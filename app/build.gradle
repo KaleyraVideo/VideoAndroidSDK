@@ -117,13 +117,13 @@ huaweiPublish {
 
 dependencies {
     /*** Kaleyra Video SDK ***/
-//    implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
+    // implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
 
     implementation project(":video-sdk")
 
     // define this dependency only if you desire to handle usb camera input in a video call
-    implementation kaleyraCatalog.kaleyraVideoCoreAvExtensionExternalCamera
+    implementation "com.kaleyra:video-extension-external-camera"
 
     // define this dependency only if you desire to handle virtual backgrounds in a video call
-    // implementation "com.kaleyra:video-extension-virtual-background"
+    implementation "com.kaleyra:video-extension-virtual-background"
 }
