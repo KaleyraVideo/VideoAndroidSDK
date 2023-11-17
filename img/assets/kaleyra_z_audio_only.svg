@@ -1,0 +1,33 @@
+<!--
+  - Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg id="audio_only" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-1 {
+        stroke: #1b1c1e;
+        stroke-linecap: round;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </defs>
+  <path id="Tracciato_1265" data-name="Tracciato 1265" class="cls-1" d="M3,6.963A15.891,15.891,0,0,1,11.692,4a15.891,15.891,0,0,1,8.692,2.963V11.9l-4.829-.988V7.951a9.811,9.811,0,0,0-3.863-.988,9.811,9.811,0,0,0-3.863.988v2.963L3,11.9Z" transform="matrix(-0.629, -0.777, 0.777, -0.629, 11.911, 26.849)"/>
+  <rect id="Rettangolo_1423" data-name="Rettangolo 1423" class="cls-2" width="24" height="24"/>
+</svg>

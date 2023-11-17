@@ -1,0 +1,110 @@
+ext.moduleGroupId = "com.kaleyra"
+ext.moduleVersion = "4.0.0-rc01"
+
+def dryRun = true
+def moduleObsfuscated = false
+
+Properties properties = new Properties()
+if (project.rootProject.file("local.properties").exists()) {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+def descriptions = new HashMap<String,String>()
+descriptions.put("video-common-ui", "Kaleyra Video Common UI")
+descriptions.put("video-common-ui", "Kaleyra Video SDK")
+descriptions.put("video-common-ui", "Kaleyra Video Glasses SDK")
+
+def mavenAccessKey = properties.getProperty("maven.accessKey") ?: ""
+def mavenSecretKey = properties.getProperty("maven.secretKey") ?: ""
+def mavenDistributionId = properties.getProperty("maven.distributionId") ?: ""
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                url = "s3://maven-bandyer/releases/"
+                credentials(AwsCredentials) {
+                    accessKey = mavenAccessKey
+                    secretKey = mavenSecretKey
+                }
+            }
+        }
+
+        publications {
+            release(MavenPublication) {
+                from components.getByName("release")
+                groupId = moduleGroupId
+                artifactId = project.getName()
+                version = moduleVersion
+                artifact kdocJar
+                if(!moduleObsfuscated) artifact sourcesJar
+                pom {
+                    url.set("https://www.kaleyra.com/video/")
+                    description.set(descriptions.get(project.getName()))
+                    licenses {
+                        license {
+                            name.set("Apache License Version 2.0")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("Kaleyra Spa")
+                            name.set("Kaleyra Spa")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+task invalidateCache(type: Exec) {
+    workingDir '../scripts'
+    def publishPath = "releases"
+    def packageName = moduleGroupId + "." + project.getName()
+    commandLine 'python3', './invalidate_s3_cache.py', mavenAccessKey, mavenSecretKey, mavenDistributionId, publishPath, packageName, version
+}
+
+task publishUpload {
+    def publishTask = 'publishToMavenLocal'
+    if (!dryRun) publishTask = 'publish'
+    dependsOn publishTask
+    dependsOn 'invalidateCache'
+    tasks.findByName('invalidateCache').mustRunAfter publishTask
+}
+
+dokkaHtml {
+    outputDirectory = new File("$buildDir/kDoc")
+    dokkaSourceSets {
+        configureEach {
+            moduleName.set(project.name)
+            reportUndocumented.set(true)
+            jdkVersion.set(8)
+            includeNonPublic.set(false)
+            skipEmptyPackages.set(true)
+        }
+    }
+}
+
+task publishDocs(type: Exec) {
+    workingDir '../scripts'
+    commandLine 'python3', './publish_doc.py', "$moduleGroupId", "${project.name}", "$version"
+}
+
+task dokkaDoc() {
+    dependsOn dokkaHtml
+}
+
+task kdocJar(type: Jar, dependsOn: dokkaHtml) {
+    from "$buildDir/docs"
+    archiveClassifier.set("kdocJar")
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set("sources")
+}
+
+artifacts {
+    archives kdocJar
+    if(!moduleObsfuscated) archives sourcesJar
+}

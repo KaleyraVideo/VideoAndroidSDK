@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <declare-styleable name="KaleyraCollaborationSuiteUI.ChatMessage.GlassNotification">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_avatarStyle" />
+        <attr name="kaleyra_titleStyle" />
+        <attr name="kaleyra_messageStyle" />
+        <attr name="kaleyra_timestampStyle" />
+        <attr name="bottomNavigationStyle" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.ChatMessage.GlassNotification" parent="KaleyraCollaborationSuiteUI.ChatMessage">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.ChatMessage.GlassNotification.RootLayout</item>
+        <item name="kaleyra_avatarStyle">@style/KaleyraCollaborationSuiteUI.Glass.Avatar</item>
+        <item name="kaleyra_titleStyle">@style/KaleyraCollaborationSuiteUI.TextView.Title.GlassChatNotification</item>
+        <item name="kaleyra_messageStyle">@style/KaleyraCollaborationSuiteUI.TextView.MessageGlassChat.Notification</item>
+        <item name="kaleyra_timestampStyle">@style/KaleyraCollaborationSuiteUI.TextView.TimestampGlassChat.Notification</item>
+        <item name="bottomNavigationStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomNavigation.ChatNotification</item>
+    </style>
+
+    <!-- ROOT -->
+    <style name="KaleyraCollaborationSuiteUI.ChatMessage.GlassNotification.RootLayout" parent="">
+        <item name="android:paddingTop">@dimen/kaleyra_dimen_space48</item>
+        <item name="android:paddingBottom">@dimen/kaleyra_dimen_space8</item>
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:paddingEnd">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:background">@color/kaleyra_glass_dimmed_background_color</item>
+    </style>
+
+    <!-- MESSAGE -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.MessageGlassChat.Notification" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.MessageGlassChat">
+        <item name="android:minHeight">@dimen/kaleyra_dimen_space0</item>
+        <item name="android:layout_marginTop">@dimen/kaleyra_dimen_space8</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <!-- TIMESTAMP -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.TimestampGlassChat.Notification" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.TimestampGlassChat">
+        <item name="android:text">@string/kaleyra_glass_now</item>
+    </style>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomNavigation">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomNavigation.RootLayout.ChatNotification</item>
+        <item name="kaleyra_firstItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.ChatNotification</item>
+        <item name="kaleyra_thirdItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.ChatNotification</item>
+        <item name="kaleyra_secondItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.ChatNotification</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.RootLayout.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.RootLayout">
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space0</item>
+        <item name="android:paddingEnd">@dimen/kaleyra_dimen_space0</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.ChatNotification</item>
+        <item name="kaleyra_labelStyle">@style/KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChatNotification</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem">
+        <item name="android:clickable">true</item>
+        <item name="android:contentDescription">@string/kaleyra_glass_hide_notification</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChatNotification" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
+        <item name="android:text">@string/kaleyra_glass_hide_notification</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.ChatNotification</item>
+        <item name="kaleyra_labelStyle">@style/KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemChatNotification</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem">
+        <item name="android:clickable">true</item>
+        <item name="android:contentDescription">@string/kaleyra_glass_read</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemChatNotification" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
+        <item name="android:text">@string/kaleyra_glass_read</item>
+    </style>
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <declare-styleable name="KaleyraCollaborationSuiteUI.CallWatermark">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_iconStyle" />
+        <attr name="kaleyra_titleStyle" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.CallWatermark" parent="KaleyraCollaborationSuiteUI.DefaultCallWatermark" />
+
+    <style name="KaleyraCollaborationSuiteUI.DefaultCallWatermark" parent="">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.CallWatermark.RootLayout</item>
+        <item name="kaleyra_iconStyle">@style/KaleyraCollaborationSuiteUI.CallWatermarkImageView</item>
+        <item name="kaleyra_titleStyle">@style/KaleyraCollaborationSuiteUI.TextView.CallWatermark</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.CallWatermark.RootLayout" parent="">
+        <item name="android:minHeight">@dimen/kaleyra_watermark_max_height</item>
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:paddingEnd">@dimen/kaleyra_dimen_space16</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.CallWatermarkImageView" parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.TextView.CallWatermark" parent="KaleyraCollaborationSuiteUI.TextView.Title">
+        <item name="android:layout_marginStart">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">0.5sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="autoSizeMaxTextSize">100sp</item>
+        <item name="autoSizeStepGranularity">2sp</item>
+    </style>
+
+</resources>

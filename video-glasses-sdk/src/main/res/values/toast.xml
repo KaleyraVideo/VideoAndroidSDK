@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!-- TOAST CONTAINER -->
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainerStyle">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_toastStyle" format="reference" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer" parent="">
+        <item name="android:gravity">center</item>
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer.RootLayout</item>
+        <item name="kaleyra_toastStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.Toast</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer.RootLayout" parent="">
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingBottom">@dimen/kaleyra_dimen_space56</item>
+        <item name="android:animateLayoutChanges">true</item>
+    </style>
+
+    <!-- TOAST -->
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastStyle">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_iconStyle" />
+        <attr name="android:textViewStyle" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.Toast" parent="">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.Toast.RootLayout</item>
+        <item name="kaleyra_iconStyle">@style/KaleyraCollaborationSuiteUI.RoundedImageGlass.Toast</item>
+        <item name="android:textViewStyle">@style/KaleyraCollaborationSuiteUI.TextView.Title.Toast</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.Toast.RootLayout" parent="">
+        <item name="android:background">@drawable/kaleyra_glass_rounded_background</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">@dimen/kaleyra_dimen_space32</item>
+        <item name="android:maxHeight">@dimen/kaleyra_dimen_space32</item>
+        <item name="android:layout_marginTop">@dimen/kaleyra_dimen_space4</item>
+        <item name="android:layout_marginBottom">@dimen/kaleyra_dimen_space4</item>
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space2</item>
+        <item name="android:paddingEnd">@dimen/kaleyra_dimen_space12</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.RoundedImageGlass.Toast" parent="KaleyraCollaborationSuiteUI.RoundedImageGlass">
+        <item name="android:layout_width">@dimen/kaleyra_dimen_space28</item>
+        <item name="android:layout_height">@dimen/kaleyra_dimen_space28</item>
+        <item name="android:padding">@dimen/kaleyra_dimen_space2</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">@color/kaleyra_glass_toast_icon_color</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.TextView.Title.Toast" parent="KaleyraCollaborationSuiteUI.TextView.Title">
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h2</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:lineSpacingExtra">@dimen/kaleyra_dimen_space0</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/kaleyra_color_white_80</item>
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space8</item>
+    </style>
+</resources>

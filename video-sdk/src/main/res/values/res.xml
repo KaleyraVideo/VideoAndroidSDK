@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!-- CHAT ACTION BAR -->
+    <item name="ic_kaleyra_audio_call" type="drawable">@drawable/ic_kaleyra_answer</item>
+    <item name="ic_kaleyra_audio_upgradable_call" type="drawable">@drawable/kaleyra_z_audio_upgradable</item>
+    <item name="ic_kaleyra_video_call" type="drawable">@drawable/kaleyra_z_cam_22</item>
+
+    <!-- CHAT -->
+    <item name="ic_kaleyra_avatar" type="drawable">@drawable/kaleyra_z_user_075</item>
+    <item name="ic_kaleyra_send" type="drawable">@drawable/kaleyra_z_send</item>
+    <item name="ic_kaleyra_double_arrow_down" type="drawable">@drawable/kaleyra_z_double_chevron</item>
+    <item name="ic_kaleyra_single_tick" type="drawable">@drawable/kaleyra_z_check</item>
+    <item name="ic_kaleyra_double_tick" type="drawable">@drawable/kaleyra_z_double_check</item>
+    <item name="ic_kaleyra_clock" type="drawable">@drawable/kaleyra_z_clock</item>
+
+    <!-- CALL -->
+    <item name="ic_kaleyra_avatar_bold" type="drawable">@drawable/kaleyra_z_user_1</item>
+    <item name="ic_kaleyra_avatars_bold" type="drawable">@drawable/kaleyra_z_users_1</item>
+    <item name="ic_kaleyra_hangup" type="drawable">@drawable/kaleyra_z_end_call_24</item>
+    <item name="ic_kaleyra_camera_off" type="drawable">@drawable/kaleyra_z_camera_off</item>
+    <item name="ic_kaleyra_switch_camera" type="drawable">@drawable/kaleyra_z_flipcam</item>
+    <item name="ic_kaleyra_whiteboard" type="drawable">@drawable/kaleyra_z_whiteboard</item>
+    <item name="ic_kaleyra_enter_fullscreen" type="drawable">@drawable/kaleyra_z_maximize</item>
+    <item name="ic_kaleyra_exit_fullscreen" type="drawable">@drawable/kaleyra_z_minimize</item>
+    <item name="ic_kaleyra_snapshot" type="drawable">@drawable/kaleyra_z_snapshot</item>
+    <item name="ic_kaleyra_mic_off" type="drawable">@drawable/kaleyra_z_mic_off</item>
+    <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_z_users</item>
+    <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
+    <item name="ic_kaleyra_empty_star" type="drawable">@drawable/kaleyra_z_star_empty</item>
+
+    <!-- WHITEBOARD -->
+    <item name="ic_kaleyra_cancel" type="drawable">@drawable/kaleyra_z_arrow_left</item>
+    <item name="ic_kaleyra_close" type="drawable">@drawable/kaleyra_z_close</item>
+    <item name="ic_kaleyra_confirm" type="drawable">@drawable/kaleyra_z_check</item>
+    <item name="ic_kaleyra_image_upload" type="drawable">@drawable/kaleyra_z_gallery</item>
+    <item name="ic_kaleyra_reload" type="drawable">@drawable/kaleyra_z_retry</item>
+
+    <!-- AUDIO -->
+    <item name="ic_kaleyra_wired_headset" type="drawable">@drawable/kaleyra_z_headset</item>
+    <item name="ic_kaleyra_muted" type="drawable">@drawable/kaleyra_z_speaker_off</item>
+    <item name="ic_kaleyra_loud_speaker" type="drawable">@drawable/kaleyra_z_speaker_on</item>
+    <item name="ic_kaleyra_earpiece" type="drawable">@drawable/kaleyra_z_audio_device</item>
+    <item name="ic_kaleyra_bluetooth_headset" type="drawable">@drawable/kaleyra_z_bluetooth</item>
+
+    <!-- SCREEN SHARE -->
+    <item name="ic_kaleyra_screen_share_device" type="drawable">@drawable/kaleyra_z_full_device</item>
+    <item name="ic_kaleyra_screen_share_app" type="drawable">@drawable/kaleyra_z_app_only</item>
+
+    <!-- FILE SHARE -->
+    <item name="ic_kaleyra_folder" type="drawable">@drawable/kaleyra_z_folder</item>
+    <item name="ic_kaleyra_zip" type="drawable">@drawable/kaleyra_z_zip</item>
+    <item name="ic_kaleyra_file" type="drawable">@drawable/kaleyra_z_file</item>
+    <item name="ic_kaleyra_image" type="drawable">@drawable/kaleyra_z_gallery</item>
+
+    <item name="ic_kaleyra_add" type="drawable">@drawable/kaleyra_z_plus</item>
+
+    <item name="ic_kaleyra_retry" type="drawable">@drawable/kaleyra_z_retry_3</item>
+    <item name="ic_kaleyra_check" type="drawable">@drawable/kaleyra_z_check_3</item>
+    <item name="ic_kaleyra_upload" type="drawable">@drawable/kaleyra_z_arrow_up_3</item>
+    <item name="ic_kaleyra_fileshare_cancel" type="drawable">@drawable/kaleyra_z_close_3</item>
+    <item name="ic_kaleyra_download" type="drawable">@drawable/kaleyra_z_arrow_down_3</item>
+    <item name="ic_kaleyra_save" type="drawable">@drawable/kaleyra_z_arrow_down_3</item>
+
+    <!-- SNAPSHOT -->
+    <item name="ic_kaleyra_nav_close" type="drawable">@drawable/kaleyra_z_close</item>
+    <item name="ic_kaleyra_nav_share_whiteboard" type="drawable">@drawable/kaleyra_z_whiteboard</item>
+
+    <!-- RECORDING -->
+    <item name="ic_kaleyra_recording_dot" type="drawable">@drawable/kaleyra_recording_dot</item>
+
+    <!-- CALL MESSAGE -->
+    <item name="ic_kaleyra_snackbar_error" type="drawable">@drawable/kaleyra_z_error</item>
+    <item name="ic_kaleyra_snackbar_info" type="drawable">@drawable/kaleyra_z_alert</item>
+
+    <!-- COMMON -->
+    <item name="ic_kaleyra_back_down" type="drawable">@drawable/kaleyra_z_chevron_down</item>
+    <item name="ic_kaleyra_close_bold" type="drawable">@drawable/kaleyra_z_close_3</item>
+
+    <!-- GLASS -->
+    <item name="ic_kaleyra_glass_mic_off" type="drawable">@drawable/kaleyra_z_mic_off</item>
+    <item name="ic_kaleyra_glass_mic_on" type="drawable">@drawable/kaleyra_z_mic_on</item>
+    <item name="ic_kaleyra_glass_cam_off" type="drawable">@drawable/kaleyra_z_camera_off</item>
+    <item name="ic_kaleyra_glass_cam_on" type="drawable">@drawable/kaleyra_z_camera_on</item>
+    <item name="ic_kaleyra_glass_participants" type="drawable">@drawable/kaleyra_z_users</item>
+
+    <!-- VIRTUAL BACKGROUND -->
+    <item name="ic_kaleyra_virtual_background" type="drawable">@drawable/kaleyra_z_virtual_bg</item>
+    <item name="ic_kaleyra_virtual_background_none" type="drawable">@drawable/kaleyra_z_square</item>
+    <item name="ic_kaleyra_virtual_background_blur" type="drawable">@drawable/kaleyra_z_blurred_bg</item>
+    <item name="ic_kaleyra_virtual_background_image" type="drawable">@drawable/kaleyra_z_virtual_bg</item>
+
+    <!-- STILL IN PNG, NOT USED -->
+    <item name="ic_kaleyra_options" type="drawable">@drawable/kaleyra_options_icon</item>
+</resources>

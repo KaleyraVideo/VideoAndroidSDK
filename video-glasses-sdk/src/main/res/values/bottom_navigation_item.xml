@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <!-- BOTTOM NAVIGATION ITEM -->
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_iconStyle" />
+        <attr name="kaleyra_iconTipStyle" format="reference" />
+        <attr name="kaleyra_labelStyle" format="reference" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem" parent="KaleyraCollaborationSuiteUI.Glass">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout</item>
+        <item name="kaleyra_iconStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.Icon</item>
+        <item name="kaleyra_iconTipStyle">@style/KaleyraCollaborationSuiteUI.TextView.GlassIconTip</item>
+        <item name="kaleyra_labelStyle">@style/KaleyraCollaborationSuiteUI.TextView.GlassLabel</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout" parent="">
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- GESTURE ICON -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.Icon" parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="tint">?attr/colorSecondary</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">@dimen/kaleyra_dimen_space24</item>
+        <item name="android:layout_height">@dimen/kaleyra_dimen_space24</item>
+    </style>
+
+    <!-- ICON TIP TEXT -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip" parent="KaleyraCollaborationSuiteUI.TextView">
+        <item name="android:maxLines">1</item>
+        <item name="android:text">@string/kaleyra_glass_tap</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">@dimen/kaleyra_dimen_space0</item>
+    </style>
+
+    <!-- LABEL TEXT -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel" parent="KaleyraCollaborationSuiteUI.TextView">
+        <item name="android:layout_marginStart">@dimen/kaleyra_dimen_space4</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">@dimen/kaleyra_dimen_space0</item>
+    </style>
+</resources>

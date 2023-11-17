@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Glass.UserInfo">
+        <attr name="kaleyra_avatarStyle" />
+        <attr name="kaleyra_titleStyle" />
+        <attr name="kaleyra_subtitleStyle" />
+        <attr name="kaleyra_contactStateDotStyle" format="reference"/>
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.UserInfo" parent="KaleyraCollaborationSuiteUI.Glass">
+        <item name="kaleyra_avatarStyle">@style/KaleyraCollaborationSuiteUI.Glass.Avatar.Big</item>
+        <item name="kaleyra_titleStyle">@style/KaleyraCollaborationSuiteUI.TextView.Title.GlassUserInfo</item>
+        <item name="kaleyra_subtitleStyle">@style/KaleyraCollaborationSuiteUI.TextView.SubTitle.GlassUserInfo</item>
+        <item name="kaleyra_contactStateDotStyle">@style/KaleyraCollaborationSuiteUI.RoundedImageGlass.StateUserInfo</item>
+    </style>
+
+    <!-- CONTACT STATE DOT -->
+    <style name="KaleyraCollaborationSuiteUI.RoundedImageGlass.StateUserInfo" parent="KaleyraCollaborationSuiteUI.RoundedImageGlass.Bordered">
+        <item name="android:layout_width">@dimen/kaleyra_dimen_space28</item>
+        <item name="android:layout_height">@dimen/kaleyra_dimen_space28</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:backgroundTint">@color/kaleyra_glass_color_contact_state</item>
+        <item name="strokeColor">@android:color/white</item>
+    </style>
+
+    <!-- NAME -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.Title.GlassUserInfo" parent="KaleyraCollaborationSuiteUI.TextView.Title">
+        <item name="android:layout_marginTop">@dimen/kaleyra_dimen_space8</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">@dimen/kaleyra_dimen_space0</item>
+    </style>
+
+    <!-- CONTACT STATE TEXT -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.SubTitle.GlassUserInfo" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle">
+        <item name="android:layout_marginTop">@dimen/kaleyra_dimen_space8</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">@dimen/kaleyra_dimen_space0</item>
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h2</item>
+    </style>
+</resources>

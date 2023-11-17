@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <activity
+            android:name=".termsandconditions.PhoneTermsAndConditionsActivity"
+            android:taskAffinity="com.kaleyra.video_sdk.termsandconditions.PhoneTermsAndConditionsActivity"
+            android:launchMode="singleTop"
+            android:exported="false" />
+
+        <receiver
+            android:name=".call.fileshare.filepick.FilePickBroadcastReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.kaleyra.collaboration_suite_phone_ui.FILE_PICK_EVENT_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".call.PhoneCallActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:launchMode="singleTop"
+            android:showForAllUsers="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:supportsPictureInPicture="true"
+            android:taskAffinity="com.kaleyra.video_sdk.call.PhoneCallActivity"
+            tools:targetApi="o_mr1" />
+        <activity
+            android:name=".chat.PhoneChatActivity"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".call.fileshare.filepick.FilePickActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="false"
+            android:theme="@style/Theme.AppCompat"
+            tools:targetApi="n" />
+    </application>
+
+</manifest>

@@ -1,0 +1,33 @@
+<!--
+  - Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg id="folder" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-2 {
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </defs>
+  <rect id="Rettangolo_1433" data-name="Rettangolo 1433" class="cls-1" width="24" height="24"/>
+  <path id="folder-open-alt" class="cls-2" d="M3.8,10.3V4H9.971l2.057,2.7H18.2v3.6M2,10.3l2,8.1H18l2-8.1Z" transform="translate(1 0.8)"/>
+</svg>

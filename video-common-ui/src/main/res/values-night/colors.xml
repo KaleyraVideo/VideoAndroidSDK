@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!-- hang up button -->
+    <color name="kaleyra_color_hang_up_button">@color/kaleyra_color_hang_up_button_night</color>
+    <color name="kaleyra_color_hang_up_button_dark">@color/kaleyra_color_hang_up_button_dark_night</color>
+
+    <!-- answer button -->
+    <color name="kaleyra_color_answer_button">@color/kaleyra_color_answer_button_night</color>
+    <color name="kaleyra_color_answer_button_dark">@color/kaleyra_color_answer_button_dark_night</color>
+
+    <!-- commons -->
+    <color name="kaleyra_color_link">@color/kaleyra_color_link_night</color>
+
+    <!-- screen share color -->
+    <color name="kaleyra_screen_share_color">@color/kaleyra_screen_share_color_night</color>
+
+    <!-- API 21 colors -->
+    <color name="kaleyra_api21_color_on_surface_12">#3F3F3F</color>
+    <color name="kaleyra_api21_color_on_surface_30">#656565</color>
+</resources>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="kaleyra_today">oggi</string>
+    <string name="kaleyra_yesterday">ieri</string>
+    <string name="kaleyra_notification_answer">Rispondi</string>
+    <string name="kaleyra_notification_decline">Rifiuta</string>
+    <string name="kaleyra_notification_hangup">Termina</string>
+    <string name="kaleyra_notification_download">Scarica</string>
+    <string name="kaleyra_notification_stop_screen_share">Ferma Condivisione</string>
+    <string name="kaleyra_notification_call_channel_high_priority_name">Chiamate Alta Priorità</string>
+    <string name="kaleyra_notification_call_channel_low_priority_name">Chiamate Bassa Priorità</string>
+    <string name="kaleyra_notification_terms_and_conditions_channel_name">Accordo Consenso Dati Utente</string>
+    <string name="kaleyra_notification_chat_channel_name">Chat</string>
+    <string name="kaleyra_notification_file_share_channel_name">Condivisione File</string>
+    <string name="kaleyra_notification_incoming_call">Chiamata in ingresso</string>
+    <string name="kaleyra_notification_incoming_group_call">Chiamata di gruppo in ingresso</string>
+    <string name="kaleyra_notification_outgoing_call">Chiamata in uscita</string>
+    <string name="kaleyra_notification_outgoing_group_call">Chiamata di gruppo in uscita</string>
+    <string name="kaleyra_notification_ongoing_call">Chiamata in corso</string>
+    <string name="kaleyra_notification_ongoing_group_call">Chiamata di gruppo in corso</string>
+    <string name="kaleyra_notification_connecting_call">Connessione in corso…</string>
+    <string name="kaleyra_notification_tap_to_return_to_call">Tocca per tornare alla chiamata</string>
+    <string name="kaleyra_notification_tap_to_return_to_group_call">Tocca per tornare alla chiamata di gruppo</string>
+    <string name="kaleyra_notification_call_recorded">Registrazione chiamata in corso</string>
+    <string name="kaleyra_notification_chat_reply">Rispondi</string>
+    <string name="kaleyra_notification_chat_mark_as_read">Segna come letto</string>
+    <string name="kaleyra_notification_user_sharing_file">%1$s vuole condividere un file con te.</string>
+    <string name="kaleyra_notification_download_file">Vuoi scaricare il file?</string>
+    <string name="kaleyra_call_waiting_for_other_participants">In attesa di altri partecipanti…</string>
+
+    <!-- KICK PARTICIPANT -->
+
+    <plurals name="kaleyra_call_participant_removed">
+        <item quantity="one">%s ti ha rimosso dalla chiamata</item>
+        <item quantity="other">L\'amministratore ti ha rimosso dalla chiamata</item>
+        <item quantity="many">L\'amministratore ti ha rimosso dalla chiamata</item>
+    </plurals>
+    <string name="kaleyra_call_participant_removed_understood_message">Chiudi</string>
+
+    <!-- MUTE PARTICIPANT -->
+
+    <plurals name="kaleyra_call_participant_muted_by_admin">
+        <item quantity="one">%s ha disabilitato il tuo microfono</item>
+        <item quantity="other">L\'amministratore ha disabilitato il tuo microfono</item>
+        <item quantity="many">L\'amministratore ha disabilitato il tuo microfono</item>
+    </plurals>
+    <string name="kaleyra_call_participant_utterance_muted_by_admin">Microfono disabilitato</string>
+
+
+    <!-- TERMS AND CONDITIONS -->
+    <string name="kaleyra_user_data_consent_agreement_notification_title">Termini e condizioni</string>
+    <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_message">Hai un nuovo messaggio</string>
+    <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_call">Chiamata in entrata</string>
+    <string name="kaleyra_user_data_consent_agreement_notification_message">Accetta i termini e le condizioni per procedere</string>
+
+    <!-- RECORDING UTTERANCE -->
+    <string name="kaleyra_utterance_recording_call_may_be_recorded">Questa chiamata potrebbe essere registrata</string>
+    <string name="kaleyra_utterance_recording_call_will_be_recorded">Questa chiamata verrà registrata</string>
+    <string name="kaleyra_utterance_recording_failed">Registrazione fallita. Chiudi la chiamata e riprova</string>
+    <string name="kaleyra_utterance_recording_started">Registrazione avviata</string>
+    <string name="kaleyra_utterance_recording_stopped">Registrazione interrotta</string>
+
+    <string name="kaleyra_call_join_url_already_in_call_error">Non è possibile entrare in una chiamata da url mentre è già in corso un\'altra chiamata.</string>
+
+</resources>

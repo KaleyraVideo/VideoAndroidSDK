@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <item name="ic_kaleyra_glass_charging" type="drawable">@drawable/kaleyra_glass_charging_icon</item>
+    <item name="ic_kaleyra_glass_cell_missing" type="drawable">@drawable/kaleyra_glass_cell_missing_icon</item>
+    <item name="ic_kaleyra_glass_cell_low" type="drawable">@drawable/kaleyra_glass_cell_low_icon</item>
+    <item name="ic_kaleyra_glass_cell_moderate" type="drawable">@drawable/kaleyra_glass_cell_moderate_icon</item>
+    <item name="ic_kaleyra_glass_cell_good" type="drawable">@drawable/kaleyra_glass_cell_good_icon</item>
+    <item name="ic_kaleyra_glass_cell_full" type="drawable">@drawable/kaleyra_glass_cell_full_icon</item>
+    <item name="ic_kaleyra_glass_badge_new_mess" type="drawable">@drawable/kaleyra_glass_badge_new_mess_icon</item>
+    <item name="ic_kaleyra_glass_close_arrow" type="drawable">@drawable/kaleyra_glass_close_arrow_icon</item>
+    <item name="ic_kaleyra_glass_arrow_right" type="drawable">@drawable/kaleyra_glass_arrow_right_icon</item>
+    <item name="ic_kaleyra_glass_arrow_left" type="drawable">@drawable/kaleyra_glass_arrow_left_icon</item>
+    <item name="ic_kaleyra_glass_mic_off" type="drawable">@drawable/kaleyra_glass_mic_off_icon</item>
+    <item name="ic_kaleyra_glass_cam_off" type="drawable">@drawable/kaleyra_glass_cam_off_icon</item>
+    <item name="ic_kaleyra_glass_select" type="drawable">@drawable/kaleyra_glass_select_icon</item>
+    <item name="ic_kaleyra_glas_swipe_arrow" type="drawable">@drawable/kaleyra_glass_swipe_arrow_icon</item>
+    <item name="ic_kaleyra_glass_wifi_disabled" type="drawable">@drawable/kaleyra_glass_wifi_disabled_icon</item>
+    <item name="ic_kaleyra_glass_wifi_low" type="drawable">@drawable/kaleyra_glass_wifi_low_icon</item>
+    <item name="ic_kaleyra_glass_wifi_moderate" type="drawable">@drawable/kaleyra_glass_wifi_moderate_icon</item>
+    <item name="ic_kaleyra_glass_wifi_full" type="drawable">@drawable/kaleyra_glass_wifi_full_icon</item>
+    <item name="ic_kaleyra_glass_rec" type="drawable">@drawable/kaleyra_rec_icon</item>
+    <item name="ic_kaleyra_glass_alert" type="drawable">@drawable/kaleyra_alert_icon</item>
+    <item name="ic_kaleyra_glass_voice_command" type="drawable">@drawable/kaleyra_voice_command</item>
+</resources>

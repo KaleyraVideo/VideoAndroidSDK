@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Theme.Glass.Call">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_statusBarStyle" />
+        <attr name="recyclerViewStyle" tools:ignore="ResourceName" />
+        <attr name="kaleyra_recyclerViewItemStyle" />
+        <attr name="kaleyra_livePointerStyle" format="reference" />
+        <attr name="kaleyra_toastContainerStyle" format="reference" />
+        <attr name="kaleyra_menuStyle" format="reference" />
+        <attr name="kaleyra_volumeStyle" format="reference" />
+        <attr name="kaleyra_zoomStyle" format="reference" />
+        <attr name="kaleyra_ringingStyle" format="reference" />
+        <attr name="kaleyra_dialingStyle" format="reference" />
+        <attr name="kaleyra_reconnectingStyle" format="reference" />
+        <attr name="kaleyra_endCallStyle" format="reference" />
+        <attr name="kaleyra_callEndedStyle" format="reference" />
+        <attr name="kaleyra_emptyStyle" format="reference" />
+        <attr name="kaleyra_participantsStyle" format="reference" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.DayNight.GlassCall" parent="KaleyraCollaborationSuiteUI.Theme.DayNight">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RootLayout</item>
+        <item name="kaleyra_statusBarStyle">@style/KaleyraCollaborationSuiteUI.Glass.StatusBar</item>
+        <item name="kaleyra_recyclerViewItemStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem</item>
+        <item name="kaleyra_livePointerStyle">@style/KaleyraCollaborationSuiteUI.LivePointer</item>
+        <item name="kaleyra_toastContainerStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer</item>
+        <item name="kaleyra_menuStyle">@style/KaleyraCollaborationSuiteUI.Glass.Menu</item>
+        <item name="kaleyra_volumeStyle">@style/KaleyraCollaborationSuiteUI.Glass.Volume</item>
+        <item name="kaleyra_zoomStyle">@style/KaleyraCollaborationSuiteUI.Glass.Zoom</item>
+        <item name="kaleyra_ringingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Ringing</item>
+        <item name="kaleyra_dialingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Dialing</item>
+        <item name="kaleyra_reconnectingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Reconnecting</item>
+        <item name="kaleyra_endCallStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.EndCall</item>
+        <item name="kaleyra_callEndedStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.CallEnded</item>
+        <item name="kaleyra_emptyStyle">@style/KaleyraCollaborationSuiteUI.Glass.Empty</item>
+        <item name="kaleyra_participantsStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.Participants</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.Day.GlassCall" parent="KaleyraCollaborationSuiteUI.Theme.Day">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RootLayout</item>
+        <item name="kaleyra_statusBarStyle">@style/KaleyraCollaborationSuiteUI.Glass.StatusBar</item>
+        <item name="kaleyra_recyclerViewItemStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem</item>
+        <item name="kaleyra_livePointerStyle">@style/KaleyraCollaborationSuiteUI.LivePointer</item>
+        <item name="kaleyra_toastContainerStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer</item>
+        <item name="kaleyra_menuStyle">@style/KaleyraCollaborationSuiteUI.Glass.Menu</item>
+        <item name="kaleyra_volumeStyle">@style/KaleyraCollaborationSuiteUI.Glass.Volume</item>
+        <item name="kaleyra_zoomStyle">@style/KaleyraCollaborationSuiteUI.Glass.Zoom</item>
+        <item name="kaleyra_ringingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Ringing</item>
+        <item name="kaleyra_dialingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Dialing</item>
+        <item name="kaleyra_reconnectingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Reconnecting</item>
+        <item name="kaleyra_endCallStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.EndCall</item>
+        <item name="kaleyra_callEndedStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.CallEnded</item>
+        <item name="kaleyra_emptyStyle">@style/KaleyraCollaborationSuiteUI.Glass.Empty</item>
+        <item name="kaleyra_participantsStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.Participants</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.Night.GlassCall" parent="KaleyraCollaborationSuiteUI.Theme.Night">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RootLayout</item>
+        <item name="kaleyra_statusBarStyle">@style/KaleyraCollaborationSuiteUI.Glass.StatusBar</item>
+        <item name="kaleyra_recyclerViewItemStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem</item>
+        <item name="kaleyra_livePointerStyle">@style/KaleyraCollaborationSuiteUI.LivePointer</item>
+        <item name="kaleyra_toastContainerStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.ToastContainer</item>
+        <item name="kaleyra_menuStyle">@style/KaleyraCollaborationSuiteUI.Glass.Menu</item>
+        <item name="kaleyra_volumeStyle">@style/KaleyraCollaborationSuiteUI.Glass.Volume</item>
+        <item name="kaleyra_zoomStyle">@style/KaleyraCollaborationSuiteUI.Glass.Zoom</item>
+        <item name="kaleyra_ringingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Ringing</item>
+        <item name="kaleyra_dialingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Dialing</item>
+        <item name="kaleyra_reconnectingStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Reconnecting</item>
+        <item name="kaleyra_endCallStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.EndCall</item>
+        <item name="kaleyra_callEndedStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.CallEnded</item>
+        <item name="kaleyra_emptyStyle">@style/KaleyraCollaborationSuiteUI.Glass.Empty</item>
+        <item name="kaleyra_participantsStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.Participants</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RootLayout" parent="">
+        <item name="android:background">@color/kaleyra_glass_background_color</item>
+    </style>
+
+    <!-- RECYCLER VIEW ITEM -->
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_avatarStyle" />
+        <attr name="android:textViewStyle" />
+        <attr name="kaleyra_iconStyle" />
+        <attr name="kaleyra_bigCamIconStyle" format="reference" />
+        <attr name="kaleyra_bigMicIconStyle"  format="reference" />
+    </declare-styleable>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem" parent="">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.RootLayout</item>
+        <item name="android:textViewStyle">@style/KaleyraCollaborationSuiteUI.TextView.Subtitle.GlassCallRecyclerViewItem</item>
+        <item name="kaleyra_iconStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.MicIcon</item>
+        <item name="kaleyra_bigCamIconStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.ActivableIcon.Camera</item>
+        <item name="kaleyra_bigMicIconStyle">@style/KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.ActivableIcon.Mic</item>
+        <item name="kaleyra_avatarStyle">@style/KaleyraCollaborationSuiteUI.Glass.Avatar.Big.GlassCallRecyclerViewItem</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.RootLayout" parent="">
+        <item name="android:paddingStart">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:paddingEnd">@dimen/kaleyra_dimen_space16</item>
+        <item name="android:paddingTop">@dimen/kaleyra_dimen_space48</item>
+        <item name="android:paddingBottom">@dimen/kaleyra_dimen_space48</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.Avatar.Big.GlassCallRecyclerViewItem" parent="KaleyraCollaborationSuiteUI.Glass.Avatar.Big">
+        <item name="android:paddingBottom">@dimen/kaleyra_dimen_space4</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.ActivableIcon.Camera" parent="KaleyraCollaborationSuiteUI.RoundedImageGlass.ActivableCallRecyclerViewItemIcon">
+        <item name="srcCompat">@drawable/ic_kaleyra_glass_cam_off</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.ActivableIcon.Mic" parent="KaleyraCollaborationSuiteUI.RoundedImageGlass.ActivableCallRecyclerViewItemIcon">
+        <item name="srcCompat">@drawable/ic_kaleyra_glass_mic_off</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.RoundedImageGlass.ActivableCallRecyclerViewItemIcon" parent="KaleyraCollaborationSuiteUI.RoundedImageGlass">
+        <item name="android:backgroundTint">@color/kaleyra_glass_input_background</item>
+        <item name="android:background">@drawable/kaleyra_glass_flat_white</item>
+        <item name="android:layout_width">@dimen/kaleyra_dimen_space48</item>
+        <item name="android:layout_height">@dimen/kaleyra_dimen_space48</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall.RecyclerViewItem.MicIcon" parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="android:tint">@android:color/white</item>
+        <item name="srcCompat">@drawable/ic_kaleyra_glass_mic_off</item>
+        <item name="android:layout_marginEnd">@dimen/kaleyra_dimen_space4</item>
+        <item name="android:layout_width">@dimen/kaleyra_dimen_space32</item>
+        <item name="android:layout_height">@dimen/kaleyra_dimen_space32</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.GlassCallRecyclerViewItem" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle">
+        <item name="paddingStart">@dimen/kaleyra_dimen_space6</item>
+        <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Theme.GlassCall" parent="KaleyraCollaborationSuiteUI.Theme.DayNight.GlassCall"/>
+</resources>

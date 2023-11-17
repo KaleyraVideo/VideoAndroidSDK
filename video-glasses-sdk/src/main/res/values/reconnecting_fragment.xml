@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <declare-styleable name="KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenLogoDialog.Reconnecting">
+        <attr name="kaleyra_rootLayoutStyle" />
+        <attr name="kaleyra_callWatermarkStyle" />
+        <attr name="recyclerViewStyle" />
+        <attr name="kaleyra_recyclerViewItemStyle" />
+        <attr name="kaleyra_titleStyle" />
+        <attr name="kaleyra_subtitleStyle" />
+        <attr name="bottomNavigationStyle" />
+        <attr name="kaleyra_bottomNavigationVoiceStyle" />
+    </declare-styleable>
+
+    <!-- RECONNECTING FRAGMENT -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo">
+        <item name="android:horizontalScrollViewStyle">@style/KaleyraCollaborationSuiteUI.Glass.HorizontalScrollView.FullScreenLogoDialog.Reconnecting</item>
+        <item name="linearProgressIndicatorStyle">@style/KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.ProgressBar.Reconnecting</item>
+        <item name="kaleyra_titleStyle">@style/KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog.Reconnecting</item>
+        <item name="kaleyra_subtitleStyle">@style/KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Reconnecting</item>
+        <item name="kaleyra_counterStyle">@style/KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Counter.Reconnecting</item>
+        <item name="bottomNavigationStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo.Reconnecting</item>
+        <item name="kaleyra_bottomNavigationVoiceStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo.VoiceCommand.Reconnecting</item>
+    </style>
+
+    <!-- TITLE -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog">
+        <item name="android:text">@string/kaleyra_glass_offline</item>
+    </style>
+
+    <!-- SUBTITLE -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog">
+        <item name="android:text">@string/kaleyra_glass_connecting</item>
+    </style>
+
+    <!-- COUNTER -->
+    <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Counter.Reconnecting" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Counter">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- SCROLLVIEW -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.HorizontalScrollView.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.HorizontalScrollView.FullScreenLogoDialog">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- PROGRESS BAR -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.ProgressBar.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.DarkBackground.FullScreenDialog.Logo.ProgressBar">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- BOTTOM NAVIGATION -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo">
+        <item name="kaleyra_firstItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.FullScreenLogoDialog.Reconnecting</item>
+        <item name="kaleyra_secondItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.FullScreenLogoDialog.Reconnecting</item>
+        <item name="kaleyra_thirdItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.FullScreenLogoDialog.Reconnecting</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.FullScreenLogoDialog">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.FullScreenLogoDialog">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.FullScreenLogoDialog">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.Reconnecting</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem">
+        <item name="android:layout_marginStart">@dimen/kaleyra_dimen_space4</item>
+    </style>
+
+    <!-- VOICE COMMAND -->
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo.VoiceCommand.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomNavigation.FullScreenDialog.Logo.VoiceCommand">
+        <item name="kaleyra_firstItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.VoiceCommand.FullScreenLogoDialog.Reconnecting</item>
+        <item name="kaleyra_secondItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.FullScreenLogoDialog.Reconnecting</item>
+        <item name="kaleyra_thirdItemStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.VoiceCommand.FullScreenLogoDialog.Reconnecting</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.VoiceCommand.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.FirstItem.VoiceCommand.FullScreenLogoDialog">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.FullScreenLogoDialog">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.VoiceCommand.FullScreenLogoDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.VoiceCommand.FullScreenLogoDialog">
+        <item name="kaleyra_rootLayoutStyle">@style/KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.Reconnecting</item>
+    </style>
+
+    <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.Reconnecting" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
+        <item name="android:layout_marginStart">@dimen/kaleyra_dimen_space4</item>
+    </style>
+</resources>
