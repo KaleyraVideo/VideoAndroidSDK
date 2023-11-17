@@ -8,7 +8,7 @@ Properties properties = new Properties()
 if (project.rootProject.file("local.properties").exists()) {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 }
-def descriptions = new HashMap<String,String>()
+def descriptions = new HashMap<String, String>()
 descriptions.put("video-common-ui", "Kaleyra Video Common UI")
 descriptions.put("video-common-ui", "Kaleyra Video SDK")
 descriptions.put("video-common-ui", "Kaleyra Video Glasses SDK")
@@ -36,7 +36,7 @@ afterEvaluate {
                 artifactId = project.getName()
                 version = moduleVersion
                 artifact kdocJar
-                if(!moduleObsfuscated) artifact sourcesJar
+                if (!moduleObsfuscated) artifact sourcesJar
                 pom {
                     url.set("https://www.kaleyra.com/video/")
                     description.set(descriptions.get(project.getName()))
@@ -61,12 +61,13 @@ task invalidateCache(type: Exec) {
     workingDir '../scripts'
     def publishPath = "releases"
     def packageName = moduleGroupId + "." + project.getName()
-    commandLine 'python3', './invalidate_s3_cache.py', mavenAccessKey, mavenSecretKey, mavenDistributionId, publishPath, packageName, version
+    commandLine 'python3', './invalidate_s3_cache.py', mavenAccessKey, mavenSecretKey, mavenDistributionId, publishPath, packageName, moduleVersion
 }
 
 task publishUpload {
     def publishTask = 'publishToMavenLocal'
     if (!dryRun) publishTask = 'publish'
+    dependsOn 'updateSdkVersion'
     dependsOn publishTask
     dependsOn 'invalidateCache'
     tasks.findByName('invalidateCache').mustRunAfter publishTask
@@ -85,9 +86,14 @@ dokkaHtml {
     }
 }
 
+task updateSdkVersion(type: Exec) {
+    workingDir '../scripts'
+    commandLine 'python3', './update_sdk_version.py', "${project.name}", "${moduleVersion}"
+}
+
 task publishDocs(type: Exec) {
     workingDir '../scripts'
-    commandLine 'python3', './publish_doc.py', "$moduleGroupId", "${project.name}", "$version"
+    commandLine 'python3', './publish_doc.py', "$moduleGroupId", "${project.name}", "$moduleVersion"
 }
 
 task dokkaDoc() {
@@ -106,5 +112,5 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives kdocJar
-    if(!moduleObsfuscated) archives sourcesJar
+    if (!moduleObsfuscated) archives sourcesJar
 }
