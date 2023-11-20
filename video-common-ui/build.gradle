@@ -33,7 +33,6 @@ dependencies {
 
     /** Platform **/
     api platform(catalog.androidxComposeBom)
-    api 'androidx.activity:activity-compose'
     api 'androidx.compose.material:material'
     api 'androidx.compose.foundation:foundation'
     api 'androidx.compose.runtime:runtime'
@@ -42,6 +41,7 @@ dependencies {
     api 'androidx.lifecycle:lifecycle-runtime-compose'
 
     api catalog.appcompat
+    api catalog.androidXActivityCompose
     api catalog.material
     api catalog.googleAccompanistSystemUiController
     api catalog.googleAccompanistPermission
