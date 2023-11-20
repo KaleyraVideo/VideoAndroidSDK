@@ -117,7 +117,7 @@ huaweiPublish {
 
 dependencies {
     /*** Kaleyra Video SDK ***/
-    // implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
+     implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
 
     implementation project(":video-sdk")
 
