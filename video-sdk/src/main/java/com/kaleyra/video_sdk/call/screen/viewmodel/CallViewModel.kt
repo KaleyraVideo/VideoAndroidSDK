@@ -176,6 +176,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         callState
             .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
+            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
             .debounce { doOthersHaveStreams -> if (!doOthersHaveStreams) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
             .onEach { doOthersHaveStreams -> _uiState.update { it.copy(amILeftAlone = !doOthersHaveStreams) } }

@@ -520,6 +520,69 @@ class CallViewModelTest {
     }
 
     @Test
+    fun testCallUiState_amILeftAloneNotUpdatedIfCallIsDialing() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callParticipantsMock.creator() } returns participantMeMock
+        every { participantMock1.streams } returns MutableStateFlow(listOf())
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
+        runCurrent()
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+    }
+
+    @Test
+    fun testCallUiState_amILeftAloneNoLongerUpdatedAfterCallIsDisconnecting() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connecting)
+        every { callMock.state } returns callState
+        every { callParticipantsMock.creator() } returns participantMeMock
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        runCurrent()
+        callState.value = Call.State.Connected
+
+        runCurrent()
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+
+        participants1StreamsFlow.value = listOf()
+        callState.value = Call.State.Disconnecting
+        advanceTimeBy(1)
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+    }
+
+    @Test
+    fun testCallUiState_amILeftAloneNoLongerUpdatedAfterCallIsEnded() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connecting)
+        every { callMock.state } returns callState
+        every { callParticipantsMock.creator() } returns participantMeMock
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        runCurrent()
+        callState.value = Call.State.Connected
+
+        runCurrent()
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+
+        participants1StreamsFlow.value = listOf()
+        callState.value = Call.State.Disconnected.Ended
+        advanceTimeBy(1)
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+    }
+
+    @Test
+    fun testCallUiState_amILeftAloneNotUpdatedIfCallIsRinging() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected)
+        every { callParticipantsMock.creator() } returns participantMock1
+        val participants1StreamsFlow = MutableStateFlow(listOf<Stream>())
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
+        runCurrent()
+        assertEquals(false, viewModel.uiState.first().amILeftAlone)
+    }
+
+    @Test
     fun testStartMicrophone() = runTest {
         val audioMock = mockk<Input.Audio>(relaxed = true)
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
