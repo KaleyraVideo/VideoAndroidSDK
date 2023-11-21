@@ -61,15 +61,16 @@ dependencies {
     testImplementation catalog.androidxTestEspressoIntents
     testImplementation catalog.coroutinesTest
     testImplementation catalog.mockkAndroid
+    testImplementation catalog.androidxComposeUiTooling
+    testImplementation catalog.androidxComposeUiTestManifest
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore
     androidTestImplementation catalog.androidxComposeUiTestJunit4
     androidTestImplementation catalog.mockkAndroid
     androidTestImplementation catalog.androidxTestEspressoIntents
-
-    debugImplementation catalog.androidxComposeUiTooling
-    debugImplementation catalog.androidxComposeUiTestManifest
+    androidTestImplementation catalog.androidxComposeUiTooling
+    androidTestImplementation catalog.androidxComposeUiTestManifest
 
     implementation catalog.coilCompose
 
