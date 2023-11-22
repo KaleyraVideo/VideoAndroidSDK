@@ -22,5 +22,11 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build module Video-Common-UI
+      run: ./gradlew :video-common-ui:build
+    - name: Build module Video-SDK
+      run: ./gradlew :video-sdk:build
+    - name: Build module Video-Glasses-SDK
+      run: ./gradlew :video-glasses-sdk:build
+    - name: Build App
+      run: ./gradlew :app:build
