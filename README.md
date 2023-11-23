@@ -68,11 +68,11 @@ android {
 - Audio call upgradable to video call
 - Video call
 - Chat
-- Collaborative whiteboard 
+- Collaborative whiteboard
 - File sharing in call
 - Screen sharing in call:
-	- App only
-	- System wide
+    - App only
+    - System wide
 - Call Recording
 - Virtual Background
 - External Camera
@@ -87,8 +87,8 @@ android {
 1. [Get started](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Get-Started)
 1. [Terminology](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Terminology)
 1. [Android Studio Setup](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Android-Studio-Setup)
-1. [Configure KaleyraVideo SDK](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Initialize-KaleyraVideoSDK)
-1. [Connect KaleyraVideo SDK](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK)
+1. [Configure KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK)
+1. [Use KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK)
     - [Connect](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK#connect-kaleyravideo-sdk)
     - [Disconnect](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK#disconnect-kaleyravideo-sdk)
     - [Reset](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK#reset-kaleyravideo-sdk)
@@ -98,36 +98,30 @@ android {
 1. [Start a Chat](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Start-a-chat)
 1. [Observe Chat Events](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Observe-Chat-Events)
 1. [Handle Push Notifications](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-Push-Notifications)
-1. [Handle External Links](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-External-Links)
+1. [Handle Links](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-Links)
 
 
 ### User Details Display Customization
 [User Details Provider](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Customize-user-details#user-details-provider)
 
-
 ### More
 [Logging](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Logging)
 
-[KaleyraVideoSDK State Observer](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/KaleyraVideoSDK-Observers)
+[KaleyraVideo State&Synchronization Observer](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/KaleyraVideoSDK-Observers)
 
 [Call UI Display Mode](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Call-UI-Display-Mode)
-
-[Reduce APK size](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Reduce-the-APK-size)
 
 [Proguard](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Proguard)
 
 ### Extensions
-
 [USB Camera](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/USB-Camera)
 
 [Virtual Backgrounds](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Virtual-Backgrounds)
 
-### Customize UI
-
-🎨  &nbsp; [UI customization](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Customize-UI)
+### Theme Customization
+🎨  &nbsp; [Logo&Colors](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Theme-Customization)
 
 ### Migrations
-
 [Upgrade to v4.+](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Upgrade-to-Kaleyra-Video-SDK-v4.x)
 
 ### Other
