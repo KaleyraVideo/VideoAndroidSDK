@@ -32,30 +32,31 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Collaboration service
+ * KaleyraVideoService
+ * An abstract service that once implemented is capable of being started from within KaleyraVideoSDK and being used to configure KaleyraVideoSDK when required
  */
 abstract class KaleyraVideoService : BoundService() {
 
     /**
-     * Companion
+     * KaleyraVideoService companion object
      **/
     companion object {
 
         /**
-         *  A service that is used to configure collaboration.
+         * Returns the service that is used to configure KaleyraVideoSDK.
          **/
         suspend fun get(): KaleyraVideoService? = getKaleyraVideoService()
     }
 
     /**
-     * On request new collaboration set up
+     * Abstract callback that is called when the KaleyraVideoSDK is required to be configured in order to let KaleyraVideoSDK function properly
      */
     abstract suspend fun onRequestKaleyraVideoConfigure()
 }
 
 @SuppressLint("QueryPermissionsNeeded")
 private fun getService(context: Context): ResolveInfo? {
-    val serviceIntent = Intent().setAction("kaleyra_collaboration_configure").setPackage(context.packageName)
+    val serviceIntent = Intent().setAction("kaleyra_video_sdk_configure").setPackage(context.packageName)
     val resolveInfo = context.packageManager.queryIntentServices(serviceIntent, PackageManager.GET_RESOLVED_FILTER)
     if (resolveInfo.size < 1) return null
     return resolveInfo[0]
@@ -76,7 +77,9 @@ private suspend fun getKaleyraVideoService(): KaleyraVideoService? = with(Contex
                 override fun onServiceDisconnected(name: ComponentName?) = Unit
             }, 0)
             continuation.invokeOnCancellation {
-                Log.e("Collaboration", "Collaboration was not set up, you had 1s to do it. And you didn't do it. reason = $it")
+                Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be configured via KaleyraVideoService implementation, but no configuration has been received." +
+                    "Please implement KaleyraVideoService as requested in order to configure KaleyraVideoSDK when needed." +
+                    "For further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
             }
         }
     }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,6 +75,20 @@
             </intent-filter>
         </activity>
 
+        <!-- KaleyraVideoService configuration service -->
+
+        <service
+            android:name=".DemoAppKaleyraVideoService"
+            android:exported="false">
+            <intent-filter>
+                <!--
+                    Do not modify this, the action value must be set to "kaleyra_video_sdk_configure"
+                    in order to let this service to be started from KaleyraVideoSDK
+                -->
+                <action android:name="kaleyra_video_sdk_configure" />
+            </intent-filter>
+        </service>
+
         <!-- FCM Notification Service -->
 
         <service
@@ -89,7 +102,7 @@
             android:name=".notification.HuaweiNotificationService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.huawei.push.action.MESSAGING_EVENT"/>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
         </service> <!-- Pushy Notification Receiver -->
         <receiver
