@@ -23,6 +23,7 @@ import com.kaleyra.video.State
 import com.kaleyra.video.Synchronization
 import com.kaleyra.video.User
 import com.kaleyra.video.configuration.Configuration
+import com.kaleyra.video.utils.extensions.awaitResult
 import com.kaleyra.video_common_ui.activityclazzprovider.GlassActivityClazzProvider
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
@@ -34,6 +35,7 @@ import com.kaleyra.video_utils.cached
 import com.kaleyra.video_utils.getValue
 import com.kaleyra.video_utils.logging.PriorityLogger
 import com.kaleyra.video_utils.setValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -184,19 +186,16 @@ object KaleyraVideo {
                 return@launchBlocking
             }
 
-            kotlin.runCatching {
+            runCatching {
                 logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo awaiting connect...")
-                connect.await()
-                connect.getCompleted()
-
-                (connect.getCompletionExceptionOrNull())?.let {
-                    logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo connect failed with error ${it.message}")
-                    completeExceptionally(it)
-                }
-
-                connect.getCompleted()?.let {
-                    logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo connect completed")
-                    complete(it)
+                connect.awaitResult { result ->
+                    if (result.isFailure) {
+                        logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo connect failed with error ${result.exceptionOrNull()?.message}")
+                        completeExceptionally(CancellationException(result.exceptionOrNull()?.message))
+                    } else {
+                        logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo connect completed")
+                        complete(result.getOrNull()!!)
+                    }
                 }
             }.onFailure {
                 logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo failed with error: ${it.message}")
@@ -210,11 +209,10 @@ object KaleyraVideo {
     fun connect(accessLink: String): Deferred<User> = CompletableDeferred<User>().apply {
         serialScope.launchBlocking {
             val connect = collaboration?.connect(accessLink) ?: return@launchBlocking
-            connect.invokeOnCompletion {
-                if (it != null) completeExceptionally(it)
-                else complete(connect.getCompleted())
+            connect.awaitResult { result ->
+                if (result.isFailure) completeExceptionally(CancellationException(result.exceptionOrNull()?.message))
+                else complete(result.getOrNull()!!)
             }
-            connect.await()
             termsAndConditionsRequester?.setUp(state, ::disconnect)
         }
     }
