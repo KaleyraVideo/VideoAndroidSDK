@@ -26,6 +26,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -124,6 +125,25 @@ class CameraStreamInputsDelegateTest {
     }
 
     @Test
+    fun usbCameraInput_handleCameraStreamVideo_awaitPermissionToSetVideo() = runTest(UnconfinedTestDispatcher()) {
+        val videoState = MutableStateFlow<Input.State>(Input.State.Closed.AwaitingPermission)
+        val videoMock = mockk<Input.Video.Camera.Usb>(relaxed = true) {
+            every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.SD, 30))
+            every { state } returns videoState
+        }
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(videoMock))
+
+        cameraStreamInputsDelegate.handleCameraStreamVideo(callMock, backgroundScope)
+
+        runCurrent()
+        assertEquals(null, meMock.streams.value.first().video.value)
+
+        videoState.value = Input.State.Idle
+        runCurrent()
+        assertEquals(videoMock, meMock.streams.value.first().video.value)
+    }
+
+    @Test
     fun handleCameraStreamAudio_streamUpdatedOnAudioInput() = runTest(UnconfinedTestDispatcher()) {
         val audioMock = mockk<Input.Audio>(relaxed = true)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(audioMock))
@@ -134,7 +154,6 @@ class CameraStreamInputsDelegateTest {
         assertEquals(audioMock, actual)
     }
 
-    // TODO
     @Test
     fun handleCameraStreamAudio_streamUpdatedOnMeParticipantUpdated() = runTest(UnconfinedTestDispatcher()) {
         val audioMock = mockk<Input.Audio>(relaxed = true)
@@ -152,6 +171,11 @@ class CameraStreamInputsDelegateTest {
         participantsFlow.value = participantsMock
         val new = meMock.streams.value.first().audio.value
         assertEquals(audioMock, new)
+    }
+
+    @Test
+    fun sdad() {
+
     }
 
     @Test

@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -52,8 +53,15 @@ interface CameraStreamInputsDelegate {
             if (!hasVideo) return@combine
             val stream = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID } ?: return@combine
             video.setQuality(Input.Video.Quality.Definition.HD)
+            if (video is Input.Video.Camera.Usb) video.awaitPermission()
             stream.video.value = video
         }.launchIn(coroutineScope)
+    }
+
+    private suspend fun Input.Video.Camera.Usb.awaitPermission() {
+        if (state.value is Input.State.Closed.AwaitingPermission) {
+            state.firstOrNull { it !is Input.State.Closed.AwaitingPermission }
+        }
     }
 
 }
