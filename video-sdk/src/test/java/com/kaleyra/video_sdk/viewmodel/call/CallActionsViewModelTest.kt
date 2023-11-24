@@ -581,8 +581,22 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun testToggleCameraOnWithoutAvailableInput() = runTest {
+    fun testToggleCameraOnWhenCameraStreamInputIsNoMoreInAvailableInputs() = runTest {
         inputs.value = setOf()
+        every { videoMock.enabled } returns MutableStateFlow(false)
+        advanceUntilIdle()
+        viewModel.toggleCamera(activity)
+        advanceUntilIdle()
+        coVerify(ordering = ORDERED) {
+            inputsMock.request(any(), Inputs.Type.Camera.External)
+            inputsMock.request(any(), Inputs.Type.Camera.Internal)
+        }
+        verify(exactly = 1) { videoMock.tryEnable() }
+    }
+
+    @Test
+    fun testToggleCameraOnWhenCameraStreamIsNull() = runTest {
+        every { myStreamMock.video } returns MutableStateFlow(null)
         every { videoMock.enabled } returns MutableStateFlow(false)
         advanceUntilIdle()
         viewModel.toggleCamera(activity)
@@ -600,20 +614,6 @@ class CallActionsViewModelTest {
         runCurrent()
         viewModel.toggleCamera(activity)
         runCurrent()
-        verify(exactly = 1) { videoMock.tryDisable() }
-    }
-
-    @Test
-    fun testToggleCameraOffWithoutAvailableInput() = runTest {
-        inputs.value = setOf()
-        every { videoMock.enabled } returns MutableStateFlow(true)
-        advanceUntilIdle()
-        viewModel.toggleCamera(activity)
-        advanceUntilIdle()
-        coVerify(ordering = ORDERED) {
-            inputsMock.request(any(), Inputs.Type.Camera.External)
-            inputsMock.request(any(), Inputs.Type.Camera.Internal)
-        }
         verify(exactly = 1) { videoMock.tryDisable() }
     }
 

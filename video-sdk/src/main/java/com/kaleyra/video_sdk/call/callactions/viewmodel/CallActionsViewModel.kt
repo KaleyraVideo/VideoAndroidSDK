@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video_common_ui.call.CameraStreamPublisher
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -143,9 +144,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     fun toggleCamera(activity: Activity?) {
         if (activity !is FragmentActivity) return
         val call = call.getValue() ?: return
-        val participants = call.participants.value
-        val restrictions = participants.me?.restrictions ?: return
-        val canUseCamera = !restrictions.camera.value.usage
+        val me = call.participants.value.me ?: return
+        val canUseCamera = !me.restrictions.camera.value.usage
         if (!canUseCamera) {
             // Avoid sending a burst of camera restriction message event
             if (wasCameraRestrictionMessageSent) return
@@ -158,18 +158,20 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             return
         }
 
-        viewModelScope.launch {
-            val input = call.inputs.request(activity, Inputs.Type.Camera.External).getOrNull<Input.Video>() ?: return@launch
-            toggleVideoInput(input)
-        }
-        viewModelScope.launch {
-            val input = call.inputs.request(activity, Inputs.Type.Camera.Internal).getOrNull<Input.Video>() ?: return@launch
-            toggleVideoInput(input)
-        }
-    }
+        val video = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }?.video?.value
+        if (video != null && call.inputs.availableInputs.value.contains<Input>(video as Input)) {
+            if (video.enabled.value) video.tryDisable() else video.tryEnable()
+        } else {
+            viewModelScope.launch {
+                val input = call.inputs.request(activity, Inputs.Type.Camera.External).getOrNull<Input.Video>() ?: return@launch
+                input.tryEnable()
+            }
 
-    private fun toggleVideoInput(input: Input.Video) {
-        if (!isMyCameraEnabled.value) input.tryEnable() else input.tryDisable()
+            viewModelScope.launch {
+                val input = call.inputs.request(activity, Inputs.Type.Camera.Internal).getOrNull<Input.Video>() ?: return@launch
+                input.tryEnable()
+            }
+        }
     }
 
     fun switchCamera() {
