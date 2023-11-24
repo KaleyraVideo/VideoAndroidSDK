@@ -109,4 +109,11 @@ internal object InputMapper {
                 }
             }
 
+    fun Flow<Call>.isUsbCameraWaitingPermission(): Flow<Boolean> =
+        this.map { it.inputs }
+            .flatMapLatest { it.availableInputs }
+            .map { inputs -> inputs.firstOrNull { it is Input.Video.Camera.Usb } }
+            .flatMapLatest { it?.state ?: flowOf(null) }
+            .map { it is Input.State.Closed.AwaitingPermission }
+
 }
