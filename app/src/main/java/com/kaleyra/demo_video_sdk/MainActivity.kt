@@ -165,7 +165,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             .flatMapLatest { it.state }
             .dropWhile { it is Recording.State.Stopped }
             .onEach {
-                Snackbar.make(searchView!!, it.toString(), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(window.decorView, it.toString(), Snackbar.LENGTH_SHORT).show()
             }.launchIn(lifecycleScope)
     }
 
