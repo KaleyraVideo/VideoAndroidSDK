@@ -816,6 +816,20 @@ class CallViewModelTest {
     }
 
     @Test
+    fun `if the onUsbCameraConnected callback is set after the isUsbConnected is received, the lambda is immediately invoked`() = runTest {
+        val usbCamera = mockk<Input.Video.Camera.Usb>(relaxed = true)
+        every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbCamera))
+        every { usbCamera.state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
+        advanceUntilIdle()
+        var connected = false
+        viewModel.setOnUsbCameraConnected {
+            connected = true
+        }
+        advanceUntilIdle()
+        assertEquals(true, connected)
+    }
+
+    @Test
     fun fullscreenStreamRemovedFromStreams_fullscreenStreamIsNull() = runTest {
         val participantStreams = MutableStateFlow(listOf(streamMock1, streamMock2))
         every { participantMock1.streams } returns participantStreams

@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.CallUiStateMapper.toPipAspectRatio
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
+import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermission
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
@@ -93,6 +94,8 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
 
     private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
+
+    private var onUsbCameraConnected: MutableSharedFlow<(Boolean) -> Unit> = MutableSharedFlow(replay = 1)
 
     init {
         viewModelScope.launch {
@@ -224,6 +227,13 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
                 preferredType.isVideoEnabled()
             )
         }.launchIn(viewModelScope)
+
+        combine(
+            call.isUsbCameraWaitingPermission(),
+            onUsbCameraConnected
+        ) { isUsbConnecting, onUsbCameraConnected ->
+            onUsbCameraConnected.invoke(isUsbConnecting)
+        }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -289,6 +299,12 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     fun setOnAudioOrVideoChanged(block: (isAudioEnabled: Boolean, isVideoEnabled: Boolean) -> Unit) {
         viewModelScope.launch {
             onAudioOrVideoChanged.emit(block)
+        }
+    }
+
+    fun setOnUsbCameraConnected(block: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            onUsbCameraConnected.emit(block)
         }
     }
 
