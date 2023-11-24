@@ -281,6 +281,7 @@ internal fun CallScreen(
     onDisplayMode: (CallUI.DisplayMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onUsbCameraConnected: (Boolean) -> Unit,
     onActivityFinishing: () -> Unit
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
@@ -364,6 +365,10 @@ internal fun CallScreen(
                 isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
             }
         }
+    }
+
+    LaunchedEffect(onUsbCameraConnected) {
+        viewModel.setOnUsbCameraConnected(onUsbCameraConnected)
     }
 
     CollaborationTheme(theme = theme, transparentSystemBars = true) { isDarkTheme ->

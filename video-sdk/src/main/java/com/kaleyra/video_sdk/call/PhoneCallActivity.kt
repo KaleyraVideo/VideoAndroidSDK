@@ -61,6 +61,8 @@ class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
         var isFileShareDisplayed: Boolean = false
 
         var isWhiteboardDisplayed: Boolean = false
+
+        var isUsbCameraConnecting: Boolean = false
     }
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -90,6 +92,7 @@ class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
                 onWhiteboardVisibility = { isWhiteboardDisplayed = it },
                 onDisplayMode = ::onDisplayMode,
                 onPipAspectRatio = ::onAspectRatio,
+                onUsbCameraConnected = ::onUsbConnecting,
                 onActivityFinishing = { isActivityFinishing = true },
             )
         }
@@ -154,6 +157,7 @@ class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
+        if (isUsbCameraConnecting) return
         enterPipModeIfSupported()
     }
 
@@ -182,6 +186,10 @@ class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
             else -> false
         }
+    }
+
+    private fun onUsbConnecting(isUsbConnecting: Boolean) {
+        isUsbCameraConnecting = isUsbConnecting
     }
 
     private fun onFileShareVisibility(isFileShareVisible: Boolean) {
