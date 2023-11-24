@@ -192,13 +192,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         if (conversation == null || participants == null) return
         val companyId = company.getValue()?.id?.getValue()
         val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        if (otherParticipants.size == 1) {
-            conversation.chat(context = context, otherParticipants.first())
-        } else {
-            viewModelScope.launch {
-                conversation.chat(context = context, otherParticipants, call.serverId.first())
-            }
-        }
+        if (otherParticipants.size > 1) return
+        conversation.chat(context = context, otherParticipants.first())
     }
 
     fun tryStopScreenShare(): Boolean {
