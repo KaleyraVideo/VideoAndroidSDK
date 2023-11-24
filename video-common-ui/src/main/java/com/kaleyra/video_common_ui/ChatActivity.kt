@@ -64,8 +64,11 @@ abstract class ChatActivity : FragmentActivity() {
         val userIds = intent.extras?.getStringArray("userIds") ?: return false
         val chatId = intent.extras?.getString("chatId")
         if (userIds.size > 1 && chatId == null) return false
-        val chat = if (userIds.size > 1) viewModel.setChat(userIds.toList(), chatId!!) ?: return false
-        else viewModel.setChat(userIds.first()) ?: return false
+        val chat = if (userIds.size > 1) {
+            return false
+        } else {
+            viewModel.setChat(userIds.first()) ?: return false
+        }
         this@ChatActivity.chatId = chat.id
         sendChatAction(DisplayedChatActivity.ACTION_CHAT_VISIBLE, chat.id)
         return true

@@ -105,24 +105,11 @@ class ConversationUI(
     override fun create(userId: String): Result<ChatUI> = conversation.create(userId).map { getOrCreateChatUI(it) }
 
     /**
-     * @suppress
-     */
-    override fun create(userIds: List<String>, chatId: String): Result<ChatUI> = conversation.create(userIds, chatId).map { getOrCreateChatUI(it) }
-
-    /**
      * Given a user, open a chat ui.
      * @param context launching context of the chat ui
      * @param userId the user id of the user to chat with
      */
     fun chat(context: Context, userId: String): Result<ChatUI> = create(userId).onSuccess { show(context, it) }
-
-    /**
-     * Given a user, open a chat ui.
-     * @param context launching context of the chat ui
-     * @param userIds the ids of the users to chat with
-     * @param chatId the id of the requested group chat
-     */
-    fun chat(context: Context, userIds: List<String>, chatId: String): Result<ChatUI> = create(userIds, chatId).onSuccess { show(context, it) }
 
     private fun listenToMessages() {
         var msgsScope: CoroutineScope? = null
