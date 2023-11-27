@@ -1,6 +1,5 @@
 import sys
 import re
-import yaml
 
 if len(sys.argv) <= 2:
     raise Exception("Missing arguments, call this script passing the release version and module name")
@@ -23,5 +22,5 @@ try:
     print("-- Update Kaleyra Video Wrapper Info--")
     replace("../"+module_name+"/src/main/assets/kaleyra_video_wrapper_info.txt", semver_regex, new_version)
     print("Updated "+ module_name +"/"+new_version)
-except:
-    print("Did not update version for " + module_name)
+except Exception as error:
+    print("Did not update version for ", module_name, " with error: ", error)

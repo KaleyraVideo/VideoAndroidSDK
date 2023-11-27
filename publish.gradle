@@ -88,7 +88,8 @@ dokkaHtml {
 
 task updateSdkVersion(type: Exec) {
     workingDir '../scripts'
-    commandLine 'python3', './update_sdk_version.py', "${project.name}", "${moduleVersion}"
+    println("Updating sdk version into assets/kaleyra_video_wrapper_into.txt for module ${project.name} with version $moduleVersion")
+    commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion"
 }
 
 task publishDocs(type: Exec) {
