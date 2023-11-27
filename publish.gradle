@@ -1,5 +1,5 @@
 ext.moduleGroupId = "com.kaleyra"
-ext.moduleVersion = "4.0.0-rc01"
+ext.moduleVersion = "4.0.0-rc02"
 
 def dryRun = true
 def moduleObsfuscated = false
