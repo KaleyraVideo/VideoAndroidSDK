@@ -69,6 +69,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -302,12 +303,9 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
     private val chat: StateFlow<ChatUI?> =
         participants
             .filter { it.others.isNotEmpty() }
-            .map {
-                if (it.others.size == 1) {
-                    KaleyraVideo.conversation.create(it.others.first().userId).getOrNull()
-                } else {
-                    KaleyraVideo.conversation.create(it.others.map { it.userId }, call.replayCache.firstOrNull()?.id!!).getOrNull()
-                }
+            .mapNotNull {
+                if (it.others.size > 1) null
+                else KaleyraVideo.conversation.create(it.others.first().userId).getOrNull()
             }
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
