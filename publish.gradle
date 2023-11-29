@@ -102,7 +102,7 @@ task dokkaDoc() {
 }
 
 task kdocJar(type: Jar, dependsOn: dokkaHtml) {
-    from "$buildDir/docs"
+    from "$buildDir/kDoc"
     archiveClassifier.set("kdocJar")
 }
 
