@@ -33,6 +33,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.R
 
+/**
+ * Dialing Content Tag
+ */
 const val DialingContentTag = "DialingContentTag"
 
 @Composable
@@ -72,7 +75,7 @@ internal fun DialingComponent(
 
 @Preview
 @Composable
-fun DialingComponentPreview() {
+internal fun DialingComponentPreview() {
     KaleyraTheme {
         DialingComponent(
             uiState = DialingUiState(participants = ImmutableList(listOf("user1", "user2"))),

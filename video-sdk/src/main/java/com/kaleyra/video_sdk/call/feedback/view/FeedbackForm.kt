@@ -58,6 +58,9 @@ import com.kaleyra.video_sdk.R
 private const val DefaultRating = 5f
 private const val SliderLevels = 5
 
+/**
+ * Feedback Form Tag
+ */
 const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable

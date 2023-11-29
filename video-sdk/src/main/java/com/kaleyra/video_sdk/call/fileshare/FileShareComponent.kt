@@ -62,6 +62,9 @@ import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.R
 
+/**
+ * Progress Indicator Tag
+ */
 const val ProgressIndicatorTag = "ProgressIndicatorTag"
 
 @Composable

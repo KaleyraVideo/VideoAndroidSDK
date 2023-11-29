@@ -23,6 +23,14 @@ import com.kaleyra.video_common_ui.termsandconditions.notification.TermsAndCondi
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_utils.ContextRetainer
 
+/**
+ * Terms And Conditions Ui representation of the Terms And Conditions on the Ui
+ * @property notificationConfig Notification notification configuration
+ * @property activityConfig Activity activity configuration
+ * @property activityDelegate TermsAndConditionsUIActivityDelegate terms and conditions activity delegate
+ * @property notificationDelegate TermsAndConditionsUINotificationDelegate notification delegate
+ * @constructor
+ */
 open class TermsAndConditionsUI(
     context: Context = ContextRetainer.context,
     activityClazz: Class<*>,
@@ -30,12 +38,26 @@ open class TermsAndConditionsUI(
     private val activityConfig: Config.Activity
 ) : TermsAndConditionBroadcastReceiver() {
 
+    /**
+     * Config
+     * @property title String title
+     * @property message String message
+     */
     sealed interface Config {
 
         val title: String
 
         val message: String
 
+        /**
+         * Notification
+         * @property title String notification title
+         * @property message String notification message
+         * @property dismissCallback Function0<Unit> dismiss callback
+         * @property enableFullscreen Boolean flag indicating if the notification can be fullscreen, true if capable of being displayed fullscreen, false otherwise
+         * @property timeout Long? optional display timeout in milliseconds
+         * @constructor
+         */
         data class Notification(
             override val title: String,
             override val message: String,
@@ -44,6 +66,16 @@ open class TermsAndConditionsUI(
             val timeout: Long? = null
         ) : Config
 
+        /**
+         * Activity notification
+         * @property title String notification title
+         * @property message String notification message
+         * @property acceptText String accept text
+         * @property declineText String decline test
+         * @property acceptCallback Function0<Unit> accept callback
+         * @property declineCallback Function0<Unit> decline callback
+         * @constructor
+         */
         data class Activity(
             override val title: String,
             override val message: String,
@@ -58,17 +90,33 @@ open class TermsAndConditionsUI(
 
     private val notificationDelegate = TermsAndConditionsUINotificationDelegate(context, notificationConfig)
 
+    /**
+     * Show the notification
+     * @param context Context required context to show the notifcation
+     */
     open fun show(context: Context = ContextRetainer.context) {
         registerForTermAndConditionAction(context)
         if (AppLifecycle.isInForeground.value) activityDelegate.showActivity()
         else notificationDelegate.showNotification(activityDelegate.getActivityIntent())
     }
 
+    /**
+     * Dismiss the notifcation
+     */
     fun dismiss() = notificationDelegate.dismissNotification()
 
+    /**
+     * Called when the notification has been accepted
+     */
     override fun onActionAccept() = activityConfig.acceptCallback()
 
+    /**
+     * Called when the notification has been declined
+     */
     override fun onActionDecline() = activityConfig.declineCallback()
 
+    /**
+     * Called when the notification has been canceled
+     */
     override fun onActionCancel() = notificationConfig.dismissCallback()
 }

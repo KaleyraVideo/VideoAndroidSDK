@@ -22,13 +22,24 @@ import android.content.Intent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * File Share Visibility Observer
+ */
 class FileShareVisibilityObserver internal constructor(): BroadcastReceiver() {
+
     /**
      * @suppress
      */
     companion object {
+
+        /**
+         * Action File Share Displayed
+         */
         const val ACTION_FILE_SHARE_DISPLAYED = "com.kaleyra.video_common_ui.FILE_SHARE_DISPLAYED"
 
+        /**
+         * Action File Share Not Displayed
+         */
         const val ACTION_FILE_SHARE_NOT_DISPLAYED = "com.kaleyra.video_common_ui.FILE_SHARE_NOT_DISPLAYED"
 
         private val _isDisplayed: MutableStateFlow<Boolean> = MutableStateFlow(false)

@@ -37,13 +37,25 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
+/**
+ * Call User Messages Provider
+ */
 object CallUserMessagesProvider {
 
     private var coroutineScope: CoroutineScope? = null
 
     private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
+
+    /**
+     * User messages flow
+     */
     val userMessage: Flow<UserMessage> = userMessageChannel.receiveAsFlow()
 
+    /**
+     * Starts the call User Message Provider
+     * @param call Flow<CallUI> the call flow
+     * @param scope CoroutineScope optional coroutine scope in which to execute the observing
+     */
     fun start(call: Flow<CallUI>, scope: CoroutineScope = MainScope() + CoroutineName("CallUserMessagesProvider")) {
         if (coroutineScope != null) dispose()
         coroutineScope = scope
@@ -53,12 +65,19 @@ object CallUserMessagesProvider {
         userMessageChannel.sendFailedAudioOutputEvents(call, scope)
     }
 
+    /**
+     * Send user message
+     * @param userMessage UserMessage the user message to be sent
+     */
     fun sendUserMessage(userMessage: UserMessage) {
         coroutineScope?.launch {
             userMessageChannel.send(userMessage)
         }
     }
 
+    /**
+     * Dispose User Message Provider
+     */
     fun dispose() {
         coroutineScope?.cancel()
         coroutineScope = null

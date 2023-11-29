@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.call.audiooutput.model
 
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
-val mockAudioDevices = ImmutableList(
+internal val mockAudioDevices = ImmutableList(
     listOf(
         AudioDeviceUi.Bluetooth(
             id = "id",

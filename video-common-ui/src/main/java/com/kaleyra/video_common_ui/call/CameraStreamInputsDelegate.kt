@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
-interface CameraStreamInputsDelegate {
+internal interface CameraStreamInputsDelegate {
 
     fun handleCameraStreamAudio(call: Call, coroutineScope: CoroutineScope) {
         combine(

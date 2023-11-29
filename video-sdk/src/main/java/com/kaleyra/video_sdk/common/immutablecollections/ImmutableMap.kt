@@ -17,9 +17,27 @@
 package com.kaleyra.video_sdk.common.immutablecollections
 
 import androidx.compose.runtime.Immutable
+
+/**
+ * Immutable map
+ * @param K tupe K
+ * @param out V type V
+ * @property value Map<K, V> input map
+ * @constructor
+ */
 @Immutable
 data class ImmutableMap<K, out V>(val value: Map<K, V> = HashMap()) {
+
+    /**
+     * Returns the element with provided key in immutable map
+     * @param key K key of the element that should be retrieved
+     * @return T?
+     */
     operator fun get(key: K): V? = value[key]
 
+    /**
+     * Returns the count of the values in the immutable map
+     * @return Int
+     */
     fun count() = value.count()
 }

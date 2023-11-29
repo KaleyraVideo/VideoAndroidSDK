@@ -27,7 +27,7 @@ import com.kaleyra.video_common_ui.termsandconditions.model.TermsAndConditions
 import com.kaleyra.video_sdk.termsandconditions.screen.TermsAndConditionsScreen
 import com.kaleyra.video_sdk.theme.TermsAndConditionsTheme
 
-class PhoneTermsAndConditionsActivity : ComponentActivity() {
+internal class PhoneTermsAndConditionsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,5 +48,4 @@ class PhoneTermsAndConditionsActivity : ComponentActivity() {
             }
         } else finishAndRemoveTask()
     }
-
 }

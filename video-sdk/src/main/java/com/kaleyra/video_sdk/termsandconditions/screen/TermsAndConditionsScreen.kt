@@ -183,7 +183,7 @@ internal fun TermsAndConditionsScreen(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-fun TermsAndConditionsScreenPreview() {
+internal fun TermsAndConditionsScreenPreview() {
     TermsAndConditionsTheme {
         TermsAndConditionsScreen(
             uiState = TermsAndConditionsUiState(),

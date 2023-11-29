@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 
-const val LinearProgressIndicatorTag = "LinearProgressIndicatorTag"
-const val WhiteboardViewTag = "WhiteboardViewTag"
+internal const val LinearProgressIndicatorTag = "LinearProgressIndicatorTag"
+internal const val WhiteboardViewTag = "WhiteboardViewTag"
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable

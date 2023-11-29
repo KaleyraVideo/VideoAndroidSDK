@@ -20,7 +20,7 @@ import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
-val mockCallActions = ImmutableList(
+internal val mockCallActions = ImmutableList(
     listOf(
         CallAction.Microphone(isToggled = false, isEnabled = true),
         CallAction.Camera(isToggled = false, isEnabled = false),

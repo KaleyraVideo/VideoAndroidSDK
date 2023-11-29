@@ -46,16 +46,16 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filterNotNull
 
-const val RecordingStarted = "RecordingStarted"
-const val RecordingStopped = "RecordingStopped"
-const val RecordingError = "RecordingError"
-const val UsbConnected = "UsbConnected"
-const val UsbDisconnected = "UsbDisconnected"
-const val UsbNotSupported = "UsbNotSupported"
-const val CameraRestriction = "CameraRestriction"
-const val AudioOutputGenericFailure = "AudioOutputGenericFailure"
-const val AudioOutputInSystemCallFailure = "AudioOutputInSystemCallFailure"
-const val MutedByAdmin = "MutedByAdmin"
+internal const val RecordingStarted = "RecordingStarted"
+internal const val RecordingStopped = "RecordingStopped"
+internal const val RecordingError = "RecordingError"
+internal const val UsbConnected = "UsbConnected"
+internal const val UsbDisconnected = "UsbDisconnected"
+internal const val UsbNotSupported = "UsbNotSupported"
+internal const val CameraRestriction = "CameraRestriction"
+internal const val AudioOutputGenericFailure = "AudioOutputGenericFailure"
+internal const val AudioOutputInSystemCallFailure = "AudioOutputInSystemCallFailure"
+internal const val MutedByAdmin = "MutedByAdmin"
 
 @Composable
 internal fun UserMessageSnackbarHandler(

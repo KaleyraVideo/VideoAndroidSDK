@@ -19,5 +19,13 @@ package com.kaleyra.video_common_ui.termsandconditions.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Terms And Conditions
+ * @property title String title of the terms and conditions
+ * @property message String message of the terms and conditions
+ * @property acceptText String accept text of the terms and conditions
+ * @property declineText String decline text of the terms and conditions
+ * @constructor
+ */
 @Parcelize
 data class TermsAndConditions(val title: String, val message: String, val acceptText: String, val declineText: String): Parcelable

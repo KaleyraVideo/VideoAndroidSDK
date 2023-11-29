@@ -16,9 +16,19 @@
 
 package com.kaleyra.video_sdk.call.recording.model
 
+/**
+ * Recording Ui representation of the Recording on the Ui
+ * @property type RecordingTypeUi recording type
+ * @property state RecordingStateUi recording state
+ * @constructor
+ */
 data class RecordingUi(
     val type: RecordingTypeUi,
     val state: RecordingStateUi
 ) {
+    /**
+     * Check if current state is started,
+     * @return Boolean true if recording has been started, false otherwise
+     */
     fun isRecording() = state == RecordingStateUi.Started
 }

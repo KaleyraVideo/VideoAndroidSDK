@@ -23,13 +23,32 @@ import com.kaleyra.video_common_ui.termsandconditions.broadcastreceiver.TermsAnd
 import com.kaleyra.video_common_ui.termsandconditions.model.TermsAndConditions
 import com.kaleyra.video_utils.ContextRetainer
 
+/**
+ * Terms And Conditions Extensions
+ */
 object TermsAndConditionsExt {
-    fun TermsAndConditions.accept() = ContextRetainer.context.apply {
-        sendBroadcast(buildBroadcastIntent(ACTION_ACCEPT))
+
+    /**
+     * Accepts the terms and conditions
+     *
+     * @receiver TermsAndConditions terms and conditions to be accepted
+     */
+    fun TermsAndConditions.accept() {
+        ContextRetainer.context.apply {
+            sendBroadcast(buildBroadcastIntent(ACTION_ACCEPT))
+            Unit
+        }
     }
 
-    fun TermsAndConditions.decline() = ContextRetainer.context.apply {
-        sendBroadcast(buildBroadcastIntent(ACTION_DECLINE))
+    /**
+     * Declines the terms and conditions
+     *
+     * @receiver TermsAndConditions terms and conditions to be declined
+     */
+    fun TermsAndConditions.decline() {
+        ContextRetainer.context.apply {
+            sendBroadcast(buildBroadcastIntent(ACTION_DECLINE))
+        }
     }
 
     private fun Context.buildBroadcastIntent(action: String) = Intent(action).apply { this.`package` = applicationContext.packageName }

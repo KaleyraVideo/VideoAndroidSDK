@@ -22,16 +22,26 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
+/**
+ * Camera Stream Publisher
+ */
 interface CameraStreamPublisher {
 
+    /**
+     * Camera Stream Publisher Instance
+     */
     companion object {
+
+        /**
+         * Camera Stream Id
+         */
         const val CAMERA_STREAM_ID = "camera"
     }
 
     /**
-     * Publish my stream
+     * Add a stream of camera type to the call
      *
-     * @param call The call
+     * @param call The call in which to add the camera stream
      */
     fun addCameraStream(call: Call, scope: CoroutineScope) {
         scope.launch {

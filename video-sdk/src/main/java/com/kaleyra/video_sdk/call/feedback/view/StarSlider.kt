@@ -43,6 +43,10 @@ private val ThumbRadius = 10.dp
 private val StarSize = 28.dp
 // Adjust the padding for the layout placement
 private val LayoutModifier = Modifier.padding(horizontal = ThumbRadius / 2)
+
+/**
+ * Star Slider Tag
+ */
 val StarSliderTag = "StarSliderTag"
 
 @Composable

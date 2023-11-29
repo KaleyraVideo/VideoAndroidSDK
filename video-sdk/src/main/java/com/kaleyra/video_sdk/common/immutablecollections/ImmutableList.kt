@@ -20,8 +20,25 @@ import androidx.compose.runtime.Immutable
 
 // Needed for compose stability to avoid recomposition
 // Tried kotlinx-collections-immutable but they were not working properly
+/**
+ * Immutable list
+ * @param out T type T
+ * @property value List<T> input list
+ * @constructor
+ */
 @Immutable
 data class ImmutableList<out T>(val value: List<T> = listOf()) {
+
+    /**
+     * Returns the element at provided index in immutable list
+     * @param index Int index of the requested item
+     * @return T?
+     */
     fun getOrNull(index: Int) = value.getOrNull(index)
+
+    /**
+     * Returns the count of the elements in the immutable list
+     * @return Int
+     */
     fun count() = value.count()
 }

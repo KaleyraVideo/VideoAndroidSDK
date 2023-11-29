@@ -19,10 +19,33 @@ package com.kaleyra.video_sdk.chat.conversation.model
 import androidx.compose.runtime.Immutable
 import java.util.UUID
 
+/**
+ * Conversation Item
+ * @property id String conversation identifier
+ * @constructor
+ */
 @Immutable
 sealed class ConversationItem(val id: String) {
+
+    /**
+     * Date day conversation item
+     * @property timestamp Long timestamp to be displayed
+     * @constructor
+     */
     data class Day(val timestamp: Long) : ConversationItem(id = timestamp.hashCode().toString())
-    object UnreadMessages : ConversationItem(id = UUID.randomUUID().toString())
+
+    /**
+     * Unread messages conversation item
+     */
+    data object UnreadMessages : ConversationItem(id = UUID.randomUUID().toString())
+
+    /**
+     * Message conversation item
+     * @property message Message message to be displayed
+     * @property isFirstChainMessage Boolean flag indicating if the message is the first of a chain of messages, true if it is the first of a chain, false otherwise
+     * @property isLastChainMessage Boolean flag indicating if the message is the last of a chain of messages, true if it is the last of a chain, false otherwise
+     * @constructor
+     */
     data class Message(
         val message: com.kaleyra.video_sdk.chat.conversation.model.Message,
         val isFirstChainMessage: Boolean = true,

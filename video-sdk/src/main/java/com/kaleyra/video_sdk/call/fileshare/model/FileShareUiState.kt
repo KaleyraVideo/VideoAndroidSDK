@@ -20,6 +20,12 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * File Share Ui State
+ * @property sharedFiles ImmutableList<SharedFileUi> shared files list
+ * @property showFileSizeLimit Boolean flag representing the file size limit, true to show the file size limit, false otherwise
+ * @constructor
+ */
 @Immutable
 internal data class FileShareUiState(
     val sharedFiles: ImmutableList<SharedFileUi> = ImmutableList(emptyList()),

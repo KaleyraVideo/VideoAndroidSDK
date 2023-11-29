@@ -22,8 +22,14 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-object CompanyThemeManager {
+/**
+ * Utility functions for the Company Theme
+ */
+ object CompanyThemeManager {
 
+    /**
+     * Mapper function to convert Company to a flow containing its CompanyUI.Theme representation
+     */
     val Company.combinedTheme: Flow<CompanyUI.Theme>
         get() = theme.mapToUI(uiTheme = KaleyraVideo.theme)
 

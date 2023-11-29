@@ -32,23 +32,57 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
+/**
+ * CollaborationViewModel representing the conference and conversation wrapper
+ * @constructor
+ */
 abstract class CollaborationViewModel(configure: suspend () -> Configuration) : ViewModel() {
 
+    /**
+     * Collaboration View Model Configuration
+     */
     sealed class Configuration {
+        /**
+         * Success Configuration
+         * @property conference ConferenceUI the conference module
+         * @property conversation ConversationUI the conversation module
+         * @property company Company the requesting company to be configured
+         * @property connectedUser StateFlow<User?> a flow representing the logged user whenever it will be connected
+         * @constructor
+         */
         data class Success(val conference: ConferenceUI, val conversation: ConversationUI, val company: Company, val connectedUser: StateFlow<User?>) : Configuration()
+
+        /**
+         * Failure Configuration representing an error during the configuration retrieval process
+         */
         data object Failure : Configuration()
     }
 
     private val _configuration = MutableSharedFlow<Configuration>(replay = 1, extraBufferCapacity = 1)
 
+    /**
+     * Flag flow representing if the configuration has been successful
+     */
     val isCollaborationConfigured = _configuration.map { it is Configuration.Success }.shareInEagerly(viewModelScope)
 
+    /**
+     * Conference module flow
+     */
     val conference = _configuration.mapSuccess { it.conference }.shareInEagerly(viewModelScope)
 
+    /**
+     * Conversation module flow
+     */
     val conversation = _configuration.mapSuccess { it.conversation }.shareInEagerly(viewModelScope)
 
+    /**
+     * Configured company flow
+     */
     val company = _configuration.mapSuccess { it.company }.shareInEagerly(viewModelScope)
 
+    /**
+     * Logged user flow whenever it will be connected
+     */
     val connectedUser = _configuration.filterIsInstance<Configuration.Success>().flatMapLatest { it.connectedUser }.shareInEagerly(viewModelScope)
 
     init {
@@ -60,13 +94,28 @@ abstract class CollaborationViewModel(configure: suspend () -> Configuration) : 
     private inline fun <T> Flow<Configuration>.mapSuccess(crossinline block: (Configuration.Success) -> T): Flow<T> =
         filterIsInstance<Configuration.Success>().map { block(it) }
 
+    /**
+     * Share-in-eagerly flow operator based on input coroutine scope
+     * @receiver Flow<T> the generic type T flow to be used in the share-in-eagerly operation
+     * @param scope CoroutineScope the coroutine scope to be used for the share-in operation
+     * @return SharedFlow<T> returns the obtained share-in-eagerly shared flow of generic type T
+     */
     protected fun <T> Flow<T>.shareInEagerly(scope: CoroutineScope): SharedFlow<T> =
         this@shareInEagerly.shareIn(scope, SharingStarted.Eagerly, 1)
 
+    /**
+     * Utility function to retrieve the associated current value of the shared flow
+     * @receiver SharedFlow<T> the generic type T shared flow from which to retrieve the current value
+     * @return T? the current value if any
+     */
     protected fun <T> SharedFlow<T>.getValue(): T? =
         replayCache.firstOrNull()
 }
 
+/**
+ * Request a new Configuration via KaleyraVideoService implementation
+ * @return CollaborationViewModel.Configuration returns the required configuration if the procedure succeed, a failure error otherwise.
+ */
 suspend fun requestConfiguration(): CollaborationViewModel.Configuration {
     if (!KaleyraVideo.isConfigured) KaleyraVideoService.get()?.onRequestKaleyraVideoConfigure()
     return if (KaleyraVideo.isConfigured) {

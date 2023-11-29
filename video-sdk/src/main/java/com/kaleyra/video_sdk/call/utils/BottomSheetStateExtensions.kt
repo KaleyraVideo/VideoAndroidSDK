@@ -117,6 +117,3 @@ internal object BottomSheetStateExtensions {
             private fun Offset.toFloat(): Float = this.y
         }
 }
-
-
-

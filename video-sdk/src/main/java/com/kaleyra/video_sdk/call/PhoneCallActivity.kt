@@ -45,7 +45,13 @@ import com.kaleyra.video_sdk.call.screen.CallScreen
 import com.kaleyra.video_sdk.extensions.RationalExtensions.coerceRationalForPip
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
+/**
+ * PhoneCallActivity implementation of activity class used to display calls
+ * @property onBackPressedCallback OnBackPressedCallback back press callback
+ * @property disableProximity Boolean true to disable proximity listener to trigger camera and display on/off, false otherwise
+ * @property isPipSupported Boolean true if picture-in-picture mode is supported, false otherwise
+ */
+internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
     private companion object {
         var pictureInPictureAspectRatio: Rational = Rational(9, 16)

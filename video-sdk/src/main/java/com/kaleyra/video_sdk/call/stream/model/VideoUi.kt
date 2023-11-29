@@ -20,6 +20,15 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Video Ui representation of a video component on the Ui
+ * @property id String video ui identifier
+ * @property view ImmutableView? optional video's rendering view
+ * @property isEnabled Boolean flag identifying if the video ui is enabled, true if enabled, false otherwise
+ * @property isScreenShare Boolean flag identifying if the video is a screen share, true if it is a screen share, false otherwise
+ * @property pointers ImmutableList<PointerUi> list of currently displayed pointers on the video
+ * @constructor
+ */
 @Immutable
 data class VideoUi(
     val id: String,

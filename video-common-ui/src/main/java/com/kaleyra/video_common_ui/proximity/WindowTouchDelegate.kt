@@ -16,9 +16,18 @@
 
 package com.kaleyra.video_common_ui.proximity
 
+/**
+ * Representation of UI capable of receiving touch inputs
+ */
 interface WindowTouchDelegate {
 
+    /**
+     * Disable the reception of touch events
+     */
     fun disableWindowTouch()
 
+    /**
+     * Enable the reception of touch events
+     */
     fun enableWindowTouch()
 }

@@ -29,8 +29,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+/**
+ * User Contact Details Manager representing the api used to refresh the contacts display details
+ */
 object ContactDetailsManager {
 
+    /**
+     * Fetch operation timeout in milliseconds
+     */
     const val FETCH_TIMEOUT = 2500L
 
     private val collaborationContactDetailsProvider by lazy { CollaborationContactDetailsProvider() }
@@ -45,9 +51,15 @@ object ContactDetailsManager {
 
     private val mutex = Mutex()
 
+    /**
+     * Map of contact details display name mapped by contact's userId
+     */
     val Contact.combinedDisplayName: Flow<String?>
         get() = contactNamesFlow.mapToUserFlow(userId)
 
+    /**
+     * Map of contact details image uris mapped by contact's userId
+     */
     val Contact.combinedDisplayImage: Flow<Uri?>
         get() = contactImagesFlow.mapToUserFlow(userId)
 
@@ -56,6 +68,11 @@ object ContactDetailsManager {
         contactImagesFlow.tryEmit(contactImages)
     }
 
+    /**
+     * Refresh the contact details
+     * @param userIds Array<out String> the varargs user ids
+     * @param timeout Long User contact details retrieval timeout
+     */
     suspend fun refreshContactDetails(vararg userIds: String, timeout: Long = FETCH_TIMEOUT) = mutex.withLock {
         val fetchedContactDetails = collaborationContactDetailsProvider.fetchContactsDetails(userIds = userIds, timeout = timeout)
         fetchedContactDetails.forEach { (userId, name, image) ->

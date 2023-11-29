@@ -39,5 +39,3 @@ internal class PhoneChatActivity : ChatActivity() {
         }
     }
 }
-
-

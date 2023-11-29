@@ -25,7 +25,18 @@ import com.kaleyra.video.conference.VideoStreamView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
+/**
+ * Streams Video View Delegate
+ */
 interface StreamsVideoViewDelegate {
+
+    /**
+     * Sets the streams video view
+     *
+     * @param context Context context used for the view creation
+     * @param participants Flow<CallParticipants> call participants' flow
+     * @param scope CoroutineScope scope used to observe the call participants' flow
+     */
     fun setStreamsVideoView(
         context: Context,
         participants: Flow<CallParticipants>,

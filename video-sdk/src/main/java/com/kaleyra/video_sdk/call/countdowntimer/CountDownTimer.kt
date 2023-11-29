@@ -21,6 +21,14 @@ import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
+/**
+ * Composable count down timer state
+ * @param initialMillis Long initial delay in milliseconds
+ * @param step Long tick value in milliseconds
+ * @param enable Boolean enable flag, true to be enabled, false otherwise
+ * @param reset Boolean reset flag, true to reset, false otherwise
+ * @return State<Long>
+ */
 @Composable
 fun rememberCountdownTimerState(
     initialMillis: Long,

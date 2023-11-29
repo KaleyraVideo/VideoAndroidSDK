@@ -18,6 +18,12 @@ package com.kaleyra.video_sdk.call.callinfowidget.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Watermark representation
+ * @property text String? optional watermark text
+ * @property logo Logo? optional logo
+ * @constructor
+ */
 @Immutable
 data class WatermarkInfo(
     val text: String? = null,

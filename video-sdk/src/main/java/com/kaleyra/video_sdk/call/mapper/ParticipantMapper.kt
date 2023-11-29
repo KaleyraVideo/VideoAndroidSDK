@@ -31,16 +31,35 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 
+/**
+ * Utility functions for the call participants
+ */
 object ParticipantMapper {
 
+    /**
+     * Utility function to be used to receive a flag representing the current initialized state of the logged participants
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow returning true when the logged user is initialized, false otherwise
+     */
     fun Flow<Call>.isMeParticipantInitialized(): Flow<Boolean> =
         flatMapLatest { it.participants }.map { it.me != null }
 
+    /**
+     * Utility function to be used to receive a flag representing if the current call is a group call
+     * @receiver Flow<Call> the call flow
+     * @param companyId Flow<String> company identifier
+     * @return Flow<Boolean> flow representing if if the current call is a group call, true if it is a group call, false otherwise
+     */
     fun Flow<Call>.isGroupCall(companyId: Flow<String>): Flow<Boolean> =
         combine(this.flatMapLatest { it.participants }, companyId) { participants, companyId ->
             participants.others.filter { it.userId != companyId }.size > 1
         }.distinctUntilChanged()
 
+    /**
+     * Utility function to be used to receive the other participants display names as list
+     * @receiver Flow<Call> the call flow
+     * @return Flow<List<String>> flow representing the other participants display names as list
+     */
     fun Flow<Call>.toOtherDisplayNames(): Flow<List<String>> =
         this.flatMapLatest { it.participants }
             .flatMapLatest { participants ->
@@ -65,6 +84,11 @@ object ParticipantMapper {
             }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to be used to receive the other participants display images as list
+     * @receiver Flow<Call> the call flow
+     * @return Flow<List<Uri>> flow representing the other participants display images as list
+     */
     fun Flow<Call>.toOtherDisplayImages(): Flow<List<Uri>> =
         this.flatMapLatest { it.participants }
             .flatMapLatest { participants ->
@@ -89,6 +113,11 @@ object ParticipantMapper {
             }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to be used to retrieve current logged participant's state
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.State> flow representing the current logged participant's state
+     */
     fun Flow<Call>.toMyParticipantState(): Flow<CallParticipant.State> =
         this.flatMapLatest { it.participants }
             .flatMapLatestNotNull { it.me?.state }

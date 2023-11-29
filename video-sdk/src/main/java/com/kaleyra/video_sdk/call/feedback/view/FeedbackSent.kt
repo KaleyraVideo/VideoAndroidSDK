@@ -39,6 +39,9 @@ import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
 
+/**
+ * Feedback Sent Tag
+ */
 const val FeedbackSentTag = "FeedbackSentTag"
 
 @Composable

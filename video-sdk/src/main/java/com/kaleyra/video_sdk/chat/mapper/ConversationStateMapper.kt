@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
-object ConversationStateMapper {
+internal object ConversationStateMapper {
 
-    fun Flow<Conversation>.toConnectionState(): Flow<ConnectionState> {
+    internal fun Flow<Conversation>.toConnectionState(): Flow<ConnectionState> {
         var previousConversationState: State? = null
 
         return this

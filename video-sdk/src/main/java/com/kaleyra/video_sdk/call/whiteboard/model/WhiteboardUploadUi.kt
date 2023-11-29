@@ -18,8 +18,21 @@ package com.kaleyra.video_sdk.call.whiteboard.model
 
 import androidx.compose.runtime.Stable
 
+/**
+ * Whiteboard Upload Ui representation of the Whiteboard Upload State on the Ui
+ */
 @Stable
 sealed interface WhiteboardUploadUi {
+
+    /**
+     * Uploading Whiteboard Upload State
+     * @property progress Float
+     * @constructor
+     */
     data class Uploading(val progress: Float): WhiteboardUploadUi
-    object Error: WhiteboardUploadUi
+
+    /**
+     * Error Whiteboard Upload State
+     */
+    data object Error: WhiteboardUploadUi
 }

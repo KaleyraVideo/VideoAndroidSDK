@@ -18,40 +18,42 @@ package com.kaleyra.video_sdk.theme
 import androidx.compose.ui.graphics.Color
 
 // CUSTOM COLORS
-val kaleyra_answer_light_color = Color(0xff7ed321)
-val kaleyra_answer_dark_color = Color(0xff48a100)
+internal val kaleyra_answer_light_color = Color(0xff7ed321)
+internal val kaleyra_answer_dark_color = Color(0xff48a100)
 
-val kaleyra_hang_up_light_color = Color(0xffff0000)
-val kaleyra_hang_up_dark_color = Color(0xffc20000)
+internal val kaleyra_hang_up_light_color = Color(0xffff0000)
+internal val kaleyra_hang_up_dark_color = Color(0xffc20000)
 
 // KALEYRA MATERIAL M2 THEME
-val kaleyra_theme_light_primary = Color.White
-val kaleyra_theme_light_primaryVariant = Color(0xFFEFEFEF)
-val kaleyra_theme_light_onPrimary = Color.Black
-val kaleyra_theme_light_secondary = Color(0xFFD80D30)
-val kaleyra_theme_light_secondaryVariant = Color(0xFF6C6C6C)
-val kaleyra_theme_light_onSecondary = Color.White
-val kaleyra_theme_light_error = Color(0xFFC70000)
-val kaleyra_theme_light_onError = Color.White
-val kaleyra_theme_light_background = Color.White
-val kaleyra_theme_light_onBackground = Color.Black
-val kaleyra_theme_light_surface = Color.White
-val kaleyra_theme_light_onSurface = Color.Black
+internal val kaleyra_theme_light_primary = Color.White
+internal val kaleyra_theme_light_primaryVariant = Color(0xFFEFEFEF)
+internal val kaleyra_theme_light_onPrimary = Color.Black
+internal val kaleyra_theme_light_secondary = Color(0xFFD80D30)
+internal val kaleyra_theme_light_secondaryVariant = Color(0xFF6C6C6C)
+internal val kaleyra_theme_light_onSecondary = Color.White
+internal val kaleyra_theme_light_error = Color(0xFFC70000)
+internal val kaleyra_theme_light_onError = Color.White
+internal val kaleyra_theme_light_background = Color.White
+internal val kaleyra_theme_light_onBackground = Color.Black
+internal val kaleyra_theme_light_surface = Color.White
+internal val kaleyra_theme_light_onSurface = Color.Black
 
-val kaleyra_theme_dark_primary = Color(0xFF303030)
-val kaleyra_theme_dark_primaryVariant = Color(0xFF1E1E1E)
-val kaleyra_theme_dark_onPrimary = Color.White
-val kaleyra_theme_dark_secondary = Color(0xFF9E000A)
-val kaleyra_theme_dark_secondaryVariant = Color.White
-val kaleyra_theme_dark_onSecondary = Color.White
-val kaleyra_theme_dark_error = Color(0xFFC70000)
-val kaleyra_theme_dark_onError = Color.White
-val kaleyra_theme_dark_background = Color(0xFF0E0E0E)
-val kaleyra_theme_dark_onBackground = Color.White
-val kaleyra_theme_dark_surface = Color(0xFF242424)
-val kaleyra_theme_dark_onSurface = Color.White
+internal val kaleyra_theme_dark_primary = Color(0xFF303030)
+internal val kaleyra_theme_dark_primaryVariant = Color(0xFF1E1E1E)
+internal val kaleyra_theme_dark_onPrimary = Color.White
+internal val kaleyra_theme_dark_secondary = Color(0xFF9E000A)
+internal val kaleyra_theme_dark_secondaryVariant = Color.White
+internal val kaleyra_theme_dark_onSecondary = Color.White
+internal val kaleyra_theme_dark_error = Color(0xFFC70000)
+internal val kaleyra_theme_dark_onError = Color.White
+internal val kaleyra_theme_dark_background = Color(0xFF0E0E0E)
+internal val kaleyra_theme_dark_onBackground = Color.White
+internal val kaleyra_theme_dark_surface = Color(0xFF242424)
+internal val kaleyra_theme_dark_onSurface = Color.White
 
+/**
 // KALEYRA MATERIAL M3 THEME
+// DE-COMMENT THIS WHEN THE MATERIAL 3 DEPENDENCY WILL BE ADDED
 val kaleyra_m3_theme_light_primary = Color(0xFFB32735)
 val kaleyra_m3_theme_light_onPrimary = Color(0xFFFFFFFF)
 val kaleyra_m3_theme_light_primaryContainer = Color(0xFFFFDAD9)
@@ -115,3 +117,4 @@ val kaleyra_m3_theme_dark_outlineVariant = Color(0xFF524343)
 val kaleyra_m3_theme_dark_scrim = Color(0xFF000000)
 
 val seed = Color(0xFFAF2433)
+**/

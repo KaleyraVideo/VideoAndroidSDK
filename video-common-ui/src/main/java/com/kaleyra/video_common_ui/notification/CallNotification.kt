@@ -66,8 +66,8 @@ class CallNotification {
      * @property channelName The notification channel name showed to the users
      * @property type The notification type
      * @property isHighImportance True to set the notification with high importance/priority
+     * @property enableCallStyle True to enable call style on the notification, false otherwise
      * @property color The color used as notification accent color
-     * @property smallIconResource The resource to be used as small icon of the notification
      * @property user The user to be show in the notification
      * @property contentText The text to be shown inside the notification
      * @property enableTimer Enable the timer of the notification

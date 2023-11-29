@@ -26,6 +26,9 @@ import com.kaleyra.video_utils.ContextRetainer
 import java.io.File
 import java.util.*
 
+/**
+ * Uri Extensions
+ */
 object UriExtensions {
     /**
      * Get mime type
@@ -64,8 +67,8 @@ object UriExtensions {
     /**
      * Get file size
      *
-     * @param context Context
-     * @return size
+     * @receiver Uri the file's uri
+     * @return Long return the file size in bytes
      */
     fun Uri.getFileSize(): Long = kotlin.runCatching {
         if (ContentResolver.SCHEME_CONTENT == this.scheme)
@@ -74,4 +77,3 @@ object UriExtensions {
         else this.toFile().run { if (exists()) length() else -1L }
     }.getOrNull() ?: -1L
 }
-

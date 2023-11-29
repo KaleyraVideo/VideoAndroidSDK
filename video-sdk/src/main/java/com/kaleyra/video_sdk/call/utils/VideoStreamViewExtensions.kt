@@ -27,11 +27,11 @@ import kotlinx.coroutines.flow.map
 
 internal object VideoStreamViewExtensions {
 
-    fun VideoStreamView.getSize(): Flow<IntSize> = videoSize.map {
+    internal fun VideoStreamView.getSize(): Flow<IntSize> = videoSize.map {
         IntSize(it.width, it.height)
     }
 
-    fun VideoStreamView.getTranslation(): Flow<FloatArray> =
+    internal fun VideoStreamView.getTranslation(): Flow<FloatArray> =
         this.getTransformationMatrix().map { matrix ->
             if (!matrix.isAffine) floatArrayOf(0f, 0f)
             else {
@@ -43,7 +43,7 @@ internal object VideoStreamViewExtensions {
             }
         }
 
-    fun VideoStreamView.getScale(): Flow<FloatArray> =
+    internal fun VideoStreamView.getScale(): Flow<FloatArray> =
         this.getTransformationMatrix().map { matrix ->
             if (!matrix.isAffine) floatArrayOf(0f, 0f)
             else {

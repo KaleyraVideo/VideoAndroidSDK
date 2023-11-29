@@ -18,16 +18,41 @@ package com.kaleyra.video_sdk.call.audiooutput.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Representation of Audio Device on UI
+ * @property id String device identifier
+ * @constructor
+ */
 @Immutable
 sealed class AudioDeviceUi(open val id: String) {
 
+    /**
+     * Bluetooth Audio Device
+     * @property id String device identifier
+     * @property name String? optional device name
+     * @property connectionState BluetoothDeviceState bluetooth connection state
+     * @property batteryLevel Int? optional battery level
+     * @constructor
+     */
     data class Bluetooth(override val id: String, val name: String?, val connectionState: BluetoothDeviceState, val batteryLevel: Int?) : AudioDeviceUi(id = id)
 
-    object LoudSpeaker : AudioDeviceUi(id = LoudSpeaker::class.java.name)
+    /**
+     * Loudspeaker Audio Device
+     */
+    data object LoudSpeaker : AudioDeviceUi(id = LoudSpeaker::class.java.name)
 
-    object EarPiece : AudioDeviceUi(id = EarPiece::class.java.name)
+    /**
+     * Earpiece Audio Device
+     */
+    data object EarPiece : AudioDeviceUi(id = EarPiece::class.java.name)
 
-    object WiredHeadset : AudioDeviceUi(id = WiredHeadset::class.java.name)
+    /**
+     * Wired Headset Audio Device
+     */
+    data object WiredHeadset : AudioDeviceUi(id = WiredHeadset::class.java.name)
 
-    object Muted : AudioDeviceUi(id = Muted::class.java.name)
+    /**
+     * Muted Audio Device
+     */
+    data object Muted : AudioDeviceUi(id = Muted::class.java.name)
 }

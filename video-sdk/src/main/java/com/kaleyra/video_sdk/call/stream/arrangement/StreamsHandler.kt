@@ -150,5 +150,4 @@ internal class StreamsHandler(
     private fun findRemovedThumbnailsStreams(newStreamsIds: List<String>): List<StreamUi> {
         return thumbnailsStreams.filterNot { newStreamsIds.contains(it.id) }
     }
-
 }

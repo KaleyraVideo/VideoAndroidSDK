@@ -18,6 +18,13 @@ package com.kaleyra.video_sdk.call.pointer.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Representation of pointer event on the UI
+ * @property username String participant's userId that triggered the event
+ * @property x Float pointer event's x coordinate
+ * @property y Float pointer event's y coordinate
+ * @constructor
+ */
 @Immutable
 data class PointerUi(
     val username: String,

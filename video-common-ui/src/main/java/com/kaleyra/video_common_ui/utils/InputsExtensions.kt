@@ -25,8 +25,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+/**
+ * Inputs Extensions Functions
+ */
 object InputsExtensions {
 
+    /**
+     * Automatically switches to the back camera when available
+     * @receiver Inputs the inputs to be used for the switching process
+     * @param coroutineScope CoroutineScope coroutine scope used for internal processing of the inputs
+     */
     fun Inputs.useBackCamera(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
         coroutineScope.launch {
             val input = availableInputs

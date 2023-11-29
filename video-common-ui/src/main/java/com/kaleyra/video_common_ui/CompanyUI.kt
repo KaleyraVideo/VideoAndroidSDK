@@ -23,8 +23,20 @@ import com.kaleyra.video.Company
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
+/**
+ * UI representation of a Company
+ * @constructor
+ */
 class CompanyUI(company: Company): Company by company {
 
+    /**
+     * Company associated theme
+     * @property fontFamily FontFamily the font family to be used on the UI layer
+     * @property defaultStyle DefaultStyle the default style (Day/Night/System) to be applied on the UI layer
+     * @property day Style Day mode style
+     * @property night Style Night mode style
+     * @constructor
+     */
     data class Theme(
         val fontFamily: FontFamily = KaleyraFontFamily.default,
         val defaultStyle: DefaultStyle = DefaultStyle.System,
@@ -32,16 +44,40 @@ class CompanyUI(company: Company): Company by company {
         override val night: Style = Style()
     ) : Company.Theme {
 
+        /**
+         * Default Style representation
+         */
         sealed class DefaultStyle {
-            object Day: DefaultStyle()
 
-            object Night: DefaultStyle()
+            /**
+             * Day style
+             */
+            data object Day: DefaultStyle()
 
-            object System: DefaultStyle()
+            /**
+             * Night syle
+             */
+            data object Night: DefaultStyle()
+
+            /**
+             * Style based on operating system selected style
+             */
+            data object System: DefaultStyle()
         }
 
+        /**
+         * Style representation applied to a day/night/system style
+         * @property logo Uri? optional uri of the company logo
+         * @property colors Colors? optional colors of the company
+         * @constructor
+         */
         data class Style(override val logo: Uri? = null, val colors: Colors? = null) : Company.Theme.Style
 
+        /**
+         * Colors representation
+         * @property secondary Color secondary color
+         * @constructor
+         */
         data class Colors(val secondary: Color)
     }
 }

@@ -25,6 +25,15 @@ import com.kaleyra.video_utils.network_observer.WiFiInfo
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 
+/**
+ * Glass Chat View Model
+ *
+ * @property deviceStatusObserver DeviceStatusObserver device status observer
+ * @property conversationState SharedFlow<State> conversation state
+ * @property battery SharedFlow<BatteryInfo> flow of BatteryInfo
+ * @property wifi SharedFlow<WiFiInfo> flow of WifiInfo
+ * @constructor
+ */
 class GlassChatViewModel(configure: suspend () -> Configuration) : ChatViewModel(configure) {
 
     private val deviceStatusObserver = DeviceStatusObserver().apply { start() }
@@ -40,7 +49,17 @@ class GlassChatViewModel(configure: suspend () -> Configuration) : ChatViewModel
         deviceStatusObserver.stop()
     }
 
+    /**
+     * Glass Chat View Model Instance
+     */
     companion object {
+
+        /**
+         * Retrieve the Glass Chat View Model Factory
+         *
+         * @param configure SuspendFunction0<Configuration> callback called when the configuration is needed to build the factory
+         * @return NewInstanceFactory the resulting Glass Chat View Model Factory
+         */
         fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.NewInstanceFactory() {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

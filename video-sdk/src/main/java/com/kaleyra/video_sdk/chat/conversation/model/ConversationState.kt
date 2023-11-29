@@ -19,6 +19,13 @@ package com.kaleyra.video_sdk.chat.conversation.model
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Conversation State
+ * @property conversationItems ImmutableList<ConversationItem>? list of conversation items
+ * @property isFetching Boolean flag indicating if there is a fetch in progress, true if fetching, false otherwise
+ * @property unreadMessagesCount Int unread messages count
+ * @constructor
+ */
 @Immutable
 data class ConversationState(
     val conversationItems: ImmutableList<ConversationItem>? = null,

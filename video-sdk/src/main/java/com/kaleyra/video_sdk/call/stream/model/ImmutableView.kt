@@ -19,5 +19,10 @@ package com.kaleyra.video_sdk.call.stream.model
 import android.view.View
 import androidx.compose.runtime.Immutable
 
+/**
+ * Immutable View representation
+ * @property value View the immutable view
+ * @constructor
+ */
 @Immutable
 data class ImmutableView(val value: View)

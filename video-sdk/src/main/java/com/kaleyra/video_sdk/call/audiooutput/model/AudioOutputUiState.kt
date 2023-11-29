@@ -20,6 +20,12 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Audio Device State
+ * @property audioDeviceList ImmutableList<AudioDeviceUi> available audio devices list
+ * @property playingDeviceId String? current playing device identifier
+ * @constructor
+ */
 @Immutable
 internal data class AudioOutputUiState(
     val audioDeviceList: ImmutableList<AudioDeviceUi> = ImmutableList(emptyList()),

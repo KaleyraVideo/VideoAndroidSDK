@@ -27,5 +27,5 @@ import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 
 @Composable
-fun HelperText(text: String, modifier: Modifier = Modifier, color: Color = Color.Unspecified, textAlign: TextAlign? = null) =
+internal fun HelperText(text: String, modifier: Modifier = Modifier, color: Color = Color.Unspecified, textAlign: TextAlign? = null) =
     Text(text = text, color = color, textAlign = textAlign, style = LocalTextStyle.current.shadow(), fontSize = 12.sp, fontStyle = FontStyle.Italic, modifier = modifier)

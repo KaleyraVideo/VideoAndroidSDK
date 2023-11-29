@@ -35,7 +35,14 @@ import androidx.compose.ui.unit.min
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
+/**
+ * Thumbnail Stream Tag
+ */
 const val ThumbnailTag = "ThumbnailTag"
+
+/**
+ * Thumbnail Stream Container Shape
+ */
 private val ThumbnailShape = RoundedCornerShape(16.dp)
 
 @Composable

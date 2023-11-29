@@ -16,7 +16,7 @@
 
 package com.kaleyra.video_common_ui
 
-interface Cache<K, V> {
+internal interface Cache<K, V> {
 
     val size: Int
 
@@ -29,7 +29,7 @@ interface Cache<K, V> {
     fun clear()
 }
 
-class PerpetualCache<K, V> : com.kaleyra.video_common_ui.Cache<K, V> {
+internal class PerpetualCache<K, V> : com.kaleyra.video_common_ui.Cache<K, V> {
 
     private val cache = HashMap<K, V>()
 

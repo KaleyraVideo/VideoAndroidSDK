@@ -24,14 +24,36 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 
+/**
+ * Terms And Conditions Broadcast Receiver
+ */
 abstract class TermsAndConditionBroadcastReceiver : BroadcastReceiver() {
 
+    /**
+     * Terms And Conditions Broadcast Receiver Instance
+     */
     companion object {
+
+        /**
+         * Accept Action
+         */
         const val ACTION_ACCEPT = "com.kaleyra.video_common_ui.termsandconditions.broadcastreceiver.ACTION_ACCEPT"
+
+        /**
+         * Decline Action
+         */
         const val ACTION_DECLINE = "com.kaleyra.video_common_ui.termsandconditions.broadcastreceiver.ACTION_DECLINE"
+
+        /**
+         * Cancel Action
+         */
         const val ACTION_CANCEL = "com.kaleyra.video_common_ui.termsandconditions.broadcastreceiver.ACTION_CANCEL"
     }
 
+    /**
+     * Register the broadcast receiver
+     * @param context Context required context to register the broadcast receiver
+     */
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     fun registerForTermAndConditionAction(context: Context) {
         val filter = IntentFilter().apply {
@@ -43,6 +65,9 @@ abstract class TermsAndConditionBroadcastReceiver : BroadcastReceiver() {
         else context.registerReceiver(this, filter)
     }
 
+    /**
+     * @suppress
+     */
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ACTION_ACCEPT && intent.action != ACTION_DECLINE && intent.action != ACTION_CANCEL) return
         when (intent.action) {
@@ -53,10 +78,19 @@ abstract class TermsAndConditionBroadcastReceiver : BroadcastReceiver() {
         context.unregisterReceiver(this)
     }
 
+    /**
+     * Callback invoked when the action has been accepted
+     */
     abstract fun onActionAccept()
 
+    /**
+     * Callback invoked when the action has been declined
+     */
     abstract fun onActionDecline()
 
+    /**
+     * Callback invoked when the action has been canceled
+     */
     abstract fun onActionCancel()
 
 }

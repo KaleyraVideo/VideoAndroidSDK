@@ -19,8 +19,10 @@ package com.kaleyra.video_sdk.common.viewmodel
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * User Message View Model
+ * @property userMessage Flow<UserMessage> flow of user messages
+ */
 interface UserMessageViewModel {
-
     val userMessage: Flow<UserMessage>
-
 }

@@ -18,6 +18,10 @@ package com.kaleyra.video_sdk.common.usermessages.model
 
 import androidx.compose.runtime.Stable
 
+/**
+ * User Message
+ * @property id String user message identifier
+ */
 @Stable
 interface UserMessage {
     val id: String

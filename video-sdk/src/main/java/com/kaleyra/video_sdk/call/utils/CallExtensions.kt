@@ -20,8 +20,16 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamPublisher
 
+/**
+ * Call Extensions
+ */
 internal object CallExtensions {
 
+    /**
+     * Utility function to retrieve the camera stream added to a call if any
+     * @receiver Call the call in which to search for the camera stream
+     * @return Stream.Mutable? the camera stream if found in the call
+     */
     fun Call.toMyCameraStream(): Stream.Mutable? {
         val me = participants.value.me ?: return null
         val streams = me.streams.value

@@ -26,8 +26,16 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
+/**
+ * Utility functions for the Call Ui
+ */
 object CallUiStateMapper {
 
+    /**
+     * Utility function to be used to receive a Flow<Rational> representing the ratio of the featured video
+     * @receiver Flow<CallUiState> the call ui flow
+     * @return Flow<Rational> the resulting flow receiving the featured videos rationals
+     */
     fun Flow<CallUiState>.toPipAspectRatio(): Flow<Rational> =
         this.map { it.featuredStreams }
             .map { it.value.firstOrNull() }

@@ -19,6 +19,12 @@ package com.kaleyra.video_sdk.call.callinfowidget.model
 import android.net.Uri
 import androidx.compose.runtime.Immutable
 
+/**
+ * Logo image representation
+ * @property light Uri? optional uri for day style
+ * @property dark Uri? optional uri for dark style
+ * @constructor
+ */
 @Immutable
 data class Logo(
     val light: Uri? = null,

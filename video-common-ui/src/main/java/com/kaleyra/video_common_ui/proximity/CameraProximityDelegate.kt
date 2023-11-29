@@ -21,7 +21,8 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.getMyInternalCamera
 import com.kaleyra.video_common_ui.utils.CallExtensions.isMyInternalCameraEnabled
 import com.kaleyra.video_common_ui.utils.CallExtensions.isMyInternalCameraUsingFrontLens
 
-interface CameraProximityDelegate {
+
+internal interface CameraProximityDelegate {
 
     val call: CallUI
 

@@ -20,6 +20,12 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Virtual Background Ui State representation of the Virtual Background State on the Ui
+ * @property currentBackground VirtualBackgroundUi current virtual background ui
+ * @property backgroundList ImmutableList<VirtualBackgroundUi> available virtual backgrounds
+ * @constructor
+ */
 @Immutable
 data class VirtualBackgroundUiState(
     val currentBackground: VirtualBackgroundUi = VirtualBackgroundUi.None,

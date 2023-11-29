@@ -23,6 +23,21 @@ import com.kaleyra.video_sdk.call.recording.model.RecordingUi
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Call Ui State representing the Ui state used in the Call Ui
+ * @property callState CallStateUi call state
+ * @property thumbnailStreams ImmutableList<StreamUi> thumbnail streams list
+ * @property featuredStreams ImmutableList<StreamUi> streams list
+ * @property fullscreenStream StreamUi? optional current fullscreen stream
+ * @property watermarkInfo WatermarkInfo? optional watermark info
+ * @property recording RecordingUi? optional recording
+ * @property isAudioOnly Boolean flag indicating if the call is audio only, true if audio only, false otherwise
+ * @property isGroupCall Boolean flag indicating if the call is a group call, true if a group call, false otherwise
+ * @property amILeftAlone Boolean flag indicating if the logged participant is currently the only participant in call, true if alone, false otherwise
+ * @property showFeedback Boolean flag indicating if the call ui should present the call feedback on call ended, true to show it, false otherwise
+ * @property shouldAutoHideSheet Boolean flag indicating if the call should auto hide the call controls, true to auto hide the call controls, false otherwise
+ * @constructor
+ */
 @Immutable
 data class CallUiState(
     val callState: CallStateUi = CallStateUi.Disconnected,

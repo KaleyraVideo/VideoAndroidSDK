@@ -22,19 +22,44 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 
+/**
+ * ChatViewModel representation of the chat view model
+ * @constructor
+ */
 open class ChatViewModel(configure: suspend () -> Configuration) : CollaborationViewModel(configure) {
 
     private val _chat = MutableSharedFlow<ChatUI>(replay = 1, extraBufferCapacity = 1)
+
+    /**
+     * Current chat flow
+     */
     val chat = _chat.asSharedFlow()
 
+    /**
+     * Current call flow
+     */
     val call = conference.flatMapLatest { it.call }.shareInEagerly(viewModelScope)
 
+    /**
+     * Messages flow
+     */
     val messages = chat.flatMapLatest { it.messages }.shareInEagerly(viewModelScope)
 
+    /**
+     * Chat UI Actions flow
+     */
     val actions = chat.flatMapLatest { it.actions }.shareInEagerly(viewModelScope)
 
+    /**
+     * Chat participants flow
+     */
     val participants = chat.flatMapLatest { it.participants }.shareInEagerly(viewModelScope)
 
+    /**
+     * Set the current one-to-one chat by passing the other participant's userId
+     * @param userId String the other participant's userId
+     * @return ChatUI? the retrieved ChatUI if available
+     */
     suspend fun setChat(userId: String): ChatUI? {
         val conversation = conversation.first()
         val chat = conversation.create(userId).getOrNull() ?: return null

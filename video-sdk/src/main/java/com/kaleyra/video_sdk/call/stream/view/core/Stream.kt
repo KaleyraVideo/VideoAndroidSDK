@@ -51,8 +51,19 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
+/**
+ * Stream Overlay Test Tag
+ */
 const val StreamOverlayTestTag = "StreamOverlayTestTag"
+
+/**
+ * Stream View Test Tag
+ */
 const val StreamViewTestTag = "StreamTestTag"
+
+/**
+ * Default Stream Avatar Size in dp
+ */
 val DefaultStreamAvatarSize = 128.dp
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -130,4 +141,3 @@ internal fun StreamPreview() {
         )
     }
 }
-

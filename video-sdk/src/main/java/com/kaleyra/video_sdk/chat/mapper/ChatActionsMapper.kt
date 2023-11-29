@@ -21,7 +21,7 @@ import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 
 internal object ChatActionsMapper {
-    fun Set<ChatUI.Action>.mapToChatActions(call: (Call.PreferredType) -> Unit): Set<ChatAction> {
+    internal fun Set<ChatUI.Action>.mapToChatActions(call: (Call.PreferredType) -> Unit): Set<ChatAction> {
         return mutableSetOf<ChatAction>().apply {
             val actions = this@mapToChatActions.filterIsInstance<ChatUI.Action.CreateCall>()
             actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
