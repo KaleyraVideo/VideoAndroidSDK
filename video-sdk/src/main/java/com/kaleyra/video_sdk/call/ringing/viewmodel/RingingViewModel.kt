@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.ringing.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
@@ -57,11 +58,13 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
     }
 
     fun accept() {
-        call.getValue()?.connect()
+        PhoneConnectionService.connection?.onAnswer()
+//        call.getValue()?.connect()
     }
 
     fun decline() {
-        call.getValue()?.end()
+        PhoneConnectionService.connection?.onReject()
+//        call.getValue()?.end()
     }
 
     companion object {

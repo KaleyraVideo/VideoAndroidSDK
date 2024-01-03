@@ -43,6 +43,7 @@ internal interface CallNotificationManager {
         private const val CONTENT_REQUEST_CODE = 456
         private const val ANSWER_REQUEST_CODE = 789
         private const val DECLINE_REQUEST_CODE = 987
+        private const val HANGUP_REQUEST_CODE = 101
         private const val SCREEN_SHARING_REQUEST_CODE = 654
     }
 
@@ -120,7 +121,7 @@ internal interface CallNotificationManager {
             .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz)) }
             .contentText(tapToReturnText)
             .contentIntent(contentPendingIntent(context, activityClazz))
-            .declineIntent(declinePendingIntent(context))
+            .declineIntent(hangUpPendingIntent(context))
 
         return builder.build()
     }
@@ -170,7 +171,7 @@ internal interface CallNotificationManager {
             .enableCallStyle(enableCallStyle)
             .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz)) }
             .contentIntent(contentPendingIntent(context, activityClazz))
-            .declineIntent(declinePendingIntent(context))
+            .declineIntent(hangUpPendingIntent(context))
             .timer(!isConnecting)
             .apply { if (isSharingScreen) screenShareIntent(screenSharePendingIntent(context)) }
 
@@ -190,6 +191,13 @@ internal interface CallNotificationManager {
         createBroadcastPendingIntent(
             context,
             DECLINE_REQUEST_CODE,
+            CallNotificationActionReceiver.ACTION_DECLINE
+        )
+
+    private fun hangUpPendingIntent(context: Context) =
+        createBroadcastPendingIntent(
+            context,
+            HANGUP_REQUEST_CODE,
             CallNotificationActionReceiver.ACTION_HANGUP
         )
 

@@ -15,11 +15,14 @@
  */
 package com.kaleyra.demo_video_sdk
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -27,8 +30,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -160,6 +165,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             if (it is Call.State.Connecting) showOngoingCallLabel()
         }.launchIn(lifecycleScope)
 
+        if (!hasPermission()) {
+            askPermissions()
+            return
+        }
+
         KaleyraVideo.conference.call
             .flatMapLatest { it.recording }
             .flatMapLatest { it.state }
@@ -167,6 +177,50 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             .onEach {
                 Snackbar.make(window.decorView, it.toString(), Snackbar.LENGTH_SHORT).show()
             }.launchIn(lifecycleScope)
+    }
+
+    private fun hasPermission() =
+        ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.MANAGE_OWN_CALLS
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.CALL_PHONE
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_PHONE_NUMBERS
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_CONTACTS
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_CONTACTS
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) == PackageManager.PERMISSION_GRANTED
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun askPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.MANAGE_OWN_CALLS,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_PHONE_NUMBERS,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_ADMIN,
+            ),
+            11
+        )
     }
 
     override fun onPause() {

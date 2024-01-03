@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.call
 
 import android.app.Notification
 import android.net.Uri
+import androidx.annotation.CallSuper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
@@ -60,12 +61,14 @@ interface CallNotificationDelegate {
      *
      * @param notification The notification
      */
+    @CallSuper
     fun showNotification(notification: Notification) =
         NotificationManager.notify(CALL_NOTIFICATION_ID, notification)
 
     /**
      * Clear the notification
      */
+    @CallSuper
     fun clearNotification() = NotificationManager.cancel(CALL_NOTIFICATION_ID)
 
     /**
@@ -75,6 +78,7 @@ interface CallNotificationDelegate {
      * @param activityClazz The call activity class
      * @param scope The coroutine scope
      */
+    @CallSuper
     fun syncCallNotification(
         call: Call,
         activityClazz: Class<*>,

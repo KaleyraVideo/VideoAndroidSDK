@@ -244,7 +244,7 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
         return ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL or inputsFlag or screenSharingFlag
     }
 
-    private fun handleProximity(call: com.kaleyra.video_common_ui.CallUI) {
+    private fun handleProximity(call: CallUI) {
         combine(
             call.state,
             call.participants

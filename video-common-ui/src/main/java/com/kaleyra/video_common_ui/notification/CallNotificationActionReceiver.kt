@@ -22,7 +22,9 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationDelegate.Companion.CALL_NOTIFICATION_ID
+import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
 import com.kaleyra.video_common_ui.onCallReady
+import com.kaleyra.video_common_ui.utils.CallExtensions.isOngoing
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +50,8 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
          */
         const val ACTION_HANGUP = "com.kaleyra.video_common_ui.HANGUP"
 
+        const val ACTION_DECLINE = "com.kaleyra.video_common_ui.DECLINE"
+
         /**
          * ActionStopScreenShare
          */
@@ -71,8 +75,17 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
                 }
                 KaleyraVideo.onCallReady(this) { call ->
                     when (notificationAction) {
-                        ACTION_ANSWER -> call.connect()
-                        ACTION_HANGUP -> call.end()
+                        ACTION_ANSWER -> {
+                            PhoneConnectionService.connection?.onAnswer()
+//                            call.connect()
+                        }
+                        ACTION_DECLINE -> {
+                            PhoneConnectionService.connection?.onReject()
+                        }
+                        ACTION_HANGUP -> {
+                            PhoneConnectionService.connection?.onDisconnect()
+//                            call.end()
+                        }
                         ACTION_STOP_SCREEN_SHARE -> {
                             val screenShareInputs =
                                 call.inputs.availableInputs.value
