@@ -5,12 +5,18 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.telecom.ConnectionService
 import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasCallPhonePermission
+import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasManageOwnCallsPermission
+import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasReadPhoneNumbersPermission
+import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasReadPhoneStatePermission
 
 object TelecomManagerExtension {
 
@@ -28,12 +34,14 @@ object TelecomManagerExtension {
         return getPhoneAccount(phoneAccountHandle) ?: let {
             PhoneAccount
 //                .builder(phoneAccountHandle, context.resources.getText(R.string.app_name))
-                .builder(phoneAccountHandle, context.packageName)
+                .builder(phoneAccountHandle, context.getAppName())
                 .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
                 .build()
                 .apply { registerPhoneAccount(this) }
         }
     }
+
+    fun Context.getAppName(): CharSequence = applicationInfo.loadLabel(packageManager)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.addIncomingCall(
@@ -41,6 +49,15 @@ object TelecomManagerExtension {
         uri: Uri,
         hasVideo: Boolean = false
     ) {
+        if (!context.hasManageOwnCallsPermission()) {
+            Log.e("TelecomExtensions", "Missing MANAGE_OWN_CALLS permission")
+            return
+        }
+        if (!context.hasReadPhoneNumbersPermission()) {
+            Log.e("TelecomExtensions", "Missing READ_PHONE_NUMBERS permission")
+            return
+        }
+
         val accountHandle = getPhoneAccountHandle(context)
         getOrRegisterPhoneAccount(context, accountHandle)
 //        val callExtras = Bundle().apply {
@@ -62,7 +79,26 @@ object TelecomManagerExtension {
         uri: Uri,
         hasVideo: Boolean = false
     ) {
+        if (!context.hasManageOwnCallsPermission()) {
+            Log.e("TelecomExtensions", "Missing MANAGE_OWN_CALLS permission")
+            return
+        }
+        if (!context.hasReadPhoneNumbersPermission()) {
+            Log.e("TelecomExtensions", "Missing READ_PHONE_NUMBERS permission")
+            return
+        }
+//        if (!context.hasReadPhoneStatePermission()) {
+//            Log.e("TelecomExtensions", "Missing READ_PHONE_STATE permission")
+//            return
+//        }
+//
+//        if (!context.hasCallPhonePermission()) {
+//            Log.e("TelecomExtensions", "Missing CALL_PHONE permission")
+//            return
+//        }
+//
         val accountHandle = getPhoneAccountHandle(context)
+        getOrRegisterPhoneAccount(context, accountHandle)
 //        val callExtras = Bundle().apply {
 //            putBoolean(Constants.EXTRA_HAS_VIDEO, hasVideo)
 //        }

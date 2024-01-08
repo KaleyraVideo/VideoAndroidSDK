@@ -184,10 +184,14 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             this,
             Manifest.permission.MANAGE_OWN_CALLS
         ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.CALL_PHONE
-                ) == PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(
+//                    this,
+//                    Manifest.permission.CALL_PHONE
+//                ) == PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(
+//                    this,
+//                    Manifest.permission.READ_PHONE_STATE
+//                ) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.READ_PHONE_NUMBERS
@@ -211,7 +215,8 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             this,
             arrayOf(
                 Manifest.permission.MANAGE_OWN_CALLS,
-                Manifest.permission.CALL_PHONE,
+//                Manifest.permission.CALL_PHONE,
+//                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.READ_PHONE_NUMBERS,
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.WRITE_CONTACTS,
