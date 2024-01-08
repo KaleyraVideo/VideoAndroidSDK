@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.call.callactions.viewmodel
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -183,8 +184,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-        PhoneConnectionService.connection?.onDisconnect()
-//        call.getValue()?.end()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService.end()
+        else call.getValue()?.end()
     }
 
     fun showChat(context: Context) {

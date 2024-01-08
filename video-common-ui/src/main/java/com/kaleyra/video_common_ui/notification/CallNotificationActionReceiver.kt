@@ -18,6 +18,8 @@ package com.kaleyra.video_common_ui.notification
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -76,15 +78,19 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
                 KaleyraVideo.onCallReady(this) { call ->
                     when (notificationAction) {
                         ACTION_ANSWER -> {
-                            PhoneConnectionService.connection?.onAnswer()
-//                            call.connect()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                PhoneConnectionService.answer()
+                            } else call.connect()
                         }
                         ACTION_DECLINE -> {
-                            PhoneConnectionService.connection?.onReject()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                PhoneConnectionService.reject()
+                            } else call.end()
                         }
                         ACTION_HANGUP -> {
-                            PhoneConnectionService.connection?.onDisconnect()
-//                            call.end()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                PhoneConnectionService.end()
+                            } else call.end()
                         }
                         ACTION_STOP_SCREEN_SHARE -> {
                             val screenShareInputs =
