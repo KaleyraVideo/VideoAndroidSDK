@@ -13,7 +13,6 @@ import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
-import android.telecom.TelecomManager
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleService
 import com.kaleyra.video.conference.Call
@@ -34,9 +33,6 @@ import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationD
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.proximity.CallProximityDelegate
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
-import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeechNotifier
-import com.kaleyra.video_common_ui.texttospeech.CallParticipantMutedTextToSpeechNotifier
-import com.kaleyra.video_common_ui.texttospeech.CallRecordingTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.TextToSpeechNotifier
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
@@ -68,7 +64,19 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
     Application.ActivityLifecycleCallbacks {
 
     companion object {
-        var connection: CallConnection? = null
+        private var connection: CallConnection? = null
+
+        fun answer() {
+            connection?.onAnswer()
+        }
+
+        fun reject() {
+            connection?.onReject()
+        }
+
+        fun end() {
+            connection?.onDisconnect()
+        }
     }
 
     private var foregroundJob: Job? = null
@@ -206,8 +214,14 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
             if (connection.isIncoming) {
                 mainScope.launch {
                     val participants = call.participants.value
-                    val callee = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
-                    createOrUpdateConnectionServiceContact(this@PhoneConnectionService, connection.address, callee)
+                    val callee = participants.others.map {
+                        it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
+                    }.joinToString()
+                    createOrUpdateConnectionServiceContact(
+                        this@PhoneConnectionService,
+                        connection.address,
+                        callee
+                    )
                 }
             }
         }
@@ -254,7 +268,9 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
         connectionManagerPhoneAccount: PhoneAccountHandle,
         request: ConnectionRequest
     ): Connection {
-        val connection = createConnection(request, isIncoming = false)
+        val connection = createConnection(request, isIncoming = false).apply {
+            setDialing()
+        }
         setUpCall(connection)
         return connection
     }
@@ -273,7 +289,6 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
             addIncomingCallListener(this@PhoneConnectionService)
             addConnectionStateListener(this@PhoneConnectionService)
 //            addAudioOutputListener(this@PhoneConnectionService)
-            if (isIncoming) setRinging() else setDialing()
         }
     }
 
@@ -281,7 +296,11 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
 //
 //    }
 
-    override fun onShowIncomingCallUi(connection: CallConnection) = setUpCall(connection)
+    override fun onShowIncomingCallUi(connection: CallConnection) {
+        connection.setRinging()
+        setUpCall(connection)
+    }
+
 
     override fun onConnectionStateChange(connection: CallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
@@ -332,9 +351,5 @@ class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallL
         return ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL or inputsFlag or screenSharingFlag
     }
 
-    private fun stopForegroundService() {
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
-        else stopForeground(true)
-    }
+    private fun stopForegroundService() = runCatching { stopForeground(STOP_FOREGROUND_REMOVE) }
 }
