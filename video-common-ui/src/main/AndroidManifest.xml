@@ -57,6 +57,7 @@
         <service
             android:name=".CallService"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone" />
+        <service android:name=".connectionservice.ProximityService" />
 
         <receiver
             android:name=".notification.CallNotificationActionReceiver"

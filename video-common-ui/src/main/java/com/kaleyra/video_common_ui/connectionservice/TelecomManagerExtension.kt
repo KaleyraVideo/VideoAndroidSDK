@@ -5,18 +5,14 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.telecom.ConnectionService
 import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import com.kaleyra.video_common_ui.R
-import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasCallPhonePermission
 import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasReadPhoneNumbersPermission
-import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasReadPhoneStatePermission
 
 object TelecomManagerExtension {
 

@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +36,7 @@ import com.kaleyra.video_common_ui.call.CameraStreamPublisher
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayDelegate
 import com.kaleyra.video_common_ui.call.StreamsOpeningDelegate
 import com.kaleyra.video_common_ui.call.StreamsVideoViewDelegate
+import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate
@@ -86,19 +88,9 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
 
     private var foregroundJob: Job? = null
 
-    private var proximityDelegate: CallProximityDelegate<LifecycleService>? = null
-
-    private var proximityCallActivity: ProximityCallActivity? = null
-
     private var call: CallUI? = null
 
     private var onCallNewActivity: ((Context) -> Unit)? = null
-
-    private var recordingTextToSpeechNotifier: TextToSpeechNotifier? = null
-
-    private var awaitingParticipantsTextToSpeechNotifier: TextToSpeechNotifier? = null
-
-    private var mutedTextToSpeechNotifier: TextToSpeechNotifier? = null
 
     /**
      * @suppress
@@ -117,17 +109,9 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
         super.onDestroy()
         clearNotification()
         application.unregisterActivityLifecycleCallbacks(this)
-        recordingTextToSpeechNotifier?.dispose()
-        mutedTextToSpeechNotifier?.dispose()
-        awaitingParticipantsTextToSpeechNotifier?.dispose()
-        proximityDelegate?.destroy()
         foregroundJob?.cancel()
+        ProximityService.stop()
         call?.end()
-        awaitingParticipantsTextToSpeechNotifier = null
-        recordingTextToSpeechNotifier = null
-        mutedTextToSpeechNotifier = null
-        proximityCallActivity = null
-        proximityDelegate = null
         onCallNewActivity = null
         foregroundJob = null
         notification = null
@@ -137,8 +121,6 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         if (activity::class.java != call?.activityClazz) return
         onCallNewActivity?.invoke(activity)
-        if (activity !is ProximityCallActivity) return
-        proximityCallActivity = activity
     }
 
     override fun onActivityStarted(activity: Activity) = Unit
@@ -151,10 +133,7 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
-    override fun onActivityDestroyed(activity: Activity) {
-        if (activity::class.java != call?.activityClazz || activity !is ProximityCallActivity) return
-        proximityCallActivity = null
-    }
+    override fun onActivityDestroyed(activity: Activity) = Unit
 
     /**
      * Set up the call streams and notifications
@@ -181,7 +160,9 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
 
             var screenShareScope: CoroutineScope? = null
             if (!DeviceUtils.isSmartGlass) {
-                handleProximity(call)
+                Log.e("ProximityService", "starting")
+
+                ProximityService.start()
                 syncFileShareNotification(this, call, call.activityClazz, lifecycleScope)
                 onCallNewActivity = { activityContext ->
                     screenShareScope?.cancel()
@@ -242,40 +223,6 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
         val inputsFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE else 0
         val screenSharingFlag = if (hasScreenSharingPermission) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION else 0
         return ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL or inputsFlag or screenSharingFlag
-    }
-
-    private fun handleProximity(call: CallUI) {
-        combine(
-            call.state,
-            call.participants
-        ) { state, participants -> state is Call.State.Disconnected && participants.let { it.creator() != it.me && it.creator() != null } }
-            .onEach {
-                // if the call is incoming, don't immediately bind the proximity
-                if (it) return@onEach
-                proximityDelegate = CallProximityDelegate<LifecycleService>(
-                    lifecycleContext = this,
-                    call = call,
-                    disableProximity = { proximityCallActivity?.disableProximity ?: false },
-                    disableWindowTouch = { disableWindowTouch ->
-                        if (disableWindowTouch) proximityCallActivity?.disableWindowTouch()
-                        else proximityCallActivity?.enableWindowTouch()
-                    }
-                ).apply { bind() }
-                recordingTextToSpeechNotifier = CallRecordingTextToSpeechNotifier(
-                    call,
-                    proximityDelegate!!.sensor!!
-                ).apply { start(lifecycleScope) }
-                mutedTextToSpeechNotifier = CallParticipantMutedTextToSpeechNotifier(
-                    call,
-                    proximityDelegate!!.sensor!!
-                ).apply { start(lifecycleScope) }
-                awaitingParticipantsTextToSpeechNotifier = AwaitingParticipantsTextToSpeechNotifier(
-                    call,
-                    proximityDelegate!!.sensor!!
-                ).apply { start(lifecycleScope) }
-            }
-            .takeWhile { it }
-            .launchIn(lifecycleScope)
     }
 
     private fun newChildScope(coroutineScope: CoroutineScope, dispatcher: CoroutineDispatcher) =
