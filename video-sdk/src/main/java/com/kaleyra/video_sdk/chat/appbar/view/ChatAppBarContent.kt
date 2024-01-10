@@ -19,8 +19,8 @@ package com.kaleyra.video_sdk.chat.appbar.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +49,7 @@ internal fun ChatAppBarContent(
             contentDescription = stringResource(id = R.string.kaleyra_chat_avatar_desc),
             placeholder = R.drawable.ic_kaleyra_avatar,
             error = R.drawable.ic_kaleyra_avatar,
-            contentColor = MaterialTheme.colors.onPrimary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             backgroundColor = colorResource(R.color.kaleyra_color_grey_light),
             size = 40.dp
         )

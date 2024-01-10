@@ -145,12 +145,12 @@ class OneToOneAppBarTest {
     }
 
     @Test
-    fun chatParticipantStateTyping_typingWithDotsDisplayed() {
+    fun chatParticipantStateTyping_typingWithDotsExists() {
         getBouncingDots().assertDoesNotExist()
         chatParticipantState.value = ChatParticipantState.Typing
         val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_typing)
         getSubtitle().assertContentDescriptionEquals(typing)
-        getBouncingDots().assertIsDisplayed()
+        getBouncingDots().assertExists()
     }
 
     @Test

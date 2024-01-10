@@ -24,6 +24,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,9 +32,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -135,14 +136,15 @@ internal fun ChatScreen(
 
     Column(
         modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
+            .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
+            .padding(PaddingValues(bottom = 16.dp))
             .navigationBarsPadding()
             .imePadding()
             .semantics {
                 testTagsAsResourceId = true
             }) {
-        StatusBarsSpacer(Modifier.background(MaterialTheme.colors.primaryVariant))
+        StatusBarsSpacer(Modifier.background(MaterialTheme.colorScheme.secondary))
         Box(Modifier.focusRequester(topBarRef)) {
             when (uiState) {
                 is ChatUiState.OneToOne -> {
@@ -170,6 +172,12 @@ internal fun ChatScreen(
             }
         }
 
+        Divider(
+            color = MaterialTheme.colorScheme.outline,
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         if (uiState.isInCall) OngoingCallLabel(onClick = onShowCall)
 
         Box {
@@ -188,10 +196,6 @@ internal fun ChatScreen(
                         .testTag(ConversationComponentTag)
                 )
 
-                Divider(
-                    color = colorResource(id = R.color.kaleyra_color_grey_light),
-                    modifier = Modifier.fillMaxWidth()
-                )
                 ChatUserInput(
                     onTextChanged = onTyping,
                     onMessageSent = onMessageSent,
@@ -228,7 +232,7 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
         Text(
             text = stringResource(id = R.string.kaleyra_ongoing_call_label),
             color = Color.White,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }

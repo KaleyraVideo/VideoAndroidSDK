@@ -1,33 +1,13 @@
-<!--
-  ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:width="11dp"
+    android:height="15dp"
+    android:viewportWidth="11"
+    android:viewportHeight="15">
   <path
-      android:pathData="M12,15v7"
-      android:strokeWidth="1.5"
-      android:fillColor="#00000000"
-      android:strokeColor="#000"
-      android:strokeLineCap="round"/>
-  <path
-      android:pathData="M8.7295,3.4987L9.5659,9.3542L6.8027,13.4995L17.1982,13.4995L14.4346,9.3544L15.271,3.4987L8.7295,3.4987M7,1.9987L17.0005,1.9987L16.0005,8.9991L20.0015,14.9995L4.0005,14.9995L8,8.9991L7,1.9987Z"
+      android:pathData="M5.5,8.5C5.776,8.5 6,8.724 6,9V13.667C6,13.943 5.776,14.167 5.5,14.167C5.224,14.167 5,13.943 5,13.667V9C5,8.724 5.224,8.5 5.5,8.5Z"
       android:fillColor="#000"
-      android:strokeColor="#00000000"
-      android:strokeLineCap="round"/>
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M3.32,1.333L3.877,5.236L2.035,8H8.966L7.123,5.236L7.681,1.333H3.32ZM2.167,0.333H8.833L8.167,4.999L10.834,9L0.167,8.999L2.833,4.999L2.167,0.333Z"
+      android:fillColor="#000"/>
 </vector>

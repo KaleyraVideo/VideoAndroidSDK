@@ -24,7 +24,9 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
  * @property id String stream ui identifier
  * @property username String participant's identifier
  * @property video VideoUi? optional video component
+ * @property audio AudioUi? optional audio component
  * @property avatar ImmutableUri? optional participant's avatar uri
+ * @property pinned Boolean true if the streamUi is currently pinned, false otherwise
  * @constructor
  */
 @Immutable
@@ -32,5 +34,7 @@ data class StreamUi(
     val id: String,
     val username: String,
     val video: VideoUi? = null,
-    val avatar: ImmutableUri? = null
+    val audio: AudioUi? = null,
+    val avatar: ImmutableUri? = null,
+    val pinned: Boolean = false
 )

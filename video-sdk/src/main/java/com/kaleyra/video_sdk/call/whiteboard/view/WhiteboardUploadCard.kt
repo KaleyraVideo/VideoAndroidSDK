@@ -19,8 +19,9 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +53,7 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_close),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.error,
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(64.dp)
                     )
                 } else {
@@ -60,9 +61,9 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                     val progress by animateFloatAsState(targetValue = progressValue)
                     CircularProgressIndicator(
                         progress = progress,
-                        color = MaterialTheme.colors.secondaryVariant,
+                        color = MaterialTheme.colorScheme.tertiary,
                         size = 56.dp,
-                        strokeWidth = ProgressIndicatorDefaults.StrokeWidth
+                        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
                     )
                     Text(
                         text = stringResource(id = R.string.kaleyra_file_upload_percentage, (progressValue * 100).roundToInt()), fontSize = 12.sp
@@ -77,7 +78,7 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                 )
                 Text(
                     text = stringResource(id = if (error) R.string.kaleyra_whiteboard_error_subtitle else R.string.kaleyra_whiteboard_compressing),
-                    color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
             }

@@ -19,12 +19,11 @@ package com.kaleyra.video_sdk.call.appbar
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -65,8 +64,7 @@ internal fun CallAppBar(
                 actions()
             }
         },
-        elevation = 0.dp,
-        contentPadding = WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+//        windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal),
         modifier = modifier
     )
 }

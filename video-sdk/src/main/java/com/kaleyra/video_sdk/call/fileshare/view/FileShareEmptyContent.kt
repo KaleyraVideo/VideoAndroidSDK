@@ -18,7 +18,10 @@ package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -43,7 +46,7 @@ fun FileShareEmptyContent(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_folder),
                 contentDescription = null,

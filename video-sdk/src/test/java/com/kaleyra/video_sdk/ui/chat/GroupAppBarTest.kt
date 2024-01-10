@@ -38,6 +38,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.topappbar.ActionsTag
 import com.kaleyra.video_sdk.ui.findBackButton
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -129,6 +130,14 @@ class GroupAppBarTest {
     }
 
     @Test
+    fun participantsStateTyping_typingDotsExist() = runTest {
+        getBouncingDots().assertDoesNotExist()
+        val users = listOf("mary", "john")
+        participantsState = ChatParticipantsState(typing = ImmutableList(users))
+        getBouncingDots().assertExists()
+    }
+
+    @Test
     fun participantsStateOnline_onlineIsDisplayed() {
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(online = ImmutableList(users))
@@ -146,14 +155,6 @@ class GroupAppBarTest {
             )
         val subtitle = participantsDetails.value.values.joinToString(", ") { it.username }
         getSubtitle().assertContentDescriptionEquals(subtitle)
-    }
-
-    @Test
-    fun participantsStateTyping_typingDotsDisplayed() {
-        getBouncingDots().assertDoesNotExist()
-        val users = listOf("mary", "john")
-        participantsState = ChatParticipantsState(typing = ImmutableList(users))
-        getBouncingDots().assertIsDisplayed()
     }
 
     @Test

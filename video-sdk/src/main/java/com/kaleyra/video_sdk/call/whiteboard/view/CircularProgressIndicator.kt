@@ -19,9 +19,9 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -49,11 +49,11 @@ internal fun CircularProgressIndicator(progress: Float, color: Color, size: Dp, 
     }
     Canvas(Modifier.size(size)) {
         drawCircularBackground(
-            color = color.copy(alpha = ProgressIndicatorDefaults.IndicatorBackgroundOpacity),
+            color = color,
             stroke = stroke
         )
     }
-    androidx.compose.material.CircularProgressIndicator(
+    androidx.compose.material3.CircularProgressIndicator(
         progress = progress,
         color = color,
         strokeWidth = strokeWidth,
@@ -87,9 +87,9 @@ internal fun CircularProgressIndicatorPreview() {
         Surface {
             CircularProgressIndicator(
                 progress = .6f,
-                color = MaterialTheme.colors.secondaryVariant,
+                color = MaterialTheme.colorScheme.tertiary,
                 size = 56.dp,
-                strokeWidth = ProgressIndicatorDefaults.StrokeWidth
+                strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
             )
         }
     }

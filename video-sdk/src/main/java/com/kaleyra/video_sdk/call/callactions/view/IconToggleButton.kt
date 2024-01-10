@@ -20,8 +20,8 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -51,7 +51,7 @@ internal fun IconToggleButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
-        CompositionLocalProvider(LocalContentAlpha provides contentAlpha, content = content)
+        val contentAlpha = if (enabled) 1f else 0.38f
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha), content = content)
     }
 }

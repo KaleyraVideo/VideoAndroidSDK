@@ -35,8 +35,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -613,8 +613,8 @@ internal fun DefaultCallScreen(
             anchor = {
                 BottomSheetAnchor(callUiState, callScreenState, onThumbnailStreamClick, onThumbnailStreamDoubleClick, modifier = Modifier.horizontalCutoutPadding())
             },
-            sheetBackgroundColor = MaterialTheme.colors.surface.copy(alpha = backgroundAlpha),
-            sheetContentColor = MaterialTheme.colors.onSurface,
+            sheetBackgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = backgroundAlpha),
+            sheetContentColor = MaterialTheme.colorScheme.onSurface,
             sheetShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
             backgroundColor = Color.Black,
             contentColor = Color.White,

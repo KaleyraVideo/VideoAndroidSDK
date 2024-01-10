@@ -20,7 +20,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,7 +36,7 @@ internal const val defaultDelay = 300
 
 @Composable
 internal fun TypingDots(
-    color: Color = MaterialTheme.colors.primary,
+    color: Color = MaterialTheme.colorScheme.primary,
     size: Dp = defaultDotSize,
     modifier: Modifier = Modifier
 ) {

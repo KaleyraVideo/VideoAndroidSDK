@@ -20,9 +20,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -84,7 +84,7 @@ internal fun StarSlider(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_full_star),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
                             .matchParentSize()
                             .graphicsLayer {

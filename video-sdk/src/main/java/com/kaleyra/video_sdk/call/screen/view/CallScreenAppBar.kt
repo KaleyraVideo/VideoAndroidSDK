@@ -19,12 +19,12 @@ package com.kaleyra.video_sdk.call.screen.view
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.AppBarDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareAppBar
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardAppBar
@@ -48,8 +48,8 @@ internal fun CallScreenAppBar(
         exit = fadeOut() + slideOutVertically(),
         modifier = modifier.testTag(CallScreenAppBarTag)
     ) {
-        Surface(elevation = AppBarDefaults.TopAppBarElevation) {
-            StatusBarsSpacer(Modifier.background(MaterialTheme.colors.primary))
+        Surface(shadowElevation = Dp(16f)) {
+            StatusBarsSpacer(Modifier.background(MaterialTheme.colorScheme.primary))
             Box(modifier = Modifier.statusBarsPadding()) {
                 when (currentSheetComponent) {
                     BottomSheetComponent.FileShare -> FileShareAppBar(onBackPressed = onBackPressed)

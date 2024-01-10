@@ -30,7 +30,7 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.*
 
-internal class AudioOutputViewModel(configure: suspend () -> Configuration) : BaseViewModel<AudioOutputUiState>(configure) {
+internal class AudioOutputViewModel(configure: suspend () -> Configuration) : BaseViewModel<AudioOutputUiState>(configure = configure) {
 
     override fun initialState() = AudioOutputUiState()
 

@@ -26,7 +26,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -157,7 +165,7 @@ private fun SharedFileInfoAndProgress(
 
         EllipsizeText(
             text = sharedFile.name,
-            color = MaterialTheme.colors.onSurface,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             ellipsize = Ellipsize.Middle
@@ -167,10 +175,10 @@ private fun SharedFileInfoAndProgress(
             progress = progress,
             modifier = Modifier
                 .padding(vertical = 2.dp)
-                .size(LinearProgressIndicatorWidth, ProgressIndicatorDefaults.StrokeWidth)
+                .size(LinearProgressIndicatorWidth, ProgressIndicatorDefaults.CircularStrokeWidth)
                 .clip(RoundedCornerShape(percent = 50))
                 .testTag(ProgressIndicatorTag),
-            color = MaterialTheme.colors.secondaryVariant,
+            color = MaterialTheme.colorScheme.tertiary,
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -234,7 +242,7 @@ private fun ActionButton(
                 }
             ),
             tint = when (sharedFileState) {
-                is SharedFileUi.State.Success, is SharedFileUi.State.Error -> MaterialTheme.colors.surface
+                is SharedFileUi.State.Success, is SharedFileUi.State.Error -> MaterialTheme.colorScheme.surface
                 else -> LocalContentColor.current.copy(alpha = .3f)
             },
             modifier = Modifier
@@ -242,16 +250,16 @@ private fun ActionButton(
                 .border(
                     width = 2.dp,
                     color = when (sharedFileState) {
-                        is SharedFileUi.State.Success -> MaterialTheme.colors.secondaryVariant
-                        is SharedFileUi.State.Error -> MaterialTheme.colors.error
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.tertiary
+                        is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
                         else -> LocalContentColor.current.copy(alpha = .3f)
                     },
                     shape = CircleShape
                 )
                 .background(
                     color = when (sharedFileState) {
-                        is SharedFileUi.State.Success -> MaterialTheme.colors.secondaryVariant
-                        is SharedFileUi.State.Error -> MaterialTheme.colors.error
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.tertiary
+                        is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
                         else -> Color.Transparent
                     },
                     shape = CircleShape
@@ -276,7 +284,7 @@ private fun ErrorMessage(isMyMessage: Boolean) {
         text = stringResource(
             id = if (isMyMessage) R.string.kaleyra_fileshare_upload_error else R.string.kaleyra_fileshare_download_error
         ),
-        color = MaterialTheme.colors.error,
+        color = MaterialTheme.colorScheme.error,
         fontSize = 12.sp
     )
 }

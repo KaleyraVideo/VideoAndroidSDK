@@ -16,20 +16,25 @@
 
 package com.kaleyra.video_sdk.common.userinput
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -54,16 +59,19 @@ internal fun UserInputText(
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
+
     val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
-            .height(48.dp)
+            .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(size = 8.dp))
+            .padding(16.dp)
+            .background(color = Color.Transparent, shape = RoundedCornerShape(size = 8.dp))
             .then(modifier),
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
             value = textFieldValue,
-            textStyle = MaterialTheme.typography.subtitle1.copy(color = LocalContentColor.current),
+            textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground),
             onValueChange = { onTextChanged(it) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,14 +99,14 @@ internal fun UserInputText(
                 },
             interactionSource = interactionSource,
             maxLines = maxLines,
-            cursorBrush = SolidColor(MaterialTheme.colors.secondary)
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.secondary)
         )
 
-        val hintColor = LocalContentColor.current.copy(alpha = 0.5f)
+        val hintColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
         if (textFieldValue.text.isEmpty()) {
             Text(
                 text = stringResource(id = R.string.kaleyra_edit_text_input_placeholder),
-                style = MaterialTheme.typography.subtitle1.copy(color = hintColor)
+                style = MaterialTheme.typography.titleMedium.copy(color = hintColor)
             )
         }
     }

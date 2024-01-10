@@ -166,10 +166,10 @@ class BottomSheetTest {
         )
 
     @Test
-    fun sheetExpanded_userPerformsMediumSwipeDown_sheetCollapsed() =
+    fun sheetExpanded_userPerformsMediumSwipeDown_sheetHidden() =
         checkStateAfterSwipe(
             initialState = BottomSheetValue.Expanded,
-            targetState = BottomSheetValue.Collapsed,
+            targetState = BottomSheetValue.Hidden,
             swipeAmount = -0.4f
         )
 

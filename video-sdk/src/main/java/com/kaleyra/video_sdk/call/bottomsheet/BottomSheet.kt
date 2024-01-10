@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.kaleyra.video_sdk.call.bottomsheet
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.SwipeableState
+import androidx.compose.material.swipeable
+import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,10 +56,9 @@ internal enum class BottomSheetValue {
     Expanded
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 internal class BottomSheetState(
     initialValue: BottomSheetValue,
-    val animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
+    val animationSpec: AnimationSpec<Float> = androidx.compose.material.SwipeableDefaults.AnimationSpec,
     val isCollapsable: Boolean = true,
     val confirmStateChange: (BottomSheetValue) -> Boolean = { true }
 ) : SwipeableState<BottomSheetValue>(
@@ -151,11 +159,11 @@ internal fun BottomSheetScaffold(
     sheetGesturesEnabled: Boolean = true,
     sheetShape: Shape = MaterialTheme.shapes.large,
     sheetElevation: Dp = BottomSheetDefaults.SheetElevation,
-    sheetBackgroundColor: Color = MaterialTheme.colors.surface,
+    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
     sheetPeekHeight: Dp = BottomSheetDefaults.SheetPeekHeight,
     sheetHalfExpandedHeight: Dp = BottomSheetDefaults.SheetHalfExpandedHeight,
-    backgroundColor: Color = MaterialTheme.colors.background,
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(backgroundColor),
     content: @Composable (WindowInsets) -> Unit
 ) {
@@ -263,7 +271,8 @@ private fun BottomSheet(
             modifier = Modifier.fillMaxSize(),
             color = sheetBackgroundColor,
             shape = sheetShape,
-            elevation = sheetElevation,
+            tonalElevation = sheetElevation,
+            shadowElevation = sheetElevation,
             content = { }
         )
         Surface(
@@ -281,7 +290,7 @@ private fun BottomSheet(
 }
 
 @Suppress("ModifierInspectorInfo")
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 private fun Modifier.sheetSwipeable(
     sheetState: BottomSheetState,
     sheetGesturesEnabled: Boolean,

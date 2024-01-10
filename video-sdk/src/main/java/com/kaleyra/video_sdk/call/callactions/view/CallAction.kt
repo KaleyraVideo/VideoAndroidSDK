@@ -22,8 +22,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +74,9 @@ internal object CallActionDefaults {
         iconColor: Color = contentColorFor(backgroundColor),
         textColor: Color = LocalContentColor.current,
         disabledBackgroundColor: Color = LocalContentColor.current.copy(alpha = .12f),
-        disabledIconColor: Color = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        disabledTextColor: Color = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        toggledBackgroundColor: Color = MaterialTheme.colors.secondaryVariant,
+        disabledIconColor: Color = LocalContentColor.current.copy(alpha = 0.38f),
+        disabledTextColor: Color = LocalContentColor.current.copy(alpha = 0.38f),
+        toggledBackgroundColor: Color = MaterialTheme.colorScheme.tertiary,
         toggledIconColor: Color = if (toggledBackgroundColor.luminance() > .5f) Color.Black else Color.White
     ): CallActionColors = DefaultColors(
         backgroundColor = backgroundColor,
@@ -267,7 +272,7 @@ private fun colorsFor(action: CallAction, isDarkTheme: Boolean): CallActionColor
             backgroundColor = backgroundColor,
             iconColor = Color.White,
             disabledBackgroundColor = backgroundColor.copy(alpha = .12f),
-            disabledIconColor = Color.White.copy(alpha = ContentAlpha.disabled)
+            disabledIconColor = Color.White.copy(alpha = 0.38f)
         )
     } else CallActionDefaults.colors()
 }

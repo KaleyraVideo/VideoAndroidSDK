@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.utils
 
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.geometry.Offset

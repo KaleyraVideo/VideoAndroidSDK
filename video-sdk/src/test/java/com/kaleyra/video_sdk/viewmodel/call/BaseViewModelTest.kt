@@ -43,7 +43,7 @@ class BaseViewModelTest {
 
     private class UiStateImpl() : UiState
 
-    private class BaseViewModelImpl(configure: suspend () -> Configuration) : BaseViewModel<UiStateImpl>(configure) {
+    private class BaseViewModelImpl(configure: suspend () -> Configuration) : BaseViewModel<UiStateImpl>(configure = configure) {
         override fun initialState() = UiStateImpl()
         fun getCall(): Flow<Call> {
             return super.call

@@ -17,8 +17,8 @@
 package com.kaleyra.video_sdk.common.usermessages.view
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -96,17 +96,17 @@ internal fun UserMessageSnackbarHandler(
         modifier = modifier.padding(vertical = 12.dp),
         hostState = snackbarHostState,
         snackbar = {
-            when (it.actionLabel) {
+            when (it.visuals.message.takeIf { it.isNotEmpty() } ?: it.visuals.actionLabel) {
                 RecordingStarted -> RecordingStartedSnackbar()
                 RecordingStopped -> RecordingEndedSnackbar()
                 RecordingError -> RecordingErrorSnackbar()
-                UsbConnected -> UsbConnectedSnackbar(it.message)
+                UsbConnected -> UsbConnectedSnackbar(it.visuals.message)
                 UsbDisconnected -> UsbDisconnectedSnackbar()
                 UsbNotSupported -> UsbNotSupportedSnackbar()
                 CameraRestriction -> CameraRestrictionSnackbar()
                 AudioOutputGenericFailure -> AudioOutputGenericFailureSnackbar()
                 AudioOutputInSystemCallFailure -> AudioOutputInSystemCallFailureSnackbar()
-                MutedByAdmin -> MutedSnackbar(it.message)
+                MutedByAdmin -> MutedSnackbar(it.visuals.message)
             }
         }
     )

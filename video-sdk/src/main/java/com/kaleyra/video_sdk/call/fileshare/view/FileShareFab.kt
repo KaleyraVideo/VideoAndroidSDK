@@ -19,7 +19,11 @@ package com.kaleyra.video_sdk.call.fileshare.view
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +48,7 @@ internal fun FileShareFab(
     FloatingActionButton(
         modifier = modifier.sizeIn(minWidth = FabSize, minHeight = FabSize),
         onClick = onClick,
-        contentColor = MaterialTheme.colors.surface
+        contentColor = MaterialTheme.colorScheme.surface
     ) {
         val padding = if (collapsed) 0.dp else FabPadding
         Row(

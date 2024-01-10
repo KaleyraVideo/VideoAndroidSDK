@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.call.whiteboard
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -47,7 +49,6 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
-import kotlinx.coroutines.flow.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -78,7 +79,7 @@ internal fun WhiteboardComponent(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WhiteboardComponent(
     uiState: WhiteboardUiState,
@@ -182,7 +183,6 @@ internal fun WhiteboardScreenOfflinePreview() {
     WhiteboardComponentPreview(uiState = WhiteboardUiState(isOffline = true))
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WhiteboardComponentPreview(uiState: WhiteboardUiState) {
     KaleyraTheme {

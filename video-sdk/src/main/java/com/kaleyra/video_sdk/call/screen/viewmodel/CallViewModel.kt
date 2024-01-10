@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
-internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallUiState>(configure), UserMessageViewModel {
+internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallUiState>(configure = configure), UserMessageViewModel {
 
     override fun initialState() = CallUiState()
 

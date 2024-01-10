@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspend () -> Configuration) : BaseViewModel<T>(configure),
+internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspend () -> Configuration) : BaseViewModel<T>(configure = configure),
     UserMessageViewModel {
 
     abstract override fun initialState(): T

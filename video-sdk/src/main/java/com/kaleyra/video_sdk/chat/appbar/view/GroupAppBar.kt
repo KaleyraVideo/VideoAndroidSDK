@@ -28,6 +28,7 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantsState
 import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -100,7 +101,7 @@ internal fun GroupAppBarPreview() = KaleyraTheme {
                 "userId2" to ChatParticipantDetails("Jack Daniels")
             )
         ),
-        participantsState = ChatParticipantsState(),
+        participantsState = ChatParticipantsState(typing = ImmutableList(listOf("Gianni", "Muzio"))),
         isInCall = false,
         actions = mockActions,
         onBackPressed = { }

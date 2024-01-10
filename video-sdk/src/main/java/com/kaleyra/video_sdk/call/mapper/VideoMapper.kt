@@ -46,6 +46,7 @@ internal object VideoMapper {
                     ImmutableList(emptyList())
                 )
             }
+
             emit(initialValue)
 
             val flow = this@mapToVideoUi.filterIsInstance<Input.Video>()

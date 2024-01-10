@@ -24,13 +24,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -63,6 +64,7 @@ private const val SliderLevels = 5
  */
 const val FeedbackFormTag = "FeedbackFormTag"
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: () -> Unit) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
@@ -86,7 +88,7 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
         AnimatedVisibility(visible = !isEditTextFocused) {
             Text(
                 text = stringResource(id = R.string.kaleyra_feedback_evaluate_call),
-                color = MaterialTheme.colors.onSurface.copy(alpha = .8f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .8f),
                 textAlign = TextAlign.Center,
                 lineHeight = 22.sp,
                 fontSize = 16.sp,
@@ -119,7 +121,7 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
                     Text(
                         text = stringResource(id = R.string.kaleyra_feedback_leave_a_comment),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colors.onSurface.copy(.5f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(.5f)
                     )
                 }
             },
@@ -136,11 +138,11 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
                 fontSize = 14.sp
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = if (isEditTextFocused) MaterialTheme.colors.onSurface.copy(
-                    .12f
-                ) else Color.Transparent,
-                cursorColor = MaterialTheme.colors.secondary,
-                unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(.3f),
+                containerColor =
+                if (isEditTextFocused) MaterialTheme.colorScheme.onSurface.copy(.12f)
+                else Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.secondary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(.3f),
                 focusedBorderColor = Color.Transparent
             )
         )
@@ -149,7 +151,7 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
 
         Button(
             onClick = { onUserFeedback(sliderValue, textFieldValue.text) },
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)

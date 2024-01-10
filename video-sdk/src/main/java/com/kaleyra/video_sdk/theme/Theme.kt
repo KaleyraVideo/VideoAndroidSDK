@@ -17,10 +17,11 @@
 package com.kaleyra.video_sdk.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Typography
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
@@ -33,37 +34,37 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.KaleyraFontFamily
 
-private val KaleyraLightColorTheme = lightColors(
-    primary = kaleyra_theme_light_primary,
-    primaryVariant = kaleyra_theme_light_primaryVariant,
-    onPrimary = kaleyra_theme_light_onPrimary,
-    secondary = kaleyra_theme_light_secondary,
-    secondaryVariant = kaleyra_theme_light_secondaryVariant,
-    onSecondary = kaleyra_theme_light_onSecondary,
-    error = kaleyra_theme_light_error,
-    onError = kaleyra_theme_light_onError,
-    background = kaleyra_theme_light_background,
-    onBackground = kaleyra_theme_light_onBackground,
-    surface = kaleyra_theme_light_surface,
-    onSurface = kaleyra_theme_light_onSurface
-)
+//private val KaleyraLightColorTheme = lightColors(
+//    primary = kaleyra_theme_light_primary,
+//    primaryVariant = kaleyra_theme_light_primaryVariant,
+//    onPrimary = kaleyra_theme_light_onPrimary,
+//    secondary = kaleyra_theme_light_secondary,
+//    secondaryVariant = kaleyra_theme_light_secondaryVariant,
+//    onSecondary = kaleyra_theme_light_onSecondary,
+//    error = kaleyra_theme_light_error,
+//    onError = kaleyra_theme_light_onError,
+//    background = kaleyra_theme_light_background,
+//    onBackground = kaleyra_theme_light_onBackground,
+//    surface = kaleyra_theme_light_surface,
+//    onSurface = kaleyra_theme_light_onSurface
+//)
 
-private val KaleyraDarkColorTheme = darkColors(
-    primary = kaleyra_theme_dark_primary,
-    primaryVariant = kaleyra_theme_dark_primaryVariant,
-    onPrimary = kaleyra_theme_dark_onPrimary,
-    secondary = kaleyra_theme_dark_secondary,
-    secondaryVariant = kaleyra_theme_dark_secondaryVariant,
-    onSecondary = kaleyra_theme_dark_onSecondary,
-    error = kaleyra_theme_dark_error,
-    onError = kaleyra_theme_dark_onError,
-    background = kaleyra_theme_dark_background,
-    onBackground = kaleyra_theme_dark_onBackground,
-    surface = kaleyra_theme_dark_surface,
-    onSurface = kaleyra_theme_dark_onSurface
-)
+//private val KaleyraDarkColorTheme = darkColors(
+//    primary = kaleyra_theme_dark_primary,
+//    primaryVariant = kaleyra_theme_dark_primaryVariant,
+//    onPrimary = kaleyra_theme_dark_onPrimary,
+//    secondary = kaleyra_theme_dark_secondary,
+//    secondaryVariant = kaleyra_theme_dark_secondaryVariant,
+//    onSecondary = kaleyra_theme_dark_onSecondary,
+//    error = kaleyra_theme_dark_error,
+//    onError = kaleyra_theme_dark_onError,
+//    background = kaleyra_theme_dark_background,
+//    onBackground = kaleyra_theme_dark_onBackground,
+//    surface = kaleyra_theme_dark_surface,
+//    onSurface = kaleyra_theme_dark_onSurface
+//)
 
-/**
+
 //DE-COMMENT THIS WHEN THE MATERIAL 3 DEPENDENCY WILL BE ADDED
 private val KaleyraM3LightColorTheme = lightColorScheme(
     primary = kaleyra_m3_theme_light_primary,
@@ -129,7 +130,29 @@ private val KaleyraM3DarkColorTheme = darkColorScheme(
     outlineVariant = kaleyra_m3_theme_dark_outlineVariant,
     scrim = kaleyra_m3_theme_dark_scrim,
 )
-**/
+
+internal val defaultTypography = Typography()
+internal val typography = Typography(
+    displayLarge = defaultTypography.displayLarge.copy(fontFamily = KaleyraFontFamily.default),
+    displayMedium = defaultTypography.displayMedium.copy(fontFamily = KaleyraFontFamily.default),
+    displaySmall = defaultTypography.displaySmall.copy(fontFamily = KaleyraFontFamily.default),
+
+    headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = KaleyraFontFamily.default),
+    headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = KaleyraFontFamily.default),
+    headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = KaleyraFontFamily.default),
+
+    titleLarge = defaultTypography.titleLarge.copy(fontFamily = KaleyraFontFamily.default),
+    titleMedium = defaultTypography.titleMedium.copy(fontFamily = KaleyraFontFamily.default),
+    titleSmall = defaultTypography.titleSmall.copy(fontFamily = KaleyraFontFamily.default),
+
+    bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = KaleyraFontFamily.default),
+    bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = KaleyraFontFamily.default),
+    bodySmall = defaultTypography.bodySmall.copy(fontFamily = KaleyraFontFamily.default),
+
+    labelLarge = defaultTypography.labelLarge.copy(fontFamily = KaleyraFontFamily.default),
+    labelMedium = defaultTypography.labelMedium.copy(fontFamily = KaleyraFontFamily.default),
+    labelSmall = defaultTypography.labelSmall.copy(fontFamily = KaleyraFontFamily.default)
+)
 
 /**
  * Composable function to generate the Collaboration Theme
@@ -160,23 +183,23 @@ fun CollaborationTheme(
 
     val colors = when {
         isDarkTheme -> {
-            if (darkColors != null) KaleyraDarkColorTheme.copy(secondary = darkColors.secondary, onSecondary = onColorFor(darkColors.secondary))
-            else KaleyraDarkColorTheme
+            if (darkColors != null) KaleyraM3DarkColorTheme.copy(secondary = darkColors.secondary, onSecondary = onColorFor(darkColors.secondary))
+            else KaleyraM3DarkColorTheme
         }
         else -> {
-            if (lightColors != null) KaleyraLightColorTheme.copy(secondary = lightColors.secondary, onSecondary = onColorFor(lightColors.secondary))
-            else KaleyraLightColorTheme
+            if (lightColors != null) KaleyraM3LightColorTheme.copy(secondary = lightColors.secondary, onSecondary = onColorFor(lightColors.secondary))
+            else KaleyraM3LightColorTheme
         }
     }
 
     SideEffect {
         systemUiController.setStatusBarColor(
-            color = if (transparentSystemBars) Color.Transparent else colors.primaryVariant,
+            color = if (transparentSystemBars) Color.Transparent else colors.secondary,
             darkIcons = !transparentSystemBars && !isDarkTheme,
             transformColorForLightContent = { Color.Black }
         )
         systemUiController.setNavigationBarColor(
-            color = if (transparentSystemBars) Color.Transparent else colors.primaryVariant,
+            color = if (transparentSystemBars) Color.Transparent else colors.secondary,
             darkIcons = !isDarkTheme,
             navigationBarContrastEnforced = false,
             transformColorForLightContent = { Color.Black }
@@ -184,8 +207,8 @@ fun CollaborationTheme(
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography(defaultFontFamily = theme.fontFamily),
+        colorScheme = colors,
+        typography = com.kaleyra.video_sdk.theme.typography,
         content = { content(isDarkTheme) }
     )
 }
@@ -203,28 +226,28 @@ fun KaleyraTheme(
     content: @Composable () -> Unit
 ) {
     val colors = when {
-        isDarkTheme -> KaleyraDarkColorTheme
-        else -> KaleyraLightColorTheme
+        isDarkTheme -> KaleyraM3DarkColorTheme
+        else -> KaleyraM3LightColorTheme
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography(defaultFontFamily = KaleyraFontFamily.default),
+        colorScheme = colors,
+        typography = typography,
         content = content
     )
 }
 
-private val TermsDarkColorTheme = darkColors(
+private val TermsDarkColorTheme = darkColorScheme(
     primary = Color.White,
-    primaryVariant = Color.White,
+    secondary = Color.White,
     surface = Color(0xFF0E0E0E),
     onPrimary = Color.Black,
     onSurface = Color.White
 )
 
-private val TermsLightColorTheme = lightColors(
+private val TermsLightColorTheme = lightColorScheme(
     primary = Color.Black,
-    primaryVariant = Color.Black,
+    secondary = Color.Black,
     surface = Color.White,
     onPrimary = Color.White,
     onSurface = Color.Black
@@ -248,8 +271,8 @@ fun TermsAndConditionsTheme(
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography(defaultFontFamily = fontFamily),
+        colorScheme = colors,
+        typography = com.kaleyra.video_sdk.theme.typography,
         content = content
     )
 }

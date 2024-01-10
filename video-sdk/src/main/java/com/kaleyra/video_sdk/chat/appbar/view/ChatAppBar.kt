@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.chat.appbar.view
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -44,7 +50,8 @@ internal fun ChatAppBar(
     TopAppBar(
         navigationIcon = { BackIconButton(onClick = onBackPressed) },
         content = content,
-        actions = { if (!isInCall) Actions(actions = actions) }
+        actions = { if (!isInCall) Actions(actions = actions) },
+        windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal)
     )
 }
 

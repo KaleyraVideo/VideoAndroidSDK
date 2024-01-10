@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.Surface
+import androidx.compose.material3.Divider
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag

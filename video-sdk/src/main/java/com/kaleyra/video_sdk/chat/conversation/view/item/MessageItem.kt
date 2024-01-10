@@ -31,13 +31,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -95,7 +98,7 @@ internal fun OtherMessageItem(
                         contentDescription = stringResource(id = R.string.kaleyra_avatar),
                         placeholder = R.drawable.ic_kaleyra_avatar,
                         error = R.drawable.ic_kaleyra_avatar,
-                        contentColor = MaterialTheme.colors.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         backgroundColor = colorResource(R.color.kaleyra_color_grey_light),
                         size = MessageItemAvatarSize
                     )
@@ -110,12 +113,12 @@ internal fun OtherMessageItem(
                 username = if (isFirstChainMessage) participantDetails?.username else null,
                 messageState = null,
                 shape = RoundedCornerShape(
-                    topStart = if (isFirstChainMessage) 12.dp else 6.dp,
-                    topEnd = 24.dp,
+                    topStart = if (isFirstChainMessage) 6.dp else 6.dp,
+                    topEnd = 6.dp,
                     bottomStart = if (isLastChainMessage) 0.dp else 6.dp,
-                    bottomEnd = 24.dp
+                    bottomEnd = 6.dp
                 ),
-                backgroundColor = MaterialTheme.colors.primaryVariant
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
             )
         }
     }
@@ -140,12 +143,12 @@ internal fun MyMessageItem(
             username = null,
             messageState = messageState,
             shape = RoundedCornerShape(
-                topStart = 24.dp,
-                topEnd = if (isFirstChainMessage) 12.dp else 6.dp,
-                bottomStart = 24.dp,
+                topStart = 6.dp,
+                topEnd = if (isFirstChainMessage) 6.dp else 6.dp,
+                bottomStart = 6.dp,
                 bottomEnd = if (isLastChainMessage) 0.dp else 6.dp
             ),
-            backgroundColor = MaterialTheme.colors.secondary
+            backgroundColor = MaterialTheme.colorScheme.tertiary
         )
     }
 }
@@ -183,8 +186,8 @@ internal fun Bubble(
 
     Card(
         shape = shape,
-        backgroundColor = backgroundColor,
-        elevation = 0.dp,
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
         modifier = Modifier
             .widthIn(min = 0.dp, max = configuration.screenWidthDp.div(2).dp)
             .testTag(BubbleTestTag)
@@ -194,7 +197,7 @@ internal fun Bubble(
                 Text(
                     text = username,
                     fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -212,7 +215,7 @@ internal fun Bubble(
                 Text(
                     text = messageTime,
                     fontSize = 12.sp,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 if (messageState != null) {
@@ -238,7 +241,7 @@ internal fun ClickableMessageText(messageText: String, textColor: Color) {
 
     ClickableText(
         text = styledMessage,
-        style = MaterialTheme.typography.body2.copy(color = LocalContentColor.current),
+        style = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
         onClick = {
             styledMessage
                 .getStringAnnotations(start = it, end = it)

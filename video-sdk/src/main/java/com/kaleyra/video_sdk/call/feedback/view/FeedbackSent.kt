@@ -22,11 +22,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +66,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
         Text(
             text = stringResource(id = R.string.kaleyra_feedback_see_you_soon),
             fontSize = 16.sp,
-            color = MaterialTheme.colors.onSurface.copy(alpha = .8f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .8f),
             modifier = Modifier.padding(horizontal = 4.dp)
         )
 
@@ -74,7 +74,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
 
         Button(
             onClick = onDismiss,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .fillMaxWidth()
         ) {

@@ -21,14 +21,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.Surface
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,9 +65,9 @@ internal fun ConversationContent(
     LazyColumn(
         reverseLayout = true,
         state = scrollState,
-        contentPadding = PaddingValues(all = ConversationContentPadding),
         verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
         modifier = Modifier
             .testTag(ConversationContentTag)
             .then(modifier)
@@ -80,14 +81,18 @@ internal fun ConversationContent(
                             isFirstChainMessage = item.isFirstChainMessage,
                             isLastChainMessage = item.isLastChainMessage,
                             participantDetails = participantsDetails?.get(message.userId),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(PaddingValues(vertical = 4.dp, horizontal = ConversationContentPadding))
+                            )
 
                         is Message.MyMessage -> MyMessageItem(
                             message = message,
                             isFirstChainMessage = item.isFirstChainMessage,
                             isLastChainMessage = item.isLastChainMessage,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(PaddingValues(vertical = 4.dp, horizontal = ConversationContentPadding))
                         )
                     }
                 }
@@ -95,14 +100,13 @@ internal fun ConversationContent(
                 is ConversationItem.Day -> DayHeaderItem(
                     timestamp = item.timestamp,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(bottom = 6.dp)
                 )
 
                 is ConversationItem.UnreadMessages -> NewMessagesHeaderItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 6.dp)
+                        .padding(bottom = 3.dp, top = 3.dp)
                 )
 
             }

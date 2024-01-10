@@ -45,6 +45,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -231,6 +232,7 @@ class CallScreenContentTest : ComposeViewModelsMockTest() {
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun callStateError_callInfoWidgetIsDisplayed() {
         callState = CallStateUi.Disconnected.Ended.Error
         composeTestRule.onNodeWithTag(CallInfoWidgetTag).assertIsDisplayed()

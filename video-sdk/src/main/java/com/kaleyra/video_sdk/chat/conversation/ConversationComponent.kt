@@ -27,9 +27,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -198,7 +198,7 @@ internal fun LoadingMessagesLabel(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_chat_channel_loading),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -212,7 +212,7 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_chat_no_messages),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -221,7 +221,7 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun LoadingConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
         ConversationComponent(
             conversationState = ConversationState(),
             onMessageScrolled = { },
@@ -237,7 +237,7 @@ internal fun LoadingConversationComponentPreview() = KaleyraTheme {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun EmptyConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = ImmutableList(listOf())),
             modifier = Modifier.fillMaxSize()
@@ -249,7 +249,7 @@ internal fun EmptyConversationComponentPreview() = KaleyraTheme {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun ConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = mockConversationElements),
             modifier = Modifier.fillMaxSize()

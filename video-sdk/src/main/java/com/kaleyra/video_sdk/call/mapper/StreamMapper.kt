@@ -22,6 +22,7 @@ import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -77,23 +78,27 @@ internal object StreamMapper {
         displayName: Flow<String?>,
         displayImage: Flow<Uri?>
     ): Flow<List<StreamUi>> =
-         this.flatMapLatest { streams ->
+        this.flatMapLatest { streams ->
             val map = mutableMapOf<String, StreamUi>()
 
             if (streams.isEmpty()) flowOf(listOf())
             else streams
                 .map { stream ->
                     val id = stream.id
-                    val video = stream.video.mapToVideoUi()
+                    val videoUi = stream.video.mapToVideoUi()
+                    val audioUi = stream.audio.mapToAudioUi()
 
                     combine(
-                        video,
+                        videoUi,
+                        audioUi,
                         displayName,
                         displayImage
-                    ) { video, name, image ->
+                    ) { videoUi, audioUi, name, image ->
+
                         StreamUi(
                             id = id,
-                            video = video,
+                            video = videoUi,
+                            audio = audioUi,
                             username = name ?: "",
                             avatar = image?.let { ImmutableUri(it) }
                         )

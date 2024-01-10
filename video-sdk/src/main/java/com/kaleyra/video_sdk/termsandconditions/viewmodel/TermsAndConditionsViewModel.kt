@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.update
  * Terms And Conditions View Model
  * @constructor
  */
-class TermsAndConditionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<TermsAndConditionsUiState>(configure) {
+class TermsAndConditionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<TermsAndConditionsUiState>(configure = configure) {
 
     override fun initialState() = TermsAndConditionsUiState()
 

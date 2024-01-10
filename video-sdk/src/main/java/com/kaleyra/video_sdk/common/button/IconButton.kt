@@ -22,8 +22,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -37,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.supportRtl
 
-private const val DisabledAlpha = 0.25f
+private const val DisabledAlpha = 0.38f
 private val MinSize = 48.dp
 private val IconSize = 24.dp
 
@@ -46,6 +47,7 @@ internal fun IconButton(
     icon: Painter,
     iconDescription: String?,
     iconTint: Color = LocalContentColor.current,
+    disabledIconTint: Color = LocalContentColor.current,
     iconSize: Dp = IconSize,
     enabled: Boolean = true,
     supportRtl: Boolean = false,
@@ -67,18 +69,15 @@ internal fun IconButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
-        CompositionLocalProvider(LocalContentAlpha provides contentAlpha) {
-            val tint = if (enabled) iconTint else LocalContentColor.current.copy(alpha = DisabledAlpha)
-            val mod = Modifier
-                .size(iconSize)
-                .then(if (supportRtl) Modifier.supportRtl() else Modifier)
-            Icon(
-                painter = icon,
-                tint = tint,
-                contentDescription = iconDescription,
-                modifier = mod
-            )
-        }
+        val tint = if (enabled) iconTint else disabledIconTint
+        val mod = Modifier
+            .size(iconSize)
+            .then(if (supportRtl) Modifier.supportRtl() else Modifier)
+        Icon(
+            painter = icon,
+            tint = tint,
+            contentDescription = iconDescription,
+            modifier = mod
+        )
     }
 }

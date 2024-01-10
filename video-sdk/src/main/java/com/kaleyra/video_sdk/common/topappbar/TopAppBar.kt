@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 
 package com.kaleyra.video_sdk.common.topappbar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Dp
 
 internal const val ActionsTag = "ActionsTag"
 
@@ -42,38 +43,38 @@ internal fun TopAppBar(
     navigationIcon: @Composable RowScope.() -> Unit,
     content: @Composable (RowScope.() -> Unit)? = null,
     actions: @Composable (RowScope.() -> Unit)? = null,
-    elevation: Dp = AppBarDefaults.TopAppBarElevation,
-    contentPadding: PaddingValues = AppBarDefaults.ContentPadding,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     modifier: Modifier = Modifier
 ) {
-    androidx.compose.material.TopAppBar(
+    androidx.compose.material3.TopAppBar(
         modifier = modifier.focusGroup(),
-        elevation = elevation,
-        contentPadding = contentPadding,
-        backgroundColor = MaterialTheme.colors.primary,
-    ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-            Row(verticalAlignment = Alignment.CenterVertically, content = navigationIcon)
+        title = {},
+        windowInsets = windowInsets,
+        colors = TopAppBarDefaults.topAppBarColors(),
+        actions = {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                Row(verticalAlignment = Alignment.CenterVertically, content = navigationIcon)
 
-            if (content != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    content = content
-                )
-            }
+                if (content != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        content = content
+                    )
+                }
 
-            if (actions != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .testTag(ActionsTag),
-                    verticalAlignment = Alignment.CenterVertically,
-                    content = actions
-                )
+                if (actions != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .testTag(ActionsTag),
+                        verticalAlignment = Alignment.CenterVertically,
+                        content = actions
+                    )
+                }
             }
-        }
-    }
+        },
+    )
 }

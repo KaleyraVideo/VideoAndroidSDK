@@ -19,9 +19,8 @@ package com.kaleyra.video_sdk.common.text
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.widget.TextView
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,7 +66,7 @@ enum class Ellipsize(val value: TextUtils.TruncateAt) {
 @Composable
 internal fun EllipsizeText(
     text: String,
-    color: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+    color: Color = LocalContentColor.current.copy(alpha = LocalContentColor.current.alpha),
     fontWeight: FontWeight = FontWeight.Normal,
     fontSize: TextUnit = 16.sp,
     ellipsize: Ellipsize,

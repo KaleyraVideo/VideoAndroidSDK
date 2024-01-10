@@ -34,6 +34,8 @@
     <!-- Action labels -->
     <string name="kaleyra_call_action_muted">Muto</string>
     <string name="kaleyra_call_action_mic_mute">Muta</string>
+    <string name="kaleyra_call_action_mic_mute_for_you">Muta per te</string>
+    <string name="kaleyra_call_action_mic_unmute_for_you">Abilita per te</string>
     <string name="kaleyra_call_action_switch_camera">Cambia</string>
     <string name="kaleyra_call_action_file_share">Condividi file</string>
     <string name="kaleyra_call_action_chat">Chat</string>
@@ -51,6 +53,10 @@
     <string name="kaleyra_call_action_disable_mic_description">Disabilita microfono</string>
     <string name="kaleyra_call_action_enable_camera_description">Abilita camera</string>
     <string name="kaleyra_call_action_disable_camera_description">Disabilita camera</string>
+    <string name="kaleyra_call_action_more_description">Altro</string>>
+    <string name="kaleyra_call_action_pin_description">Fissa</string>
+    <string name="kaleyra_call_action_unpin_description">Togli</string>
+    <string name="kaleyra_call_action_remove_participant_from_call">Rimuovi dalla chiamata</string>
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Scrivi qui &#8230;</string>
@@ -131,6 +137,20 @@
 
     <string name="kaleyra_move_to_featured_streams">Muovi tra gli stream in primo piano</string>
     <string name="kaleyra_tap_to_answer">premi per rispondere</string>
+
+    <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
+
+    <plurals name="kaleyra_participants">
+        <item quantity="one">Partecipante</item>
+        <item quantity="other">Partecipanti</item>
+        <item quantity="many">Partecipanti</item>
+    </plurals>
+    <string name="kaleyra_admin_user">Amministratore</string>
+    <string name="kaleyra_grid_arrangement">Griglia</string>
+    <string name="kaleyra_pin_arrangement">Pin</string>
+    <string name="kaleyra_change_layout">Modifica disposizione</string>
+    <string name="kaleyra_users_in_call">Utenti in chiamata</string>
+    <string name="kaleyra_invited_users">Invitati</string>
 
     <!-- WHITEBOARD -->
     <string name="kaleyra_whiteboard">Lavagna</string>
@@ -251,7 +271,5 @@
     <!-- AUDIO FAILURE -->
     <string name="kaleyra_generic_audio_routing_error">Non è stato possibile effettuare il cambio di dispositivo di uscita audio.</string>
     <string name="kaleyra_already_in_system_call_audio_routing_error">Non è possibile cambiare il dispositivo di uscita audio mentre una chiamata di sistema è in corso.</string>
-
-    <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
 
 </resources>

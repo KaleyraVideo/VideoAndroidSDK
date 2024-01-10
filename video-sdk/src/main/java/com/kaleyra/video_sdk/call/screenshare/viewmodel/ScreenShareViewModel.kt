@@ -27,7 +27,7 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import kotlinx.coroutines.launch
 
-internal class ScreenShareViewModel(configure: suspend () -> Configuration) : BaseViewModel<ScreenShareUiState>(configure) {
+internal class ScreenShareViewModel(configure: suspend () -> Configuration) : BaseViewModel<ScreenShareUiState>(configure = configure) {
     override fun initialState() = ScreenShareUiState()
 
     fun shareApplicationScreen(context: Context) = shareScreen(context, Inputs.Type.Application)

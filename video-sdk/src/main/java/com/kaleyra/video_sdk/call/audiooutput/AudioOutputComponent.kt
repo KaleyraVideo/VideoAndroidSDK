@@ -19,7 +19,7 @@ package com.kaleyra.video_sdk.call.audiooutput
 import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue

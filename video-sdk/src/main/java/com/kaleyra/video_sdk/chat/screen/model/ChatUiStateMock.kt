@@ -28,5 +28,5 @@ internal val mockChatUiState = ChatUiState.OneToOne(
     connectionState = ConnectionState.Connecting,
     actions = mockActions,
     conversationState = mockConversationState,
-    isInCall = true
+    isInCall = false
 )

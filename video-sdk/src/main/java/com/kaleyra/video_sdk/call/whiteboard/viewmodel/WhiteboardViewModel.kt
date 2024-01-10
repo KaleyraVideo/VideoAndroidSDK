@@ -37,7 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure),
+internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure = configure),
     UserMessageViewModel {
 
     override fun initialState() = WhiteboardUiState()

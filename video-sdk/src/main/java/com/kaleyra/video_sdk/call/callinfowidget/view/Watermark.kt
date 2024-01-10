@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +38,7 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 
 private val MaxWatermarkHeight = 80.dp
 private val MaxWatermarkWidth = 300.dp
@@ -66,6 +67,7 @@ internal fun Watermark(watermarkInfo: WatermarkInfo, modifier: Modifier = Modifi
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
+
             watermarkInfo.text != null -> {
                 Text(
                     text = watermarkInfo.text,
@@ -86,7 +88,12 @@ internal fun Watermark(watermarkInfo: WatermarkInfo, modifier: Modifier = Modifi
 fun CallInfoWidgetPreview() {
     KaleyraTheme {
         Watermark(
-            watermarkInfo = WatermarkInfo(text = "text", logo = null)
+            watermarkInfo = WatermarkInfo(
+                text = "text",
+                logo = Logo(
+                    light = Uri.parse("https://www.kaleyra.com/wp-content/uploads/Video.png"),
+                    dark = Uri.parse("https://www.kaleyra.com/wp-content/uploads/Video.png"))
+            )
         )
     }
 }

@@ -84,62 +84,60 @@ abstract class ComposeViewModelsMockTest {
 
         private val virtualBackgroundViewModelFactory = mockk<ViewModelProvider.Factory>(relaxed = true)
 
-        @BeforeClass
-        @JvmStatic
-        fun setup() {
-            mockkObject(KaleyraVideoService)
-            mockkObject(CallViewModel)
-            mockkObject(DialingViewModel)
-            mockkObject(RingingViewModel)
-            mockkObject(ScreenShareViewModel)
-            mockkObject(AudioOutputViewModel)
-            mockkObject(CallActionsViewModel)
-            mockkObject(WhiteboardViewModel)
-            mockkObject(VirtualBackgroundViewModel)
-
-            coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
-
-            every { CallViewModel.provideFactory(any()) } returns callViewModelFactory
-            every { callViewModelFactory.create<CallViewModel>(any(), any()) } returns callViewModel
-            every { callViewModel.uiState } returns MutableStateFlow(CallUiState())
-
-            every { DialingViewModel.provideFactory(any()) } returns dialingViewModelFactory
-            every { dialingViewModelFactory.create<DialingViewModel>(any(), any()) } returns dialingViewModel
-            every { dialingViewModel.uiState } returns MutableStateFlow(DialingUiState())
-
-            every { RingingViewModel.provideFactory(any()) } returns ringingViewModelFactory
-            every { ringingViewModelFactory.create<RingingViewModel>(any(), any()) } returns ringingViewModel
-            every { ringingViewModel.uiState } returns MutableStateFlow(RingingUiState())
-
-            every { ScreenShareViewModel.provideFactory(any()) } returns screenShareViewModelFactory
-            every { screenShareViewModelFactory.create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
-            every { screenShareViewModel.uiState } returns MutableStateFlow( ScreenShareUiState(targetList = ImmutableList(listOf(
-                ScreenShareTargetUi.Device, ScreenShareTargetUi.Application)))
-            )
-
-            every { AudioOutputViewModel.provideFactory(any()) } returns audioOutputViewModelFactory
-            every { audioOutputViewModelFactory.create<AudioOutputViewModel>(any(), any()) } returns audioOutputViewModel
-            every { audioOutputViewModel.uiState } returns MutableStateFlow(AudioOutputUiState(audioDeviceList = mockAudioDevices, playingDeviceId = "id"))
-
-            every { CallActionsViewModel.provideFactory(any()) } returns callActionsViewModelFactory
-            every { callActionsViewModelFactory.create<CallActionsViewModel>(any(), any()) } returns callActionsViewModel
-            every { callActionsViewModel.uiState } returns MutableStateFlow(CallActionsUiState(actionList = mockCallActions))
-
-            every { WhiteboardViewModel.provideFactory(any(), any()) } returns whiteboardViewModelFactory
-            every { whiteboardViewModelFactory.create<WhiteboardViewModel>(any(), any()) } returns whiteboardViewModel
-            every { whiteboardViewModel.uiState } returns MutableStateFlow(WhiteboardUiState(isLoading = false, isOffline = true))
-
-            every { VirtualBackgroundViewModel.provideFactory(any()) } returns virtualBackgroundViewModelFactory
-            every { virtualBackgroundViewModelFactory.create<VirtualBackgroundViewModel>(any(), any()) } returns virtualBackgroundViewModel
-            every { virtualBackgroundViewModel.uiState } returns MutableStateFlow(
-                VirtualBackgroundUiState(backgroundList = mockVirtualBackgrounds)
-            )
-        }
-
         @AfterClass
         @JvmStatic
         fun destroy() {
             unmockkAll()
         }
+    }
+
+    init {
+        mockkObject(KaleyraVideoService)
+        mockkObject(CallViewModel)
+        mockkObject(DialingViewModel)
+        mockkObject(RingingViewModel)
+        mockkObject(ScreenShareViewModel)
+        mockkObject(AudioOutputViewModel)
+        mockkObject(CallActionsViewModel)
+        mockkObject(WhiteboardViewModel)
+        mockkObject(VirtualBackgroundViewModel)
+
+        coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
+
+        every { CallViewModel.provideFactory(any()) } returns callViewModelFactory
+        every { callViewModelFactory.create<CallViewModel>(any(), any()) } returns callViewModel
+        every { callViewModel.uiState } returns MutableStateFlow(CallUiState())
+
+        every { DialingViewModel.provideFactory(any()) } returns dialingViewModelFactory
+        every { dialingViewModelFactory.create<DialingViewModel>(any(), any()) } returns dialingViewModel
+        every { dialingViewModel.uiState } returns MutableStateFlow(DialingUiState())
+
+        every { RingingViewModel.provideFactory(any()) } returns ringingViewModelFactory
+        every { ringingViewModelFactory.create<RingingViewModel>(any(), any()) } returns ringingViewModel
+        every { ringingViewModel.uiState } returns MutableStateFlow(RingingUiState())
+
+        every { ScreenShareViewModel.provideFactory(any()) } returns screenShareViewModelFactory
+        every { screenShareViewModelFactory.create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
+        every { screenShareViewModel.uiState } returns MutableStateFlow( ScreenShareUiState(targetList = ImmutableList(listOf(
+            ScreenShareTargetUi.Device, ScreenShareTargetUi.Application)))
+        )
+
+        every { AudioOutputViewModel.provideFactory(any()) } returns audioOutputViewModelFactory
+        every { audioOutputViewModelFactory.create<AudioOutputViewModel>(any(), any()) } returns audioOutputViewModel
+        every { audioOutputViewModel.uiState } returns MutableStateFlow(AudioOutputUiState(audioDeviceList = mockAudioDevices, playingDeviceId = "id"))
+
+        every { CallActionsViewModel.provideFactory(any()) } returns callActionsViewModelFactory
+        every { callActionsViewModelFactory.create<CallActionsViewModel>(any(), any()) } returns callActionsViewModel
+        every { callActionsViewModel.uiState } returns MutableStateFlow(CallActionsUiState(actionList = mockCallActions))
+
+        every { WhiteboardViewModel.provideFactory(any(), any()) } returns whiteboardViewModelFactory
+        every { whiteboardViewModelFactory.create<WhiteboardViewModel>(any(), any()) } returns whiteboardViewModel
+        every { whiteboardViewModel.uiState } returns MutableStateFlow(WhiteboardUiState(isLoading = false, isOffline = true))
+
+        every { VirtualBackgroundViewModel.provideFactory(any()) } returns virtualBackgroundViewModelFactory
+        every { virtualBackgroundViewModelFactory.create<VirtualBackgroundViewModel>(any(), any()) } returns virtualBackgroundViewModel
+        every { virtualBackgroundViewModel.uiState } returns MutableStateFlow(
+            VirtualBackgroundUiState(backgroundList = mockVirtualBackgrounds)
+        )
     }
 }
