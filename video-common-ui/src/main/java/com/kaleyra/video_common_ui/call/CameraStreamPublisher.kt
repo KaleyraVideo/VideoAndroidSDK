@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.conference.Call
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 /**
  * Camera Stream Publisher
  */
-interface CameraStreamPublisher {
+class CameraStreamPublisher(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
 
     /**
      * Camera Stream Publisher Instance
@@ -43,8 +44,8 @@ interface CameraStreamPublisher {
      *
      * @param call The call in which to add the camera stream
      */
-    fun addCameraStream(call: Call, scope: CoroutineScope) {
-        scope.launch {
+    fun addCameraStream(call: Call) {
+        coroutineScope.launch {
             val me = call.participants.mapNotNull { it.me }.first()
             if (me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } != null) return@launch
             me.addStream(CAMERA_STREAM_ID).let {
