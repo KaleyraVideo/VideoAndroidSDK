@@ -16,27 +16,28 @@
 
 package com.kaleyra.video_common_ui.call
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 /**
  * StreamsOpeningDelegate delegate for the opening stream operation
  */
-interface StreamsOpeningDelegate {
+ class StreamsOpeningDelegate(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
 
     /**
      * Open Participant streams
-     * @param participants Flow<CallParticipants> flow of Call Participants
-     * @param scope CoroutineScope the scope to be used for the process
+     * @param call Call the call object
      */
-    fun openParticipantsStreams(participants: Flow<CallParticipants>, scope: CoroutineScope) {
-        participants
+    fun openParticipantsStreams(call: Call) {
+        call.participants
             .map { it.list }
             .flatMapLatest { participantsList ->
                 participantsList.map { it.streams }.merge()
             }
             .onEach { it.forEach { stream -> stream.open() } }
-            .launchIn(scope)
+            .launchIn(coroutineScope)
     }
 }
