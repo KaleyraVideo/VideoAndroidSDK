@@ -20,6 +20,7 @@ import android.app.Notification
 import android.content.Context
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -28,18 +29,15 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
-internal interface FileShareNotificationDelegate {
+ class FileShareNotificationDelegate(
+    private val coroutineScope: CoroutineScope
+) {
 
     companion object {
         const val EXTRA_DOWNLOAD_ID = "com.kaleyra.video_common_ui.EXTRA_DOWNLOAD_ID"
     }
 
-    fun syncFileShareNotification(
-        context: Context,
-        call: Call,
-        activityClazz: Class<*>,
-        scope: CoroutineScope
-    ) {
+    fun syncFileShareNotification(context: Context, call: CallUI) {
         var lastNotifiedDownload: SharedFile? = null
         val me = call.participants.value.me
         call.sharedFolder.files
@@ -50,7 +48,7 @@ internal interface FileShareNotificationDelegate {
             }
             .onEach {
                 if (!FileShareVisibilityObserver.isDisplayed.value) {
-                    val notification = buildNotification(context, call, it, activityClazz)
+                    val notification = buildNotification(context, call, it, call.activityClazz)
                     NotificationManager.notify(it.id.hashCode(), notification)
                 }
             }
@@ -59,7 +57,7 @@ internal interface FileShareNotificationDelegate {
                     NotificationManager.cancel(it.id.hashCode())
                 }
             }
-            .launchIn(scope)
+            .launchIn(coroutineScope)
     }
 
     private suspend fun buildNotification(context: Context, call: Call, sharedFile: SharedFile, activityClazz: Class<*>): Notification {
