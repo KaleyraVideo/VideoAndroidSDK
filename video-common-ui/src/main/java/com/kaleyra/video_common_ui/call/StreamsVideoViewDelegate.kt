@@ -17,41 +17,44 @@
 package com.kaleyra.video_common_ui.call
 
 import android.content.Context
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conference.VideoStreamView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 
 /**
  * Streams Video View Delegate
  */
-interface StreamsVideoViewDelegate {
+ class StreamsVideoViewDelegate(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)){
 
     /**
      * Sets the streams video view
      *
      * @param context Context context used for the view creation
-     * @param participants Flow<CallParticipants> call participants' flow
-     * @param scope CoroutineScope scope used to observe the call participants' flow
+     * @param call Call The call on which set the video view
      */
     fun setStreamsVideoView(
         context: Context,
-        participants: Flow<CallParticipants>,
-        scope: CoroutineScope
+        call: Call
     ) {
-        participants
+        call.participants
             .map { it.list }
             .mapParticipantsToVideos()
             .transform { videos -> videos.forEach { emit(it) } }
             .filterIsInstance<Input.Video>()
             .onEach { video ->
-                if (video.view.value != null) return@onEach
-                video.view.value = VideoStreamView(context.applicationContext)
+                withContext(Dispatchers.Main) {
+                    if (video.view.value != null) return@withContext
+                    video.view.value = VideoStreamView(context.applicationContext)
+                }
             }
-            .launchIn(scope)
+            .launchIn(coroutineScope)
     }
 
     private fun Flow<List<CallParticipant>>.mapParticipantsToVideos(): Flow<List<Input.Video?>> {
