@@ -21,6 +21,7 @@ import android.net.Uri
 import androidx.annotation.CallSuper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.isAnyScreenInputActive
@@ -33,6 +34,7 @@ import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -40,6 +42,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.withContext
 
 /**
  * CallNotificationDelegate. It is responsible of syncing the call's notifications with the call
@@ -75,13 +78,11 @@ interface CallNotificationDelegate {
      * Sync the notifications with the call
      *
      * @param call The call
-     * @param activityClazz The call activity class
      * @param scope The coroutine scope
      */
     @CallSuper
     fun syncCallNotification(
-        call: Call,
-        activityClazz: Class<*>,
+        call: CallUI,
         scope: CoroutineScope
     ) {
         combine(
@@ -90,18 +91,20 @@ interface CallNotificationDelegate {
             call.recording,
             flowOf(call).isAnyScreenInputActive()
         ) { callState, participants, recording, isAnyScreenInputActive ->
-            ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
+            withContext(Dispatchers.Main) {
+                ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
 
-            val notification = buildNotification(
-                callState,
-                participants,
-                recording,
-                activityClazz,
-                isAnyScreenInputActive
-            )
+                val notification = buildNotification(
+                    callState,
+                    participants,
+                    recording,
+                    call.activityClazz,
+                    isAnyScreenInputActive
+                )
 
-            if (notification != null) showNotification(notification)
-            callState
+                if (notification != null) showNotification(notification)
+                callState
+            }
         }
             .takeWhile { it !is Call.State.Disconnected.Ended }
             .onCompletion { clearNotification() }
