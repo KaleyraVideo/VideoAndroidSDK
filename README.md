@@ -4,7 +4,7 @@
 <img src="img/kaleyra.png" alt="Kaleyra" title="Kaleyra" />
 </p>
 
-[![Download](https://badgen.net/maven/v/metadata-url/https/maven.bandyer.com/releases/com/kaleyra/video-sdk/maven-metadata.xml?label=maven.bandyer.com/releases) ](https://maven.bandyer.com/index.html#releases/com/kaleyra/video-sdk/)[![Android CI](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml/badge.svg?branch=develop)](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml)
+[![Download](https://badgen.net/maven/v/metadata-url/https/maven.bandyer.com/releases/com/kaleyra/video-sdk-bom/maven-metadata.xml?label=maven.bandyer.com/releases) ](https://maven.bandyer.com/index.html#releases/com/kaleyra/video-sdk-bom/)[![Android CI](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml/badge.svg?branch=develop)](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml)
 
 **Kaleyra video** enables audio/video communication and collaboration from any platform and browser! Through its WebRTC architecture, it makes video communication simple and punctual.
 
