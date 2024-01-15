@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.call.CameraStreamManager.Companion.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudio
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents

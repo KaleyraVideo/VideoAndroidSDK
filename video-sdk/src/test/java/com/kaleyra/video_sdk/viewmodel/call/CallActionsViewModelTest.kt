@@ -27,7 +27,7 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.call.CameraStreamManager.Companion.CAMERA_STREAM_ID
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule

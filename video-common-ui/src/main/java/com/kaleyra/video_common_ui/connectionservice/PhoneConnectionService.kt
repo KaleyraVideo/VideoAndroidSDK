@@ -2,7 +2,6 @@ package com.kaleyra.video_common_ui.connectionservice
 
 import android.app.Notification
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
 import android.telecom.Connection
@@ -10,17 +9,13 @@ import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.lifecycleScope
-import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CallUncaughtExceptionHandler
 import com.kaleyra.video_common_ui.ICallService
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationDelegate
-import com.kaleyra.video_common_ui.call.CameraStreamInputsDelegate
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayDelegate
 import com.kaleyra.video_common_ui.call.StreamsOpeningDelegate
-import com.kaleyra.video_common_ui.call.StreamsVideoViewDelegate
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
@@ -28,7 +23,6 @@ import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationD
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
-import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -65,7 +59,7 @@ import kotlinx.coroutines.launch
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
 
-    override val cameraStreamPublisher by lazy { CameraStreamPublisher(ioScope) }
+    override val CameraStreamManager by lazy { CameraStreamManager(ioScope) }
 
     override val cameraStreamInputDelegate by lazy { CameraStreamInputsDelegate(ioScope) }
 

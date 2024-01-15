@@ -76,7 +76,6 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         isRunning = true
-        Log.e("ProximityService", "started")
         KaleyraVideo.onCallReady(lifecycleScope) { call ->
             application.registerActivityLifecycleCallbacks(this)
             callActivityClazz = call.activityClazz

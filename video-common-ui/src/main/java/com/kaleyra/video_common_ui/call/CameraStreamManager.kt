@@ -18,38 +18,75 @@ package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 
- class CameraStreamInputsDelegate(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+class CameraStreamManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
 
-    fun handleCameraStreamAudio(call: Call) {
-        combine(
+    /**
+     * Camera Stream Publisher Instance
+     */
+    companion object {
+
+        /**
+         * Camera Stream Id
+         */
+        const val CAMERA_STREAM_ID = "camera"
+    }
+    
+    private val jobs = mutableListOf<Job>()
+
+    fun bind(call: Call) {
+        stop()
+        addCameraStream(call)
+        handleCameraStreamAudio(call)
+        handleCameraStreamVideo(call)
+    }
+
+    fun stop() {
+        jobs.forEach { it.cancel() }
+    }
+
+    /**
+     * Add a stream of camera type to the call
+     *
+     * @param call The call in which to add the camera stream
+     */
+    private fun addCameraStream(call: Call) {
+        jobs += coroutineScope.launch {
+            val me = call.participants.mapNotNull { it.me }.first()
+            if (me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } != null) return@launch
+            me.addStream(CAMERA_STREAM_ID).let {
+                it.audio.value = null
+                it.video.value = null
+            }
+        }
+    }
+
+    private fun handleCameraStreamAudio(call: Call) {
+        jobs += combine(
             call.inputs.availableInputs
                 .map { it.filterIsInstance<Input.Audio>().firstOrNull() }
                 .filterNotNull(),
             call.participants.mapNotNull { it.me }
         ) { audio, me ->
-            val stream = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID } ?: return@combine
+            val stream = me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } ?: return@combine
             stream.audio.value = audio
         }.launchIn(coroutineScope)
     }
 
-    fun handleCameraStreamVideo(call: Call) {
-        combine(
+    private fun handleCameraStreamVideo(call: Call) {
+        jobs += combine(
             call.inputs.availableInputs
                 .map { inputs -> inputs.lastOrNull { it is Input.Video.Camera } }
                 .filterIsInstance<Input.Video.My>(),
@@ -59,7 +96,7 @@ import kotlinx.coroutines.withContext
             val hasVideo = preferredType.hasVideo()
             if (!hasVideo) return@combine
             val stream =
-                me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }
+                me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID }
                     ?: return@combine
             video.setQuality(Input.Video.Quality.Definition.HD)
             if (video is Input.Video.Camera.Usb) video.awaitPermission()
@@ -72,4 +109,5 @@ import kotlinx.coroutines.withContext
             state.firstOrNull { it !is Input.State.Closed.AwaitingPermission }
         }
     }
+
 }

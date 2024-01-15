@@ -16,34 +16,56 @@
 
 package com.kaleyra.video_common_ui.call
 
-import android.content.Context
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
-import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conference.VideoStreamView
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 /**
- * Streams Video View Delegate
+ * StreamsManager
  */
- class StreamsVideoViewDelegate(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)){
+class StreamsManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+
+    private val jobs = mutableListOf<Job>()
+
+    fun bind(call: Call) {
+        handleStreamsOpening(call)
+        handleStreamsVideoView(call)
+    }
+
+    fun stop() {
+        jobs.forEach { it.cancel() }
+    }
+
+    /**
+     * Open Participant streams
+     * @param call Call the call object
+     */
+    private fun handleStreamsOpening(call: Call) {
+        jobs += call.participants
+            .map { it.list }
+            .flatMapLatest { participantsList ->
+                participantsList.map { it.streams }.merge()
+            }
+            .onEach { it.forEach { stream -> stream.open() } }
+            .launchIn(coroutineScope)
+    }
 
     /**
      * Sets the streams video view
      *
-     * @param context Context context used for the view creation
      * @param call Call The call on which set the video view
      */
-    fun setStreamsVideoView(
-        context: Context,
-        call: Call
-    ) {
-        call.participants
+    private fun handleStreamsVideoView(call: Call) {
+        val context = ContextRetainer.context
+        jobs += call.participants
             .map { it.list }
             .mapParticipantsToVideos()
             .transform { videos -> videos.forEach { emit(it) } }

@@ -28,7 +28,7 @@ import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.call.CameraStreamManager.Companion.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName

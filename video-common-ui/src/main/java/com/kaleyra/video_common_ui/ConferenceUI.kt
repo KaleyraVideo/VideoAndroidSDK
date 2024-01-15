@@ -35,7 +35,10 @@ import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtension.add
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtension.placeOutgoingCall
 import com.kaleyra.video_common_ui.utils.CallExtensions.isIncoming
 import com.kaleyra.video_common_ui.utils.CallExtensions.isOutgoing
+import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
+import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
@@ -128,26 +131,27 @@ class ConferenceUI(
                     return@onEach
                 }
 
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@onEach
-                val context = ContextRetainer.context
-                val uri = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+111" + context.packageName.hashCode(), null)
-                val telecomManager = context.getTelecomManager()
-                val participants = call.participants.value
-                when {
-                    participants.creator() == null || participants.me == participants.creator() -> {
-                        telecomManager.placeOutgoingCall(context, uri)
-                    }
-                    participants.me != participants.creator() -> {
-                        telecomManager.addIncomingCall(context, uri)
-                    }
-                }
-
-//                CallService.start()
-//                call.enableAudioRouting(withCallSounds = true, logger = logger, coroutineScope = callScope, isLink = call.isLink)
+//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@onEach
+//                val context = ContextRetainer.context
+//                val uri = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+111" + context.packageName.hashCode(), null)
+//                val telecomManager = context.getTelecomManager()
+//                val participants = call.participants.value
 //                when {
-//                    !withUI -> Unit
-//                    call.shouldShowAsActivity() -> call.showOnAppResumed(callScope)
+//                    participants.creator() == null || participants.me == participants.creator() -> {
+//                        // TODO move this to call create
+//                        telecomManager.placeOutgoingCall(context, uri)
+//                    }
+//                    participants.me != participants.creator() -> {
+//                        telecomManager.addIncomingCall(context, uri)
+//                    }
 //                }
+
+                CallService.start()
+                call.enableAudioRouting(withCallSounds = true, logger = logger, coroutineScope = callScope, isLink = call.isLink)
+                when {
+                    !withUI -> Unit
+                    call.shouldShowAsActivity() -> call.showOnAppResumed(callScope)
+                }
                 currentCall = call
             }
             .onCompletion {

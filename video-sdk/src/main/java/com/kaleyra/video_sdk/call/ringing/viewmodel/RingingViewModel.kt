@@ -59,15 +59,17 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
     }
 
     fun accept() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PhoneConnectionService.answer()
-        } else call.getValue()?.connect()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            PhoneConnectionService.answer()
+//        } else call.getValue()?.connect()
+        call.getValue()?.connect()
     }
 
     fun decline() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PhoneConnectionService.reject()
-        } else call.getValue()?.end()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            PhoneConnectionService.reject()
+//        } else call.getValue()?.end()
+        call.getValue()?.end()
     }
 
     companion object {

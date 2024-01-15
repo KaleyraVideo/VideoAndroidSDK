@@ -78,19 +78,22 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
                 KaleyraVideo.onCallReady(this) { call ->
                     when (notificationAction) {
                         ACTION_ANSWER -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                PhoneConnectionService.answer()
-                            } else call.connect()
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                PhoneConnectionService.answer()
+//                            } else call.connect()
+                            call.connect()
                         }
                         ACTION_DECLINE -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                PhoneConnectionService.reject()
-                            } else call.end()
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                PhoneConnectionService.reject()
+//                            } else call.end()
+                            call.end()
                         }
                         ACTION_HANGUP -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                PhoneConnectionService.end()
-                            } else call.end()
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                PhoneConnectionService.end()
+//                            } else call.end()
+                            call.end()
                         }
                         ACTION_STOP_SCREEN_SHARE -> {
                             val screenShareInputs =

@@ -133,6 +133,7 @@ internal class CallComponentState(
             else -> 1
         }
     }
+
 }
 
 @Composable

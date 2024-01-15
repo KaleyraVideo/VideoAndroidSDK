@@ -38,7 +38,7 @@ import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.CollaborationViewModel
 import com.kaleyra.video_common_ui.DeviceStatusObserver
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.model.Permission
@@ -343,7 +343,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
                 _micPermission.value = Permission(false, false)
             }.launchIn(this)
 
-            currentCall.participants.value.me?.streams?.value?.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }?.audio?.value = input
+            currentCall.participants.value.me?.streams?.value?.firstOrNull { it.id == CameraStreamManager.CAMERA_STREAM_ID }?.audio?.value = input
         }
     }
 
@@ -358,7 +358,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
 
             val input = inputRequest.getOrNull<Input.Video.Camera.Internal>() ?: return@launchWhenResumed
 
-            currentCall.participants.value.me?.streams?.value?.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }?.video?.value = input
+            currentCall.participants.value.me?.streams?.value?.firstOrNull { it.id == CameraStreamManager.CAMERA_STREAM_ID }?.video?.value = input
 
             input.state.filter { it is Input.State.Closed }.onEach {
                 _camPermission.value = Permission(false, false)

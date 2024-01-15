@@ -18,7 +18,6 @@ package com.kaleyra.video_common_ui.call
 
 import android.app.Notification
 import android.net.Uri
-import androidx.annotation.CallSuper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.CallUI
@@ -35,6 +34,8 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -44,14 +45,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.withContext
 
-/**
- * CallNotificationDelegate. It is responsible of syncing the call's notifications with the call
- */
-interface CallNotificationDelegate {
+class CallNotificationProducer(private val coroutineScope: CoroutineScope = MainScope()) {
 
-    /**
-     * @suppress
-     */
     companion object {
         /**
          * The global call notification id
@@ -59,33 +54,18 @@ interface CallNotificationDelegate {
         const val CALL_NOTIFICATION_ID = 22
     }
 
-    /**
-     * Show the notification
-     *
-     * @param notification The notification
-     */
-    @CallSuper
-    fun showNotification(notification: Notification) =
-        NotificationManager.notify(CALL_NOTIFICATION_ID, notification)
+    interface Listener {
+        fun onNewNotification(notification: Notification, id: Int)
+        fun onClearNotification(id: Int)
+    }
 
-    /**
-     * Clear the notification
-     */
-    @CallSuper
-    fun clearNotification() = NotificationManager.cancel(CALL_NOTIFICATION_ID)
+    var listener: Listener? = null
 
-    /**
-     * Sync the notifications with the call
-     *
-     * @param call The call
-     * @param scope The coroutine scope
-     */
-    @CallSuper
-    fun syncCallNotification(
-        call: CallUI,
-        scope: CoroutineScope
-    ) {
-        combine(
+    private var job: Job? = null
+
+    fun bind(call: CallUI) {
+        stop()
+        job = combine(
             call.state,
             call.participants,
             call.recording,
@@ -102,13 +82,29 @@ interface CallNotificationDelegate {
                     isAnyScreenInputActive
                 )
 
-                if (notification != null) showNotification(notification)
+                if (notification != null) {
+                    showNotification(notification)
+                }
                 callState
             }
         }
             .takeWhile { it !is Call.State.Disconnected.Ended }
             .onCompletion { clearNotification() }
-            .launchIn(scope)
+            .launchIn(coroutineScope)
+    }
+
+    fun stop() {
+        job?.cancel()
+    }
+
+    private fun showNotification(notification: Notification) {
+        NotificationManager.notify(CALL_NOTIFICATION_ID, notification)
+        listener?.onNewNotification(notification, CALL_NOTIFICATION_ID)
+    }
+
+    private fun clearNotification() {
+        NotificationManager.cancel(CALL_NOTIFICATION_ID)
+        listener?.onClearNotification(CALL_NOTIFICATION_ID)
     }
 
     private suspend fun buildNotification(
@@ -161,4 +157,5 @@ interface CallNotificationDelegate {
             else -> null
         }
     }
+
 }

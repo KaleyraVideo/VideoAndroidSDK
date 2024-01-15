@@ -17,7 +17,6 @@
 package com.kaleyra.video_common_ui
 
 import com.kaleyra.video.conference.*
-import com.kaleyra.video_common_ui.call.StreamsVideoViewDelegate
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll

@@ -26,7 +26,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
@@ -160,7 +160,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             return
         }
 
-        val video = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }?.video?.value
+        val video = me.streams.value.firstOrNull { it.id == CameraStreamManager.CAMERA_STREAM_ID }?.video?.value
         if (video != null && call.inputs.availableInputs.value.contains<Input>(video as Input)) {
             if (video.enabled.value) video.tryDisable() else video.tryEnable()
         } else {
@@ -184,8 +184,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService.end()
-        else call.getValue()?.end()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService.end()
+//        else call.getValue()?.end()
+        call.getValue()?.end()
     }
 
     fun showChat(context: Context) {

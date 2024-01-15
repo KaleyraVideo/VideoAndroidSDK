@@ -18,7 +18,7 @@ package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -51,7 +51,7 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever the screen input is active
      */
-    fun Flow<Call>.isDeviceScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Screen>()
+    fun Flow<Call>.isDeviceScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Screen.My>()
 
     /**
      * Utility function to detect whenever the app screen input is active
@@ -89,7 +89,7 @@ object InputMapper {
     fun Flow<Call>.toAudio(): Flow<Input.Audio?> =
         this.toMe()
             .flatMapLatest { it.streams }
-            .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamPublisher.CAMERA_STREAM_ID } }
+            .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamManager.CAMERA_STREAM_ID } }
             .flatMapLatest { it?.audio ?: flowOf(null) }
 
     /**

@@ -18,8 +18,7 @@ package com.kaleyra.video_common_ui
 
 import com.kaleyra.video.conference.*
 import com.kaleyra.video.conference.Call.PreferredType
-import com.kaleyra.video_common_ui.call.CameraStreamInputsDelegate
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -54,7 +53,7 @@ class CameraStreamInputsDelegateTest {
         every { participantsMock.me } returns meMock
         every { meMock.streams } returns MutableStateFlow(listOf(myStream))
         with(myStream) {
-            every { id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+            every { id } returns CameraStreamManager.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
             every { video } returns MutableStateFlow(null)
         }

@@ -17,8 +17,6 @@
 package com.kaleyra.video_common_ui
 
 import android.app.Notification
-import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
@@ -26,135 +24,70 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.call.CallNotificationDelegate
-import com.kaleyra.video_common_ui.call.CallNotificationDelegate.Companion.CALL_NOTIFICATION_ID
-import com.kaleyra.video_common_ui.call.CameraStreamInputsDelegate
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
-import com.kaleyra.video_common_ui.call.ScreenShareOverlayDelegate
-import com.kaleyra.video_common_ui.call.StreamsOpeningDelegate
-import com.kaleyra.video_common_ui.call.StreamsVideoViewDelegate
+import com.kaleyra.video_common_ui.call.CallNotificationProducer
+import com.kaleyra.video_common_ui.call.CameraStreamManager
+import com.kaleyra.video_common_ui.call.ParticipantManager
+import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 
- interface ICallService: CallNotificationDelegate {
+interface NewCallForegroundService {
 
-    val cameraStreamPublisher: CameraStreamPublisher
-
-    val cameraStreamInputDelegate: CameraStreamInputsDelegate
-
-    val streamOpeningDelegate: StreamsOpeningDelegate
-
-    val streamVideoViewDelegate: StreamsVideoViewDelegate
-
-    val fileShareNotificationDelegate: FileShareNotificationDelegate
-
-    val screenShareOverlayDelegate: ScreenShareOverlayDelegate?
-
-    override fun showNotification(notification: Notification) {
-        super.showNotification(notification)
-        startForegroundService(notification)
-    }
-
-    override fun clearNotification() {
-        super.clearNotification()
-        stopForegroundService()
-    }
-
-    fun setUpCall(context: Context, coroutineScope: CoroutineScope, onEnded: () -> Unit) {
-        KaleyraVideo.onCallReady(coroutineScope) { call ->
-//            this@CallService.call = call
-            cameraStreamPublisher.addCameraStream(call)
-            cameraStreamInputDelegate.handleCameraStreamAudio(call)
-            cameraStreamInputDelegate.handleCameraStreamVideo(call)
-            streamOpeningDelegate.openParticipantsStreams(call)
-            streamVideoViewDelegate.setStreamsVideoView(context, call)
-            syncCallNotification(call, coroutineScope)
-            refreshParticipantDetails(call, coroutineScope)
-            stopOnCallEnded(call, coroutineScope, onEnded)
-            if (DeviceUtils.isSmartGlass) return@onCallReady
-            ProximityService.start()
-            fileShareNotificationDelegate.syncFileShareNotification(context, call)
-        }
-    }
-
-    fun startForegroundService(notification: Notification)
+    fun startForegroundService(notification: Notification, id: Int)
 
     fun stopForegroundService()
 
-    fun refreshParticipantDetails(call: Call, coroutineScope: CoroutineScope) {
-        call.participants
-            .onEach { participants ->
-                val userIds = participants.list.map { it.userId }.toTypedArray()
-                ContactDetailsManager.refreshContactDetails(*userIds)
-            }
-            .launchIn(coroutineScope)
-    }
-
-    fun stopOnCallEnded(call: Call, coroutineScope: CoroutineScope, onEnded: () -> Unit) {
-        call.state
-            .takeWhile { it !is Call.State.Disconnected.Ended }
-            .onCompletion { onEnded() }
-            .launchIn(coroutineScope)
-    }
-
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun getForegroundServiceType(hasScreenSharingPermission: Boolean): Int {
+    fun getForegroundServiceType(hasScreenSharingInput: Boolean): Int {
         val inputsFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE else 0
-        val screenSharingFlag = if (hasScreenSharingPermission) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION else 0
+        val screenSharingFlag = if (hasScreenSharingInput) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION else 0
         return ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL or inputsFlag or screenSharingFlag
     }
-
 }
 
 /**
  * The CallService
  */
-internal class CallService : LifecycleService(), ICallService {
+internal class NewCallService: LifecycleService(), NewCallForegroundService, CallNotificationProducer.Listener  {
 
     companion object {
         fun start() = with(ContextRetainer.context) {
             stop()
-            val intent = Intent(this, CallService::class.java)
+            val intent = Intent(this, NewCallService::class.java)
             startService(intent)
         }
 
         fun stop() = with(ContextRetainer.context) {
-            stopService(Intent(this, CallService::class.java))
+            stopService(Intent(this, NewCallService::class.java))
         }
     }
 
+    private val callNotificationProducer by lazy { CallNotificationProducer(lifecycleScope) }
+
+    private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(lifecycleScope) }
+
+    private val cameraStreamManager by lazy { CameraStreamManager(lifecycleScope) }
+
+    private val streamsManager by lazy { StreamsManager(lifecycleScope) }
+
+    private val participantManager by lazy { ParticipantManager(lifecycleScope) }
+
     private var foregroundJob: Job? = null
-
-//    private var call: CallUI? = null
-
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-
-    override val cameraStreamPublisher by lazy { CameraStreamPublisher(ioScope) }
-
-    override val cameraStreamInputDelegate by lazy { CameraStreamInputsDelegate(ioScope) }
-
-    override val streamOpeningDelegate by lazy { StreamsOpeningDelegate(ioScope) }
-
-    override val streamVideoViewDelegate by lazy { StreamsVideoViewDelegate(ioScope) }
-
-    override val fileShareNotificationDelegate by lazy { FileShareNotificationDelegate(ioScope) }
-
-    override var screenShareOverlayDelegate: ScreenShareOverlayDelegate? = null
 
     /**
      * @suppress
@@ -162,8 +95,24 @@ internal class CallService : LifecycleService(), ICallService {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
-        screenShareOverlayDelegate = ScreenShareOverlayDelegate(application, ioScope)
-        setUpCall(this, ioScope) { stopSelf() }
+        lifecycleScope.launch {
+            val call = KaleyraVideo.conference.call.first()
+            cameraStreamManager.bind(call)
+            streamsManager.bind(call)
+            participantManager.bind(call)
+            callNotificationProducer.bind(call)
+            callNotificationProducer.listener = this@NewCallService
+
+            call.state
+                .takeWhile { it !is Call.State.Disconnected.Ended }
+                .onCompletion { stopSelf() }
+                .launchIn(lifecycleScope)
+
+            if (DeviceUtils.isSmartGlass) return@launch
+            ProximityService.start()
+            fileShareNotificationProducer.bind(call)
+
+        }
         return START_NOT_STICKY
     }
 
@@ -172,13 +121,43 @@ internal class CallService : LifecycleService(), ICallService {
      */
     override fun onDestroy() {
         super.onDestroy()
-        clearNotification()
         foregroundJob?.cancel()
-        ProximityService.stop()
-//        call?.end()
-        screenShareOverlayDelegate?.dispose()
-        ioScope.cancel()
         foregroundJob = null
+        ProximityService.stop()
+        cameraStreamManager.stop()
+        streamsManager.stop()
+        participantManager.stop()
+        callNotificationProducer.stop()
+        fileShareNotificationProducer.stop()
+    }
+
+    override fun onNewNotification(notification: Notification, id: Int) = startForegroundService(notification, id)
+
+    override fun onClearNotification(id: Int) = stopForegroundService()
+
+    override fun startForegroundService(notification: Notification, id: Int) {
+        kotlin.runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingInput = false))
+            else startForeground(id, notification)
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun stopForegroundService() {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
+            else stopForeground(true)
+        }
+    }
+}
+
+internal class CallService : LifecycleService() {
+
+//    private var call: CallUI? = null
+
+    override fun onDestroy() {
+        super.onDestroy()
+//        call?.end()
 //        call = null
     }
 
@@ -196,14 +175,6 @@ internal class CallService : LifecycleService(), ICallService {
                     else startForeground(CALL_NOTIFICATION_ID, notification)
                 }
             }.launchIn(lifecycleScope)
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    override fun stopForegroundService() {
-        runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
-            else stopForeground(true)
         }
     }
 
