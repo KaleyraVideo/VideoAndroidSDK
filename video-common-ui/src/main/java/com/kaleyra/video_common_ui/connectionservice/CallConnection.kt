@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 
 @RequiresApi(Build.VERSION_CODES.M)
-class CallConnection private constructor(val isIncoming: Boolean) : Connection() {
+class CallConnection private constructor() : Connection() {
 
     interface ConnectionStateListener {
         fun onConnectionStateChange(connection: CallConnection)
@@ -36,18 +36,17 @@ class CallConnection private constructor(val isIncoming: Boolean) : Connection()
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun create(request: ConnectionRequest, isIncoming: Boolean): CallConnection {
-            return CallConnection(isIncoming = isIncoming).apply {
+        fun create(request: ConnectionRequest): CallConnection {
+            return CallConnection().apply {
                 setInitializing()
                 setAddress(request.address, TelecomManager.PRESENTATION_ALLOWED)
                 connectionProperties = PROPERTY_SELF_MANAGED
                 audioModeIsVoip = true
-                connectionCapabilities =
-                    CAPABILITY_MUTE or CAPABILITY_HOLD or CAPABILITY_SUPPORT_HOLD
+                connectionCapabilities = CAPABILITY_MUTE or CAPABILITY_HOLD or CAPABILITY_SUPPORT_HOLD
 //          TODO do we really need this capabilities?
 //          or CAPABILITY_VIDEO_CALLING or CAPABILITY_SUPPORTS_VIDEO_CALLING
 //          TODO set the video state
-                videoState = VideoProfile.STATE_AUDIO_ONLY
+//                videoState = VideoProfile.STATE_AUDIO_ONLY
                 extras = request.extras
             }
         }

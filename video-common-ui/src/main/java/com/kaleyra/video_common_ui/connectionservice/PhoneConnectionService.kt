@@ -9,22 +9,29 @@ import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.lifecycleScope
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.CallForegroundService
+import com.kaleyra.video_common_ui.CallForegroundServiceWorker
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CallUncaughtExceptionHandler
-import com.kaleyra.video_common_ui.ICallService
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.call.CallNotificationDelegate
+import com.kaleyra.video_common_ui.call.CallNotificationProducer
+import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
 import com.kaleyra.video_common_ui.call.CameraStreamManager
+import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayDelegate
-import com.kaleyra.video_common_ui.call.StreamsOpeningDelegate
+import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.filterNotNull
@@ -35,9 +42,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
- class PhoneConnectionService : ConnectionService(), CallConnection.IncomingCallListener,
-    CallConnection.ConnectionStateListener,
-    ICallService {
+class PhoneConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.IncomingCallListener, CallConnection.ConnectionStateListener {
 
     companion object {
         private var connection: CallConnection? = null
@@ -55,85 +60,52 @@ import kotlinx.coroutines.launch
         }
     }
 
-//    private var call: CallUI? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val callForegroundServiceWorker = CallForegroundServiceWorker(coroutineScope, this)
 
-    override val CameraStreamManager by lazy { CameraStreamManager(ioScope) }
-
-    override val cameraStreamInputDelegate by lazy { CameraStreamInputsDelegate(ioScope) }
-
-    override val streamOpeningDelegate by lazy { StreamsOpeningDelegate(ioScope) }
-
-    override val streamVideoViewDelegate by lazy { StreamsVideoViewDelegate(ioScope) }
-
-    override val fileShareNotificationDelegate by lazy { FileShareNotificationDelegate(ioScope) }
-
-    override var screenShareOverlayDelegate: ScreenShareOverlayDelegate? = null
+    private var foregroundJob: Job? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
-        screenShareOverlayDelegate = ScreenShareOverlayDelegate(application, ioScope)
-        return super.onStartCommand(intent, flags, startId)
+        super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        clearNotification()
-        ProximityService.stop()
-//        call?.end()
-        screenShareOverlayDelegate?.dispose()
-        ioScope.cancel()
-//        call = null
-    }
-
-    /**
-     * Set up the call streams and notifications
-     */
-    private fun setUpCall(connection: CallConnection) {
-        setUpCall(this, ioScope) { stopSelf() }
-        KaleyraVideo.onCallReady(ioScope) { call ->
-            if (call.shouldShowAsActivity()) {
-                call.showOnAppResumed(MainScope())
-            }
-
-            if (connection.isIncoming) {
-                MainScope().launch {
-                    val participants = call.participants.value
-                    val callee = participants.others.map {
-                        it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
-                    }.joinToString()
-                    createOrUpdateConnectionServiceContact(
-                        this@PhoneConnectionService,
-                        connection.address,
-                        callee
-                    )
-                }
-            }
-        }
+        callForegroundServiceWorker.dispose()
+        coroutineScope.cancel()
+        foregroundJob?.cancel()
+        foregroundJob = null
     }
 
     override fun onCreateOutgoingConnection(
         connectionManagerPhoneAccount: PhoneAccountHandle,
         request: ConnectionRequest
     ): Connection {
-        val connection = createConnection(request, isIncoming = false).apply {
+        val connection = createConnection(request).apply {
             setDialing()
         }
-        setUpCall(connection)
+        bindCallForegroundServiceWorker()
         return connection
+    }
+
+    private fun bindCallForegroundServiceWorker(block: ((CallUI) -> Unit)? = null) {
+        callForegroundServiceWorker.bind(this) { call ->
+            if (call.shouldShowAsActivity()) {
+                call.showOnAppResumed(coroutineScope)
+            }
+            block?.invoke(call)
+        }
     }
 
     override fun onCreateIncomingConnection(
         connectionManagerPhoneAccount: PhoneAccountHandle,
         request: ConnectionRequest
-    ): Connection = createConnection(request, isIncoming = true)
+    ): Connection = createConnection(request)
 
-    private fun createConnection(
-        request: ConnectionRequest,
-        isIncoming: Boolean
-    ): CallConnection {
-        return CallConnection.create(request = request, isIncoming).apply {
+    private fun createConnection(request: ConnectionRequest): CallConnection {
+        return CallConnection.create(request = request).apply {
             connection = this
             addIncomingCallListener(this@PhoneConnectionService)
             addConnectionStateListener(this@PhoneConnectionService)
@@ -147,9 +119,18 @@ import kotlinx.coroutines.launch
 
     override fun onShowIncomingCallUi(connection: CallConnection) {
         connection.setRinging()
-        setUpCall(connection)
+        bindCallForegroundServiceWorker { call ->
+            coroutineScope.launch {
+                val participants = call.participants.value
+                val callee = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
+                createOrUpdateConnectionServiceContact(
+                    this@PhoneConnectionService,
+                    connection.address,
+                    callee
+                )
+            }
+        }
     }
-
 
     override fun onConnectionStateChange(connection: CallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
@@ -181,21 +162,22 @@ import kotlinx.coroutines.launch
         connectionServiceFocusReleased()
     }
 
-    override fun startForegroundService(notification: Notification) {
-        KaleyraVideo.onCallReady(ioScope) { call ->
-            flowOf(call)
-                .hasScreenSharingInput()
-                .onEach { hasScreenSharingPermission ->
-                    runCatching {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CallNotificationDelegate.CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
-                        else startForeground(CallNotificationDelegate.CALL_NOTIFICATION_ID, notification)
-                    }
+    override fun onNewNotification(call: Call, notification: Notification, id: Int) {
+        if (foregroundJob != null) return
+        foregroundJob = flowOf(call)
+            .hasScreenSharingInput()
+            .onEach { hasScreenSharingPermission ->
+                runCatching {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
+                    else startForeground(CALL_NOTIFICATION_ID, notification)
                 }
-                .launchIn(MainScope())
-        }
+            }
+            .launchIn(coroutineScope)
     }
 
-    override fun stopForegroundService() {
+    override fun onClearNotification(id: Int) = stopForegroundService()
+
+    private fun stopForegroundService() {
         runCatching { stopForeground(STOP_FOREGROUND_REMOVE) }
     }
 

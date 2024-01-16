@@ -55,7 +55,7 @@ class CallNotificationProducer(private val coroutineScope: CoroutineScope = Main
     }
 
     interface Listener {
-        fun onNewNotification(notification: Notification, id: Int)
+        fun onNewNotification(call: Call, notification: Notification, id: Int)
         fun onClearNotification(id: Int)
     }
 
@@ -83,7 +83,7 @@ class CallNotificationProducer(private val coroutineScope: CoroutineScope = Main
                 )
 
                 if (notification != null) {
-                    showNotification(notification)
+                    showNotification(call, notification)
                 }
                 callState
             }
@@ -97,9 +97,9 @@ class CallNotificationProducer(private val coroutineScope: CoroutineScope = Main
         job?.cancel()
     }
 
-    private fun showNotification(notification: Notification) {
+    private fun showNotification(call: Call, notification: Notification) {
         NotificationManager.notify(CALL_NOTIFICATION_ID, notification)
-        listener?.onNewNotification(notification, CALL_NOTIFICATION_ID)
+        listener?.onNewNotification(call, notification, CALL_NOTIFICATION_ID)
     }
 
     private fun clearNotification() {

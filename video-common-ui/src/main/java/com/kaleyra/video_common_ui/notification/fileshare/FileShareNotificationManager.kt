@@ -21,7 +21,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.kaleyra.video_common_ui.R
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate.Companion.EXTRA_DOWNLOAD_ID
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 
 internal interface FileShareNotificationManager {

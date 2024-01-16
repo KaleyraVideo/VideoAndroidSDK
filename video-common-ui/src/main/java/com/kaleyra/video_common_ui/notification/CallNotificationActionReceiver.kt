@@ -18,15 +18,11 @@ package com.kaleyra.video_common_ui.notification
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.call.CallNotificationDelegate.Companion.CALL_NOTIFICATION_ID
-import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
+import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
+import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
 import com.kaleyra.video_common_ui.onCallReady
-import com.kaleyra.video_common_ui.utils.CallExtensions.isOngoing
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope

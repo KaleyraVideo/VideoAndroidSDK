@@ -17,19 +17,21 @@
 package com.kaleyra.video_common_ui
 
 import android.app.Notification
+import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
+import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
-import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.utils.AppLifecycle
@@ -42,15 +44,62 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 
-interface NewCallForegroundService {
+// TODO revise naming for managers
+internal class CallForegroundServiceWorker(
+    private val coroutineScope: CoroutineScope,
+    private val callNotificationListener: CallNotificationProducer.Listener
+) {
 
-    fun startForegroundService(notification: Notification, id: Int)
+    private val callNotificationProducer by lazy { CallNotificationProducer(coroutineScope) }
 
-    fun stopForegroundService()
+    private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(coroutineScope) }
+
+    private val cameraStreamManager by lazy { CameraStreamManager(coroutineScope) }
+
+    private val streamsManager by lazy { StreamsManager(coroutineScope) }
+
+    private val participantManager by lazy { ParticipantManager(coroutineScope) }
+
+    private var call: Call? = null
+
+    fun bind(service: Service, block: ((CallUI) -> Unit)? = null) {
+        Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
+        KaleyraVideo.onCallReady(coroutineScope) { call ->
+            this.call = call
+            cameraStreamManager.bind(call)
+            streamsManager.bind(call)
+            participantManager.bind(call)
+            callNotificationProducer.bind(call)
+            callNotificationProducer.listener = callNotificationListener
+
+            call.state
+                .takeWhile { it !is Call.State.Disconnected.Ended }
+                .onCompletion { service.stopSelf() }
+                .launchIn(coroutineScope)
+
+            if (DeviceUtils.isSmartGlass) return@onCallReady
+            ProximityService.start()
+            fileShareNotificationProducer.bind(call)
+            block?.invoke(call)
+        }
+    }
+
+    fun dispose() {
+        call?.end()
+        call = null
+        ProximityService.stop()
+        cameraStreamManager.stop()
+        streamsManager.stop()
+        participantManager.stop()
+        callNotificationProducer.stop()
+        fileShareNotificationProducer.stop()
+    }
+}
+
+interface CallForegroundService {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun getForegroundServiceType(hasScreenSharingInput: Boolean): Int {
@@ -63,29 +112,21 @@ interface NewCallForegroundService {
 /**
  * The CallService
  */
-internal class NewCallService: LifecycleService(), NewCallForegroundService, CallNotificationProducer.Listener  {
+internal class CallService: LifecycleService(), CallForegroundService, CallNotificationProducer.Listener {
 
     companion object {
         fun start() = with(ContextRetainer.context) {
             stop()
-            val intent = Intent(this, NewCallService::class.java)
+            val intent = Intent(this, CallService::class.java)
             startService(intent)
         }
 
         fun stop() = with(ContextRetainer.context) {
-            stopService(Intent(this, NewCallService::class.java))
+            stopService(Intent(this, CallService::class.java))
         }
     }
 
-    private val callNotificationProducer by lazy { CallNotificationProducer(lifecycleScope) }
-
-    private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(lifecycleScope) }
-
-    private val cameraStreamManager by lazy { CameraStreamManager(lifecycleScope) }
-
-    private val streamsManager by lazy { StreamsManager(lifecycleScope) }
-
-    private val participantManager by lazy { ParticipantManager(lifecycleScope) }
+    private val callForegroundServiceWorker = CallForegroundServiceWorker(lifecycleScope, this)
 
     private var foregroundJob: Job? = null
 
@@ -94,26 +135,8 @@ internal class NewCallService: LifecycleService(), NewCallForegroundService, Cal
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
-        lifecycleScope.launch {
-            val call = KaleyraVideo.conference.call.first()
-            cameraStreamManager.bind(call)
-            streamsManager.bind(call)
-            participantManager.bind(call)
-            callNotificationProducer.bind(call)
-            callNotificationProducer.listener = this@NewCallService
-
-            call.state
-                .takeWhile { it !is Call.State.Disconnected.Ended }
-                .onCompletion { stopSelf() }
-                .launchIn(lifecycleScope)
-
-            if (DeviceUtils.isSmartGlass) return@launch
-            ProximityService.start()
-            fileShareNotificationProducer.bind(call)
-
-        }
-        return START_NOT_STICKY
+        callForegroundServiceWorker.bind(this)
+        return START_STICKY
     }
 
     /**
@@ -121,61 +144,31 @@ internal class NewCallService: LifecycleService(), NewCallForegroundService, Cal
      */
     override fun onDestroy() {
         super.onDestroy()
+        callForegroundServiceWorker.dispose()
         foregroundJob?.cancel()
         foregroundJob = null
-        ProximityService.stop()
-        cameraStreamManager.stop()
-        streamsManager.stop()
-        participantManager.stop()
-        callNotificationProducer.stop()
-        fileShareNotificationProducer.stop()
     }
 
-    override fun onNewNotification(notification: Notification, id: Int) = startForegroundService(notification, id)
-
-    override fun onClearNotification(id: Int) = stopForegroundService()
-
-    override fun startForegroundService(notification: Notification, id: Int) {
-        kotlin.runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingInput = false))
-            else startForeground(id, notification)
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    override fun stopForegroundService() {
-        runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
-            else stopForeground(true)
-        }
-    }
-}
-
-internal class CallService : LifecycleService() {
-
-//    private var call: CallUI? = null
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        call?.end()
-//        call = null
-    }
-
-    override fun startForegroundService(notification: Notification) {
+    override fun onNewNotification(call: Call, notification: Notification, id: Int) {
         if (foregroundJob != null) return
         // Every time the app goes in foreground, try to promote the service in foreground.
         // The runCatching is needed because the startForeground may fails when the app is in background but
         // the isInForeground flag is still true. This happens because the onStop of the application lifecycle is
         // dispatched 700ms after the last activity's onStop
-        KaleyraVideo.onCallReady(lifecycleScope) { call ->
-            foregroundJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
-                if (!isInForeground) return@combine
-                kotlin.runCatching {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
-                    else startForeground(CALL_NOTIFICATION_ID, notification)
-                }
-            }.launchIn(lifecycleScope)
-        }
+        foregroundJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
+            if (!isInForeground) return@combine
+            kotlin.runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
+                else startForeground(CALL_NOTIFICATION_ID, notification)
+            }
+        }.launchIn(lifecycleScope)
     }
 
+    @Suppress("DEPRECATION")
+    override fun onClearNotification(id: Int) {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
+            else stopForeground(true)
+        }
+    }
 }
