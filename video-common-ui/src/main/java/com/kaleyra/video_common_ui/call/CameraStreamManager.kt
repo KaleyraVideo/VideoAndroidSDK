@@ -62,7 +62,7 @@ class CameraStreamManager(private val coroutineScope: CoroutineScope = Coroutine
      *
      * @param call The call in which to add the camera stream
      */
-    private fun addCameraStream(call: Call) {
+    fun addCameraStream(call: Call) {
         jobs += coroutineScope.launch {
             val me = call.participants.mapNotNull { it.me }.first()
             if (me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } != null) return@launch
@@ -73,7 +73,7 @@ class CameraStreamManager(private val coroutineScope: CoroutineScope = Coroutine
         }
     }
 
-    private fun handleCameraStreamAudio(call: Call) {
+    fun handleCameraStreamAudio(call: Call) {
         jobs += combine(
             call.inputs.availableInputs
                 .map { it.filterIsInstance<Input.Audio>().firstOrNull() }
@@ -85,7 +85,7 @@ class CameraStreamManager(private val coroutineScope: CoroutineScope = Coroutine
         }.launchIn(coroutineScope)
     }
 
-    private fun handleCameraStreamVideo(call: Call) {
+    fun handleCameraStreamVideo(call: Call) {
         jobs += combine(
             call.inputs.availableInputs
                 .map { inputs -> inputs.lastOrNull { it is Input.Video.Camera } }
