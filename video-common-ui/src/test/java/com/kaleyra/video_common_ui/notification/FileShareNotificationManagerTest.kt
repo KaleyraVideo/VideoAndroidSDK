@@ -20,8 +20,8 @@ import android.content.Intent
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotification
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationManager
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import io.mockk.every
 import io.mockk.mockk

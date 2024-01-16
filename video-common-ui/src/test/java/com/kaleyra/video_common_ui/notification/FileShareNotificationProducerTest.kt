@@ -17,17 +17,19 @@
 package com.kaleyra.video_common_ui.notification
 
 import android.content.Context
-import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.sharedfolder.SharedFolder
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,14 +44,16 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FileShareNotificationDelegateTest {
+class FileShareNotificationProducerTest {
 
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
 
-    private val fileShareNotificationDelegate = object : FileShareNotificationDelegate {}
+    private val context = mockk<Context>(relaxed = true)
 
-    private val call = mockk<Call>()
+    private val call = mockk<CallUI>() {
+        every { activityClazz } returns this@FileShareNotificationProducerTest::class.java
+    }
 
     private val otherParticipant = mockk<CallParticipant> {
         every { userId } returns "otherUserId"
@@ -83,11 +87,13 @@ class FileShareNotificationDelegateTest {
     fun setUp() {
         mockkObject(FileShareVisibilityObserver)
         mockkObject(NotificationManager)
+        mockkObject(ContextRetainer)
         with(NotificationManager) {
             every { buildIncomingFileNotification(any(), any(), any(), any()) } returns mockk(relaxed = true)
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
+        every { ContextRetainer.context } returns context
         every { call.participants } returns MutableStateFlow(participants)
         every { call.sharedFolder } returns sharedFolder
     }
@@ -99,19 +105,20 @@ class FileShareNotificationDelegateTest {
 
     @Test
     fun testNotifyDownloadFile() = runTest {
+        val fileShareNotificationProducer = FileShareNotificationProducer(this)
         every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        val contextMock = mockk<Context>(relaxed = true)
-        fileShareNotificationDelegate.syncFileShareNotification(contextMock, call, this@FileShareNotificationDelegateTest::class.java, this)
+        fileShareNotificationProducer.bind(call)
         advanceUntilIdle()
-        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(contextMock, "otherUsername", "downloadId", this@FileShareNotificationDelegateTest::class.java) }
+        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(context, "otherUsername", "downloadId", this@FileShareNotificationProducerTest::class.java) }
         verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
         coroutineContext.cancelChildren()
     }
 
     @Test
     fun testNotificationNotShownIfFileShareIsVisible() = runTest {
+        val fileShareNotificationProducer = FileShareNotificationProducer(this)
         every { FileShareVisibilityObserver.isDisplayed.value } returns true
-        fileShareNotificationDelegate.syncFileShareNotification(mockk(relaxed = true), call, this@FileShareNotificationDelegateTest::class.java, this)
+        fileShareNotificationProducer.bind(call)
         advanceUntilIdle()
         verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), any()) }
         verify(exactly = 0) { NotificationManager.notify(any(), any()) }
@@ -120,11 +127,12 @@ class FileShareNotificationDelegateTest {
 
     @Test
     fun testUploadIsNotNotified() = runTest {
+        val fileShareNotificationProducer = FileShareNotificationProducer(this)
         every { FileShareVisibilityObserver.isDisplayed.value } returns false
         every { call.sharedFolder } returns mockk {
             every { files } returns MutableStateFlow(setOf(uploadFile))
         }
-        fileShareNotificationDelegate.syncFileShareNotification(mockk(relaxed = true), call, this@FileShareNotificationDelegateTest::class.java, this)
+        fileShareNotificationProducer.bind(call)
         advanceUntilIdle()
         verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), any()) }
         verify(exactly = 0) { NotificationManager.notify(any(), any()) }
@@ -133,10 +141,18 @@ class FileShareNotificationDelegateTest {
 
     @Test
     fun testNotificationIsCancelledOnScopeCancel() = runTest {
-        fileShareNotificationDelegate.syncFileShareNotification(mockk(relaxed = true), call, this@FileShareNotificationDelegateTest::class.java, this)
+        val fileShareNotificationProducer = FileShareNotificationProducer(this)
+        fileShareNotificationProducer.bind(call)
         advanceUntilIdle()
         coroutineContext.cancelChildren()
         coroutineContext.job.children.first().join()
         verify { NotificationManager.cancel("downloadId".hashCode()) }
+    }
+
+    @Test
+    fun testStop() = runTest {
+        val fileShareNotificationProducer = spyk(FileShareNotificationProducer(this))
+        fileShareNotificationProducer.bind(call)
+        fileShareNotificationProducer.stop()
     }
 }
