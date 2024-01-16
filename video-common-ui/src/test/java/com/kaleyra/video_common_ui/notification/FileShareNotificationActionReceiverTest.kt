@@ -23,7 +23,7 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver.Companion.ACTION_DOWNLOAD
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate.Companion.EXTRA_DOWNLOAD_ID
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
