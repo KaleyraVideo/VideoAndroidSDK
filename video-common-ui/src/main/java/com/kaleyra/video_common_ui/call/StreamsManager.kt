@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 /**
  * StreamsManager
  */
-class StreamsManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+internal class StreamsManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
 
     private val jobs = mutableListOf<Job>()
 

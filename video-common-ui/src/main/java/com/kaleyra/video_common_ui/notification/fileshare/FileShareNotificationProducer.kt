@@ -31,9 +31,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
-
 // TODO try to pass an io coroutine scope
-class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) {
+internal class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) {
 
     companion object {
         const val EXTRA_DOWNLOAD_ID = "com.kaleyra.video_common_ui.EXTRA_DOWNLOAD_ID"

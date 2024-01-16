@@ -99,7 +99,7 @@ internal class CallForegroundServiceWorker(
     }
 }
 
-interface CallForegroundService {
+internal interface CallForegroundService {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun getForegroundServiceType(hasScreenSharingInput: Boolean): Int {

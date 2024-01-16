@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import kotlinx.coroutines.flow.Flow
@@ -89,7 +90,7 @@ object InputMapper {
     fun Flow<Call>.toAudio(): Flow<Input.Audio?> =
         this.toMe()
             .flatMapLatest { it.streams }
-            .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamManager.CAMERA_STREAM_ID } }
+            .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
             .flatMapLatest { it?.audio ?: flowOf(null) }
 
     /**

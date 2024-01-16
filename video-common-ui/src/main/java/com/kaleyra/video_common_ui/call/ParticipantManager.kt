@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class ParticipantManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+internal class ParticipantManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
 
     private var job: Job? = null
 

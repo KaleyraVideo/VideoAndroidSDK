@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.withContext
 
-class CallNotificationProducer(private val coroutineScope: CoroutineScope = MainScope()) {
+internal class CallNotificationProducer(private val coroutineScope: CoroutineScope = MainScope()) {
 
     companion object {
         /**

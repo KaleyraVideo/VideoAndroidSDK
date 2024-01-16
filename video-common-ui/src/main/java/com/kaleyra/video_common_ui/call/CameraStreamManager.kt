@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,18 +32,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
-class CameraStreamManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+object CameraStreamConstants {
+    const val CAMERA_STREAM_ID = "camera"
+}
 
-    /**
-     * Camera Stream Publisher Instance
-     */
-    companion object {
-
-        /**
-         * Camera Stream Id
-         */
-        const val CAMERA_STREAM_ID = "camera"
-    }
+internal class CameraStreamManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
     
     private val jobs = mutableListOf<Job>()
 
