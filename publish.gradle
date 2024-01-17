@@ -1,8 +1,11 @@
 ext.moduleGroupId = "com.kaleyra"
 ext.moduleVersion = "4.0.0-rc02"
 
-def dryRun = true
-def moduleObsfuscated = false
+if (project.hasProperty("dryRun")) {
+    project.ext.setProperty("isPublishing", true)
+}
+def dryRun = project.hasProperty("dryRun") ? project.getProperty("dryRun").toBoolean() : true
+def moduleObsfuscated = project.hasProperty("moduleObsfuscated") ? project.getProperty("moduleObsfuscated").toBoolean() : false
 
 Properties properties = new Properties()
 if (project.rootProject.file("local.properties").exists()) {
@@ -67,7 +70,6 @@ task invalidateCache(type: Exec) {
 task publishUpload {
     def publishTask = 'publishToMavenLocal'
     if (!dryRun) publishTask = 'publish'
-    dependsOn 'updateSdkVersion'
     dependsOn publishTask
     dependsOn 'invalidateCache'
     tasks.findByName('invalidateCache').mustRunAfter publishTask
@@ -86,10 +88,15 @@ dokkaHtml {
     }
 }
 
-task updateSdkVersion(type: Exec) {
-    workingDir '../scripts'
-    println("Updating sdk version into assets/kaleyra_video_wrapper_into.txt for module ${project.name} with version $moduleVersion")
-    commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion"
+task updateSdkVersion() {
+    def stdout = new ByteArrayOutputStream()
+    def nextVersion = project.hasProperty("nextVersion") ? project.getProperty("nextVersion") : moduleVersion
+    exec {
+        workingDir '../scripts'
+        commandLine 'python3', './update_sdk_version.py', "${project.name}","$moduleVersion", "$nextVersion"
+        standardOutput = stdout;
+    }
+    println stdout
 }
 
 task publishDocs(type: Exec) {
