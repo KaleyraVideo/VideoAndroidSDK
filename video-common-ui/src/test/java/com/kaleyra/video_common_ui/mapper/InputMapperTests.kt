@@ -20,6 +20,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.isAnyScreenInputActive
@@ -47,10 +48,10 @@ class InputMapperTests {
     private val inactiveMicrophoneInputMock = mockk<Input.Audio> {
         every { state } returns MutableStateFlow(Input.State.Closed)
     }
-    private val activeScreenInputMock = mockk<Input.Video.Screen> {
+    private val activeScreenInputMock = mockk<Input.Video.Screen.My> {
         every { state } returns MutableStateFlow(Input.State.Active)
     }
-    private val inactiveScreenInputMock = mockk<Input.Video.Screen> {
+    private val inactiveScreenInputMock = mockk<Input.Video.Screen.My> {
         every { state } returns MutableStateFlow(Input.State.Closed)
     }
     private val activeApplicationInputMock = mockk<Input.Video.Application> {
@@ -150,7 +151,7 @@ class InputMapperTests {
     @Test
     fun cameraStreamAudio_toAudio_streamAudio() = runTest {
         with(streamMock) {
-            every { id } returns CameraStreamManager.CAMERA_STREAM_ID
+            every { id } returns CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(audioMock)
         }
         val call = MutableStateFlow(callMock)
@@ -162,7 +163,7 @@ class InputMapperTests {
     @Test
     fun cameraStreamAudioNull_toAudio_null() = runTest {
         with(streamMock) {
-            every { id } returns CameraStreamManager.CAMERA_STREAM_ID
+            every { id } returns CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
         val call = MutableStateFlow(callMock)
@@ -183,7 +184,7 @@ class InputMapperTests {
     @Test
     fun inputAudioRequestMute_toMuteEvent_inputEvent() = runTest {
         val event = mockk<Input.Audio.Event.Request.Mute>()
-        every { streamMock.id } returns CameraStreamManager.CAMERA_STREAM_ID
+        every { streamMock.id } returns CAMERA_STREAM_ID
         every { audioMock.events } returns MutableStateFlow(event)
         val call = MutableStateFlow(callMock)
         val result = call.toMuteEvents()
