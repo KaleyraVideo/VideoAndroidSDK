@@ -9,30 +9,20 @@ import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallForegroundService
 import com.kaleyra.video_common_ui.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.CallUncaughtExceptionHandler
-import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
-import com.kaleyra.video_common_ui.call.CameraStreamManager
-import com.kaleyra.video_common_ui.call.ParticipantManager
-import com.kaleyra.video_common_ui.call.ScreenShareOverlayDelegate
-import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
-import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -62,7 +52,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val callForegroundServiceWorker = CallForegroundServiceWorker(coroutineScope, this)
+    private val callForegroundServiceWorker by lazy { CallForegroundServiceWorker(application, coroutineScope, this) }
 
     private var foregroundJob: Job? = null
 

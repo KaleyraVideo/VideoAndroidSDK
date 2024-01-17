@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_common_ui
 
+import android.app.Application
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
@@ -30,6 +31,7 @@ import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
+import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
@@ -49,6 +51,7 @@ import kotlinx.coroutines.launch
 
 // TODO revise naming for managers
 internal class CallForegroundServiceWorker(
+    private val application: Application,
     private val coroutineScope: CoroutineScope,
     private val callNotificationListener: CallNotificationProducer.Listener
 ) {
@@ -56,6 +59,8 @@ internal class CallForegroundServiceWorker(
     private val callNotificationProducer by lazy { CallNotificationProducer(coroutineScope) }
 
     private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(coroutineScope) }
+
+    private val screenShareOverlayProducer by lazy { ScreenShareOverlayProducer(application, coroutineScope) }
 
     private val cameraStreamManager by lazy { CameraStreamManager(coroutineScope) }
 
@@ -83,6 +88,7 @@ internal class CallForegroundServiceWorker(
             if (DeviceUtils.isSmartGlass) return@onCallReady
             ProximityService.start()
             fileShareNotificationProducer.bind(call)
+            screenShareOverlayProducer.bind(call)
             block?.invoke(call)
         }
     }
@@ -90,12 +96,15 @@ internal class CallForegroundServiceWorker(
     fun dispose() {
         call?.end()
         call = null
-        ProximityService.stop()
         cameraStreamManager.stop()
         streamsManager.stop()
         participantManager.stop()
         callNotificationProducer.stop()
+
+        if (DeviceUtils.isSmartGlass) return
+        ProximityService.stop()
         fileShareNotificationProducer.stop()
+        screenShareOverlayProducer.stop()
     }
 }
 
@@ -126,7 +135,7 @@ internal class CallService: LifecycleService(), CallForegroundService, CallNotif
         }
     }
 
-    private val callForegroundServiceWorker = CallForegroundServiceWorker(lifecycleScope, this)
+    private val callForegroundServiceWorker by lazy { CallForegroundServiceWorker(application, lifecycleScope, this) }
 
     private var foregroundJob: Job? = null
 
