@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui
 
 import com.kaleyra.video.conference.*
 import com.kaleyra.video.conference.Call.PreferredType
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import io.mockk.every
 import io.mockk.mockk
@@ -53,7 +54,7 @@ class CameraStreamManagerTest {
         every { participantsMock.me } returns meMock
         every { meMock.streams } returns MutableStateFlow(listOf(myStream))
         with(myStream) {
-            every { id } returns CameraStreamManager.CAMERA_STREAM_ID
+            every { id } returns CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
             every { video } returns MutableStateFlow(null)
         }
@@ -91,12 +92,12 @@ class CameraStreamManagerTest {
         cameraStreamManager.addCameraStream(callMock)
         runCurrent()
 
-        verify(exactly = 0) { meMock.addStream(CameraStreamManager.CAMERA_STREAM_ID) }
+        verify(exactly = 0) { meMock.addStream(CAMERA_STREAM_ID) }
 
         participantsFlow.value = participantsMock
         runCurrent()
 
-        verify(exactly = 1) { meMock.addStream(CameraStreamManager.CAMERA_STREAM_ID) }
+        verify(exactly = 1) { meMock.addStream(CAMERA_STREAM_ID) }
     }
 
     @Test
@@ -108,14 +109,14 @@ class CameraStreamManagerTest {
         cameraStreamManager.addCameraStream(callMock)
         runCurrent()
 
-        verify(exactly = 1) { meMock.addStream(CameraStreamManager.CAMERA_STREAM_ID) }
+        verify(exactly = 1) { meMock.addStream(CAMERA_STREAM_ID) }
     }
 
     @Test
     fun streamAlreadyExists_addCameraStream_addStreamIsNotPerformed() = runTest {
         val cameraStreamManager = CameraStreamManager(this)
         val streamMock = mockk<Stream.Mutable>(relaxed = true) {
-            every { id } returns CameraStreamManager.CAMERA_STREAM_ID
+            every { id } returns CAMERA_STREAM_ID
         }
         every { meMock.streams } returns MutableStateFlow(listOf(streamMock))
         every { callMock.participants } returns MutableStateFlow(participantsMock)
@@ -123,7 +124,7 @@ class CameraStreamManagerTest {
         cameraStreamManager.addCameraStream(callMock)
         runCurrent()
 
-        verify(exactly = 0) { meMock.addStream(CameraStreamManager.CAMERA_STREAM_ID) }
+        verify(exactly = 0) { meMock.addStream(CAMERA_STREAM_ID) }
     }
 
     @Test
