@@ -36,13 +36,12 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,7 +60,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -247,9 +245,11 @@ internal fun ChatScreen(
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
 
-                StatusBarsSpacer(modifier = Modifier.background(spacerColor.value))
-
-                if (uiState.isInCall) OngoingCallLabel(onClick = onShowCall)
+                if (uiState.isInCall) {
+                    OngoingCallLabel(onClick = onShowCall)
+                } else {
+                    StatusBarsSpacer(modifier = Modifier.background(spacerColor.value))
+                }
 
                 when (uiState) {
                     is ChatUiState.OneToOne -> {
@@ -359,6 +359,7 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
             )
             .highlightOnFocus(interactionSource)
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(WindowInsets.statusBars.asPaddingValues())
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_ongoing_call_label),
