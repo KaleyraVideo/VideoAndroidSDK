@@ -16,31 +16,61 @@
 
 package com.kaleyra.video_sdk.chat.conversation.view.item
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
+
 
 @Composable
 internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isDark = isSystemInDarkTheme()
     Row(
         modifier = Modifier
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
-            .then(modifier),
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(size = 4.dp)),
         horizontalArrangement = Arrangement.Center
     ) {
         val text = TimestampUtils.parseDay(LocalContext.current, timestamp)
-        Text(text = text, fontSize = 12.sp, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
+        Text(
+            modifier = Modifier
+                .padding(start = 8.dp, top = 2.dp, end = 8.dp, bottom = 2.dp),
+            text = text,
+            fontSize = MaterialTheme.typography.labelMedium.fontSize,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun DayHeaderItemPreview() = KaleyraM3Theme {
+    Surface {
+        DayHeaderItem(0)
     }
 }

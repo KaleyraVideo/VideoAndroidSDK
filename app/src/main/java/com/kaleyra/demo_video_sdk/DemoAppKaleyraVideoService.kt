@@ -19,6 +19,7 @@ package com.kaleyra.demo_video_sdk
 import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.app_configuration.model.UserDetailsProviderMode.CUSTOM
 import com.kaleyra.app_configuration.utils.MediaStorageUtils.getUriFromString
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -49,18 +50,18 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
                         defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-                        day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors(secondary = Color(0xFF0087E2))),
-                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors(secondary = Color.Yellow))
+                        day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = Color(0xFF0087E2).toArgb())),
+                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = android.graphics.Color.YELLOW))
                     )
-                KaleyraVideo.conference.call.onEach {
-                    val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-                    it.actions.value = callConfiguration.actions.mapToCallUIActions()
-                    it.withFeedback = callConfiguration.options.feedbackEnabled
-                    if (callConfiguration.options.backCameraAsDefault) {
-                        it.inputs.useBackCamera()
-                    }
-                }.launchIn(MainScope())
             }
+            KaleyraVideo.conference.call.onEach {
+                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
+                it.actions.value = callConfiguration.actions.mapToCallUIActions()
+                it.withFeedback = callConfiguration.options.feedbackEnabled
+                if (callConfiguration.options.backCameraAsDefault) {
+                    it.inputs.useBackCamera()
+                }
+            }.launchIn(MainScope())
         }
 
         internal fun customUserDetailsProvider(context: Context): UserDetailsProvider? {

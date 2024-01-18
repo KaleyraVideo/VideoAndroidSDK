@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.chat.appbar.view
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -28,7 +37,7 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
-import com.kaleyra.video_sdk.common.topappbar.TopAppBar
+import com.kaleyra.video_sdk.common.topappbar.ChatTopAppBar
 
 internal const val SubtitleTag = "SubtitleTag"
 internal const val BouncingDotsTag = "BouncingDots"
@@ -37,14 +46,24 @@ internal const val ChatActionsTag = "ChatActionsTag"
 @Composable
 internal fun ChatAppBar(
     isInCall: Boolean = false,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollState: LazyListState,
     actions: ImmutableSet<ChatAction>,
     onBackPressed: () -> Unit = { },
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
-    TopAppBar(
-        navigationIcon = { BackIconButton(onClick = onBackPressed) },
+    ChatTopAppBar(
+        navigationIcon = {
+            BackIconButton(
+                iconTint = MaterialTheme.colorScheme.onSurface,
+                onClick = onBackPressed
+            )
+        },
+        scrollBehavior = scrollBehavior,
+        scrollState = scrollState,
         content = content,
-        actions = { if (!isInCall) Actions(actions = actions) }
+        actions = { if (!isInCall) Actions(actions = actions) },
+        windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal),
     )
 }
 
@@ -57,6 +76,7 @@ internal fun Actions(actions: ImmutableSet<ChatAction>) {
                     IconButton(
                         icon = painterResource(R.drawable.ic_kaleyra_audio_call),
                         iconDescription = stringResource(id = R.string.kaleyra_start_audio_call),
+                        iconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = it.onClick
                     )
                 }
@@ -65,6 +85,7 @@ internal fun Actions(actions: ImmutableSet<ChatAction>) {
                     IconButton(
                         icon = painterResource(R.drawable.ic_kaleyra_audio_upgradable_call),
                         iconDescription = stringResource(id = R.string.kaleyra_start_audio_upgradable_call),
+                        iconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = it.onClick
                     )
                 }
@@ -73,6 +94,7 @@ internal fun Actions(actions: ImmutableSet<ChatAction>) {
                     IconButton(
                         icon = painterResource(R.drawable.ic_kaleyra_video_call),
                         iconDescription = stringResource(id = R.string.kaleyra_start_video_call),
+                        iconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = it.onClick
                     )
                 }

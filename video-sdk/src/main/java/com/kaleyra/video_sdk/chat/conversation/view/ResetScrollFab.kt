@@ -24,14 +24,17 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,24 +42,26 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun ResetScrollFab(
+    modifier: Modifier = Modifier,
     counter: Int,
     onClick: () -> Unit,
-    enabled: Boolean
+    enabled: Boolean,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     AnimatedVisibility(
         visible = enabled,
         enter = scaleIn(),
-        exit = scaleOut()
+        exit = scaleOut(),
+        modifier = modifier
     ) {
-        FloatingActionButton(
+        SmallFloatingActionButton(
             onClick = onClick,
-            backgroundColor = MaterialTheme.colors.primary,
             modifier = Modifier
-                .defaultMinSize(32.dp, 32.dp)
+//                .defaultMinSize(32.dp, 32.dp)
                 .highlightOnFocus(interactionSource),
             interactionSource = interactionSource
         ) {
@@ -73,7 +78,7 @@ internal fun ResetScrollFab(
                     )
                 }
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_double_arrow_down),
+                    painter = painterResource(id = R.drawable.kaleyra_z_arrow_down_3),
                     contentDescription = stringResource(id = R.string.kaleyra_chat_scroll_to_last_message),
                     modifier = Modifier.size(16.dp)
                 )
@@ -85,7 +90,7 @@ internal fun ResetScrollFab(
 @Preview
 @Composable
 internal fun ResetScrollFabPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         ResetScrollFab(counter = 5, onClick = { }, enabled = true)
     }
 }
@@ -93,7 +98,7 @@ internal fun ResetScrollFabPreview() {
 @Preview
 @Composable
 internal fun ResetScrollFabDarkPreview() {
-    KaleyraTheme(isDarkTheme = true) {
+    KaleyraM3Theme {
         ResetScrollFab(counter = 5, onClick = { }, enabled = true)
     }
 }

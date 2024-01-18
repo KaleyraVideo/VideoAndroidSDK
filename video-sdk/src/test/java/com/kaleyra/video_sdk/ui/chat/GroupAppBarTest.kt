@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.ui.chat
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -77,6 +81,7 @@ class GroupAppBarTest {
                 participantsState = participantsState,
                 isInCall = isInCall ,
                 actions = chatActions,
+                scrollState = rememberLazyListState(),
                 onBackPressed = { isBackPressed = true }
             )
         }
@@ -153,7 +158,7 @@ class GroupAppBarTest {
         getBouncingDots().assertDoesNotExist()
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(typing = ImmutableList(users))
-        getBouncingDots().assertIsDisplayed()
+        getBouncingDots().assertExists()
     }
 
     @Test

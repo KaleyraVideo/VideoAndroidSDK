@@ -23,31 +23,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -59,14 +48,12 @@ import com.kaleyra.video_sdk.chat.conversation.model.ConversationItem
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
 import com.kaleyra.video_sdk.chat.conversation.model.mock.mockConversationElements
 import com.kaleyra.video_sdk.chat.conversation.view.ConversationContent
-import com.kaleyra.video_sdk.chat.conversation.view.ResetScrollFab
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 private const val TOP_THRESHOLD = 15
 
@@ -80,7 +67,7 @@ private val LazyListState.isApproachingTop: Boolean
     }.value
 
 @Composable
-private fun scrollToBottomFabEnabled(listState: LazyListState): State<Boolean> {
+internal fun scrollToBottomFabEnabled(listState: LazyListState): State<Boolean> {
     val resetScrollThreshold = with(LocalDensity.current) { ScrollToBottomThreshold.toPx() }
     return remember {
         derivedStateOf {
@@ -92,29 +79,17 @@ private fun scrollToBottomFabEnabled(listState: LazyListState): State<Boolean> {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun ConversationComponent(
+    modifier: Modifier = Modifier,
     conversationState: ConversationState,
     participantsDetails: ImmutableMap<String, ChatParticipantDetails>? = null,
-    onDirectionLeft: (() -> Unit) = { },
     onMessageScrolled: (ConversationItem.Message) -> Unit = { },
     onApproachingTop: () -> Unit = { },
-    onResetScroll: () -> Unit = { },
     scrollState: LazyListState = rememberLazyListState(),
-    modifier: Modifier = Modifier
 ) {
     val screenHeight = with(LocalDensity.current) {
         LocalConfiguration.current.screenHeightDp.dp.toPx()
-    }
-    val scope = rememberCoroutineScope()
-    val fabRef = remember { FocusRequester() }
-    val scrollToBottomFabEnabled by scrollToBottomFabEnabled(scrollState)
-    val onFabClick = remember(scope, scrollState) {
-        {
-            scope.launch { scrollState.scrollToItem(0) }
-            onResetScroll()
-        }
     }
 
     LaunchedEffect(scrollState) {
@@ -146,17 +121,6 @@ internal fun ConversationComponent(
 
     Box(
         modifier = Modifier
-            .onPreviewKeyEvent {
-                return@onPreviewKeyEvent when {
-                    it.type != KeyEventType.KeyDown && it.key == Key.DirectionLeft -> {
-                        onDirectionLeft(); true
-                    }
-                    scrollToBottomFabEnabled && it.type != KeyEventType.KeyDown && it.key == Key.DirectionRight -> {
-                        fabRef.requestFocus(); true
-                    }
-                    else -> false
-                }
-            }
             .then(modifier)
     ) {
         if (conversationState.conversationItems == null) LoadingMessagesLabel(Modifier.align(Alignment.Center))
@@ -173,19 +137,6 @@ internal fun ConversationComponent(
                     .align(Alignment.BottomCenter)
             )
         }
-
-        Box(
-            Modifier
-                .focusRequester(fabRef)
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            ResetScrollFab(
-                counter = conversationState.unreadMessagesCount,
-                onClick = onFabClick,
-                enabled = scrollToBottomFabEnabled
-            )
-        }
     }
 }
 
@@ -198,7 +149,7 @@ internal fun LoadingMessagesLabel(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_chat_channel_loading),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -212,7 +163,7 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_chat_no_messages),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -220,13 +171,12 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun LoadingConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+internal fun LoadingConversationComponentPreview() = KaleyraM3Theme {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(),
             onMessageScrolled = { },
             onApproachingTop = { },
-            onResetScroll = { },
             scrollState = rememberLazyListState(),
             modifier = Modifier.fillMaxSize()
         )
@@ -236,8 +186,8 @@ internal fun LoadingConversationComponentPreview() = KaleyraTheme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun EmptyConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+internal fun EmptyConversationComponentPreview() = KaleyraM3Theme {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = ImmutableList(listOf())),
             modifier = Modifier.fillMaxSize()
@@ -248,8 +198,8 @@ internal fun EmptyConversationComponentPreview() = KaleyraTheme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ConversationComponentPreview() = KaleyraTheme {
-    Surface(color = MaterialTheme.colors.background) {
+internal fun ConversationComponentPreview() = KaleyraM3Theme {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = mockConversationElements),
             modifier = Modifier.fillMaxSize()

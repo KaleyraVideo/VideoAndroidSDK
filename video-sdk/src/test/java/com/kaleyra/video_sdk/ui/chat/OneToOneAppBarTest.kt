@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.ui.chat
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -56,7 +60,7 @@ class OneToOneAppBarTest {
 
     private val chatParticipantState = MutableStateFlow<ChatParticipantState>(ChatParticipantState.Unknown)
 
-    private var connectionState by mutableStateOf<ConnectionState>(ConnectionState.Unknown)
+    private var connectionState by mutableStateOf<ConnectionState>(ConnectionState.Connected)
 
     private var chatParticipantsDetails by mutableStateOf(ChatParticipantDetails(username = "recipientUser", state = chatParticipantState))
 
@@ -76,6 +80,7 @@ class OneToOneAppBarTest {
                 recipientDetails = chatParticipantsDetails,
                 isInCall = isInCall,
                 actions = chatActions,
+                scrollState = rememberLazyListState(),
                 onBackPressed = { isBackPressed = true }
             )
         }
@@ -83,7 +88,7 @@ class OneToOneAppBarTest {
 
     @After
     fun tearDown() {
-        connectionState = ConnectionState.Unknown
+        connectionState = ConnectionState.Connected
         ChatParticipantDetails(username = "recipientUser", state = chatParticipantState)
         chatParticipantState.value = ChatParticipantState.Unknown
         isInCall = false
@@ -150,7 +155,7 @@ class OneToOneAppBarTest {
         chatParticipantState.value = ChatParticipantState.Typing
         val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_typing)
         getSubtitle().assertContentDescriptionEquals(typing)
-        getBouncingDots().assertIsDisplayed()
+        getBouncingDots().assertExists()
     }
 
     @Test

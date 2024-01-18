@@ -37,7 +37,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class CompanyThemeManagerTest {
 
@@ -76,8 +75,8 @@ class CompanyThemeManagerTest {
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-            day = Style(logo = dayLogo, colors = CompanyUI.Theme.Colors(secondary = Color.Red)),
-            night = Style(logo = nightLogo, colors = CompanyUI.Theme.Colors(secondary = Color.Yellow))
+            day = Style(logo = dayLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Red)),
+            night = Style(logo = nightLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow))
         )
         every { KaleyraVideo.theme } returns companyUITheme
         assertEquals(companyUITheme, company.combinedTheme.first())

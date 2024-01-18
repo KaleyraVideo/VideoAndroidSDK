@@ -58,7 +58,6 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
-import com.kaleyra.video_sdk.call.stream.*
 import com.kaleyra.video_sdk.call.stream.view.core.DefaultStreamAvatarSize
 import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStream
 import com.kaleyra.video_sdk.call.stream.view.featured.HeaderAutoHideMs

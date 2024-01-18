@@ -62,14 +62,11 @@ class ConversationComponentTest {
 
     private var onMessageScrolled = false
 
-    private var onResetScroll = false
-
     private var onApproachingTop = false
 
     @After
     fun tearDown() {
         onMessageScrolled = false
-        onResetScroll = false
         onApproachingTop = false
     }
 
@@ -85,23 +82,6 @@ class ConversationComponentTest {
         setContent(ConversationState(conversationItems = null))
         val channelLoading = composeTestRule.activity.getString(R.string.kaleyra_chat_channel_loading)
         composeTestRule.onNodeWithText(channelLoading).assertIsDisplayed()
-    }
-
-    @Test
-    fun userScrollsUp_fabAppears() {
-        setContent(ConversationState(conversationItems = ImmutableList(mockConversationElements.value.plus(mockConversationElements.value))))
-        findResetScrollFab().assertDoesNotExist()
-        findConversation().performScrollUp()
-        findResetScrollFab().assertIsDisplayed()
-    }
-
-    @Test
-    fun userClicksFab_resetScrollInvoked() {
-        setContent(ConversationState(conversationItems = ImmutableList(mockConversationElements.value.plus(mockConversationElements.value))))
-        findConversation().performScrollUp()
-        findResetScrollFab().performClick()
-        findResetScrollFab().assertDoesNotExist()
-        assert(onResetScroll)
     }
 
     @Test
@@ -212,7 +192,6 @@ class ConversationComponentTest {
             participantsDetails = participantsDetails,
             onMessageScrolled = { onMessageScrolled = true },
             onApproachingTop = { onApproachingTop = true },
-            onResetScroll = { onResetScroll = true }
         )
     }
 

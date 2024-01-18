@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.chat.appbar.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
@@ -28,8 +35,10 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantsState
 import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -37,20 +46,29 @@ internal fun GroupAppBar(
     image: ImmutableUri,
     name: String,
     connectionState: ConnectionState,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollState: LazyListState,
     participantsDetails: ImmutableMap<String, ChatParticipantDetails>,
     participantsState: ChatParticipantsState,
     isInCall: Boolean,
     actions: ImmutableSet<ChatAction>,
     onBackPressed: () -> Unit = { }
 ) {
-    ChatAppBar(actions = actions, isInCall = isInCall, onBackPressed = onBackPressed) {
-        ChatAppBarContent(
-            image = image,
-            title = name,
-            subtitle = textFor(connectionState, participantsState, participantsDetails),
-            typingDots = participantsState.typing.count() > 0
-        )
-    }
+    ChatAppBar(
+        actions = actions,
+        isInCall = isInCall,
+        onBackPressed = onBackPressed,
+        scrollBehavior = scrollBehavior,
+        scrollState = scrollState,
+        content = {
+            ChatAppBarContent(
+                image = image,
+                title = name,
+                subtitle = textFor(connectionState, participantsState, participantsDetails),
+                typingDots = participantsState.typing.count() > 0
+            )
+        }
+    )
 }
 
 @Composable
@@ -89,7 +107,7 @@ private fun textFor(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun GroupAppBarPreview() = KaleyraTheme {
+internal fun GroupAppBarPreview() = KaleyraM3Theme {
     GroupAppBar(
         image = ImmutableUri(),
         name = "Trip Crashers",
@@ -100,9 +118,10 @@ internal fun GroupAppBarPreview() = KaleyraTheme {
                 "userId2" to ChatParticipantDetails("Jack Daniels")
             )
         ),
-        participantsState = ChatParticipantsState(),
+        participantsState = ChatParticipantsState(typing = ImmutableList(listOf("Gianni", "Muzio"))),
         isInCall = false,
         actions = mockActions,
-        onBackPressed = { }
+        onBackPressed = { },
+        scrollState = rememberLazyListState()
     )
 }

@@ -28,10 +28,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.KaleyraFontFamily
+import com.kaleyra.video_common_ui.KaleyraM3FontFamily
+import com.kaleyra.video_common_ui.material.ColorSchemeUtils.toM3ColorScheme
+import com.kaleyra.video_sdk.extensions.darkColorSchemeFrom
+import com.kaleyra.video_sdk.extensions.lightColorSchemeFrom
 
 private val KaleyraLightColorTheme = lightColors(
     primary = kaleyra_theme_light_primary,
@@ -63,73 +68,28 @@ private val KaleyraDarkColorTheme = darkColors(
     onSurface = kaleyra_theme_dark_onSurface
 )
 
-/**
-//DE-COMMENT THIS WHEN THE MATERIAL 3 DEPENDENCY WILL BE ADDED
-private val KaleyraM3LightColorTheme = lightColorScheme(
-    primary = kaleyra_m3_theme_light_primary,
-    onPrimary = kaleyra_m3_theme_light_onPrimary,
-    primaryContainer = kaleyra_m3_theme_light_primaryContainer,
-    onPrimaryContainer = kaleyra_m3_theme_light_onPrimaryContainer,
-    secondary = kaleyra_m3_theme_light_secondary,
-    onSecondary = kaleyra_m3_theme_light_onSecondary,
-    secondaryContainer = kaleyra_m3_theme_light_secondaryContainer,
-    onSecondaryContainer = kaleyra_m3_theme_light_onSecondaryContainer,
-    tertiary = kaleyra_m3_theme_light_tertiary,
-    onTertiary = kaleyra_m3_theme_light_onTertiary,
-    tertiaryContainer = kaleyra_m3_theme_light_tertiaryContainer,
-    onTertiaryContainer = kaleyra_m3_theme_light_onTertiaryContainer,
-    error = kaleyra_m3_theme_light_error,
-    errorContainer = kaleyra_m3_theme_light_errorContainer,
-    onError = kaleyra_m3_theme_light_onError,
-    onErrorContainer = kaleyra_m3_theme_light_onErrorContainer,
-    background = kaleyra_m3_theme_light_background,
-    onBackground = kaleyra_m3_theme_light_onBackground,
-    surface = kaleyra_m3_theme_light_surface,
-    onSurface = kaleyra_m3_theme_light_onSurface,
-    surfaceVariant = kaleyra_m3_theme_light_surfaceVariant,
-    onSurfaceVariant = kaleyra_m3_theme_light_onSurfaceVariant,
-    outline = kaleyra_m3_theme_light_outline,
-    inverseOnSurface = kaleyra_m3_theme_light_inverseOnSurface,
-    inverseSurface = kaleyra_m3_theme_light_inverseSurface,
-    inversePrimary = kaleyra_m3_theme_light_inversePrimary,
-    surfaceTint = kaleyra_m3_theme_light_surfaceTint,
-    outlineVariant = kaleyra_m3_theme_light_outlineVariant,
-    scrim = kaleyra_m3_theme_light_scrim,
-)
+internal val defaultTypography = androidx.compose.material3.Typography()
+internal val typography = androidx.compose.material3.Typography(
+    displayLarge = defaultTypography.displayLarge.copy(fontFamily = KaleyraM3FontFamily.default),
+    displayMedium = defaultTypography.displayMedium.copy(fontFamily = KaleyraM3FontFamily.default),
+    displaySmall = defaultTypography.displaySmall.copy(fontFamily = KaleyraM3FontFamily.default),
 
+    headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = KaleyraM3FontFamily.default),
+    headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = KaleyraM3FontFamily.default),
+    headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = KaleyraM3FontFamily.default),
 
-private val KaleyraM3DarkColorTheme = darkColorScheme(
-    primary = kaleyra_m3_theme_dark_primary,
-    onPrimary = kaleyra_m3_theme_dark_onPrimary,
-    primaryContainer = kaleyra_m3_theme_dark_primaryContainer,
-    onPrimaryContainer = kaleyra_m3_theme_dark_onPrimaryContainer,
-    secondary = kaleyra_m3_theme_dark_secondary,
-    onSecondary = kaleyra_m3_theme_dark_onSecondary,
-    secondaryContainer = kaleyra_m3_theme_dark_secondaryContainer,
-    onSecondaryContainer = kaleyra_m3_theme_dark_onSecondaryContainer,
-    tertiary = kaleyra_m3_theme_dark_tertiary,
-    onTertiary = kaleyra_m3_theme_dark_onTertiary,
-    tertiaryContainer = kaleyra_m3_theme_dark_tertiaryContainer,
-    onTertiaryContainer = kaleyra_m3_theme_dark_onTertiaryContainer,
-    error = kaleyra_m3_theme_dark_error,
-    errorContainer = kaleyra_m3_theme_dark_errorContainer,
-    onError = kaleyra_m3_theme_dark_onError,
-    onErrorContainer = kaleyra_m3_theme_dark_onErrorContainer,
-    background = kaleyra_m3_theme_dark_background,
-    onBackground = kaleyra_m3_theme_dark_onBackground,
-    surface = kaleyra_m3_theme_dark_surface,
-    onSurface = kaleyra_m3_theme_dark_onSurface,
-    surfaceVariant = kaleyra_m3_theme_dark_surfaceVariant,
-    onSurfaceVariant = kaleyra_m3_theme_dark_onSurfaceVariant,
-    outline = kaleyra_m3_theme_dark_outline,
-    inverseOnSurface = kaleyra_m3_theme_dark_inverseOnSurface,
-    inverseSurface = kaleyra_m3_theme_dark_inverseSurface,
-    inversePrimary = kaleyra_m3_theme_dark_inversePrimary,
-    surfaceTint = kaleyra_m3_theme_dark_surfaceTint,
-    outlineVariant = kaleyra_m3_theme_dark_outlineVariant,
-    scrim = kaleyra_m3_theme_dark_scrim,
+    titleLarge = defaultTypography.titleLarge.copy(fontFamily = KaleyraM3FontFamily.default),
+    titleMedium = defaultTypography.titleMedium.copy(fontFamily = KaleyraM3FontFamily.default),
+    titleSmall = defaultTypography.titleSmall.copy(fontFamily = KaleyraM3FontFamily.default),
+
+    bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = KaleyraM3FontFamily.default),
+    bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = KaleyraM3FontFamily.default),
+    bodySmall = defaultTypography.bodySmall.copy(fontFamily = KaleyraM3FontFamily.default),
+
+    labelLarge = defaultTypography.labelLarge.copy(fontFamily = KaleyraM3FontFamily.default),
+    labelMedium = defaultTypography.labelMedium.copy(fontFamily = KaleyraM3FontFamily.default),
+    labelSmall = defaultTypography.labelSmall.copy(fontFamily = KaleyraM3FontFamily.default)
 )
-**/
 
 /**
  * Composable function to generate the Collaboration Theme
@@ -158,14 +118,19 @@ fun CollaborationTheme(
         }
     }
 
+    val darkSeedColor = (darkColors as? Theme.Colors.Seed)?.color ?: (darkColors as? Theme.Colors.Scheme)?.primary ?: kaleyra_m3_seed.toArgb()
+    val lightSeedColor = (lightColors as? Theme.Colors.Seed)?.color ?: (lightColors as? Theme.Colors.Scheme)?.primary ?: kaleyra_m3_seed.toArgb()
+
     val colors = when {
         isDarkTheme -> {
-            if (darkColors != null) KaleyraDarkColorTheme.copy(secondary = darkColors.secondary, onSecondary = onColorFor(darkColors.secondary))
-            else KaleyraDarkColorTheme
+            with(Color(darkSeedColor)) {
+                KaleyraDarkColorTheme.copy(secondary = this, onSecondary = onColorFor(this))
+            }
         }
         else -> {
-            if (lightColors != null) KaleyraLightColorTheme.copy(secondary = lightColors.secondary, onSecondary = onColorFor(lightColors.secondary))
-            else KaleyraLightColorTheme
+            with(Color(lightSeedColor)) {
+                KaleyraLightColorTheme.copy(secondary = this, onSecondary = onColorFor(this))
+            }
         }
     }
 
@@ -190,6 +155,71 @@ fun CollaborationTheme(
     )
 }
 
+/**
+ * Composable function to generate the Collaboration M3 Theme
+ * @param theme Theme input theme
+ * @param transparentSystemBars Boolean flag indicating if the system bars should be transparent, true if transparent, false otherwise
+ * @param content [@androidx.compose.runtime.Composable] Function1<[@kotlin.ParameterName] Boolean, Unit> composable callback with isDarkTheme as input flag
+ */
+@Composable
+fun CollaborationM3Theme(
+    theme: Theme,
+    transparentSystemBars: Boolean = true,
+    content: @Composable (isDarkTheme: Boolean) -> Unit
+) {
+    val systemUiController = rememberSystemUiController()
+
+    val lightColors = theme.day.colors
+    val darkColors = theme.night.colors
+    val isSystemDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme by remember(theme) {
+        derivedStateOf {
+            when (theme.defaultStyle) {
+                Theme.DefaultStyle.Day -> false
+                Theme.DefaultStyle.Night -> true
+                else -> isSystemDarkTheme
+            }
+        }
+    }
+
+
+    val colors = when {
+        isDarkTheme -> when(darkColors) {
+            is Theme.Colors.Seed -> darkColorSchemeFrom(darkColors.color)
+            is Theme.Colors.Scheme -> darkColors.toM3ColorScheme()
+            else -> darkColorSchemeFrom(kaleyra_m3_seed.toArgb())
+
+        }
+        else ->  when(lightColors) {
+            is Theme.Colors.Seed -> lightColorSchemeFrom(lightColors.color)
+            is Theme.Colors.Scheme -> lightColors.toM3ColorScheme()
+            else -> lightColorSchemeFrom(kaleyra_m3_seed.toArgb())
+
+        }
+    }
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = if (transparentSystemBars) Color.Transparent else colors.surface,
+            darkIcons = !transparentSystemBars && !isDarkTheme,
+            transformColorForLightContent = { Color.Black }
+        )
+        systemUiController.setNavigationBarColor(
+            color = if (transparentSystemBars) Color.Transparent else colors.surface,
+            darkIcons = !isDarkTheme,
+            navigationBarContrastEnforced = false,
+            transformColorForLightContent = { Color.Black }
+        )
+    }
+
+    androidx.compose.material3.MaterialTheme(
+        colorScheme = colors,
+        typography = typography,
+        content = { content(isDarkTheme) }
+    )
+}
+
+
 private fun onColorFor(color: Color) = if (color.luminance() > .5f) Color.Black else Color.White
 
 /**
@@ -212,6 +242,19 @@ fun KaleyraTheme(
         typography = Typography(defaultFontFamily = KaleyraFontFamily.default),
         content = content
     )
+}
+
+/**
+ * Composable function to build the Kaleyra M3 Theme
+ * @param content [@androidx.compose.runtime.Composable] Function0<Unit> composable callback called when the content should be rendered
+ */
+@Composable
+fun KaleyraM3Theme(content: @Composable (isDarkTheme: Boolean) -> Unit) {
+    val theme = Theme(
+        day = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb())),
+        night = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb()))
+    )
+    CollaborationM3Theme(theme = theme, content = content)
 }
 
 private val TermsDarkColorTheme = darkColors(

@@ -35,3 +35,20 @@ object KaleyraFontFamily {
         Font(R.font.kaleyra_font_bold, FontWeight(450), FontStyle.Normal)
     )
 }
+
+/**
+ * Font M3 family representation
+ */
+object KaleyraM3FontFamily {
+
+    /**
+     * Default font family
+     */
+    val default = FontFamily(
+        Font(R.font.kaleyra_font_regular, FontWeight.W400, FontStyle.Normal),
+        Font(R.font.kaleyra_font_regular, FontWeight.W500, FontStyle.Normal),
+
+        Font(R.font.kaleyra_font_italic, FontWeight.W400, FontStyle.Italic),
+        Font(R.font.kaleyra_font_italic, FontWeight.W500, FontStyle.Italic),
+    )
+}

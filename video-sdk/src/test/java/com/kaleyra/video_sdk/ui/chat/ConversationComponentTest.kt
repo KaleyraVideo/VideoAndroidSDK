@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.ui.chat
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.kaleyra.video_sdk.R
@@ -87,33 +88,6 @@ class ConversationComponentTest {
         setContent(ConversationState(conversationItems = null))
         val channelLoading = composeTestRule.activity.getString(R.string.kaleyra_chat_channel_loading)
         composeTestRule.onNodeWithText(channelLoading).assertIsDisplayed()
-    }
-
-    @Test
-    fun userScrollsUp_fabAppears() {
-        setContent(
-            ConversationState(conversationItems = ImmutableList(
-                mockConversationElements.value.plus(
-                    mockConversationElements.value))
-            )
-        )
-        findResetScrollFab().assertDoesNotExist()
-        findConversation().performScrollUp()
-        findResetScrollFab().assertIsDisplayed()
-    }
-
-    @Test
-    fun userClicksFab_resetScrollInvoked() {
-        setContent(
-            ConversationState(conversationItems = ImmutableList(
-                mockConversationElements.value.plus(
-                    mockConversationElements.value))
-            )
-        )
-        findConversation().performScrollUp()
-        findResetScrollFab().performClick()
-        findResetScrollFab().assertDoesNotExist()
-        assert(onResetScroll)
     }
 
     @Test
@@ -232,10 +206,6 @@ class ConversationComponentTest {
         )
     }
 
-    private fun findResetScrollFab() = composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(
-        R.string.kaleyra_chat_scroll_to_last_message
-    ))
-
     private fun findConversation() = composeTestRule.onNodeWithTag(ConversationContentTag)
 
     private fun findMessageState() = composeTestRule.onNodeWithTag(MessageStateTag)
@@ -248,8 +218,7 @@ class ConversationComponentTest {
             participantsDetails = participantsDetails,
             onMessageScrolled = { onMessageScrolled = true },
             onApproachingTop = { onApproachingTop = true },
-            onResetScroll = { onResetScroll = true }
+            scrollState = rememberLazyListState()
         )
     }
-
 }

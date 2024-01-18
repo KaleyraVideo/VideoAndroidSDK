@@ -16,34 +16,62 @@
 
 package com.kaleyra.video_sdk.chat.conversation.view.item
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isDark = isSystemInDarkTheme()
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .then(modifier),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .then(modifier),
             text = stringResource(id = R.string.kaleyra_chat_unread_messages),
-            fontSize = 12.sp,
-            style = MaterialTheme.typography.body2
+            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         )
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun ConversationContentGroupPreview() = KaleyraM3Theme {
+    Surface {
+        NewMessagesHeaderItem()
     }
 }

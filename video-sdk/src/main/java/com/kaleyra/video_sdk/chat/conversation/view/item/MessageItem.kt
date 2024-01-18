@@ -31,13 +31,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,12 +66,13 @@ import com.kaleyra.video_sdk.chat.conversation.model.Message
 import com.kaleyra.video_sdk.chat.conversation.view.MessageStateTag
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 internal val MessageItemAvatarSize = 28.dp
 internal val OtherBubbleAvatarSpacing = 8.dp
 internal val OtherBubbleLeftSpacing = 36.dp
+internal val BubbleCornerRadius = 8.dp
 internal const val BubbleTestTag = "BubbleTestTag"
 
 @Composable
@@ -82,6 +84,7 @@ internal fun OtherMessageItem(
     modifier: Modifier = Modifier
 ) {
     MessageRow(
+        isFirstChainMessage = isFirstChainMessage,
         isLastChainMessage = isLastChainMessage,
         horizontalArrangement = Arrangement.Start,
         modifier = modifier
@@ -95,7 +98,7 @@ internal fun OtherMessageItem(
                         contentDescription = stringResource(id = R.string.kaleyra_avatar),
                         placeholder = R.drawable.ic_kaleyra_avatar,
                         error = R.drawable.ic_kaleyra_avatar,
-                        contentColor = MaterialTheme.colors.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         backgroundColor = colorResource(R.color.kaleyra_color_grey_light),
                         size = MessageItemAvatarSize
                     )
@@ -110,12 +113,12 @@ internal fun OtherMessageItem(
                 username = if (isFirstChainMessage) participantDetails?.username else null,
                 messageState = null,
                 shape = RoundedCornerShape(
-                    topStart = if (isFirstChainMessage) 12.dp else 6.dp,
-                    topEnd = 24.dp,
+                    topStart = 8.dp,
+                    topEnd = 6.dp,
                     bottomStart = if (isLastChainMessage) 0.dp else 6.dp,
-                    bottomEnd = 24.dp
+                    bottomEnd = 6.dp
                 ),
-                backgroundColor = MaterialTheme.colors.primaryVariant
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
             )
         }
     }
@@ -130,6 +133,7 @@ internal fun MyMessageItem(
 ) {
     val messageState by message.state.collectAsStateWithLifecycle(initialValue = Message.State.Read)
     MessageRow(
+        isFirstChainMessage = isFirstChainMessage,
         isLastChainMessage = isLastChainMessage,
         horizontalArrangement = Arrangement.End,
         modifier = modifier
@@ -140,12 +144,12 @@ internal fun MyMessageItem(
             username = null,
             messageState = messageState,
             shape = RoundedCornerShape(
-                topStart = 24.dp,
-                topEnd = if (isFirstChainMessage) 12.dp else 6.dp,
-                bottomStart = 24.dp,
-                bottomEnd = if (isLastChainMessage) 0.dp else 6.dp
+                topStart = BubbleCornerRadius,
+                topEnd = BubbleCornerRadius,
+                bottomStart = BubbleCornerRadius,
+                bottomEnd = if (isLastChainMessage) 0.dp else BubbleCornerRadius
             ),
-            backgroundColor = MaterialTheme.colors.secondary
+            backgroundColor = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -153,6 +157,7 @@ internal fun MyMessageItem(
 @Composable
 internal fun MessageRow(
     isLastChainMessage: Boolean,
+    isFirstChainMessage: Boolean,
     horizontalArrangement: Arrangement.Horizontal,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
@@ -163,7 +168,10 @@ internal fun MessageRow(
         modifier = Modifier
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
-            .padding(bottom = if (isLastChainMessage) 6.dp else 0.dp)
+            .padding(
+                bottom = if (isLastChainMessage) 6.dp else 0.dp,
+                top = if (isFirstChainMessage) 6.dp else 0.dp
+            )
             .then(modifier),
         horizontalArrangement = horizontalArrangement,
         content = content
@@ -183,8 +191,8 @@ internal fun Bubble(
 
     Card(
         shape = shape,
-        backgroundColor = backgroundColor,
-        elevation = 0.dp,
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
         modifier = Modifier
             .widthIn(min = 0.dp, max = configuration.screenWidthDp.div(2).dp)
             .testTag(BubbleTestTag)
@@ -193,8 +201,7 @@ internal fun Bubble(
             if (username != null) {
                 Text(
                     text = username,
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -211,8 +218,8 @@ internal fun Bubble(
             ) {
                 Text(
                     text = messageTime,
-                    fontSize = 12.sp,
-                    style = MaterialTheme.typography.body2
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 if (messageState != null) {
@@ -238,7 +245,7 @@ internal fun ClickableMessageText(messageText: String, textColor: Color) {
 
     ClickableText(
         text = styledMessage,
-        style = MaterialTheme.typography.body2.copy(color = LocalContentColor.current),
+        style = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
         onClick = {
             styledMessage
                 .getStringAnnotations(start = it, end = it)
@@ -276,13 +283,13 @@ private fun contentDescriptionFor(state: Message.State): String =
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun OtherMessageItemPreview() = KaleyraTheme {
+internal fun OtherMessageItemPreview() = KaleyraM3Theme {
     Surface {
         OtherMessageItem(
             message = Message.OtherMessage(
                 "userId8",
                 "id8",
-                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                "Ut enim ad https://google.com minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
                 "15:01"
             )
         )
@@ -292,12 +299,12 @@ internal fun OtherMessageItemPreview() = KaleyraTheme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun MyMessageItemPreview() = KaleyraTheme {
+internal fun MyMessageItemPreview() = KaleyraM3Theme {
     Surface {
         MyMessageItem(
             message = Message.MyMessage(
                 "id8",
-                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                "Ut enim https://google.com ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
                 "15:01",
                 MutableStateFlow(Message.State.Read)
             )

@@ -79,7 +79,10 @@ internal fun CallInfoWidget(
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BackIconButton(onClick = onBackPressed)
+            BackIconButton(
+                iconTint = Color.White,
+                onClick = onBackPressed
+            )
 
             Box(
                 modifier = Modifier

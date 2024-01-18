@@ -14,31 +14,54 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.chat.screen
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -46,7 +69,19 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -56,23 +91,26 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.appbar.view.GroupAppBar
 import com.kaleyra.video_sdk.chat.appbar.view.OneToOneAppBar
 import com.kaleyra.video_sdk.chat.conversation.ConversationComponent
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationItem
+import com.kaleyra.video_sdk.chat.conversation.scrollToBottomFabEnabled
+import com.kaleyra.video_sdk.chat.conversation.view.ResetScrollFab
 import com.kaleyra.video_sdk.chat.input.ChatUserInput
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.model.mockChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
-import com.kaleyra.video_sdk.common.spacer.StatusBarsSpacer
+import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.CollaborationTheme
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.CollaborationM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
 
 internal const val ConversationComponentTag = "ConversationComponentTag"
@@ -93,7 +131,7 @@ internal fun ChatScreen(
         }
     }
 
-    CollaborationTheme(theme = theme) {
+    CollaborationM3Theme(theme = theme) {
         ChatScreen(
             uiState = uiState,
             userMessage = userMessage,
@@ -121,9 +159,36 @@ internal fun ChatScreen(
     onSendMessage: (String) -> Unit,
     onTyping: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val topBarRef = remember { FocusRequester() }
     val scrollState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
+
+    val focusManager = LocalFocusManager.current
+    val isKeyboardOpen by keyboardAsState()
+    if (!isKeyboardOpen) focusManager.clearFocus()
+
+    val isDarkTheme = isSystemInDarkTheme()
+    val elevatedSurfaceColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+    val statusBarColor =
+        if (uiState.isInCall) colorResource(id = R.color.kaleyra_color_answer_button)
+        else Color.Transparent
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = statusBarColor,
+            darkIcons = !isDarkTheme && !uiState.isInCall,
+            transformColorForLightContent = { Color.Black }
+        )
+        systemUiController.setNavigationBarColor(
+            color = elevatedSurfaceColor,
+            darkIcons = !isDarkTheme,
+            transformColorForLightContent = { Color.Black }
+        )
+    }
+
     val onMessageSent: ((String) -> Unit) = remember(scope, scrollState) {
         { text ->
             scope.launch {
@@ -133,54 +198,122 @@ internal fun ChatScreen(
         }
     }
 
-    Column(
+    val fabRef = remember { FocusRequester() }
+    val scrollToBottomFabEnabled by scrollToBottomFabEnabled(scrollState)
+    val onFabClick = remember(scope, scrollState) {
+        {
+            scope.launch { scrollState.scrollToItem(0) }
+            onResetMessagesScroll()
+        }
+    }
+    var fabPadding by remember { mutableStateOf(0f) }
+
+    Scaffold(
         modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
             .fillMaxSize()
             .navigationBarsPadding()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .imePadding()
             .semantics {
                 testTagsAsResourceId = true
-            }) {
-        StatusBarsSpacer(Modifier.background(MaterialTheme.colors.primaryVariant))
-        Box(Modifier.focusRequester(topBarRef)) {
-            when (uiState) {
-                is ChatUiState.OneToOne -> {
-                    OneToOneAppBar(
-                        connectionState = uiState.connectionState,
-                        recipientDetails = uiState.recipientDetails,
-                        isInCall = uiState.isInCall,
-                        actions = uiState.actions,
-                        onBackPressed = onBackPressed
-                    )
-                }
+            }
+            .onPreviewKeyEvent {
+                return@onPreviewKeyEvent when {
+                    it.type != KeyEventType.KeyDown && it.key == Key.DirectionLeft -> {
+                        topBarRef.requestFocus(); true
+                    }
 
-                is ChatUiState.Group -> {
-                    GroupAppBar(
-                        image = uiState.image,
-                        name = uiState.name.ifBlank { stringResource(R.string.kaleyra_chat_group_title) },
-                        connectionState = uiState.connectionState,
-                        participantsDetails = uiState.participantsDetails,
-                        participantsState = uiState.participantsState,
-                        isInCall = uiState.isInCall,
-                        actions = uiState.actions,
-                        onBackPressed = onBackPressed
-                    )
+                    scrollToBottomFabEnabled && it.type != KeyEventType.KeyDown && it.key == Key.DirectionRight -> {
+                        fabRef.requestFocus(); true
+                    }
+
+                    else -> false
+                }
+            },
+        topBar = {
+            Column(Modifier.focusRequester(topBarRef)) {
+
+                val spacerColor = animateColorAsState(
+                    targetValue = when {
+                        uiState.isInCall -> colorResource(id = R.color.kaleyra_color_answer_button)
+                        scrollState.canScrollForward -> elevatedSurfaceColor
+                        else -> MaterialTheme.colorScheme.surface
+                    },
+                    label = "spacerColor",
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(
+                            WindowInsets.systemBars
+                                .asPaddingValues()
+                                .calculateTopPadding())
+                        .background(spacerColor.value)
+                )
+
+                if (uiState.isInCall) OngoingCallLabel(onClick = onShowCall)
+
+                when (uiState) {
+                    is ChatUiState.OneToOne -> {
+                        OneToOneAppBar(
+                            connectionState = uiState.connectionState,
+                            recipientDetails = uiState.recipientDetails,
+                            scrollBehavior = scrollBehavior,
+                            scrollState = scrollState,
+                            isInCall = uiState.isInCall,
+                            actions = uiState.actions,
+                            onBackPressed = onBackPressed,
+                        )
+                    }
+
+                    is ChatUiState.Group -> {
+                        GroupAppBar(
+                            image = uiState.image,
+                            name = uiState.name.ifBlank { stringResource(R.string.kaleyra_chat_group_title) },
+                            scrollBehavior = scrollBehavior,
+                            scrollState = scrollState,
+                            connectionState = uiState.connectionState,
+                            participantsDetails = uiState.participantsDetails,
+                            participantsState = uiState.participantsState,
+                            isInCall = uiState.isInCall,
+                            actions = uiState.actions,
+                            onBackPressed = onBackPressed,
+                        )
+                    }
                 }
             }
-        }
-
-        if (uiState.isInCall) OngoingCallLabel(onClick = onShowCall)
-
+        },
+        floatingActionButton = {
+            ResetScrollFab(
+                modifier = Modifier
+                    .focusRequester(fabRef)
+                    .graphicsLayer {
+                        translationY = -fabPadding
+                    }
+                ,
+                counter = uiState.conversationState.unreadMessagesCount,
+                onClick = onFabClick,
+                enabled = scrollToBottomFabEnabled
+            )
+        },
+        contentWindowInsets = ScaffoldDefaults
+            .contentWindowInsets
+            .exclude(WindowInsets.navigationBars)
+            .exclude(WindowInsets.ime),
+    ) { paddingValues ->
         Box {
-            Column {
+
+            Column(
+                modifier = Modifier.padding(paddingValues)
+            ) {
+
                 ConversationComponent(
                     conversationState = uiState.conversationState,
                     participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
-                    onDirectionLeft = topBarRef::requestFocus,
                     onMessageScrolled = onMessageScrolled,
                     onApproachingTop = onFetchMessages,
-                    onResetScroll = onResetMessagesScroll,
                     scrollState = scrollState,
                     modifier = Modifier
                         .weight(1f)
@@ -188,18 +321,24 @@ internal fun ChatScreen(
                         .testTag(ConversationComponentTag)
                 )
 
-                Divider(
-                    color = colorResource(id = R.color.kaleyra_color_grey_light),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                ChatUserInput(
-                    onTextChanged = onTyping,
-                    onMessageSent = onMessageSent,
-                    onDirectionLeft = topBarRef::requestFocus
-                )
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
+                    .onGloballyPositioned {
+                        fabPadding = it.boundsInRoot().height
+                    }
+                ) {
+                    ChatUserInput(
+                        onTextChanged = onTyping,
+                        onMessageSent = onMessageSent,
+                        onDirectionLeft = topBarRef::requestFocus
+                    )
+                }
             }
 
-            UserMessageSnackbarHandler(userMessage = userMessage)
+            UserMessageSnackbarHandler(
+                userMessage = userMessage
+            )
         }
     }
 }
@@ -208,7 +347,7 @@ internal fun ChatScreen(
 internal fun OngoingCallLabel(onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     Row(
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clickable(
@@ -228,15 +367,21 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
         Text(
             text = stringResource(id = R.string.kaleyra_ongoing_call_label),
             color = Color.White,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
 
-@Preview(name = "Light Mode")
+@Composable
+fun keyboardAsState(): State<Boolean> {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    return rememberUpdatedState(isImeVisible)
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ChatScreenPreview() = KaleyraTheme {
+internal fun ChatScreenPreview() = KaleyraM3Theme {
     ChatScreen(
         uiState = mockChatUiState,
         onBackPressed = { },
@@ -245,6 +390,7 @@ internal fun ChatScreenPreview() = KaleyraTheme {
         onFetchMessages = { },
         onShowCall = { },
         onSendMessage = { },
-        onTyping = { }
+        onTyping = { },
+        userMessage = RecordingMessage.Started,
     )
 }

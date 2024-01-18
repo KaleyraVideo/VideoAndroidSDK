@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.createFontFamilyResolver
 import androidx.compose.ui.unit.TextUnit
@@ -69,13 +70,12 @@ internal fun EllipsizeText(
     text: String,
     color: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
     fontWeight: FontWeight = FontWeight.Normal,
+    fontFamily: FontFamily = LocalTextStyle.current.fontFamily!!,
     fontSize: TextUnit = 16.sp,
     ellipsize: Ellipsize,
     shadow: Shadow? = null,
     modifier: Modifier = Modifier
 ) {
-    val fontFamily = LocalTextStyle.current.fontFamily
-
     AndroidView(
         factory = { context -> TextView(context) },
         update = {

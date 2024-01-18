@@ -16,11 +16,12 @@
 
 package com.kaleyra.video_sdk.chat.appbar.view
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,14 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal val defaultDotSize = 4.dp
 internal const val defaultDelay = 300
 
 @Composable
 internal fun TypingDots(
-    color: Color = MaterialTheme.colors.primary,
+    color: Color = MaterialTheme.colorScheme.onSurface,
     size: Dp = defaultDotSize,
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +77,9 @@ internal fun TypingDots(
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = maxOffset.dp).then(modifier)
+        modifier = Modifier
+            .padding(top = maxOffset.dp)
+            .then(modifier)
     ) {
         val spaceSize = 2.dp
 
@@ -88,8 +91,11 @@ internal fun TypingDots(
     }
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun DotsPreview() = KaleyraTheme {
-    TypingDots()
+internal fun DotsPreview() = KaleyraM3Theme {
+    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+        TypingDots()
+    }
 }

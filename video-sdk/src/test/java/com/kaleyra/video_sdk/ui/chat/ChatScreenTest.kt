@@ -27,6 +27,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
 import com.kaleyra.video_sdk.chat.conversation.model.mock.mockConversationElements
+import com.kaleyra.video_sdk.chat.conversation.view.ConversationContentTag
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.ConversationComponentTag
@@ -168,6 +169,13 @@ class ChatScreenTest {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
+    @Test
+    fun userScrollsUp_fabAppears() {
+        findResetScrollFab().assertDoesNotExist()
+        findConversation().performScrollUp()
+        findResetScrollFab().assertIsDisplayed()
+    }
+
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)
 
     private fun findResetScrollFab() = composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(
@@ -179,5 +187,7 @@ class ChatScreenTest {
     ))
 
     private fun findTextInputField() = composeTestRule.onNode(hasTestTag(TextFieldTag))
+
+    private fun findConversation() = composeTestRule.onNodeWithTag(ConversationContentTag)
 
 }
