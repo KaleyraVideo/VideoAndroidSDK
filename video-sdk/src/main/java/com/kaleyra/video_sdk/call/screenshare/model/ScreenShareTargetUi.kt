@@ -18,8 +18,19 @@ package com.kaleyra.video_sdk.call.screenshare.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Screen Share Target Ui
+ */
 @Immutable
 enum class ScreenShareTargetUi {
+
+    /**
+     * Device Screen Share Target
+     */
     Device,
+
+    /**
+     * Application Screen Share Target
+     */
     Application
 }

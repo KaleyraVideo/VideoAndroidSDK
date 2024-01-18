@@ -51,7 +51,7 @@ internal const val MessageStateTag = "MessageStateTag"
 internal const val ConversationContentTag = "ConversationContentTag"
 internal const val ProgressIndicatorTag = "ProgressIndicatorTag"
 
-val ConversationContentPadding = 16.dp
+internal val ConversationContentPadding = 16.dp
 
 @Composable
 internal fun ConversationContent(
@@ -157,14 +157,3 @@ internal fun ConversationContentGroupPreview() = KaleyraTheme {
         )
     }
 }
-
-
-
-
-
-
-
-
-
-
-

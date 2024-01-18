@@ -35,10 +35,31 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 
+/**
+ * Ellipsize
+ * @property value TruncateAt truncate at
+ * @constructor
+ */
 enum class Ellipsize(val value: TextUtils.TruncateAt) {
+
+    /**
+     * Start Truncate
+     */
     Start(TextUtils.TruncateAt.START),
+
+    /**
+     * Middle Truncate
+     */
     Middle(TextUtils.TruncateAt.MIDDLE),
+
+    /**
+     * End Truncate
+     */
     End(TextUtils.TruncateAt.END),
+
+    /**
+     * Marquee Truncate
+     */
     Marquee(TextUtils.TruncateAt.MARQUEE)
 }
 

@@ -21,7 +21,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 
+/**
+ * Font family representation
+ */
 object KaleyraFontFamily {
+
+    /**
+     * Default font family
+     */
     val default = FontFamily(
         Font(R.font.kaleyra_font_regular, FontWeight.W400, FontStyle.Normal),
         Font(R.font.kaleyra_font_italic, FontWeight.W400, FontStyle.Italic),

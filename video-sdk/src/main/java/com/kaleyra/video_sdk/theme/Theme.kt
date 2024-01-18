@@ -63,72 +63,80 @@ private val KaleyraDarkColorTheme = darkColors(
     onSurface = kaleyra_theme_dark_onSurface
 )
 
-// DE-COMMENT THIS WHEN THE MATERIAL 3 DEPENDENCY WILL BE ADDED
-//private val KaleyraM3LightColorTheme = lightColorScheme(
-//    primary = kaleyra_m3_theme_light_primary,
-//    onPrimary = kaleyra_m3_theme_light_onPrimary,
-//    primaryContainer = kaleyra_m3_theme_light_primaryContainer,
-//    onPrimaryContainer = kaleyra_m3_theme_light_onPrimaryContainer,
-//    secondary = kaleyra_m3_theme_light_secondary,
-//    onSecondary = kaleyra_m3_theme_light_onSecondary,
-//    secondaryContainer = kaleyra_m3_theme_light_secondaryContainer,
-//    onSecondaryContainer = kaleyra_m3_theme_light_onSecondaryContainer,
-//    tertiary = kaleyra_m3_theme_light_tertiary,
-//    onTertiary = kaleyra_m3_theme_light_onTertiary,
-//    tertiaryContainer = kaleyra_m3_theme_light_tertiaryContainer,
-//    onTertiaryContainer = kaleyra_m3_theme_light_onTertiaryContainer,
-//    error = kaleyra_m3_theme_light_error,
-//    errorContainer = kaleyra_m3_theme_light_errorContainer,
-//    onError = kaleyra_m3_theme_light_onError,
-//    onErrorContainer = kaleyra_m3_theme_light_onErrorContainer,
-//    background = kaleyra_m3_theme_light_background,
-//    onBackground = kaleyra_m3_theme_light_onBackground,
-//    surface = kaleyra_m3_theme_light_surface,
-//    onSurface = kaleyra_m3_theme_light_onSurface,
-//    surfaceVariant = kaleyra_m3_theme_light_surfaceVariant,
-//    onSurfaceVariant = kaleyra_m3_theme_light_onSurfaceVariant,
-//    outline = kaleyra_m3_theme_light_outline,
-//    inverseOnSurface = kaleyra_m3_theme_light_inverseOnSurface,
-//    inverseSurface = kaleyra_m3_theme_light_inverseSurface,
-//    inversePrimary = kaleyra_m3_theme_light_inversePrimary,
-//    surfaceTint = kaleyra_m3_theme_light_surfaceTint,
-//    outlineVariant = kaleyra_m3_theme_light_outlineVariant,
-//    scrim = kaleyra_m3_theme_light_scrim,
-//)
-//
-//
-//private val KaleyraM3DarkColorTheme = darkColorScheme(
-//    primary = kaleyra_m3_theme_dark_primary,
-//    onPrimary = kaleyra_m3_theme_dark_onPrimary,
-//    primaryContainer = kaleyra_m3_theme_dark_primaryContainer,
-//    onPrimaryContainer = kaleyra_m3_theme_dark_onPrimaryContainer,
-//    secondary = kaleyra_m3_theme_dark_secondary,
-//    onSecondary = kaleyra_m3_theme_dark_onSecondary,
-//    secondaryContainer = kaleyra_m3_theme_dark_secondaryContainer,
-//    onSecondaryContainer = kaleyra_m3_theme_dark_onSecondaryContainer,
-//    tertiary = kaleyra_m3_theme_dark_tertiary,
-//    onTertiary = kaleyra_m3_theme_dark_onTertiary,
-//    tertiaryContainer = kaleyra_m3_theme_dark_tertiaryContainer,
-//    onTertiaryContainer = kaleyra_m3_theme_dark_onTertiaryContainer,
-//    error = kaleyra_m3_theme_dark_error,
-//    errorContainer = kaleyra_m3_theme_dark_errorContainer,
-//    onError = kaleyra_m3_theme_dark_onError,
-//    onErrorContainer = kaleyra_m3_theme_dark_onErrorContainer,
-//    background = kaleyra_m3_theme_dark_background,
-//    onBackground = kaleyra_m3_theme_dark_onBackground,
-//    surface = kaleyra_m3_theme_dark_surface,
-//    onSurface = kaleyra_m3_theme_dark_onSurface,
-//    surfaceVariant = kaleyra_m3_theme_dark_surfaceVariant,
-//    onSurfaceVariant = kaleyra_m3_theme_dark_onSurfaceVariant,
-//    outline = kaleyra_m3_theme_dark_outline,
-//    inverseOnSurface = kaleyra_m3_theme_dark_inverseOnSurface,
-//    inverseSurface = kaleyra_m3_theme_dark_inverseSurface,
-//    inversePrimary = kaleyra_m3_theme_dark_inversePrimary,
-//    surfaceTint = kaleyra_m3_theme_dark_surfaceTint,
-//    outlineVariant = kaleyra_m3_theme_dark_outlineVariant,
-//    scrim = kaleyra_m3_theme_dark_scrim,
-//)
+/**
+//DE-COMMENT THIS WHEN THE MATERIAL 3 DEPENDENCY WILL BE ADDED
+private val KaleyraM3LightColorTheme = lightColorScheme(
+    primary = kaleyra_m3_theme_light_primary,
+    onPrimary = kaleyra_m3_theme_light_onPrimary,
+    primaryContainer = kaleyra_m3_theme_light_primaryContainer,
+    onPrimaryContainer = kaleyra_m3_theme_light_onPrimaryContainer,
+    secondary = kaleyra_m3_theme_light_secondary,
+    onSecondary = kaleyra_m3_theme_light_onSecondary,
+    secondaryContainer = kaleyra_m3_theme_light_secondaryContainer,
+    onSecondaryContainer = kaleyra_m3_theme_light_onSecondaryContainer,
+    tertiary = kaleyra_m3_theme_light_tertiary,
+    onTertiary = kaleyra_m3_theme_light_onTertiary,
+    tertiaryContainer = kaleyra_m3_theme_light_tertiaryContainer,
+    onTertiaryContainer = kaleyra_m3_theme_light_onTertiaryContainer,
+    error = kaleyra_m3_theme_light_error,
+    errorContainer = kaleyra_m3_theme_light_errorContainer,
+    onError = kaleyra_m3_theme_light_onError,
+    onErrorContainer = kaleyra_m3_theme_light_onErrorContainer,
+    background = kaleyra_m3_theme_light_background,
+    onBackground = kaleyra_m3_theme_light_onBackground,
+    surface = kaleyra_m3_theme_light_surface,
+    onSurface = kaleyra_m3_theme_light_onSurface,
+    surfaceVariant = kaleyra_m3_theme_light_surfaceVariant,
+    onSurfaceVariant = kaleyra_m3_theme_light_onSurfaceVariant,
+    outline = kaleyra_m3_theme_light_outline,
+    inverseOnSurface = kaleyra_m3_theme_light_inverseOnSurface,
+    inverseSurface = kaleyra_m3_theme_light_inverseSurface,
+    inversePrimary = kaleyra_m3_theme_light_inversePrimary,
+    surfaceTint = kaleyra_m3_theme_light_surfaceTint,
+    outlineVariant = kaleyra_m3_theme_light_outlineVariant,
+    scrim = kaleyra_m3_theme_light_scrim,
+)
 
+
+private val KaleyraM3DarkColorTheme = darkColorScheme(
+    primary = kaleyra_m3_theme_dark_primary,
+    onPrimary = kaleyra_m3_theme_dark_onPrimary,
+    primaryContainer = kaleyra_m3_theme_dark_primaryContainer,
+    onPrimaryContainer = kaleyra_m3_theme_dark_onPrimaryContainer,
+    secondary = kaleyra_m3_theme_dark_secondary,
+    onSecondary = kaleyra_m3_theme_dark_onSecondary,
+    secondaryContainer = kaleyra_m3_theme_dark_secondaryContainer,
+    onSecondaryContainer = kaleyra_m3_theme_dark_onSecondaryContainer,
+    tertiary = kaleyra_m3_theme_dark_tertiary,
+    onTertiary = kaleyra_m3_theme_dark_onTertiary,
+    tertiaryContainer = kaleyra_m3_theme_dark_tertiaryContainer,
+    onTertiaryContainer = kaleyra_m3_theme_dark_onTertiaryContainer,
+    error = kaleyra_m3_theme_dark_error,
+    errorContainer = kaleyra_m3_theme_dark_errorContainer,
+    onError = kaleyra_m3_theme_dark_onError,
+    onErrorContainer = kaleyra_m3_theme_dark_onErrorContainer,
+    background = kaleyra_m3_theme_dark_background,
+    onBackground = kaleyra_m3_theme_dark_onBackground,
+    surface = kaleyra_m3_theme_dark_surface,
+    onSurface = kaleyra_m3_theme_dark_onSurface,
+    surfaceVariant = kaleyra_m3_theme_dark_surfaceVariant,
+    onSurfaceVariant = kaleyra_m3_theme_dark_onSurfaceVariant,
+    outline = kaleyra_m3_theme_dark_outline,
+    inverseOnSurface = kaleyra_m3_theme_dark_inverseOnSurface,
+    inverseSurface = kaleyra_m3_theme_dark_inverseSurface,
+    inversePrimary = kaleyra_m3_theme_dark_inversePrimary,
+    surfaceTint = kaleyra_m3_theme_dark_surfaceTint,
+    outlineVariant = kaleyra_m3_theme_dark_outlineVariant,
+    scrim = kaleyra_m3_theme_dark_scrim,
+)
+**/
+
+/**
+ * Composable function to generate the Collaboration Theme
+ * @param theme Theme input theme
+ * @param transparentSystemBars Boolean flag indicating if the system bars should be transparent, true if transparent, false otherwise
+ * @param content [@androidx.compose.runtime.Composable] Function1<[@kotlin.ParameterName] Boolean, Unit> composable callback with isDarkTheme as input flag
+ */
 @Composable
 fun CollaborationTheme(
     theme: Theme,
@@ -184,6 +192,11 @@ fun CollaborationTheme(
 
 private fun onColorFor(color: Color) = if (color.luminance() > .5f) Color.Black else Color.White
 
+/**
+ * Composable function to build the Kaleyra Theme
+ * @param isDarkTheme Boolean flag indicating if dark theme should be used, true if dark theme should be used, false otherwise
+ * @param content [@androidx.compose.runtime.Composable] Function0<Unit> composable callback called when the content should be rendered
+ */
 @Composable
 fun KaleyraTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -217,6 +230,12 @@ private val TermsLightColorTheme = lightColors(
     onSurface = Color.Black
 )
 
+/**
+ * Composable function to build the Kaleyra Theme
+ * @param fontFamily FontFamily font family to be used
+ * @param isDarkTheme Boolean flag indicating if dark theme should be used, true if dark theme should be used, false otherwise
+ * @param content [@androidx.compose.runtime.Composable] Function0<Unit> composable callback called when the content should be rendered
+ */
 @Composable
 fun TermsAndConditionsTheme(
     fontFamily: FontFamily = KaleyraFontFamily.default,

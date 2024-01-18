@@ -23,4 +23,3 @@ internal val mockActions = ImmutableSet(setOf(
     ChatAction.AudioUpgradableCall {},
     ChatAction.VideoCall {}
 ))
-

@@ -39,7 +39,14 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
 
+/**
+ * File Share Item Tag
+ */
 const val FileShareItemTag = "FileShareItemTag"
+
+/**
+ * File Share Item Divider Tag
+ */
 const val FileShareItemDividerTag = "FileShareItemDividerTag"
 private val ContentBottomPadding = 72.dp
 

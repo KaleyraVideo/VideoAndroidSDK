@@ -27,13 +27,26 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 
+/**
+ * Utility functions for the call participants
+ */
 object ParticipantMapper {
 
+    /**
+     * Utility function to retrieve my participant
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting my participant whenever is available
+     */
     fun Flow<Call>.toMe(): Flow<CallParticipant.Me> =
         this.flatMapLatest { it.participants }
             .mapNotNull { it.me }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to retrieve the participants that are in-call
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting all the participants that are in-call
+     */
     fun Flow<Call>.toInCallParticipants(): Flow<List<CallParticipant>> =
         this.flatMapLatest { it.participants }
             .mapNotNull { participants -> participants.me?.let { Pair(it, participants.others) }}

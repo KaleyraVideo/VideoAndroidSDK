@@ -35,7 +35,14 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.countdowntimer.rememberCountdownTimerState
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 
+/**
+ * Pointer size in dp
+ */
 val PointerSize = 16.dp
+
+/**
+ * Pointer autohide time in milliseconds
+ */
 const val PointerAutoHideMs = 3000L
 
 @Composable

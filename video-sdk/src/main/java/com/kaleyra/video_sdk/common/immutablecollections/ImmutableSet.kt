@@ -18,7 +18,18 @@ package com.kaleyra.video_sdk.common.immutablecollections
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Immutable Set
+ * @param out T type T
+ * @property value Set<T> input set of type T
+ * @constructor
+ */
 @Immutable
 data class ImmutableSet<out T>(val value: Set<T> = setOf()) {
+
+    /**
+     * Returns the count of the element in the immutable set
+     * @return Int
+     */
     fun count() = value.count()
 }

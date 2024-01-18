@@ -19,12 +19,22 @@ package com.kaleyra.video_common_ui.proximity
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.bandyer.android_audiosession.session.AudioCallSessionInstance
 
+/**
+ * Audio Proximity Delegate
+ * @property audioCallSession AudioCallSessionInstance target AudioCallSessionInstance for the operation of switching audio outputs
+ */
 interface AudioProximityDelegate {
 
     val audioCallSession: AudioCallSessionInstance
 
+    /**
+     * Tries to switch to earpiece audio output if available
+     */
     fun trySwitchToEarpiece()
 
+    /**
+     * Tries to restore loudspeaker audio output if available
+     */
     fun tryRestoreToLoudspeaker()
 }
 

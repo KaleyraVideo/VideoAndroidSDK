@@ -20,6 +20,15 @@ import android.view.View
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 
+/**
+ * Whiteboard Ui State representation of the Whiteboard State on the Ui
+ * @property whiteboardView View? optional whiteboard rendering view
+ * @property isLoading Boolean flag indicating if the whiteboard is loading, true if loading, false otherwise
+ * @property isOffline Boolean flag indicating if the whiteboard id offline, true if offline, false otherwise
+ * @property upload WhiteboardUploadUi? optional whiteboard upload ui
+ * @property text String? optional whiteboard text
+ * @constructor
+ */
 @Immutable
 internal data class WhiteboardUiState(
     val whiteboardView: View? = null,

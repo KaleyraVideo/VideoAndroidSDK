@@ -21,6 +21,13 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+/**
+ * Chat Participant Details
+ * @property username String participant's username
+ * @property image ImmutableUri participant's image uri
+ * @property state Flow<ChatParticipantState> flow of chat participant state
+ * @constructor
+ */
 @Stable
 data class ChatParticipantDetails(
     val username: String = "",

@@ -18,4 +18,11 @@ package com.kaleyra.video_common_ui.model
 
 import android.net.Uri
 
+/**
+ * UserDetails representation of display info of a user
+ * @property userId String the user details userId
+ * @property name String the display name
+ * @property image Uri the uri display image
+ * @constructor
+ */
 data class UserDetails(val userId: String, val name: String, val image: Uri)

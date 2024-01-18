@@ -23,6 +23,17 @@ import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Dialing Ui State
+ * @property video VideoUi? optional video
+ * @property avatar ImmutableUri? optional uri avatar representation
+ * @property participants ImmutableList<String> participants' identifiers list
+ * @property watermarkInfo WatermarkInfo? optional watermark info
+ * @property isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
+ * @property isConnecting Boolean flag representing the connecting state, true if connecting, false otherwise
+ * @property isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
+ * @constructor
+ */
 @Immutable
 data class DialingUiState(
     override val video: VideoUi? = null,

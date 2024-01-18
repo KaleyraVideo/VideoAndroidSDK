@@ -19,6 +19,14 @@ package com.kaleyra.video_sdk.call.stream.model
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 
+/**
+ * Stream Ui representation of a Stream on the Ui
+ * @property id String stream ui identifier
+ * @property username String participant's identifier
+ * @property video VideoUi? optional video component
+ * @property avatar ImmutableUri? optional participant's avatar uri
+ * @constructor
+ */
 @Immutable
 data class StreamUi(
     val id: String,

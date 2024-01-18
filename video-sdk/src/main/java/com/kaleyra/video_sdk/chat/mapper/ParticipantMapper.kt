@@ -39,11 +39,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 
-object ParticipantsMapper {
+internal object ParticipantsMapper {
 
-    fun ChatParticipants.isGroupChat(): Boolean = others.size > 1
+    internal fun ChatParticipants.isGroupChat(): Boolean = others.size > 1
 
-    suspend fun ChatParticipants.toParticipantsDetails(): ImmutableMap<String, ChatParticipantDetails> {
+    internal suspend fun ChatParticipants.toParticipantsDetails(): ImmutableMap<String, ChatParticipantDetails> {
         return if (list.isEmpty()) ImmutableMap()
         else {
             coroutineScope {
@@ -65,7 +65,7 @@ object ParticipantsMapper {
         }
     }
 
-    fun ChatParticipant.toChatParticipantState(): Flow<ChatParticipantState> {
+    internal fun ChatParticipant.toChatParticipantState(): Flow<ChatParticipantState> {
         return combine(
             state,
             events.filterIsInstance<ChatParticipant.Event.Typing>()
@@ -86,7 +86,7 @@ object ParticipantsMapper {
         }.distinctUntilChanged()
     }
 
-    suspend fun ChatParticipants.toOtherParticipantsState(): Flow<ChatParticipantsState> {
+    internal suspend fun ChatParticipants.toOtherParticipantsState(): Flow<ChatParticipantsState> {
         return coroutineScope {
             if (others.isEmpty()) flowOf(ChatParticipantsState())
             else {
@@ -113,7 +113,7 @@ object ParticipantsMapper {
         }
     }
 
-    fun List<Pair<String, ChatParticipantState>>.mapToChatParticipantsState(): ChatParticipantsState {
+    internal fun List<Pair<String, ChatParticipantState>>.mapToChatParticipantsState(): ChatParticipantsState {
         val online = mutableListOf<String>()
         val typing = mutableListOf<String>()
         val offline = mutableListOf<String>()

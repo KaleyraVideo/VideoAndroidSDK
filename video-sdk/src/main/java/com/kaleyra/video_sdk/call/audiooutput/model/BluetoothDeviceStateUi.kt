@@ -16,16 +16,58 @@
 
 package com.kaleyra.video_sdk.call.audiooutput.model
 
+/**
+ * Bluetooth Audio Device State
+ */
 enum class BluetoothDeviceState {
+    /**
+     * Available Bluetooth Audio Device State
+     */
     Available,
+
+    /**
+     * Connecting Bluetooth Audio Device State
+     */
     Connecting,
+
+    /**
+     * Connecting Audio Bluetooth Audio Device State
+     */
     ConnectingAudio,
+
+    /**
+     * Playing Audio Bluetooth Audio Device State
+     */
     PlayingAudio,
+
+    /**
+     * Connected Bluetooth Audio Device State
+     */
     Connected,
+
+    /**
+     * Activating Bluetooth Audio Device State
+     */
     Activating,
+
+    /**
+     * Active Bluetooth Audio Device State
+     */
     Active,
+
+    /**
+     * Deactivating Bluetooth Audio Device State
+     */
     Deactivating,
+
+    /**
+     * Disconnected Bluetooth Audio Device State
+     */
     Disconnected,
+
+    /**
+     * Failed Bluetooth Audio Device State
+     */
     Failed
 }
 

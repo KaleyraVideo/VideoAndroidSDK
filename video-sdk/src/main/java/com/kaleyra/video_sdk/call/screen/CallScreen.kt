@@ -120,12 +120,28 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
+/**
+ * Call Actions Peek Height in dp
+ */
 private val PeekHeight = 48.dp
+
+/**
+ * Call Actions Half Expanded Height in dp
+ */
 private val HalfExpandedHeight = 166.dp
 
+/**
+ * Activity Finish Delay in milliseconds
+ */
 private const val ActivityFinishDelay = 1100L
+
+/**
+ * Activity Finish Delay when an error occurs in milliseconds
+ */
 private const val ActivityFinishErrorDelay = 1500L
 
+/**
+ */
 const val BottomSheetAutoHideMs = 9000L
 
 @Composable

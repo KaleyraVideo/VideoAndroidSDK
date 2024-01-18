@@ -57,14 +57,8 @@ class ConferenceUI(
 
     private var callUIMap: HashMap<String, CallUI> = HashMap()
 
-    /**
-     * @suppress
-     */
     override val call: SharedFlow<CallUI> = conference.call.map { getOrCreateCallUI(it) }.shareIn(callScope, SharingStarted.Eagerly, replay = 1)
 
-    /**
-     * @suppress
-     */
     override val callHistory: SharedFlow<List<CallUI>> = conference.callHistory.map { calls -> calls.map { getOrCreateCallUI(it) } }.shareIn(callScope, SharingStarted.Eagerly, replay = 1)
 
     /**

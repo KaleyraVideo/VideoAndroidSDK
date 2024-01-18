@@ -21,6 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import kotlin.math.ceil
 
+/**
+ * Composable function to get the adaptive grid container
+ * @param modifier Modifier compose modifier
+ * @param columns Int number of columns in the grid
+ * @param children [@androidx.compose.runtime.Composable] Function0<Unit> composable function needed to render the children
+ */
 @Composable
 fun AdaptiveGrid(
     modifier: Modifier = Modifier,

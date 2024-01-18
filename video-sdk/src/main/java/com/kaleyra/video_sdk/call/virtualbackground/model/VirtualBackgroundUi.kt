@@ -16,11 +16,29 @@
 
 package com.kaleyra.video_sdk.call.virtualbackground.model
 
+/**
+ * Virtual Background Ui representation of the Virtual Background on the Ui
+ * @property id String virtual background identifier
+ * @constructor
+ */
 sealed class VirtualBackgroundUi(open val id: String) {
 
+    /**
+     * Blue Virtual Background
+     * @property id String blur virtual background identifier
+     * @constructor
+     */
     data class Blur(override val id: String): VirtualBackgroundUi(id)
 
+    /**
+     * Image Virtual Background
+     * @property id String image virtual background identifier
+     * @constructor
+     */
     data class Image(override val id: String): VirtualBackgroundUi(id)
 
-    object None: VirtualBackgroundUi("None")
+    /**
+     * None Virtual Background
+     */
+    data object None: VirtualBackgroundUi("None")
 }

@@ -29,8 +29,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 
+/**
+ * Utility functions for the streams
+ */
 object StreamMapper {
 
+    /**
+     * Utility function to retrieve whenever a local stream has been published and currently visible/audible to other call participants
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting true whenever any of my participants streams are currently published and visible/audible to other call participants
+     */
     fun Flow<Call>.doAnyOfMyStreamsIsLive(): Flow<Boolean> =
         this.flatMapLatest { it.participants }
             .map { it.me }
@@ -53,6 +61,11 @@ object StreamMapper {
             }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to retrieve whenever any of the other participants have published streams
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting true whenever any of the other participants have published streams
+     */
     fun Flow<Call>.doOthersHaveStreams(): Flow<Boolean> =
         this.flatMapLatest { it.participants }
             .map { it.others }
@@ -74,6 +87,11 @@ object StreamMapper {
             }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to detect whenever the logged SDK user is alone in the call
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting true whenever the logged SDK user is alone in the call
+     */
     fun Flow<Call>.amIAlone(): Flow<Boolean> =
         combine(
             doOthersHaveStreams(),
@@ -86,6 +104,11 @@ object StreamMapper {
     private fun Stream.isMyStreamLive(): Flow<Boolean> =
         this.state.map { it is Stream.State.Live }
 
+    /**
+     * Utility function to retrieve whenever my participant is waiting for other participants to publish their audio or video streams
+     * @receiver Flow<Call> the call flow
+     * @return Flow<CallParticipant.Me> flow emitting true whenever my participant is waiting for other participants to publish their audio or video streams
+     */
     fun Flow<Call>.amIWaitingOthers(): Flow<Boolean> =
         combine(
             flatMapLatest { it.state },

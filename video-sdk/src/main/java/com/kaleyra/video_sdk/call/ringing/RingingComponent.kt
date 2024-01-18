@@ -62,8 +62,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.R
 
+/**
+ * Ringing content tag
+ */
 const val RingingContentTag = "RingingContentTag"
+
+/**
+ * Tap to answer reveal timing in milliseconds
+ */
 const val TapToAnswerTimerMillis = 7000L
+
+/**
+ * Waiting for Other Avatar Component Padding in dp
+ */
 val WaitingForOtherAvatarPadding = DefaultStreamAvatarSize / 2 + 24.dp
 
 @Composable

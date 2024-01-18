@@ -18,13 +18,31 @@ package com.kaleyra.video_sdk.chat.appbar.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Chat Participant State
+ */
 @Immutable
 sealed class ChatParticipantState {
-    object Online : ChatParticipantState()
 
+    /**
+     * Online Chat Participant State
+     */
+    data object Online : ChatParticipantState()
+
+    /**
+     * Offline Chat Participant State
+     * @property timestamp Long?
+     * @constructor
+     */
     data class Offline(val timestamp: Long? = null) : ChatParticipantState()
 
-    object Typing : ChatParticipantState()
+    /**
+     * Typing Chat Participant State
+     */
+    data object Typing : ChatParticipantState()
 
-    object Unknown : ChatParticipantState()
+    /**
+     * Unknown Chat Participant State
+     */
+    data object Unknown : ChatParticipantState()
 }

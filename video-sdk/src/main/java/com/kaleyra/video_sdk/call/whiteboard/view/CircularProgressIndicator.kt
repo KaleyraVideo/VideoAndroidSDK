@@ -37,7 +37,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-const val CircularProgressIndicatorTag = "CircularProgressIndicatorTag"
+/**
+ * Circular Progress Indicator Tag
+ */
+internal const val CircularProgressIndicatorTag = "CircularProgressIndicatorTag"
 
 @Composable
 internal fun CircularProgressIndicator(progress: Float, color: Color, size: Dp, strokeWidth: Dp) {

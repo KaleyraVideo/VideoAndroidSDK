@@ -46,7 +46,10 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPadding
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.verticalGradientScrim
 
-const val CallInfoWidgetTag = "CallInfoWidgetTag"
+/**
+ * Call Info Widget Tag
+ */
+internal const val CallInfoWidgetTag = "CallInfoWidgetTag"
 
 // NB: The title is actually an AndroidView, because there is not text ellipsize in compose
 @Composable

@@ -18,17 +18,34 @@ package com.kaleyra.video_sdk.chat.appbar.model
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Connection State
+ */
 @Immutable
 sealed class ConnectionState {
 
+    /**
+     * Connecting State
+     */
     data object Connecting : ConnectionState()
 
+    /**
+     * Connected State
+     */
     data object Connected: ConnectionState()
 
+    /**
+     * Offline State
+     */
     data object Offline : ConnectionState()
 
+    /**
+     * Error State
+     */
     data object Error : ConnectionState()
 
+    /**
+     * Unknown State
+     */
     data object Unknown : ConnectionState()
 }
-

@@ -28,6 +28,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
+/**
+ * Base view model abstract class
+ * @param UI_STATE: UiState Ui State
+ * @property call SharedFlow<CallUI> call flow
+ * @property uiState StateFlow<UI_STATE> ui state flow
+ * @constructor
+ */
 abstract class BaseViewModel<UI_STATE: UiState>(configure: suspend () -> Configuration) : CollaborationViewModel(configure) {
 
     private val _call = MutableSharedFlow<CallUI>(replay = 1)
@@ -36,6 +43,10 @@ abstract class BaseViewModel<UI_STATE: UiState>(configure: suspend () -> Configu
     protected val _uiState = MutableStateFlow(this.initialState())
     val uiState = _uiState.asStateFlow()
 
+    /**
+     * Get initial Ui State
+     * @return UI_STATE the initial ui state
+     */
     abstract fun initialState(): UI_STATE
 
     init {

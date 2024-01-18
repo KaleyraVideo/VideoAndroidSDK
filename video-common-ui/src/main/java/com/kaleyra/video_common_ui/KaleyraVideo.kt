@@ -49,24 +49,23 @@ import kotlinx.coroutines.flow.take
 import java.util.concurrent.Executors
 
 /**
- * KaleyraVideo
- *
- * This object allows the usage of a KaleyraVideo
+ * Kaleyra Video Android SDK facade
  */
 object KaleyraVideo {
 
-    /**
-     * Is configured
-     */
     @get:Synchronized
+        /**
+         * Is configured flag, true if KaleyraVideo is configured, false otherwise
+         * */
     val isConfigured
         get() = collaboration != null
 
+
+    @get:Synchronized
+    @set:Synchronized
     /**
      * Collaboration
      */
-    @get:Synchronized
-    @set:Synchronized
     internal var collaboration: Collaboration? = null
         set(value) {
             logger = value?.configuration?.logger
@@ -86,39 +85,49 @@ object KaleyraVideo {
     private var _conference: ConferenceUI? by cached { ConferenceUI(collaboration!!.conference, callActivityClazz, logger) }
     private var _conversation: ConversationUI? by cached { ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz) }
 
-    /**
-     * Conference
-     */
+
     @get:Synchronized
+        /**
+         * Conference module
+         */
     val conference: ConferenceUI
         get() {
             require(collaboration != null) { "configure the CollaborationUI to use the conference" }
             return _conference!!
         }
 
-    /**
-     * Conversation
-     */
     @get:Synchronized
+        /**
+         * Conversation module
+         */
     val conversation: ConversationUI
         get() {
             require(collaboration != null) { "configure the KaleyraVideo to use the conversation" }
             return _conversation!!
         }
 
+    /**
+     * Company name flow that will emit company's name whenever available
+     */
     val companyName: SharedFlow<String> by lazy { collaboration?.company?.name ?: MutableSharedFlow() }
 
+    /**
+     * Company theme flow that will emit company's theme configuration whenever available
+     */
     val companyTheme: SharedFlow<Company.Theme> by lazy { collaboration?.company?.theme ?: MutableSharedFlow() }
 
-    /**
-     * Users description to be used for the UI
-     */
     @get:Synchronized
     @set:Synchronized
+        /**
+         * Users description to be used for the UI users presentation
+         */
     var userDetailsProvider: UserDetailsProvider? = null
 
     @get:Synchronized
     @set:Synchronized
+        /**
+         * Optional theme setup that will be used on the UI layer
+         */
     var theme: CompanyUI.Theme? = null
 
     /**
@@ -156,18 +165,27 @@ object KaleyraVideo {
         return true
     }
 
+    /**
+     * State flow representing Kaleyra Video SDK current state
+     */
     val state: StateFlow<State>
         get() {
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the state" }
             return collaboration!!.state
         }
 
+    /**
+     * Synchronization flow representing Kaleyra Video SDK current synchronization state
+     */
     val synchronization: StateFlow<Synchronization>
         get() {
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the synchronization" }
             return collaboration!!.synchronization
         }
 
+    /**
+     * Connected user flow that will emit currently logged user
+     */
     val connectedUser: StateFlow<User?>
         get() {
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the connectedUser" }
@@ -175,7 +193,10 @@ object KaleyraVideo {
         }
 
     /**
-     * Connect
+     * Connect Kaleyra Video SDK
+     * @param userId String the userId of the user that is requested to be connected
+     * @param accessTokenProvider SuspendFunction1<[@kotlin.ParameterName] Date, Result<String>> lambda function that will be called whenever a token for the sdk connection is requested
+     * @return Deferred<User> the Deferred<User> async result that will contain the connected user or the connection error after the connection attempt
      */
     fun connect(userId: String, accessTokenProvider: AccessTokenProvider): Deferred<User> = CompletableDeferred<User>().apply {
         serialScope.launchBlocking {
@@ -206,6 +227,13 @@ object KaleyraVideo {
         }
     }
 
+    /**
+     * Connect Kaleyra Video SDK via access-link
+     * The access-link represents a call that the SDK connection will be scoped to. After the connection and the call establishment, when the call will end, the SDK
+     * will be automatically disconnected.
+     * @param accessLink String the access-link to be used for the SDK connection
+     * @return Deferred<User> the Deferred<User> async result that will contain the connected user or the connection error after the connection attempt
+     */
     fun connect(accessLink: String): Deferred<User> = CompletableDeferred<User>().apply {
         serialScope.launchBlocking {
             val connect = collaboration?.connect(accessLink) ?: return@launchBlocking
@@ -217,6 +245,10 @@ object KaleyraVideo {
         }
     }
 
+    /**
+     * Disconnects the Kaleyra Video SDK
+     * @param clearSavedData Boolean flag representing the request to clear all SDK saved data, true to clear all the saved data, false otherwise
+     */
     fun disconnect(clearSavedData: Boolean = false) {
         serialScope.launchBlocking {
             collaboration?.disconnect(clearSavedData)
@@ -225,7 +257,7 @@ object KaleyraVideo {
     }
 
     /**
-     * Dispose the collaboration UI and optionally clear saved data.
+     * Resets Kaleyra Video SDK by disconnecting it, clearing configuration and all saved data
      */
     fun reset() {
         serialScope.launchBlocking {
@@ -241,6 +273,12 @@ object KaleyraVideo {
     }
 }
 
+/**
+ * Utility function to be called when the call is ready to be displayed
+ * @receiver KaleyraVideo Kaleyra Video SDK
+ * @param scope CoroutineScope the scope on which to notify the callback
+ * @param block Function1<[@kotlin.ParameterName] CallUI, Unit> the callback called when the call is ready to be displayed
+ */
 internal fun KaleyraVideo.onCallReady(scope: CoroutineScope, block: (call: CallUI) -> Unit) {
     conference.call
         .take(1)

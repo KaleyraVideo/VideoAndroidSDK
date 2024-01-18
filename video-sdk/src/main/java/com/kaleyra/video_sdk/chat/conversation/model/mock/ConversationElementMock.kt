@@ -21,7 +21,7 @@ import com.kaleyra.video_sdk.chat.conversation.model.Message
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 
-val mockConversationElements = ImmutableList(
+internal val mockConversationElements = ImmutableList(
     listOf(
         ConversationItem.Message(
             Message.OtherMessage(

@@ -71,12 +71,36 @@ import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
 
+/**
+ * Call Component Tag
+ */
 const val CallComponentTag = "CallComponentTag"
+
+/**
+ * Streams Grid Tag
+ */
 const val StreamsGridTag = "StreamsGridTag"
+
 private val StatusBarPaddingModifier = Modifier.statusBarsPadding()
+
+/**
+ * You Are Alone Avatar Component Padding in dp
+ */
 val YouAreAloneAvatarPadding = DefaultStreamAvatarSize / 2 + 24.dp
+
+/**
+ * Snackbar Component Padding in dp
+ */
 val SnackbarPadding = 16.dp
+
+/**
+ * Featured Stream Header Component Height in dp
+ */
 val FeaturedStreamHeaderHeight = 48.dp
+
+/**
+ * FullScreen Message Component duration in milliseconds
+ */
 const val FullScreenMessageMs = 1000L
 
 @Composable
@@ -362,7 +386,7 @@ private fun Modifier.streamClickable(onClick: () -> Unit): Modifier =
 
 @Preview
 @Composable
-fun CallContentPreview() {
+internal fun CallContentPreview() {
     KaleyraTheme {
         CallComponent(
             callUiState = CallUiState(

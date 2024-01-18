@@ -19,6 +19,9 @@ package com.kaleyra.video_sdk.call.fileshare.model
 import android.net.Uri
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 
+/**
+ * Mock Upload Shared File
+ */
 val mockUploadSharedFile = SharedFileUi(
     id = "1",
     name = "upload.txt",
@@ -30,6 +33,9 @@ val mockUploadSharedFile = SharedFileUi(
     isMine = true
 )
 
+/**
+ * Mock Download Shared File
+ */
 val mockDownloadSharedFile = SharedFileUi(
     id = "2",
     name = "download.txt",

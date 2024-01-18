@@ -18,10 +18,19 @@ package com.kaleyra.video_sdk.common.usermessages.model
 
 import java.util.UUID
 
+/**
+ * Muted message
+ * @property admin String? admin user identifier that triggered the mute
+ * @property id String muted message identifier
+ * @constructor
+ */
 class MutedMessage(val admin: String?) : UserMessage {
 
     override val id: String = UUID.randomUUID().toString()
 
+    /**
+     * @suppress
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -34,6 +43,9 @@ class MutedMessage(val admin: String?) : UserMessage {
         return true
     }
 
+    /**
+     * @suppress
+     */
     override fun hashCode(): Int {
         var result = admin?.hashCode() ?: 0
         result = 31 * result + id.hashCode()

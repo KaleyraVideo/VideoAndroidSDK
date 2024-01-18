@@ -37,11 +37,34 @@ import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.R
 
+/**
+ * Call Actions Component tag
+ */
 const val CallActionsComponentTag = "CallActionsComponentTag"
-const val AudioOutputComponentTag = "AudioOutputComponentTag"
+
+/**
+ * Screen Share Component Tag
+ */
 const val ScreenShareComponentTag = "ScreenShareComponentTag"
+
+/**
+ * Audio Output Component tag
+ */
+const val AudioOutputComponentTag = "AudioOutputComponentTag"
+
+/**
+ * File Share Component tag
+ */
 const val FileShareComponentTag = "FileShareComponentTag"
+
+/**
+ * Whiteboard Component Tag
+ */
 const val WhiteboardComponentTag = "WhiteboardComponentTag"
+
+/**
+ * Virtual Background Component Tag
+ */
 const val VirtualBackgroundComponentTag = "VirtualBackgroundComponentTag"
 
 internal enum class BottomSheetComponent {

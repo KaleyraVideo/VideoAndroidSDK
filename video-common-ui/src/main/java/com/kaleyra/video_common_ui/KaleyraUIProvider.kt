@@ -21,8 +21,15 @@ import android.content.Intent
 import com.kaleyra.video_common_ui.utils.DeviceUtils.isSmartGlass
 import com.kaleyra.video_utils.ContextRetainer
 
+/**
+ * Provider for the display operation of conversation and conference flows
+ */
 object KaleyraUIProvider {
 
+    /**
+     * Starts requested call activity
+     * @param activityClazz Class<*> the requested call activity's Class
+     */
     fun startCallActivity(activityClazz: Class<*>) =
         with(ContextRetainer.context) {
             val intent = Intent(this, activityClazz).apply {
@@ -32,6 +39,10 @@ object KaleyraUIProvider {
             startActivity(intent)
         }
 
+    /**
+     * Starts requested chat activity
+     * @param activityClazz Class<*> the requested chat activity's Class
+     */
     fun startChatActivity(context: Context, activityClazz: Class<*>, userIds: List<String>, chatId: String? = null) = with(context) {
         val intent = Intent(this, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

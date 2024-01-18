@@ -27,8 +27,19 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.*
 
+/**
+ * Timestamp Utils
+ */
 object TimestampUtils {
-    
+
+    /**
+     * Returns whether two dates differs more that input milliseconds
+     *
+     * @param firstDate Date first date
+     * @param secondDate Date second date
+     * @param millis Long the gap in which the second date should be placed to let the function return true
+     * @return Boolean
+     */
     fun areDateDifferenceGreaterThanMillis(firstDate: Date, secondDate: Date, millis: Long): Boolean =
         firstDate.toInstant().isAfter(secondDate.toInstant().plusMillis(millis)) || firstDate.toInstant().isBefore(secondDate.toInstant().minusMillis(millis))
 

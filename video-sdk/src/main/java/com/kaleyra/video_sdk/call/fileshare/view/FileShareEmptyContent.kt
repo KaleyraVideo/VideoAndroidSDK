@@ -32,6 +32,10 @@ import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
 
+/**
+ * Composable File Share Empty Content
+ * @param modifier Modifier compose modifier
+ */
 @Composable
 fun FileShareEmptyContent(modifier: Modifier = Modifier) {
     Column(

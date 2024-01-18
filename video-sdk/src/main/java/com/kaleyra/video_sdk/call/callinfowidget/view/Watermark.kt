@@ -42,7 +42,10 @@ import com.kaleyra.video_sdk.R
 private val MaxWatermarkHeight = 80.dp
 private val MaxWatermarkWidth = 300.dp
 
-const val WatermarkTag = "WatermarkTag"
+/**
+ * Watermark tag
+ */
+internal const val WatermarkTag = "WatermarkTag"
 
 @Composable
 internal fun Watermark(watermarkInfo: WatermarkInfo, modifier: Modifier = Modifier) {
@@ -75,6 +78,9 @@ internal fun Watermark(watermarkInfo: WatermarkInfo, modifier: Modifier = Modifi
     }
 }
 
+/**
+ * Call Info Widget Composable Preview
+ */
 @Preview
 @Composable
 fun CallInfoWidgetPreview() {

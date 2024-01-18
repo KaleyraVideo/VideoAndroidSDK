@@ -16,44 +16,108 @@
 
 package com.kaleyra.video_sdk.call.screen.model
 
+/**
+ * Representation of the Call State on the Ui
+ */
 sealed class CallStateUi {
 
+    /**
+     * Ringing Call State Ui
+     * @property isConnecting Boolean flag indicating if the call is connecting, true if connecting, false otherwise
+     * @constructor
+     */
     data class Ringing(val isConnecting: Boolean = false) : CallStateUi()
 
+    /**
+     * Dialing Call State Ui
+     */
     data object Dialing : CallStateUi()
 
+    /**
+     * Connected Call State Ui
+     */
     data object Connected : CallStateUi()
 
+    /**
+     * Reconnecting Call State Ui
+     */
     data object Reconnecting : CallStateUi()
 
+    /**
+     * Disconnecting Call State Ui
+     */
     data object Disconnecting : CallStateUi()
 
+    /**
+     * Disconnected Call State Ui
+     */
     sealed class Disconnected : CallStateUi() {
 
+        /**
+         * Disconnected Call State Ui
+         */
         companion object : Disconnected()
 
+        /**
+         * Ended Call State Ui Instance
+         */
         sealed class Ended : Disconnected() {
 
+            /**
+             * Call State Ui Instance
+             */
             companion object : Ended()
 
+            /**
+             * HungUp Call State Ui
+             */
             data object HungUp: Ended()
 
+            /**
+             * Declined Call State Ui
+             */
             data object Declined : Ended()
 
+            /**
+             * Kicked Call State Ui
+             * @property adminName String participant's identifier that kicked out the logged user
+             * @constructor
+             */
             data class Kicked(val adminName: String) : Ended()
 
+            /**
+             * Answered On Another Device
+             */
             data object AnsweredOnAnotherDevice : Ended()
 
+            /**
+             * Line Busy Call State Ui
+             */
             data object LineBusy : Ended()
 
+            /**
+             * Timeout Call State Ui
+             */
             data object Timeout : Ended()
 
+            /**
+             * Error Call State Ui
+             */
             sealed class Error: Ended() {
 
+                /**
+                 * Error Call State Ui Instance
+                 */
                 companion object : Error()
 
+                /**
+                 * Server Error Call State Ui
+                 */
                 data object Server : Error()
 
+                /**
+                 * Unknown Error Call State Ui
+                 */
                 data object Unknown : Error()
             }
         }

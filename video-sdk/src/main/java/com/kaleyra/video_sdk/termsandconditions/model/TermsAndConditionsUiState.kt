@@ -18,6 +18,12 @@ package com.kaleyra.video_sdk.termsandconditions.model
 
 import com.kaleyra.video_sdk.common.uistate.UiState
 
+/**
+ * Terms And Conditions Ui State
+ * @property isConnected Boolean flag indicating if the call is connected, true if connected, false otherwise
+ * @property isDeclined Boolean flag indicating if the call has been declined, true if declined, false otherwise
+ * @constructor
+ */
 data class TermsAndConditionsUiState(
     val isConnected: Boolean = false,
     val isDeclined: Boolean = false

@@ -20,6 +20,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Message representation
+ * @property id String message identifier
+ * @property content String message content
+ * @property time String message date
+ */
 @Stable
 sealed interface Message {
 
@@ -29,6 +35,14 @@ sealed interface Message {
 
     val time: String
 
+    /**
+     * Other Message representing message from another participant
+     * @property id String message identifier
+     * @property content String message content
+     * @property time String message date
+     * @property userId String message author identifier
+     * @constructor
+     */
     data class OtherMessage(
         override val id: String,
         override val content: String,
@@ -36,6 +50,14 @@ sealed interface Message {
         val userId: String
     ) : Message
 
+    /**
+     * My message representation of a message sent by logged user
+     * @property id String message identifier
+     * @property content String message content
+     * @property time String message date
+     * @property state Flow<State> flow of message states
+     * @constructor
+     */
     data class MyMessage(
         override val id: String,
         override val content: String,
@@ -43,12 +65,35 @@ sealed interface Message {
         val state: Flow<State>
     ) : Message
 
+    /**
+     * Message State
+     */
     @Immutable
     sealed class State {
-        object Created : State()
-        object Received : State()
-        object Sending : State()
-        object Sent : State()
-        object Read : State()
+
+        /**
+         * Created Message State
+         */
+        data object Created : State()
+
+        /**
+         * Received Message State
+         */
+        data object Received : State()
+
+        /**
+         * Sending Message State
+         */
+        data object Sending : State()
+
+        /**
+         * Sent Message State
+         */
+        data object Sent : State()
+
+        /**
+         * Read Message State
+         */
+        data object Read : State()
     }
 }

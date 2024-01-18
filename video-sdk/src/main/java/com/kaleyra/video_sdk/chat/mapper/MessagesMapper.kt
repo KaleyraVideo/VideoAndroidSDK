@@ -25,12 +25,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-object MessagesMapper {
+internal object MessagesMapper {
 
     private const val UnreadMessageFetchCount = 5
 //    private const val NewMessageChainDeltaMillis = 5 * 60 * 1000L
 
-    fun Message.toUiMessage(): com.kaleyra.video_sdk.chat.conversation.model.Message {
+    internal fun Message.toUiMessage(): com.kaleyra.video_sdk.chat.conversation.model.Message {
         val text = (content as? Message.Content.Text)?.message ?: ""
         val time = TimestampUtils.parseTime(creationDate.time)
 
@@ -40,7 +40,7 @@ object MessagesMapper {
             com.kaleyra.video_sdk.chat.conversation.model.Message.MyMessage(id, text, time, state.mapToUiState())
     }
 
-    fun Flow<Message.State>.mapToUiState(): Flow<com.kaleyra.video_sdk.chat.conversation.model.Message.State> =
+    internal fun Flow<Message.State>.mapToUiState(): Flow<com.kaleyra.video_sdk.chat.conversation.model.Message.State> =
         map { state ->
             when (state) {
                 is Message.State.Sending -> com.kaleyra.video_sdk.chat.conversation.model.Message.State.Sending
@@ -51,7 +51,7 @@ object MessagesMapper {
             }
         }
 
-    fun List<Message>.mapToConversationItems(firstUnreadMessageId: String? = null): List<ConversationItem> {
+    internal fun List<Message>.mapToConversationItems(firstUnreadMessageId: String? = null): List<ConversationItem> {
         val items = mutableListOf<ConversationItem>()
 
         forEachIndexed { index, message ->
@@ -89,7 +89,7 @@ object MessagesMapper {
 //                || areDateDifferenceGreaterThanMillis(nextMessage.creationDate, creationDate, NewMessageChainDeltaMillis)
                 || !TimestampUtils.isSameDay(creationDate.time, nextMessage.creationDate.time)
 
-    suspend fun findFirstUnreadMessageId(
+    internal suspend fun findFirstUnreadMessageId(
         messages: Messages,
         fetch: suspend (Int) -> Result<Messages>
     ): String? {

@@ -27,6 +27,12 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.isNotConnected
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isOrientationLandscape
 import com.kaleyra.video_common_ui.CallUI
 
+/**
+ * Wake Lock Proximity Delegate representing a class capable on operating on the hardware screen
+ * @property application Application the application
+ * @property call CallUI the call Ui
+ * @property isScreenTurnedOff Boolean flag indicating if the screen is currently turned off, true if turned off, false otherwise
+ */
 interface WakeLockProximityDelegate {
 
     val application: Application
@@ -35,12 +41,24 @@ interface WakeLockProximityDelegate {
 
     val isScreenTurnedOff: Boolean
 
+    /**
+     * Enable the WakeLockProximityDelegate
+     */
     fun bind()
 
+    /**
+     * Destroy the WakeLockProximityDelegate
+     */
     fun destroy()
 
+    /**
+     * Try to turn the hardware screen off
+     */
     fun tryTurnScreenOff()
 
+    /**
+     * Try to turn the hardware screen on
+     */
     fun restoreScreenOn()
 }
 

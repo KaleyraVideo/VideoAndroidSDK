@@ -29,6 +29,10 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 
+/**
+ * Terms And Conditions View Model
+ * @constructor
+ */
 class TermsAndConditionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<TermsAndConditionsUiState>(configure) {
 
     override fun initialState() = TermsAndConditionsUiState()
@@ -44,11 +48,23 @@ class TermsAndConditionsViewModel(configure: suspend () -> Configuration) : Base
             .launchIn(viewModelScope)
     }
 
+    /**
+     * Declines the terms and conditions
+     */
     fun decline() {
         _uiState.update { it.copy(isDeclined = true) }
     }
 
+    /**
+     * Terms And Conditions Instance
+     */
     companion object {
+
+        /**
+         * Provide the factory for the Terms And Conditions View Model
+         * @param configure SuspendFunction0<Configuration> configuration callback
+         * @return Factory the Terms And Conditions Factory
+         */
         fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

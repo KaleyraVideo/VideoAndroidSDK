@@ -33,5 +33,4 @@ internal object ConfigurationExtensions {
     fun Dp.isAtLeastMediumSizeHeight() = this >= MediumSizeHeight
 
     fun isAtLeastMediumSizeDevice(width: Dp, height: Dp) = width.isAtLeastMediumSizeWidth() && height.isAtLeastMediumSizeHeight()
-
 }

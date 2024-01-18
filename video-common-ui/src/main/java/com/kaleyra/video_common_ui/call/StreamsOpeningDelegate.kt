@@ -20,7 +20,16 @@ import com.kaleyra.video.conference.CallParticipants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
+/**
+ * StreamsOpeningDelegate delegate for the opening stream operation
+ */
 interface StreamsOpeningDelegate {
+
+    /**
+     * Open Participant streams
+     * @param participants Flow<CallParticipants> flow of Call Participants
+     * @param scope CoroutineScope the scope to be used for the process
+     */
     fun openParticipantsStreams(participants: Flow<CallParticipants>, scope: CoroutineScope) {
         participants
             .map { it.list }

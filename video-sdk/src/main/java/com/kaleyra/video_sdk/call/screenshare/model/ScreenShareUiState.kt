@@ -20,6 +20,11 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Screen Share Ui State representing the state of Screen Share on the Ui
+ * @property targetList ImmutableList<ScreenShareTargetUi> available Screen Share Target Uis
+ * @constructor
+ */
 @Immutable
 internal data class ScreenShareUiState(
     val targetList: ImmutableList<ScreenShareTargetUi> = ImmutableList(

@@ -16,4 +16,7 @@
 
 package com.kaleyra.video_sdk.common.uistate
 
+/**
+ * Ui State
+ */
 interface UiState

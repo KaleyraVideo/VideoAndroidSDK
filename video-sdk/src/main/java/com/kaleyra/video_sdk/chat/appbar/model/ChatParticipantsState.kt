@@ -18,6 +18,13 @@ package com.kaleyra.video_sdk.chat.appbar.model
 
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Chat Participants State
+ * @property online ImmutableList<String> Online Chat Participant State
+ * @property typing ImmutableList<String> Typing Chat Participant State
+ * @property offline ImmutableList<String> Offline Chat Participant State
+ * @constructor
+ */
 data class ChatParticipantsState(
     val online: ImmutableList<String> = ImmutableList(),
     val typing: ImmutableList<String> = ImmutableList(),

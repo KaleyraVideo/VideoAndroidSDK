@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * Thumbnail Stream Tag
+ */
 const val ThumbnailStreamsTag = "ThumbnailStreamsTag"
 
 @Composable
@@ -48,4 +51,3 @@ internal fun ThumbnailStreams(
         }
     }
 }
-

@@ -20,9 +20,9 @@ import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 
-object StreamViewSettings {
+internal object StreamViewSettings {
 
-    fun ImmutableView.thumbnailSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill(1f)): ImmutableView {
+    internal fun ImmutableView.thumbnailSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill(1f)): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = false
@@ -33,7 +33,7 @@ object StreamViewSettings {
         return this
     }
 
-    fun ImmutableView.featuredSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill()): ImmutableView {
+   internal  fun ImmutableView.featuredSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill()): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = true
@@ -44,7 +44,7 @@ object StreamViewSettings {
         return this
     }
 
-    fun ImmutableView.pipSettings(): ImmutableView {
+    internal fun ImmutableView.pipSettings(): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = false

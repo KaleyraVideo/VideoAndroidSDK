@@ -16,8 +16,11 @@
 
 package com.kaleyra.video_common_ui.proximity
 
+/**
+ * Proximity Call Activity representation of the Proximity Call Activity capable of disable the proximity trigger
+ * @property disableProximity Boolean flag indicating whether to disable the proximity trigger, true to disable, false otherwise
+ */
 interface ProximityCallActivity : WindowTouchDelegate {
 
     val disableProximity: Boolean
-
 }

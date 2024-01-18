@@ -18,10 +18,17 @@ package com.kaleyra.video_sdk.common.usermessages.model
 
 import java.util.UUID
 
+/**
+ * Camera Restriction Message
+ * @property id String camera restriction message identifier
+ */
 class CameraRestrictionMessage: UserMessage {
 
     override val id: String = UUID.randomUUID().toString()
 
+    /**
+     * @suppress
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -33,9 +40,10 @@ class CameraRestrictionMessage: UserMessage {
         return true
     }
 
+    /**
+     * @suppress
+     */
     override fun hashCode(): Int {
         return id.hashCode()
     }
-
-
 }

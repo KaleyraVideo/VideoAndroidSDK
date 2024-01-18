@@ -29,12 +29,19 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
+/**
+ * Event representing the display mode set
+ * @property id String
+ * @property displayMode DisplayMode
+ * @constructor
+ */
 data class DisplayModeEvent(val id: String, val displayMode: CallUI.DisplayMode)
 
 /**
- * The Call UI
  *
- * @property actions The MutableStateFlow containing the set of actions
+ * @property call Call
+ * @property activityClazz Class<*> the activity that will be used to display the call UI
+ * @property actions MutableStateFlow<Set<Action>> The MutableStateFlow containing the set of actions
  * @constructor
  */
 class CallUI(
@@ -89,16 +96,29 @@ class CallUI(
         return isInForeground
     }
 
+    /**
+     * DisplayMode representing the way call UI is displayed
+     */
     sealed class DisplayMode {
+
+        /**
+         * PictureInPicture display mode
+         */
         data object PictureInPicture : DisplayMode()
 
+        /**
+         * Foreground display mode
+         */
         data object Foreground : DisplayMode()
 
+        /**
+         * Background display mode
+         */
         data object Background : DisplayMode()
     }
 
     /**
-     * The call action sealed class
+     * Call Action triggered by the UI
      */
     sealed class Action : Parcelable {
 
@@ -130,6 +150,9 @@ class CallUI(
                 )
             }
 
+            /**
+             * Default set of Call Actions
+             */
             val default by lazy {
                 setOf(
                     ToggleMicrophone,
@@ -167,15 +190,27 @@ class CallUI(
         @Parcelize
         data object SwitchCamera : Action()
 
+        /**
+         * HangUp action
+         */
         @Parcelize
         data object HangUp : Action()
 
+        /**
+         * File Share open action
+         */
         @Parcelize
         data object FileShare : Action()
 
+        /**
+         * Screen share request action
+         */
         @Parcelize
         data object ScreenShare : Action()
 
+        /**
+         * Audio switches displaying request
+         */
         @Parcelize
         data object Audio : Action()
 
@@ -207,6 +242,9 @@ class CallUI(
             @Parcelize
             data object ViewOnly : OpenChat()
 
+            /**
+             * Open chat action with view and send messages capabilities
+             */
             @Parcelize
             data object Full : OpenChat()
         }
@@ -221,6 +259,9 @@ class CallUI(
             @Parcelize
             data object ViewOnly : OpenWhiteboard()
 
+            /**
+             * Open whiteboard action with view and interaction capability
+             */
             @Parcelize
             data object Full : OpenWhiteboard()
         }

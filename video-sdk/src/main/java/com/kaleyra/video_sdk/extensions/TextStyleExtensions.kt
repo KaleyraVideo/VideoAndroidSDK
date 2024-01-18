@@ -34,5 +34,3 @@ internal object TextStyleExtensions {
             )
         )
 }
-
-

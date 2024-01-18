@@ -16,8 +16,23 @@
 
 package com.kaleyra.video_sdk.call.recording.model
 
+/**
+ * Representation of the Recording State on the UI
+ */
 enum class RecordingStateUi {
+
+    /**
+     * Started Recording State
+     */
     Started,
+
+    /**
+     * Stopped Recording State
+     */
     Stopped,
+
+    /**
+     * Error Recording State
+     */
     Error
 }

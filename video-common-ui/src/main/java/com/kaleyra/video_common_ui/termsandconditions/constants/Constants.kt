@@ -16,6 +16,12 @@
 
 package com.kaleyra.video_common_ui.termsandconditions.constants
 
+/**
+ * Terms And Conditions Constants
+ */
 object Constants {
+    /**
+     * Extra Terms And Condition Configuration Key
+     */
     const val EXTRA_TERMS_AND_CONDITIONS_CONFIGURATION = "termsAndConditionsExtra"
 }

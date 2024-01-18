@@ -19,5 +19,11 @@ package com.kaleyra.video_sdk.common.avatar.model
 import android.net.Uri
 import androidx.compose.runtime.Immutable
 
+
+/**
+ * Immutable uri
+ * @property value Uri uri
+ * @constructor
+ */
 @Immutable
 data class ImmutableUri(val value: Uri = Uri.EMPTY)

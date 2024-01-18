@@ -16,8 +16,23 @@
 
 package com.kaleyra.video_sdk.call.recording.model
 
+/**
+ * Representation of Recording Type on the Ui
+ */
 enum class RecordingTypeUi {
+
+    /**
+     * OnConnect Recording Type
+     */
     OnConnect,
+
+    /**
+     * OnDemand Recording Type
+     */
     OnDemand,
+
+    /**
+     * Never Recording Type
+     */
     Never
 }

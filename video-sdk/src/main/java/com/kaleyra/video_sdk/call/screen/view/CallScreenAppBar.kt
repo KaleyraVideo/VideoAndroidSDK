@@ -30,6 +30,9 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareAppBar
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardAppBar
 import com.kaleyra.video_sdk.common.spacer.StatusBarsSpacer
 
+/**
+ * Call Screen App Bar Tag
+ */
 const val CallScreenAppBarTag = "CallScreenAppBarTag"
 
 @Composable
@@ -57,4 +60,3 @@ internal fun CallScreenAppBar(
         }
     }
 }
-

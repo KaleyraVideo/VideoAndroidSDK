@@ -29,8 +29,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
+/**
+ * Call Input flow utilities
+ */
 object InputMapper {
 
+    /**
+     * Utility function to detect whenever an input is active
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever a phone call input is active
+     */
     inline fun <reified T:Input> Flow<Call>.isInputActive(): Flow<Boolean> =
         flatMapLatest { it.inputs.availableInputs }
             .map { inputs -> inputs.firstOrNull { it is T } }
@@ -38,27 +46,57 @@ object InputMapper {
             .map { it is Input.State.Active }
             .distinctUntilChanged()
 
+    /**
+     * Utility function to detect whenever the screen input is active
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever the screen input is active
+     */
     fun Flow<Call>.isDeviceScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Screen>()
 
+    /**
+     * Utility function to detect whenever the app screen input is active
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever the app screen input is active
+     */
     fun Flow<Call>.isAppScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Application>()
 
+    /**
+     * Utility function to detect whenever an input is active
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever a phone call input is active
+     */
     fun Flow<Call>.isAnyScreenInputActive(): Flow<Boolean> =
         combine(isDeviceScreenInputActive(), isAppScreenInputActive()) { isDeviceScreenInputActive, isAppScreenInputActive ->
             isDeviceScreenInputActive || isAppScreenInputActive
     }
 
+    /**
+     * Utility function to detect whenever an audio mute event has been sent
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Input.Audio.Event.Request.Mute> flow emitting whenever an audio mute event has been sent
+     */
     fun Flow<Call>.toMuteEvents(): Flow<Input.Audio.Event.Request.Mute> =
         this.toAudio()
             .filterNotNull()
             .flatMapLatest { it.events }
             .filterIsInstance()
 
+    /**
+     * Utility function to detect whenever a stream with audio has been created
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Input.Audio?> flow emitting whenever an audio is available on a publishing local stream
+     */
     fun Flow<Call>.toAudio(): Flow<Input.Audio?> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamPublisher.CAMERA_STREAM_ID } }
             .flatMapLatest { it?.audio ?: flowOf(null) }
 
+    /**
+     * Utility function to detect whenever a screen sharing input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever a screen sharing input is currently available
+     */
     fun Flow<Call>.hasScreenSharingInput(): Flow<Boolean> =
         this.flatMapLatest { it.inputs.availableInputs }.map { inputs -> inputs.any { it is Input.Video.Screen.My } }
 }

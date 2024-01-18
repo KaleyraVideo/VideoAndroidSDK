@@ -68,10 +68,10 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
-val MessageItemAvatarSize = 28.dp
-val OtherBubbleAvatarSpacing = 8.dp
-val OtherBubbleLeftSpacing = 36.dp
-const val BubbleTestTag = "BubbleTestTag"
+internal val MessageItemAvatarSize = 28.dp
+internal val OtherBubbleAvatarSpacing = 8.dp
+internal val OtherBubbleLeftSpacing = 36.dp
+internal const val BubbleTestTag = "BubbleTestTag"
 
 @Composable
 internal fun OtherMessageItem(

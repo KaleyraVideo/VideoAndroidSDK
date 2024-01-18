@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+
 @Composable
 internal fun MaxFileSizeDialog(onDismiss: () -> Unit) {
     AlertDialog(

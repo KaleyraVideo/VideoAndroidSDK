@@ -30,6 +30,16 @@ import com.kaleyra.video_sdk.call.dialing.DialingComponent
 import com.kaleyra.video_sdk.call.ringing.RingingComponent
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 
+/**
+ * Composable function used to render the call screen component
+ * @param callState CallStateUi call state ui
+ * @param maxWidth Dp max width in dp
+ * @param onBackPressed Function0<Unit> callback invoked when the back button is pressed
+ * @param onStreamFullscreenClick Function1<String?, Unit> callback invoked when a fullscreen button is clicked
+ * @param shouldShowUserMessages Boolean flag indicating whether to show user messages, true to show them, false otherwise
+ * @param isDarkTheme Boolean flag indicating if the dark theme is enabled, true if enabled, false otherwise
+ * @param modifier Modifier compose modifier
+ */
 @Composable
 internal fun CallScreenContent(
     callState: CallStateUi,

@@ -51,7 +51,14 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPadding
 import com.kaleyra.video_sdk.R
 
+/**
+ * Featured Stream Tag
+ */
 const val FeaturedStreamTag = "FeaturedStreamTag"
+
+/**
+ * Featured Stream Header auto hide timing in milliseconds
+ */
 const val HeaderAutoHideMs = 5000L
 
 @Composable

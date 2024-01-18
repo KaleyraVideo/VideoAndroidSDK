@@ -152,4 +152,3 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
             }
     }
 }
-

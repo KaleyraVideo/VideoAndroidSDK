@@ -16,8 +16,17 @@
 
 package com.kaleyra.video_common_ui.utils
 
+/**
+ * Math Utils
+ */
 object MathUtils {
 
+    /**
+     * Find greatest common divisor
+     * @param number1 Int first member
+     * @param number2 Int second member
+     * @return Int the resulting first greatest common divisor
+     */
     fun findGreatestCommonDivisor(number1: Int, number2: Int): Int {
         var n1 = number1
         var n2 = number2

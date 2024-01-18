@@ -22,6 +22,17 @@ import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
+/**
+ * PreCall Ui State
+ * @param out T type of the PreCall Ui State
+ * @property video VideoUi? optional video
+ * @property avatar ImmutableUri? optional avatar uri
+ * @property participants ImmutableList<String> participants' identifiers list
+ * @property watermarkInfo WatermarkInfo? optional watermark info
+ * @property isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
+ * @property isConnecting Boolean flag representing if the call is connecting, true if connecting, false otherwise
+ * @property isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
+ */
 interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
 
     val video: VideoUi?
@@ -38,6 +49,17 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
 
     val isVideoIncoming: Boolean
 
+    /**
+     * Clone this state
+     * @param video VideoUi? optional video ui
+     * @param avatar ImmutableUri? optional avatar uri
+     * @param participants ImmutableList<String> participants' identifiers
+     * @param watermarkInfo WatermarkInfo? optional watermark info
+     * @param isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
+     * @param isConnecting Boolean flag representing if the call is connecting, true if connecting, false otherwise
+     * @param isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
+     * @return T
+     */
     fun clone(
         video: VideoUi? = this@PreCallUiState.video,
         avatar: ImmutableUri? = this@PreCallUiState.avatar,

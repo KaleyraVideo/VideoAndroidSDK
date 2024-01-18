@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.extensions
 
 import android.util.Rational
 
-object RationalExtensions {
+internal object RationalExtensions {
 
     private val MIN_PIP_RATIONAL = Rational(9, 21)
 

@@ -29,6 +29,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * File Share Notification Action Receiver
+ * @property dispatcher CoroutineDispatcher coroutine dispatcher to be used for the action processing
+ * @constructor
+ */
 class FileShareNotificationActionReceiver internal constructor(val dispatcher: CoroutineDispatcher = Dispatchers.IO): KaleyraVideoBroadcastReceiver() {
 
     /**

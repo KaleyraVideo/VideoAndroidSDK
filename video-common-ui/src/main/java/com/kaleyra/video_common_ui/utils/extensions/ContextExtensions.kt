@@ -274,6 +274,13 @@ object ContextExtensions {
         startActivity(mainIntent)
     }
 
+    /**
+     * Checks whether the input uri represents a file that exists on the file system
+     *
+     * @receiver Context the context used for the file lookup
+     * @param uri Uri the input uri
+     * @return Boolean true if the file exists, false otherwise
+     */
     fun Context.doesFileExists(uri: Uri): Boolean =
         kotlin.runCatching {
             this.contentResolver.query(uri, null, null, null, null)?.use {
@@ -281,6 +288,13 @@ object ContextExtensions {
             }
         }.getOrNull() ?: false
 
+    /**
+     * Open the file or call the input callback if an error occurs
+     *
+     * @receiver Context the context used for the file lookup
+     * @param uri Uri the input uri
+     * @param onFailure Function1<[@kotlin.ParameterName] Boolean, Unit> callback that is called when the open file process fails
+     */
     fun Context.tryToOpenFile(
         uri: Uri,
         onFailure: (doesFileExists: Boolean) -> Unit
@@ -319,4 +333,3 @@ object ContextExtensions {
         }
     }
 }
-

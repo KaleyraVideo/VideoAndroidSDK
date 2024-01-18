@@ -20,12 +20,37 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 
+/**
+ * Flow Utils
+ */
 object FlowUtils {
 
+    /**
+     * Combine 3 flows
+     * @receiver Flow<T1> input flow to be combined
+     * @param flow1 Flow<T2> second flow to be combined
+     * @param flow2 Flow<T3> third flow to be compined
+     * @param transform SuspendFunction3<[@kotlin.ParameterName] T1, [@kotlin.ParameterName] T2, [@kotlin.ParameterName] T3, R> transformation for the combine process
+     * @return Flow<R> the resulting combined flow
+     */
     fun <T1, T2, T3, R> Flow<T1>.combine(flow1: Flow<T2>, flow2: Flow<T3>, transform: suspend (a: T1, b: T2, c: T3) -> R): Flow<R> {
         return kotlinx.coroutines.flow.combine(this, flow1, flow2, transform)
     }
 
+    /**
+     * Combine 9 flows
+     * @param flow Flow<T1> first flow to be combined
+     * @param flow2 Flow<T2> second flow to be combined
+     * @param flow3 Flow<T3> third flow to be combined
+     * @param flow4 Flow<T4> fourth flow to be combined
+     * @param flow5 Flow<T5> fifth flow to be combined
+     * @param flow6 Flow<T6> sixth flow to be combined
+     * @param flow7 Flow<T7> seventh flow to be combined
+     * @param flow8 Flow<T8> eighth flow to be combined
+     * @param flow9 Flow<T9> ninth flow to be combined
+     * @param transform SuspendFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> transformation for the combine process
+     * @return Flow<R> the resulting combined flow
+     */
     inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
         flow: Flow<T1>,
         flow2: Flow<T2>,
@@ -64,6 +89,12 @@ object FlowUtils {
         }
     }
 
+    /**
+     * Flat map latest not null
+     * @receiver Flow<T> the flow to be mapped
+     * @param transform SuspendFunction1<[@kotlin.ParameterName] T, Flow<R>?> transformation for the mapping process
+     * @return Flow<R> the resulting mapped flow
+     */
     inline fun <T, R> Flow<T>.flatMapLatestNotNull(crossinline transform: suspend (value: T) -> Flow<R>?): Flow<R> = flatMapLatest { a ->
         transform(a) ?: emptyFlow()
     }

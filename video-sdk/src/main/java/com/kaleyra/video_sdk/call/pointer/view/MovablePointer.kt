@@ -34,6 +34,9 @@ import androidx.compose.ui.unit.IntSize
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
 import java.lang.Integer.max
 
+/**
+ * Movable pointer tag
+ */
 const val MovablePointerTag = "MovablePointerTag"
 
 @Composable
