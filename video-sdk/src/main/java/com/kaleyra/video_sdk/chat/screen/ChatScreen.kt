@@ -176,7 +176,7 @@ internal fun ChatScreen(
             if (uiState.isInCall) backToCallColor else Color.Transparent
         }
     }
-    
+
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -209,6 +209,7 @@ internal fun ChatScreen(
         }
     }
     var fabPadding by remember { mutableStateOf(0f) }
+    var topAppBarPadding by remember { mutableStateOf(0f) }
 
     Scaffold(
         modifier = Modifier
@@ -233,8 +234,12 @@ internal fun ChatScreen(
                 }
             },
         topBar = {
-            Column(Modifier.focusRequester(topBarRef)) {
-                
+            Column(Modifier
+                .focusRequester(topBarRef)
+                .onGloballyPositioned {
+                    topAppBarPadding = it.boundsInRoot().height
+                }) {
+
                 if (uiState.isInCall) {
                     OngoingCallLabel(onClick = onShowCall)
                 } else {
@@ -276,14 +281,25 @@ internal fun ChatScreen(
                 }
             }
         },
+        snackbarHost = {
+            Box(contentAlignment = Alignment.TopCenter) {
+                UserMessageSnackbarHandler(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            translationY = topAppBarPadding
+                        },
+                    userMessage = userMessage
+                )
+            }
+        },
         floatingActionButton = {
             ResetScrollFab(
                 modifier = Modifier
                     .focusRequester(fabRef)
                     .graphicsLayer {
                         translationY = -fabPadding
-                    }
-                ,
+                    },
                 counter = uiState.conversationState.unreadMessagesCount,
                 onClick = onFabClick,
                 enabled = scrollToBottomFabEnabled
@@ -326,10 +342,6 @@ internal fun ChatScreen(
                     )
                 }
             }
-
-            UserMessageSnackbarHandler(
-                userMessage = userMessage
-            )
         }
     }
 }

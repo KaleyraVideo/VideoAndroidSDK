@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.common.usermessages.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.common.snackbar.AudioOutputGenericFailureSnackbar
 import com.kaleyra.video_sdk.common.snackbar.AudioOutputInSystemCallFailureSnackbar
@@ -93,7 +95,7 @@ internal fun UserMessageSnackbarHandler(
     }
 
     SnackbarHost(
-        modifier = modifier.padding(vertical = 12.dp),
+        modifier = modifier.padding(vertical = 12.dp).background(color = Color.Transparent),
         hostState = snackbarHostState,
         snackbar = {
             when (it.actionLabel) {
