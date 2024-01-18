@@ -171,10 +171,13 @@ internal fun ChatScreen(
 
     val isDarkTheme = isSystemInDarkTheme()
     val elevatedSurfaceColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-    val statusBarColor =
-        if (uiState.isInCall) colorResource(id = R.color.kaleyra_color_answer_button)
-        else Color.Transparent
-
+    val backToCallColor = colorResource(id = R.color.kaleyra_color_answer_button)
+    val statusBarColor by remember {
+        derivedStateOf {
+            if (uiState.isInCall) backToCallColor else Color.Transparent
+        }
+    }
+    
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(
