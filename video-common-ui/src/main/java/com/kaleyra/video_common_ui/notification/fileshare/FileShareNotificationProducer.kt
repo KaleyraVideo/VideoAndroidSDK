@@ -21,6 +21,8 @@ import android.content.Context
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +33,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
-// TODO try to pass an io coroutine scope
 internal class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) {
 
     companion object {
@@ -71,7 +72,9 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
     private suspend fun buildNotification(context: Context, call: Call, sharedFile: SharedFile, activityClazz: Class<*>): Notification {
         val participants = call.participants.first()
         val participant = participants.others.firstOrNull { it.userId == sharedFile.sender.userId }
-        val username = participant?.displayName?.first() ?: ""
+        val participantsList = participant?.userId?.let { listOf(it) } ?: listOf()
+        ContactDetailsManager.refreshContactDetails(*participantsList.toTypedArray())
+        val username = participant?.combinedDisplayName?.first() ?: ""
         return NotificationManager.buildIncomingFileNotification(context, username, sharedFile.id, activityClazz)
     }
 }

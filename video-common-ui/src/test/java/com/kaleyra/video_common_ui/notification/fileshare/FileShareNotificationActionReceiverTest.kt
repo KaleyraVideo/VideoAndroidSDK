@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification
+package com.kaleyra.video_common_ui.notification.fileshare
 
 import android.content.Context
 import android.content.Intent
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver.Companion.ACTION_DOWNLOAD
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.onCallReady

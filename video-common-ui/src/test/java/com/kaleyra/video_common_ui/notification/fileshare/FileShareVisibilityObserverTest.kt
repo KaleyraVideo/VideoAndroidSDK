@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification
+package com.kaleyra.video_common_ui.notification.fileshare
 
 import android.content.Intent
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
