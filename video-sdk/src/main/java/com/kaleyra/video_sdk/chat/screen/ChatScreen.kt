@@ -246,15 +246,7 @@ internal fun ChatScreen(
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            WindowInsets.systemBars
-                                .asPaddingValues()
-                                .calculateTopPadding())
-                        .background(spacerColor.value)
-                )
+                StatusBarsSpacer(modifier = Modifier.background(spacerColor.value))
 
                 if (uiState.isInCall) OngoingCallLabel(onClick = onShowCall)
 
