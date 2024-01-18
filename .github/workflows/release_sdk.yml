@@ -35,6 +35,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+      - name: add python dependency
+        run: python3 -m pip install semver boto3
       - name: Setup android sdk
         if: ${{ env.ACT }} # Only run on local act setups, as GitHub Actions provides the Android SDK on Ubuntu
         uses: android-actions/setup-android@v2
@@ -76,6 +78,7 @@ jobs:
           commit_message: Update sdk version
           tagging_message: ${{ steps.output_tag.outputs.TAG }}
   update_bom_version:
+    needs: update_sdk_version
     uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
     with:
       release_version: ${{ github.event.inputs.release_version }}
