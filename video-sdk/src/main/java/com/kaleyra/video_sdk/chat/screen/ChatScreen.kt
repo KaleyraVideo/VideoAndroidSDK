@@ -56,6 +56,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,7 +77,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -166,7 +166,7 @@ internal fun ChatScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
 
     val focusManager = LocalFocusManager.current
-    val isKeyboardOpen by keyboardAsState()
+    val isKeyboardOpen by isKeyboardOpen()
     if (!isKeyboardOpen) focusManager.clearFocus()
 
     val isDarkTheme = isSystemInDarkTheme()
@@ -373,9 +373,14 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
 }
 
 @Composable
-fun keyboardAsState(): State<Boolean> {
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    return rememberUpdatedState(isImeVisible)
+fun isKeyboardOpen(): State<Boolean> {
+    val imeInsets = WindowInsets.ime
+    val density = LocalDensity.current
+    return remember {
+        derivedStateOf {
+            imeInsets.getBottom(density) > 0
+        }
+    }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
