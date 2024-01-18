@@ -234,21 +234,16 @@ internal fun ChatScreen(
             },
         topBar = {
             Column(Modifier.focusRequester(topBarRef)) {
-
-                val spacerColor = animateColorAsState(
-                    targetValue = when {
-                        uiState.isInCall -> colorResource(id = R.color.kaleyra_color_answer_button)
-                        scrollState.canScrollForward -> elevatedSurfaceColor
-                        else -> MaterialTheme.colorScheme.surface
-                    },
-                    label = "spacerColor",
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
-
+                
                 if (uiState.isInCall) {
                     OngoingCallLabel(onClick = onShowCall)
                 } else {
-                    StatusBarsSpacer(modifier = Modifier.background(spacerColor.value))
+                    val spacerColor by animateColorAsState(
+                        targetValue = if (scrollState.canScrollForward) elevatedSurfaceColor else MaterialTheme.colorScheme.surface,
+                        label = "spacerColor",
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                    StatusBarsSpacer(modifier = Modifier.background(spacerColor))
                 }
 
                 when (uiState) {
