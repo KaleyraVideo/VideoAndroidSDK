@@ -100,6 +100,7 @@ internal fun ChatUserInput(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_kaleyra_send),
                     contentDescription = stringResource(id = R.string.kaleyra_chat_send),
+                    modifier = Modifier.fillMaxSize(.66f)
                 )
             },
             enabled = textState.text.isNotBlank(),
