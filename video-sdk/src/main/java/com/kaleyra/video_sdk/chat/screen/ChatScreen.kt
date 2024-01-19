@@ -193,9 +193,7 @@ internal fun ChatScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .navigationBarsPadding()
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .imePadding()
             .semantics {
                 testTagsAsResourceId = true
             }
@@ -307,6 +305,8 @@ internal fun ChatScreen(
                     onMessageSent = onMessageSent,
                     onDirectionLeft = topBarRef::requestFocus,
                     modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
                         .onGloballyPositioned {
                             fabPadding = it.boundsInRoot().height
                         }
