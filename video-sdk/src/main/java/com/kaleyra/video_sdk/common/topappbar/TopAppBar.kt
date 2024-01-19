@@ -23,19 +23,72 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 internal const val ActionsTag = "ActionsTag"
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun TopAppBar(
+    navigationIcon: @Composable RowScope.() -> Unit,
+    content: @Composable (RowScope.() -> Unit)? = null,
+    actions: @Composable (RowScope.() -> Unit)? = null,
+    scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
+    scrollState: LazyListState,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.material3.TopAppBar(
+        modifier = modifier
+            .focusGroup(),
+        title = { },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = if (scrollState.canScrollForward) androidx.compose.material3.MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else androidx.compose.material3.MaterialTheme.colorScheme.surface
+        ),
+        windowInsets = windowInsets,
+        scrollBehavior = scrollBehavior,
+        actions = {
+            Row(verticalAlignment = Alignment.CenterVertically, content = navigationIcon)
+
+            if (content != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = content
+                )
+            }
+
+            if (actions != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .testTag(ActionsTag),
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = actions
+                )
+            }
+        },
+    )
+}
 
 @Composable
 internal fun TopAppBar(
