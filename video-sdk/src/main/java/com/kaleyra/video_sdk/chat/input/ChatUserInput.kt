@@ -35,6 +35,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,56 +68,61 @@ internal fun ChatUserInput(
     val interactionSource = remember { MutableInteractionSource() }
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier
-            .focusGroup()
+    Surface(
+        modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .highlightOnFocus(interactionSource)
-            .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+            .then(modifier)
     ) {
-
-        ChatUserInputText(
-            textFieldValue = textState,
-            onTextChanged = {
-                textState = it
-                onTextChanged()
-            },
-            maxLines = 4,
-            onDirectionLeft = onDirectionLeft,
-            interactionSource = interactionSource,
+        Row(
+            verticalAlignment = Alignment.Bottom,
             modifier = Modifier
-                .weight(1.0f)
-                .padding(bottom = 4.dp),
-        )
+                .focusGroup()
+                .highlightOnFocus(interactionSource)
+                .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+        ) {
 
-        Spacer(modifier = Modifier.size(6.dp))
+            ChatUserInputText(
+                textFieldValue = textState,
+                onTextChanged = {
+                    textState = it
+                    onTextChanged()
+                },
+                maxLines = 4,
+                onDirectionLeft = onDirectionLeft,
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .weight(1.0f)
+                    .padding(bottom = 4.dp),
+            )
 
-        val buttonInteractionSource = remember { MutableInteractionSource() }
-        FilledIconButton(
-            onClick = {
-                onMessageSent(textState.text)
-                textState = TextFieldValue()
-            },
-            content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_send),
-                    contentDescription = stringResource(id = R.string.kaleyra_chat_send),
-                    modifier = Modifier.fillMaxSize(.66f)
-                )
-            },
-            enabled = textState.text.isNotBlank(),
-            colors = IconButtonDefaults.filledIconButtonColors(
-                disabledContainerColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            interactionSource = buttonInteractionSource,
-            modifier = Modifier
-                .supportRtl()
-                .highlightOnFocus(buttonInteractionSource)
-        )
+            Spacer(modifier = Modifier.size(6.dp))
+
+            val buttonInteractionSource = remember { MutableInteractionSource() }
+            FilledIconButton(
+                onClick = {
+                    onMessageSent(textState.text)
+                    textState = TextFieldValue()
+                },
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_send),
+                        contentDescription = stringResource(id = R.string.kaleyra_chat_send),
+                        modifier = Modifier.fillMaxSize(.66f)
+                    )
+                },
+                enabled = textState.text.isNotBlank(),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    disabledContainerColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(8.dp),
+                interactionSource = buttonInteractionSource,
+                modifier = Modifier
+                    .supportRtl()
+                    .highlightOnFocus(buttonInteractionSource)
+            )
+        }
     }
+
 }
 
 @Preview(name = "Light Mode")
