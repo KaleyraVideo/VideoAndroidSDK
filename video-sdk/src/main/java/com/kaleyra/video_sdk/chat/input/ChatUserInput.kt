@@ -72,9 +72,9 @@ internal fun ChatUserInput(
         modifier = modifier
             .focusGroup()
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
-            .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+            .background(MaterialTheme.colorScheme.surface)
             .highlightOnFocus(interactionSource)
+            .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
     ) {
 
         ChatUserInputText(
