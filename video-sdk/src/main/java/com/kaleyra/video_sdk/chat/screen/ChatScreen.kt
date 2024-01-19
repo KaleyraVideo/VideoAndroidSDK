@@ -271,36 +271,32 @@ internal fun ChatScreen(
             .exclude(WindowInsets.navigationBars)
             .exclude(WindowInsets.ime),
     ) { paddingValues ->
-        Box {
+        Column(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            ConversationComponent(
+                conversationState = uiState.conversationState,
+                participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
+                onMessageScrolled = onMessageScrolled,
+                onApproachingTop = onFetchMessages,
+                scrollState = scrollState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .testTag(ConversationComponentTag)
+            )
 
-            Column(
-                modifier = Modifier.padding(paddingValues)
-            ) {
-
-                ConversationComponent(
-                    conversationState = uiState.conversationState,
-                    participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
-                    onMessageScrolled = onMessageScrolled,
-                    onApproachingTop = onFetchMessages,
-                    scrollState = scrollState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .testTag(ConversationComponentTag)
-                )
-
-                ChatUserInput(
-                    onTextChanged = onTyping,
-                    onMessageSent = onMessageSent,
-                    onDirectionLeft = topBarRef::requestFocus,
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .imePadding()
-                        .onGloballyPositioned {
-                            fabPadding = it.boundsInRoot().height
-                        }
-                )
-            }
+            ChatUserInput(
+                onTextChanged = onTyping,
+                onMessageSent = onMessageSent,
+                onDirectionLeft = topBarRef::requestFocus,
+                modifier = Modifier
+                    .onGloballyPositioned {
+                        fabPadding = it.boundsInRoot().height
+                    }
+                    .navigationBarsPadding()
+                    .imePadding()
+            )
         }
     }
 }
