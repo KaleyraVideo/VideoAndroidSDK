@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +54,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
@@ -145,7 +148,7 @@ internal fun ChatScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun ChatScreen(
     uiState: ChatUiState,
@@ -161,35 +164,11 @@ internal fun ChatScreen(
     val scope = rememberCoroutineScope()
     val topBarRef = remember { FocusRequester() }
     val scrollState = rememberLazyListState()
-    val topBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val focusManager = LocalFocusManager.current
     val isKeyboardOpen by isKeyboardOpen()
     if (!isKeyboardOpen) focusManager.clearFocus()
-
-    val isDarkTheme = isSystemInDarkTheme()
-    val elevatedSurfaceColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-    val backToCallColor = colorResource(id = R.color.kaleyra_color_answer_button)
-    val statusBarColor by remember {
-        derivedStateOf {
-            if (uiState.isInCall) backToCallColor else Color.Transparent
-        }
-    }
-
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.setStatusBarColor(
-            color = statusBarColor,
-            darkIcons = !isDarkTheme && !uiState.isInCall,
-            transformColorForLightContent = { Color.Black }
-        )
-        systemUiController.setNavigationBarColor(
-            color = elevatedSurfaceColor,
-            darkIcons = !isDarkTheme,
-            transformColorForLightContent = { Color.Black }
-        )
-    }
 
     val onMessageSent: ((String) -> Unit) = remember(scope, scrollState) {
         { text ->
@@ -234,23 +213,18 @@ internal fun ChatScreen(
                 }
             },
         topBar = {
-            Column(Modifier
-                .focusRequester(topBarRef)
-                .onGloballyPositioned {
-                    topAppBarPadding = it.boundsInRoot().height
-                }) {
+            Column(
+                Modifier
+                    .focusRequester(topBarRef)
+                    .onGloballyPositioned {
+                        topAppBarPadding = it.boundsInRoot().height
+                    }) {
 
                 if (uiState.isInCall) {
                     OngoingCallLabel(onClick = onShowCall)
-                } else {
-                    val spacerColor by animateColorAsState(
-                        targetValue = if (scrollState.canScrollForward) elevatedSurfaceColor else MaterialTheme.colorScheme.surface,
-                        label = "spacerColor",
-                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                    )
-                    StatusBarsSpacer(modifier = Modifier.background(spacerColor))
                 }
 
+                val topAppBarInsets = if (!uiState.isInCall) TopAppBarDefaults.windowInsets else WindowInsets(0, 0, 0, 0)
                 when (uiState) {
                     is ChatUiState.OneToOne -> {
                         OneToOneAppBar(
@@ -258,6 +232,7 @@ internal fun ChatScreen(
                             recipientDetails = uiState.recipientDetails,
                             scrollBehavior = scrollBehavior,
                             scrollState = scrollState,
+                            windowInsets = topAppBarInsets,
                             isInCall = uiState.isInCall,
                             actions = uiState.actions,
                             onBackPressed = onBackPressed,
@@ -270,6 +245,7 @@ internal fun ChatScreen(
                             name = uiState.name.ifBlank { stringResource(R.string.kaleyra_chat_group_title) },
                             scrollBehavior = scrollBehavior,
                             scrollState = scrollState,
+                            windowInsets = topAppBarInsets,
                             connectionState = uiState.connectionState,
                             participantsDetails = uiState.participantsDetails,
                             participantsState = uiState.participantsState,
@@ -347,6 +323,20 @@ internal fun ChatScreen(
 @Composable
 internal fun OngoingCallLabel(onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
+    val systemUiController = rememberSystemUiController()
+
+    DisposableEffect(Unit) {
+        val hasStatusBarDarkIcons = systemUiController.statusBarDarkContentEnabled
+        systemUiController.setStatusBarColor(color = Color.Transparent, darkIcons = false)
+
+        onDispose {
+            systemUiController.setStatusBarColor(
+                color = Color.Transparent,
+                darkIcons = hasStatusBarDarkIcons
+            )
+        }
+    }
+    
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,

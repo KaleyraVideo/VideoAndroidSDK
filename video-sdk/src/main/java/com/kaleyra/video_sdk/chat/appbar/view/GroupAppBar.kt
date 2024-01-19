@@ -19,9 +19,11 @@
 package com.kaleyra.video_sdk.chat.appbar.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
@@ -48,6 +50,7 @@ internal fun GroupAppBar(
     connectionState: ConnectionState,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     scrollState: LazyListState,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     participantsDetails: ImmutableMap<String, ChatParticipantDetails>,
     participantsState: ChatParticipantsState,
     isInCall: Boolean,
@@ -59,6 +62,7 @@ internal fun GroupAppBar(
         isInCall = isInCall,
         onBackPressed = onBackPressed,
         scrollBehavior = scrollBehavior,
+        windowInsets = windowInsets,
         scrollState = scrollState,
         content = {
             ChatAppBarContent(
@@ -104,6 +108,7 @@ private fun textFor(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable

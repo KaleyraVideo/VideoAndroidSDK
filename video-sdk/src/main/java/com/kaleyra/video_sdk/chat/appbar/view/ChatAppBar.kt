@@ -20,6 +20,7 @@ package com.kaleyra.video_sdk.chat.appbar.view
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.lazy.LazyListState
@@ -37,12 +38,13 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
-import com.kaleyra.video_sdk.common.topappbar.ChatTopAppBar
+import com.kaleyra.video_sdk.common.topappbar.TopAppBar
 
 internal const val SubtitleTag = "SubtitleTag"
 internal const val BouncingDotsTag = "BouncingDots"
 internal const val ChatActionsTag = "ChatActionsTag"
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ChatAppBar(
     isInCall: Boolean = false,
@@ -50,20 +52,21 @@ internal fun ChatAppBar(
     scrollState: LazyListState,
     actions: ImmutableSet<ChatAction>,
     onBackPressed: () -> Unit = { },
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     content: @Composable RowScope.() -> Unit,
 ) {
-    ChatTopAppBar(
+    TopAppBar(
         navigationIcon = {
             BackIconButton(
                 iconTint = MaterialTheme.colorScheme.onSurface,
                 onClick = onBackPressed
             )
         },
+        windowInsets = windowInsets,
         scrollBehavior = scrollBehavior,
         scrollState = scrollState,
         content = content,
-        actions = { if (!isInCall) Actions(actions = actions) },
-        windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal),
+        actions = { if (!isInCall) Actions(actions = actions) }
     )
 }
 

@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +57,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun OneToOneAppBar(
     connectionState: ConnectionState,
@@ -64,6 +66,7 @@ internal fun OneToOneAppBar(
     recipientDetails: ChatParticipantDetails,
     isInCall: Boolean,
     actions: ImmutableSet<ChatAction>,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     onBackPressed: () -> Unit = { },
 ) {
     ChatAppBar(
@@ -71,6 +74,7 @@ internal fun OneToOneAppBar(
         scrollBehavior = scrollBehavior,
         scrollState = scrollState,
         isInCall = isInCall,
+        windowInsets = windowInsets,
         onBackPressed = onBackPressed,
         content = {
             val recipientState by recipientDetails.state.collectAsStateWithLifecycle(ChatParticipantState.Unknown)

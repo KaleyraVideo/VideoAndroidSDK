@@ -37,25 +37,23 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ChatTopAppBar(
+internal fun TopAppBar(
     navigationIcon: @Composable RowScope.() -> Unit,
     content: @Composable (RowScope.() -> Unit)? = null,
     actions: @Composable (RowScope.() -> Unit)? = null,
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
     scrollState: LazyListState,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.material3.TopAppBar(
         modifier = modifier
             .focusGroup(),
         title = { },
-        windowInsets = windowInsets,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor =
-            if (scrollState.canScrollForward) MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-            else MaterialTheme.colorScheme.surface
+            containerColor = if (scrollState.canScrollForward) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else MaterialTheme.colorScheme.surface
         ),
+        windowInsets = windowInsets,
         scrollBehavior = scrollBehavior,
         actions = {
             Row(verticalAlignment = Alignment.CenterVertically, content = navigationIcon)
