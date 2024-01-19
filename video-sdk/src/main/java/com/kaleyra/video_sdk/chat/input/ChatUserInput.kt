@@ -67,50 +67,46 @@ internal fun ChatUserInput(
     val interactionSource = remember { MutableInteractionSource() }
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
-    Box(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .focusGroup()
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
+            .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+            .highlightOnFocus(interactionSource)
             .then(modifier)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .focusGroup()
-                .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
-                .highlightOnFocus(interactionSource)
-        ) {
 
-            ChatUserInputText(
-                textFieldValue = textState,
-                onTextChanged = {
-                    textState = it
-                    onTextChanged()
-                },
-                maxLines = 4,
-                onDirectionLeft = onDirectionLeft,
-                modifier = Modifier.weight(1.0f).padding(bottom = 4.dp),
-                interactionSource = interactionSource
-            )
+        ChatUserInputText(
+            textFieldValue = textState,
+            onTextChanged = {
+                textState = it
+                onTextChanged()
+            },
+            maxLines = 4,
+            onDirectionLeft = onDirectionLeft,
+            modifier = Modifier.weight(1.0f).padding(bottom = 4.dp),
+            interactionSource = interactionSource
+        )
 
-            Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(16.dp))
 
-            FilledIconButton(
-                onClick = {
-                    onMessageSent(textState.text)
-                    textState = TextFieldValue()
-                },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_send),
-                        contentDescription = stringResource(id = R.string.kaleyra_chat_send),
-                    )
-                },
-                enabled = textState.text.isNotBlank(),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.supportRtl()
-            )
-        }
+        FilledIconButton(
+            onClick = {
+                onMessageSent(textState.text)
+                textState = TextFieldValue()
+            },
+            content = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_kaleyra_send),
+                    contentDescription = stringResource(id = R.string.kaleyra_chat_send),
+                )
+            },
+            enabled = textState.text.isNotBlank(),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.supportRtl()
+        )
     }
 }
 
