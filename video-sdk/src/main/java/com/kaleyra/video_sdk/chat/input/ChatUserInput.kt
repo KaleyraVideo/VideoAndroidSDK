@@ -68,7 +68,7 @@ internal fun ChatUserInput(
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
         modifier = modifier
             .focusGroup()
             .fillMaxWidth()
