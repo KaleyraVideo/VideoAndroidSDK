@@ -19,6 +19,9 @@
 package com.kaleyra.video_sdk.chat.screen
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +33,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,11 +46,13 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -77,7 +81,6 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -183,6 +186,14 @@ internal fun ChatScreen(
     }
     var fabPadding by remember { mutableStateOf(0f) }
     var topAppBarPadding by remember { mutableStateOf(0f) }
+
+    val chatUserInputContainerColor: Color by animateColorAsState(
+        targetValue =
+        if (scrollState.canScrollBackward) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+        else MaterialTheme.colorScheme.surface,
+        label = "chatUserInputContainerColor",
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+    )
 
     Box(
         modifier = Modifier.windowInsetsPadding(
@@ -304,16 +315,18 @@ internal fun ChatScreen(
                         .testTag(ConversationComponentTag)
                 )
 
+                Divider(color = chatUserInputContainerColor)
+
                 ChatUserInput(
-                    onTextChanged = onTyping,
-                    onMessageSent = onMessageSent,
-                    onDirectionLeft = topBarRef::requestFocus,
                     modifier = Modifier
                         .onGloballyPositioned {
                             fabPadding = it.boundsInRoot().height
                         }
                         .navigationBarsPadding()
-                        .imePadding()
+                        .imePadding(),
+                    onTextChanged = onTyping,
+                    onMessageSent = onMessageSent,
+                    onDirectionLeft = topBarRef::requestFocus
                 )
             }
         }
