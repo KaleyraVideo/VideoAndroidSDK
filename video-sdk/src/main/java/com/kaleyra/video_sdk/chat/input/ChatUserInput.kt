@@ -69,13 +69,12 @@ internal fun ChatUserInput(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .focusGroup()
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
             .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
             .highlightOnFocus(interactionSource)
-            .then(modifier)
     ) {
 
         ChatUserInputText(
