@@ -16,8 +16,8 @@
   -->
 
 <resources>
-    <string name="kaleyra_today">oggi</string>
-    <string name="kaleyra_yesterday">ieri</string>
+    <string name="kaleyra_today">Oggi</string>
+    <string name="kaleyra_yesterday">Ieri</string>
     <string name="kaleyra_notification_answer">Rispondi</string>
     <string name="kaleyra_notification_decline">Rifiuta</string>
     <string name="kaleyra_notification_hangup">Termina</string>

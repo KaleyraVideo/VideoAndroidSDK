@@ -16,8 +16,8 @@
 
 <resources>
     <string name="kaleyra_day_time_pattern" translatable="false">%1$s, %2$s</string>
-    <string name="kaleyra_today">today</string>
-    <string name="kaleyra_yesterday">yesterday</string>
+    <string name="kaleyra_today">Today</string>
+    <string name="kaleyra_yesterday">Yesterday</string>
     <string name="kaleyra_notification_answer">Answer</string>
     <string name="kaleyra_notification_decline">Decline</string>
     <string name="kaleyra_notification_hangup">Hang Up</string>
