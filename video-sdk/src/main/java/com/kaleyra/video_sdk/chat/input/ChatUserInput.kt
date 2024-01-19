@@ -89,7 +89,7 @@ internal fun ChatUserInput(
             interactionSource = interactionSource
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(6.dp))
 
         FilledIconButton(
             onClick = {
