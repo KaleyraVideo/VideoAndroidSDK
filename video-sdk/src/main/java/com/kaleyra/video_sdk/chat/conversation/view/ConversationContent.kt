@@ -109,7 +109,7 @@ internal fun ConversationContent(
                 is ConversationItem.UnreadMessages -> NewMessagesHeaderItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 3.dp, top = 3.dp)
+                        .padding(vertical = 2.dp)
                 )
 
             }
