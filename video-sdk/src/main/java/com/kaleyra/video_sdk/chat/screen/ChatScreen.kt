@@ -24,10 +24,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,8 +38,10 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -179,124 +184,138 @@ internal fun ChatScreen(
     var fabPadding by remember { mutableStateOf(0f) }
     var topAppBarPadding by remember { mutableStateOf(0f) }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .semantics {
-                testTagsAsResourceId = true
-            }
-            .onPreviewKeyEvent {
-                return@onPreviewKeyEvent when {
-                    it.type != KeyEventType.KeyDown && it.key == Key.DirectionLeft -> {
-                        topBarRef.requestFocus(); true
+    Box(
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets
+                .navigationBars
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+        )
+    ) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .semantics {
+                    testTagsAsResourceId = true
+                }
+                .onPreviewKeyEvent {
+                    return@onPreviewKeyEvent when {
+                        it.type != KeyEventType.KeyDown && it.key == Key.DirectionLeft -> {
+                            topBarRef.requestFocus(); true
+                        }
+
+                        scrollToBottomFabEnabled && it.type != KeyEventType.KeyDown && it.key == Key.DirectionRight -> {
+                            fabRef.requestFocus(); true
+                        }
+
+                        else -> false
+                    }
+                },
+            topBar = {
+                Column(
+                    Modifier
+                        .focusRequester(topBarRef)
+                        .onGloballyPositioned {
+                            topAppBarPadding = it.boundsInRoot().height
+                        }) {
+
+                    if (uiState.isInCall) {
+                        OngoingCallLabel(onClick = onShowCall)
                     }
 
-                    scrollToBottomFabEnabled && it.type != KeyEventType.KeyDown && it.key == Key.DirectionRight -> {
-                        fabRef.requestFocus(); true
-                    }
+                    val topAppBarInsets =
+                        if (!uiState.isInCall) TopAppBarDefaults.windowInsets else WindowInsets(
+                            0,
+                            0,
+                            0,
+                            0
+                        )
+                    when (uiState) {
+                        is ChatUiState.OneToOne -> {
+                            OneToOneAppBar(
+                                connectionState = uiState.connectionState,
+                                recipientDetails = uiState.recipientDetails,
+                                scrollBehavior = scrollBehavior,
+                                scrollState = scrollState,
+                                windowInsets = topAppBarInsets,
+                                isInCall = uiState.isInCall,
+                                actions = uiState.actions,
+                                onBackPressed = onBackPressed,
+                            )
+                        }
 
-                    else -> false
+                        is ChatUiState.Group -> {
+                            GroupAppBar(
+                                image = uiState.image,
+                                name = uiState.name.ifBlank { stringResource(R.string.kaleyra_chat_group_title) },
+                                scrollBehavior = scrollBehavior,
+                                scrollState = scrollState,
+                                windowInsets = topAppBarInsets,
+                                connectionState = uiState.connectionState,
+                                participantsDetails = uiState.participantsDetails,
+                                participantsState = uiState.participantsState,
+                                isInCall = uiState.isInCall,
+                                actions = uiState.actions,
+                                onBackPressed = onBackPressed,
+                            )
+                        }
+                    }
                 }
             },
-        topBar = {
+            snackbarHost = {
+                UserMessageSnackbarHandler(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            translationY = topAppBarPadding
+                        },
+                    userMessage = userMessage
+                )
+            },
+            floatingActionButton = {
+                ResetScrollFab(
+                    modifier = Modifier
+                        .focusRequester(fabRef)
+                        .graphicsLayer {
+                            translationY = -fabPadding
+                        },
+                    counter = uiState.conversationState.unreadMessagesCount,
+                    onClick = onFabClick,
+                    enabled = scrollToBottomFabEnabled
+                )
+            },
+            contentWindowInsets = ScaffoldDefaults
+                .contentWindowInsets
+                .exclude(WindowInsets.navigationBars)
+                .exclude(WindowInsets.ime),
+        ) { paddingValues ->
             Column(
-                Modifier
-                    .focusRequester(topBarRef)
-                    .onGloballyPositioned {
-                        topAppBarPadding = it.boundsInRoot().height
-                    }) {
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                ConversationComponent(
+                    conversationState = uiState.conversationState,
+                    participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
+                    onMessageScrolled = onMessageScrolled,
+                    onApproachingTop = onFetchMessages,
+                    scrollState = scrollState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .testTag(ConversationComponentTag)
+                )
 
-                if (uiState.isInCall) {
-                    OngoingCallLabel(onClick = onShowCall)
-                }
-
-                val topAppBarInsets = if (!uiState.isInCall) TopAppBarDefaults.windowInsets else WindowInsets(0, 0, 0, 0)
-                when (uiState) {
-                    is ChatUiState.OneToOne -> {
-                        OneToOneAppBar(
-                            connectionState = uiState.connectionState,
-                            recipientDetails = uiState.recipientDetails,
-                            scrollBehavior = scrollBehavior,
-                            scrollState = scrollState,
-                            windowInsets = topAppBarInsets,
-                            isInCall = uiState.isInCall,
-                            actions = uiState.actions,
-                            onBackPressed = onBackPressed,
-                        )
-                    }
-
-                    is ChatUiState.Group -> {
-                        GroupAppBar(
-                            image = uiState.image,
-                            name = uiState.name.ifBlank { stringResource(R.string.kaleyra_chat_group_title) },
-                            scrollBehavior = scrollBehavior,
-                            scrollState = scrollState,
-                            windowInsets = topAppBarInsets,
-                            connectionState = uiState.connectionState,
-                            participantsDetails = uiState.participantsDetails,
-                            participantsState = uiState.participantsState,
-                            isInCall = uiState.isInCall,
-                            actions = uiState.actions,
-                            onBackPressed = onBackPressed,
-                        )
-                    }
-                }
+                ChatUserInput(
+                    onTextChanged = onTyping,
+                    onMessageSent = onMessageSent,
+                    onDirectionLeft = topBarRef::requestFocus,
+                    modifier = Modifier
+                        .onGloballyPositioned {
+                            fabPadding = it.boundsInRoot().height
+                        }
+                        .navigationBarsPadding()
+                        .imePadding()
+                )
             }
-        },
-        snackbarHost = {
-            UserMessageSnackbarHandler(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        translationY = topAppBarPadding
-                    },
-                userMessage = userMessage
-            )
-        },
-        floatingActionButton = {
-            ResetScrollFab(
-                modifier = Modifier
-                    .focusRequester(fabRef)
-                    .graphicsLayer {
-                        translationY = -fabPadding
-                    },
-                counter = uiState.conversationState.unreadMessagesCount,
-                onClick = onFabClick,
-                enabled = scrollToBottomFabEnabled
-            )
-        },
-        contentWindowInsets = ScaffoldDefaults
-            .contentWindowInsets
-            .exclude(WindowInsets.navigationBars)
-            .exclude(WindowInsets.ime),
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            ConversationComponent(
-                conversationState = uiState.conversationState,
-                participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
-                onMessageScrolled = onMessageScrolled,
-                onApproachingTop = onFetchMessages,
-                scrollState = scrollState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .testTag(ConversationComponentTag)
-            )
-
-            ChatUserInput(
-                onTextChanged = onTyping,
-                onMessageSent = onMessageSent,
-                onDirectionLeft = topBarRef::requestFocus,
-                modifier = Modifier
-                    .onGloballyPositioned {
-                        fabPadding = it.boundsInRoot().height
-                    }
-                    .navigationBarsPadding()
-                    .imePadding()
-            )
         }
     }
 }
@@ -317,7 +336,7 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
             )
         }
     }
-    
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
