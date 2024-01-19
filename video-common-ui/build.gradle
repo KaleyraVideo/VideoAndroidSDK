@@ -32,15 +32,15 @@ apply from: '../licenses.gradle'
 dependencies {
 
     /** Platform **/
-    api platform(catalog.androidxComposeBom)
-    api 'androidx.compose.material:material'
-    api 'androidx.compose.material3:material3:1.1.2'
-    api 'androidx.compose.foundation:foundation'
-    api 'androidx.compose.runtime:runtime'
-    api 'androidx.compose.ui:ui-tooling-preview'
-    api 'androidx.lifecycle:lifecycle-viewmodel-compose'
-    api 'androidx.lifecycle:lifecycle-runtime-compose'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    compileOnly platform(catalog.androidxComposeBom)
+    compileOnly 'androidx.compose.material:material'
+    compileOnly 'androidx.compose.material3:material3'
+    compileOnly 'androidx.compose.foundation:foundation'
+    compileOnly 'androidx.compose.runtime:runtime'
+    compileOnly 'androidx.compose.ui:ui-tooling-preview'
+    compileOnly 'androidx.lifecycle:lifecycle-viewmodel-compose'
+    compileOnly 'androidx.lifecycle:lifecycle-runtime-compose'
+    compileOnly 'androidx.compose.ui:ui-tooling'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.18.0'
 
     api catalog.appcompat

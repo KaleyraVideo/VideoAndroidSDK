@@ -16,16 +16,9 @@
 
 package com.kaleyra.video_common_ui
 
-import android.annotation.TargetApi
-import android.graphics.Color as AndroidColor
 import android.net.Uri
 import androidx.annotation.ColorInt
-import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import com.kaleyra.video.Company
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -87,78 +80,11 @@ class CompanyUI(company: Company) : Company by company {
 
             /**
              * Theme colors representation from seed color
-             * @property seed Int seed color used to generate a consistent theme based on this color
+             * @property color Int seed color used to generate a consistent theme based on this color
              *
              * @constructor
              */
             data class Seed(@ColorInt val color: Int) : Colors()
-
-
-            /**
-             * Material 3 color scheme representation
-             *
-             * @property primary Int
-             * @property onPrimary Int
-             * @property primaryContainer Int
-             * @property onPrimaryContainer Int
-             * @property inversePrimary Int
-             * @property secondary Int
-             * @property onSecondary Int
-             * @property secondaryContainer Int
-             * @property onSecondaryContainer Int
-             * @property tertiary Int
-             * @property onTertiary Int
-             * @property tertiaryContainer Int
-             * @property onTertiaryContainer Int
-             * @property background Int
-             * @property onBackground Int
-             * @property surface Int
-             * @property onSurface Int
-             * @property surfaceVariant Int
-             * @property onSurfaceVariant Int
-             * @property surfaceTint Int
-             * @property inverseSurface Int
-             * @property inverseOnSurface Int
-             * @property error Int
-             * @property onError Int
-             * @property errorContainer Int
-             * @property onErrorContainer Int
-             * @property outline Int
-             * @property outlineVariant Int
-             * @property scrim Int
-             * @constructor
-             */
-            data class Scheme(
-                @ColorInt val primary: Int,
-                @ColorInt val onPrimary: Int,
-                @ColorInt val primaryContainer: Int,
-                @ColorInt val onPrimaryContainer: Int,
-                @ColorInt val inversePrimary: Int,
-                @ColorInt val secondary: Int,
-                @ColorInt val onSecondary: Int,
-                @ColorInt val secondaryContainer: Int,
-                @ColorInt val onSecondaryContainer: Int,
-                @ColorInt val tertiary: Int,
-                @ColorInt val onTertiary: Int,
-                @ColorInt val tertiaryContainer: Int,
-                @ColorInt val onTertiaryContainer: Int,
-                @ColorInt val background: Int,
-                @ColorInt val onBackground: Int,
-                @ColorInt val surface: Int,
-                @ColorInt val onSurface: Int,
-                @ColorInt val surfaceVariant: Int,
-                @ColorInt val onSurfaceVariant: Int,
-                @ColorInt val surfaceTint: Int,
-                @ColorInt val inverseSurface: Int,
-                @ColorInt val inverseOnSurface: Int,
-                @ColorInt val error: Int,
-                @ColorInt val onError: Int,
-                @ColorInt val errorContainer: Int,
-                @ColorInt val onErrorContainer: Int,
-                @ColorInt val outline: Int,
-                @ColorInt val outlineVariant: Int,
-                @ColorInt val scrim: Int,
-            ) : Colors()
         }
     }
 }

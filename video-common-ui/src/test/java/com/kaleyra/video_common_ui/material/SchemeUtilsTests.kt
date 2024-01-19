@@ -1,8 +1,6 @@
 package com.kaleyra.video_common_ui.material
 
 import androidx.compose.ui.graphics.toArgb
-import com.kaleyra.video_common_ui.CompanyUI
-import com.kaleyra.video_common_ui.material.ColorSchemeUtils.toM3ColorScheme
 import com.kaleyra.video_common_ui.material.colorutils.scheme.Scheme
 import com.kaleyra.video_common_ui.material.colorutils.scheme.SchemeUtils.toColorScheme
 import org.junit.Assert
@@ -76,70 +74,6 @@ class SchemeUtilsTests {
         Assert.assertEquals(scheme.inverseSurface, colorScheme.inverseSurface.toArgb())
         Assert.assertEquals(scheme.inverseOnSurface, colorScheme.inverseOnSurface.toArgb())
         Assert.assertEquals(scheme.inversePrimary, colorScheme.inversePrimary.toArgb())
-    }
-
-    @Test
-    fun testKaleyraThemeColorSchemeToColorSchemeMapping() {
-        val kaleyraThemeColorScheme = CompanyUI.Theme.Colors.Scheme(
-            primary = getRandomColor(),
-            onPrimary = getRandomColor(),
-            primaryContainer = getRandomColor(),
-            onPrimaryContainer = getRandomColor(),
-            inversePrimary = getRandomColor(),
-            secondary = getRandomColor(),
-            onSecondary = getRandomColor(),
-            secondaryContainer = getRandomColor(),
-            onSecondaryContainer = getRandomColor(),
-            tertiary = getRandomColor(),
-            onTertiary = getRandomColor(),
-            tertiaryContainer = getRandomColor(),
-            onTertiaryContainer = getRandomColor(),
-            background = getRandomColor(),
-            onBackground = getRandomColor(),
-            surface = getRandomColor(),
-            onSurface = getRandomColor(),
-            surfaceVariant = getRandomColor(),
-            onSurfaceVariant = getRandomColor(),
-            surfaceTint = getRandomColor(),
-            inverseSurface = getRandomColor(),
-            inverseOnSurface = getRandomColor(),
-            error = getRandomColor(),
-            onError = getRandomColor(),
-            errorContainer = getRandomColor(),
-            onErrorContainer = getRandomColor(),
-            outline = getRandomColor(),
-            outlineVariant = getRandomColor(),
-            scrim = getRandomColor(),
-        )
-
-        val material3ColorScheme = kaleyraThemeColorScheme.toM3ColorScheme()
-
-        Assert.assertEquals(kaleyraThemeColorScheme.primary, material3ColorScheme.primary.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onPrimary, material3ColorScheme.onPrimary.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.primaryContainer, material3ColorScheme.primaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onPrimaryContainer, material3ColorScheme.onPrimaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.secondary, material3ColorScheme.secondary.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onSecondary, material3ColorScheme.onSecondary.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.secondaryContainer, material3ColorScheme.secondaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onSecondaryContainer, material3ColorScheme.onSecondaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.tertiary, material3ColorScheme.tertiary.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.tertiaryContainer, material3ColorScheme.tertiaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onTertiaryContainer, material3ColorScheme.onTertiaryContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.error, material3ColorScheme.error.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onError, material3ColorScheme.onError.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.errorContainer, material3ColorScheme.errorContainer.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.background, material3ColorScheme.background.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onBackground, material3ColorScheme.onBackground.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.surface, material3ColorScheme.surface.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onSurface, material3ColorScheme.onSurface.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.surfaceVariant, material3ColorScheme.surfaceVariant.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.onSurfaceVariant, material3ColorScheme.onSurfaceVariant.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.outline, material3ColorScheme.outline.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.outlineVariant, material3ColorScheme.outlineVariant.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.scrim, material3ColorScheme.scrim.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.inverseSurface, material3ColorScheme.inverseSurface.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.inverseOnSurface, material3ColorScheme.inverseOnSurface.toArgb())
-        Assert.assertEquals(kaleyraThemeColorScheme.inversePrimary, material3ColorScheme.inversePrimary.toArgb())
     }
 
     private fun getRandomColor() = android.graphics.Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))

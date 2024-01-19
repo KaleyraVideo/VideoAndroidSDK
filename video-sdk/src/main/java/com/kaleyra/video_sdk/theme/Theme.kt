@@ -34,7 +34,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_common_ui.KaleyraM3FontFamily
-import com.kaleyra.video_common_ui.material.ColorSchemeUtils.toM3ColorScheme
 import com.kaleyra.video_sdk.extensions.darkColorSchemeFrom
 import com.kaleyra.video_sdk.extensions.lightColorSchemeFrom
 
@@ -118,8 +117,8 @@ fun CollaborationTheme(
         }
     }
 
-    val darkSeedColor = (darkColors as? Theme.Colors.Seed)?.color ?: (darkColors as? Theme.Colors.Scheme)?.primary ?: kaleyra_m3_seed.toArgb()
-    val lightSeedColor = (lightColors as? Theme.Colors.Seed)?.color ?: (lightColors as? Theme.Colors.Scheme)?.primary ?: kaleyra_m3_seed.toArgb()
+    val darkSeedColor = (darkColors as? Theme.Colors.Seed)?.color ?: kaleyra_m3_seed.toArgb()
+    val lightSeedColor = (lightColors as? Theme.Colors.Seed)?.color ?: kaleyra_m3_seed.toArgb()
 
     val colors = when {
         isDarkTheme -> {
@@ -186,13 +185,11 @@ fun CollaborationM3Theme(
     val colors = when {
         isDarkTheme -> when(darkColors) {
             is Theme.Colors.Seed -> darkColorSchemeFrom(darkColors.color)
-            is Theme.Colors.Scheme -> darkColors.toM3ColorScheme()
             else -> darkColorSchemeFrom(kaleyra_m3_seed.toArgb())
 
         }
         else ->  when(lightColors) {
             is Theme.Colors.Seed -> lightColorSchemeFrom(lightColors.color)
-            is Theme.Colors.Scheme -> lightColors.toM3ColorScheme()
             else -> lightColorSchemeFrom(kaleyra_m3_seed.toArgb())
 
         }

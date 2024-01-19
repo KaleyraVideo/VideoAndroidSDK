@@ -54,6 +54,9 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                         night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = android.graphics.Color.YELLOW))
                     )
             }
+
+
+
             KaleyraVideo.conference.call.onEach {
                 val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
                 it.actions.value = callConfiguration.actions.mapToCallUIActions()
