@@ -72,7 +72,8 @@ internal fun ChatUserInput(
     val interactionSource = remember { MutableInteractionSource() }
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
-    Row(verticalAlignment = Alignment.Bottom,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .focusGroup()
             .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
