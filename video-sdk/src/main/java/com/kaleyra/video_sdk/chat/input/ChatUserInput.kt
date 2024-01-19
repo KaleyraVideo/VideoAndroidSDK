@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,6 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -67,46 +70,55 @@ internal const val TextFieldTag = "TextFieldTag"
 internal fun ChatUserInput(
     onTextChanged: () -> Unit,
     onMessageSent: (String) -> Unit,
-    onDirectionLeft: (() -> Unit) = { }
+    onDirectionLeft: (() -> Unit) = { },
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = Modifier
-            .focusGroup()
-            .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
-            .highlightOnFocus(interactionSource)) {
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
+            .then(modifier)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .focusGroup()
+                .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+                .highlightOnFocus(interactionSource)
+        ) {
 
-        ChatUserInputText(
-            textFieldValue = textState,
-            onTextChanged = {
-                textState = it
-                onTextChanged()
-            },
-            maxLines = 4,
-            onDirectionLeft = onDirectionLeft,
-            modifier = Modifier.weight(1.0f).padding(bottom = 4.dp),
-            interactionSource = interactionSource
-        )
+            ChatUserInputText(
+                textFieldValue = textState,
+                onTextChanged = {
+                    textState = it
+                    onTextChanged()
+                },
+                maxLines = 4,
+                onDirectionLeft = onDirectionLeft,
+                modifier = Modifier.weight(1.0f).padding(bottom = 4.dp),
+                interactionSource = interactionSource
+            )
 
-        Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(16.dp))
 
-        FilledIconButton(
-            onClick = {
-                onMessageSent(textState.text)
-                textState = TextFieldValue()
-            },
-            content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_send),
-                    contentDescription = stringResource(id = R.string.kaleyra_chat_send),
-                )
-            },
-            enabled = textState.text.isNotBlank(),
-            shape = RoundedCornerShape(8.dp)
-        )
+            FilledIconButton(
+                onClick = {
+                    onMessageSent(textState.text)
+                    textState = TextFieldValue()
+                },
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_send),
+                        contentDescription = stringResource(id = R.string.kaleyra_chat_send),
+                    )
+                },
+                enabled = textState.text.isNotBlank(),
+                shape = RoundedCornerShape(8.dp)
+            )
+        }
     }
 }
 

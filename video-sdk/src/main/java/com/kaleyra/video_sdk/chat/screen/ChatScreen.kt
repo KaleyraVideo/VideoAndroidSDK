@@ -302,19 +302,15 @@ internal fun ChatScreen(
                         .testTag(ConversationComponentTag)
                 )
 
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
-                    .onGloballyPositioned {
-                        fabPadding = it.boundsInRoot().height
-                    }
-                ) {
-                    ChatUserInput(
-                        onTextChanged = onTyping,
-                        onMessageSent = onMessageSent,
-                        onDirectionLeft = topBarRef::requestFocus
-                    )
-                }
+                ChatUserInput(
+                    onTextChanged = onTyping,
+                    onMessageSent = onMessageSent,
+                    onDirectionLeft = topBarRef::requestFocus,
+                    modifier = Modifier
+                        .onGloballyPositioned {
+                            fabPadding = it.boundsInRoot().height
+                        }
+                )
             }
         }
     }
