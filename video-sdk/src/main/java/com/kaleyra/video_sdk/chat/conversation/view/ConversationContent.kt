@@ -70,7 +70,7 @@ internal fun ConversationContent(
         state = scrollState,
         verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(vertical = ConversationContentPadding),
         modifier = Modifier
             .testTag(ConversationContentTag)
             .then(modifier)
@@ -86,7 +86,7 @@ internal fun ConversationContent(
                             participantDetails = participantsDetails?.get(message.userId),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(PaddingValues(vertical = 4.dp, horizontal = ConversationContentPadding))
+                                .padding(PaddingValues(horizontal = ConversationContentPadding))
                         )
 
                         is Message.MyMessage -> MyMessageItem(
@@ -95,7 +95,7 @@ internal fun ConversationContent(
                             isLastChainMessage = item.isLastChainMessage,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(PaddingValues(vertical = 4.dp, horizontal = ConversationContentPadding))
+                                .padding(PaddingValues(horizontal = ConversationContentPadding))
                         )
                     }
                 }

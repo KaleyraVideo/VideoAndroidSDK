@@ -169,8 +169,8 @@ internal fun MessageRow(
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
             .padding(
-                bottom = if (isLastChainMessage) 6.dp else 0.dp,
-                top = if (isFirstChainMessage) 6.dp else 0.dp
+                bottom = if (isLastChainMessage) 8.dp else 3.dp,
+                top = if (isFirstChainMessage) 8.dp else 3.dp
             )
             .then(modifier),
         horizontalArrangement = horizontalArrangement,
