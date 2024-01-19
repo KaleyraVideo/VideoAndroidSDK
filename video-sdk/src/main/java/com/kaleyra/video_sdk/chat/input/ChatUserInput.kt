@@ -103,6 +103,9 @@ internal fun ChatUserInput(
                 )
             },
             enabled = textState.text.isNotBlank(),
+            colors = IconButtonDefaults.filledIconButtonColors(
+                disabledContainerColor = Color.Transparent
+            ),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.supportRtl()
         )
