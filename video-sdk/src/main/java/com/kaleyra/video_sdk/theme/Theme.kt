@@ -158,13 +158,13 @@ fun CollaborationTheme(
 /**
  * Composable function to generate the Collaboration M3 Theme
  * @param theme Theme input theme
- * @param transparentSystemBars Boolean flag indicating if the system bars should be transparent, true if transparent, false otherwise
+ * @param lightStatusBarIcons Boolean flag indicating if the system bars should be transparent, true if transparent, false otherwise
  * @param content [@androidx.compose.runtime.Composable] Function1<[@kotlin.ParameterName] Boolean, Unit> composable callback with isDarkTheme as input flag
  */
 @Composable
 fun CollaborationM3Theme(
     theme: Theme,
-    transparentSystemBars: Boolean = true,
+    lightStatusBarIcons: Boolean = false,
     content: @Composable (isDarkTheme: Boolean) -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
@@ -200,15 +200,13 @@ fun CollaborationM3Theme(
 
     SideEffect {
         systemUiController.setStatusBarColor(
-            color = if (transparentSystemBars) Color.Transparent else colors.surface,
-            darkIcons = !transparentSystemBars && !isDarkTheme,
-            transformColorForLightContent = { Color.Black }
+            color = Color.Transparent,
+            darkIcons = !lightStatusBarIcons && !isDarkTheme
         )
         systemUiController.setNavigationBarColor(
-            color = if (transparentSystemBars) Color.Transparent else colors.surface,
+            color = Color.Transparent,
             darkIcons = !isDarkTheme,
-            navigationBarContrastEnforced = false,
-            transformColorForLightContent = { Color.Black }
+            navigationBarContrastEnforced = false
         )
     }
 
