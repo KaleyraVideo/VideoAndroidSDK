@@ -18,12 +18,14 @@
 
 package com.kaleyra.video_sdk.chat.conversation.view
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -61,6 +63,7 @@ internal fun ResetScrollFab(
         SmallFloatingActionButton(
             onClick = onClick,
             modifier = Modifier.highlightOnFocus(interactionSource),
+            shape = CircleShape,
             interactionSource = interactionSource
         ) {
             Row(
@@ -69,10 +72,12 @@ internal fun ResetScrollFab(
             ) {
                 if (counter > 0) {
                     Text(
-                        text = "$counter",
                         modifier = Modifier
                             .paddingFromBaseline(bottom = 6.dp)
-                            .padding(end = 4.dp)
+                            .padding(end = 4.dp),
+                        text = "$counter",
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
                 Icon(
@@ -85,15 +90,8 @@ internal fun ResetScrollFab(
     }
 }
 
-@Preview
-@Composable
-internal fun ResetScrollFabPreview() {
-    KaleyraM3Theme {
-        ResetScrollFab(counter = 5, onClick = { }, enabled = true)
-    }
-}
-
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
 @Composable
 internal fun ResetScrollFabDarkPreview() {
     KaleyraM3Theme {
