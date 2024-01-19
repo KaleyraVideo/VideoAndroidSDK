@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.contentColorFor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,7 +61,8 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
             text = text,
             fontSize = MaterialTheme.typography.labelMedium.fontSize,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+            color = contentColorFor(MaterialTheme.colorScheme.surfaceVariant)
+        )
     }
 }
 

@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.contentColorFor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,10 +59,9 @@ internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
                 .width(IntrinsicSize.Max)
                 .then(modifier),
             text = stringResource(id = R.string.kaleyra_chat_unread_messages),
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            fontSize = MaterialTheme.typography.labelMedium.fontSize,
+            style = MaterialTheme.typography.labelMedium,
+            color = contentColorFor(MaterialTheme.colorScheme.surfaceVariant)
         )
     }
 }
