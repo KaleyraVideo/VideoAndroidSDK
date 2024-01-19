@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.chat.conversation.view
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,16 +103,17 @@ internal fun ConversationContent(
 
                 is ConversationItem.Day -> DayHeaderItem(
                     timestamp = item.timestamp,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
 
-                is ConversationItem.UnreadMessages -> NewMessagesHeaderItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                )
-
+                is ConversationItem.UnreadMessages ->
+                    Box(modifier = Modifier.padding(vertical = 12.dp)) {
+                        NewMessagesHeaderItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        )
+                    }
             }
         }
         if (isFetching) {
