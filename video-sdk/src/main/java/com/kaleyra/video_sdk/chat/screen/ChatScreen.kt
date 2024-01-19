@@ -282,16 +282,14 @@ internal fun ChatScreen(
             }
         },
         snackbarHost = {
-            Box(contentAlignment = Alignment.TopCenter) {
-                UserMessageSnackbarHandler(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            translationY = topAppBarPadding
-                        },
-                    userMessage = userMessage
-                )
-            }
+            UserMessageSnackbarHandler(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        translationY = topAppBarPadding
+                    },
+                userMessage = userMessage
+            )
         },
         floatingActionButton = {
             ResetScrollFab(
