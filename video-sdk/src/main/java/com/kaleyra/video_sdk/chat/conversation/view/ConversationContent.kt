@@ -103,7 +103,7 @@ internal fun ConversationContent(
                 is ConversationItem.Day -> DayHeaderItem(
                     timestamp = item.timestamp,
                     modifier = Modifier
-                        .padding(bottom = 6.dp)
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
 
                 is ConversationItem.UnreadMessages -> NewMessagesHeaderItem(

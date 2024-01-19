@@ -44,7 +44,6 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isDark = isSystemInDarkTheme()
     Row(
         modifier = Modifier
             .fillMaxWidth()

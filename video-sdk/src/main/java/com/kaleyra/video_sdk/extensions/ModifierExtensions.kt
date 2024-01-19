@@ -84,7 +84,7 @@ internal object ModifierExtensions {
 
     @Stable
     internal fun Modifier.highlightOnFocus(interactionSource: MutableInteractionSource): Modifier =
-        composed {
+        this.composed {
             val inputModeManager = LocalInputModeManager.current
             val isFocused = interactionSource.collectIsFocusedAsState().value
             val enableHighlight = remember(inputModeManager, isFocused) { derivedStateOf { inputModeManager.inputMode != InputMode.Touch && isFocused }.value }

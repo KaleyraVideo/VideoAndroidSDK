@@ -45,20 +45,18 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isDark = isSystemInDarkTheme()
     Row(
         modifier = Modifier
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(size = 4.dp)),
+                shape = RoundedCornerShape(size = 4.dp))
+            .then(modifier),
         horizontalArrangement = Arrangement.Center
     ) {
         val text = TimestampUtils.parseDay(LocalContext.current, timestamp)
         Text(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 2.dp, end = 8.dp, bottom = 2.dp),
             text = text,
             fontSize = MaterialTheme.typography.labelMedium.fontSize,
             style = MaterialTheme.typography.labelMedium,
