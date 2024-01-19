@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.userinput.ChatUserInputText
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.supportRtl
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal const val TextFieldTag = "TextFieldTag"
@@ -106,7 +107,8 @@ internal fun ChatUserInput(
                     )
                 },
                 enabled = textState.text.isNotBlank(),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.supportRtl()
             )
         }
     }
