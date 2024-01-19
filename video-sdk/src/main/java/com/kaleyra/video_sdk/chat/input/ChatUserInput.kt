@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.kaleyra.video_sdk.chat.input
 
@@ -23,26 +23,26 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -85,12 +85,15 @@ internal fun ChatUserInput(
             },
             maxLines = 4,
             onDirectionLeft = onDirectionLeft,
-            modifier = Modifier.weight(1.0f).padding(bottom = 4.dp),
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            modifier = Modifier
+                .weight(1.0f)
+                .padding(bottom = 4.dp),
         )
 
         Spacer(modifier = Modifier.size(6.dp))
 
+        val buttonInteractionSource = remember { MutableInteractionSource() }
         FilledIconButton(
             onClick = {
                 onMessageSent(textState.text)
@@ -108,7 +111,10 @@ internal fun ChatUserInput(
                 disabledContainerColor = Color.Transparent
             ),
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.supportRtl()
+            interactionSource = buttonInteractionSource,
+            modifier = Modifier
+                .supportRtl()
+                .highlightOnFocus(buttonInteractionSource)
         )
     }
 }

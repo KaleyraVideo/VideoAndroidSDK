@@ -160,9 +160,9 @@ internal fun ChatScreen(
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val focusManager = LocalFocusManager.current
-    val isKeyboardOpen by isKeyboardOpen()
-    if (!isKeyboardOpen) focusManager.clearFocus()
+//    val focusManager = LocalFocusManager.current
+//    val isKeyboardOpen by isKeyboardOpen()
+//    if (!isKeyboardOpen) focusManager.clearFocus()
 
     val onMessageSent: ((String) -> Unit) = remember(scope, scrollState) {
         { text ->

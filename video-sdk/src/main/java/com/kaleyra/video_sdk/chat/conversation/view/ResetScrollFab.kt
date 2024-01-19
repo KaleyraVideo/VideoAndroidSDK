@@ -60,9 +60,7 @@ internal fun ResetScrollFab(
     ) {
         SmallFloatingActionButton(
             onClick = onClick,
-            modifier = Modifier
-//                .defaultMinSize(32.dp, 32.dp)
-                .highlightOnFocus(interactionSource),
+            modifier = Modifier.highlightOnFocus(interactionSource),
             interactionSource = interactionSource
         ) {
             Row(
