@@ -53,10 +53,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
@@ -118,7 +116,8 @@ internal fun OtherMessageItem(
                     bottomStart = if (isLastChainMessage) 0.dp else 6.dp,
                     bottomEnd = 6.dp
                 ),
-                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }
@@ -149,7 +148,8 @@ internal fun MyMessageItem(
                 bottomStart = BubbleCornerRadius,
                 bottomEnd = if (isLastChainMessage) 0.dp else BubbleCornerRadius
             ),
-            backgroundColor = MaterialTheme.colorScheme.primary
+            backgroundColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -185,7 +185,8 @@ internal fun Bubble(
     username: String?,
     messageState: Message.State?,
     shape: Shape,
-    backgroundColor: Color
+    backgroundColor: Color,
+    contentColor: Color,
 ) {
     val configuration = LocalConfiguration.current
 
@@ -208,7 +209,7 @@ internal fun Bubble(
 
             ClickableMessageText(
                 messageText = messageText,
-                textColor = contentColorFor(backgroundColor)
+                textColor = contentColor
             )
 
             Row(
