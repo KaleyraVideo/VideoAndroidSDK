@@ -53,7 +53,7 @@
     <string name="kaleyra_call_action_disable_camera_description">Disabilita camera</string>
 
     <!-- Chat -->
-    <string name="kaleyra_edit_text_input_placeholder">Scrivi qui &#8230;</string>
+    <string name="kaleyra_edit_text_input_placeholder">Scrivi qui il tuo messaggio &#8230;</string>
     <string name="kaleyra_chat_channel_loading">Caricamento &#8230;</string>
     <string name="kaleyra_chat_user_status_online">in linea</string>
     <string name="kaleyra_chat_participants_online">%1$s in linea</string>
