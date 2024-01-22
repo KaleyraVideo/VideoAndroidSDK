@@ -81,6 +81,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -162,10 +163,6 @@ internal fun ChatScreen(
     val topBarRef = remember { FocusRequester() }
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-//    val focusManager = LocalFocusManager.current
-//    val isKeyboardOpen by isKeyboardOpen()
-//    if (!isKeyboardOpen) focusManager.clearFocus()
 
     val onMessageSent: ((String) -> Unit) = remember(scope, scrollState) {
         { text ->
@@ -374,17 +371,6 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
             color = Color.White,
             style = MaterialTheme.typography.bodyMedium,
         )
-    }
-}
-
-@Composable
-fun isKeyboardOpen(): State<Boolean> {
-    val imeInsets = WindowInsets.ime
-    val density = LocalDensity.current
-    return remember {
-        derivedStateOf {
-            imeInsets.getBottom(density) > 0
-        }
     }
 }
 

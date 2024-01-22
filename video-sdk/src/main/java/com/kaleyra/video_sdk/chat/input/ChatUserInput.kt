@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.userinput.ChatUserInputText
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.clearFocusOnKeyboardDismiss
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.supportRtl
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
@@ -91,6 +92,7 @@ internal fun ChatUserInput(
                 onDirectionLeft = onDirectionLeft,
                 interactionSource = interactionSource,
                 modifier = Modifier
+                    .clearFocusOnKeyboardDismiss()
                     .weight(1.0f)
                     .padding(bottom = 4.dp),
             )

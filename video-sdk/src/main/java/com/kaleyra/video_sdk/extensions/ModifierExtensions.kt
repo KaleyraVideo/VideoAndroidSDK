@@ -25,10 +25,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
@@ -45,6 +47,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -59,6 +62,7 @@ import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
@@ -164,6 +168,30 @@ internal object ModifierExtensions {
                 size = Rect(topLeft, bottomRight).size,
                 brush = brush
             )
+        }
+    }
+
+    @OptIn(ExperimentalLayoutApi::class)
+    internal fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
+        var isFocused by remember { mutableStateOf(false) }
+        var keyboardAppearedSinceLastFocused by remember { mutableStateOf(false) }
+        if (isFocused) {
+            val imeIsVisible = WindowInsets.isImeVisible
+            val focusManager = LocalFocusManager.current
+            LaunchedEffect(imeIsVisible) {
+                if (imeIsVisible) {
+                    keyboardAppearedSinceLastFocused = true
+                } else if (keyboardAppearedSinceLastFocused) {
+                    focusManager.clearFocus()
+                }
+            }
+        }
+        onFocusEvent {
+            if (isFocused == it.isFocused) return@onFocusEvent
+            isFocused = it.isFocused
+            if (isFocused) {
+                keyboardAppearedSinceLastFocused = false
+            }
         }
     }
 
