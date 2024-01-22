@@ -1,5 +1,5 @@
 ext.moduleGroupId = "com.kaleyra"
-ext.moduleVersion = "4.0.0-rc02"
+ext.moduleVersion = "4.0.0-rc03"
 
 if (project.hasProperty("dryRun")) {
     project.ext.setProperty("isPublishing", true)
@@ -88,15 +88,10 @@ dokkaHtml {
     }
 }
 
-task updateSdkVersion() {
-    def stdout = new ByteArrayOutputStream()
-    def nextVersion = project.hasProperty("nextVersion") ? project.getProperty("nextVersion") : moduleVersion
-    exec {
-        workingDir '../scripts'
-        commandLine 'python3', './update_sdk_version.py', "${project.name}","$moduleVersion", "$nextVersion"
-        standardOutput = stdout;
-    }
-    println stdout
+task updateSdkVersion(type: Exec) {
+    def nextVersion = project.hasProperty("newVersion") ? project.getProperty("newVersion") : moduleVersion
+    workingDir '../scripts'
+    commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion", "$nextVersion"
 }
 
 task publishDocs(type: Exec) {
