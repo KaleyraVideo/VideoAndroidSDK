@@ -18,15 +18,11 @@ package com.kaleyra.video_sdk.common.userinput
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-//import androidx.compose.foundation.gestures.ModifierLocalScrollableContainerProvider.value
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -39,8 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -49,6 +43,8 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +64,9 @@ internal fun ChatUserInputText(
 ) {
 
     val focusManager = LocalFocusManager.current
+
+    val placeHolderStringResource = stringResource(id = R.string.kaleyra_edit_text_input_placeholder)
+
     Box(
         modifier = Modifier
             .then(modifier),
@@ -106,10 +105,13 @@ internal fun ChatUserInputText(
 
                         else -> false
                     }
+                }
+                .semantics(mergeDescendants = true) {
+                    contentDescription = textFieldValue.text.takeIf { it.isNotEmpty() } ?: placeHolderStringResource
                 },
             interactionSource = interactionSource,
             maxLines = maxLines,
-            placeholder = { Text(text = stringResource(id = R.string.kaleyra_edit_text_input_placeholder)) }
+            placeholder = { Text(text = placeHolderStringResource) }
         )
     }
 }
