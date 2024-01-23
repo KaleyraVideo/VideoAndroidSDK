@@ -23,7 +23,6 @@ import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -125,8 +124,7 @@ object StreamMapper {
             if (streams.isEmpty()) flowOf(listOf())
             else streams
                 .map { stream ->
-                    stream.video
-                        .map { Pair(stream.id, it) }
+                    stream.video.map { Pair(stream.id, it) }
                 }
                 .merge()
                 .transform { (streamId, video) ->
