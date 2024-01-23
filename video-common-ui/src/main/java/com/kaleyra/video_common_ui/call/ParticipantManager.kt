@@ -17,7 +17,7 @@ internal class ParticipantManager(private val coroutineScope: CoroutineScope = C
         keepContactDetailsUpdated(call)
     }
 
-    private fun keepContactDetailsUpdated(call: CallUI) {
+    fun keepContactDetailsUpdated(call: CallUI) {
         job = call.participants
             .onEach { participants ->
                 val userIds = participants.list.map { it.userId }.toTypedArray()
