@@ -116,13 +116,11 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
     ): Notification? {
         val context = ContextRetainer.context
         val isGroupCall = participants.others.count() > 1
-
         val enableCallStyle = !DeviceUtils.isSmartGlass
-        val callerDescription = participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
-        val calleeDescription = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
 
         return when {
             isIncoming(callState, participants) -> {
+                val callerDescription = participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
                 NotificationManager.buildIncomingCallNotification(
                     callerDescription,
                     isGroupCall,
@@ -133,6 +131,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
             }
 
             isOutgoing(callState, participants) -> {
+                val calleeDescription = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
                 NotificationManager.buildOutgoingCallNotification(
                     calleeDescription,
                     isGroupCall,
@@ -142,6 +141,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
             }
 
             isOngoing(callState, participants) -> {
+                val calleeDescription = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
                 NotificationManager.buildOngoingCallNotification(
                     calleeDescription,
                     isLink = participants.creator() == null,
