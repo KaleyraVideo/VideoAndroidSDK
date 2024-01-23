@@ -17,6 +17,7 @@
 package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import kotlinx.coroutines.flow.Flow
@@ -117,4 +118,24 @@ object StreamMapper {
         ) { callState, amIAlone, inCallParticipants ->
             callState is Call.State.Connected && amIAlone && inCallParticipants.size == 1
         }.distinctUntilChanged()
+
+    internal fun Flow<List<Stream>>.mapStreamsToVideos(): Flow<List<Input.Video?>> {
+        return this.flatMapLatest { streams ->
+            val streamVideos = mutableMapOf<String, Input.Video?>()
+            if (streams.isEmpty()) flowOf(listOf())
+            else streams
+                .map { stream ->
+                    stream.video
+                        .map { Pair(stream.id, it) }
+                }
+                .merge()
+                .transform { (streamId, video) ->
+                    streamVideos[streamId] = video
+                    val values = streamVideos.values.toList()
+                    if (values.size == streams.size) {
+                        emit(values)
+                    }
+                }
+        }
+    }
 }

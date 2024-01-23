@@ -17,10 +17,9 @@
 package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conference.VideoStreamView
+import com.kaleyra.video_common_ui.mapper.VideoMapper.mapParticipantsToVideos
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +35,7 @@ internal class StreamsManager(private val coroutineScope: CoroutineScope = Corou
     private val jobs = mutableListOf<Job>()
 
     fun bind(call: Call) {
+        stop()
         handleStreamsOpening(call)
         handleStreamsVideoView(call)
     }
@@ -48,7 +48,7 @@ internal class StreamsManager(private val coroutineScope: CoroutineScope = Corou
      * Open Participant streams
      * @param call Call the call object
      */
-    private fun handleStreamsOpening(call: Call) {
+    fun handleStreamsOpening(call: Call) {
         jobs += call.participants
             .map { it.list }
             .flatMapLatest { participantsList ->
@@ -63,7 +63,7 @@ internal class StreamsManager(private val coroutineScope: CoroutineScope = Corou
      *
      * @param call Call The call on which set the video view
      */
-    private fun handleStreamsVideoView(call: Call) {
+    fun handleStreamsVideoView(call: Call) {
         val context = ContextRetainer.context
         jobs += call.participants
             .map { it.list }
@@ -79,42 +79,4 @@ internal class StreamsManager(private val coroutineScope: CoroutineScope = Corou
             .launchIn(coroutineScope)
     }
 
-    private fun Flow<List<CallParticipant>>.mapParticipantsToVideos(): Flow<List<Input.Video?>> {
-        return this.flatMapLatest { participants ->
-            val participantVideos = mutableMapOf<String, List<Input.Video?>>()
-            participants.map { participant ->
-                participant.streams
-                    .mapStreamsToVideos()
-                    .map { Pair(participant.userId, it) }
-            }
-                .merge()
-                .transform { (userId, videos) ->
-                    participantVideos[userId] = videos
-                    val values = participantVideos.values.toList()
-                    if (values.size == participants.size) {
-                        emit(values.flatten())
-                    }
-                }
-        }
-    }
-
-    private fun Flow<List<Stream>>.mapStreamsToVideos(): Flow<List<Input.Video?>> {
-        return this.flatMapLatest { streams ->
-            val streamVideos = mutableMapOf<String, Input.Video?>()
-            if (streams.isEmpty()) flowOf(listOf())
-            else streams
-                .map { stream ->
-                    stream.video
-                        .map { Pair(stream.id, it) }
-                }
-                .merge()
-                .transform { (streamId, video) ->
-                    streamVideos[streamId] = video
-                    val values = streamVideos.values.toList()
-                    if (values.size == streams.size) {
-                        emit(values)
-                    }
-                }
-        }
-    }
 }
