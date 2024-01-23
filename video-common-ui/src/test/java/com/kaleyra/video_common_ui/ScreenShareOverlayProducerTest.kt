@@ -83,7 +83,7 @@ internal class ScreenShareOverlayProducerTest {
     }
 
     @Test
-    fun testStop() = runTest {
+    fun testStop() = runTest(UnconfinedTestDispatcher()) {
         val screenShareOverlayProducer = ScreenShareOverlayProducer(applicationMock, backgroundScope)
         val backgroundJob = backgroundScope.coroutineContext[Job]!!
         screenShareOverlayProducer.bind(callMock)
