@@ -81,8 +81,8 @@ internal class CallService: LifecycleService(), CallForegroundService, CallNotif
         foregroundJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
             if (!isInForeground) return@combine
             kotlin.runCatching {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
-                else startForeground(CALL_NOTIFICATION_ID, notification)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))
+                else startForeground(id, notification)
             }
         }.launchIn(lifecycleScope)
     }
