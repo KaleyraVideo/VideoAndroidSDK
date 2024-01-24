@@ -56,10 +56,12 @@ internal class CallForegroundServiceWorker(
                 .onCompletion { service.stopSelf() }
                 .launchIn(coroutineScope)
 
-            if (DeviceUtils.isSmartGlass) return@onCallReady
-            ProximityService.start()
-            fileShareNotificationProducer.bind(call)
-            screenShareOverlayProducer.bind(call)
+            if (!DeviceUtils.isSmartGlass) {
+                ProximityService.start()
+                fileShareNotificationProducer.bind(call)
+                screenShareOverlayProducer.bind(call)
+            }
+
             block?.invoke(call)
         }
     }
