@@ -1,5 +1,6 @@
 package com.kaleyra.video_common_ui
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.call.ParticipantManager
@@ -22,7 +23,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ParticipantManagerTest {
 
-    private val callMock = mockk<CallUI>(relaxed = true)
+    private val callMock = mockk<Call>(relaxed = true)
 
     private val participantsMock = mockk<CallParticipants>(relaxed = true)
 
