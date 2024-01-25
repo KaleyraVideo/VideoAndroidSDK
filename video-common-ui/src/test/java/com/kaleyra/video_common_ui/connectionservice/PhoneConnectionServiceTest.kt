@@ -14,6 +14,7 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.TestUtils.setPrivateField
 import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
@@ -317,10 +318,4 @@ class PhoneConnectionServiceTest {
         }
     }
 
-    inline fun <reified T> T.setPrivateField(field: String, value: Any): T  = apply {
-        T::class.java.declaredFields
-            .find { it.name == field}
-            ?.also { it.isAccessible = true }
-            ?.set(this, value)
-    }
 }

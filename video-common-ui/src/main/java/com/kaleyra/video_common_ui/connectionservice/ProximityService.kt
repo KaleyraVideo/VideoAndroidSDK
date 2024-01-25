@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video_common_ui.CallUI
@@ -28,12 +27,11 @@ import kotlin.contracts.contract
 internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks {
 
     companion object {
-        private var isRunning: Boolean = false
 
         fun start() = with(ContextRetainer.context) {
-            if (isRunning) return@with
             val intent = Intent(this, ProximityService::class.java)
             startService(intent)
+            Unit
         }
 
         fun stop() = with(ContextRetainer.context) {
@@ -75,7 +73,6 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        isRunning = true
         KaleyraVideo.onCallReady(lifecycleScope) { call ->
             application.registerActivityLifecycleCallbacks(this)
             callActivityClazz = call.activityClazz
@@ -103,10 +100,9 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         disposeProximityDelegate()
         proximityCallActivity = null
         callActivityClazz = null
-        isRunning = false
     }
 
-    fun setUpProximityDelegate(call: CallUI) {
+    private fun setUpProximityDelegate(call: CallUI) {
         proximityDelegate = CallProximityDelegate<LifecycleService>(
             lifecycleContext = this,
             call = call,
@@ -118,12 +114,12 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         ).apply { bind() }
     }
 
-    fun disposeProximityDelegate() {
+    private fun disposeProximityDelegate() {
         proximityDelegate?.destroy()
         proximityDelegate = null
     }
 
-    fun setUpRecordingTextToSpeech(
+    private fun setUpRecordingTextToSpeech(
         call: CallUI,
         proximityDelegate: CallProximityDelegate<LifecycleService>
     ) {
@@ -132,12 +128,12 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         }
     }
 
-    fun disposeRecordingTextToSpeech() {
+    private fun disposeRecordingTextToSpeech() {
         recordingTextToSpeechNotifier?.dispose()
         recordingTextToSpeechNotifier = null
     }
 
-    fun setUpMutedTextToSpeech(
+    private fun setUpMutedTextToSpeech(
         call: CallUI,
         proximityDelegate: CallProximityDelegate<LifecycleService>
     ) {
@@ -146,12 +142,12 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         }
     }
 
-    fun disposeMutedTextToSpeech() {
+    private fun disposeMutedTextToSpeech() {
         mutedTextToSpeechNotifier?.dispose()
         mutedTextToSpeechNotifier = null
     }
 
-    fun setUpAwaitingParticipantsTextToSpeech(
+    private fun setUpAwaitingParticipantsTextToSpeech(
         call: CallUI,
         proximityDelegate: CallProximityDelegate<LifecycleService>
     ) {
@@ -160,13 +156,13 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         }
     }
 
-    fun disposeAwaitingParticipantsTextToSpeech() {
+    private fun disposeAwaitingParticipantsTextToSpeech() {
         awaitingParticipantsTextToSpeechNotifier?.dispose()
         awaitingParticipantsTextToSpeechNotifier = null
     }
 
     @OptIn(ExperimentalContracts::class)
-    fun isProximityCallActivity(activity: Activity): Boolean {
+    private fun isProximityCallActivity(activity: Activity): Boolean {
         contract {
             returns(true) implies (activity is ProximityCallActivity)
         }
