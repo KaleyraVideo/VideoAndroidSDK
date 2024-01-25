@@ -150,7 +150,7 @@ class CallServiceTest {
     }
 
     @Test
-    fun onDestroyRemovesNotification() {
+    fun testOnDestroyRemovesNotification() {
         val n: Notification = notificationBuilder!!.build()
         service!!.startForeground(10, n)
         service!!.onDestroy()

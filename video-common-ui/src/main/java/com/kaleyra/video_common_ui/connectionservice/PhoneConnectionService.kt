@@ -2,7 +2,6 @@ package com.kaleyra.video_common_ui.connectionservice
 
 import android.app.Notification
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
@@ -10,11 +9,11 @@ import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.CallForegroundService
-import com.kaleyra.video_common_ui.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
-import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
+import com.kaleyra.video_common_ui.callservice.CallForegroundService
+import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
@@ -67,6 +66,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         coroutineScope.cancel()
         foregroundJob?.cancel()
         foregroundJob = null
+        connection?.address?.also { ContactsController.deleteConnectionServiceContact(this, it) }
     }
 
     override fun onCreateOutgoingConnection(
@@ -112,7 +112,11 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         bindCallForegroundServiceWorker { call ->
             coroutineScope.launch {
                 val participants = call.participants.value
-                val callee = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
+                val callee = if (participants.others.size > 1) {
+                    resources.getString(R.string.kaleyra_notification_incoming_group_call)
+                } else {
+                    participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
+                }
                 createOrUpdateConnectionServiceContact(
                     this@PhoneConnectionService,
                     connection.address,
@@ -158,8 +162,8 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
             .hasScreenSharingInput()
             .onEach { hasScreenSharingPermission ->
                 runCatching {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(CALL_NOTIFICATION_ID, notification, getForegroundServiceType(hasScreenSharingPermission))
-                    else startForeground(CALL_NOTIFICATION_ID, notification)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))
+                    else startForeground(id, notification)
                 }
             }
             .launchIn(coroutineScope)
