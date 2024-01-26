@@ -1,4 +1,4 @@
-name: Release sdk to maven
+name: Test Bom
 
 on:
   workflow_dispatch:
