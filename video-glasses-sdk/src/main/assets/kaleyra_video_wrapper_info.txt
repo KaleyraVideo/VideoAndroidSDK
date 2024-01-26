@@ -1,1 +1,1 @@
-VideoAndroidGlassesSDK/4.0.0-rc03
+VideoAndroidGlassesSDK/4.0.0-rc04
