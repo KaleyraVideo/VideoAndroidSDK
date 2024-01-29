@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_common_ui.utils.extensions
 
+import android.Manifest
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
@@ -31,14 +32,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.telecom.TelecomManager
 import android.util.DisplayMetrics
 import android.util.Rational
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
@@ -331,5 +335,27 @@ object ContextExtensions {
         } else {
             manager.getRunningTasks(Int.MAX_VALUE).any { it.topActivity?.className == activityClazz.name }
         }
+    }
+
+    fun Context.getTelecomManager(): TelecomManager = getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasReadPhoneNumbersPermission() = hasPermission(Manifest.permission.READ_PHONE_NUMBERS)
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasManageOwnCallsPermission() = hasPermission(Manifest.permission.MANAGE_OWN_CALLS)
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun Context.hasBluetoothPermission() = hasPermission(Manifest.permission.BLUETOOTH_CONNECT)
+
+    fun Context.hasContactsPermissions() = hasPermission(Manifest.permission.READ_CONTACTS) && hasPermission(
+        Manifest.permission.WRITE_CONTACTS)
+
+    fun Context.hasCanDrawOverlaysPermission() = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(applicationContext)
+
+    fun Context.getAppName(): CharSequence = applicationInfo.loadLabel(packageManager)
+
+    private fun Context.hasPermission(permission: String): Boolean {
+        return PermissionChecker.checkSelfPermission(applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
     }
 }

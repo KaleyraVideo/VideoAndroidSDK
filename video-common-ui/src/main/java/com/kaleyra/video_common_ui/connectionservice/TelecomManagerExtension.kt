@@ -11,8 +11,9 @@ import android.telecom.TelecomManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasManageOwnCallsPermission
-import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasReadPhoneNumbersPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
 
 object TelecomManagerExtension {
 
@@ -29,15 +30,12 @@ object TelecomManagerExtension {
     ): PhoneAccount {
         return getPhoneAccount(phoneAccountHandle) ?: let {
             PhoneAccount
-//                .builder(phoneAccountHandle, context.resources.getText(R.string.app_name))
                 .builder(phoneAccountHandle, context.getAppName())
                 .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
                 .build()
                 .apply { registerPhoneAccount(this) }
         }
     }
-
-    fun Context.getAppName(): CharSequence = applicationInfo.loadLabel(packageManager)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.addIncomingCall(
@@ -83,16 +81,7 @@ object TelecomManagerExtension {
             Log.e("TelecomExtensions", "Missing READ_PHONE_NUMBERS permission")
             return
         }
-//        if (!context.hasReadPhoneStatePermission()) {
-//            Log.e("TelecomExtensions", "Missing READ_PHONE_STATE permission")
-//            return
-//        }
-//
-//        if (!context.hasCallPhonePermission()) {
-//            Log.e("TelecomExtensions", "Missing CALL_PHONE permission")
-//            return
-//        }
-//
+
         val accountHandle = getPhoneAccountHandle(context)
         getOrRegisterPhoneAccount(context, accountHandle)
 //        val callExtras = Bundle().apply {
