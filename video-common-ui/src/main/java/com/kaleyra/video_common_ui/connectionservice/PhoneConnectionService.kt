@@ -10,6 +10,7 @@ import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.callservice.CallForegroundService
@@ -82,7 +83,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
     private fun bindCallForegroundServiceWorker(block: ((CallUI) -> Unit)? = null) {
         callForegroundServiceWorker.bind(this) { call ->
-            if (call.shouldShowAsActivity()) {
+            if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
                 call.showOnAppResumed(coroutineScope)
             }
             block?.invoke(call)
