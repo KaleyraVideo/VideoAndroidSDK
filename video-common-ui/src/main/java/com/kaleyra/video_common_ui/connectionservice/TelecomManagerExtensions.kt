@@ -15,7 +15,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
 
-object TelecomManagerExtension {
+object TelecomManagerExtensions {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.getPhoneAccountHandle(context: Context): PhoneAccountHandle {
