@@ -39,9 +39,10 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         }
     }
 
-    private var proximityDelegate: CallProximityDelegate<LifecycleService>? = null
+    var proximityCallActivity: ProximityCallActivity? = null
+        private set
 
-    private var proximityCallActivity: ProximityCallActivity? = null
+    private var proximityDelegate: CallProximityDelegate<LifecycleService>? = null
 
     private var recordingTextToSpeechNotifier: TextToSpeechNotifier? = null
 

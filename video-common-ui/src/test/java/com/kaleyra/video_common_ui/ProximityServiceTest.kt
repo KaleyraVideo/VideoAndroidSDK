@@ -161,7 +161,7 @@ class ProximityServiceTest {
         every { callMock.activityClazz } returns callActivity::class.java
         service!!.onStartCommand(null, 0, 0)
         service!!.onActivityCreated(callActivity, null)
-        assertEquals(callActivity, service!!.getPrivateField<ProximityService, ProximityCallActivity>("proximityCallActivity"))
+        assertEquals(callActivity, service!!.proximityCallActivity)
     }
 
     @Test
@@ -175,7 +175,7 @@ class ProximityServiceTest {
         service!!.onStartCommand(null, 0, 0)
         service!!.onActivityCreated(callActivity, null)
         service!!.onActivityDestroyed(callActivity)
-        assertEquals(null, service!!.getPrivateField<ProximityService, ProximityCallActivity>("proximityCallActivity"))
+        assertEquals(null, service!!.proximityCallActivity)
     }
 
     private fun getRegisteredActivityLifecycleCallbacks(): ArrayList<Application.ActivityLifecycleCallbacks> {
