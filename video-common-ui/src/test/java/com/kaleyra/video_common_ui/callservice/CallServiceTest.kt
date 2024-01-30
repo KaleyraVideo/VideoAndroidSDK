@@ -8,6 +8,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_utils.ContextRetainer
@@ -78,8 +81,13 @@ class CallServiceTest {
 
     @Test
     fun testOnStartCommand() {
+        mockkObject(KaleyraVideo)
+        val conferenceMock = mockk<ConferenceUI>(relaxed = true)
+        val callMock = mockk<CallUI>(relaxed = true)
+        every { KaleyraVideo.conference } returns conferenceMock
+        every { conferenceMock.call } returns MutableStateFlow(callMock)
         val startType = service!!.onStartCommand(null, 0, 0)
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!) }
+        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
         assertEquals(Service.START_STICKY, startType)
     }
 

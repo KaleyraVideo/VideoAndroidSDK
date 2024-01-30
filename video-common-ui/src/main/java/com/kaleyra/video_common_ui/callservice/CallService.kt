@@ -22,8 +22,8 @@ import android.os.Build
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
-import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_utils.ContextRetainer
@@ -58,7 +58,8 @@ internal class CallService: LifecycleService(), CallForegroundService, CallNotif
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        callForegroundServiceWorker.bind(this)
+        val call = KaleyraVideo.conference.call.replayCache.first()
+        callForegroundServiceWorker.bind(this, call)
         return START_STICKY
     }
 
