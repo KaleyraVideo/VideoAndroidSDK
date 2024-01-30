@@ -32,7 +32,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
-import android.telecom.TelecomManager
 import android.util.DisplayMetrics
 import android.util.Rational
 import android.view.Display
@@ -336,8 +335,6 @@ object ContextExtensions {
             manager.getRunningTasks(Int.MAX_VALUE).any { it.topActivity?.className == activityClazz.name }
         }
     }
-
-    fun Context.getTelecomManager(): TelecomManager = getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun Context.hasReadPhoneNumbersPermission() = hasPermission(Manifest.permission.READ_PHONE_NUMBERS)
