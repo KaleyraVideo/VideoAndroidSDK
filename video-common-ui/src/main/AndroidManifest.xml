@@ -56,7 +56,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".CallService"
+            android:name=".callservice.CallService"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone" />
         <service android:name=".connectionservice.ProximityService" />
 
