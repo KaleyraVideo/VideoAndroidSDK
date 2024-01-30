@@ -24,7 +24,6 @@ import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import io.mockk.every
-import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
@@ -66,9 +65,9 @@ class PhoneConnectionServiceTest {
 
     private val otherParticipantMock = mockk<CallParticipant>(relaxed = true)
 
-    private val connection = mockk<CallConnection>(relaxed = true)
+    private val connectionMock = mockk<CallConnection>(relaxed = true)
 
-    private val conference = mockk<ConferenceUI>(relaxed = true)
+    private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
     @Before
     fun setup() {
@@ -84,9 +83,7 @@ class PhoneConnectionServiceTest {
         mockkObject(ContactDetailsManager)
         mockkObject(CallConnection)
         mockkObject(KaleyraVideo)
-        every { anyConstructed<CallForegroundServiceWorker>().bind(any(), captureLambda()) } answers {
-            lambda<(CallUI) -> Unit>().invoke(callMock)
-        }
+        every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any()) } returns Unit
         every { anyConstructed<CallForegroundServiceWorker>().dispose() } returns Unit
         every { ContactsController.createOrUpdateConnectionServiceContact(any(), any(), any()) } returns Unit
         every { ContactsController.deleteConnectionServiceContact(any(), any()) } returns Unit
@@ -95,9 +92,12 @@ class PhoneConnectionServiceTest {
             every { showOnAppResumed(any()) } returns Unit
             every { participants } returns MutableStateFlow(participantsMock)
         }
-        every { CallConnection.create(any()) } returns connection
-        every { KaleyraVideo.conference } returns conference
-        every { conference.withUI } returns true
+        every { CallConnection.create(any(), any()) } returns connectionMock
+        every { KaleyraVideo.conference } returns conferenceMock
+        with(conferenceMock) {
+            every { call } returns MutableStateFlow(callMock)
+            every { withUI } returns true
+        }
     }
 
     @After
@@ -114,7 +114,7 @@ class PhoneConnectionServiceTest {
     @Test
     fun testOnDestroy() {
         val uri = Uri.parse("")
-        every { connection.address } returns uri
+        every { connectionMock.address } returns uri
         service!!.onCreateIncomingConnection(mockk(), mockk())
         service!!.onDestroy()
         verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
@@ -201,18 +201,17 @@ class PhoneConnectionServiceTest {
     @Test
     fun testOnCreateOutgoingConnection() {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
-        assertEquals(connection, createdConnection)
-        verify { connection.setDialing() }
-        verify { connection.addConnectionStateListener(service!!) }
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, any()) }
+        assertEquals(connectionMock, createdConnection)
+        verify { connectionMock.setDialing() }
+        verify { connectionMock.addListener(service!!) }
+        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
     }
 
     @Test
     fun testOnCreateIncomingConnection() {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        assertEquals(connection, createdConnection)
-        verify { connection.addIncomingCallListener(service!!) }
-        verify { connection.addConnectionStateListener(service!!) }
+        assertEquals(connectionMock, createdConnection)
+        verify { connectionMock.addListener(service!!) }
     }
 
     @Test
@@ -245,7 +244,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun conferenceWithUITrue_onCreateOutgoingConnection_activityShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 1) { callMock.showOnAppResumed(any()) }
@@ -253,7 +252,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun conferenceWithUIFalse_onCreateOutgoingConnection_activityNotShown() {
-        every { conference.withUI } returns false
+        every { conferenceMock.withUI } returns false
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 0) { callMock.showOnAppResumed(any()) }
@@ -261,7 +260,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun callActivityShouldBeShown_onCreateOutgoingConnection_activityShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 1) { callMock.showOnAppResumed(any()) }
@@ -269,7 +268,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun callActivityShouldNotBeShown_onCreateOutgoingConnection_activityNotShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns false
         service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 0) { callMock.showOnAppResumed(any()) }
@@ -280,8 +279,7 @@ class PhoneConnectionServiceTest {
         val connection = mockk<CallConnection>(relaxed = true)
         every { connection.state } returns Connection.STATE_DISCONNECTED
         service!!.onConnectionStateChange(connection)
-        verify { connection.removeIncomingCallListener(service!!) }
-        verify { connection.removeConnectionStateListener(service!!) }
+        verify { connection.removeListener(service!!) }
         assertEquals(true, Shadows.shadowOf(service).isForegroundStopped)
         assertEquals(true, Shadows.shadowOf(service).isStoppedBySelf)
     }
@@ -291,8 +289,7 @@ class PhoneConnectionServiceTest {
         val connection = mockk<CallConnection>(relaxed = true)
         every { connection.state } returns mockk(relaxed = true)
         service!!.onConnectionStateChange(connection)
-        verify(exactly = 0) { connection.removeIncomingCallListener(service!!) }
-        verify(exactly = 0) { connection.removeConnectionStateListener(service!!) }
+        verify(exactly = 0) { connection.removeListener(service!!) }
         assertEquals(false, Shadows.shadowOf(service).isForegroundStopped)
         assertEquals(false, Shadows.shadowOf(service).isStoppedBySelf)
     }
@@ -302,13 +299,13 @@ class PhoneConnectionServiceTest {
         val connection = mockk<CallConnection>(relaxed = true)
         service!!.onShowIncomingCallUi(connection)
         verify { connection.setRinging() }
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, any()) }
+        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
         verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
     }
 
     @Test
     fun conferenceWithUITrue_onShowIncomingCallUi_activityShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onShowIncomingCallUi(mockk(relaxed = true))
         verify(exactly = 1) { callMock.showOnAppResumed(any()) }
@@ -316,7 +313,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun conferenceWithUIFalse_onShowIncomingCallUi_activityNotShown() {
-        every { conference.withUI } returns false
+        every { conferenceMock.withUI } returns false
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onShowIncomingCallUi(mockk(relaxed = true))
         verify(exactly = 0) { callMock.showOnAppResumed(any()) }
@@ -324,7 +321,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun callActivityShouldBeShown_onShowIncomingCallUi_activityShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns true
         service!!.onShowIncomingCallUi(mockk(relaxed = true))
         verify(exactly = 1) { callMock.showOnAppResumed(any()) }
@@ -332,7 +329,7 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun callActivityShouldNotBeShown_onShowIncomingCallUi_activityNotShown() {
-        every { conference.withUI } returns true
+        every { conferenceMock.withUI } returns true
         every { callMock.shouldShowAsActivity() } returns false
         service!!.onShowIncomingCallUi(mockk(relaxed = true))
         verify(exactly = 0) { callMock.showOnAppResumed(any()) }

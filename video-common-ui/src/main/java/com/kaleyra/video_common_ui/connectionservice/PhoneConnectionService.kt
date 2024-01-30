@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-class PhoneConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.IncomingCallListener, CallConnection.ConnectionStateListener {
+class PhoneConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
 
     companion object {
         private var connection: CallConnection? = null
@@ -74,33 +74,34 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         connectionManagerPhoneAccount: PhoneAccountHandle,
         request: ConnectionRequest
     ): Connection {
-        val connection = createConnection(request).apply {
+        val call = KaleyraVideo.conference.call.replayCache.first()
+        val connection = createConnection(request, call).apply {
             setDialing()
         }
-        bindCallForegroundServiceWorker()
+        bindCallForegroundServiceWorker(call)
         return connection
     }
 
-    private fun bindCallForegroundServiceWorker(block: ((CallUI) -> Unit)? = null) {
-        callForegroundServiceWorker.bind(this) { call ->
-            if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
-                call.showOnAppResumed(coroutineScope)
-            }
-            block?.invoke(call)
+    private fun bindCallForegroundServiceWorker(call: CallUI) {
+        callForegroundServiceWorker.bind(this, call)
+        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
+            call.showOnAppResumed(coroutineScope)
         }
+        // TODO enable audio routing?
     }
 
     override fun onCreateIncomingConnection(
         connectionManagerPhoneAccount: PhoneAccountHandle,
         request: ConnectionRequest
-    ): Connection = createConnection(request)
+    ): Connection {
+        val call = KaleyraVideo.conference.call.replayCache.first()
+        return createConnection(request, call)
+    }
 
-    private fun createConnection(request: ConnectionRequest): CallConnection {
-        return CallConnection.create(request = request).apply {
+    private fun createConnection(request: ConnectionRequest, call: CallUI): CallConnection {
+        return CallConnection.create(request = request, call = call).apply {
             connection = this
-            addIncomingCallListener(this@PhoneConnectionService)
-            addConnectionStateListener(this@PhoneConnectionService)
-//            addAudioOutputListener(this@PhoneConnectionService)
+            addListener(this@PhoneConnectionService)
         }
     }
 
@@ -109,28 +110,31 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 //    }
 
     override fun onShowIncomingCallUi(connection: CallConnection) {
+        val call = KaleyraVideo.conference.call.replayCache.first()
         connection.setRinging()
-        bindCallForegroundServiceWorker { call ->
-            coroutineScope.launch {
-                val participants = call.participants.value
-                val callee = if (participants.others.size > 1) {
-                    resources.getString(R.string.kaleyra_notification_incoming_group_call)
-                } else {
-                    participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
-                }
-                createOrUpdateConnectionServiceContact(
-                    this@PhoneConnectionService,
-                    connection.address,
-                    callee
-                )
+        bindCallForegroundServiceWorker(call)
+        createOrUpdateConnectionContact(connection, call)
+    }
+
+    private fun createOrUpdateConnectionContact(connection: CallConnection, call: Call) {
+        coroutineScope.launch {
+            val participants = call.participants.value
+            val callee = if (participants.others.size > 1) {
+                resources.getString(R.string.kaleyra_notification_incoming_group_call)
+            } else {
+                participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
             }
+            createOrUpdateConnectionServiceContact(
+                this@PhoneConnectionService,
+                connection.address,
+                callee
+            )
         }
     }
 
     override fun onConnectionStateChange(connection: CallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
-        connection.removeIncomingCallListener(this@PhoneConnectionService)
-        connection.removeConnectionStateListener(this@PhoneConnectionService)
+        connection.removeListener(this@PhoneConnectionService)
         stopForegroundService()
         stopSelf()
     }
