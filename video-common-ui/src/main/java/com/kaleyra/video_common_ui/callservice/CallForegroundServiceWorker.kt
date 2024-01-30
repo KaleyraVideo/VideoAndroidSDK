@@ -41,28 +41,24 @@ internal class CallForegroundServiceWorker(
 
     private var call: Call? = null
 
-    fun bind(service: Service, block: ((CallUI) -> Unit)? = null) {
+    fun bind(service: Service, call: CallUI) {
         Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
-        KaleyraVideo.onCallReady(coroutineScope) { call ->
-            this.call = call
-            cameraStreamManager.bind(call)
-            streamsManager.bind(call)
-            participantManager.bind(call)
-            callNotificationProducer.bind(call)
-            callNotificationProducer.listener = callNotificationListener
+        this.call = call
+        cameraStreamManager.bind(call)
+        streamsManager.bind(call)
+        participantManager.bind(call)
+        callNotificationProducer.bind(call)
+        callNotificationProducer.listener = callNotificationListener
 
-            call.state
-                .takeWhile { it !is Call.State.Disconnected.Ended }
-                .onCompletion { service.stopSelf() }
-                .launchIn(coroutineScope)
+        call.state
+            .takeWhile { it !is Call.State.Disconnected.Ended }
+            .onCompletion { service.stopSelf() }
+            .launchIn(coroutineScope)
 
-            if (!DeviceUtils.isSmartGlass) {
-                ProximityService.start()
-                fileShareNotificationProducer.bind(call)
-                screenShareOverlayProducer.bind(call)
-            }
-
-            block?.invoke(call)
+        if (!DeviceUtils.isSmartGlass) {
+            ProximityService.start()
+            fileShareNotificationProducer.bind(call)
+            screenShareOverlayProducer.bind(call)
         }
     }
 

@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.Service
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
@@ -12,17 +11,14 @@ import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
-import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import io.mockk.every
-import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,15 +43,18 @@ class CallForegroundServiceWorkerTest {
         mockkConstructor(CameraStreamManager::class)
         mockkConstructor(StreamsManager::class)
         mockkConstructor(ParticipantManager::class)
-        every { KaleyraVideo.onCallReady(any(), captureLambda()) } answers {
-            lambda<(CallUI) -> Unit>().invoke(callMock)
-        }
         every { anyConstructed<CallNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<FileShareNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) } returns Unit
         every { anyConstructed<CameraStreamManager>().bind(callMock) } returns Unit
         every { anyConstructed<StreamsManager>().bind(callMock) } returns Unit
         every { anyConstructed<ParticipantManager>().bind(callMock) } returns Unit
+        every { anyConstructed<CallNotificationProducer>().stop() } returns Unit
+        every { anyConstructed<FileShareNotificationProducer>().stop() } returns Unit
+        every { anyConstructed<ScreenShareOverlayProducer>().stop() } returns Unit
+        every { anyConstructed<CameraStreamManager>().stop() } returns Unit
+        every { anyConstructed<StreamsManager>().stop() } returns Unit
+        every { anyConstructed<ParticipantManager>().stop() } returns Unit
         every { ProximityService.start() } returns Unit
         every { ProximityService.stop() } returns true
     }
@@ -72,11 +71,8 @@ class CallForegroundServiceWorkerTest {
             override fun onNewNotification(call: Call, notification: Notification, id: Int) = Unit
             override fun onClearNotification(id: Int) = Unit
         }
-        var call: CallUI? = null
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, listener)
-        callForegroundServiceWorker.bind(mockk(relaxed = true)) {
-            call = it
-        }
+        callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<CameraStreamManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<StreamsManager>().bind(callMock) }
@@ -85,7 +81,6 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 1) { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) }
         verify(exactly = 1) { ProximityService.start() }
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>() setProperty "listener" value listener }
-        assertEquals(callMock, call)
     }
 
     @Test
@@ -95,11 +90,8 @@ class CallForegroundServiceWorkerTest {
             override fun onNewNotification(call: Call, notification: Notification, id: Int) = Unit
             override fun onClearNotification(id: Int) = Unit
         }
-        var call: CallUI? = null
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, listener)
-        callForegroundServiceWorker.bind(mockk(relaxed = true)) {
-            call = it
-        }
+        callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<CameraStreamManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<StreamsManager>().bind(callMock) }
@@ -108,14 +100,13 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 0) { anyConstructed<FileShareNotificationProducer>().bind(callMock) }
         verify(exactly = 0) { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) }
         verify(exactly = 0) { ProximityService.start() }
-        assertEquals(callMock, call)
     }
 
     @Test
     fun testStopOnSmartphone() = runTest {
         every { DeviceUtils.isSmartGlass } returns false
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, mockk(relaxed = true))
-        callForegroundServiceWorker.bind(mockk(relaxed = true))
+        callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
         callForegroundServiceWorker.dispose()
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>().stop() }
         verify(exactly = 1) { anyConstructed<CameraStreamManager>().stop() }
@@ -130,7 +121,7 @@ class CallForegroundServiceWorkerTest {
     fun testStopOnSmartglasses() = runTest {
         every { DeviceUtils.isSmartGlass } returns true
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, mockk(relaxed = true))
-        callForegroundServiceWorker.bind(mockk(relaxed = true))
+        callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
         callForegroundServiceWorker.dispose()
         verify(exactly = 1) { callMock.end() }
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>().stop() }
@@ -147,7 +138,7 @@ class CallForegroundServiceWorkerTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
         val service = mockk<Service>(relaxed = true)
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, mockk(relaxed = true))
-        callForegroundServiceWorker.bind(service)
+        callForegroundServiceWorker.bind(service, callMock)
         advanceUntilIdle()
         verify(exactly = 1) { service.stopSelf() }
     }
