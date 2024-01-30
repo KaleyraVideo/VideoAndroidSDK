@@ -19,6 +19,10 @@ android {
     compileSdkVersion catalog.versions.sdkVersion.get().toInteger()
     buildToolsVersion catalog.versions.toolsVersion.get()
 
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
+
     defaultConfig {
         minSdkVersion catalog.versions.minSdkVersion.get()
         targetSdkVersion catalog.versions.sdkVersion.get().toInteger()
