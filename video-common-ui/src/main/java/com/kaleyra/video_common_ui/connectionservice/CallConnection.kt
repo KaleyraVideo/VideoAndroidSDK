@@ -5,13 +5,9 @@ import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
 import android.telecom.TelecomManager
-import android.telecom.VideoProfile
 import androidx.annotation.RequiresApi
-import com.bandyer.android_audiosession.sounds.CallSound
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.onCallReady
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
@@ -19,82 +15,64 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 
 @RequiresApi(Build.VERSION_CODES.M)
-class CallConnection private constructor() : Connection() {
+class CallConnection private constructor(val call: Call, val coroutineScope: CoroutineScope) : Connection() {
 
-    interface ConnectionStateListener {
-        fun onConnectionStateChange(connection: CallConnection)
-    }
+    interface Listener {
+        fun onConnectionStateChange(connection: CallConnection) = Unit
+        fun onShowIncomingCallUi(connection: CallConnection) = Unit
 
-    interface IncomingCallListener {
-        fun onShowIncomingCallUi(connection: CallConnection)
-    }
-
-//    interface AudioOutputListener {
 //        fun onAudioOutputStateChanged(audioOutputState: AudioOutputState) = Unit
+
 //        fun onSilent() = Unit
-//    }
+    }
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun create(request: ConnectionRequest): CallConnection {
-            return CallConnection().apply {
+        fun create(request: ConnectionRequest, call: Call, coroutineScope: CoroutineScope = MainScope()): CallConnection {
+            return CallConnection(call, coroutineScope).apply {
                 setInitializing()
                 setAddress(request.address, TelecomManager.PRESENTATION_ALLOWED)
                 connectionProperties = PROPERTY_SELF_MANAGED
                 audioModeIsVoip = true
                 connectionCapabilities = CAPABILITY_MUTE or CAPABILITY_HOLD or CAPABILITY_SUPPORT_HOLD
-//          TODO do we really need this capabilities?
-//          or CAPABILITY_VIDEO_CALLING or CAPABILITY_SUPPORTS_VIDEO_CALLING
-//          TODO set the video state
-//                videoState = VideoProfile.STATE_AUDIO_ONLY
                 extras = request.extras
             }
         }
     }
 
-//    private val audioOutputListeners: MutableList<AudioOutputListener> = mutableListOf()
-
-    private val connectionStateListeners: MutableList<ConnectionStateListener> = mutableListOf()
-
-    private val incomingCallListeners: MutableList<IncomingCallListener> = mutableListOf()
-
-//    fun addAudioOutputListener(listener: AudioOutputListener) = audioOutputListeners.add(listener)
-
-    fun addConnectionStateListener(listener: ConnectionStateListener) = connectionStateListeners.add(listener)
-
-    fun addIncomingCallListener(listener: IncomingCallListener) = incomingCallListeners.add(listener)
-
-//    fun removeAudioOutputListener(listener: AudioOutputListener) = audioOutputListeners.remove(listener)
-
-    fun removeConnectionStateListener(listener: ConnectionStateListener) = connectionStateListeners.remove(listener)
-
-    fun removeIncomingCallListener(listener: IncomingCallListener) = incomingCallListeners.remove(listener)
+    private val listeners: MutableList<Listener> = mutableListOf()
 
     private var wasAnswered = false
+
     private var wasRejected = false
 
-    private val mainScope = MainScope()
-
-    private var call: CallUI? = null
-
     init {
-        KaleyraVideo.onCallReady(mainScope) { call ->
-            this@CallConnection.call = call
-            call.state
-                .onEach {
-                    when (it) {
-                        is Call.State.Connected -> setActive()
-                        Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> setConnectionDisconnected(DisconnectCause.ANSWERED_ELSEWHERE)
-                        Call.State.Disconnected.Ended.LineBusy -> setConnectionDisconnected(DisconnectCause.BUSY)
-                        Call.State.Disconnected.Ended.Declined, is Call.State.Disconnected.Ended.HungUp -> setConnectionDisconnected(DisconnectCause.REMOTE)
-                        is Call.State.Disconnected.Ended.Error -> setConnectionDisconnected(DisconnectCause.ERROR)
-                        Call.State.Disconnected.Ended, Call.State.Disconnected.Ended.Timeout, is Call.State.Disconnected.Ended.Kicked -> setConnectionDisconnected(DisconnectCause.OTHER)
-                        else -> Unit
+        syncStateWithCall()
+    }
+
+    fun addListener(listener: Listener) = listeners.add(listener)
+
+    fun removeListener(listener: Listener) = listeners.remove(listener)
+
+    fun syncStateWithCall() {
+        call.state
+            .onEach {
+                when (it) {
+                    is Call.State.Connected -> setActive()
+                    Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        setConnectionDisconnected(DisconnectCause.ANSWERED_ELSEWHERE)
+                    } else {
+                        setConnectionDisconnected(DisconnectCause.OTHER)
                     }
+                    Call.State.Disconnected.Ended.LineBusy -> setConnectionDisconnected(DisconnectCause.BUSY)
+                    Call.State.Disconnected.Ended.Declined, is Call.State.Disconnected.Ended.HungUp -> setConnectionDisconnected(DisconnectCause.REMOTE)
+                    is Call.State.Disconnected.Ended.Error -> setConnectionDisconnected(DisconnectCause.ERROR)
+                    Call.State.Disconnected.Ended, Call.State.Disconnected.Ended.Timeout, is Call.State.Disconnected.Ended.Kicked -> setConnectionDisconnected(DisconnectCause.OTHER)
+                    else -> Unit
                 }
-                .takeWhile { it !is Call.State.Disconnected.Ended }
-                .launchIn(mainScope)
-        }
+            }
+            .takeWhile { it !is Call.State.Disconnected.Ended }
+            .launchIn(coroutineScope)
     }
 
     override fun onAnswer(videoState: Int) {
@@ -111,25 +89,25 @@ class CallConnection private constructor() : Connection() {
         // On some devices (like Huawei), both onAnswer() and onAnswer(int) are called
         if (wasAnswered) return
         wasAnswered = true
-        call?.connect()
+        call.connect()
     }
 
     override fun onStateChanged(state: Int) {
         super.onStateChanged(state)
-        connectionStateListeners.forEach { it.onConnectionStateChange(this) }
+        listeners.forEach { it.onConnectionStateChange(this) }
     }
 
     override fun onHold() {
         super.onHold()
-        mainScope.cancel()
-        call?.end()
+        coroutineScope.cancel()
+        call.end()
         setConnectionDisconnected(DisconnectCause.LOCAL)
     }
 
     override fun onAbort() {
         super.onAbort()
-        mainScope.cancel()
-        call?.end()
+        coroutineScope.cancel()
+        call.end()
         setConnectionDisconnected(DisconnectCause.OTHER)
     }
 
@@ -151,34 +129,33 @@ class CallConnection private constructor() : Connection() {
     private fun _onReject() {
         if (wasRejected) return
         wasRejected = true
-        mainScope.cancel()
-        call?.end()
+        coroutineScope.cancel()
+        call.end()
         setConnectionDisconnected(DisconnectCause.REJECTED)
     }
 
     override fun onDisconnect() {
         super.onDisconnect()
-        mainScope.cancel()
-        call?.end()
+        coroutineScope.cancel()
+        call.end()
         setConnectionDisconnected(DisconnectCause.LOCAL)
     }
 
     override fun onSilence() {
         super.onSilence()
-        CallSound.stop()
+//        listeners.forEach { it.onSilent() }
+//        CallSound.stop()
     }
 
     override fun onShowIncomingCallUi() {
         super.onShowIncomingCallUi()
-        incomingCallListeners.forEach { it.onShowIncomingCallUi(this) }
+        listeners.forEach { it.onShowIncomingCallUi(this) }
     }
 
     private fun setConnectionDisconnected(cause: Int) {
         setDisconnected(DisconnectCause(cause))
         destroy()
-//        audioOutputListeners.clear()
-        connectionStateListeners.clear()
-        incomingCallListeners.clear()
+        listeners.clear()
     }
 
 //    var audioOutputState: AudioOutputState = AudioOutputState()
