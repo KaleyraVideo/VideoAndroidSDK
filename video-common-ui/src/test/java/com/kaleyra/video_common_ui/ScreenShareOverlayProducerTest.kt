@@ -23,6 +23,7 @@ import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.overlay.AppViewOverlay
 import com.kaleyra.video_common_ui.overlay.StatusBarOverlayView
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.requestOverlayPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import io.mockk.every
@@ -58,6 +59,7 @@ internal class ScreenShareOverlayProducerTest {
     @Before
     fun setUp() {
         mockkObject(ContextExtensions)
+        mockkObject(ActivityExtensions)
         mockkConstructor(AppViewOverlay::class)
         mockkConstructor(StatusBarOverlayView::class)
         every { anyConstructed<AppViewOverlay>().show(any()) } returns Unit
