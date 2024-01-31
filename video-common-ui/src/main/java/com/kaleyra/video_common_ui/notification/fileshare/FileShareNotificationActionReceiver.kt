@@ -55,7 +55,7 @@ class FileShareNotificationActionReceiver internal constructor(val dispatcher: C
             requestConfigure().let {
                 if (!it) return@let context.goToLaunchingActivity()
                 KaleyraVideo.onCallReady(this) { call ->
-                    when (intent.extras?.getString("notificationAction")) {
+                    when (intent.extras?.getString(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA)) {
                         ACTION_DOWNLOAD -> {
                             val downloadId = intent.getStringExtra(EXTRA_DOWNLOAD_ID) ?: return@onCallReady
                             call.sharedFolder.download(downloadId)

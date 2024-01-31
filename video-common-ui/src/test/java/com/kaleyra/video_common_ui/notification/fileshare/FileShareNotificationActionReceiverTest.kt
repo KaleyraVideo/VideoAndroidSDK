@@ -80,7 +80,7 @@ internal class FileShareNotificationActionReceiverTest {
     fun testOnReceiveWithCollaborationConfigured() = runTest {
         val downloadId = "downloadId"
         val intent = Intent().apply {
-            putExtra("notificationAction", ACTION_DOWNLOAD)
+            putExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_DOWNLOAD)
             putExtra(EXTRA_DOWNLOAD_ID, downloadId)
         }
         coEvery { fileShareNotificationActionReceiver.requestConfigure() } returns true
