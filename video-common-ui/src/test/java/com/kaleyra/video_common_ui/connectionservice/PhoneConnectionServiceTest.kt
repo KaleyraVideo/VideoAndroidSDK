@@ -92,7 +92,7 @@ class PhoneConnectionServiceTest {
             every { showOnAppResumed(any()) } returns Unit
             every { participants } returns MutableStateFlow(participantsMock)
         }
-        every { CallConnection.create(any(), any()) } returns connectionMock
+        every { CallConnection.create(any(), any(), any()) } returns connectionMock
         every { KaleyraVideo.conference } returns conferenceMock
         with(conferenceMock) {
             every { call } returns MutableStateFlow(callMock)
