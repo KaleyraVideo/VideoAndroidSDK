@@ -4,9 +4,10 @@ import android.content.ContentProviderOperation
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
-import com.kaleyra.video_common_ui.connectionservice.ContextExtensions.hasContactsPermissions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasContactsPermissions
 
 object ContactsController {
+
     fun createOrUpdateConnectionServiceContact(
         context: Context,
         uri: Uri,
@@ -20,7 +21,7 @@ object ContactsController {
             } else {
                 createConnectionServiceContact(context, uri, username)
             }
-        } catch (x: Exception) {
+        } catch (_: Exception) {
 
         }
     }
@@ -55,18 +56,6 @@ object ContactsController {
                 .withValue(ContactsContract.RawContacts.DELETED, 0)
                 .build()
         )
-//        ops.add(
-//            ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-//                .withSelection(
-//                    ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
-//                    arrayOf(
-//                        contactID.toString(),
-//                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
-//                    )
-//                )
-//                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "+88000$id")
-//                .build()
-//        )
         ops.add(
             ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(
@@ -124,13 +113,13 @@ object ContactsController {
         if (!context.hasContactsPermissions()) return
         try {
             val resolver = context.applicationContext.contentResolver
-            val contactId = getConnectionServiceContactId(context, uri)
+            val contactId = getConnectionServiceContactId(context, uri) ?: return
             resolver.delete(
                 ContactsContract.RawContacts.CONTENT_URI,
                 ContactsContract.RawContacts._ID + "=?",
                 arrayOf(contactId.toString())
             )
-        } catch (x: Exception) {
+        } catch (_: Exception) {
 
         }
     }
