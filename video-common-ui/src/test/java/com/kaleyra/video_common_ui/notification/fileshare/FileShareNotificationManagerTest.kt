@@ -16,7 +16,9 @@
 
 package com.kaleyra.video_common_ui.notification.fileshare
 
+import android.content.Context
 import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
@@ -49,7 +51,7 @@ class FileShareNotificationManagerTest {
 
     @Test
     fun testBuildIncomingFileNotification() {
-        val context = RuntimeEnvironment.getApplication()
+        val context = ApplicationProvider.getApplicationContext<Context>()
         fileShareNotificationManager.buildIncomingFileNotification(
             context = context,
             username = "username",
