@@ -43,6 +43,7 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.call.widget.LivePointerView
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
@@ -577,7 +578,7 @@ internal class GlassCallActivity :
     }
 
     private fun handleIntentAction(intent: Intent) {
-        val notificationAction = intent.extras?.getString("notificationAction")
+        val notificationAction = intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)
         if (notificationAction != CallNotificationActionReceiver.ACTION_ANSWER && notificationAction != CallNotificationActionReceiver.ACTION_HANGUP) return
         sendBroadcast(Intent(this, CallNotificationActionReceiver::class.java).apply {
             putExtras(intent)

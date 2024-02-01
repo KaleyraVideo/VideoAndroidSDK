@@ -21,12 +21,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.kaleyra.video_common_ui.KaleyraUIProvider
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra.NOTIFICATION_ACTION_EXTRA
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isScreenLocked
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.turnOnScreen
 import com.kaleyra.video_utils.ContextRetainer
+
+object CallNotificationExtra {
+    const val NOTIFICATION_ACTION_EXTRA = "notificationAction"
+}
 
 /**
  * CallNotificationManager
@@ -106,8 +112,7 @@ internal interface CallNotificationManager {
         enableCallStyle: Boolean
     ): Notification {
         val context = ContextRetainer.context
-        val userText =
-            if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
+        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
         val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call)
         val builder = CallNotification
             .Builder(
@@ -150,13 +155,18 @@ internal interface CallNotificationManager {
         enableCallStyle: Boolean
     ): Notification {
         val context = ContextRetainer.context
-        val userText =
-            if (isGroupCall || isLink) context.resources.getString(if (isGroupCall) R.string.kaleyra_notification_ongoing_group_call else R.string.kaleyra_notification_ongoing_call) else username
-        val contentText = context.resources.getString(
+        val resources = context.resources
+        val userText = when {
+            isGroupCall -> resources.getString(R.string.kaleyra_notification_ongoing_group_call)
+            isLink -> resources.getString(R.string.kaleyra_notification_ongoing_call)
+            else -> username
+        }
+        val contentText = resources.getString(
             when {
                 isConnecting -> R.string.kaleyra_notification_connecting_call
                 isCallRecorded -> R.string.kaleyra_notification_call_recorded
-                else -> if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call
+                isGroupCall -> R.string.kaleyra_notification_tap_to_return_to_group_call
+                else -> R.string.kaleyra_notification_tap_to_return_to_call
             }
         )
         val builder = CallNotification
@@ -221,8 +231,8 @@ internal interface CallNotificationManager {
             this.action = Intent.ACTION_MAIN
             this.addCategory(Intent.CATEGORY_LAUNCHER)
             this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.putExtra("enableTilt", DeviceUtils.isSmartGlass)
-            action?.also { this.putExtra("notificationAction", it) }
+            this.putExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, DeviceUtils.isSmartGlass)
+            action?.also { this.putExtra(NOTIFICATION_ACTION_EXTRA, it) }
         }
         return PendingIntent.getActivity(
             applicationContext,
@@ -237,7 +247,7 @@ internal interface CallNotificationManager {
             context,
             requestCode,
             Intent(context, CallNotificationActionReceiver::class.java).apply {
-                putExtra("notificationAction", action)
+                putExtra(NOTIFICATION_ACTION_EXTRA, action)
             },
             PendingIntentExtensions.updateFlags
         )

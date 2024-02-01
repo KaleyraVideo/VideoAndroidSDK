@@ -38,6 +38,7 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
      * @suppress
      */
     companion object {
+
         /**
          * ActionAnswer
          */
@@ -62,7 +63,7 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
-            val notificationAction = intent.extras?.getString("notificationAction")
+            val notificationAction = intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)
             if (notificationAction == ACTION_HANGUP) {
                 NotificationManager.cancel(CALL_NOTIFICATION_ID)
             }

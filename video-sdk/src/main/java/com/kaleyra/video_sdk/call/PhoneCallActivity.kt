@@ -35,6 +35,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
@@ -174,7 +175,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
     }
 
     private fun handleIntentAction(intent: Intent): Boolean {
-        return when (intent.extras?.getString("notificationAction")) {
+        return when (intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)) {
             CallNotificationActionReceiver.ACTION_ANSWER, CallNotificationActionReceiver.ACTION_HANGUP -> {
                 sendBroadcast(Intent(this, CallNotificationActionReceiver::class.java).apply {
                     putExtras(intent)
