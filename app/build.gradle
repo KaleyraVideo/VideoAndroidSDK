@@ -7,10 +7,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id 'kotlin-parcelize'
-    id "com.github.triplet.play"
-    id "com.google.firebase.appdistribution"
-    id "ru.cian.huawei-publish"
-    id "com.google.firebase.crashlytics"
     id 'org.jetbrains.kotlin.plugin.serialization' version sampleAppCatalog.versions.jetbrainsKotlinVersion
 }
 
@@ -37,47 +33,31 @@ android {
 
     signingConfigs {
         debug {
-            if (keyStoreFilePath(name)?.trim()) {
-                keyAlias keyStoreAlias(name)
-                keyPassword keyStorePassword(name)
-                storeFile file(keyStoreFilePath(name))
-                storePassword keyStorePassword(name)
-            }
+            keyAlias "debug"
+            keyPassword "123debug"
+            storeFile file("${project.rootDir}/keystores/debug.keystore")
+            storePassword "123debug"
         }
+
         release {
-            if (keyStoreFilePath(name)?.trim()) {
-                keyAlias keyStoreAlias(name)
-                keyPassword keyStorePassword(name)
-                storeFile file(keyStoreFilePath(name))
-                storePassword keyStorePassword(name)
-            }
+            keyAlias System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword System.getenv("SIGNING_KEY_PASSWORD")
+            storeFile file("${project.rootDir}/keystores/release.keystore")
+            storePassword System.getenv("SIGNING_STORE_PASSWORD")
         }
     }
 
     buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (keyStoreFilePath(name)?.trim()) signingConfig signingConfigs.release
-            firebaseCrashlytics {
-                mappingFileUploadEnabled false
-            }
-        }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
-            if (keyStoreFilePath(name)?.trim()) signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
+        }
 
-            // Firebase distribution
-            if (getDistributionCredentialsFilePath(name)?.trim()) firebaseAppDistribution {
-                appId getDistributionAppId(name)
-                serviceCredentialsFile getDistributionCredentialsFilePath(name)
-                releaseNotes getDistributionReleaseNotes(kaleyraVideoSdkVersion)
-                groups getDistributionTestGroup()
-            }
-            firebaseCrashlytics {
-                mappingFileUploadEnabled false
-            }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -98,26 +78,9 @@ android {
     ndkVersion "23.1.7779620"
 }
 
-play {
-    def canPublish = !playStoreCredentialsFilePath()?.trim().allWhitespace
-    if (canPublish) serviceAccountCredentials = file(playStoreCredentialsFilePath())
-    track.set("beta")
-    enabled.set(canPublish)
-    defaultToAppBundles.set(true)
-}
-
-huaweiPublish {
-    instances {
-        release {
-            credentialsPath = getHmsDistributionCredentialsFilePath()
-            buildFormat = "aab"
-        }
-    }
-}
-
 dependencies {
     /*** Kaleyra Video SDK ***/
-     implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
+    implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
 
     implementation project(":video-sdk")
 
