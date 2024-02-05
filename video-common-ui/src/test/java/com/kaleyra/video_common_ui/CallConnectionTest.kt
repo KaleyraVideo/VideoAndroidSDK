@@ -21,7 +21,7 @@ import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.ma
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutput
 import com.kaleyra.video_common_ui.connectionservice.CallConnection
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.toAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutput
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -432,8 +432,8 @@ class CallConnectionTest {
                 audioOutputState = connectionAudioState
             }
         }
-        every { speakerEndpoint.toAudioOutput() } returns speakerAudioOutput
-        every { earpieceEndpoint.toAudioOutput() } returns earpieceAudioOutput
+        every { speakerEndpoint.mapToAudioOutput() } returns speakerAudioOutput
+        every { earpieceEndpoint.mapToAudioOutput() } returns earpieceAudioOutput
         connection.addListener(listener)
         connection.onAvailableCallEndpointsChanged(listOf(speakerEndpoint, earpieceEndpoint))
         val expected = com.kaleyra.video_common_ui.connectionservice.CallAudioState(availableOutputs = listOf(speakerAudioOutput, earpieceAudioOutput))
@@ -454,7 +454,7 @@ class CallConnectionTest {
                 audioOutputState = connectionAudioState
             }
         }
-        every { endpoint.toAudioOutput() } returns audioOutput
+        every { endpoint.mapToAudioOutput() } returns audioOutput
         connection.addListener(listener)
         connection.onCallEndpointChanged(endpoint)
         val expected = com.kaleyra.video_common_ui.connectionservice.CallAudioState(currentOutput = audioOutput)
@@ -501,7 +501,7 @@ class CallConnectionTest {
         mockkObject(CallEndpointExtensions)
         val endpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
         val audioOutput = CallAudioOutput.Speaker
-        every { endpoint.toAudioOutput() } returns audioOutput
+        every { endpoint.mapToAudioOutput() } returns audioOutput
         val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
         connection.onAvailableCallEndpointsChanged(listOf(endpoint))
         connection.setAudioOutput(CallAudioOutput.Speaker)

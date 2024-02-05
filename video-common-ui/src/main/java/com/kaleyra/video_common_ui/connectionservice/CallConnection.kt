@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputs
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutput
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.toAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -197,13 +197,13 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onAvailableCallEndpointsChanged(availableEndpoints: List<CallEndpoint>) {
         this.availableCallEndpoints = availableEndpoints
-        audioState = audioState.copy(availableOutputs = availableEndpoints.mapNotNull { it.toAudioOutput() })
+        audioState = audioState.copy(availableOutputs = availableEndpoints.mapNotNull { it.mapToAudioOutput() })
         listeners.forEach { it.onAudioOutputStateChanged(audioState) }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCallEndpointChanged(callEndpoint: CallEndpoint) {
-        audioState = audioState.copy(currentOutput = callEndpoint.toAudioOutput())
+        audioState = audioState.copy(currentOutput = callEndpoint.mapToAudioOutput())
         listeners.forEach { it.onAudioOutputStateChanged(audioState) }
     }
 
