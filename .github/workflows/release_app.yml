@@ -59,10 +59,10 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           packageName: com.kaleyra.demo_video_sdk
-          releaseFiles: outputs/bundle/release/app-release.aab
+          releaseFiles: build/outputs/bundle/release/app-release.aab
           track: beta
-          mappingFile:  outputs/mapping/release/mapping.txt
-          debugSymbols: intermediates/merged_native_libs/release/out/lib
+          mappingFile:  build/outputs/mapping/release/mapping.txt
+          debugSymbols: build/intermediates/merged_native_libs/release/out/lib
   upload_huawei:
     runs-on: ubuntu-latest
     needs: build_aab
@@ -80,5 +80,5 @@ jobs:
           client-key: ${{secrets.HUAWEI_CLIENT_KEY}}
           app-id: ${{secrets.HUAWEI_APP_ID}}
           file-extension: "aab"
-          file-path: "outputs/bundle/release/app-release.aab"
+          file-path: "build/outputs/bundle/release/app-release.aab"
           submit: false
