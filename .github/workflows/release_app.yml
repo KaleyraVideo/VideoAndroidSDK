@@ -56,4 +56,4 @@ jobs:
           app-id: ${{secrets.HUAWEI_APP_ID}}
           file-extension: "aab"
           file-path: "app/build/outputs/bundle/release/app-release.aab"
-          submit: true
+          submit: false
