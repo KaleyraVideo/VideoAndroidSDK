@@ -40,7 +40,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build_release
-          path: app/build
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/mapping/release/mapping.txt
+            app/build/intermediates/merged_native_libs/release/out/lib
   upload_playstore:
     runs-on: ubuntu-latest
     needs: build_aab
@@ -50,15 +53,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_release
+          path: build
       - name: Deploy to PlayStore
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           packageName: com.kaleyra.demo_video_sdk
-          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          releaseFiles: build/app-release.aab
           track: beta
-          mappingFile: app/build/outputs/mapping/release/mapping.txt
-          debugSymbols: app/build/intermediates/merged_native_libs/release/out/lib
+          mappingFile: build/mapping.txt
+          debugSymbols: build/lib
   upload_huawei:
     runs-on: ubuntu-latest
     needs: build_aab
@@ -68,6 +72,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_release
+          path: build
       - name: Deploy to Huawei App Gallery
         uses: muhamedzeema/appgallery-deply-action@main
         with:
@@ -75,5 +80,5 @@ jobs:
           client-key: ${{secrets.HUAWEI_CLIENT_KEY}}
           app-id: ${{secrets.HUAWEI_APP_ID}}
           file-extension: "aab"
-          file-path: "app/build/outputs/bundle/release/app-release.aab"
+          file-path: "build/app-release.aab"
           submit: false
