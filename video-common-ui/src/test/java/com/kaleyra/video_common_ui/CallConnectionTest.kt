@@ -17,8 +17,8 @@ import android.telecom.TelecomManager
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.toAvailableAudioOutputs
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.toCurrentAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputs
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutput
 import com.kaleyra.video_common_ui.connectionservice.CallConnection
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.toAudioOutput
@@ -380,8 +380,8 @@ class CallConnectionTest {
                 audioOutputState = connectionAudioState
             }
         }
-        every { callAudioState.toCurrentAudioOutput() } returns audioOutput
-        every { callAudioState.toAvailableAudioOutputs() } returns availableAudioOutputs
+        every { callAudioState.mapToCurrentAudioOutput() } returns audioOutput
+        every { callAudioState.mapToAvailableAudioOutputs() } returns availableAudioOutputs
         val connection = CallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
         connection.onCallAudioStateChanged(callAudioState)
@@ -407,8 +407,8 @@ class CallConnectionTest {
                 audioOutputState = connectionAudioState
             }
         }
-        every { callAudioState.toCurrentAudioOutput() } returns audioOutput
-        every { callAudioState.toAvailableAudioOutputs() } returns availableAudioOutputs
+        every { callAudioState.mapToCurrentAudioOutput() } returns audioOutput
+        every { callAudioState.mapToAvailableAudioOutputs() } returns availableAudioOutputs
         val connection = CallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
         connection.onCallAudioStateChanged(callAudioState)
