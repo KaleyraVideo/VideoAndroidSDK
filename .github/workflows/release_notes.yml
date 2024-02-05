@@ -26,12 +26,9 @@ jobs:
         run: chmod +x gradlew
       - name: Decode Keystore
         id: decode_keystore
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: 'keystores/release.keystore'
-          encodedString: ${{ secrets.KEYSTORE }}
-      - name: Build app
-        run: ./gradlew :app:build
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+        run: echo $ENCODED_STRING | base64 -di > app/keystores/release.keystore
       - name: Generate app apk debug
         run: ./gradlew :app:assembleDebug
       - name: Generate app apk release
