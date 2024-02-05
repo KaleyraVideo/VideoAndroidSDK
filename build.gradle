@@ -79,6 +79,10 @@ buildscript {
     }
 }
 
+plugins {
+    alias(catalog.plugins.dokka)
+}
+
 allprojects {
     repositories {
         mavenLocal()
@@ -97,4 +101,11 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.dokkaHtmlMultiModule {
+    moduleName.set(project.name)
+    moduleVersion.set(project.version.toString())
+    outputDirectory.set(file("docs"))
+
 }

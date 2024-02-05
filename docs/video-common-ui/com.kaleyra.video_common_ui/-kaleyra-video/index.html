@@ -1,0 +1,299 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>KaleyraVideo</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            VideoAndroidSDK
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-common-ui:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="video-common-ui::com.kaleyra.video_common_ui/KaleyraVideo///PointingToDeclaration//-943617535">
+  <div class="breadcrumbs"><a href="../../index.html">video-common-ui</a><span class="delimiter">/</span><a href="../index.html">com.kaleyra.video_common_ui</a><span class="delimiter">/</span><span class="current">KaleyraVideo</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Kaleyra</span><wbr><span><span>Video</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">KaleyraVideo</a></div><p class="paragraph">Kaleyra Video Android SDK facade</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="451519445%2FProperties%2F-943617535" anchor-label="companyName" id="451519445%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="company-name.html"><span>company</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="451519445%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="company-name.html">companyName</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/SharedFlow///PointingToDeclaration/">SharedFlow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Company name flow that will emit company's name whenever available</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-285277647%2FProperties%2F-943617535" anchor-label="companyTheme" id="-285277647%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="company-theme.html"><span>company</span><wbr><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-285277647%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="company-theme.html">companyTheme</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/SharedFlow///PointingToDeclaration/">SharedFlow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/Company.Theme///PointingToDeclaration/">Company.Theme</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Company theme flow that will emit company's theme configuration whenever available</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1410300319%2FProperties%2F-943617535" anchor-label="conference" id="-1410300319%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="conference.html"><span><span>conference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1410300319%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="conference.html">conference</a><span class="token operator">: </span><a href="../-conference-u-i/index.html">ConferenceUI</a></div><div class="brief "><p class="paragraph">Conference module</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1189351305%2FProperties%2F-943617535" anchor-label="connectedUser" id="1189351305%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="connected-user.html"><span>connected</span><wbr><span><span>User</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1189351305%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="connected-user.html">connectedUser</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/User///PointingToDeclaration/">User</span><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Connected user flow that will emit currently logged user</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1638977318%2FProperties%2F-943617535" anchor-label="conversation" id="-1638977318%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="conversation.html"><span><span>conversation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1638977318%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="conversation.html">conversation</a><span class="token operator">: </span><a href="../-conversation-u-i/index.html">ConversationUI</a></div><div class="brief "><p class="paragraph">Conversation module</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2126739979%2FProperties%2F-943617535" anchor-label="isConfigured" id="-2126739979%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-configured.html"><span>is</span><wbr><span><span>Configured</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2126739979%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="is-configured.html">isConfigured</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Is configured flag, true if KaleyraVideo is configured, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="252238860%2FProperties%2F-943617535" anchor-label="state" id="252238860%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state.html"><span><span>state</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="252238860%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="state.html">state</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/State///PointingToDeclaration/">State</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">State flow representing Kaleyra Video SDK current state</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2082351843%2FProperties%2F-943617535" anchor-label="synchronization" id="-2082351843%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="synchronization.html"><span><span>synchronization</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2082351843%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="synchronization.html">synchronization</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/Synchronization///PointingToDeclaration/">Synchronization</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Synchronization flow representing Kaleyra Video SDK current synchronization state</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1375959508%2FProperties%2F-943617535" anchor-label="theme" id="1375959508%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="theme.html"><span><span>theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1375959508%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div><div class="block"><span class="token annotation builtin">@set:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="theme.html">theme</a><span class="token operator">: </span><a href="../-company-u-i/-theme/index.html">CompanyUI.Theme</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional theme setup that will be used on the UI layer</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-168583819%2FProperties%2F-943617535" anchor-label="userDetailsProvider" id="-168583819%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="user-details-provider.html"><span>user</span><wbr><span>Details</span><wbr><span><span>Provider</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-168583819%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div><div class="block"><span class="token annotation builtin">@set:</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-synchronized/index.html"><span class="token annotation builtin">Synchronized</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="user-details-provider.html">userDetailsProvider</a><span class="token operator">: </span><a href="../../com.kaleyra.video_common_ui.model/-user-details-provider/index.html">UserDetailsProvider</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Users description to be used for the UI users presentation</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="953136546%2FFunctions%2F-943617535" anchor-label="configure" id="953136546%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="configure.html"><span><span>configure</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="953136546%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="configure.html"><span class="token function">configure</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">configuration<span class="token operator">: </span><span data-unresolved-link="com.kaleyra.video.configuration/Configuration///PointingToDeclaration/">Configuration</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Configure</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="265420498%2FFunctions%2F-943617535" anchor-label="connect" id="265420498%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="connect.html"><span><span>connect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="265420498%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="connect.html"><span class="token function">connect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">accessLink<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/Deferred///PointingToDeclaration/">Deferred</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/User///PointingToDeclaration/">User</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Connect Kaleyra Video SDK via access-link The access-link represents a call that the SDK connection will be scoped to. After the connection and the call establishment, when the call will end, the SDK will be automatically disconnected.</p></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="connect.html"><span class="token function">connect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">userId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">accessTokenProvider<span class="token operator">: </span><span data-unresolved-link="com.kaleyra.video/AccessTokenProvider///PointingToDeclaration/">AccessTokenProvider</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/Deferred///PointingToDeclaration/">Deferred</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.kaleyra.video/User///PointingToDeclaration/">User</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Connect Kaleyra Video SDK</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="997731430%2FFunctions%2F-943617535" anchor-label="disconnect" id="997731430%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disconnect.html"><span><span>disconnect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="997731430%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clearSavedData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disconnects the Kaleyra Video SDK</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1364997390%2FFunctions%2F-943617535" anchor-label="reset" id="1364997390%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reset.html"><span><span>reset</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1364997390%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="reset.html"><span class="token function">reset</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Resets Kaleyra Video SDK by disconnecting it, clearing configuration and all saved data</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
