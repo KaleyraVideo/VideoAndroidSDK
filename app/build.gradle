@@ -35,14 +35,14 @@ android {
         debug {
             keyAlias "debug"
             keyPassword "123debug"
-            storeFile file("${project.rootDir}/keystores/debug.keystore")
+            storeFile file("keystores/debug.keystore")
             storePassword "123debug"
         }
 
         release {
             keyAlias System.getenv("SIGNING_KEY_ALIAS")
             keyPassword System.getenv("SIGNING_KEY_PASSWORD")
-            storeFile file("${project.rootDir}/keystores/release.keystore")
+            storeFile file("keystores/release.keystore")
             storePassword System.getenv("SIGNING_STORE_PASSWORD")
         }
     }

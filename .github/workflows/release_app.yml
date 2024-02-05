@@ -31,8 +31,6 @@ jobs:
         with:
           fileName: 'keystores/release.keystore'
           encodedString: ${{ secrets.KEYSTORE }}
-      - name: Build app
-        run: ./gradlew :app:build
       - name: Build app bundle release (AAB)
         run: ./gradlew :app:bundleRelease
         env:
