@@ -1,4 +1,4 @@
-name: Release sdk to maven
+name: Release new SDK version
 
 on:
   workflow_dispatch:
@@ -128,6 +128,8 @@ jobs:
         run: ./gradlew :video-glasses-sdk:publishUpload -PdryRun=false
       - name: Release new sdk version
         run: ./gradlew :video-sdk:publishUpload -PdryRun=false
+      - name: Update app version
+        run: ./gradlew autoIncrementVersionCode
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update sdk version

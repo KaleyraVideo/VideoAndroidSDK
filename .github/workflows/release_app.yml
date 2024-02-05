@@ -1,6 +1,7 @@
-name: Release app to stores
+name: Release app on stores
 
 on:
+  workflow_dispatch: { }
   push:
     tags:
       - '**'
