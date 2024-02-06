@@ -37,6 +37,7 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
@@ -50,7 +51,10 @@ private val ShouldAskBluetoothPermissionOnClick = Build.VERSION.SDK_INT >= Build
 @Composable
 internal fun AudioOutputComponent(
     viewModel: AudioOutputViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = AudioOutputViewModel.provideFactory(::requestConfiguration)
+        factory = AudioOutputViewModel.provideFactory(
+            ::requestConfiguration,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService else null
+        )
     ),
     onDeviceConnected: () -> Unit,
     onCloseClick: () -> Unit,

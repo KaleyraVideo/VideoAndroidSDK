@@ -23,23 +23,30 @@ import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
+import com.kaleyra.video_common_ui.connectionservice.CallAudioState
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.audioOutputDevicesList
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.setAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
+import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
+import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioDeviceUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -75,7 +82,7 @@ class AudioOutputViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = AudioOutputViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}
+        viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, null)
         mockkObject(CollaborationAudioExtensions)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.audioOutputDevicesList } returns MutableStateFlow(listOf(AudioOutputDevice.Loudspeaker(), AudioOutputDevice.WiredHeadset(), AudioOutputDevice.Earpiece(), AudioOutputDevice.Bluetooth("bluetoothId1"), AudioOutputDevice.Bluetooth("bluetoothId2"), AudioOutputDevice.None()))
@@ -168,6 +175,78 @@ class AudioOutputViewModelTest {
         viewModel.setDevice(AudioDeviceUi.LoudSpeaker)
         verify(exactly = 1) { audioMock1.tryEnable() }
         verify(exactly = 1) { audioMock2.tryEnable() }
+    }
+
+    @Test
+    fun testCallAudioOutputDelegate_audioOutputStateUpdated() = runTest {
+        val callOutputStateFlow = MutableStateFlow(CallAudioState())
+        val callAudioOutputDelegate = object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = callOutputStateFlow
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        }
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        val current = viewModel.uiState.first()
+        Assert.assertEquals(AudioOutputUiState(), current)
+        callOutputStateFlow.value = CallAudioState(currentOutput = CallAudioOutput.Speaker)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first()
+        val expected = AudioOutputUiState(playingDeviceId = AudioDeviceUi.LoudSpeaker.id)
+        Assert.assertEquals(expected, new)
+    }
+
+    @Test
+    fun callAudioOutputDelegate_setLoudSpeakerDevice_deviceSet() {
+        val callAudioOutputDelegate = spyk(object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(CallAudioState())
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        })
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        viewModel.setDevice(AudioDeviceUi.LoudSpeaker)
+        verify(exactly = 1) { callAudioOutputDelegate.setAudioOutput(CallAudioOutput.Speaker) }
+    }
+
+    @Test
+    fun callAudioOutputDelegate_setEarpieceDevice_deviceSet() = runTest {
+        val callAudioOutputDelegate = spyk(object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(CallAudioState())
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        })
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        viewModel.setDevice(AudioDeviceUi.EarPiece)
+        verify(exactly = 1) { callAudioOutputDelegate.setAudioOutput(CallAudioOutput.Earpiece) }
+    }
+
+    @Test
+    fun callAudioOutputDelegate_setWiredHeadsetDevice_deviceSet() = runTest {
+        val callAudioOutputDelegate = spyk(object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(CallAudioState())
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        })
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        viewModel.setDevice(AudioDeviceUi.WiredHeadset)
+        verify(exactly = 1) { callAudioOutputDelegate.setAudioOutput(CallAudioOutput.WiredHeadset) }
+    }
+
+    @Test
+    fun callAudioOutputDelegate_setMutedDevice_deviceSet() = runTest {
+        val callAudioOutputDelegate = spyk(object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(CallAudioState())
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        })
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        viewModel.setDevice(AudioDeviceUi.Muted)
+        verify(exactly = 1) { callAudioOutputDelegate.setAudioOutput(CallAudioOutput.Muted) }
+    }
+
+    @Test
+    fun callAudioOutputDelegate_setBluetoothDevice_deviceSet() = runTest {
+        val callAudioOutputDelegate = spyk(object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(CallAudioState(CallAudioOutput.Bluetooth(id = "bluetoothId")))
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        })
+        val viewModel = AudioOutputViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}, callAudioOutputDelegate)
+        viewModel.setDevice(AudioDeviceUi.Bluetooth(id = "bluetoothId", connectionState = null, name = null, batteryLevel = null))
+        verify(exactly = 1) { callAudioOutputDelegate.setAudioOutput(CallAudioOutput.Bluetooth(id = "bluetoothId", any())) }
     }
 
 }
