@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.callactions
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
 import com.kaleyra.video_sdk.call.callactions.view.CallActionsContent
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -39,7 +41,10 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun CallActionsComponent(
     viewModel: CallActionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallActionsViewModel.provideFactory(::requestConfiguration)
+        factory = CallActionsViewModel.provideFactory(
+            ::requestConfiguration,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService else null
+        )
     ),
     onItemClick: (action: CallAction) -> Unit,
     isDarkTheme: Boolean = false,

@@ -18,7 +18,6 @@ package com.kaleyra.video_sdk.call.callactions.viewmodel
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -27,10 +26,12 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
@@ -45,10 +46,19 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
+internal class CallActionsViewModel(configure: suspend () -> Configuration, callAudioOutputDelegate: CallAudioOutputDelegate?) : BaseViewModel<CallActionsUiState>(configure) {
     override fun initialState() = CallActionsUiState()
 
     private val callActions = call
@@ -81,8 +91,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         .hasUsbCamera()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val currentAudioOutput = call
-        .toCurrentAudioDeviceUi()
+    private val currentAudioDevice = (callAudioOutputDelegate?.callOutputState?.mapToCurrentAudioDeviceUi() ?: call.toCurrentAudioDeviceUi())
         .filterNotNull()
         .debounce(300)
         .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
@@ -109,15 +118,15 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             isMyCameraEnabled,
             isMyMicEnabled,
             isSharingScreen,
-            currentAudioOutput,
+            currentAudioDevice,
             isVirtualBackgroundEnabled,
             hasUsbCamera,
             isMeParticipantsInitialed
-        ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioOutput, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
+        ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioDevice, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
             val actions = callActions
                 .updateActionIfExists(CallAction.Microphone(isToggled = !isMyMicEnabled, isEnabled = isMeParticipantsInitialed))
                 .updateActionIfExists(CallAction.Camera(isToggled = !isMyCameraEnabled, isEnabled = isMeParticipantsInitialed))
-                .updateActionIfExists(CallAction.Audio(device = currentAudioOutput))
+                .updateActionIfExists(CallAction.Audio(device = currentAudioDevice))
                 .updateActionIfExists(CallAction.FileShare(isEnabled = isCallConnected))
                 .updateActionIfExists(CallAction.ScreenShare(isToggled = isSharingScreen, isEnabled = isCallConnected))
                 .updateActionIfExists(CallAction.VirtualBackground(isToggled = isVirtualBackgroundEnabled))
@@ -219,10 +228,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     companion object {
 
-        fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
+        fun provideFactory(configure: suspend () -> Configuration, callAudioOutputDelegate: CallAudioOutputDelegate?) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CallActionsViewModel(configure) as T
+                return CallActionsViewModel(configure, callAudioOutputDelegate) as T
             }
         }
     }

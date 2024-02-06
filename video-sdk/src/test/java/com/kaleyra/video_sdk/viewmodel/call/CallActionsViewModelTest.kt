@@ -27,7 +27,10 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.call.CameraStreamManager.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
+import com.kaleyra.video_common_ui.connectionservice.CallAudioState
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -41,6 +44,7 @@ import io.mockk.*
 import io.mockk.Ordering.ORDERED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -103,9 +107,9 @@ class CallActionsViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = spyk(CallActionsViewModel {
+        viewModel = spyk(CallActionsViewModel({
             Configuration.Success(conferenceMock, conversationMock, companyMock, MutableStateFlow(mockk()))
-        })
+        }, null))
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { companyMock.id } returns MutableStateFlow("companyId")
         with(callMock) {
@@ -706,6 +710,31 @@ class CallActionsViewModelTest {
                 userId = withArg { assertEquals(it, expectedUserId) }
             )
         }
+    }
+
+    @Test
+    fun callAudioOutputDelegate_audioActionUpdated() = runTest {
+        val callAudioStateFlow = MutableStateFlow(CallAudioState())
+        val callAudioOutputDelegate = object : CallAudioOutputDelegate {
+            override val callOutputState: StateFlow<CallAudioState> = callAudioStateFlow
+            override fun setAudioOutput(output: CallAudioOutput) = Unit
+        }
+        val viewModel = spyk(
+            CallActionsViewModel(
+                { Configuration.Success(conferenceMock, conversationMock, companyMock, MutableStateFlow(mockk())) },
+                callAudioOutputDelegate
+        ))
+        val result = viewModel.uiState
+        val current = result.first().actionList.value
+        assertEquals(listOf<CallAction>(), current)
+
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.Audio))
+        callAudioStateFlow.value = CallAudioState(currentOutput = CallAudioOutput.Speaker)
+
+        advanceUntilIdle()
+        val actual = result.first().actionList.value
+        val expected = listOf(CallAction.Audio(device = AudioDeviceUi.LoudSpeaker))
+        assertEquals(expected, actual)
     }
 
     // TODO de-comment this when mtm will be available again
