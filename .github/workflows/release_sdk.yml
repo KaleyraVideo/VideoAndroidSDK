@@ -14,13 +14,6 @@ on:
           - patch
           - minor
           - major
-    secrets:
-      MAVEN_ACCESSKEY:
-        required: true
-      MAVEN_SECRETKEY:
-        required: true
-      MAVEN_DISTRIBUTIONID:
-        required: true
 
 jobs:
   update_sdk_version:
