@@ -46,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -273,7 +274,7 @@ internal fun CallActionLabelM3(
         contentAlignment = Alignment.Center
     ) {
         val button = @Composable {
-            Button(
+            TextButton(
                 modifier = Modifier
                     .padding(2.dp)
                     .indication(
@@ -296,7 +297,7 @@ internal fun CallActionLabelM3(
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         text = textFor(action = action),
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         color = colors.contentColor(toggled = action.isEnabled, enabled = action.isEnabled).value,
                     )
                 },
