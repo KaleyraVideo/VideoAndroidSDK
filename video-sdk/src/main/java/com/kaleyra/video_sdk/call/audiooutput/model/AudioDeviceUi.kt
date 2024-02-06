@@ -34,7 +34,7 @@ sealed class AudioDeviceUi(open val id: String) {
      * @property batteryLevel Int? optional battery level
      * @constructor
      */
-    data class Bluetooth(override val id: String, val name: String?, val connectionState: BluetoothDeviceState, val batteryLevel: Int?) : AudioDeviceUi(id = id)
+    data class Bluetooth(override val id: String, val name: String?, val connectionState: BluetoothDeviceState?, val batteryLevel: Int?) : AudioDeviceUi(id = id)
 
     /**
      * Loudspeaker Audio Device
