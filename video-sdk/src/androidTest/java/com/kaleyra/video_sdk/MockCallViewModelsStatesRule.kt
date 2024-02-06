@@ -74,12 +74,12 @@ class MockCallViewModelsStatesRule : TestWatcher() {
                 )
             }
         }
-        every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
+        every { AudioOutputViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<AudioOutputViewModel>(any(), any()) } returns mockk(relaxed = true) {
                 every { uiState } returns MutableStateFlow(AudioOutputUiState(audioDeviceList = com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices, playingDeviceId = "id"))
             }
         }
-        every { CallActionsViewModel.provideFactory(any()) } returns mockk {
+        every { CallActionsViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<CallActionsViewModel>(any(), any()) } returns mockk(relaxed = true) {
                every { uiState } returns MutableStateFlow(CallActionsUiState(actionList = com.kaleyra.video_sdk.call.callactions.model.mockCallActions))
             }

@@ -20,7 +20,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Stream
-import com.kaleyra.video_common_ui.call.CameraStreamManager
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import io.mockk.every
 import io.mockk.mockk
