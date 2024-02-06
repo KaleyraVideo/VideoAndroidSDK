@@ -34,12 +34,14 @@
     <item name="ic_kaleyra_avatars_bold" type="drawable">@drawable/kaleyra_z_users_1</item>
     <item name="ic_kaleyra_hangup" type="drawable">@drawable/kaleyra_z_end_call_24</item>
     <item name="ic_kaleyra_camera_off" type="drawable">@drawable/kaleyra_z_camera_off</item>
+    <item name="ic_kaleyra_camera_on" type="drawable">@drawable/kaleyra_z_camera_on</item>
     <item name="ic_kaleyra_switch_camera" type="drawable">@drawable/kaleyra_z_flipcam</item>
     <item name="ic_kaleyra_whiteboard" type="drawable">@drawable/kaleyra_z_whiteboard</item>
     <item name="ic_kaleyra_enter_fullscreen" type="drawable">@drawable/kaleyra_z_maximize</item>
     <item name="ic_kaleyra_exit_fullscreen" type="drawable">@drawable/kaleyra_z_minimize</item>
     <item name="ic_kaleyra_snapshot" type="drawable">@drawable/kaleyra_z_snapshot</item>
     <item name="ic_kaleyra_mic_off" type="drawable">@drawable/kaleyra_z_mic_off</item>
+    <item name="ic_kaleyra_mic_on" type="drawable">@drawable/kaleyra_z_mic_on</item>
     <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_z_users</item>
     <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
     <item name="ic_kaleyra_empty_star" type="drawable">@drawable/kaleyra_z_star_empty</item>

@@ -53,7 +53,7 @@ internal object CallActionM3Defaults {
         disabledIconColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
         disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = disabledAlpha),
         toggledBackgroundColor: Color = MaterialTheme.colorScheme.primary,
-        toggledIconColor: Color = if (toggledBackgroundColor.luminance() > .5f) Color.Black else Color.White
+        toggledIconColor: Color = MaterialTheme.colorScheme.onPrimary,
     ): CallActionColorsM3 = DefaultM3Colors(
         backgroundColor = backgroundColor,
         iconColor = iconColor,
@@ -179,8 +179,12 @@ internal fun descriptionFor(action: CallAction) = stringResource(
 @Composable
 internal fun painterFor(action: CallAction): Painter = painterResource(
     id = when (action) {
-        is CallAction.Camera -> R.drawable.ic_kaleyra_camera_off
-        is CallAction.Microphone -> R.drawable.ic_kaleyra_mic_off
+        is CallAction.Camera -> {
+            if (action.isToggled) R.drawable.ic_kaleyra_camera_off else R.drawable.ic_kaleyra_camera_on
+        }
+        is CallAction.Microphone -> {
+            if (action.isToggled) R.drawable.ic_kaleyra_mic_off else R.drawable.ic_kaleyra_mic_on
+        }
         is CallAction.SwitchCamera -> R.drawable.ic_kaleyra_switch_camera
         is CallAction.HangUp -> R.drawable.ic_kaleyra_hangup
         is CallAction.Answer -> R.drawable.ic_kaleyra_answer
