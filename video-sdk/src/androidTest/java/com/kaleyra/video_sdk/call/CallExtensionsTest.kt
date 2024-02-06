@@ -39,7 +39,7 @@ class CallExtensionsTest {
         every { call.participants } returns MutableStateFlow(callParticipants)
         every { callParticipants.me } returns me
         every { me.streams } returns MutableStateFlow(listOf(myStream))
-        every { myStream.id } returns CameraStreamManager.CAMERA_STREAM_ID
+        every { myStream.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         val actual = call.toMyCameraStream()
         Assert.assertEquals(myStream, actual)
     }
