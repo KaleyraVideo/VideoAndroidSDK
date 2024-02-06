@@ -36,13 +36,13 @@
     <string name="kaleyra_call_action_mic_mute">Mute</string>
     <string name="kaleyra_call_action_video_disable">Disable</string>
     <string name="kaleyra_call_action_screen_share">Screen Share</string>
-    <string name="kaleyra_call_action_virtual_background">Virtual Background</string>
+    <string name="kaleyra_call_action_virtual_background">Background</string>
     <string name="kaleyra_call_action_switch_camera">Switch</string>
     <string name="kaleyra_call_action_chat">Chat</string>
     <string name="kaleyra_call_action_whiteboard">Whiteboard</string>
     <string name="kaleyra_call_action_file_share">File Share</string>
     <string name="kaleyra_call_action_participants">Participants</string>
-    <string name="kaleyra_call_action_audio_route">Audio Output</string>
+    <string name="kaleyra_call_action_audio_route">Audio</string>
     <string name="kaleyra_call_action_options">Options</string>
 
     <string name="kaleyra_call_action_switch_camera_description">Switch camera</string>
@@ -50,6 +50,10 @@
     <string name="kaleyra_call_action_disable_mic_description">Mute microphone</string>
     <string name="kaleyra_call_action_enable_camera_description">Enable camera</string>
     <string name="kaleyra_call_action_disable_camera_description">Disable camera</string>
+
+    <string name="kaleyra_call_action_more">More</string>
+
+    <string name="kaleyra_call_drag_to_expand">Drag to expand</string>
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Type your message here &#8230;</string>
@@ -106,6 +110,7 @@
     <string name="kaleyra_action_confirm">Confirm</string>
     <string name="kaleyra_data_loss_confirm_message">Are you sure?\nAll data will be lost.</string>
     <string name="kaleyra_call_hangup">Hangup</string>
+    <string name="kaleyra_call_answer">Participate</string>
     <string name="kaleyra_ongoing_call_label">Tap to go back to call</string>
     <string name="kaleyra_call_left_alone">You are left alone</string>
     <string name="kaleyra_call_offline">You are offline</string>

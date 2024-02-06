@@ -43,6 +43,7 @@
     <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_z_users</item>
     <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
     <item name="ic_kaleyra_empty_star" type="drawable">@drawable/kaleyra_z_star_empty</item>
+    <item name="ic_kaleyra_more" type="drawable">@drawable/kaleyra_z_more</item>
 
     <!-- WHITEBOARD -->
     <item name="ic_kaleyra_cancel" type="drawable">@drawable/kaleyra_z_arrow_left</item>

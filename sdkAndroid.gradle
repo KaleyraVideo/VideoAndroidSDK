@@ -16,12 +16,12 @@
 android {
 
     namespace "com.kaleyra." + project.getName().replace("-", "_")
-    compileSdkVersion catalog.versions.sdkVersion.get().toInteger()
-    buildToolsVersion catalog.versions.toolsVersion.get()
+    compileSdkVersion 34//catalog.versions.sdkVersion.get().toInteger()
+    buildToolsVersion "34.0.0"//catalog.versions.toolsVersion.get()
 
     defaultConfig {
         minSdkVersion catalog.versions.minSdkVersion.get()
-        targetSdkVersion catalog.versions.sdkVersion.get().toInteger()
+        targetSdkVersion 34//catalog.versions.sdkVersion.get().toInteger()
         versionCode 1
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

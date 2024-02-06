@@ -39,18 +39,23 @@
     <string name="kaleyra_call_action_chat">Chat</string>
     <string name="kaleyra_call_action_whiteboard">Lavagna</string>
     <string name="kaleyra_call_action_participants">Partecipanti</string>
-    <string name="kaleyra_call_action_audio_route">Uscita audio</string>
+    <string name="kaleyra_call_action_audio_route">Audio</string>
     <string name="kaleyra_call_action_options">Opzioni</string>
     <string name="kaleyra_call_action_screen_share">Condividi schermo</string>
-    <string name="kaleyra_call_action_virtual_background">Sfondo Virtuale</string>
+    <string name="kaleyra_call_action_virtual_background">Sfondo</string>
     <string name="kaleyra_call_action_video_disable">Disattiva</string>
     <string name="kaleyra_call_hangup">Chiudi</string>
+    <string name="kaleyra_call_answer">Participa</string>
 
     <string name="kaleyra_call_action_switch_camera_description">Cambia camera</string>
     <string name="kaleyra_call_action_enable_mic_description">Abilita microfono</string>
     <string name="kaleyra_call_action_disable_mic_description">Disabilita microfono</string>
     <string name="kaleyra_call_action_enable_camera_description">Abilita camera</string>
     <string name="kaleyra_call_action_disable_camera_description">Disabilita camera</string>
+
+    <string name="kaleyra_call_action_more">Altro</string>
+
+    <string name="kaleyra_call_drag_to_expand">Trascina per espandere</string>
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Scrivi qui il tuo messaggio &#8230;</string>

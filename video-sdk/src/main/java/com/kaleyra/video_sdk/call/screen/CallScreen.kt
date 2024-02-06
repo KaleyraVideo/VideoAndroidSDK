@@ -140,8 +140,6 @@ private const val ActivityFinishDelay = 1100L
  */
 private const val ActivityFinishErrorDelay = 1500L
 
-/**
- */
 const val BottomSheetAutoHideMs = 9000L
 
 @Composable

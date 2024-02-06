@@ -22,7 +22,7 @@ internal val kaleyra_answer_light_color = Color(0xff7ed321)
 internal val kaleyra_answer_dark_color = Color(0xff48a100)
 
 internal val kaleyra_hang_up_light_color = Color(0xffff0000)
-internal val kaleyra_hang_up_dark_color = Color(0xffc20000)
+internal val kaleyra_hang_up_dark_color = Color(0xff7C0000)
 
 // KALEYRA MATERIAL M2 THEME
 internal val kaleyra_theme_light_primary = Color.White

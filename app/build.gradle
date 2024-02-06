@@ -21,8 +21,8 @@ def kaleyraVideoSdkVersion = "4.0.0-rc02"
 
 android {
     namespace "com.kaleyra.demo_video_sdk"
-    compileSdkVersion sampleAppCatalog.versions.sampleAppSdkVersion.get().toInteger()
-    buildToolsVersion sampleAppCatalog.versions.sampleAppToolsVersion.get()
+    compileSdkVersion 34//sampleAppCatalog.versions.sampleAppSdkVersion.get().toInteger()
+    buildToolsVersion "34.0.0"//sampleAppCatalog.versions.sampleAppToolsVersion.get()
 
     defaultConfig {
         applicationId "com.kaleyra.demo_video_sdk"

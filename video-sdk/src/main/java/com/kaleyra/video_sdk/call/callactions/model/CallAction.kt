@@ -40,6 +40,8 @@ sealed interface CallAction {
          * True if the toggleable action is toggled, false otherwise
          */
         val isToggled: Boolean
+
+        fun copy(isToggled: Boolean): Toggleable
     }
 
     /**
@@ -51,7 +53,9 @@ sealed interface CallAction {
     data class Camera(
         override val isEnabled: Boolean = true,
         override val isToggled: Boolean = false
-    ) : Toggleable
+    ) : Toggleable {
+        override fun copy(isToggled: Boolean): Camera = Camera(isEnabled, isToggled = isToggled)
+    }
 
     /**
      * Microphone Call Action
@@ -62,7 +66,22 @@ sealed interface CallAction {
     data class Microphone(
         override val isEnabled: Boolean = true,
         override val isToggled: Boolean = false
-    ) : Toggleable
+    ) : Toggleable {
+        override fun copy(isToggled: Boolean): Microphone = Microphone(isEnabled, isToggled = isToggled)
+    }
+
+    /**
+     * Microphone Call Action More
+     * @property isEnabled Boolean enabled flag
+     * @property isToggled Boolean enabled flag
+     * @constructor
+     */
+    data class More(
+        override val isEnabled: Boolean = true,
+        override val isToggled: Boolean = false
+    ) : Toggleable {
+        override fun copy(isToggled: Boolean): Microphone = Microphone(isEnabled, isToggled = isToggled)
+    }
 
     /**
      * Screen Share Call Action
@@ -73,7 +92,9 @@ sealed interface CallAction {
     data class ScreenShare(
         override val isEnabled: Boolean = true,
         override val isToggled: Boolean = false
-    ) : Toggleable
+    ) : Toggleable {
+        override fun copy(isToggled: Boolean): ScreenShare = ScreenShare(isEnabled, isToggled = isToggled)
+    }
 
     /**
      * Virtual Background Call Action
@@ -84,7 +105,9 @@ sealed interface CallAction {
     data class VirtualBackground(
         override val isEnabled: Boolean = true,
         override val isToggled: Boolean = false
-    ) : Toggleable
+    ) : Toggleable {
+        override fun copy(isToggled: Boolean): VirtualBackground = VirtualBackground(isEnabled, isToggled = isToggled)
+    }
 
     /**
      * Switch Camera Call Action
@@ -99,6 +122,13 @@ sealed interface CallAction {
      * @constructor
      */
     data class HangUp(override val isEnabled: Boolean = true) : CallAction
+
+    /**
+     * Answer Call Action
+     * @property isEnabled Boolean enabled  flag
+     * @constructor
+     */
+    data class Answer(override val isEnabled: Boolean = true) : CallAction
 
     /**
      * Chat Call Action
