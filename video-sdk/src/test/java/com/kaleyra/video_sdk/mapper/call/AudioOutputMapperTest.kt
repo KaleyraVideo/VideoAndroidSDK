@@ -19,35 +19,24 @@ package com.kaleyra.video_sdk.mapper.call
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
-import com.kaleyra.video_common_ui.connectionservice.CallAudioState
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.audioOutputDevicesList
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioOutputDevice
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToBluetoothDeviceState
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToCallAudioOutput
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToCurrentAudioDeviceUi
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAudioOutputUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -321,152 +310,5 @@ class AudioOutputMapperTest {
             device.mapToAudioOutputDevice(callMock)
         )
         unmockkObject(CollaborationAudioExtensions)
-    }
-
-    @Test
-    fun earpieceAudioDevice_mapToCallAudioOutput_earpieceAudioOutput() = runTest {
-        val device = AudioDeviceUi.EarPiece
-        assertEquals(
-            CallAudioOutput.Earpiece,
-            device.mapToCallAudioOutput(mockk())
-        )
-    }
-
-    @Test
-    fun loudSpeakerAudioDevice_mapToCallAudioOutput_loudSpeakerAudioOutput() = runTest {
-        val device = AudioDeviceUi.LoudSpeaker
-        assertEquals(
-            CallAudioOutput.Speaker,
-            device.mapToCallAudioOutput(mockk())
-        )
-    }
-
-    @Test
-    fun mutedAudioDevice_mapToCallAudioOutput_noneAudioOutput() = runTest {
-        val device = AudioDeviceUi.Muted
-        assertEquals(
-            CallAudioOutput.Muted,
-            device.mapToCallAudioOutput(mockk())
-        )
-    }
-
-    @Test
-    fun wiredHeadsetAudioDevice_mapToCallAudioOutput_wiredHeadsetAudioOutput() = runTest {
-        val device = AudioDeviceUi.WiredHeadset
-        assertEquals(
-            CallAudioOutput.WiredHeadset,
-            device.mapToCallAudioOutput(mockk())
-        )
-    }
-
-    @Test
-    fun bluetoothAudioDevice_mapToCallAudioOutput_bluetoothAudioOutput() = runTest {
-        mockkObject(CollaborationAudioExtensions)
-        val device = AudioDeviceUi.Bluetooth("id", null, BluetoothDeviceState.Activating, null)
-        val delegate = object : CallAudioOutputDelegate {
-            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(
-                CallAudioState(availableOutputs = listOf(CallAudioOutput.Bluetooth("id2"), CallAudioOutput.Bluetooth("id")))
-            )
-            override fun setAudioOutput(output: CallAudioOutput) = Unit
-        }
-        assertEquals(
-            CallAudioOutput.Bluetooth("id"),
-            device.mapToCallAudioOutput(delegate)
-        )
-        unmockkObject(CollaborationAudioExtensions)
-    }
-
-    @Test
-    fun bluetoothAudioDeviceWithInvalidId_mapToCallAudioOutput_null() = runTest {
-        mockkObject(CollaborationAudioExtensions)
-        val device = AudioDeviceUi.Bluetooth("id3", null, BluetoothDeviceState.Activating, null)
-        val delegate = object : CallAudioOutputDelegate {
-            override val callOutputState: StateFlow<CallAudioState> = MutableStateFlow(
-                CallAudioState(availableOutputs = listOf(CallAudioOutput.Bluetooth("id2"), CallAudioOutput.Bluetooth("id")))
-            )
-            override fun setAudioOutput(output: CallAudioOutput) = Unit
-        }
-        assertEquals(
-            null,
-            device.mapToCallAudioOutput(delegate)
-        )
-        unmockkObject(CollaborationAudioExtensions)
-    }
-
-    @Test
-    fun speakerAudioOutput_mapToAudioDeviceUi_loudSpeakerAudioDevice() = runTest {
-        val output = CallAudioOutput.Speaker
-        assertEquals(
-            AudioDeviceUi.LoudSpeaker,
-            output.mapToAudioDeviceUi()
-        )
-    }
-
-
-    @Test
-    fun earpieceAudioOutput_mapToAudioDeviceUi_earpieceAudioDevice() = runTest {
-        val output = CallAudioOutput.Earpiece
-        assertEquals(
-            AudioDeviceUi.EarPiece,
-            output.mapToAudioDeviceUi()
-        )
-    }
-
-    @Test
-    fun wiredHeadsetAudioOutput_mapToAudioDeviceUi_wiredHeadsetAudioDevice() = runTest {
-        val output = CallAudioOutput.WiredHeadset
-        assertEquals(
-            AudioDeviceUi.WiredHeadset,
-            output.mapToAudioDeviceUi()
-        )
-    }
-
-    @Test
-    fun bluetoothAudioOutput_mapToAudioDeviceUi_bluetoothAudioDevice() = runTest {
-        val output = CallAudioOutput.Bluetooth(id = "id", name = "name")
-        assertEquals(
-            AudioDeviceUi.Bluetooth(id = "id", name = "name", connectionState = null, batteryLevel = null),
-            output.mapToAudioDeviceUi()
-        )
-    }
-
-    @Test
-    fun mutedAudioOutput_mapToAudioDeviceUi_mutedAudioDevice() = runTest {
-        val output = CallAudioOutput.Muted
-        assertEquals(
-            AudioDeviceUi.Muted,
-            output.mapToAudioDeviceUi()
-        )
-    }
-
-    @Test
-    fun callAudioState_mapToCurrentAudioDeviceUi_currentAudioDeviceUi() = runTest {
-        mockkObject(AudioOutputMapper)
-        val currentOutput = CallAudioOutput.Speaker
-        val device = AudioDeviceUi.LoudSpeaker
-        every { currentOutput.mapToAudioDeviceUi() } returns device
-        val callAudioState = CallAudioState(currentOutput = currentOutput)
-        val result = flowOf(callAudioState).mapToCurrentAudioDeviceUi().first()
-        assertEquals(device, result)
-        unmockkObject(AudioOutputMapper)
-    }
-
-    @Test
-    fun callAudioState_toAudioOutputUiState_audioOutputUiState() = runTest {
-        mockkObject(AudioOutputMapper)
-        val currentOutput = CallAudioOutput.Speaker
-        val otherOutput = CallAudioOutput.WiredHeadset
-        val currentDevice = AudioDeviceUi.LoudSpeaker
-        val otherDevice = AudioDeviceUi.WiredHeadset
-        every { currentOutput.mapToAudioDeviceUi() } returns currentDevice
-        every { otherOutput.mapToAudioDeviceUi() } returns otherDevice
-        val callAudioState = CallAudioState(
-            currentOutput = currentOutput,
-            availableOutputs = listOf(currentOutput, otherOutput)
-        )
-        val result = flowOf(callAudioState).toAudioOutputUiState().first()
-        val expected = AudioOutputUiState(playingDeviceId = currentDevice.id, audioDeviceList = ImmutableList(listOf(currentDevice, otherDevice)))
-        assertEquals(expected, result)
-        unmockkObject(AudioOutputMapper)
     }
 }

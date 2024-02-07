@@ -21,16 +21,19 @@ import androidx.fragment.app.FragmentActivity
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.Company
 import com.kaleyra.video.Contact
-import com.kaleyra.video.conference.*
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.conference.Effect
+import com.kaleyra.video.conference.Effects
+import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
-import com.kaleyra.video_common_ui.connectionservice.CallAudioState
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -40,11 +43,17 @@ import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import io.mockk.*
 import io.mockk.Ordering.ORDERED
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -107,9 +116,9 @@ class CallActionsViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = spyk(CallActionsViewModel({
+        viewModel = spyk(CallActionsViewModel{
             Configuration.Success(conferenceMock, conversationMock, companyMock, MutableStateFlow(mockk()))
-        }, null))
+        })
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { companyMock.id } returns MutableStateFlow("companyId")
         with(callMock) {
@@ -710,31 +719,6 @@ class CallActionsViewModelTest {
                 userId = withArg { assertEquals(it, expectedUserId) }
             )
         }
-    }
-
-    @Test
-    fun callAudioOutputDelegate_audioActionUpdated() = runTest {
-        val callAudioStateFlow = MutableStateFlow(CallAudioState())
-        val callAudioOutputDelegate = object : CallAudioOutputDelegate {
-            override val callOutputState: StateFlow<CallAudioState> = callAudioStateFlow
-            override fun setAudioOutput(output: CallAudioOutput) = Unit
-        }
-        val viewModel = spyk(
-            CallActionsViewModel(
-                { Configuration.Success(conferenceMock, conversationMock, companyMock, MutableStateFlow(mockk())) },
-                callAudioOutputDelegate
-        ))
-        val result = viewModel.uiState
-        val current = result.first().actionList.value
-        assertEquals(listOf<CallAction>(), current)
-
-        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.Audio))
-        callAudioStateFlow.value = CallAudioState(currentOutput = CallAudioOutput.Speaker)
-
-        advanceUntilIdle()
-        val actual = result.first().actionList.value
-        val expected = listOf(CallAction.Audio(device = AudioDeviceUi.LoudSpeaker))
-        assertEquals(expected, actual)
     }
 
     // TODO de-comment this when mtm will be available again

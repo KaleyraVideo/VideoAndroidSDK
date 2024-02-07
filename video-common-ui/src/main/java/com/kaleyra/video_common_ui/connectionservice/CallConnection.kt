@@ -1,26 +1,25 @@
 package com.kaleyra.video_common_ui.connectionservice
 
 import android.os.Build
-import android.os.OutcomeReceiver
-import android.os.ParcelUuid
 import android.telecom.CallEndpoint
-import android.telecom.CallEndpointException
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
 import android.telecom.TelecomManager
 import androidx.annotation.RequiresApi
+import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputs
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutput
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutputDevice
+import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
-import java.util.concurrent.Executors
 
 @RequiresApi(Build.VERSION_CODES.M)
 class CallConnection private constructor(val call: Call, val coroutineScope: CoroutineScope) : Connection() {
@@ -29,8 +28,6 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
         fun onConnectionStateChange(connection: CallConnection) = Unit
 
         fun onShowIncomingCallUi(connection: CallConnection) = Unit
-
-        fun onAudioOutputStateChanged(connectionAudioState: CallAudioState) = Unit
 
         fun onSilence() = Unit
     }
@@ -54,18 +51,19 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
         }
     }
 
-    var audioState: CallAudioState = CallAudioState()
+    private val _currentAudioDevice: MutableStateFlow<AudioOutputDevice?> = MutableStateFlow(null)
+
+    private val _availableAudioDevices: MutableStateFlow<List<AudioOutputDevice>> = MutableStateFlow(listOf())
 
     private val listeners: MutableList<Listener> = mutableListOf()
-
-    private val endpointExecutor by lazy { Executors.newSingleThreadExecutor() }
 
     private var wasAnswered = false
 
     private var wasRejected = false
 
-    private var availableCallEndpoints: List<CallEndpoint> = listOf()
+    val currentAudioDevice: StateFlow<AudioOutputDevice?> = _currentAudioDevice
 
+    val availableAudioDevices: StateFlow<List<AudioOutputDevice>> = _availableAudioDevices
 
     init {
         syncStateWithCall()
@@ -184,101 +182,25 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
     @Deprecated("Deprecated in Java")
     override fun onCallAudioStateChanged(state: android.telecom.CallAudioState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
-        val currentAudioOutput = state.mapToCurrentAudioOutput() ?: return
-        audioState = CallAudioState(
-            currentOutput = currentAudioOutput,
-            availableOutputs = state.mapToAvailableAudioOutputs()
-        )
-        listeners.forEach { it.onAudioOutputStateChanged(audioState) }
+        _currentAudioDevice.value = state.mapToCurrentAudioOutputDevice()
+        _availableAudioDevices.value = state.mapToAvailableAudioOutputDevices()
     }
 
     ///// Audio API 34 /////
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onAvailableCallEndpointsChanged(availableEndpoints: List<CallEndpoint>) {
-        this.availableCallEndpoints = availableEndpoints
-        audioState = audioState.copy(availableOutputs = availableEndpoints.mapNotNull { it.mapToAudioOutput() })
-        listeners.forEach { it.onAudioOutputStateChanged(audioState) }
+        _availableAudioDevices.value = availableEndpoints.mapNotNull { it.mapToAudioOutputDevice() }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCallEndpointChanged(callEndpoint: CallEndpoint) {
-        audioState = audioState.copy(currentOutput = callEndpoint.mapToAudioOutput())
-        listeners.forEach { it.onAudioOutputStateChanged(audioState) }
+        _currentAudioDevice.value = callEndpoint.mapToAudioOutputDevice()
     }
 
     override fun onMuteStateChanged(isMuted: Boolean) {
         if (!isMuted) return
-        audioState = audioState.copy(currentOutput = CallAudioOutput.Muted)
-        listeners.forEach { it.onAudioOutputStateChanged(audioState) }
-    }
-
-    ///////////////////////////
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setAudioOutput(output: CallAudioOutput) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) setCallEndpoint(output)
-        else setAudioRoute(output)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Suppress("DEPRECATION")
-    private fun setAudioRoute(output: CallAudioOutput) =
-        when (output) {
-            is CallAudioOutput.Speaker -> setAudioRoute(android.telecom.CallAudioState.ROUTE_SPEAKER)
-            is CallAudioOutput.WiredHeadset -> setAudioRoute(android.telecom.CallAudioState.ROUTE_WIRED_HEADSET)
-            is CallAudioOutput.Earpiece -> setAudioRoute(android.telecom.CallAudioState.ROUTE_EARPIECE)
-            is CallAudioOutput.Bluetooth -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    val device = callAudioState.supportedBluetoothDevices.firstOrNull { it.address == output.id } ?: let {
-                        return
-                    }
-                    requestBluetoothAudio(device)
-                } else {
-                    setAudioRoute(android.telecom.CallAudioState.ROUTE_BLUETOOTH)
-                }
-            }
-
-            is CallAudioOutput.Muted -> onCallAudioStateChanged(
-                android.telecom.CallAudioState(
-                    true,
-                    callAudioState.route,
-                    callAudioState.supportedRouteMask
-                )
-            )
-        }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun setCallEndpoint(output: CallAudioOutput) {
-        if (output !is CallAudioOutput.Muted) {
-            val endpoint = mapToCallEndpoint(output) ?: return
-            requestCallEndpointChange(
-                endpoint,
-                endpointExecutor,
-                object : OutcomeReceiver<Void, CallEndpointException> {
-                    override fun onResult(result: Void?) = Unit
-                    override fun onError(error: CallEndpointException) = Unit
-                }
-            )
-        } else {
-            onMuteStateChanged(true)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun mapToCallEndpoint(output: CallAudioOutput): CallEndpoint? {
-        return availableCallEndpoints.firstOrNull {
-            when (output) {
-                CallAudioOutput.Speaker -> it.endpointType == CallEndpoint.TYPE_SPEAKER
-                CallAudioOutput.Earpiece -> it.endpointType == CallEndpoint.TYPE_EARPIECE
-                CallAudioOutput.WiredHeadset -> it.endpointType == CallEndpoint.TYPE_WIRED_HEADSET
-                is CallAudioOutput.Bluetooth -> {
-                    it.endpointType == CallEndpoint.TYPE_BLUETOOTH && it.identifier == ParcelUuid.fromString(output.id)
-                }
-
-                CallAudioOutput.Muted -> false
-            }
-        }
+        _currentAudioDevice.value = AudioOutputDevice.None()
     }
 
 }

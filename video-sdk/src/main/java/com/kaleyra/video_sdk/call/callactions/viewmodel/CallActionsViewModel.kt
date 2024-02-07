@@ -26,12 +26,10 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
@@ -58,7 +56,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class CallActionsViewModel(configure: suspend () -> Configuration, callAudioOutputDelegate: CallAudioOutputDelegate?) : BaseViewModel<CallActionsUiState>(configure) {
+internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
     override fun initialState() = CallActionsUiState()
 
     private val callActions = call
@@ -91,7 +89,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration, call
         .hasUsbCamera()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val currentAudioDevice = (callAudioOutputDelegate?.callOutputState?.mapToCurrentAudioDeviceUi() ?: call.toCurrentAudioDeviceUi())
+    private val currentAudioDevice = call.toCurrentAudioDeviceUi()
         .filterNotNull()
         .debounce(300)
         .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
@@ -228,10 +226,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration, call
 
     companion object {
 
-        fun provideFactory(configure: suspend () -> Configuration, callAudioOutputDelegate: CallAudioOutputDelegate?) = object : ViewModelProvider.Factory {
+        fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CallActionsViewModel(configure, callAudioOutputDelegate) as T
+                return CallActionsViewModel(configure) as T
             }
         }
     }

@@ -27,21 +27,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.call.audiooutput.view.AudioOutputContent
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
-import com.kaleyra.video_sdk.theme.KaleyraTheme
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
-import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
-import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @ChecksSdkIntAtLeast(api = 34)
 private val ShouldAskBluetoothPermissionImmediately = Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU
@@ -51,10 +50,7 @@ private val ShouldAskBluetoothPermissionOnClick = Build.VERSION.SDK_INT >= Build
 @Composable
 internal fun AudioOutputComponent(
     viewModel: AudioOutputViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = AudioOutputViewModel.provideFactory(
-            ::requestConfiguration,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService else null
-        )
+        factory = AudioOutputViewModel.provideFactory(::requestConfiguration)
     ),
     onDeviceConnected: () -> Unit,
     onCloseClick: () -> Unit,

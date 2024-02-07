@@ -117,11 +117,11 @@ abstract class ComposeViewModelsMockTest {
                 ScreenShareTargetUi.Device, ScreenShareTargetUi.Application)))
             )
 
-            every { AudioOutputViewModel.provideFactory(any(), any()) } returns audioOutputViewModelFactory
+            every { AudioOutputViewModel.provideFactory(any()) } returns audioOutputViewModelFactory
             every { audioOutputViewModelFactory.create<AudioOutputViewModel>(any(), any()) } returns audioOutputViewModel
             every { audioOutputViewModel.uiState } returns MutableStateFlow(AudioOutputUiState(audioDeviceList = mockAudioDevices, playingDeviceId = "id"))
 
-            every { CallActionsViewModel.provideFactory(any(), any()) } returns callActionsViewModelFactory
+            every { CallActionsViewModel.provideFactory(any()) } returns callActionsViewModelFactory
             every { callActionsViewModelFactory.create<CallActionsViewModel>(any(), any()) } returns callActionsViewModel
             every { callActionsViewModel.uiState } returns MutableStateFlow(CallActionsUiState(actionList = mockCallActions))
 

@@ -19,41 +19,34 @@ package com.kaleyra.video_sdk.call.audiooutput.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutputDelegate
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.setAudioOutputDevice
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioOutputDevice
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToCallAudioOutput
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAudioOutputUiState
+import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
-internal class AudioOutputViewModel(configure: suspend () -> Configuration, private val callAudioOutputDelegate: CallAudioOutputDelegate?) : BaseViewModel<AudioOutputUiState>(configure) {
+internal class AudioOutputViewModel(configure: suspend () -> Configuration) : BaseViewModel<AudioOutputUiState>(configure) {
 
     override fun initialState() = AudioOutputUiState()
 
     init {
-        if (callAudioOutputDelegate != null) {
-            callAudioOutputDelegate.callOutputState
-                .toAudioOutputUiState()
-                .onEach { _uiState.value = it }
-                .launchIn(viewModelScope)
-        } else {
-            call
-                .toAvailableAudioDevicesUi()
-                .onEach { audioDevices -> _uiState.update { it.copy(audioDeviceList = ImmutableList(audioDevices)) } }
-                .launchIn(viewModelScope)
+        call
+            .toAvailableAudioDevicesUi()
+            .onEach { audioDevices -> _uiState.update { it.copy(audioDeviceList = ImmutableList(audioDevices)) } }
+            .launchIn(viewModelScope)
 
-            call
-                .toCurrentAudioDeviceUi()
-                .filterNotNull()
-                .onEach { currentOutputDevice -> _uiState.update { it.copy(playingDeviceId = currentOutputDevice.id) } }
-                .launchIn(viewModelScope)
-        }
+        call
+            .toCurrentAudioDeviceUi()
+            .filterNotNull()
+            .onEach { currentOutputDevice -> _uiState.update { it.copy(playingDeviceId = currentOutputDevice.id) } }
+            .launchIn(viewModelScope)
     }
 
     fun setDevice(device: AudioDeviceUi) {
@@ -63,14 +56,9 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration, priv
         }
         _uiState.update { it.copy(playingDeviceId = device.id) }
 
-        if (callAudioOutputDelegate != null) {
-            val outputDevice = device.mapToCallAudioOutput(callAudioOutputDelegate) ?: return
-            callAudioOutputDelegate.setAudioOutput(outputDevice)
-        } else {
-            val call = call.getValue()
-            val outputDevice = call?.let { device.mapToAudioOutputDevice(it) } ?: return
-            call.setAudioOutputDevice(outputDevice)
-        }
+        val call = call.getValue()
+        val outputDevice = call?.let { device.mapToAudioOutputDevice(it) } ?: return
+        call.setAudioOutputDevice(outputDevice)
     }
 
     private fun shouldRestoreParticipantsAudio(selectedDevice: AudioDeviceUi) = uiState.value.playingDeviceId == AudioDeviceUi.Muted.id && selectedDevice.id != AudioDeviceUi.Muted.id
@@ -88,10 +76,10 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration, priv
     }
 
     companion object {
-        fun provideFactory(configure: suspend () -> Configuration, callAudioOutputDelegate: CallAudioOutputDelegate?) = object : ViewModelProvider.Factory {
+        fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return AudioOutputViewModel(configure, callAudioOutputDelegate) as T
+                return AudioOutputViewModel(configure) as T
             }
         }
     }

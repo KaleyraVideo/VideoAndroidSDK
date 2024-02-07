@@ -4,12 +4,14 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Build
 import android.telecom.CallAudioState
-import com.kaleyra.video_common_ui.connectionservice.CallAudioOutput
+import androidx.test.core.app.ApplicationProvider
+import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputs
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToBluetoothOutput
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutput
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToBluetoothDevice
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.supportCallAudioStateRoute
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasBluetoothPermission
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
@@ -45,62 +47,62 @@ class CallAudioStateExtensionsTest {
     }
 
     @Test
-    fun emptySupportedRouteMask_mapToAvailableAudioOutputs_onlyMuteAudioOutput() {
+    fun emptySupportedRouteMask_mapToAvailableAudioOutputDevices_onlyMuteAudioOutput() {
         val callAudioState = CallAudioState(false, CallAudioState.ROUTE_WIRED_HEADSET, 0)
         assertEquals(
-            listOf(CallAudioOutput.Muted),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None()),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
     }
 
     @Test
-    fun routeMaskSupportsEarpiece_mapToAvailableAudioOutputs_earpieceOutputAvailable() {
+    fun routeMaskSupportsEarpiece_mapToAvailableAudioOutputDevices_earpieceOutputAvailable() {
         val callAudioState = CallAudioState(false, CallAudioState.ROUTE_WIRED_OR_EARPIECE, CallAudioState.ROUTE_EARPIECE)
         assertEquals(
-            listOf(CallAudioOutput.Muted, CallAudioOutput.Earpiece),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None(), AudioOutputDevice.Earpiece()),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
     }
 
     @Test
-    fun routeMaskSupportsSpeaker_mapToAvailableAudioOutputs_speakerOutputAvailable() {
+    fun routeMaskSupportsSpeaker_mapToAvailableAudioOutputDevices_speakerOutputAvailable() {
         val callAudioState = CallAudioState(false, CallAudioState.ROUTE_WIRED_OR_EARPIECE, CallAudioState.ROUTE_SPEAKER)
         assertEquals(
-            listOf(CallAudioOutput.Muted, CallAudioOutput.Speaker),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker()),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
     }
 
     @Test
-    fun routeMaskSupportsWiredHeadset_mapToAvailableAudioOutputs_wiredHeadsetOutputAvailable() {
+    fun routeMaskSupportsWiredHeadset_mapToAvailableAudioOutputDevices_wiredHeadsetOutputAvailable() {
         val callAudioState = CallAudioState(false, CallAudioState.ROUTE_WIRED_OR_EARPIECE, CallAudioState.ROUTE_WIRED_HEADSET)
         assertEquals(
-            listOf(CallAudioOutput.Muted, CallAudioOutput.WiredHeadset),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None(), AudioOutputDevice.WiredHeadset()),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.O_MR1])
-    fun routeMaskSupportsBluetoothApi27_mapToAvailableAudioOutputs_bluetoothOutputAvailable() {
+    fun routeMaskSupportsBluetoothApi27_mapToAvailableAudioOutputDevices_bluetoothOutputAvailable() {
         val callAudioState = CallAudioState(false, CallAudioState.ROUTE_WIRED_OR_EARPIECE, CallAudioState.ROUTE_BLUETOOTH)
         assertEquals(
-            listOf(CallAudioOutput.Muted, CallAudioOutput.Bluetooth("")),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None(), AudioOutputDevice.Bluetooth("")),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.P])
-    fun routeMaskSupportsBluetooth_mapToAvailableAudioOutputs_bluetoothOutputAvailable() {
+    fun routeMaskSupportsBluetooth_mapToAvailableAudioOutputDevices_bluetoothOutputAvailable() {
         mockkObject(CallAudioStateExtensions)
         val device = mockk<BluetoothDevice>()
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_WIRED_OR_EARPIECE, CallAudioState.ROUTE_BLUETOOTH))
         every { callAudioState.supportedBluetoothDevices } returns listOf(device)
-        every { device.mapToBluetoothOutput() } returns CallAudioOutput.Bluetooth("id")
+        every { device.mapToBluetoothDevice(any()) } returns AudioOutputDevice.Bluetooth("id")
         assertEquals(
-            listOf(CallAudioOutput.Muted, CallAudioOutput.Bluetooth("id")),
-            callAudioState.mapToAvailableAudioOutputs()
+            listOf(AudioOutputDevice.None(), AudioOutputDevice.Bluetooth("id")),
+            callAudioState.mapToAvailableAudioOutputDevices()
         )
         unmockkObject(CallAudioStateExtensions)
     }
@@ -109,8 +111,8 @@ class CallAudioStateExtensionsTest {
     fun mutedState_mapToCurrentAudioOutput_mutedOutput() {
         val callAudioState = spyk(CallAudioState(true, CallAudioState.ROUTE_WIRED_OR_EARPIECE, 0))
         assertEquals(
-            CallAudioOutput.Muted,
-            callAudioState.mapToCurrentAudioOutput()
+            AudioOutputDevice.None(),
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
     }
 
@@ -118,8 +120,8 @@ class CallAudioStateExtensionsTest {
     fun earpieceRoute_mapToCurrentAudioOutput_earpieceOutput() {
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_EARPIECE, 0))
         assertEquals(
-            CallAudioOutput.Earpiece,
-            callAudioState.mapToCurrentAudioOutput()
+            AudioOutputDevice.Earpiece(),
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
     }
 
@@ -127,8 +129,8 @@ class CallAudioStateExtensionsTest {
     fun speakerRoute_mapToCurrentAudioOutput_speakerOutput() {
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_SPEAKER, 0))
         assertEquals(
-            CallAudioOutput.Speaker,
-            callAudioState.mapToCurrentAudioOutput()
+            AudioOutputDevice.Loudspeaker(),
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
     }
 
@@ -136,8 +138,8 @@ class CallAudioStateExtensionsTest {
     fun wiredHeadsetRoute_mapToCurrentAudioOutput_wiredHeadsetOutput() {
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_WIRED_HEADSET, 0))
         assertEquals(
-            CallAudioOutput.WiredHeadset,
-            callAudioState.mapToCurrentAudioOutput()
+            AudioOutputDevice.WiredHeadset(),
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
     }
 
@@ -146,8 +148,8 @@ class CallAudioStateExtensionsTest {
     fun bluetoothRouteApi27_mapToCurrentAudioOutput_bluetoothOutput() {
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_BLUETOOTH, 0))
         assertEquals(
-            CallAudioOutput.Bluetooth(""),
-            callAudioState.mapToCurrentAudioOutput()
+            AudioOutputDevice.Bluetooth(""),
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
     }
 
@@ -156,12 +158,12 @@ class CallAudioStateExtensionsTest {
         mockkObject(CallAudioStateExtensions)
         val callAudioState = spyk(CallAudioState(false, CallAudioState.ROUTE_BLUETOOTH, 0))
         val bluetoothDevice = mockk<BluetoothDevice>()
-        val bluetoothOutput = mockk<CallAudioOutput.Bluetooth>()
+        val bluetoothOutput = mockk<AudioOutputDevice.Bluetooth>()
         every { callAudioState.activeBluetoothDevice } returns bluetoothDevice
-        every { bluetoothDevice.mapToBluetoothOutput() } returns bluetoothOutput
+        every { bluetoothDevice.mapToBluetoothDevice(listOf()) } returns bluetoothOutput
         assertEquals(
             bluetoothOutput,
-            callAudioState.mapToCurrentAudioOutput()
+            callAudioState.mapToCurrentAudioOutputDevice()
         )
         unmockkObject(CallAudioStateExtensions)
     }
@@ -177,31 +179,37 @@ class CallAudioStateExtensionsTest {
         every { bluetoothDevice.address } returns "address"
         every { bluetoothDevice.name } returns "name"
         assertEquals(
-            CallAudioOutput.Bluetooth(id = "address", name = "name"),
-            bluetoothDevice.mapToBluetoothOutput()
+            AudioOutputDevice.Bluetooth(identifier = "address").apply { name = "name" },
+            bluetoothDevice.mapToBluetoothDevice(listOf())
         )
+        unmockkObject(ContextRetainer)
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.S])
     fun api31AndNoBluetoothPermission_mapToBluetoothOutput_bluetoothAudioOutputWithNoName() {
         mockkObject(ContextRetainer)
-        val context = mockk<Context>()
+        mockkObject(ContextExtensions)
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val bluetoothDevice = mockk<BluetoothDevice>()
         every { ContextRetainer.context } returns context
         every { context.hasBluetoothPermission() } returns false
         every { bluetoothDevice.address } returns "address"
         every { bluetoothDevice.name } returns "name"
+        val text = context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
         assertEquals(
-            CallAudioOutput.Bluetooth(id = "address"),
-            bluetoothDevice.mapToBluetoothOutput()
+            AudioOutputDevice.Bluetooth(identifier = "address").apply { name = "$text 1" },
+            bluetoothDevice.mapToBluetoothDevice(listOf(bluetoothDevice))
         )
+        unmockkObject(ContextRetainer)
+        unmockkObject(ContextExtensions)
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.S])
     fun api31AndBluetoothPermission_mapToBluetoothOutput_bluetoothAudioOutputWithName() {
         mockkObject(ContextRetainer)
+        mockkObject(ContextExtensions)
         val context = mockk<Context>()
         val bluetoothDevice = mockk<BluetoothDevice>()
         every { ContextRetainer.context } returns context
@@ -209,8 +217,10 @@ class CallAudioStateExtensionsTest {
         every { bluetoothDevice.address } returns "address"
         every { bluetoothDevice.name } returns "name"
         assertEquals(
-            CallAudioOutput.Bluetooth(id = "address", name = "name"),
-            bluetoothDevice.mapToBluetoothOutput()
+            AudioOutputDevice.Bluetooth(identifier = "address").apply { name = "name" },
+            bluetoothDevice.mapToBluetoothDevice(listOf())
         )
+        unmockkObject(ContextRetainer)
+        unmockkObject(ContextExtensions)
     }
 }
