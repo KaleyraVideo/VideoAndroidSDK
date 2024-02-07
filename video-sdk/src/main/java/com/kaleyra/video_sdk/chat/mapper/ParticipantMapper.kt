@@ -73,13 +73,13 @@ internal object ParticipantsMapper {
             when {
                 typingEvent is ChatParticipant.Event.Typing.Started -> ChatParticipantState.Typing
                 participantState is ChatParticipant.State.Joined.Online -> ChatParticipantState.Online
-                participantState is ChatParticipant.State.Joined.Offline.LastLogin.Never -> {
-                    ChatParticipantState.Offline()
+                participantState is ChatParticipant.State.Joined.Offline -> {
+                    val lastLogin = participantState.lastLogin
+                    ChatParticipantState.Offline(
+                        if (lastLogin is ChatParticipant.State.Joined.Offline.LastLogin.At) lastLogin.date.time
+                        else null
+                    )
                 }
-                participantState is ChatParticipant.State.Joined.Offline.LastLogin.At -> {
-                    ChatParticipantState.Offline(participantState.date.time)
-                }
-
                 else -> ChatParticipantState.Unknown
             }
         }.distinctUntilChanged()
