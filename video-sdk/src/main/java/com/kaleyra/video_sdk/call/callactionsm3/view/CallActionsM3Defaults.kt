@@ -64,12 +64,6 @@ internal object CallActionM3Defaults {
         toggledBackgroundColor = toggledBackgroundColor,
         toggledIconColor = toggledIconColor
     )
-
-    sealed class Label {
-        data object Never
-        data object Inside
-        data object Below
-    }
 }
 
 @Immutable

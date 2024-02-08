@@ -1,0 +1,269 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>CallUiState</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            VideoAndroidSDK
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-sdk:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="video-sdk::com.kaleyra.video_sdk.call.screen.model/CallUiState///PointingToDeclaration//2017425725">
+  <div class="breadcrumbs"><a href="../../index.html">video-sdk</a><span class="delimiter">/</span><a href="../index.html">com.kaleyra.video_sdk.call.screen.model</a><span class="delimiter">/</span><span class="current">CallUiState</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Call</span><wbr><span>Ui</span><wbr><span><span>State</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">CallUiState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>callState<span class="token operator">: </span><a href="../-call-state-ui/index.html">CallStateUi</a><span class="token operator"> = </span>CallStateUi.Disconnected<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>thumbnailStreams<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf())<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>featuredStreams<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf())<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fullscreenStream<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>watermarkInfo<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.callinfowidget.model/-watermark-info/index.html">WatermarkInfo</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>recording<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.recording.model/-recording-ui/index.html">RecordingUi</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isAudioOnly<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isGroupCall<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>amILeftAlone<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>showFeedback<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>shouldAutoHideSheet<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span> : <a href="../../com.kaleyra.video_sdk.common.uistate/-ui-state/index.html">UiState</a></div><p class="paragraph">Call Ui State representing the Ui state used in the Call Ui</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1909124169%2FConstructors%2F2017425725" anchor-label="CallUiState" id="-1909124169%2FConstructors%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-call-ui-state.html"><span>Call</span><wbr><span>Ui</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1909124169%2FConstructors%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callState<span class="token operator">: </span><a href="../-call-state-ui/index.html">CallStateUi</a><span class="token operator"> = </span>CallStateUi.Disconnected<span class="token punctuation">, </span></span><span class="parameter ">thumbnailStreams<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf())<span class="token punctuation">, </span></span><span class="parameter ">featuredStreams<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf())<span class="token punctuation">, </span></span><span class="parameter ">fullscreenStream<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">watermarkInfo<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.callinfowidget.model/-watermark-info/index.html">WatermarkInfo</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">recording<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.recording.model/-recording-ui/index.html">RecordingUi</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">isAudioOnly<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">isGroupCall<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">amILeftAlone<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">showFeedback<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">shouldAutoHideSheet<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-789150172%2FProperties%2F2017425725" anchor-label="amILeftAlone" id="-789150172%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="am-i-left-alone.html"><span>am</span><wbr><span>ILeft</span><wbr><span><span>Alone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-789150172%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="am-i-left-alone.html">amILeftAlone</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Boolean flag indicating if the logged participant is currently the only participant in call, true if alone, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1961452300%2FProperties%2F2017425725" anchor-label="callState" id="1961452300%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="call-state.html"><span>call</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1961452300%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="call-state.html">callState</a><span class="token operator">: </span><a href="../-call-state-ui/index.html">CallStateUi</a></div><div class="brief "><p class="paragraph">CallStateUi call state</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1979096646%2FProperties%2F2017425725" anchor-label="featuredStreams" id="-1979096646%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="featured-streams.html"><span>featured</span><wbr><span><span>Streams</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1979096646%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="featured-streams.html">featuredStreams</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">ImmutableList<streamui> streams list</streamui></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-320689664%2FProperties%2F2017425725" anchor-label="fullscreenStream" id="-320689664%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fullscreen-stream.html"><span>fullscreen</span><wbr><span><span>Stream</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-320689664%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="fullscreen-stream.html">fullscreenStream</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">StreamUi? optional current fullscreen stream</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-808656793%2FProperties%2F2017425725" anchor-label="isAudioOnly" id="-808656793%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-audio-only.html"><span>is</span><wbr><span>Audio</span><wbr><span><span>Only</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-808656793%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-audio-only.html">isAudioOnly</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Boolean flag indicating if the call is audio only, true if audio only, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1481098220%2FProperties%2F2017425725" anchor-label="isGroupCall" id="1481098220%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-group-call.html"><span>is</span><wbr><span>Group</span><wbr><span><span>Call</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1481098220%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-group-call.html">isGroupCall</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Boolean flag indicating if the call is a group call, true if a group call, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="678160302%2FProperties%2F2017425725" anchor-label="recording" id="678160302%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="recording.html"><span><span>recording</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="678160302%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="recording.html">recording</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.recording.model/-recording-ui/index.html">RecordingUi</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">RecordingUi? optional recording</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1655361276%2FProperties%2F2017425725" anchor-label="shouldAutoHideSheet" id="-1655361276%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="should-auto-hide-sheet.html"><span>should</span><wbr><span>Auto</span><wbr><span>Hide</span><wbr><span><span>Sheet</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1655361276%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="should-auto-hide-sheet.html">shouldAutoHideSheet</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Boolean flag indicating if the call should auto hide the call controls, true to auto hide the call controls, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1522552921%2FProperties%2F2017425725" anchor-label="showFeedback" id="1522552921%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="show-feedback.html"><span>show</span><wbr><span><span>Feedback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1522552921%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="show-feedback.html">showFeedback</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Boolean flag indicating if the call ui should present the call feedback on call ended, true to show it, false otherwise</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="389132340%2FProperties%2F2017425725" anchor-label="thumbnailStreams" id="389132340%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="thumbnail-streams.html"><span>thumbnail</span><wbr><span><span>Streams</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="389132340%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="thumbnail-streams.html">thumbnailStreams</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../com.kaleyra.video_sdk.call.stream.model/-stream-ui/index.html">StreamUi</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">ImmutableList<streamui> thumbnail streams list</streamui></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="773456013%2FProperties%2F2017425725" anchor-label="watermarkInfo" id="773456013%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="watermark-info.html"><span>watermark</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="773456013%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="watermark-info.html">watermarkInfo</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.call.callinfowidget.model/-watermark-info/index.html">WatermarkInfo</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">WatermarkInfo? optional watermark info</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

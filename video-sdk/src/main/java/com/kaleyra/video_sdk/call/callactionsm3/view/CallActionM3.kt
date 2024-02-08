@@ -161,7 +161,7 @@ internal fun ClickableCallActionM3(
     FilledIconButton(
         modifier = Modifier
             .padding(2.dp)
-            .width(buttonWidth)
+            .width(buttonWidth.minus(if (buttonWidth > CallActionM3Defaults.Size) 8.dp else 0.dp))
             .height(CallActionM3Defaults.Size)
             .defaultMinSize(minWidth = CallActionM3Defaults.Size),
         enabled = action.isEnabled,
@@ -215,7 +215,7 @@ internal fun ToggleableCallActionM3(
         modifier = Modifier
             .padding(2.dp)
             .height(CallActionM3Defaults.Size)
-            .width(buttonWidth)
+            .width(buttonWidth.minus(if (buttonWidth > CallActionM3Defaults.Size) 8.dp else 0.dp))
             .testTag(callActionToggleableTestTag),
         enabled = action.isEnabled,
         checked = action.isToggled,

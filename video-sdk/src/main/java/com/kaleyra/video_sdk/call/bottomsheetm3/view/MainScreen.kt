@@ -50,7 +50,7 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
             primaryActionList = ImmutableList(
                 listOf(
                     CallAction.HangUp(),
-                    CallAction.Microphone(),
+                    CallAction.Microphone(isToggled = true),
                     CallAction.Camera(),
                     CallAction.Answer(),
 //                    CallAction.Audio(),

@@ -1,0 +1,67 @@
+name: Release new SDK version
+
+on:
+  workflow_dispatch:
+    inputs:
+      specific_release_version:
+        description: Define the specific release version?
+        required: false
+      release_version:
+        type: choice
+        description: What kind of release do you want to do?
+        required: false
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  update_sdk_version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Update Maven credentials
+        env:
+          MAVEN_ACCESSKEY: ${{ secrets.MAVEN_ACCESSKEY }}
+          MAVEN_SECRETKEY: ${{ secrets.MAVEN_SECRETKEY }}
+          MAVEN_DISTRIBUTIONID: ${{ secrets.MAVEN_DISTRIBUTIONID }}
+        run:
+          echo -e "maven.accessKey=$MAVEN_ACCESSKEY\nmaven.secretKey=$MAVEN_SECRETKEY\nmaven.distributionId=$MAVEN_DISTRIBUTIONID" >> ./local.properties
+      - name: Generate documentation
+        run: ./gradlew dokkaHtmlMultiModule
+      - name: Update sdk version
+        id: output_tag
+        run: ./gradlew updateSdkVersion -PnewVersion=${{ github.event.inputs.specific_release_version || github.event.inputs.release_version }}
+      - name: Release new common ui version
+        run: ./gradlew :video-common-ui:publishUpload -PdryRun=false
+      - name: Release new glasses sdk version
+        run: ./gradlew :video-glasses-sdk:publishUpload -PdryRun=false
+      - name: Release new sdk version
+        run: ./gradlew :video-sdk:publishUpload -PdryRun=false
+      - name: Update app version
+        run: ./gradlew autoIncrementVersionCode
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update sdk version
+          tagging_message: ${{ steps.output_tag.outputs.TAG }}
+          token: ${{secrets.PRIVATE_KEY}}
+  update_bom_version:
+    needs: update_sdk_version
+    uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      specific_release_version: ${{ github.event.inputs.specific_release_version }}
+    secrets: inherit
