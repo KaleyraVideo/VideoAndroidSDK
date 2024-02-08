@@ -53,6 +53,8 @@ jobs:
         run: ./gradlew :video-sdk:publishUpload -PdryRun=false
       - name: Update app version
         run: ./gradlew autoIncrementVersionCode
+      - name: Update app sdk dependency
+        run: sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ github.event.inputs.specific_release_version || github.event.inputs.release_version }}'"/g' ./app/build.gradle
       - name: Generate a token
         id: generate_token
         uses: actions/create-github-app-token@v1
