@@ -20,12 +20,19 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.MatrixCursor
 import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.doesFileExists
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowSettings
 
+@RunWith(RobolectricTestRunner::class)
 class ContextExtensionsTest {
 
     // TODO do these tests make sense?
@@ -53,6 +60,23 @@ class ContextExtensionsTest {
         every { matrixCursor.moveToFirst() } returns false
         val result = contextMock.doesFileExists(uriMock)
         assertEquals(false, result)
+    }
+
+    @Test
+    @Config(sdk = [22])
+    fun testHasCanDrawOverlaysPermissionApi22() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        ShadowSettings.setCanDrawOverlays(false)
+        assertEquals(true, context.hasCanDrawOverlaysPermission())
+    }
+
+    @Test
+    fun testHasCanDrawOverlaysPermission() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        ShadowSettings.setCanDrawOverlays(false)
+        assertEquals(false, context.hasCanDrawOverlaysPermission())
+        ShadowSettings.setCanDrawOverlays(true)
+        assertEquals(true, context.hasCanDrawOverlaysPermission())
     }
 
 }

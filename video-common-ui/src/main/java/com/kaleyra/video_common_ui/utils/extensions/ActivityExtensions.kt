@@ -26,6 +26,8 @@ import android.view.WindowManager
  */
 object ActivityExtensions {
 
+    private const val SCREEN_SHARE_REQUEST_CODE = 233
+
     /**
      * Turn and keep the screen on
      *
