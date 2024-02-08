@@ -63,7 +63,7 @@ internal object AudioOutputMapper {
             is AudioOutputDevice.Bluetooth -> AudioDeviceUi.Bluetooth(
                 id = identifier,
                 name = name,
-                connectionState = bluetoothConnectionStatus.mapToBluetoothDeviceState(),
+                connectionState = bluetoothConnectionStatus?.mapToBluetoothDeviceState(),
                 batteryLevel = batteryLevel
             )
         }

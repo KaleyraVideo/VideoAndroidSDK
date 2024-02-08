@@ -15,6 +15,7 @@ object CallEndpointExtensions {
             CallEndpoint.TYPE_WIRED_HEADSET -> AudioOutputDevice.WiredHeadset()
             CallEndpoint.TYPE_BLUETOOTH -> {
                 AudioOutputDevice.Bluetooth(identifier = identifier.toString()).apply {
+                    bluetoothConnectionStatus = null
                     name = endpointName.toString()
                 }
             }
