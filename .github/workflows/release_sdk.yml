@@ -53,11 +53,17 @@ jobs:
         run: ./gradlew :video-sdk:publishUpload -PdryRun=false
       - name: Update app version
         run: ./gradlew autoIncrementVersionCode
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update sdk version
           tagging_message: ${{ steps.output_tag.outputs.TAG }}
-          token: ${{secrets.PRIVATE_KEY}}
+          token: ${{steps.generate_token.outputs.token}}
   update_bom_version:
     needs: update_sdk_version
     uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
