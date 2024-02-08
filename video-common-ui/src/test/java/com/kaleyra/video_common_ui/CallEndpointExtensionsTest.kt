@@ -47,8 +47,8 @@ class CallEndpointExtensionsTest {
     fun endpointBluetooth_mapToAudioOutput_bluetoothAudioOutput() {
         val endpoint = CallEndpoint("endpointName", CallEndpoint.TYPE_BLUETOOTH, ParcelUuid(UUID.randomUUID()))
         val expected = AudioOutputDevice.Bluetooth(identifier = endpoint.identifier.toString()).apply {
-            bluetoothConnectionStatus = null
             name = endpoint.endpointName.toString()
+            bluetoothConnectionStatus = null
         }
         assertEquals(
             expected,
