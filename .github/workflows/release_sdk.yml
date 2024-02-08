@@ -57,6 +57,7 @@ jobs:
         with:
           commit_message: Update sdk version
           tagging_message: ${{ steps.output_tag.outputs.TAG }}
+          token: ${{secrets.PRIVATE_KEY}}
   update_bom_version:
     needs: update_sdk_version
     uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
