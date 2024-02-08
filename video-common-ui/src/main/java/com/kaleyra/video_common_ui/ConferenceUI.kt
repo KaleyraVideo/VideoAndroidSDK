@@ -38,7 +38,6 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.isOutgoing
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
-import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
@@ -90,7 +89,6 @@ class ConferenceUI(
     }
 
     internal fun dispose() {
-        disableAudioRouting(logger)
         callScope.cancel()
     }
     /**

@@ -8,6 +8,7 @@ import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import androidx.annotation.RequiresApi
+import com.bandyer.android_audiosession.sounds.CallSound
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -20,6 +21,8 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -56,6 +59,8 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
     private var foregroundJob: Job? = null
 
+    private var call: CallUI? = null
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return START_STICKY
@@ -66,7 +71,9 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         callForegroundServiceWorker.dispose()
         coroutineScope.cancel()
         foregroundJob?.cancel()
+        call?.disableAudioRouting()
         foregroundJob = null
+        call = null
         connection?.address?.also { ContactsController.deleteConnectionServiceContact(this, it) }
     }
 
@@ -78,16 +85,8 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         val connection = createConnection(request, call).apply {
             setDialing()
         }
-        bindCallForegroundServiceWorker(call)
+        configureService(call, connection)
         return connection
-    }
-
-    private fun bindCallForegroundServiceWorker(call: CallUI) {
-        callForegroundServiceWorker.bind(this, call)
-        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
-            call.showOnAppResumed(coroutineScope)
-        }
-        // TODO enable audio routing?
     }
 
     override fun onCreateIncomingConnection(
@@ -105,15 +104,20 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
         }
     }
 
-//    override fun onSilent() {
-//
-//    }
-
     override fun onShowIncomingCallUi(connection: CallConnection) {
         val call = KaleyraVideo.conference.call.replayCache.first()
         connection.setRinging()
-        bindCallForegroundServiceWorker(call)
+        configureService(call, connection)
         createOrUpdateConnectionContact(connection, call)
+    }
+
+    private fun configureService(call: CallUI, connection: CallConnection) {
+        this.call = call
+        call.enableAudioRouting(connection, connection.currentAudioDevice, connection.availableAudioDevices)
+        callForegroundServiceWorker.bind(this, call)
+        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
+            call.showOnAppResumed(coroutineScope)
+        }
     }
 
     private fun createOrUpdateConnectionContact(connection: CallConnection, call: Call) {
@@ -172,6 +176,10 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    override fun onSilence() {
+        CallSound.stop(instantly = true)
     }
 
     override fun onClearNotification(id: Int) = stopForegroundService()

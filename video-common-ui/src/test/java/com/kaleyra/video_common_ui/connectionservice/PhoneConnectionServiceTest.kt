@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.telecom.Connection
 import androidx.test.core.app.ApplicationProvider
+import com.bandyer.android_audiosession.sounds.CallSound
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
@@ -23,12 +24,15 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -113,12 +117,23 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun testOnDestroy() {
+        mockkObject(CollaborationAudioExtensions)
         val uri = Uri.parse("")
         every { connectionMock.address } returns uri
-        service!!.onCreateIncomingConnection(mockk(), mockk())
+        service!!.onCreateOutgoingConnection(mockk(), mockk())
         service!!.onDestroy()
         verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
         verify(exactly = 1) { ContactsController.deleteConnectionServiceContact(service!!, uri) }
+        verify(exactly = 1) { callMock.disableAudioRouting(any()) }
+        unmockkObject(CollaborationAudioExtensions)
+    }
+
+    @Test
+    fun testOnSilence() {
+        mockkObject(CallSound)
+        service!!.onSilence()
+        verify(exactly = 1) { CallSound.stop(any(), true) }
+        unmockkObject(CallSound)
     }
 
     @Test
@@ -231,14 +246,14 @@ class PhoneConnectionServiceTest {
     @Test
     fun testIncomingConnectionEnd() {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        PhoneConnectionService.end()
+        PhoneConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
     fun testOutgoingConnectionEnd() {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
-        PhoneConnectionService.end()
+        PhoneConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
