@@ -20,7 +20,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.MatrixCursor
 import android.net.Uri
-import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.doesFileExists
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
 import io.mockk.every
@@ -29,6 +28,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowSettings
 
@@ -65,14 +65,14 @@ class ContextExtensionsTest {
     @Test
     @Config(sdk = [22])
     fun testHasCanDrawOverlaysPermissionApi22() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        val context = RuntimeEnvironment.getApplication()
         ShadowSettings.setCanDrawOverlays(false)
         assertEquals(true, context.hasCanDrawOverlaysPermission())
     }
 
     @Test
     fun testHasCanDrawOverlaysPermission() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        val context = RuntimeEnvironment.getApplication()
         ShadowSettings.setCanDrawOverlays(false)
         assertEquals(false, context.hasCanDrawOverlaysPermission())
         ShadowSettings.setCanDrawOverlays(true)

@@ -16,12 +16,14 @@
 
 package com.kaleyra.video_common_ui.call
 
-import android.content.Context
+import android.app.Activity
+import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.overlay.AppViewOverlay
 import com.kaleyra.video_common_ui.overlay.StatusBarOverlayView
 import com.kaleyra.video_common_ui.overlay.ViewOverlayAttacher
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.requestOverlayPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -34,7 +36,7 @@ import kotlinx.coroutines.flow.onEach
 
 internal interface ScreenShareOverlayDelegate {
 
-    fun syncScreenShareOverlay(context: Context, call: Call, scope: CoroutineScope) {
+    fun syncScreenShareOverlay(context: Activity, call: Call, scope: CoroutineScope) {
         var deviceScreenShareOverlay: AppViewOverlay? = null
         var appScreenShareOverlay: AppViewOverlay? = null
 
@@ -42,6 +44,7 @@ internal interface ScreenShareOverlayDelegate {
             .distinctUntilChanged()
             .onEach {
                 if (it) {
+                    context.requestOverlayPermission()
                     deviceScreenShareOverlay = AppViewOverlay(StatusBarOverlayView(context), ViewOverlayAttacher.OverlayType.GLOBAL)
                     deviceScreenShareOverlay!!.show(context)
                 } else {

@@ -75,5 +75,11 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/license.md'
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE-notice.md'
+    }
+
     resourcePrefix 'kaleyra'
 }
