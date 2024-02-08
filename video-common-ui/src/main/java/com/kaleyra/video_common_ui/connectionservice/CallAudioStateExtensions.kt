@@ -16,7 +16,7 @@ object CallAudioStateExtensions {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun CallAudioState.mapToAvailableAudioOutputDevices(): List<AudioOutputDevice> {
-        return mutableListOf<AudioOutputDevice>(AudioOutputDevice.None()).apply {
+        return mutableListOf<AudioOutputDevice>().apply {
             if (supportCallAudioStateRoute(CallAudioState.ROUTE_EARPIECE)) add(AudioOutputDevice.Earpiece())
             if (supportCallAudioStateRoute(CallAudioState.ROUTE_SPEAKER)) add(AudioOutputDevice.Loudspeaker())
             if (supportCallAudioStateRoute(CallAudioState.ROUTE_WIRED_HEADSET)) add(AudioOutputDevice.WiredHeadset())
@@ -28,6 +28,7 @@ object CallAudioStateExtensions {
                     add(AudioOutputDevice.Bluetooth(""))
                 }
             }
+            add(AudioOutputDevice.None())
         }
     }
 
