@@ -190,7 +190,7 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onAvailableCallEndpointsChanged(availableEndpoints: List<CallEndpoint>) {
-        _availableAudioDevices.value = availableEndpoints.mapNotNull { it.mapToAudioOutputDevice() }
+        _availableAudioDevices.value = availableEndpoints.mapNotNull { it.mapToAudioOutputDevice() } + AudioOutputDevice.None()
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

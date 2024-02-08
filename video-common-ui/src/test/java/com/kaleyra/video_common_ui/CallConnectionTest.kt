@@ -410,7 +410,7 @@ class CallConnectionTest {
         every { speakerEndpoint.mapToAudioOutputDevice() } returns speakerAudioOutput
         every { earpieceEndpoint.mapToAudioOutputDevice() } returns earpieceAudioOutput
         connection.onAvailableCallEndpointsChanged(listOf(speakerEndpoint, earpieceEndpoint))
-        val expected = listOf(speakerAudioOutput, earpieceAudioOutput)
+        val expected = listOf(speakerAudioOutput, earpieceAudioOutput, AudioOutputDevice.None())
         assertEquals(expected, connection.availableAudioDevices.first())
         unmockkObject(CallEndpointExtensions)
     }
