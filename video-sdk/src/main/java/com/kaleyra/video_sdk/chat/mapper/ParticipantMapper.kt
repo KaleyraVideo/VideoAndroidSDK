@@ -80,7 +80,6 @@ internal object ParticipantsMapper {
                         else null
                     )
                 }
-
                 else -> ChatParticipantState.Unknown
             }
         }.distinctUntilChanged()
