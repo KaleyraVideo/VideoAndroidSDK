@@ -55,14 +55,14 @@ internal class SystemViewControlsAware(private var finished: (() -> Unit)?) :
                     Insets.max(getInsets(WindowInsetsCompat.Type.systemBars()), getInsets(WindowInsetsCompat.Type.displayCutout()))
                 }
 
-                if (currentInset == newInsets) return@setOnApplyWindowInsetsListener WindowInsetsCompat.CONSUMED
+                if (currentInset == newInsets) return@setOnApplyWindowInsetsListener insets
 
                 currentInset = newInsets
 
                 resetMargins()
                 stopObserversListeningIfNeeded()
 
-                return@setOnApplyWindowInsetsListener WindowInsetsCompat.CONSUMED
+                return@setOnApplyWindowInsetsListener insets
             }
         }
     }
