@@ -117,12 +117,18 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         streamsHandler.streamsArrangement
             .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
-                val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
-                _uiState.update {
-                    it.copy(
-                        featuredStreams = ImmutableList(featuredStreams),
-                        thumbnailStreams = ImmutableList(thumbnails)
-                    )
+                if (state is CallStateUi.Disconnected.Ended) {
+                    _uiState.update {
+                        it.copy(featuredStreams = ImmutableList(listOf()), thumbnailStreams = ImmutableList(listOf()))
+                    }
+                } else {
+                    val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
+                    _uiState.update {
+                        it.copy(
+                            featuredStreams = ImmutableList(featuredStreams),
+                            thumbnailStreams = ImmutableList(thumbnails)
+                        )
+                    }
                 }
             }
             .launchIn(viewModelScope)

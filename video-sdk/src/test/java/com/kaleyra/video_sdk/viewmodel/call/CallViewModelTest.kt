@@ -41,6 +41,7 @@ import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
+import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
@@ -223,6 +224,26 @@ class CallViewModelTest {
         advanceTimeBy(SINGLE_STREAM_DEBOUNCE_MILLIS)
         val new = viewModel.uiState.first().featuredStreams.value.map { it.id }
         assertEquals(listOf(myStreamMock.id), new)
+    }
+
+    @Test
+    fun `test streams cleaned on call ended`() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connected)
+        every { callMock.state } returns callState
+        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
+        advanceUntilIdle()
+        val featured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val thumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf(streamMock1.id), featured)
+        assertEquals(listOf(myStreamMock.id), thumbnail)
+        callState.value = Call.State.Disconnected.Ended
+        advanceUntilIdle()
+        val newFeatured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val newThumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf<String>(), newFeatured)
+        assertEquals(listOf<String>(), newThumbnail)
     }
 
     @Test
