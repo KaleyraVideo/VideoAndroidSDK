@@ -55,7 +55,7 @@ internal class SystemViewControlsAware(private var finished: (() -> Unit)?) :
                     Insets.max(getInsets(WindowInsetsCompat.Type.systemBars()), getInsets(WindowInsetsCompat.Type.displayCutout()))
                 }
 
-                if (currentInset == newInsets) return@setOnApplyWindowInsetsListener insets
+                if (!areInsetsValid(newInsets) || currentInset == newInsets) return@setOnApplyWindowInsetsListener insets
 
                 currentInset = newInsets
 
@@ -65,6 +65,10 @@ internal class SystemViewControlsAware(private var finished: (() -> Unit)?) :
                 return@setOnApplyWindowInsetsListener insets
             }
         }
+    }
+
+    private fun areInsetsValid(insets: Insets): Boolean {
+        return !(insets.bottom == 0 && insets.top == 0 && insets.left == 0 && insets.right == 0)
     }
 
     override fun addObserver(
