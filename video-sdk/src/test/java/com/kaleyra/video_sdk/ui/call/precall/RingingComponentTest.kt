@@ -147,6 +147,15 @@ class RingingComponentTest {
     }
 
     @Test
+    fun ringingButtonsDoNotExistIfAnsweredIsTrue() {
+        val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
+        val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
+        uiState = uiState.copy(answered = true)
+        composeTestRule.onNodeWithText(answer).assertDoesNotExist()
+        composeTestRule.onNodeWithText(decline).assertDoesNotExist()
+    }
+
+    @Test
     fun declineButtonIsDisplayed() {
         val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
         composeTestRule.assertRingingButtonIsDisplayed(decline)

@@ -43,12 +43,6 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
             .launchIn(viewModelScope)
 
         call
-            .toCallStateUi()
-            .filterIsInstance<CallStateUi.Ringing>()
-            .onEach { state -> _uiState.update { it.copy(answered = state.isConnecting) } }
-            .launchIn(viewModelScope)
-
-        call
             .amIWaitingOthers()
             .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
             .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
@@ -58,10 +52,12 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
 
     fun accept() {
         call.getValue()?.connect()
+        _uiState.update { it.copy(answered = true) }
     }
 
     fun decline() {
         call.getValue()?.end()
+        _uiState.update { it.copy(answered = true) }
     }
 
     companion object {
