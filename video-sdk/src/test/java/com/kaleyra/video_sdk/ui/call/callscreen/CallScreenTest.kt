@@ -611,14 +611,14 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun callStateRingingAndIsConnectingFalse_sheetIsHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Ringing())
+        callUiState = CallUiState(callState = CallStateUi.Ringing)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
-    fun callStateRingingAndIsConnectingTrue_sheetIsHalfExpanded() {
-        callUiState = CallUiState(callState = CallStateUi.Ringing(true))
+    fun callStateConnecting_sheetIsHalfExpanded() {
+        callUiState = CallUiState(callState = CallStateUi.Connecting)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
     }

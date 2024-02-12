@@ -459,10 +459,8 @@ internal fun CallScreen(
 
     LaunchedEffect(callUiState) {
         when {
-            callUiState.callState != CallStateUi.Dialing && callUiState.callState != CallStateUi.Connected && callUiState.callState != CallStateUi.Reconnecting && callUiState.callState != CallStateUi.Ringing(
-                true
-            ) -> callScreenState.hideSheet()
-            callScreenState.isSheetHidden                                                                                                                                                                             -> callScreenState.halfExpandSheet()
+            callUiState.callState != CallStateUi.Dialing && callUiState.callState != CallStateUi.Connected && callUiState.callState != CallStateUi.Reconnecting && callUiState.callState != CallStateUi.Connecting -> callScreenState.hideSheet()
+            callScreenState.isSheetHidden                                                                                                                                                                          -> callScreenState.halfExpandSheet()
         }
     }
 
