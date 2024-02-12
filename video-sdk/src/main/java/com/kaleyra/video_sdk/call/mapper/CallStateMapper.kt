@@ -20,6 +20,8 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIAlone
+import com.kaleyra.video_common_ui.mapper.StreamMapper.doAnyOfMyStreamsIsLive
+import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -39,11 +41,12 @@ internal object CallStateMapper {
         return combine(
             flatMapLatest { it.state },
             flatMapLatest { it.participants },
-            amIAlone()
-        ) { state, participants, amIAlone ->
+            doAnyOfMyStreamsIsLive()
+        ) { state, participants, doAnyOfMyStreamsIsLive ->
             when {
-                isDialing(state, participants, amIAlone) -> CallStateUi.Dialing
-                isRinging(state, participants, amIAlone) -> CallStateUi.Ringing(isConnecting = state != Call.State.Disconnected)
+                isDialing(state, participants) -> CallStateUi.Dialing
+                isRinging(state, participants) -> CallStateUi.Ringing
+                state is Call.State.Connected && !doAnyOfMyStreamsIsLive -> CallStateUi.Connecting
                 state is Call.State.Connected -> CallStateUi.Connected
                 state is Call.State.Reconnecting -> CallStateUi.Reconnecting
                 state is Call.State.Disconnecting -> CallStateUi.Disconnecting
@@ -66,10 +69,10 @@ internal object CallStateMapper {
         }.distinctUntilChanged()
     }
 
-    private fun isDialing(state: Call.State, participants: CallParticipants, amIAlone: Boolean): Boolean =
-        (participants.creator() == null || participants.me == participants.creator()) && (state is Call.State.Connecting || (state is Call.State.Connected && amIAlone))
+    private fun isDialing(state: Call.State, participants: CallParticipants): Boolean =
+        (participants.creator() == null || participants.me == participants.creator()) && state is Call.State.Connecting
 
-    private fun isRinging(state: Call.State, participants: CallParticipants, amIAlone: Boolean) =
-        participants.me != participants.creator() && (state == Call.State.Disconnected || state is Call.State.Connecting || (state is Call.State.Connected && amIAlone))
+    private fun isRinging(state: Call.State, participants: CallParticipants) =
+        participants.me != participants.creator() && (state == Call.State.Disconnected || state is Call.State.Connecting)
 
 }
