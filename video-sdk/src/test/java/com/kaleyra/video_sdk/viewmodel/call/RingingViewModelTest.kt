@@ -129,19 +129,21 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
 
     @Test
     fun testCallAnswer() = runTest {
+        every { callParticipantsMock.others } returns listOf()
         advanceUntilIdle()
-        assertEquals(false, viewModel.uiState.first().answered)
+        assertEquals(false, viewModel.uiState.first().isConnecting)
         viewModel.accept()
         verify(exactly = 1) { callMock.connect() }
-        assertEquals(true, viewModel.uiState.first().answered)
+        assertEquals(true, viewModel.uiState.first().isConnecting)
     }
 
     @Test
     fun testCallDecline() = runTest {
+        every { callParticipantsMock.others } returns listOf()
         advanceUntilIdle()
-        assertEquals(false, viewModel.uiState.first().answered)
+        assertEquals(false, viewModel.uiState.first().isConnecting)
         viewModel.decline()
         verify(exactly = 1) { callMock.end() }
-        assertEquals(true, viewModel.uiState.first().answered)
+        assertEquals(true, viewModel.uiState.first().isConnecting)
     }
 }

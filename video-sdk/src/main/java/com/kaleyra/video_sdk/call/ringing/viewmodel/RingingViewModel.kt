@@ -52,12 +52,12 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
 
     fun accept() {
         call.getValue()?.connect()
-        _uiState.update { it.copy(answered = true) }
+        _uiState.update { it.copy(isConnecting = true) }
     }
 
     fun decline() {
         call.getValue()?.end()
-        _uiState.update { it.copy(answered = true) }
+        _uiState.update { it.copy(isConnecting = true) }
     }
 
     companion object {

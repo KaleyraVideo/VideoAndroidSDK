@@ -28,7 +28,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * Ringing Ui State
  * @property amIWaitingOthers Boolean flag indicating if the logged in-call participant is waiting for other participants to join the call
  * @property recording RecordingTypeUi? optional recording type
- * @property answered Boolean flag indicating if the call has been answered
  * @property video VideoUi? optional video component
  * @property avatar ImmutableUri? optional avatar uri
  * @property participants ImmutableList<String> participants identifiers
@@ -42,7 +41,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 data class RingingUiState(
     val amIWaitingOthers: Boolean = false,
     val recording: RecordingTypeUi? = null,
-    val answered: Boolean = false,
     override val video: VideoUi? = null,
     override val avatar: ImmutableUri? = null,
     override val participants: ImmutableList<String> = ImmutableList(listOf()),
