@@ -75,5 +75,16 @@ jobs:
         run: python3 -m pip install semver boto3
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Decode Keystore
+        id: decode_keystore
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+        run: echo $ENCODED_STRING | base64 -di > app/keystores/release.keystore       
       - name: Build module App
         run: ./gradlew :app:build
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+
+    
