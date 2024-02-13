@@ -33,7 +33,7 @@ object CallAudioStateExtensions {
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun CallAudioState.mapToCurrentAudioOutputDevice(): AudioOutputDevice? {
+    fun CallAudioState.mapCurrentRouteToAudioOutputDevice(): AudioOutputDevice? {
         return if (isMuted) AudioOutputDevice.None()
         else {
             when (route) {
@@ -59,6 +59,8 @@ object CallAudioStateExtensions {
         } else {
             val bluetooth = context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
             AudioOutputDevice.Bluetooth(identifier = address).apply { name = "$bluetooth ${supportedBluetoothDevices.indexOf(this@mapToBluetoothDevice) + 1}" }
+        }.apply {
+            bluetoothConnectionStatus = null
         }
     }
 }

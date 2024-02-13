@@ -17,7 +17,7 @@ import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutputDevice
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallConnection
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
@@ -374,7 +374,7 @@ class CallConnectionTest {
         val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_WIRED_HEADSET)
         val audioOutput = AudioOutputDevice.Earpiece()
         val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
-        every { callAudioState.mapToCurrentAudioOutputDevice() } returns audioOutput
+        every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
         every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
         val connection = CallConnection.create(requestMock, callMock, backgroundScope)
         connection.onCallAudioStateChanged(callAudioState)
@@ -390,7 +390,7 @@ class CallConnectionTest {
         val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_WIRED_HEADSET)
         val audioOutput = AudioOutputDevice.Earpiece()
         val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
-        every { callAudioState.mapToCurrentAudioOutputDevice() } returns audioOutput
+        every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
         every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
         val connection = CallConnection.create(requestMock, callMock, backgroundScope)
         connection.onCallAudioStateChanged(callAudioState)

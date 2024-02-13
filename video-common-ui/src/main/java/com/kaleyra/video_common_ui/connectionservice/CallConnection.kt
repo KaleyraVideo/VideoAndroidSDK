@@ -9,8 +9,8 @@ import android.telecom.TelecomManager
 import androidx.annotation.RequiresApi
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToCurrentAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -182,7 +182,7 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
     @Deprecated("Deprecated in Java")
     override fun onCallAudioStateChanged(state: android.telecom.CallAudioState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
-        _currentAudioDevice.value = state.mapToCurrentAudioOutputDevice()
+        _currentAudioDevice.value = state.mapCurrentRouteToAudioOutputDevice()
         _availableAudioDevices.value = state.mapToAvailableAudioOutputDevices()
     }
 
