@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(windowSizeClass: WindowSizeClass) {
     val bottomSheetState = rememberCallUiBottomSheetState(initialValue = CallUiBottomSheetValue.HalfExpanded)
-    bottomSheetState.peekOffset = 32.dp
     val coroutineScope = rememberCoroutineScope()
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
@@ -61,8 +60,8 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
                     CallAction.Audio(),
                     CallAction.VirtualBackground(),
                     CallAction.Chat(),
-//                    CallAction.ScreenShare(),
-//                    CallAction.Whiteboard(),
+//                    CallAction.Camera(),
+//                    CallAction.Microphone(isToggled = true),
                 )
             ),
         ))
@@ -70,7 +69,6 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
 
     CallUiScaffold(
         windowSizeClass = windowSizeClass,
-        bottomSheetState = bottomSheetState,
         content = {
             Column(
                 modifier = Modifier
@@ -103,7 +101,7 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
             CallUiPrimaryActions(callActionsUiState = callActionsUiState.value, isSystemInDarkTheme = isSystemInDarkTheme)
         },
         secondaryActions = {
-            CallUiSecondaryActions(callActionsUiState = callActionsUiState.value, isSystemInDarkTheme = isSystemInDarkTheme)
+            CallUiSecondaryActions(callActionsUiState = callActionsUiState.value, bottomSheetState = bottomSheetState, isSystemInDarkTheme = isSystemInDarkTheme)
         },
     )
 }

@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.bottomsheetm3.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,28 +15,27 @@ fun <T> Table(
     modifier: Modifier = Modifier,
     columnCount: Int,
     data: List<T>,
-    cellContent: @Composable (index: Int, item: T) -> Unit,
+    cellContent: @Composable (index: Int, item: T, itemsPerRow: Int) -> Unit,
 ) {
     Box(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface).then(modifier)
     ) {
-        var rows = rowsCount(data.size, columnCount)
-        val lastRowColumns = data.size % columnCount
-        if (data.size % columnCount > 0) rows++
+        val rows = rowsCount(data.size, columnCount)
+        val lastRowElementsCount = lastRowItemsCount(data.size, columnCount)
         LazyColumn {
             items((1 .. rows).toList()) { row ->
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    if (lastRowColumns != 0 && row == rows) {
-                        items((1 .. lastRowColumns).toList()) { column ->
+                    if (lastRowElementsCount != 0 && row == rows) {
+                        items((1 .. lastRowElementsCount).toList()) { column ->
                             val index = row * column
-                            cellContent(row * column, data[index - 1])
+                            cellContent(row * column, data[index - 1], lastRowElementsCount)
                         }
                     } else {
                         items((1 .. columnCount).toList()) { column ->
                             val index = row * column
-                            cellContent(row * column, data[index - 1])
+                            cellContent(row * column, data[index - 1], columnCount)
                         }
                     }
                 }
@@ -47,3 +45,4 @@ fun <T> Table(
 }
 
 internal fun rowsCount(dataSize: Int, columnCount: Int): Int = (dataSize / columnCount).plus(if (dataSize % columnCount != 0) 1 else 0)
+internal fun lastRowItemsCount(dataSize: Int, columnCount: Int): Int = dataSize % columnCount

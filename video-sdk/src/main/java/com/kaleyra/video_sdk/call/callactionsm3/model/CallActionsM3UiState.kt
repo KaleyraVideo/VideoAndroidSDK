@@ -27,10 +27,4 @@ data class CallActionsM3UiState(
     val primaryActionList: ImmutableList<CallAction> = ImmutableList(emptyList()),
     val secondaryActionList: ImmutableList<CallAction> = ImmutableList(emptyList()),
     val message: String? = null
-) : UiState {
-
-
-//    fun copy(primaryActionList: ImmutableList<CallAction> = ImmutableList(emptyList()),
-//             secondaryActionList: ImmutableList<CallAction> = ImmutableList(emptyList()),
-//             message: String? = null): CallActionsM3UiState = CallActionsM3UiState(primaryActionList, secondaryActionList, message)
-}
+) : UiState

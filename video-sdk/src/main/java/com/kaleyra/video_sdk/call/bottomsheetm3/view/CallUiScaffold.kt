@@ -52,10 +52,7 @@ fun CallUiScaffold(
     windowSizeClass: WindowSizeClass,
     content: @Composable () -> Unit,
     primaryActions: @Composable () -> Unit,
-    bottomSheetState: CallUiBottomSheetState,
-    secondaryActions: @Composable BoxScope.() -> Unit,
-    sheetShape: Shape = RoundedCornerShape(16.dp),
-    sheetBackgroundColor: Color = Color.Transparent,
+    secondaryActions: @Composable () -> Unit,
 ) {
     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded || windowSizeClass.heightSizeClass == WindowHeightSizeClass.Expanded) {
         TabletCallUiScaffold(content, primaryActions, secondaryActions)
@@ -71,8 +68,64 @@ fun CallUiScaffold(
     }
 
     when (orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> LandscapeCallUiScaffold(content, primaryActions, bottomSheetState, secondaryActions, sheetShape, sheetBackgroundColor)
-        else -> PortraitCallUiScaffold(content, primaryActions, bottomSheetState, secondaryActions , sheetShape, sheetBackgroundColor)
+        Configuration.ORIENTATION_LANDSCAPE -> LandscapeCallUiScaffold(content, primaryActions, secondaryActions)
+        else -> PortraitCallUiScaffold(content, primaryActions, secondaryActions)
+    }
+}
+
+@Composable
+fun PortraitCallUiScaffold(
+    content: @Composable () -> Unit,
+    primaryActions: @Composable () -> Unit,
+    secondaryActions: @Composable () -> Unit,
+) {
+    // content
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(bottom = 116.dp)) {
+        content()
+    }
+
+    // call actions
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f))
+
+        // secondary actions
+        secondaryActions()
+
+        // primary actions
+        primaryActions()
+    }
+}
+
+@Composable
+fun LandscapeCallUiScaffold(
+    content: @Composable () -> Unit,
+    primaryActions: @Composable () -> Unit,
+    secondaryActions: @Composable () -> Unit
+) {
+    // content
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(end = 116.dp)) {
+        content()
+    }
+
+    // call actions
+    Row(modifier = Modifier
+        .fillMaxSize()) {
+
+        Spacer(modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f))
+
+        // secondary actions
+        secondaryActions()
+
+        // primary actions
+        primaryActions()
     }
 }
 
@@ -80,7 +133,7 @@ fun CallUiScaffold(
 fun TabletCallUiScaffold(
     content: @Composable () -> Unit,
     primaryActions: @Composable () -> Unit,
-    secondaryActions: @Composable BoxScope.() -> Unit) {
+    secondaryActions: @Composable () -> Unit) {
 
     // content
     Box(modifier = Modifier
@@ -110,207 +163,4 @@ fun TabletCallUiScaffold(
         // primary actions
         primaryActions()
     }
-}
-
-@Composable
-fun LandscapeCallUiScaffold(
-    content: @Composable () -> Unit,
-    primaryActions: @Composable () -> Unit,
-    bottomSheetState: CallUiBottomSheetState,
-    secondaryActions: @Composable BoxScope.() -> Unit,
-    sheetShape: Shape = RoundedCornerShape(16.dp),
-    sheetBackgroundColor: Color = Color.Transparent,
-) {
-    var sheetWidth by remember { mutableIntStateOf(0) }
-    var sheetOffset by remember { mutableIntStateOf(0) }
-
-    val bottomSheetNestedScrollConnection = remember(bottomSheetState.draggableState) {
-        CallUiBottomSheetNestedScrollConnection(
-            state = bottomSheetState.draggableState,
-            orientation = Orientation.Horizontal
-        )
-    }
-
-    // content
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(end = 116.dp)) {
-        content()
-    }
-
-    // call actions
-    Row(modifier = Modifier
-        .fillMaxSize()) {
-
-        Spacer(modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f))
-
-        // secondary actions
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .wrapContentWidth()
-                .graphicsLayer { clip = true }
-                .onSizeChanged {
-                    sheetWidth = it.width
-                    if (sheetWidth <= 0) return@onSizeChanged
-                    bottomSheetState.updateAnchors(sheetWidth)
-                    sheetOffset = bottomSheetState
-                        .requireOffset()
-                        .roundToInt()
-                }
-                .offset {
-                    val offset = if (bottomSheetState.draggableState.offset.isNaN()) 0 else bottomSheetState
-                        .requireOffset()
-                        .roundToInt()
-                    println(offset)
-                    IntOffset(
-                        x = offset,
-                        y = 0
-                    )
-                }
-                .anchoredDraggable(
-                    state = bottomSheetState.draggableState,
-                    orientation = Orientation.Horizontal
-                )
-                .nestedScroll(bottomSheetNestedScrollConnection)
-                .background(sheetBackgroundColor, sheetShape),
-            content = {
-                secondaryActions()
-            }
-        )
-
-        // primary actions
-        primaryActions()
-    }
-}
-
-@Composable
-fun PortraitCallUiScaffold(
-    content: @Composable () -> Unit,
-    primaryActions: @Composable () -> Unit,
-    bottomSheetState: CallUiBottomSheetState,
-    secondaryActions: @Composable BoxScope.() -> Unit,
-    sheetShape: Shape = RoundedCornerShape(16.dp),
-    sheetBackgroundColor: Color = Color.Transparent,
-) {
-    var sheetHeight by remember { mutableIntStateOf(0) }
-    var sheetOffset by remember { mutableIntStateOf(0) }
-
-    val bottomSheetNestedScrollConnection = remember(bottomSheetState.draggableState) {
-        CallUiBottomSheetNestedScrollConnection(
-            state = bottomSheetState.draggableState,
-            orientation = Orientation.Vertical
-        )
-    }
-
-    val modifier = Modifier
-
-    // content
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(bottom = 116.dp)) {
-        content()
-    }
-
-    // call actions
-    Column(modifier = modifier
-        .fillMaxSize()) {
-
-        Spacer(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f))
-
-        // secondary actions
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .graphicsLayer { clip = true }
-                .onSizeChanged {
-                    sheetHeight = it.height
-                    if (sheetHeight <= 0) return@onSizeChanged
-                    bottomSheetState.updateAnchors(sheetHeight)
-                    sheetOffset = bottomSheetState
-                        .requireOffset()
-                        .roundToInt()
-                }
-                .offset {
-                    val offset = if (bottomSheetState.draggableState.offset.isNaN()) 0 else bottomSheetState
-                        .requireOffset()
-                        .roundToInt()
-                    println(offset)
-                    IntOffset(
-                        x = 0,
-                        y = offset
-                    )
-                }
-                .anchoredDraggable(
-                    state = bottomSheetState.draggableState,
-                    orientation = Orientation.Vertical
-                )
-                .nestedScroll(bottomSheetNestedScrollConnection)
-                .background(sheetBackgroundColor, sheetShape),
-            content = secondaryActions
-        )
-
-        // primary actions
-        primaryActions()
-    }
-}
-
-private fun CallUiBottomSheetNestedScrollConnection(
-    state: AnchoredDraggableState<CallUiBottomSheetValue>,
-    orientation: Orientation
-): NestedScrollConnection = object : NestedScrollConnection {
-
-    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-        val delta = available.offsetToFloat()
-        return if (delta < 0 && source == NestedScrollSource.Drag) {
-            state.dispatchRawDelta(delta).toOffset()
-        } else {
-            Offset.Zero
-        }
-    }
-
-    override fun onPostScroll(
-        consumed: Offset,
-        available: Offset,
-        source: NestedScrollSource
-    ): Offset {
-        val delta = available.offsetToFloat()
-        return if (source == NestedScrollSource.Drag) {
-            state.dispatchRawDelta(delta).toOffset()
-        } else {
-            Offset.Zero
-        }
-    }
-
-    override suspend fun onPreFling(available: Velocity): Velocity {
-        val toFling = available.velocityToFloat()
-        val currentOffset = state.requireOffset()
-        return if (toFling < 0 && currentOffset > state.anchors.minAnchor()) {
-            state.settle(toFling)
-            available
-        } else {
-            Velocity.Zero
-        }
-    }
-
-    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-        val toFling = available.velocityToFloat()
-        state.settle(toFling)
-        return available
-    }
-
-
-    private fun Offset.offsetToFloat(): Float = if (orientation == Orientation.Horizontal) x else y
-
-    private fun Float.toOffset(): Offset = Offset(
-        x = if (orientation == Orientation.Horizontal) this else 0f,
-        y = if (orientation == Orientation.Vertical) this else 0f
-    )
-
-    private fun Velocity.velocityToFloat() = if (orientation == Orientation.Horizontal) x else y
 }

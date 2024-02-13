@@ -73,13 +73,12 @@ private fun CallUiPhonePortraitPrimaryActions(
         BoxWithConstraints(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-            val itemsCount = callActionsUiState.primaryActionList.value.count()
             Table(
                 columnCount = itemsPerRow,
                 data = callActionsUiState.primaryActionList.value,
-                cellContent = { index, action ->
-                    val itemWidth = portraitActionWidth(maxWidth = maxWidth, maxItemsPerRow = 5, itemsPerRow = itemsCount, index = index)
-                    val containerWidth = portraitActionContainerWidth(index = index, itemsCount = itemsCount, maxWidth = maxWidth)
+                cellContent = { index, action, itemsPerRow ->
+                    val itemWidth = portraitActionWidth(maxWidth = maxWidth, maxItemsPerRow = 5, itemsPerRow = itemsPerRow, index = index)
+                    val containerWidth = portraitActionContainerWidth(index = index, itemsCount = itemsPerRow, maxWidth = maxWidth)
 
                     Box(modifier = Modifier, contentAlignment = Alignment.Center) {
                         Column {
@@ -129,25 +128,6 @@ private fun CallUiPhonePortraitPrimaryActions(
                     }
                 })
         }
-    }
-}
-
-internal fun portraitActionContainerWidth(index: Int, itemsCount: Int, maxWidth: Dp) = when {
-    itemsCount == 1 -> maxWidth
-    itemsCount == 2 -> maxWidth / 2
-    itemsCount == 3 && index == itemsCount -> (maxWidth / 5) * 3
-    itemsCount == 4 && index == itemsCount -> (maxWidth / 5) * 2
-    else -> maxWidth / 5
-}
-
-internal fun portraitActionWidth(maxWidth: Dp, itemsPerRow: Int, maxItemsPerRow: Int = 5, index: Int): Dp {
-    val spacerWidth = (maxWidth - (maxItemsPerRow * 48).dp) / 4
-    return when (itemsPerRow) {
-        1 -> maxWidth
-        2 -> (maxWidth - spacerWidth) / 2
-        3 -> if (index < 3) 48.dp else 144.dp + spacerWidth * 2
-        4 -> if (index < 4) 48.dp else 96.dp + spacerWidth
-        else -> 48.dp
     }
 }
 
@@ -227,5 +207,24 @@ private fun CallUiPhoneLandscapePrimaryActions(
                 .width(32.dp)
                 .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(bottomEnd = 16.dp, topEnd = 16.dp)))
         }
+    }
+}
+
+internal fun portraitActionContainerWidth(index: Int, itemsCount: Int, maxWidth: Dp) = when {
+    itemsCount == 1 -> maxWidth
+    itemsCount == 2 -> maxWidth / 2
+    itemsCount == 3 && index == itemsCount -> (maxWidth / 5) * 3
+    itemsCount == 4 && index == itemsCount -> (maxWidth / 5) * 2
+    else -> maxWidth / 5
+}
+
+internal fun portraitActionWidth(maxWidth: Dp, itemsPerRow: Int, maxItemsPerRow: Int = 5, index: Int): Dp {
+    val spacerWidth = (maxWidth - (maxItemsPerRow * 48).dp) / 4
+    return when (itemsPerRow) {
+        1 -> maxWidth
+        2 -> (maxWidth - spacerWidth) / 2
+        3 -> if (index < 3) 48.dp else 144.dp + spacerWidth * 2
+        4 -> if (index < 4) 48.dp else 96.dp + spacerWidth
+        else -> 48.dp
     }
 }
