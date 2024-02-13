@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.telecom.Connection
 import androidx.test.core.app.ApplicationProvider
 import com.bandyer.android_audiosession.sounds.CallSound
@@ -26,6 +27,9 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
+import com.kaleyra.video_utils.logging.BaseLogger
+import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -73,10 +77,21 @@ class PhoneConnectionServiceTest {
 
     private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
+    private val coroutineScope = MainScope()
+
+    private val logger = object : PriorityLogger(BaseLogger.VERBOSE) {
+        override fun debug(tag: String, message: String) = Unit
+        override fun error(tag: String, message: String) = Unit
+        override fun info(tag: String, message: String) = Unit
+        override fun verbose(tag: String, message: String) = Unit
+        override fun warn(tag: String, message: String) = Unit
+    }
+
     @Before
     fun setup() {
         service = spyk(Robolectric.setupService(PhoneConnectionService::class.java))
-        service!!.setPrivateField("coroutineScope", MainScope())
+        service!!.setPrivateField("coroutineScope", coroutineScope)
+        PhoneConnectionService.logger = logger
         notificationBuilder = Notification.Builder(service)
             .setSmallIcon(1)
             .setContentTitle("Test")
@@ -106,6 +121,7 @@ class PhoneConnectionServiceTest {
 
     @After
     fun tearDown() {
+        PhoneConnectionService.logger = null
         unmockkAll()
     }
 
@@ -117,15 +133,15 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun testOnDestroy() {
-        mockkObject(CollaborationAudioExtensions)
-        val uri = Uri.parse("")
-        every { connectionMock.address } returns uri
-        service!!.onCreateOutgoingConnection(mockk(), mockk())
-        service!!.onDestroy()
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
-        verify(exactly = 1) { ContactsController.deleteConnectionServiceContact(service!!, uri) }
-        verify(exactly = 1) { callMock.disableAudioRouting(any()) }
-        unmockkObject(CollaborationAudioExtensions)
+        mockkObject(CollaborationAudioExtensions) {
+            val uri = Uri.parse("")
+            every { connectionMock.address } returns uri
+            service!!.onCreateOutgoingConnection(mockk(), mockk())
+            service!!.onDestroy()
+            verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
+            verify(exactly = 1) { ContactsController.deleteConnectionServiceContact(service!!, uri) }
+            verify(exactly = 1) { callMock.disableAudioRouting(any()) }
+        }
     }
 
     @Test
@@ -215,11 +231,28 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun testOnCreateOutgoingConnection() {
-        val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
-        assertEquals(connectionMock, createdConnection)
-        verify { connectionMock.setDialing() }
-        verify { connectionMock.addListener(service!!) }
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
+        mockkObject(CollaborationAudioExtensions) {
+            val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk()) as CallConnection
+            assertEquals(connectionMock, createdConnection)
+            verify { connectionMock.setDialing() }
+            verify { connectionMock.addListener(service!!) }
+            verify(exactly = 1) {
+                anyConstructed<CallForegroundServiceWorker>().bind(
+                    service!!,
+                    callMock
+                )
+            }
+            verify(exactly = 1) {
+                callMock.enableAudioRouting(
+                    createdConnection,
+                    createdConnection.currentAudioDevice,
+                    createdConnection.availableAudioDevices,
+                    true,
+                    logger,
+                    coroutineScope
+                )
+            }
+        }
     }
 
     @Test
@@ -311,11 +344,14 @@ class PhoneConnectionServiceTest {
 
     @Test
     fun testOnShowIncomingCallUi() {
-        val connection = mockk<CallConnection>(relaxed = true)
-        service!!.onShowIncomingCallUi(connection)
-        verify { connection.setRinging() }
-        verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
-        verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
+        mockkObject(CollaborationAudioExtensions) {
+            val connection = mockk<CallConnection>(relaxed = true)
+            service!!.onShowIncomingCallUi(connection)
+            verify { connection.setRinging() }
+            verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
+            verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
+            verify(exactly = 1) { callMock.enableAudioRouting(connection, connection.currentAudioDevice, connection.availableAudioDevices, true, logger, coroutineScope) }
+        }
     }
 
     @Test

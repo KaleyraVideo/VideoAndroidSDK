@@ -23,6 +23,7 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
+import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,6 +39,9 @@ import kotlinx.coroutines.launch
 class PhoneConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
 
     companion object {
+
+        var logger: PriorityLogger? = null
+
         private var connection: CallConnection? = null
 
         fun answer() {
@@ -113,7 +117,14 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
     private fun configureService(call: CallUI, connection: CallConnection) {
         this.call = call
-        call.enableAudioRouting(connection, connection.currentAudioDevice, connection.availableAudioDevices)
+        call.enableAudioRouting(
+            connection = connection,
+            currentDevice = connection.currentAudioDevice,
+            availableDevices = connection.availableAudioDevices,
+            withCallSounds = true,
+            logger = logger,
+            coroutineScope
+        )
         callForegroundServiceWorker.bind(this, call)
         if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
             call.showOnAppResumed(coroutineScope)
