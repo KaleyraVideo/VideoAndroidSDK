@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-class PhoneConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
+class CallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
 
     companion object {
 
@@ -44,6 +44,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
         private var connection: CallConnection? = null
 
+        // TODO revise if it is needed
         fun answer() {
             connection?.onAnswer()
         }
@@ -52,7 +53,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
             connection?.onReject()
         }
 
-        fun end() {
+        fun hangUp() {
             connection?.onDisconnect()
         }
     }
@@ -104,7 +105,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
     private fun createConnection(request: ConnectionRequest, call: CallUI): CallConnection {
         return CallConnection.create(request = request, call = call).apply {
             connection = this
-            addListener(this@PhoneConnectionService)
+            addListener(this@CallConnectionService)
         }
     }
 
@@ -140,7 +141,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
                 participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
             }
             createOrUpdateConnectionServiceContact(
-                this@PhoneConnectionService,
+                this@CallConnectionService,
                 connection.address,
                 callee
             )
@@ -149,7 +150,7 @@ class PhoneConnectionService : ConnectionService(), CallForegroundService, CallN
 
     override fun onConnectionStateChange(connection: CallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
-        connection.removeListener(this@PhoneConnectionService)
+        connection.removeListener(this@CallConnectionService)
         stopForegroundService()
         stopSelf()
     }

@@ -6,7 +6,6 @@ import android.app.Service
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.telecom.Connection
 import androidx.test.core.app.ApplicationProvider
 import com.bandyer.android_audiosession.sounds.CallSound
@@ -56,12 +55,12 @@ import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class PhoneConnectionServiceTest {
+class CallConnectionServiceTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private var service: PhoneConnectionService? = null
+    private var service: CallConnectionService? = null
 
     private var notificationBuilder: Notification.Builder? = null
 
@@ -89,9 +88,9 @@ class PhoneConnectionServiceTest {
 
     @Before
     fun setup() {
-        service = spyk(Robolectric.setupService(PhoneConnectionService::class.java))
+        service = spyk(Robolectric.setupService(CallConnectionService::class.java))
         service!!.setPrivateField("coroutineScope", coroutineScope)
-        PhoneConnectionService.logger = logger
+        CallConnectionService.logger = logger
         notificationBuilder = Notification.Builder(service)
             .setSmallIcon(1)
             .setContentTitle("Test")
@@ -121,7 +120,7 @@ class PhoneConnectionServiceTest {
 
     @After
     fun tearDown() {
-        PhoneConnectionService.logger = null
+        CallConnectionService.logger = null
         unmockkAll()
     }
 
@@ -265,28 +264,28 @@ class PhoneConnectionServiceTest {
     @Test
     fun testIncomingConnectionAnswer() {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        PhoneConnectionService.answer()
+        CallConnectionService.answer()
         verify(exactly = 1) { createdConnection.onAnswer() }
     }
 
     @Test
     fun testIncomingConnectionReject() {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        PhoneConnectionService.reject()
+        CallConnectionService.reject()
         verify(exactly = 1) { createdConnection.onReject() }
     }
 
     @Test
     fun testIncomingConnectionEnd() {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        PhoneConnectionService.hangUp()
+        CallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
     fun testOutgoingConnectionEnd() {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
-        PhoneConnectionService.hangUp()
+        CallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 

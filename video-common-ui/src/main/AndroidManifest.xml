@@ -45,7 +45,7 @@
 
     <application>
         <service
-            android:name=".connectionservice.PhoneConnectionService"
+            android:name=".connectionservice.CallConnectionService"
             android:exported="true"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">

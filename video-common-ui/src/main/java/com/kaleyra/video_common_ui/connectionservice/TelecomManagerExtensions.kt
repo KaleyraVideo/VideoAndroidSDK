@@ -19,7 +19,7 @@ object TelecomManagerExtensions {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.getPhoneAccountHandle(context: Context): PhoneAccountHandle {
-        val componentName = ComponentName(context, PhoneConnectionService::class.java)
+        val componentName = ComponentName(context, CallConnectionService::class.java)
         return PhoneAccountHandle(componentName, getConnectionServiceId(context))
     }
 
