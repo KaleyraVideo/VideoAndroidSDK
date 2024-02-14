@@ -26,7 +26,12 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.utils.AppLifecycle
+import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
+import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -35,9 +40,12 @@ import kotlinx.coroutines.flow.launchIn
 /**
  * The CallService
  */
-internal class CallService: LifecycleService(), CallForegroundService, CallNotificationProducer.Listener {
+internal class CallService : LifecycleService(), CallForegroundService, CallNotificationProducer.Listener {
 
     companion object {
+
+        var logger: PriorityLogger? = null
+
         fun start() = with(ContextRetainer.context) {
             stop()
             val intent = Intent(this, CallService::class.java)
@@ -53,13 +61,26 @@ internal class CallService: LifecycleService(), CallForegroundService, CallNotif
 
     private var foregroundJob: Job? = null
 
+    private var call: Call? = null
+
     /**
      * @suppress
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        val call = KaleyraVideo.conference.call.replayCache.first()
+        val call = KaleyraVideo.conference.call.replayCache.first().apply {
+            call = this
+        }
         callForegroundServiceWorker.bind(this, call)
+        call.enableAudioRouting(
+            withCallSounds = true,
+            logger = logger,
+            coroutineScope = lifecycleScope,
+            isLink = call.isLink
+        )
+        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
+            call.showOnAppResumed(lifecycleScope)
+        }
         return START_STICKY
     }
 
@@ -69,8 +90,10 @@ internal class CallService: LifecycleService(), CallForegroundService, CallNotif
     override fun onDestroy() {
         super.onDestroy()
         callForegroundServiceWorker.dispose()
+        call?.disableAudioRouting()
         foregroundJob?.cancel()
         foregroundJob = null
+        call = null
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
