@@ -65,7 +65,7 @@ jobs:
         run: sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ github.event.inputs.specific_release_version || github.event.inputs.release_version }}'"/g' ./app/build.gradle
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update sdk version
+          commit_message: "chore: Update sdk version"
           tagging_message: ${{ steps.output_tag.outputs.TAG }}
 
   update_bom_version:
