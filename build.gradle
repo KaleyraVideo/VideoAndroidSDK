@@ -51,8 +51,6 @@ buildscript {
         // Documentation
         classpath "org.jetbrains.dokka:dokka-core:${catalog.versions.jetbrainsDokkaVersion.get()}"
 
-        // Firebase crashlytics
-        classpath "com.google.firebase:firebase-crashlytics-gradle:${sampleAppCatalog.plugins.firebaseCrashlytics.get().version}"
 
         // Push notifications
         classpath "com.google.gms:google-services:${sampleAppCatalog.plugins.gmsGoogleServices.get().version}"
