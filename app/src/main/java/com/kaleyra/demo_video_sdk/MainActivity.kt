@@ -15,25 +15,19 @@
  */
 package com.kaleyra.demo_video_sdk
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -52,7 +46,6 @@ import com.kaleyra.app_utilities.notification.requestPushNotificationPermissionA
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.LoginManager
 import com.kaleyra.app_utilities.storage.LoginManager.isUserLogged
-import com.kaleyra.demo_video_sdk.R.drawable
 import com.kaleyra.demo_video_sdk.R.id
 import com.kaleyra.demo_video_sdk.R.layout
 import com.kaleyra.demo_video_sdk.R.string
@@ -65,7 +58,6 @@ import com.kaleyra.demo_video_sdk.ui.adapter_items.SelectedUserItem
 import com.kaleyra.demo_video_sdk.ui.adapter_items.UserSelectionItem
 import com.kaleyra.demo_video_sdk.ui.custom_views.CallConfiguration
 import com.kaleyra.demo_video_sdk.ui.custom_views.CustomConfigurationDialog
-import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIActions
 import com.kaleyra.video.State
 import com.kaleyra.video.State.Disconnected
 import com.kaleyra.video.Synchronization
@@ -165,11 +157,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             if (it is Call.State.Connecting) showOngoingCallLabel()
         }.launchIn(lifecycleScope)
 
-        if (!hasPermission()) {
-            askPermissions()
-            return
-        }
-
         KaleyraVideo.conference.call
             .flatMapLatest { it.recording }
             .flatMapLatest { it.state }
@@ -177,38 +164,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             .onEach {
                 Snackbar.make(window.decorView, it.toString(), Snackbar.LENGTH_SHORT).show()
             }.launchIn(lifecycleScope)
-    }
-
-    private fun hasPermission() =
-        ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.MANAGE_OWN_CALLS
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_PHONE_NUMBERS
-                ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_CONTACTS
-                ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_CONTACTS
-                ) == PackageManager.PERMISSION_GRANTED
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun askPermissions() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.MANAGE_OWN_CALLS,
-                Manifest.permission.READ_PHONE_NUMBERS,
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.WRITE_CONTACTS,
-            ),
-            11
-        )
     }
 
     override fun onPause() {
@@ -256,7 +211,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         }
         intent.action = null
     }
-
 
     /**
      * There are two ways to use a link:
