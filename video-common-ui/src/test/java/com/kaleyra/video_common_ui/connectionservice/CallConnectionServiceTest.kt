@@ -41,7 +41,9 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertNotEquals
@@ -122,6 +124,7 @@ class CallConnectionServiceTest {
     @After
     fun tearDown() {
         CallConnectionService.logger = null
+        service!!.onDestroy()
         unmockkAll()
     }
 
@@ -257,36 +260,83 @@ class CallConnectionServiceTest {
 
     @Test
     fun testOnCreateIncomingConnection() {
-        val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        assertEquals(connectionMock, createdConnection)
-        verify { connectionMock.addListener(service!!) }
+        mockkObject(CollaborationAudioExtensions) {
+            val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk()) as CallConnection
+            assertEquals(connectionMock, createdConnection)
+            verify { connectionMock.setRinging() }
+            verify { connectionMock.addListener(service!!) }
+            verify(exactly = 1) {
+                anyConstructed<CallForegroundServiceWorker>().bind(
+                    service!!,
+                    callMock
+                )
+            }
+            verify(exactly = 1) {
+                callMock.enableAudioRouting(
+                    createdConnection,
+                    createdConnection.currentAudioDevice,
+                    createdConnection.availableAudioDevices,
+                    true,
+                    logger,
+                    coroutineScope
+                )
+            }
+        }
     }
 
     @Test
-    fun testIncomingConnectionAnswer() = runTest {
+    fun testIncomingConnectionAnswerAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.answer()
         verify(exactly = 1) { createdConnection.onAnswer() }
     }
 
     @Test
-    fun testIncomingConnectionReject() = runTest {
+    fun testIncomingConnectionAnswerBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch { CallConnectionService.answer() }
+        val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
+        verify(exactly = 1) { createdConnection.onAnswer() }
+    }
+
+    @Test
+    fun testIncomingConnectionRejectAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.reject()
         verify(exactly = 1) { createdConnection.onReject() }
     }
 
     @Test
-    fun testIncomingConnectionEnd() = runTest {
+    fun testIncomingConnectionRejectBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch { CallConnectionService.reject() }
+        val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
+        verify(exactly = 1) { createdConnection.onReject() }
+    }
+
+    @Test
+    fun testIncomingConnectionEndAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
-    fun testOutgoingConnectionEnd() = runTest {
+    fun testIncomingConnectionEndBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch { CallConnectionService.hangUp() }
+        val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
+        verify(exactly = 1) { createdConnection.onDisconnect() }
+    }
+
+    @Test
+    fun testOutgoingConnectionEndAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
         CallConnectionService.hangUp()
+        verify(exactly = 1) { createdConnection.onDisconnect() }
+    }
+
+    @Test
+    fun testOutgoingConnectionEndBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch { CallConnectionService.hangUp() }
+        val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
@@ -315,10 +365,7 @@ class CallConnectionServiceTest {
         mockkObject(CollaborationAudioExtensions) {
             val connection = mockk<CallConnection>(relaxed = true)
             service!!.onShowIncomingCallUi(connection)
-            verify { connection.setRinging() }
-            verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
             verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
-            verify(exactly = 1) { callMock.enableAudioRouting(connection, connection.currentAudioDevice, connection.availableAudioDevices, true, logger, coroutineScope) }
         }
     }
 
