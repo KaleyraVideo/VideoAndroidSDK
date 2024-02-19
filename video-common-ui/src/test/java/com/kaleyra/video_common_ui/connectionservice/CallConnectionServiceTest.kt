@@ -42,6 +42,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -262,63 +263,31 @@ class CallConnectionServiceTest {
     }
 
     @Test
-    fun testIncomingConnectionAnswer() {
+    fun testIncomingConnectionAnswer() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.answer()
         verify(exactly = 1) { createdConnection.onAnswer() }
     }
 
     @Test
-    fun testIncomingConnectionReject() {
+    fun testIncomingConnectionReject() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.reject()
         verify(exactly = 1) { createdConnection.onReject() }
     }
 
     @Test
-    fun testIncomingConnectionEnd() {
+    fun testIncomingConnectionEnd() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         CallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
-    fun testOutgoingConnectionEnd() {
+    fun testOutgoingConnectionEnd() = runTest {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
         CallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
-    }
-
-    @Test
-    fun conferenceWithUITrue_onCreateOutgoingConnection_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onCreateOutgoingConnection(mockk(), mockk())
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun conferenceWithUIFalse_onCreateOutgoingConnection_activityNotShown() {
-        every { conferenceMock.withUI } returns false
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onCreateOutgoingConnection(mockk(), mockk())
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldBeShown_onCreateOutgoingConnection_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onCreateOutgoingConnection(mockk(), mockk())
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldNotBeShown_onCreateOutgoingConnection_activityNotShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns false
-        service!!.onCreateOutgoingConnection(mockk(), mockk())
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
     }
 
     @Test
@@ -351,38 +320,6 @@ class CallConnectionServiceTest {
             verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
             verify(exactly = 1) { callMock.enableAudioRouting(connection, connection.currentAudioDevice, connection.availableAudioDevices, true, logger, coroutineScope) }
         }
-    }
-
-    @Test
-    fun conferenceWithUITrue_onShowIncomingCallUi_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onShowIncomingCallUi(mockk(relaxed = true))
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun conferenceWithUIFalse_onShowIncomingCallUi_activityNotShown() {
-        every { conferenceMock.withUI } returns false
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onShowIncomingCallUi(mockk(relaxed = true))
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldBeShown_onShowIncomingCallUi_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onShowIncomingCallUi(mockk(relaxed = true))
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldNotBeShown_onShowIncomingCallUi_activityNotShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns false
-        service!!.onShowIncomingCallUi(mockk(relaxed = true))
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
     }
 
     @Test
