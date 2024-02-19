@@ -7,12 +7,10 @@ import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
 import com.bandyer.android_audiosession.sounds.CallSound
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.ConnectionServiceBehaviour
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
@@ -21,13 +19,8 @@ import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
-import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
-import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isActivityRunning
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
-import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +35,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-class CallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
+class KaleyraCallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
 
     companion object {
 
@@ -113,7 +106,7 @@ class CallConnectionService : ConnectionService(), CallForegroundService, CallNo
     private fun createConnection(request: ConnectionRequest, call: CallUI): CallConnection {
         return CallConnection.create(request = request, call = call).apply {
             connection.value = this
-            addListener(this@CallConnectionService)
+            addListener(this@KaleyraCallConnectionService)
             configureService(call, this)
         }
     }
@@ -145,7 +138,7 @@ class CallConnectionService : ConnectionService(), CallForegroundService, CallNo
                 participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
             }
             createOrUpdateConnectionServiceContact(
-                this@CallConnectionService,
+                this@KaleyraCallConnectionService,
                 connection.address,
                 callee
             )
@@ -154,7 +147,7 @@ class CallConnectionService : ConnectionService(), CallForegroundService, CallNo
 
     override fun onConnectionStateChange(connection: CallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
-        connection.removeListener(this@CallConnectionService)
+        connection.removeListener(this@KaleyraCallConnectionService)
         stopForegroundService()
         stopSelf()
     }

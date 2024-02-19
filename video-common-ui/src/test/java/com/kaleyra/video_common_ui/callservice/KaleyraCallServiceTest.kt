@@ -47,12 +47,12 @@ import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class CallServiceTest {
+class KaleyraCallServiceTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private var service: CallService? = null
+    private var service: KaleyraCallService? = null
 
     private var notificationBuilder: Notification.Builder? = null
 
@@ -72,8 +72,8 @@ class CallServiceTest {
 
     @Before
     fun setup() {
-        service = Robolectric.setupService(CallService::class.java)
-        CallService.logger = logger
+        service = Robolectric.setupService(KaleyraCallService::class.java)
+        KaleyraCallService.logger = logger
         notificationBuilder = Notification.Builder(service)
             .setSmallIcon(1)
             .setContentTitle("Test")
@@ -100,27 +100,27 @@ class CallServiceTest {
 
     @After
     fun tearDown() {
-        CallService.logger = null
+        KaleyraCallService.logger = null
         unmockkAll()
     }
 
     @Test
     fun testStartService() {
         every { ContextRetainer.context } returns service!!.applicationContext
-        CallService.start()
+        KaleyraCallService.start()
         val startedIntent: Intent = shadowOf(service!!).nextStartedService
         val shadowIntent = shadowOf(startedIntent)
-        assertEquals(CallService::class.java, shadowIntent.intentClass)
+        assertEquals(KaleyraCallService::class.java, shadowIntent.intentClass)
     }
 
     @Test
     fun testStopService() {
         mockkObject(ContextRetainer)
         every { ContextRetainer.context } returns service!!.applicationContext
-        CallService.stop()
+        KaleyraCallService.stop()
         val startedIntent: Intent = shadowOf(service!!).nextStoppedService
         val shadowIntent = shadowOf(startedIntent)
-        assertEquals(CallService::class.java, shadowIntent.intentClass)
+        assertEquals(KaleyraCallService::class.java, shadowIntent.intentClass)
     }
 
     @Test

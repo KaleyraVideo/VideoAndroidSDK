@@ -26,8 +26,6 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.utils.AppLifecycle
-import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
-import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import com.kaleyra.video_utils.ContextRetainer
@@ -40,20 +38,20 @@ import kotlinx.coroutines.flow.launchIn
 /**
  * The CallService
  */
-internal class CallService : LifecycleService(), CallForegroundService, CallNotificationProducer.Listener {
+class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotificationProducer.Listener {
 
     companion object {
 
         var logger: PriorityLogger? = null
 
-        fun start() = with(ContextRetainer.context) {
-            stop()
-            val intent = Intent(this, CallService::class.java)
+        fun start(logger: PriorityLogger? = null) = with(ContextRetainer.context) {
+            KaleyraCallService.logger = logger
+            val intent = Intent(this, KaleyraCallService::class.java)
             startService(intent)
         }
 
         fun stop() = with(ContextRetainer.context) {
-            stopService(Intent(this, CallService::class.java))
+            stopService(Intent(this, KaleyraCallService::class.java))
         }
     }
 
@@ -78,9 +76,9 @@ internal class CallService : LifecycleService(), CallForegroundService, CallNoti
             coroutineScope = lifecycleScope,
             isLink = call.isLink
         )
-        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
-            call.showOnAppResumed(lifecycleScope)
-        }
+//        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
+//            call.showOnAppResumed(lifecycleScope)
+//        }
         return START_STICKY
     }
 
@@ -93,6 +91,7 @@ internal class CallService : LifecycleService(), CallForegroundService, CallNoti
         call?.disableAudioRouting()
         foregroundJob?.cancel()
         foregroundJob = null
+        logger = null
         call = null
     }
 

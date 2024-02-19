@@ -43,7 +43,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertNotEquals
@@ -58,12 +57,12 @@ import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class CallConnectionServiceTest {
+class KaleyraCallConnectionServiceTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private var service: CallConnectionService? = null
+    private var service: KaleyraCallConnectionService? = null
 
     private var notificationBuilder: Notification.Builder? = null
 
@@ -91,9 +90,9 @@ class CallConnectionServiceTest {
 
     @Before
     fun setup() {
-        service = spyk(Robolectric.setupService(CallConnectionService::class.java))
+        service = spyk(Robolectric.setupService(KaleyraCallConnectionService::class.java))
         service!!.setPrivateField("coroutineScope", coroutineScope)
-        CallConnectionService.logger = logger
+        KaleyraCallConnectionService.logger = logger
         notificationBuilder = Notification.Builder(service)
             .setSmallIcon(1)
             .setContentTitle("Test")
@@ -123,7 +122,7 @@ class CallConnectionServiceTest {
 
     @After
     fun tearDown() {
-        CallConnectionService.logger = null
+        KaleyraCallConnectionService.logger = null
         service!!.onDestroy()
         unmockkAll()
     }
@@ -287,13 +286,13 @@ class CallConnectionServiceTest {
     @Test
     fun testIncomingConnectionAnswerAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        CallConnectionService.answer()
+        KaleyraCallConnectionService.answer()
         verify(exactly = 1) { createdConnection.onAnswer() }
     }
 
     @Test
     fun testIncomingConnectionAnswerBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { CallConnectionService.answer() }
+        backgroundScope.launch { KaleyraCallConnectionService.answer() }
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         verify(exactly = 1) { createdConnection.onAnswer() }
     }
@@ -301,13 +300,13 @@ class CallConnectionServiceTest {
     @Test
     fun testIncomingConnectionRejectAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        CallConnectionService.reject()
+        KaleyraCallConnectionService.reject()
         verify(exactly = 1) { createdConnection.onReject() }
     }
 
     @Test
     fun testIncomingConnectionRejectBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { CallConnectionService.reject() }
+        backgroundScope.launch { KaleyraCallConnectionService.reject() }
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         verify(exactly = 1) { createdConnection.onReject() }
     }
@@ -315,13 +314,13 @@ class CallConnectionServiceTest {
     @Test
     fun testIncomingConnectionEndAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
-        CallConnectionService.hangUp()
+        KaleyraCallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
     fun testIncomingConnectionEndBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { CallConnectionService.hangUp() }
+        backgroundScope.launch { KaleyraCallConnectionService.hangUp() }
         val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk())
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
@@ -329,13 +328,13 @@ class CallConnectionServiceTest {
     @Test
     fun testOutgoingConnectionEndAfterInitialization() = runTest {
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
-        CallConnectionService.hangUp()
+        KaleyraCallConnectionService.hangUp()
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }
 
     @Test
     fun testOutgoingConnectionEndBeforeInitialization() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { CallConnectionService.hangUp() }
+        backgroundScope.launch { KaleyraCallConnectionService.hangUp() }
         val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk())
         verify(exactly = 1) { createdConnection.onDisconnect() }
     }

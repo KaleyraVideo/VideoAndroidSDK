@@ -8,7 +8,7 @@ import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ApplicationProvider
-import com.kaleyra.video_common_ui.connectionservice.CallConnectionService
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addIncomingCall
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.getOrRegisterPhoneAccount
@@ -36,7 +36,7 @@ internal class TelecomManagerExtensionsTest {
     fun testGetPhoneAccountHandle() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
-        val componentName = ComponentName(context, CallConnectionService::class.java)
+        val componentName = ComponentName(context, KaleyraCallConnectionService::class.java)
         val accountHandle = PhoneAccountHandle(componentName, context.applicationContext.packageName + ".connectionService")
         assertEquals(accountHandle, telecomManager.getPhoneAccountHandle(context))
     }
