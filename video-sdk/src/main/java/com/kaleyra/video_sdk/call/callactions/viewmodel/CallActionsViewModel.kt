@@ -26,6 +26,8 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -190,9 +192,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) PhoneConnectionService.end()
-//        else call.getValue()?.end()
-        call.getValue()?.end()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+        else call.getValue()?.end()
     }
 
     fun showChat(context: Context) {

@@ -34,7 +34,7 @@ import com.kaleyra.video_common_ui.ConnectionServiceSetting
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.canConnectionServiceStart
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
@@ -223,9 +223,9 @@ class CallViewModelTest {
     @Test
     fun testShouldAskConnectionServicePermissionsFlag() {
         mockkObject(ConnectionServiceUtils) {
-            every { canConnectionServiceStart } returns true
+            every { isConnectionServiceEnabled } returns true
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
-            every { canConnectionServiceStart } returns false
+            every { isConnectionServiceEnabled } returns false
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
         }
     }

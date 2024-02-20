@@ -19,8 +19,6 @@ package com.kaleyra.video_sdk.call.screen.viewmodel
 import android.content.Context
 import android.telecom.TelecomManager
 import android.util.Rational
-import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -91,7 +89,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
         .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
 
     val shouldAskConnectionServicePermissions: Boolean
-        get() = ConnectionServiceUtils.canConnectionServiceStart
+        get() = ConnectionServiceUtils.isConnectionServiceEnabled
 
     private val callState = call
         .toCallStateUi()

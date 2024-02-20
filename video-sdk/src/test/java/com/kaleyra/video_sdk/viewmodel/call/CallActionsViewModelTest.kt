@@ -34,6 +34,9 @@ import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -51,10 +54,12 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -646,9 +651,22 @@ class CallActionsViewModelTest {
 
     @Test
     fun testHangUp() = runTest {
-        advanceUntilIdle()
-        viewModel.hangUp()
-        verify(exactly = 1) { callMock.end() }
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            viewModel.hangUp()
+            verify(exactly = 1) { callMock.end() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceHangUp() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel.hangUp()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.hangUp() }
+        }
     }
 
     @Test
