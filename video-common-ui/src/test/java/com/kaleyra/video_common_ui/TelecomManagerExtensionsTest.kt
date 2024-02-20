@@ -8,25 +8,33 @@ import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ApplicationProvider
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.utils.logger.PHONE_CALL
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addIncomingCall
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.getOrRegisterPhoneAccount
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.getPhoneAccountHandle
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.kaleyraAddress
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.placeOutgoingCall
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCallPhonePermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
@@ -229,5 +237,65 @@ internal class TelecomManagerExtensionsTest {
         assertEquals(0, shadowManager.allOutgoingCalls.size)
         verify { logger.error(PHONE_CALL, loggerTag, message = "Missing READ_PHONE_NUMBERS permission") }
         unmockkObject(ContextExtensions)
+    }
+
+    @Test
+    fun callCreatorItsMe_addCall_outgoingCallIsPlaced() {
+        mockkObject(ContextRetainer, KaleyraCallConnectionService, TelecomManagerExtensions) {
+            val call = mockk<Call>(relaxed = true)
+            val participants = mockk<CallParticipants>(relaxed = true)
+            val me = mockk<CallParticipant.Me>(relaxed = true)
+            val context = spyk(ApplicationProvider.getApplicationContext())
+            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            val uri = kaleyraAddress
+            every { ContextRetainer.context } returns context
+            every { telecomManager.placeOutgoingCall(any(), any(), any()) } returns Unit
+            every { call.participants } returns MutableStateFlow(participants)
+            every { participants.me } returns me
+            every { participants.creator() } returns me
+
+            telecomManager.addCall(call, logger)
+            verify(exactly = 1) { telecomManager.placeOutgoingCall(context, uri, logger) }
+            assertEquals(logger, KaleyraCallConnectionService.logger)
+        }
+    }
+
+    @Test
+    fun callCreatorItsNotMe_addCall_incomingCallIsAdded() {
+        mockkObject(ContextRetainer, KaleyraCallConnectionService, TelecomManagerExtensions) {
+            val call = mockk<Call>(relaxed = true)
+            val participants = mockk<CallParticipants>(relaxed = true)
+            val me = mockk<CallParticipant.Me>(relaxed = true)
+            val context = spyk(ApplicationProvider.getApplicationContext())
+            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            val uri = kaleyraAddress
+            every { ContextRetainer.context } returns context
+            every { telecomManager.addIncomingCall(any(), any(), any()) } returns Unit
+            every { call.participants } returns MutableStateFlow(participants)
+            every { participants.me } returns me
+            every { participants.creator() } returns mockk()
+
+            telecomManager.addCall(call, logger)
+            verify(exactly = 1) { telecomManager.addIncomingCall(context, uri, logger) }
+            assertEquals(logger, KaleyraCallConnectionService.logger)
+        }
+    }
+
+    @Test
+    fun callCreatorItsNull_addCall_errorIsLogged() {
+        mockkObject(ContextRetainer, KaleyraCallConnectionService, TelecomManagerExtensions) {
+            val call = mockk<Call>(relaxed = true)
+            val participants = mockk<CallParticipants>(relaxed = true)
+            val me = mockk<CallParticipant.Me>(relaxed = true)
+            val context = spyk(ApplicationProvider.getApplicationContext())
+            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            every { ContextRetainer.context } returns context
+            every { call.participants } returns MutableStateFlow(participants)
+            every { participants.me } returns me
+            every { participants.creator() } returns null
+
+            telecomManager.addCall(call, logger)
+            verify { logger.error(PHONE_CALL, loggerTag, message = "No incoming or outgoing call found") }
+        }
     }
 }

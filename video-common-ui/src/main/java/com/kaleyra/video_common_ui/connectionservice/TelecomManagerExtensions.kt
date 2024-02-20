@@ -9,17 +9,20 @@ import android.os.Bundle
 import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.utils.logger.PHONE_CALL
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCallPhonePermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 
 object TelecomManagerExtensions {
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    val kaleyraAddress: Uri = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+1110000000000", null)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.getPhoneAccountHandle(context: Context): PhoneAccountHandle {
@@ -38,6 +41,18 @@ object TelecomManagerExtensions {
                 .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
                 .build()
                 .apply { registerPhoneAccount(this) }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun TelecomManager.addCall(call: Call, logger: PriorityLogger? = null) {
+        val context = ContextRetainer.context
+        val participants = call.participants.value
+        KaleyraCallConnectionService.logger = logger
+        when {
+            participants.let { it.creator() != it.me && it.creator() != null } -> addIncomingCall(context, kaleyraAddress, logger)
+            participants.let { it.creator() == it.me } -> placeOutgoingCall(context, kaleyraAddress, logger)
+            else -> logger?.error(PHONE_CALL, message = "No incoming or outgoing call found")
         }
     }
 
