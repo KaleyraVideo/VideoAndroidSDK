@@ -46,7 +46,7 @@
 
     <application>
         <service
-            android:name=".connectionservice.CallConnectionService"
+            android:name=".connectionservice.KaleyraCallConnectionService"
             android:exported="true"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
@@ -55,7 +55,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".callservice.CallService"
+            android:name=".callservice.KaleyraCallService"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone" />
         <service android:name=".connectionservice.ProximityService" />
 
