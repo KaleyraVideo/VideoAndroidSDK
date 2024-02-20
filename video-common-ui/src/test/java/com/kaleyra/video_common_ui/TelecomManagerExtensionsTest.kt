@@ -8,6 +8,7 @@ import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ApplicationProvider
+import com.kaleyra.video.utils.logger.PHONE_CALL
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addIncomingCall
@@ -16,14 +17,18 @@ import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.ge
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.placeOutgoingCall
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCallPhonePermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
+import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkObject
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -31,6 +36,21 @@ import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 internal class TelecomManagerExtensionsTest {
+
+    private val logger = spyk(object : PriorityLogger() {
+        override fun debug(tag: String, message: String) = Unit
+        override fun error(tag: String, message: String) = Unit
+        override fun info(tag: String, message: String) = Unit
+        override fun verbose(tag: String, message: String) = Unit
+        override fun warn(tag: String, message: String) = Unit
+    }, recordPrivateCalls = true)
+
+    private val loggerTag = "loggerTag"
+
+    @Before
+    fun setUp() {
+        every { logger invokeNoArgs "getTag" } returns loggerTag
+    }
 
     @Test
     fun testGetPhoneAccountHandle() {
@@ -140,6 +160,7 @@ internal class TelecomManagerExtensionsTest {
         val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
+        every { context.hasCallPhonePermission() } returns true
         every { context.hasManageOwnCallsPermission() } returns true
         every { context.hasReadPhoneNumbersPermission() } returns true
 
@@ -154,19 +175,40 @@ internal class TelecomManagerExtensionsTest {
     }
 
     @Test
+    fun hasCallPhonePermissionFalse_placeOutgoingCall_fails() {
+        val context = spyk(ApplicationProvider.getApplicationContext())
+        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val shadowManager = shadowOf(telecomManager)
+        mockkObject(ContextExtensions)
+        every { context.hasCallPhonePermission() } returns false
+        every { context.hasManageOwnCallsPermission() } returns true
+        every { context.hasReadPhoneNumbersPermission() } returns true
+
+        val accountHandle = telecomManager.getPhoneAccountHandle(context)
+        val uri = Uri.parse("content://telecom")
+        telecomManager.getOrRegisterPhoneAccount(context, accountHandle)
+        telecomManager.placeOutgoingCall(context, uri, logger)
+        assertEquals(0, shadowManager.allOutgoingCalls.size)
+        verify { logger.error(PHONE_CALL, loggerTag, message = "Missing PHONE_CALL permission") }
+        unmockkObject(ContextExtensions)
+    }
+
+    @Test
     fun hasManageOwnCallsPermissionFalse_placeOutgoingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
         val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
+        every { context.hasCallPhonePermission() } returns true
         every { context.hasManageOwnCallsPermission() } returns false
         every { context.hasReadPhoneNumbersPermission() } returns true
 
         val accountHandle = telecomManager.getPhoneAccountHandle(context)
         val uri = Uri.parse("content://telecom")
         telecomManager.getOrRegisterPhoneAccount(context, accountHandle)
-        telecomManager.placeOutgoingCall(context, uri)
+        telecomManager.placeOutgoingCall(context, uri, logger)
         assertEquals(0, shadowManager.allOutgoingCalls.size)
+        verify { logger.error(PHONE_CALL, loggerTag, message = "Missing MANAGE_OWN_CALLS permission") }
         unmockkObject(ContextExtensions)
     }
 
@@ -176,14 +218,16 @@ internal class TelecomManagerExtensionsTest {
         val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
+        every { context.hasCallPhonePermission() } returns true
         every { context.hasManageOwnCallsPermission() } returns true
         every { context.hasReadPhoneNumbersPermission() } returns false
 
         val accountHandle = telecomManager.getPhoneAccountHandle(context)
         val uri = Uri.parse("content://telecom")
         telecomManager.getOrRegisterPhoneAccount(context, accountHandle)
-        telecomManager.placeOutgoingCall(context, uri)
+        telecomManager.placeOutgoingCall(context, uri, logger)
         assertEquals(0, shadowManager.allOutgoingCalls.size)
+        verify { logger.error(PHONE_CALL, loggerTag, message = "Missing READ_PHONE_NUMBERS permission") }
         unmockkObject(ContextExtensions)
     }
 }
