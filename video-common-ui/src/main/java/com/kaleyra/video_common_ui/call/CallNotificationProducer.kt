@@ -29,7 +29,6 @@ import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.CallExtensions.isIncoming
 import com.kaleyra.video_common_ui.utils.CallExtensions.isOngoing
 import com.kaleyra.video_common_ui.utils.CallExtensions.isOutgoing
-import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
@@ -112,50 +111,81 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
         participants: CallParticipants,
         recording: Call.Recording,
         activityClazz: Class<*>,
-        isAnyScreenInputActive: Boolean,
+        isAnyScreenInputActive: Boolean
     ): Notification? {
-        val context = ContextRetainer.context
-        val isGroupCall = participants.others.count() > 1
-        val enableCallStyle = !DeviceUtils.isSmartGlass
-
         return when {
-            isIncoming(callState, participants) -> {
-                val callerDescription = participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
-                NotificationManager.buildIncomingCallNotification(
-                    callerDescription,
-                    isGroupCall,
-                    activityClazz,
-                    isHighPriority = !AppLifecycle.isInForeground.value || context.isSilent(),
-                    enableCallStyle = enableCallStyle
-                )
-            }
+            isIncoming(callState, participants) -> buildIncomingCallNotification(
+                participants,
+                activityClazz
+            )
 
-            isOutgoing(callState, participants) -> {
-                val calleeDescription = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
-                NotificationManager.buildOutgoingCallNotification(
-                    calleeDescription,
-                    isGroupCall,
-                    activityClazz,
-                    enableCallStyle = enableCallStyle
-                )
-            }
+            isOutgoing(callState, participants) -> buildOutgoingCallNotification(
+                participants,
+                activityClazz
+            )
 
-            isOngoing(callState, participants) -> {
-                val calleeDescription = participants.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY }.joinToString()
-                NotificationManager.buildOngoingCallNotification(
-                    calleeDescription,
-                    isLink = participants.creator() == null,
-                    isGroupCall,
-                    isCallRecorded = recording.type == Call.Recording.Type.OnConnect,
-                    isSharingScreen = isAnyScreenInputActive,
-                    callState is Call.State.Connecting,
-                    activityClazz,
-                    enableCallStyle = enableCallStyle
-                )
-            }
+            isOngoing(callState, participants) -> buildOngoingCallNotification(
+                participants,
+                recording,
+                callState,
+                isAnyScreenInputActive,
+                activityClazz
+            )
 
             else -> null
         }
     }
 
+    private suspend fun buildOutgoingCallNotification(
+        participants: CallParticipants,
+        activityClazz: Class<*>
+    ): Notification {
+        val isGroupCall = participants.others.count() > 1
+        val calleeDescription = participants.others.map {
+            it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
+        }.joinToString()
+        return NotificationManager.buildOutgoingCallNotification(
+            calleeDescription,
+            isGroupCall,
+            activityClazz
+        )
+    }
+
+    private suspend fun buildIncomingCallNotification(
+        participants: CallParticipants,
+        activityClazz: Class<*>
+    ): Notification {
+        val context = ContextRetainer.context
+        val isGroupCall = participants.others.count() > 1
+        val callerDescription =
+            participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
+        return NotificationManager.buildIncomingCallNotification(
+            callerDescription,
+            isGroupCall,
+            activityClazz,
+            isHighPriority = !AppLifecycle.isInForeground.value || context.isSilent()
+        )
+    }
+
+    private suspend fun buildOngoingCallNotification(
+        participants: CallParticipants,
+        recording: Call.Recording,
+        callState: Call.State,
+        isAnyScreenInputActive: Boolean,
+        activityClazz: Class<*>
+    ): Notification {
+        val isGroupCall = participants.others.count() > 1
+        val calleeDescription = participants.others.map {
+            it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
+        }.joinToString()
+        return NotificationManager.buildOngoingCallNotification(
+            calleeDescription,
+            isLink = participants.creator() == null,
+            isGroupCall,
+            isCallRecorded = recording.type == Call.Recording.Type.OnConnect,
+            isSharingScreen = isAnyScreenInputActive,
+            callState is Call.State.Connecting,
+            activityClazz
+        )
+    }
 }
