@@ -221,11 +221,23 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testShouldAskConnectionServicePermissionsFlag() {
+    fun testShouldAskConnectionServicePermissionsFlag() = runTest {
         mockkObject(ConnectionServiceUtils) {
-            every { isConnectionServiceEnabled } returns true
+            advanceUntilIdle()
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Default
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
-            every { isConnectionServiceEnabled } returns false
+
+            every { isConnectionServiceSupported } returns false
+            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Default
+            assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Fallback
+            assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Disabled
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
         }
     }

@@ -30,6 +30,7 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceSetting
 import com.kaleyra.video_common_ui.DisplayModeEvent
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
@@ -89,7 +90,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
         .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
 
     val shouldAskConnectionServicePermissions: Boolean
-        get() = ConnectionServiceUtils.isConnectionServiceEnabled
+        get() = ConnectionServiceUtils.isConnectionServiceSupported && conference.getValue()?.connectionServiceSetting != ConnectionServiceSetting.Disabled
 
     private val callState = call
         .toCallStateUi()

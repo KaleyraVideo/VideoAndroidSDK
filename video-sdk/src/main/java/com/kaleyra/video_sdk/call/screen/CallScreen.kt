@@ -69,6 +69,7 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContentState
@@ -116,6 +117,7 @@ import com.kaleyra.video_sdk.theme.CollaborationTheme
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
 import com.kaleyra.video_sdk.call.utils.ContactsPermissions
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -379,7 +381,7 @@ internal fun CallScreen(
         viewModel.setOnDisplayMode(onDisplayMode)
     }
 
-    val shouldAskConnectionServicePermissions = remember(viewModel) { viewModel.shouldAskConnectionServicePermissions }
+    val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
     var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
 
     if (shouldAskConnectionServicePermissions) {
