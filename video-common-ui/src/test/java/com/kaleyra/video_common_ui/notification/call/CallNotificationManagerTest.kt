@@ -80,6 +80,7 @@ class CallNotificationManagerTest {
             anyConstructed<CallNotification.Builder>().enableCallStyle(false)
         }
         verifyContentIntent(exactly = 1)
+        verifyAnswerPendingIntent(exactly = 1)
         verifyDeclineIntent(exactly = 1, action = CallNotificationActionReceiver.ACTION_DECLINE)
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().answerIntent(withArg {
@@ -131,6 +132,50 @@ class CallNotificationManagerTest {
             anyConstructed<CallNotification.Builder>().contentText(
                 resources.getString(R.string.kaleyra_notification_tap_to_return_to_group_call)
             )
+        }
+    }
+
+    @Test
+    fun isCallServiceTrue_buildIncomingCallNotification_isCallServiceRunningExtraTrue() {
+        buildIncomingCallNotification(isCallServiceRunning = true)
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().fullscreenIntent(withArg {
+                val intent = Shadows.shadowOf(it).savedIntent
+                Assert.assertEquals(true, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, false))
+            })
+        }
+    }
+
+    @Test
+    fun isCallServiceFalse_buildIncomingCallNotification_isCallServiceRunningExtraFalse() {
+        buildIncomingCallNotification(isCallServiceRunning = false)
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().fullscreenIntent(withArg {
+                val intent = Shadows.shadowOf(it).savedIntent
+                Assert.assertEquals(false, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, true))
+            })
+        }
+    }
+
+    @Test
+    fun isCallServiceTrue_buildOutgoingCallNotification_isCallServiceRunningExtraTrue() {
+        buildOutgoingCallNotification(isCallServiceRunning = true)
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().fullscreenIntent(withArg {
+                val intent = Shadows.shadowOf(it).savedIntent
+                Assert.assertEquals(true, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, false))
+            })
+        }
+    }
+
+    @Test
+    fun isCallServiceFalse_buildOutgoingCallNotification_isCallServiceRunningExtraFalse() {
+        buildOutgoingCallNotification(isCallServiceRunning = false)
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().fullscreenIntent(withArg {
+                val intent = Shadows.shadowOf(it).savedIntent
+                Assert.assertEquals(false, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, true))
+            })
         }
     }
 
@@ -192,6 +237,82 @@ class CallNotificationManagerTest {
         buildOutgoingCallNotification(enableCallStyle = true)
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().enableCallStyle(true)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartphone_buildOngoingCallNotification_callStyleEnabled() {
+        every { DeviceUtils.isSmartGlass } returns false
+        callNotificationManager.buildOngoingCallNotification(
+            "",
+            isLink = false,
+            isGroupCall = false,
+            isCallRecorded = false,
+            isSharingScreen = false,
+            isConnecting = false, activityClazz = this::class.java
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(true)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartglass_buildOngoingCallNotification_callStyleDisabled() {
+        every { DeviceUtils.isSmartGlass } returns true
+        callNotificationManager.buildOngoingCallNotification(
+             "",
+            isLink = false,
+            isGroupCall = false,
+            isCallRecorded = false,
+            isSharingScreen = false,
+            isConnecting = false, activityClazz = this::class.java
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartphone_buildOutgoingCallNotification_callStyleEnabled() {
+        every { DeviceUtils.isSmartGlass } returns false
+        callNotificationManager.buildOutgoingCallNotification(
+            username = "", isGroupCall = false, activityClazz = this::class.java
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(true)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartglass_buildOutgoingCallNotification_callStyleDisabled() {
+        every { DeviceUtils.isSmartGlass } returns true
+        callNotificationManager.buildOutgoingCallNotification(
+            username = "", isGroupCall = false, activityClazz = this::class.java
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartphone_buildIncomingCallNotification_callStyleEnabled() {
+        every { DeviceUtils.isSmartGlass } returns false
+        callNotificationManager.buildIncomingCallNotification(
+            username = "", isGroupCall = false, activityClazz = this::class.java, false
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(true)
+        }
+    }
+
+    @Test
+    fun deviceIsSmartglass_buildIncomingCallNotification_callStyleDisabled() {
+        every { DeviceUtils.isSmartGlass } returns true
+        callNotificationManager.buildIncomingCallNotification(
+            username = "", isGroupCall = false, activityClazz = this::class.java, false
+        )
+        verify(exactly = 1) {
+            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
         }
     }
 
@@ -305,14 +426,16 @@ class CallNotificationManagerTest {
         isGroupCall: Boolean = false,
         activityClazz: Class<*> = this::class.java,
         isHighPriority: Boolean = false,
-        enableCallStyle: Boolean = false
+        enableCallStyle: Boolean = false,
+        isCallServiceRunning: Boolean = true
     ) {
         callNotificationManager.buildIncomingCallNotification(
             username = username,
             isGroupCall = isGroupCall,
             activityClazz = activityClazz,
             isHighPriority = isHighPriority,
-            enableCallStyle = enableCallStyle
+            enableCallStyle = enableCallStyle,
+            isCallServiceRunning = isCallServiceRunning
         )
     }
 
@@ -320,13 +443,15 @@ class CallNotificationManagerTest {
         username: String = "",
         isGroupCall: Boolean = false,
         activityClazz: Class<*> = this::class.java,
-        enableCallStyle: Boolean = false
+        enableCallStyle: Boolean = false,
+        isCallServiceRunning: Boolean = true
     ) {
         callNotificationManager.buildOutgoingCallNotification(
             username = username,
             isGroupCall = isGroupCall,
             activityClazz = activityClazz,
-            enableCallStyle = enableCallStyle
+            enableCallStyle = enableCallStyle,
+            isCallServiceRunning = isCallServiceRunning
         )
     }
 
@@ -361,6 +486,22 @@ class CallNotificationManagerTest {
                 assert(intent.hasCategory(Intent.CATEGORY_LAUNCHER))
                 Assert.assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.flags)
                 Assert.assertEquals(false, intent.getBooleanExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, false))
+                Assert.assertEquals(true, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, false))
+            })
+        }
+    }
+
+    private fun verifyAnswerPendingIntent(exactly: Int) {
+        verify(exactly = exactly) {
+            anyConstructed<CallNotification.Builder>().answerIntent(withArg {
+                val intent = Shadows.shadowOf(it).savedIntent
+                Assert.assertEquals(PendingIntentExtensions.updateFlags, Shadows.shadowOf(it).flags)
+                Assert.assertEquals(Intent.ACTION_MAIN, intent.action)
+                assert(intent.hasCategory(Intent.CATEGORY_LAUNCHER))
+                Assert.assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.flags)
+                Assert.assertEquals(false, intent.getBooleanExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, false))
+                Assert.assertEquals(true, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, false))
+                Assert.assertEquals(CallNotificationActionReceiver.ACTION_ANSWER, intent.getStringExtra(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA))
             })
         }
     }
@@ -384,6 +525,7 @@ class CallNotificationManagerTest {
                 assert(intent.hasCategory(Intent.CATEGORY_LAUNCHER))
                 Assert.assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.flags)
                 Assert.assertEquals(false, intent.getBooleanExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, false))
+                Assert.assertEquals(true, intent.getBooleanExtra(CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA, false))
             })
         }
     }
