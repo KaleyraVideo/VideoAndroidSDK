@@ -26,12 +26,15 @@ import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.doesFileExists
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getAppName
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasBluetoothPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCallPhonePermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasContactsPermissions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageOwnCallsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import junit.framework.TestCase
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -124,6 +127,33 @@ class ContextExtensionsTest {
         shadow.grantPermissions(Manifest.permission.WRITE_CONTACTS)
         shadow.denyPermissions(Manifest.permission.READ_CONTACTS)
         assertEquals(false, context.hasContactsPermissions())
+    }
+
+    @Test
+    fun testHasCallPhonePermissions() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CALL_PHONE)
+        assertEquals(true, context.hasCallPhonePermission())
+        shadow.denyPermissions(Manifest.permission.CALL_PHONE)
+        assertEquals(false, context.hasCallPhonePermission())
+    }
+
+    @Test
+    fun testHasConnectionServicePermissions() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CALL_PHONE, Manifest.permission.MANAGE_OWN_CALLS, Manifest.permission.READ_PHONE_NUMBERS)
+        assertEquals(true, context.hasConnectionServicePermissions())
+        shadow.grantPermissions(Manifest.permission.CALL_PHONE, Manifest.permission.MANAGE_OWN_CALLS)
+        shadow.denyPermissions(Manifest.permission.READ_PHONE_NUMBERS)
+        assertEquals(false, context.hasConnectionServicePermissions())
+        shadow.grantPermissions(Manifest.permission.CALL_PHONE, Manifest.permission.READ_PHONE_NUMBERS)
+        shadow.denyPermissions(Manifest.permission.MANAGE_OWN_CALLS)
+        assertEquals(false, context.hasConnectionServicePermissions())
+        shadow.grantPermissions(Manifest.permission.MANAGE_OWN_CALLS, Manifest.permission.READ_PHONE_NUMBERS)
+        shadow.denyPermissions(Manifest.permission.CALL_PHONE)
+        assertEquals(false, context.hasConnectionServicePermissions())
     }
 
     @Test

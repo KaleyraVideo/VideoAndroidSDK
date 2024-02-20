@@ -46,7 +46,6 @@ import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
 
-
 /**
  * Context extensions
  */
@@ -335,6 +334,11 @@ object ContextExtensions {
             manager.getRunningTasks(Int.MAX_VALUE).any { it.topActivity?.className == activityClazz.name }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasConnectionServicePermissions() = hasCallPhonePermission() && hasManageOwnCallsPermission() && hasReadPhoneNumbersPermission()
+
+    fun Context.hasCallPhonePermission() = hasPermission(Manifest.permission.CALL_PHONE)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun Context.hasReadPhoneNumbersPermission() = hasPermission(Manifest.permission.READ_PHONE_NUMBERS)
