@@ -226,8 +226,15 @@ class CallExtensionsTest {
     }
 
     @Test
-    fun callDisconnected_isOutgoing_false() {
-        assertEquals(false, isOutgoing(Call.State.Disconnected, mockk(relaxed = true)))
+    fun callDisconnectedAndIAmCallCreator_isOutgoing_true() {
+        every { callParticipants.creator() } returns me
+        assertEquals(true, isOutgoing(Call.State.Disconnected, callParticipants))
+    }
+
+    @Test
+    fun callDisconnectedAndIAmNotCallCreator_isOutgoing_false() {
+        every { callParticipants.creator() } returns mockk()
+        assertEquals(false, isOutgoing(Call.State.Disconnected, callParticipants))
     }
 
     @Test

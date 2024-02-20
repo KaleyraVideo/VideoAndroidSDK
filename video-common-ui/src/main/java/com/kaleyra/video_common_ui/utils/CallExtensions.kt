@@ -62,7 +62,7 @@ internal object CallExtensions {
         state is Call.State.Disconnected && participants.let { it.creator() != it.me && it.creator() != null }
 
     fun isOutgoing(state: Call.State, participants: CallParticipants) =
-        state is Call.State.Connecting && participants.let { it.creator() == it.me }
+        (state is Call.State.Disconnected || state is Call.State.Connecting) && participants.let { it.creator() == it.me }
 
     fun isOngoing(state: Call.State, participants: CallParticipants) =
         state is Call.State.Connecting || state is Call.State.Connected || participants.creator() == null
