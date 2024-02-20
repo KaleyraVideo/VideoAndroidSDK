@@ -16,11 +16,11 @@
 
 package com.kaleyra.video_sdk.call.ringing.viewmodel
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.kaleyra.video_common_ui.connectionservice.PhoneConnectionService
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class RingingViewModel(configure: suspend () -> Configuration): PreCallViewModel<RingingUiState>(configure) {
 
@@ -59,17 +60,13 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
     }
 
     fun accept() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            PhoneConnectionService.answer()
-//        } else call.getValue()?.connect()
-        call.getValue()?.connect()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        else call.getValue()?.connect()
     }
 
     fun decline() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            PhoneConnectionService.reject()
-//        } else call.getValue()?.end()
-        call.getValue()?.end()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.reject() }
+        else call.getValue()?.end()
     }
 
     companion object {

@@ -20,12 +20,17 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel
 import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel.Companion.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -151,15 +156,41 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
 
     @Test
     fun testCallAnswer() = runTest {
-        advanceUntilIdle()
-        viewModel.accept()
-        verify(exactly = 1) { callMock.connect() }
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            viewModel.accept()
+            verify(exactly = 1) { callMock.connect() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceAnswer() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel.accept()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+        }
     }
 
     @Test
     fun testCallDecline() = runTest {
-        advanceUntilIdle()
-        viewModel.decline()
-        verify(exactly = 1) { callMock.end() }
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            viewModel.decline()
+            verify(exactly = 1) { callMock.end() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceDecline() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel.decline()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
+        }
     }
 }
