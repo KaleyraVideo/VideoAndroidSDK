@@ -41,8 +41,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,6 +114,8 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalSystemBarsP
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.CollaborationTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
+import com.kaleyra.video_sdk.call.utils.ContactsPermissions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -298,7 +302,8 @@ internal fun CallScreen(
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onUsbCameraConnected: (Boolean) -> Unit,
-    onActivityFinishing: () -> Unit
+    onActivityFinishing: () -> Unit,
+    onConnectionServicePermissions: () -> Unit
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val activity = LocalContext.current.findActivity() as FragmentActivity
@@ -312,6 +317,7 @@ internal fun CallScreen(
         sheetState = sheetState,
         shouldShowFileShareComponent = shouldShowFileShareComponent
     )
+
     // Needed this to handle properly a sequence of multiple permission
     // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
     val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(RecordAudioPermission, CameraPermission)) { permissionsResult ->
@@ -373,12 +379,36 @@ internal fun CallScreen(
         viewModel.setOnDisplayMode(onDisplayMode)
     }
 
-    LaunchedEffect(inputPermissionsState) {
-        viewModel.setOnAudioOrVideoChanged { isAudioEnabled, isVideoEnabled ->
-            when {
-                isAudioEnabled && isVideoEnabled -> inputPermissionsState.launchMultiplePermissionRequest()
-                isAudioEnabled -> micPermissionState.launchPermissionRequest()
-                isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
+    val shouldAskConnectionServicePermissions = remember(viewModel) { viewModel.shouldAskConnectionServicePermissions }
+    var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
+
+    if (shouldAskConnectionServicePermissions) {
+        val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
+            viewModel.startConnectionService(activity)
+            shouldAskInputPermissions = true
+        }
+        val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = ConnectionServicePermissions) { permissionsResult ->
+            if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
+                contactsPermissionsState.launchMultiplePermissionRequest()
+            } else {
+                viewModel.tryStartCallService()
+            }
+            onConnectionServicePermissions()
+        }
+
+        LaunchedEffect(connectionServicePermissionsState) {
+            connectionServicePermissionsState.launchMultiplePermissionRequest()
+        }
+    }
+
+    if (shouldAskInputPermissions) {
+        LaunchedEffect(inputPermissionsState) {
+            viewModel.setOnAudioOrVideoChanged { isAudioEnabled, isVideoEnabled ->
+                when {
+                    isAudioEnabled && isVideoEnabled -> inputPermissionsState.launchMultiplePermissionRequest()
+                    isAudioEnabled -> micPermissionState.launchPermissionRequest()
+                    isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
+                }
             }
         }
     }
