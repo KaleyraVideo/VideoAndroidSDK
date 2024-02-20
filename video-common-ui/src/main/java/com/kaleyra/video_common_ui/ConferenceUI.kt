@@ -75,11 +75,6 @@ class ConferenceUI(
     override val callHistory: SharedFlow<List<CallUI>> = conference.callHistory.map { calls -> calls.map { getOrCreateCallUI(it) } }.shareIn(callScope, SharingStarted.Eagerly, replay = 1)
 
     /**
-     * WithUI flag, set to true to automatically show the call ui on a new call, false otherwise
-     */
-    var withUI = true
-
-    /**
      * The call actions that will be set on every call
      */
     var callActions: Set<CallUI.Action> = CallUI.Action.default

@@ -116,7 +116,6 @@ class KaleyraCallConnectionServiceTest {
         every { KaleyraVideo.conference } returns conferenceMock
         with(conferenceMock) {
             every { call } returns MutableStateFlow(callMock)
-            every { withUI } returns true
         }
     }
 

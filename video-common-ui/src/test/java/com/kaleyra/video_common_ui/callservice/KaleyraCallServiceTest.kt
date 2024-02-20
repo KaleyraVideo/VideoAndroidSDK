@@ -94,7 +94,6 @@ class KaleyraCallServiceTest {
         }
         with(conferenceMock) {
             every { call } returns MutableStateFlow(callMock)
-            every { withUI } returns true
         }
     }
 
@@ -213,37 +212,5 @@ class KaleyraCallServiceTest {
         service!!.startForeground(10, n)
         service!!.onDestroy()
         assertEquals(null, shadowOf(notificationManager).getNotification(10))
-    }
-
-    @Test
-    fun conferenceWithUITrue_onStartCommand_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onStartCommand(null, 0, 0)
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun conferenceWithUIFalse_onStartCommand_activityNotShown() {
-        every { conferenceMock.withUI } returns false
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onStartCommand(null, 0, 0)
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldBeShown_onStartCommand_activityShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns true
-        service!!.onStartCommand(null, 0, 0)
-        verify(exactly = 1) { callMock.showOnAppResumed(any()) }
-    }
-
-    @Test
-    fun callActivityShouldNotBeShown_onStartCommand_activityNotShown() {
-        every { conferenceMock.withUI } returns true
-        every { callMock.shouldShowAsActivity() } returns false
-        service!!.onStartCommand(null, 0, 0)
-        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
     }
 }
