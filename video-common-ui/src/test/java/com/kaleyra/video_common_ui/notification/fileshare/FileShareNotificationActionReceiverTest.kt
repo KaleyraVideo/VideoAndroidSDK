@@ -28,6 +28,7 @@ import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import io.mockk.coEvery
+import io.mockk.coInvoke
 import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
@@ -64,7 +65,7 @@ internal class FileShareNotificationActionReceiverTest {
         mockkObject(ContextExtensions)
         mockkObject(NotificationManager)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
-        every { KaleyraVideo.onCallReady(any(), captureLambda()) } answers { lambda<(CallUI) -> Unit>().invoke(callMock) }
+        every { KaleyraVideo.onCallReady(any(), captureCoroutine()) } answers { coroutine<suspend (CallUI) -> Unit>().coInvoke(callMock) }
         every { contextMock.goToLaunchingActivity() } returns Unit
         every { callMock.sharedFolder.download(any()) } returns Result.success(mockk(relaxed = true))
         every { NotificationManager.cancel(any()) } returns Unit

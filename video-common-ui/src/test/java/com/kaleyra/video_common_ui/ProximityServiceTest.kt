@@ -18,6 +18,7 @@ import com.kaleyra.video_common_ui.texttospeech.CallRecordingTextToSpeechNotifie
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
+import io.mockk.coInvoke
 import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
@@ -61,8 +62,8 @@ class ProximityServiceTest {
         mockkObject(KaleyraVideo)
         mockkObject(CallExtensions)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
-        every { KaleyraVideo.onCallReady(any(), captureLambda()) } answers {
-            lambda<(CallUI) -> Unit>().invoke(callMock)
+        every { KaleyraVideo.onCallReady(any(), captureCoroutine()) } answers {
+            coroutine<suspend (CallUI) -> Unit>().coInvoke(callMock)
         }
         every { anyConstructed<CallProximityDelegate<LifecycleService>>().bind() } returns Unit
         every { anyConstructed<CallProximityDelegate<LifecycleService>>().destroy() } returns Unit
