@@ -29,6 +29,18 @@ apply from: '../sdkAndroid.gradle'
 apply from: '../publish.gradle'
 apply from: '../licenses.gradle'
 
+android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                maxParallelForks = Runtime.runtime.availableProcessors()
+                forkEvery = 100
+            }
+        }
+    }
+}
+
 dependencies {
 
     /** Platform **/
