@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.notification.fileshare
 
 import android.content.Context
 import android.content.Intent
+import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
@@ -56,6 +57,8 @@ internal class FileShareNotificationActionReceiverTest {
 
     private val callMock = mockk<CallUI>(relaxed = true)
 
+    private val sharedFolderMock = mockk<SharedFolder>(relaxed = true)
+
     private val contextMock = mockk<Context>()
 
     private val fileShareNotificationActionReceiver = spyk(FileShareNotificationActionReceiver(mainDispatcherRule.testDispatcher))
@@ -67,7 +70,8 @@ internal class FileShareNotificationActionReceiverTest {
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
         every { KaleyraVideo.onCallReady(any(), captureCoroutine()) } answers { coroutine<suspend (CallUI) -> Unit>().coInvoke(callMock) }
         every { contextMock.goToLaunchingActivity() } returns Unit
-        every { callMock.sharedFolder.download(any()) } returns Result.success(mockk(relaxed = true))
+        every { callMock.sharedFolder } returns sharedFolderMock
+        every { sharedFolderMock.download(any()) } returns Result.success(mockk(relaxed = true))
         every { NotificationManager.cancel(any()) } returns Unit
         coEvery { fileShareNotificationActionReceiver.goAsync() } returns mockk(relaxed = true)
     }
@@ -87,7 +91,7 @@ internal class FileShareNotificationActionReceiverTest {
         coEvery { fileShareNotificationActionReceiver.requestConfigure() } returns true
         fileShareNotificationActionReceiver.onReceive(mockk(relaxed = true), intent)
         advanceUntilIdle()
-        verify { callMock.sharedFolder.download(downloadId) }
+        verify { sharedFolderMock.download(downloadId) }
         verify { NotificationManager.cancel(downloadId.hashCode()) }
     }
 
