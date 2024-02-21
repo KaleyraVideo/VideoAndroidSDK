@@ -29,7 +29,6 @@ class ConnectionServiceUtilsTest {
         mockkObject(ConnectionServiceUtils, ContextRetainer, ContextExtensions, KaleyraVideo)
         every { ContextRetainer.context } returns contextMock
         every { contextMock.hasConnectionServicePermissions() } returns true
-        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Default
     }
 
@@ -52,18 +51,21 @@ class ConnectionServiceUtilsTest {
 
     @Test
     fun connectionServiceDefaultSetting_isConnectionServiceEnabled_true() {
+        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Default
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
     fun connectionServiceFallbackSetting_isConnectionServiceEnabled_true() {
+        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Fallback
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
     fun connectionServiceDisabled_isConnectionServiceEnabled_false() {
+        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Disabled
         assertEquals(false, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
@@ -82,12 +84,14 @@ class ConnectionServiceUtilsTest {
 
     @Test
     fun hasConnectionServicePermissionsTrue_isConnectionServiceEnabled_true() {
+        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { contextMock.hasConnectionServicePermissions() } returns true
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
     fun hasConnectionServicePermissionsFalse_isConnectionServiceEnabled_false() {
+        every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { contextMock.hasConnectionServicePermissions() } returns false
         assertEquals(false, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
