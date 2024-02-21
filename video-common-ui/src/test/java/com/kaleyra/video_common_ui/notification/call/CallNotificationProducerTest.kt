@@ -2,6 +2,7 @@ package com.kaleyra.video_common_ui.notification.call
 
 import android.app.Notification
 import android.content.Context
+import android.net.Uri
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
@@ -33,7 +34,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -72,6 +77,8 @@ class CallNotificationProducerTest {
         override fun onClearNotification(id: Int) = Unit
     })
 
+    private val clazz = this::class.java
+
     @Before
     fun setUp() {
         mockkObject(ContactDetailsManager)
@@ -82,8 +89,8 @@ class CallNotificationProducerTest {
         mockkObject(DeviceUtils)
         mockkObject(AppLifecycle)
         with(NotificationManager) {
-            every { buildIncomingCallNotification(any(), any(), any(), any(), any()) } returns incomingCallNotification
-            every { buildOutgoingCallNotification(any(), any(), any(), any()) } returns outgoingCallNotification
+            every { buildIncomingCallNotification(any(), any(), any(), any(), any(), any()) } returns incomingCallNotification
+            every { buildOutgoingCallNotification(any(), any(), any(), any(), any()) } returns outgoingCallNotification
             every { buildOngoingCallNotification(any(), any(), any(), any(), any(), any(), any(), any()) } returns ongoingCallNotification
             every { cancel(any()) } returns Unit
             every { notify(any(), any()) } returns Unit
@@ -134,14 +141,19 @@ class CallNotificationProducerTest {
 
     @Test
     fun testNotifyIncomingCall() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.listener = listener
-        callNotificationProducer.bind(callMock)
-        coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId", "myUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingCallNotification("otherUsername", any(), this@CallNotificationProducerTest::class.java, any(), any()) }
-        verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingCallNotification) }
-        verify(exactly = 1) { listener.onNewNotification(callMock, incomingCallNotification, CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        mockkObject(CallNotificationProducer) {
+            every { CallExtensions.isIncoming(any(), any()) } returns true
+            coEvery { CallNotificationProducer.buildIncomingCallNotification(any(), any(), any()) } returns incomingCallNotification
+            val callNotificationProducer = CallNotificationProducer(backgroundScope)
+            callNotificationProducer.listener = listener
+            callNotificationProducer.bind(callMock)
+            val participants = callMock.participants.value
+            val activityClazz = callMock.activityClazz
+            coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId", "myUserId").toTypedArray()) }
+            coVerify(exactly = 1) { CallNotificationProducer.buildIncomingCallNotification(participants, activityClazz, true) }
+            verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingCallNotification) }
+            verify(exactly = 1) { listener.onNewNotification(callMock, incomingCallNotification, CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        }
     }
 
     @Test
@@ -149,18 +161,18 @@ class CallNotificationProducerTest {
         val otherParticipantMock2 = mockk<CallParticipant>(relaxed = true)
         every { otherParticipantMock2.combinedDisplayName } returns MutableStateFlow("otherParticipant2")
         every { participantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2)
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), isGroupCall = true, any(), any(), any()) }
     }
 
     @Test
     fun oneToOneCall_buildIncomingCallNotification_isGroupCallIsFalse() = runTest(UnconfinedTestDispatcher()) {
         every { participantsMock.others } returns listOf(otherParticipantMock)
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), isGroupCall = false, any(), any(), any()) }
     }
 
@@ -170,9 +182,9 @@ class CallNotificationProducerTest {
         with(ContextExtensions) {
             every { contextMock.isSilent() } returns false
         }
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), isHighPriority = false, any()) }
     }
 
@@ -182,9 +194,9 @@ class CallNotificationProducerTest {
         with(ContextExtensions) {
             every { contextMock.isSilent() } returns false
         }
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), isHighPriority = true, any()) }
     }
 
@@ -194,9 +206,9 @@ class CallNotificationProducerTest {
         with(ContextExtensions) {
             every { contextMock.isSilent() } returns true
         }
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), isHighPriority = true, any()) }
     }
 
@@ -206,78 +218,129 @@ class CallNotificationProducerTest {
         with(ContextExtensions) {
             every { contextMock.isSilent() } returns false
         }
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), isHighPriority = false, any()) }
     }
 
     @Test
     fun deviceIsSmartglass_buildIncomingCallNotification_callStyleDisabled() = runTest(UnconfinedTestDispatcher()) {
         every { DeviceUtils.isSmartGlass } returns true
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), any(), enableCallStyle = false) }
     }
 
     @Test
     fun deviceIsSmartphone_buildIncomingCallNotification_callStyleEnabled() = runTest(UnconfinedTestDispatcher()) {
         every { DeviceUtils.isSmartGlass } returns false
-        every { CallExtensions.isIncoming(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz)
+        }
         verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), any(), enableCallStyle = true) }
     }
 
     @Test
+    fun isCallServiceRunningTrue_buildIncomingCallNotification_isCallServiceRunningTrue() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, true)
+        }
+        verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), any(), any(), isCallServiceRunning = true) }
+    }
+
+    @Test
+    fun isCallServiceRunningFalse_buildIncomingCallNotification_isCallServiceRunningFalse() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false)
+        }
+        verify(exactly = 1) { NotificationManager.buildIncomingCallNotification(any(), any(), any(), any(), any(), isCallServiceRunning = false) }
+    }
+
+    @Test
     fun testNotifyOutgoingCall() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isOutgoing(any(), any()) } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.listener = listener
-        callNotificationProducer.bind(callMock)
-        coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId", "myUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification("otherUsername", any(), this@CallNotificationProducerTest::class.java, any()) }
-        verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, outgoingCallNotification) }
-        verify(exactly = 1) { listener.onNewNotification(callMock, outgoingCallNotification, CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        mockkObject(CallNotificationProducer) {
+            coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any()) } returns outgoingCallNotification
+            every { CallExtensions.isOutgoing(any(), any()) } returns true
+            val callNotificationProducer = CallNotificationProducer(backgroundScope)
+            callNotificationProducer.listener = listener
+            callNotificationProducer.bind(callMock)
+            val participants = callMock.participants.value
+            val activityClazz = callMock.activityClazz
+            coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId", "myUserId").toTypedArray()) }
+            coVerify(exactly = 1) { CallNotificationProducer.buildOutgoingCallNotification(participants, activityClazz, true) }
+            verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, outgoingCallNotification) }
+            verify(exactly = 1) { listener.onNewNotification(callMock, outgoingCallNotification, CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        }
+    }
+
+    @Test
+    fun testBuildOutgoingCallNotification() = runTest(UnconfinedTestDispatcher()) {
+        every { participantsMock.others } returns listOf(otherParticipantMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz)
+        }
+        verify(exactly = 1) {
+            NotificationManager.buildOutgoingCallNotification("otherUsername", any(), clazz, any())
+        }
     }
 
     @Test
     fun groupCall_buildOutgoingCallNotification_isGroupCallIsTrue() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isOutgoing(any(), any()) } returns true
         val otherParticipantMock2 = mockk<CallParticipant>(relaxed = true)
         every { otherParticipantMock2.combinedDisplayName } returns MutableStateFlow("otherParticipant2")
         every { participantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2)
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
-        verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), isGroupCall = true, any(), any()) }
+        val calleeDescription = participantsMock.others.map { it.combinedDisplayName.first() }.joinToString()
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz)
+        }
+        verify(exactly = 1) {
+            NotificationManager.buildOutgoingCallNotification(calleeDescription, isGroupCall = true, any(), any())
+        }
     }
 
     @Test
     fun oneToOneCall_buildOutgoingCallNotification_isGroupCallIsFalse() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isOutgoing(any(), any()) } returns true
         every { participantsMock.others } returns listOf(otherParticipantMock)
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, true)
+        }
         verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), isGroupCall = false, any(), any()) }
     }
 
     @Test
     fun deviceIsSmartglass_buildOutgoingCallNotification_callStyleDisabled() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isOutgoing(any(), any()) } returns true
         every { DeviceUtils.isSmartGlass } returns true
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, true)
+        }
         verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), any(), any(), enableCallStyle = false) }
     }
 
     @Test
     fun deviceIsSmartphone_buildOutgoingCallNotification_callStyleEnabled() = runTest(UnconfinedTestDispatcher()) {
-        every { CallExtensions.isOutgoing(any(), any()) } returns true
         every { DeviceUtils.isSmartGlass } returns false
-        val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock)
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, true)
+        }
         verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), any(), any(), enableCallStyle = true) }
+    }
+
+    @Test
+    fun isCallServiceRunningTrue_buildOutgoingCallNotification_isCallServiceRunningTrue() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, true)
+        }
+        verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), any(), any(), any(), isCallServiceRunning = true) }
+    }
+
+    @Test
+    fun isCallServiceRunningFalse_buildOutgoingCallNotification_isCallServiceRunningFalse() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false)
+        }
+        verify(exactly = 1) { NotificationManager.buildOutgoingCallNotification(any(), any(), any(), any(), isCallServiceRunning = false) }
     }
 
     @Test

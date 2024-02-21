@@ -51,6 +51,40 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
          * The global call notification id
          */
         const val CALL_NOTIFICATION_ID = 22
+
+        internal suspend fun buildOutgoingCallNotification(
+            participants: CallParticipants,
+            activityClazz: Class<*>,
+            isCallServiceRunning: Boolean = true
+        ): Notification {
+            val isGroupCall = participants.others.count() > 1
+            val calleeDescription = participants.others.map {
+                it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
+            }.joinToString()
+            return NotificationManager.buildOutgoingCallNotification(
+                calleeDescription,
+                isGroupCall,
+                activityClazz,
+                isCallServiceRunning = isCallServiceRunning
+            )
+        }
+
+        internal suspend fun buildIncomingCallNotification(
+            participants: CallParticipants,
+            activityClazz: Class<*>,
+            isCallServiceRunning: Boolean = true
+        ): Notification {
+            val context = ContextRetainer.context
+            val isGroupCall = participants.others.count() > 1
+            val callerDescription = participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
+            return NotificationManager.buildIncomingCallNotification(
+                callerDescription,
+                isGroupCall,
+                activityClazz,
+                isHighPriority = !AppLifecycle.isInForeground.value || context.isSilent(),
+                isCallServiceRunning = isCallServiceRunning
+            )
+        }
     }
 
     interface Listener {
@@ -134,37 +168,6 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
 
             else -> null
         }
-    }
-
-    private suspend fun buildOutgoingCallNotification(
-        participants: CallParticipants,
-        activityClazz: Class<*>
-    ): Notification {
-        val isGroupCall = participants.others.count() > 1
-        val calleeDescription = participants.others.map {
-            it.combinedDisplayName.filterNotNull().firstOrNull() ?: Uri.EMPTY
-        }.joinToString()
-        return NotificationManager.buildOutgoingCallNotification(
-            calleeDescription,
-            isGroupCall,
-            activityClazz
-        )
-    }
-
-    private suspend fun buildIncomingCallNotification(
-        participants: CallParticipants,
-        activityClazz: Class<*>
-    ): Notification {
-        val context = ContextRetainer.context
-        val isGroupCall = participants.others.count() > 1
-        val callerDescription =
-            participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
-        return NotificationManager.buildIncomingCallNotification(
-            callerDescription,
-            isGroupCall,
-            activityClazz,
-            isHighPriority = !AppLifecycle.isInForeground.value || context.isSilent()
-        )
     }
 
     private suspend fun buildOngoingCallNotification(
