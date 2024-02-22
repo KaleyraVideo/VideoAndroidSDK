@@ -34,6 +34,7 @@ import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -46,6 +47,7 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.WatermarkMapper.toWatermarkInfo
+import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -142,12 +144,18 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         streamsHandler.streamsArrangement
             .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
-                val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
-                _uiState.update {
-                    it.copy(
-                        featuredStreams = ImmutableList(featuredStreams),
-                        thumbnailStreams = ImmutableList(thumbnails)
-                    )
+                if (state is CallStateUi.Disconnected.Ended) {
+                    _uiState.update {
+                        it.copy(featuredStreams = ImmutableList(listOf()), thumbnailStreams = ImmutableList(listOf()))
+                    }
+                } else {
+                    val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
+                    _uiState.update {
+                        it.copy(
+                            featuredStreams = ImmutableList(featuredStreams),
+                            thumbnailStreams = ImmutableList(thumbnails)
+                        )
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -204,12 +212,22 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
             .onEach { isGroupCall -> _uiState.update { it.copy(isGroupCall = isGroupCall) } }
             .launchIn(viewModelScope)
 
-        callState
+        val doOthersHaveStreams = callState
             .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
-            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing }
+            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.Connecting }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
-            .debounce { doOthersHaveStreams -> if (!doOthersHaveStreams) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
-            .onEach { doOthersHaveStreams -> _uiState.update { it.copy(amILeftAlone = !doOthersHaveStreams) } }
+
+        doOthersHaveStreams
+            .debounce { if (!it) WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
+            .onEach { value -> _uiState.update { it.copy(amIWaitingOthers = !value) } }
+            .takeWhile { !it }
+            .onCompletion { _uiState.update { it.copy(amIWaitingOthers = false) } }
+            .launchIn(viewModelScope)
+
+        doOthersHaveStreams
+            .dropWhile { !it }
+            .debounce { if (!it) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
+            .onEach { value -> _uiState.update { it.copy(amILeftAlone = !value) } }
             .launchIn(viewModelScope)
 
         call
@@ -353,6 +371,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         const val DEFAULT_FEATURED_STREAMS_COUNT = 2
         const val SINGLE_STREAM_DEBOUNCE_MILLIS = 5000L
+        const val WAITING_FOR_OTHERS_DEBOUNCE_MILLIS = 2000L
         const val AM_I_LEFT_ALONE_DEBOUNCE_MILLIS = 5000L
         const val NULL_CALL_TIMEOUT = 1000L
 

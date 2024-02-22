@@ -17,7 +17,6 @@ package com.kaleyra.app_utilities.storage
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kaleyra.app_utilities.notification.NotificationProxy
 
 /**
@@ -41,12 +40,6 @@ object LoginManager {
         val editor = context.applicationContext.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).edit()
         editor.putString("userId", userId)
         editor.commit()
-
-        // Set userAlias on Crashlytics to identify the user in crash logs.
-        try {
-            FirebaseCrashlytics.getInstance().setUserId(userId)
-        } catch (ignored: Throwable) {
-        }
 
         // Register device for receive push notifications
         // It will not work for you, you should implement your own server for notification send/receive logics
@@ -92,11 +85,6 @@ object LoginManager {
         // It will not work for you, you should implement your own server for notification send/receive logics
         NotificationProxy.unregisterDevice(context)
 
-        // Remove userAlias on Crashlytics to identify the user in crash logs.
-        try {
-            FirebaseCrashlytics.getInstance().setUserId("")
-        } catch (ignored: Throwable) {
-        }
         val prefs = context.applicationContext.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
         ConfigurationPrefsManager.logoutUser(context)

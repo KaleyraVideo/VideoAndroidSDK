@@ -46,12 +46,6 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
             .launchIn(viewModelScope)
 
         call
-            .toCallStateUi()
-            .filterIsInstance<CallStateUi.Ringing>()
-            .onEach { state -> _uiState.update { it.copy(answered = state.isConnecting) } }
-            .launchIn(viewModelScope)
-
-        call
             .amIWaitingOthers()
             .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
             .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
@@ -62,11 +56,13 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
     fun accept() {
         if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
         else call.getValue()?.connect()
+        _uiState.update { it.copy(isConnecting = true) }
     }
 
     fun decline() {
         if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.reject() }
         else call.getValue()?.end()
+        _uiState.update { it.copy(isConnecting = true) }
     }
 
     companion object {

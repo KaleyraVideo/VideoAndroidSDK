@@ -33,6 +33,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * @property recording RecordingUi? optional recording
  * @property isAudioOnly Boolean flag indicating if the call is audio only, true if audio only, false otherwise
  * @property isGroupCall Boolean flag indicating if the call is a group call, true if a group call, false otherwise
+ * @property amIWaitingOthers Boolean flag indicating if the logged participant is awaiting other participants
  * @property amILeftAlone Boolean flag indicating if the logged participant is currently the only participant in call, true if alone, false otherwise
  * @property showFeedback Boolean flag indicating if the call ui should present the call feedback on call ended, true to show it, false otherwise
  * @property shouldAutoHideSheet Boolean flag indicating if the call should auto hide the call controls, true to auto hide the call controls, false otherwise
@@ -48,6 +49,7 @@ data class CallUiState(
     val recording: RecordingUi? = null,
     val isAudioOnly: Boolean = false,
     val isGroupCall: Boolean = false,
+    val amIWaitingOthers: Boolean = false,
     val amILeftAlone: Boolean = false,
     val showFeedback: Boolean = false,
     val shouldAutoHideSheet: Boolean = false

@@ -137,13 +137,22 @@ class RingingComponentTest {
     fun isConnectingTrue_connectingIsDisplayed() {
         uiState = uiState.copy(isConnecting = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
-        composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
     }
 
     @Test
     fun answerButtonIsDisplayed() {
         val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
         composeTestRule.assertRingingButtonIsDisplayed(answer)
+    }
+
+    @Test
+    fun ringingButtonsDoNotExistIfConnectingIsTrue() {
+        val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
+        val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
+        uiState = uiState.copy(isConnecting = true)
+        composeTestRule.onNodeWithText(answer).assertDoesNotExist()
+        composeTestRule.onNodeWithText(decline).assertDoesNotExist()
     }
 
     @Test

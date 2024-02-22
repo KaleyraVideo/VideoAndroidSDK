@@ -111,9 +111,6 @@ dependencies {
     /*** Debug leaks ***/
     debugImplementation sampleAppCatalog.squareupLeakCanary
 
-    /*** Crashlytics ***/
-    compileOnly sampleAppCatalog.firebaseCrashlyticsNdk
-
 
     /*** FCM setup ***/
     compileOnly sampleAppCatalog.firebaseMessaging

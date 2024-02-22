@@ -1,5 +1,5 @@
 ext.moduleGroupId = "com.kaleyra"
-ext.moduleVersion = "4.0.0-rc03"
+ext.moduleVersion = "4.0.0-rc06"
 
 if (project.hasProperty("dryRun")) {
     project.ext.setProperty("isPublishing", true)
@@ -38,7 +38,7 @@ afterEvaluate {
                 groupId = moduleGroupId
                 artifactId = project.getName()
                 version = moduleVersion
-                artifact kdocJar
+                artifact dokkaHtmlJar
                 if (!moduleObsfuscated) artifact sourcesJar
                 pom {
                     url.set("https://www.kaleyra.com/video/")
@@ -75,15 +75,20 @@ task publishUpload {
     tasks.findByName('invalidateCache').mustRunAfter publishTask
 }
 
-dokkaHtml {
-    outputDirectory = new File("$buildDir/kDoc")
-    dokkaSourceSets {
-        configureEach {
-            moduleName.set(project.name)
-            reportUndocumented.set(true)
-            jdkVersion.set(8)
-            includeNonPublic.set(false)
-            skipEmptyPackages.set(true)
+tasks.forEach {
+    def parts = it.class.name.split("\\.")
+    def lastName = parts[(parts.length - 1)]
+    if (lastName.startsWith("DokkaTaskPartial")) {
+        it.configure {
+            dokkaSourceSets {
+                configureEach {
+                    moduleName.set(project.name)
+                    reportUndocumented.set(true)
+                    jdkVersion.set(8)
+                    includeNonPublic.set(false)
+                    skipEmptyPackages.set(true)
+                }
+            }
         }
     }
 }
@@ -94,18 +99,10 @@ task updateSdkVersion(type: Exec) {
     commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion", "$nextVersion"
 }
 
-task publishDocs(type: Exec) {
-    workingDir '../scripts'
-    commandLine 'python3', './publish_doc.py', "$moduleGroupId", "${project.name}", "$moduleVersion"
-}
-
-task dokkaDoc() {
-    dependsOn dokkaHtml
-}
-
-task kdocJar(type: Jar, dependsOn: dokkaHtml) {
-    from "$buildDir/kDoc"
-    archiveClassifier.set("kdocJar")
+tasks.register('dokkaHtmlJar', Jar.class) {
+    dependsOn(dokkaHtml)
+    from(dokkaHtml)
+    archiveClassifier.set("html-docs")
 }
 
 task sourcesJar(type: Jar) {
@@ -114,6 +111,6 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives kdocJar
+    archives dokkaHtmlJar
     if (!moduleObsfuscated) archives sourcesJar
 }

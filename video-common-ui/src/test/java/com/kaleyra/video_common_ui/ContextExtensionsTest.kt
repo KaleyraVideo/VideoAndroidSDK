@@ -34,7 +34,6 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasManageO
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasReadPhoneNumbersPermission
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import junit.framework.TestCase
 import org.junit.Assert.assertEquals
 import org.junit.Test

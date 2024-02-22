@@ -49,6 +49,7 @@ import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
+import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
@@ -320,6 +321,26 @@ class CallViewModelTest {
     }
 
     @Test
+    fun `test streams cleaned on call ended`() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connected)
+        every { callMock.state } returns callState
+        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
+        advanceUntilIdle()
+        val featured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val thumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf(streamMock1.id), featured)
+        assertEquals(listOf(myStreamMock.id), thumbnail)
+        callState.value = Call.State.Disconnected.Ended
+        advanceUntilIdle()
+        val newFeatured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val newThumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf<String>(), newFeatured)
+        assertEquals(listOf<String>(), newThumbnail)
+    }
+
+    @Test
     fun `test streams updated immediately if there is more than one participant in call`() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         with(participantMock1) {
@@ -580,19 +601,50 @@ class CallViewModelTest {
 
     @Test
     fun testCallUiState_amILeftAloneUpdated() = runTest {
-        every { participantMock1.streams } returns MutableStateFlow(listOf())
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
         val current = viewModel.uiState.first().amILeftAlone
         assertEquals(false, current)
+        participants1StreamsFlow.value = listOf()
         advanceUntilIdle()
         val new = viewModel.uiState.first().amILeftAlone
         assertEquals(true, new)
     }
 
     @Test
-    fun testCallUiState_amILeftAloneUpdatedAfterDebounceIfValueIsTrue() = runTest {
+    fun testCallUiState_waitingForOthersUpdatedAfterDebounceIfValueIsTrue() = runTest {
         every { participantMock1.streams } returns MutableStateFlow(listOf())
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceTimeBy(CallViewModel.WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+        advanceTimeBy(1)
+        assertEquals(true, viewModel.uiState.first().amIWaitingOthers)
+    }
+
+    @Test
+    fun testCallUiState_waitingForOthersNotUpdatedIfSomeonePreviouslyJoined() = runTest {
+        val participants1StreamsFlow = MutableStateFlow(listOf<Stream>())
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+        assertEquals(true, viewModel.uiState.first().amIWaitingOthers)
+        participants1StreamsFlow.value = listOf(streamMock1)
+        advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+        participants1StreamsFlow.value = listOf()
+        advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+    }
+
+    @Test
+    fun testCallUiState_amILeftAloneUpdatedAfterDebounceIfValueIsTrue() = runTest {
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+        participants1StreamsFlow.value = listOf()
         advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
         assertEquals(false, viewModel.uiState.first().amILeftAlone)
         advanceTimeBy(1)
@@ -601,9 +653,12 @@ class CallViewModelTest {
 
     @Test
     fun testCallUiState_amILeftAloneUpdatedImmediatelyIfValueIsFalse() = runTest {
-        val participants1StreamsFlow = MutableStateFlow(listOf<Stream>())
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
         every { participantMock1.streams } returns participants1StreamsFlow
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+
+        participants1StreamsFlow.value = listOf()
         advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
         runCurrent()
         assertEquals(true, viewModel.uiState.first().amILeftAlone)

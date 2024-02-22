@@ -67,8 +67,12 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
             Column {
                 CallInfoWidget(
                     onBackPressed = onBackPressed,
-                    title = uiState.participants.value.joinToString(separator = ", "),
-                    subtitle = if (!uiState.isLink && !uiState.isConnecting) subtitle else stringResource(id = R.string.kaleyra_call_status_connecting),
+                    title = if (!uiState.isConnecting) uiState.participants.value.joinToString(separator = ", ") else stringResource(id = R.string.kaleyra_call_status_connecting),
+                    subtitle = when {
+                        uiState.isLink -> stringResource(id = R.string.kaleyra_call_status_connecting)
+                        uiState.isConnecting -> null
+                        else -> subtitle
+                    },
                     watermarkInfo = uiState.watermarkInfo,
                     recording = false,
                     modifier = Modifier.statusBarsPadding()

@@ -15,7 +15,7 @@
   -->
 <resources>
 
-    <string name="app_name" translatable="false">Kaleyra Video SDK Showcase</string>
+    <string name="app_name" translatable="false">Kaleyra Video Demo SDK</string>
 
     <!-- ACTIVITIES -->
 
@@ -48,7 +48,7 @@
     <string name="search" translatable="false">Search&#8230;</string>
     <string name="button_allow" translatable="false">Allow</string>
 
-    <string name="app_name_with_version" translatable="false">Showcase %1$s</string>
+    <string name="app_name_with_version" translatable="false">Demo %1$s</string>
 
     <!-- CALL OPTIONS -->
 

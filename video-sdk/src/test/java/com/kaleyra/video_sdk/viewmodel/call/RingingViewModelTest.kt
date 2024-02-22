@@ -18,7 +18,6 @@ package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
-import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
@@ -80,28 +79,6 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
     }
 
     @Test
-    fun testPreCallUiState_answeredUpdated() = runTest {
-        with(callMock) {
-            every { state } returns MutableStateFlow(Call.State.Connecting)
-            every { participants } returns MutableStateFlow(callParticipantsMock)
-        }
-        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
-        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
-        every { myStreamMock.state } returns MutableStateFlow(Stream.State.Live)
-        every { streamMock1.id } returns "streamId"
-        with(callParticipantsMock) {
-            every { me } returns participantMeMock
-            every { others } returns listOf(participantMock1)
-            every { creator() } returns mockk()
-        }
-        val current = viewModel.uiState.first().answered
-        assertEquals(false, current)
-        advanceUntilIdle()
-        val new = viewModel.uiState.first().answered
-        assertEquals(true, new)
-    }
-
-    @Test
     fun testPreCallUiState_amIWaitingForOthersUpdated() = runTest {
         with(callMock) {
             every { state } returns MutableStateFlow(Call.State.Connected)
@@ -157,40 +134,53 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
     @Test
     fun testCallAnswer() = runTest {
         mockkObject(ConnectionServiceUtils) {
+            every { callParticipantsMock.others } returns listOf()
             every { isConnectionServiceEnabled } returns false
             advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
             viewModel.accept()
             verify(exactly = 1) { callMock.connect() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
         }
     }
 
     @Test
     fun testConnectionServiceAnswer() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { callParticipantsMock.others } returns listOf()
             every { isConnectionServiceEnabled } returns true
-            viewModel.accept()
             advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
+            viewModel.accept()
             coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
         }
     }
 
     @Test
     fun testCallDecline() = runTest {
         mockkObject(ConnectionServiceUtils) {
+            every { callParticipantsMock.others } returns listOf()
             every { isConnectionServiceEnabled } returns false
             advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
             viewModel.decline()
             verify(exactly = 1) { callMock.end() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
         }
     }
 
     @Test
     fun testConnectionServiceDecline() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { callParticipantsMock.others } returns listOf()
             every { isConnectionServiceEnabled } returns true
+            advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
             viewModel.decline()
             advanceUntilIdle()
             coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
         }
     }
 }

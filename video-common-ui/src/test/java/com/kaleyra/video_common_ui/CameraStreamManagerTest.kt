@@ -23,6 +23,9 @@ import com.kaleyra.video_common_ui.call.CameraStreamManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import com.kaleyra.video_common_ui.utils.DeviceUtils
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import io.mockk.verify
 import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -47,6 +51,8 @@ class CameraStreamManagerTest {
 
     @Before
     fun setUp() {
+        mockkObject(DeviceUtils)
+        every { DeviceUtils.isSmartGlass } returns false
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)
             every { preferredType } returns MutableStateFlow(PreferredType.audioVideo())
@@ -58,6 +64,11 @@ class CameraStreamManagerTest {
             every { audio } returns MutableStateFlow(null)
             every { video } returns MutableStateFlow(null)
         }
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
@@ -183,7 +194,8 @@ class CameraStreamManagerTest {
     }
 
     @Test
-    fun handleCameraStreamVideo_setHDQualityOnCameraVideoStream() = runTest(UnconfinedTestDispatcher()) {
+    fun smartglassDevice_handleCameraStreamVideo_setSDQualityOnCameraVideoStream() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns true
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.SD, 30))
@@ -193,6 +205,20 @@ class CameraStreamManagerTest {
         cameraStreamManager.handleCameraStreamVideo(callMock)
 
         verify { videoMock.setQuality(Input.Video.Quality.Definition.HD, any()) }
+    }
+
+    @Test
+    fun smartphoneDevice_handleCameraStreamVideo_setHDQualityOnCameraVideoStream() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns false
+        val cameraStreamManager = CameraStreamManager(backgroundScope)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true) {
+            every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.SD, 30))
+        }
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(videoMock))
+
+        cameraStreamManager.handleCameraStreamVideo(callMock)
+
+        verify { videoMock.setQuality(Input.Video.Quality.Definition.SD, any()) }
     }
 
     @Test
