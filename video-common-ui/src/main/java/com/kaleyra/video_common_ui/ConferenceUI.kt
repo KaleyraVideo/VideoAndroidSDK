@@ -16,29 +16,11 @@
 
 package com.kaleyra.video_common_ui
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.telecom.PhoneAccount
-import android.telecom.TelecomManager
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Conference
-import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtension.addIncomingCall
-import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtension.placeOutgoingCall
-import com.kaleyra.video_common_ui.utils.CallExtensions.isIncoming
-import com.kaleyra.video_common_ui.utils.CallExtensions.isOutgoing
-import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
-import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
-import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
-import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCannotJoinUrlToast
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,10 +28,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 
 /**
@@ -85,7 +64,9 @@ class ConferenceUI(
     var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
 
     init {
-        listenToCalls()
+        configureCallServiceStart(callActivityClazz, logger, callScope)
+        configureCannotJoinUrlToast(callScope)
+        configureCallActivityShow(callScope)
     }
 
     internal fun dispose() {
@@ -117,53 +98,6 @@ class ConferenceUI(
      */
     override fun create(userIDs: List<String>, conf: (Conference.CreationOptions.() -> Unit)?): Result<CallUI> =
         conference.create(userIDs, conf).map { getOrCreateCallUI(it) }
-
-    private fun listenToCalls() {
-        var currentCall: CallUI? = null
-        call
-            .onEach { call ->
-                if (call.state.value is Call.State.Disconnected.Ended) return@onEach
-
-                if (currentCall != null && currentCall?.state?.value !is Call.State.Disconnected.Ended && call.isLink) {
-                    showCannotJoinUrl()
-                    return@onEach
-                }
-
-//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@onEach
-//                val context = ContextRetainer.context
-//                val uri = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+111" + context.packageName.hashCode(), null)
-//                val telecomManager = context.getTelecomManager()
-//                val participants = call.participants.value
-//                when {
-//                    participants.creator() == null || participants.me == participants.creator() -> {
-//                        // TODO move this to call create
-//                        telecomManager.placeOutgoingCall(context, uri)
-//                    }
-//                    participants.me != participants.creator() -> {
-//                        telecomManager.addIncomingCall(context, uri)
-//                    }
-//                }
-
-                CallService.start()
-                call.enableAudioRouting(withCallSounds = true, logger = logger, coroutineScope = callScope, isLink = call.isLink)
-                when {
-                    !withUI -> Unit
-                    call.shouldShowAsActivity() -> call.showOnAppResumed(callScope)
-                }
-                currentCall = call
-            }
-            .onCompletion {
-                CallService.stop()
-            }
-            .launchIn(callScope)
-    }
-
-    fun Context.getTelecomManager(): TelecomManager =
-        getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
-
-    private fun showCannotJoinUrl() = Handler(Looper.getMainLooper()).post {
-        Toast.makeText(ContextRetainer.context, R.string.kaleyra_call_join_url_already_in_call_error, Toast.LENGTH_SHORT).show()
-    }
 
     private fun getOrCreateCallUI(call: Call): CallUI = synchronized(this) {
         callUIMap[call.id] ?: CallUI(

@@ -63,7 +63,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun testGetPhoneAccountHandle() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val componentName = ComponentName(context, KaleyraCallConnectionService::class.java)
         val accountHandle = PhoneAccountHandle(componentName, context.applicationContext.packageName + ".connectionService")
         assertEquals(accountHandle, telecomManager.getPhoneAccountHandle(context))
@@ -73,7 +73,7 @@ internal class TelecomManagerExtensionsTest {
     fun testGetOrRegisterPhoneAccount() {
         mockkObject(TelecomManagerExtensions)
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         val handle = PhoneAccountHandle(ComponentName(context, TelecomManagerExtensionsTest::class.java), "handleId")
         every { context.getAppName() } returns "appName"
@@ -94,7 +94,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun testAddIncomingCall() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = spyk(context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager)
+        val telecomManager = spyk(context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager)
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasManageOwnCallsPermission() } returns true
@@ -114,7 +114,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun isIncomingCallPermittedFalse_addIncomingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = spyk(context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager)
+        val telecomManager = spyk(context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager)
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasManageOwnCallsPermission() } returns true
@@ -131,7 +131,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun hasManageOwnCallsPermissionFalse_addIncomingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = spyk(context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager)
+        val telecomManager = spyk(context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager)
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasManageOwnCallsPermission() } returns false
@@ -148,7 +148,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun hasReadPhoneNumbersPermissionFalse_addIncomingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = spyk(context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager)
+        val telecomManager = spyk(context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager)
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasManageOwnCallsPermission() } returns true
@@ -165,7 +165,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun testPlaceOutgoingCall() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasCallPhonePermission() } returns true
@@ -185,7 +185,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun hasCallPhonePermissionFalse_placeOutgoingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasCallPhonePermission() } returns false
@@ -204,7 +204,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun hasManageOwnCallsPermissionFalse_placeOutgoingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasCallPhonePermission() } returns true
@@ -223,7 +223,7 @@ internal class TelecomManagerExtensionsTest {
     @Test
     fun hasReadPhoneNumbersPermissionFalse_placeOutgoingCall_fails() {
         val context = spyk(ApplicationProvider.getApplicationContext())
-        val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
         val shadowManager = shadowOf(telecomManager)
         mockkObject(ContextExtensions)
         every { context.hasCallPhonePermission() } returns true
@@ -246,7 +246,7 @@ internal class TelecomManagerExtensionsTest {
             val participants = mockk<CallParticipants>(relaxed = true)
             val me = mockk<CallParticipant.Me>(relaxed = true)
             val context = spyk(ApplicationProvider.getApplicationContext())
-            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             val uri = kaleyraAddress
             every { ContextRetainer.context } returns context
             every { telecomManager.placeOutgoingCall(any(), any(), any()) } returns Unit
@@ -267,7 +267,7 @@ internal class TelecomManagerExtensionsTest {
             val participants = mockk<CallParticipants>(relaxed = true)
             val me = mockk<CallParticipant.Me>(relaxed = true)
             val context = spyk(ApplicationProvider.getApplicationContext())
-            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             val uri = kaleyraAddress
             every { ContextRetainer.context } returns context
             every { telecomManager.addIncomingCall(any(), any(), any()) } returns Unit
@@ -288,7 +288,7 @@ internal class TelecomManagerExtensionsTest {
             val participants = mockk<CallParticipants>(relaxed = true)
             val me = mockk<CallParticipant.Me>(relaxed = true)
             val context = spyk(ApplicationProvider.getApplicationContext())
-            val telecomManager = context.getSystemService(AppCompatActivity.TELECOM_SERVICE) as TelecomManager
+            val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             every { ContextRetainer.context } returns context
             every { call.participants } returns MutableStateFlow(participants)
             every { participants.me } returns me
