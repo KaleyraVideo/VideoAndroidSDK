@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_utils.ContextRetainer
@@ -26,7 +27,7 @@ class ConnectionServiceUtilsTest {
 
     @Before
     fun setUp() {
-        mockkObject(ConnectionServiceUtils, ContextRetainer, ContextExtensions, KaleyraVideo)
+        mockkObject(ConnectionServiceUtils, ContextRetainer, ContextExtensions, KaleyraVideo, DeviceUtils)
         every { ContextRetainer.context } returns contextMock
         every { contextMock.hasConnectionServicePermissions() } returns true
         every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
@@ -35,6 +36,20 @@ class ConnectionServiceUtilsTest {
     @After
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.O])
+    fun smartglassDevice_isConnectionServiceSupported_false() {
+        every { DeviceUtils.isSmartGlass } returns true
+        assertEquals(false, ConnectionServiceUtils.isConnectionServiceSupported)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.O])
+    fun smartphoneDevice_isConnectionServiceSupported_true() {
+        every { DeviceUtils.isSmartGlass } returns false
+        assertEquals(true, ConnectionServiceUtils.isConnectionServiceSupported)
     }
 
     @Test
