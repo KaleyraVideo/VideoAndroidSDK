@@ -21,8 +21,9 @@ import com.kaleyra.video_utils.logging.PriorityLogger
 
 object TelecomManagerExtensions {
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    val kaleyraAddress: Uri = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+1110000000000", null)
+    @get:RequiresApi(Build.VERSION_CODES.M)
+    val kaleyraAddress: Uri
+        get() = Uri.fromParts(PhoneAccount.SCHEME_SIP, "+1110000000000", null)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun TelecomManager.getPhoneAccountHandle(context: Context): PhoneAccountHandle {

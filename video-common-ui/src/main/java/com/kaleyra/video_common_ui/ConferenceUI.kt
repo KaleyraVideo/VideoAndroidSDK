@@ -79,6 +79,11 @@ class ConferenceUI(
      */
     var callActions: Set<CallUI.Action> = CallUI.Action.default
 
+    /**
+     * The connection service option
+     */
+    var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
+
     init {
         listenToCalls()
     }

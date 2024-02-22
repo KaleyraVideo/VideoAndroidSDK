@@ -2,7 +2,7 @@ package com.kaleyra.video_common_ui.connectionservice
 
 import android.content.Context
 import android.os.Build
-import com.kaleyra.video_common_ui.ConnectionServiceSetting
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
@@ -29,7 +29,7 @@ class ConnectionServiceUtilsTest {
         mockkObject(ConnectionServiceUtils, ContextRetainer, ContextExtensions, KaleyraVideo)
         every { ContextRetainer.context } returns contextMock
         every { contextMock.hasConnectionServicePermissions() } returns true
-        every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Default
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
     }
 
     @After
@@ -50,23 +50,23 @@ class ConnectionServiceUtilsTest {
     }
 
     @Test
-    fun connectionServiceDefaultSetting_isConnectionServiceEnabled_true() {
+    fun connectionServiceEnabledOption_isConnectionServiceEnabled_true() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Default
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
-    fun connectionServiceFallbackSetting_isConnectionServiceEnabled_true() {
+    fun connectionServiceOptionalOption_isConnectionServiceEnabled_true() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Fallback
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Optional
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
-    fun connectionServiceDisabled_isConnectionServiceEnabled_false() {
+    fun connectionServiceDisabledOption_isConnectionServiceEnabled_false() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceSetting } returns ConnectionServiceSetting.Disabled
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Disabled
         assertEquals(false, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 

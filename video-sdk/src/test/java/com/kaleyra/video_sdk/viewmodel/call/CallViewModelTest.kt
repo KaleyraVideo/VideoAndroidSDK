@@ -30,11 +30,10 @@ import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.ConnectionServiceSetting
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
@@ -225,19 +224,19 @@ class CallViewModelTest {
         mockkObject(ConnectionServiceUtils) {
             advanceUntilIdle()
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Default
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns false
-            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Default
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Fallback
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Optional
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Disabled
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
         }
     }
@@ -277,8 +276,8 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithDefaultConnectionServiceSetting() = runTest {
-        every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Default
+    fun testTryStartCallServiceWithConnectionServiceEnabled() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
 
         advanceUntilIdle()
         viewModel.tryStartCallService()
@@ -286,8 +285,8 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithDisabledConnectionService() = runTest {
-        every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Disabled
+    fun testTryStartCallServiceWithConnectionServiceDisabled() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
 
         advanceUntilIdle()
         viewModel.tryStartCallService()
@@ -295,10 +294,10 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithFallbackConnectionServiceSetting() = runTest {
+    fun testTryStartCallServiceWithConnectionServiceOptional() = runTest {
         mockkObject(KaleyraCallService) {
             every { KaleyraCallService.start() } returns Unit
-            every { conferenceMock.connectionServiceSetting } returns ConnectionServiceSetting.Fallback
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Optional
 
             advanceUntilIdle()
             viewModel.tryStartCallService()
