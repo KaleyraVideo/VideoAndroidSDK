@@ -235,7 +235,6 @@ internal interface CallNotificationManager {
             // from notification if there is already an instance, instead of a creating a new one
             this.action = Intent.ACTION_MAIN
             this.addCategory(Intent.CATEGORY_LAUNCHER)
-            this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             this.putExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, DeviceUtils.isSmartGlass)
             this.putExtra(IS_CALL_SERVICE_RUNNING_EXTRA, isCallServiceRunning)
             action?.also { this.putExtra(NOTIFICATION_ACTION_EXTRA, it) }
