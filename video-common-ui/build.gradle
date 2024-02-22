@@ -57,6 +57,7 @@ dependencies {
     api catalog.material
     api catalog.googleAccompanistSystemUiController
     api catalog.googleAccompanistPermission
+    implementation 'androidx.test:core-ktx:1.5.0'
     coreLibraryDesugaring catalog.desugar
 
     /** UI **/
@@ -66,10 +67,12 @@ dependencies {
     /** Testing **/
     testImplementation catalog.junit
     testImplementation catalog.mockkAndroid
-    testImplementation catalog.roboelectric
+//    testImplementation catalog.roboelectric
+    testImplementation "org.robolectric:robolectric:4.11.1"
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
-    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
+//    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
+    testImplementation project(':video-extension-audio')
     testImplementation kaleyraCatalog.kaleyraVideo
 
     androidTestImplementation catalog.mockkAndroid
@@ -78,8 +81,10 @@ dependencies {
 
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
-    compileOnly kaleyraCatalog.kaleyraVideo
-    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
+//    compileOnly kaleyraCatalog.kaleyraVideo
+    implementation project(':video')
+//    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
+    implementation project(':video-extension-audio')
 }
 
 licenseReport {
