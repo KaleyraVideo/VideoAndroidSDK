@@ -1,7 +1,6 @@
 package com.kaleyra.video_common_ui.connectionservice
 
 import android.os.Build
-import android.telecom.CallEndpoint
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
@@ -11,7 +10,6 @@ import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -181,26 +179,27 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
 
     @Deprecated("Deprecated in Java")
     override fun onCallAudioStateChanged(state: android.telecom.CallAudioState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
         _currentAudioDevice.value = state.mapCurrentRouteToAudioOutputDevice()
         _availableAudioDevices.value = state.mapToAvailableAudioOutputDevices()
     }
 
     ///// Audio API 34 /////
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    override fun onAvailableCallEndpointsChanged(availableEndpoints: List<CallEndpoint>) {
-        _availableAudioDevices.value = availableEndpoints.mapNotNull { it.mapToAudioOutputDevice() } + AudioOutputDevice.None()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    override fun onCallEndpointChanged(callEndpoint: CallEndpoint) {
-        _currentAudioDevice.value = callEndpoint.mapToAudioOutputDevice()
-    }
-
-    override fun onMuteStateChanged(isMuted: Boolean) {
-        if (!isMuted) return
-        _currentAudioDevice.value = AudioOutputDevice.None()
-    }
+//    Try to use the new API when the endpoint issue will be solved: https://issuetracker.google.com/issues/302436283
+//
+//    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+//    override fun onAvailableCallEndpointsChanged(availableEndpoints: List<CallEndpoint>) {
+//        _availableAudioDevices.value = availableEndpoints.mapNotNull { it.mapToAudioOutputDevice() } + AudioOutputDevice.None()
+//    }
+//
+//    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+//    override fun onCallEndpointChanged(callEndpoint: CallEndpoint) {
+//        _currentAudioDevice.value = callEndpoint.mapToAudioOutputDevice()
+//    }
+//
+//    override fun onMuteStateChanged(isMuted: Boolean) {
+//        if (!isMuted) return
+//        _currentAudioDevice.value = AudioOutputDevice.None()
+//    }
 
 }
