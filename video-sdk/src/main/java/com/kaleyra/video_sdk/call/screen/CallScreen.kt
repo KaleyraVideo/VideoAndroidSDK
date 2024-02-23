@@ -394,6 +394,7 @@ internal fun CallScreen(
                 contactsPermissionsState.launchMultiplePermissionRequest()
             } else {
                 viewModel.tryStartCallService()
+                shouldAskInputPermissions = true
             }
             onConnectionServicePermissions()
         }
