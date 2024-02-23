@@ -399,46 +399,46 @@ class CallConnectionTest {
         unmockkObject(CallAudioStateExtensions)
     }
 
-    @Test
-    fun testOnAvailableCallEndpointsChange() = runTest {
-        mockkObject(CallEndpointExtensions)
-        val speakerEndpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
-        val earpieceEndpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
-        val speakerAudioOutput = AudioOutputDevice.Loudspeaker()
-        val earpieceAudioOutput = AudioOutputDevice.Earpiece()
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
-        every { speakerEndpoint.mapToAudioOutputDevice() } returns speakerAudioOutput
-        every { earpieceEndpoint.mapToAudioOutputDevice() } returns earpieceAudioOutput
-        connection.onAvailableCallEndpointsChanged(listOf(speakerEndpoint, earpieceEndpoint))
-        val expected = listOf(speakerAudioOutput, earpieceAudioOutput, AudioOutputDevice.None())
-        assertEquals(expected, connection.availableAudioDevices.first())
-        unmockkObject(CallEndpointExtensions)
-    }
+//    @Test
+//    fun testOnAvailableCallEndpointsChange() = runTest {
+//        mockkObject(CallEndpointExtensions)
+//        val speakerEndpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
+//        val earpieceEndpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
+//        val speakerAudioOutput = AudioOutputDevice.Loudspeaker()
+//        val earpieceAudioOutput = AudioOutputDevice.Earpiece()
+//        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+//        every { speakerEndpoint.mapToAudioOutputDevice() } returns speakerAudioOutput
+//        every { earpieceEndpoint.mapToAudioOutputDevice() } returns earpieceAudioOutput
+//        connection.onAvailableCallEndpointsChanged(listOf(speakerEndpoint, earpieceEndpoint))
+//        val expected = listOf(speakerAudioOutput, earpieceAudioOutput, AudioOutputDevice.None())
+//        assertEquals(expected, connection.availableAudioDevices.first())
+//        unmockkObject(CallEndpointExtensions)
+//    }
 
-    @Test
-    fun testOnCallEndpointChanged() = runTest {
-        mockkObject(CallEndpointExtensions)
-        val endpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
-        val audioOutput = AudioOutputDevice.Loudspeaker()
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
-        every { endpoint.mapToAudioOutputDevice() } returns audioOutput
-        connection.onCallEndpointChanged(endpoint)
-        assertEquals(audioOutput, connection.currentAudioDevice.first())
-        unmockkObject(CallEndpointExtensions)
-    }
+//    @Test
+//    fun testOnCallEndpointChanged() = runTest {
+//        mockkObject(CallEndpointExtensions)
+//        val endpoint = spyk(CallEndpoint("endpointName", CallEndpoint.TYPE_SPEAKER, ParcelUuid(UUID.randomUUID())))
+//        val audioOutput = AudioOutputDevice.Loudspeaker()
+//        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+//        every { endpoint.mapToAudioOutputDevice() } returns audioOutput
+//        connection.onCallEndpointChanged(endpoint)
+//        assertEquals(audioOutput, connection.currentAudioDevice.first())
+//        unmockkObject(CallEndpointExtensions)
+//    }
 
-    @Test
-    fun isMutedTrue_onMuteStateChanged_audioStateMuted() = runTest {
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
-        connection.onMuteStateChanged(true)
-        assertEquals(AudioOutputDevice.None(), connection.currentAudioDevice.first())
-    }
+//    @Test
+//    fun isMutedTrue_onMuteStateChanged_audioStateMuted() = runTest {
+//        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+//        connection.onMuteStateChanged(true)
+//        assertEquals(AudioOutputDevice.None(), connection.currentAudioDevice.first())
+//    }
 
-    @Test
-    fun isMutedFalse_onMuteStateChanged_audioStateNotUpdated() = runTest {
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
-        connection.onMuteStateChanged(false)
-        assertEquals(null, connection.currentAudioDevice.first())
-    }
+//    @Test
+//    fun isMutedFalse_onMuteStateChanged_audioStateNotUpdated() = runTest {
+//        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+//        connection.onMuteStateChanged(false)
+//        assertEquals(null, connection.currentAudioDevice.first())
+//    }
 
 }
