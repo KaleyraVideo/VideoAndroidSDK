@@ -105,11 +105,19 @@ class KaleyraCallServiceTest {
 
     @Test
     fun testStartService() {
+        val newLogger = object : PriorityLogger(BaseLogger.VERBOSE) {
+            override fun debug(tag: String, message: String) = Unit
+            override fun error(tag: String, message: String) = Unit
+            override fun info(tag: String, message: String) = Unit
+            override fun verbose(tag: String, message: String) = Unit
+            override fun warn(tag: String, message: String) = Unit
+        }
         every { ContextRetainer.context } returns service!!.applicationContext
-        KaleyraCallService.start()
+        KaleyraCallService.start(newLogger)
         val startedIntent: Intent = shadowOf(service!!).nextStartedService
         val shadowIntent = shadowOf(startedIntent)
         assertEquals(KaleyraCallService::class.java, shadowIntent.intentClass)
+        assertEquals(newLogger, KaleyraCallService.logger)
     }
 
     @Test

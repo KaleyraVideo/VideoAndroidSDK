@@ -46,7 +46,7 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
 
         fun start(logger: PriorityLogger? = null) {
             with(ContextRetainer.context) {
-                KaleyraCallService.logger = Companion.logger
+                KaleyraCallService.logger = logger
                 val intent = Intent(this, KaleyraCallService::class.java)
                 startService(intent)
             }
