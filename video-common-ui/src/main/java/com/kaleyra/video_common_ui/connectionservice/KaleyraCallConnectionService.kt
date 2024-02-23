@@ -60,7 +60,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
 
     private val callForegroundServiceWorker by lazy { CallForegroundServiceWorker(application, coroutineScope, this) }
 
-    private var foregroundJob: Job? = null
+    private var notificationJob: Job? = null
 
     private var call: CallUI? = null
 
@@ -73,9 +73,9 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         super.onDestroy()
         callForegroundServiceWorker.dispose()
         coroutineScope.cancel()
-        foregroundJob?.cancel()
+        notificationJob?.cancel()
         call?.disableAudioRouting()
-        foregroundJob = null
+        notificationJob = null
         call = null
         connection.value?.address?.also { ContactsController.deleteConnectionServiceContact(this, it) }
         connection.value = null
@@ -175,8 +175,8 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
-        if (foregroundJob != null) return
-        foregroundJob = flowOf(call)
+        notificationJob?.cancel()
+        notificationJob = flowOf(call)
             .hasScreenSharingInput()
             .onEach { hasScreenSharingPermission ->
                 runCatching {

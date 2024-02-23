@@ -180,6 +180,30 @@ class KaleyraCallServiceTest {
     }
 
     @Test
+    @Config(sdk = [Build.VERSION_CODES.P])
+    fun testStartForegroundIsExecutedOnNotificationUpdate() {
+        mockkObject(AppLifecycle)
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        every { AppLifecycle.isInForeground } returns MutableStateFlow(true)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(notification, shadowOf(service).lastForegroundNotification)
+        assertEquals(10, shadowOf(service).lastForegroundNotificationId)
+
+        val newNotification = Notification.Builder(service)
+            .setSmallIcon(1)
+            .setContentTitle("new test")
+            .setContentText("new content text")
+            .build()
+        service!!.onNewNotification(callMock, newNotification, 10)
+        assertEquals(newNotification, shadowOf(service).lastForegroundNotification)
+        assertEquals(10, shadowOf(service).lastForegroundNotificationId)
+        unmockkObject(AppLifecycle)
+    }
+
+    @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun testOnNewNotificationWithForegroundServiceType() {
         mockkObject(AppLifecycle)

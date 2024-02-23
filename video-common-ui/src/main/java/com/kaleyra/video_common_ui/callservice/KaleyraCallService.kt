@@ -59,7 +59,7 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
 
     private val callForegroundServiceWorker by lazy { CallForegroundServiceWorker(application, lifecycleScope, this) }
 
-    private var foregroundJob: Job? = null
+    private var notificationJob: Job? = null
 
     private var call: Call? = null
 
@@ -78,9 +78,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
             coroutineScope = lifecycleScope,
             isLink = call.isLink
         )
-//        if (KaleyraVideo.conference.withUI && call.shouldShowAsActivity()) {
-//            call.showOnAppResumed(lifecycleScope)
-//        }
         return START_STICKY
     }
 
@@ -91,19 +88,19 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
         super.onDestroy()
         callForegroundServiceWorker.dispose()
         call?.disableAudioRouting()
-        foregroundJob?.cancel()
-        foregroundJob = null
+        notificationJob?.cancel()
+        notificationJob = null
         logger = null
         call = null
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
-        if (foregroundJob != null) return
         // Every time the app goes in foreground, try to promote the service in foreground.
         // The runCatching is needed because the startForeground may fails when the app is in background but
         // the isInForeground flag is still true. This happens because the onStop of the application lifecycle is
         // dispatched 700ms after the last activity's onStop
-        foregroundJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
+        notificationJob?.cancel()
+        notificationJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
             if (!isInForeground) return@combine
             kotlin.runCatching {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))

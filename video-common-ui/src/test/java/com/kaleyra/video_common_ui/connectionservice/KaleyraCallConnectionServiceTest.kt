@@ -21,6 +21,7 @@ import com.kaleyra.video_common_ui.TestUtils.setPrivateField
 import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
@@ -189,6 +190,27 @@ class KaleyraCallConnectionServiceTest {
             service!!.getForegroundServiceType(false),
             service!!.foregroundServiceType
         )
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.P])
+    fun testStartForegroundIsExecutedOnNotificationUpdate() {
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(notification, Shadows.shadowOf(service).lastForegroundNotification)
+        assertEquals(10, Shadows.shadowOf(service).lastForegroundNotificationId)
+
+        val newNotification = Notification.Builder(service)
+            .setSmallIcon(1)
+            .setContentTitle("new test")
+            .setContentText("new content text")
+            .build()
+        service!!.onNewNotification(callMock, newNotification, 10)
+        assertEquals(newNotification, Shadows.shadowOf(service).lastForegroundNotification)
+        assertEquals(10, Shadows.shadowOf(service).lastForegroundNotificationId)
     }
 
     @Test
