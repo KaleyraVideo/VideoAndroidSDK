@@ -7,7 +7,6 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
-import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCannotJoinUrlToast
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
@@ -37,7 +36,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.math.expm1
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConferenceUIExtensionsTest {
@@ -199,72 +197,6 @@ class ConferenceUIExtensionsTest {
 
         verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingNotificationMock) }
         verify(exactly = 1) { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
-    }
-
-    @Test
-    fun newCallEnded_configureCannotJoinUrlToast_toastNotShown() = runTest(UnconfinedTestDispatcher()) {
-        val currentCall = mockk<CallUI>(relaxed = true)
-        val callFlow = MutableStateFlow(currentCall)
-        every { currentCall.state } returns MutableStateFlow(mockk())
-        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
-        every { callMock.isLink } returns true
-        every { conferenceMock.call } returns callFlow
-
-        conferenceMock.configureCannotJoinUrlToast(backgroundScope)
-        callFlow.value = callMock
-        coVerify(exactly = 0) { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
-    }
-
-    @Test
-    fun currentCallEnded_configureCannotJoinUrlToast_toastNotShown() = runTest(UnconfinedTestDispatcher()) {
-        val currentCall = mockk<CallUI>(relaxed = true)
-        val callFlow = MutableStateFlow(currentCall)
-        every { currentCall.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
-        every { callMock.state } returns MutableStateFlow(mockk())
-        every { callMock.isLink } returns true
-        every { conferenceMock.call } returns callFlow
-
-        conferenceMock.configureCannotJoinUrlToast(backgroundScope)
-        callFlow.value = callMock
-        coVerify(exactly = 0) { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
-    }
-
-    @Test
-    fun currentCallNull_configureCannotJoinUrlToast_toastNotShown() = runTest(UnconfinedTestDispatcher()) {
-        every { callMock.state } returns MutableStateFlow(mockk())
-        every { callMock.isLink } returns true
-        every { conferenceMock.call } returns MutableStateFlow(callMock)
-
-        conferenceMock.configureCannotJoinUrlToast(backgroundScope)
-        coVerify(exactly = 0) { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
-    }
-
-    @Test
-    fun newCallIsNotLink_configureCannotJoinUrlToast_toastNotShown() = runTest(UnconfinedTestDispatcher()) {
-        val currentCall = mockk<CallUI>(relaxed = true)
-        val callFlow = MutableStateFlow(currentCall)
-        every { currentCall.state } returns MutableStateFlow(mockk())
-        every { callMock.state } returns MutableStateFlow(mockk())
-        every { callMock.isLink } returns false
-        every { conferenceMock.call } returns callFlow
-
-        conferenceMock.configureCannotJoinUrlToast(backgroundScope)
-        callFlow.value = callMock
-        coVerify(exactly = 0) { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
-    }
-
-    @Test
-    fun joinUrlDuringAnotherCall_configureCannotJoinUrlToast_toastShown() = runTest(UnconfinedTestDispatcher()) {
-        val currentCall = mockk<CallUI>(relaxed = true)
-        val callFlow = MutableStateFlow(currentCall)
-        every { currentCall.state } returns MutableStateFlow(mockk())
-        every { callMock.state } returns MutableStateFlow(mockk())
-        every { callMock.isLink } returns true
-        every { conferenceMock.call } returns callFlow
-
-        conferenceMock.configureCannotJoinUrlToast(backgroundScope)
-        callFlow.value = callMock
-        coVerify(exactly = 1) { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
     }
 
     @Test

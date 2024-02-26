@@ -15,7 +15,6 @@
   -->
 
 <resources>
-    <string name="kaleyra_call_join_url_already_in_call_error">No se puede crear un enlace de unión a la llamada mientras ya se está en una llamada.</string>
     <string name="kaleyra_call_participant_removed_understood_message">Cerrar</string>
     <string name="kaleyra_call_participant_utterance_muted_by_admin">Silenciado</string>
     <string name="kaleyra_call_waiting_for_other_participants">Esperando a otros participantes…</string>

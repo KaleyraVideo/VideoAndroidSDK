@@ -2,7 +2,6 @@ package com.kaleyra.video_common_ui
 
 import android.content.Context
 import android.telecom.TelecomManager
-import android.widget.Toast
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
@@ -16,12 +15,10 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnect
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.withContext
 
 internal object ConferenceUIExtensions {
 
@@ -65,24 +62,6 @@ internal object ConferenceUIExtensions {
         }
 
         NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
-    }
-
-    fun ConferenceUI.configureCannotJoinUrlToast(coroutineScope: CoroutineScope) {
-        var currentCall: CallUI? = null
-        call
-            .onEach { call ->
-                if (call.state.value is Call.State.Disconnected.Ended) return@onEach
-                if (currentCall != null && currentCall?.state?.value !is Call.State.Disconnected.Ended && call.isLink) {
-                    showCannotJoinUrlToast()
-                    return@onEach
-                }
-                currentCall = call
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private suspend fun showCannotJoinUrlToast() = withContext(Dispatchers.Main) {
-        Toast.makeText(ContextRetainer.context, R.string.kaleyra_call_join_url_already_in_call_error, Toast.LENGTH_SHORT).show()
     }
 
     fun ConferenceUI.configureCallActivityShow(coroutineScope: CoroutineScope) {
