@@ -282,12 +282,13 @@ internal class TelecomManagerExtensionsTest {
     }
 
     @Test
-    fun callCreatorItsNull_addCall_errorIsLogged() {
+    fun callCreatorItsNull_addCall_outgoingCallIsPlaced() {
         mockkObject(ContextRetainer, KaleyraCallConnectionService, TelecomManagerExtensions) {
             val call = mockk<Call>(relaxed = true)
             val participants = mockk<CallParticipants>(relaxed = true)
             val me = mockk<CallParticipant.Me>(relaxed = true)
             val context = spyk(ApplicationProvider.getApplicationContext())
+            val uri = kaleyraAddress
             val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             every { ContextRetainer.context } returns context
             every { call.participants } returns MutableStateFlow(participants)
@@ -295,7 +296,7 @@ internal class TelecomManagerExtensionsTest {
             every { participants.creator() } returns null
 
             telecomManager.addCall(call, logger)
-            verify { logger.error(PHONE_CALL, loggerTag, message = "No incoming or outgoing call found") }
+            verify(exactly = 1) { telecomManager.placeOutgoingCall(context, uri, logger) }
         }
     }
 }

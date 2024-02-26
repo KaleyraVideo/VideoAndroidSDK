@@ -52,7 +52,7 @@ object TelecomManagerExtensions {
         KaleyraCallConnectionService.logger = logger
         when {
             participants.let { it.creator() != it.me && it.creator() != null } -> addIncomingCall(context, kaleyraAddress, logger)
-            participants.let { it.creator() == it.me } -> placeOutgoingCall(context, kaleyraAddress, logger)
+            participants.creator() == null || participants.let { it.creator() == it.me } -> placeOutgoingCall(context, kaleyraAddress, logger)
             else -> logger?.error(PHONE_CALL, message = "No incoming or outgoing call found")
         }
     }
