@@ -5,7 +5,7 @@ import android.app.Service
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CallUncaughtExceptionHandler
-import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.StreamsAudioManager
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
@@ -13,7 +13,6 @@ import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
-import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +38,8 @@ internal class CallForegroundServiceWorker(
 
     private val participantManager by lazy { ParticipantManager(coroutineScope) }
 
+    private val streamsAudioManager by lazy { StreamsAudioManager(coroutineScope) }
+
     private var call: Call? = null
 
     fun bind(service: Service, call: CallUI) {
@@ -47,6 +48,7 @@ internal class CallForegroundServiceWorker(
         cameraStreamManager.bind(call)
         streamsManager.bind(call)
         participantManager.bind(call)
+        streamsAudioManager.bind(call)
         callNotificationProducer.bind(call)
         callNotificationProducer.listener = callNotificationListener
 
@@ -68,6 +70,7 @@ internal class CallForegroundServiceWorker(
         cameraStreamManager.stop()
         streamsManager.stop()
         participantManager.stop()
+        streamsAudioManager.stop()
         callNotificationProducer.stop()
 
         if (DeviceUtils.isSmartGlass) return

@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.Service
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.StreamsAudioManager
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
@@ -43,18 +44,21 @@ class CallForegroundServiceWorkerTest {
         mockkConstructor(CameraStreamManager::class)
         mockkConstructor(StreamsManager::class)
         mockkConstructor(ParticipantManager::class)
+        mockkConstructor(StreamsAudioManager::class)
         every { anyConstructed<CallNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<FileShareNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) } returns Unit
         every { anyConstructed<CameraStreamManager>().bind(callMock) } returns Unit
         every { anyConstructed<StreamsManager>().bind(callMock) } returns Unit
         every { anyConstructed<ParticipantManager>().bind(callMock) } returns Unit
+        every { anyConstructed<StreamsAudioManager>().bind(callMock) } returns Unit
         every { anyConstructed<CallNotificationProducer>().stop() } returns Unit
         every { anyConstructed<FileShareNotificationProducer>().stop() } returns Unit
         every { anyConstructed<ScreenShareOverlayProducer>().stop() } returns Unit
         every { anyConstructed<CameraStreamManager>().stop() } returns Unit
         every { anyConstructed<StreamsManager>().stop() } returns Unit
         every { anyConstructed<ParticipantManager>().stop() } returns Unit
+        every { anyConstructed<StreamsAudioManager>().stop() } returns Unit
         every { ProximityService.start() } returns Unit
         every { ProximityService.stop() } returns true
     }
@@ -79,6 +83,7 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 1) { anyConstructed<ParticipantManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<FileShareNotificationProducer>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) }
+        verify(exactly = 1) { anyConstructed<StreamsAudioManager>().bind(callMock) }
         verify(exactly = 1) { ProximityService.start() }
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>() setProperty "listener" value listener }
     }
@@ -99,6 +104,7 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 1) { anyConstructed<CallNotificationProducer>() setProperty "listener" value listener }
         verify(exactly = 0) { anyConstructed<FileShareNotificationProducer>().bind(callMock) }
         verify(exactly = 0) { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) }
+        verify(exactly = 1) { anyConstructed<StreamsAudioManager>().bind(callMock) }
         verify(exactly = 0) { ProximityService.start() }
     }
 
@@ -114,6 +120,7 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 1) { anyConstructed<ParticipantManager>().stop() }
         verify(exactly = 1) { anyConstructed<FileShareNotificationProducer>().stop() }
         verify(exactly = 1) { anyConstructed<ScreenShareOverlayProducer>().stop() }
+        verify(exactly = 1) { anyConstructed<StreamsAudioManager>().stop() }
         verify(exactly = 1) { ProximityService.stop() }
     }
 
@@ -130,6 +137,7 @@ class CallForegroundServiceWorkerTest {
         verify(exactly = 1) { anyConstructed<ParticipantManager>().stop() }
         verify(exactly = 0) { anyConstructed<FileShareNotificationProducer>().stop() }
         verify(exactly = 0) { anyConstructed<ScreenShareOverlayProducer>().stop() }
+        verify(exactly = 1) { anyConstructed<StreamsAudioManager>().stop() }
         verify(exactly = 0) { ProximityService.stop() }
     }
 
