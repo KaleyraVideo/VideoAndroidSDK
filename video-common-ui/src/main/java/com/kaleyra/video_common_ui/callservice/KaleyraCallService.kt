@@ -73,7 +73,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
         }
         callForegroundServiceWorker.bind(this, call)
         call.enableAudioRouting(
-            withCallSounds = true,
             logger = logger,
             coroutineScope = lifecycleScope,
             isLink = call.isLink

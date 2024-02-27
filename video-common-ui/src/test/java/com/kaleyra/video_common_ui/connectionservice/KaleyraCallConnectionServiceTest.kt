@@ -21,7 +21,6 @@ import com.kaleyra.video_common_ui.TestUtils.setPrivateField
 import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
@@ -270,7 +269,6 @@ class KaleyraCallConnectionServiceTest {
                     createdConnection,
                     createdConnection.currentAudioDevice,
                     createdConnection.availableAudioDevices,
-                    true,
                     logger,
                     coroutineScope
                 )
@@ -296,7 +294,6 @@ class KaleyraCallConnectionServiceTest {
                     createdConnection,
                     createdConnection.currentAudioDevice,
                     createdConnection.availableAudioDevices,
-                    true,
                     logger,
                     coroutineScope
                 )

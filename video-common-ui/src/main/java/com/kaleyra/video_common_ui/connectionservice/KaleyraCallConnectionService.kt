@@ -122,7 +122,6 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
             connection = connection,
             currentDevice = connection.currentAudioDevice,
             availableDevices = connection.availableAudioDevices,
-            withCallSounds = true,
             logger = logger,
             coroutineScope
         )

@@ -89,7 +89,7 @@ class KaleyraCallServiceTest {
         with(callMock) {
             every { shouldShowAsActivity() } returns false
             every { showOnAppResumed(any()) } returns Unit
-            every { enableAudioRouting(withCallSounds = any(), any(), any(), any()) } returns Unit
+            every { enableAudioRouting(logger = any(), any(), any()) } returns Unit
             every { disableAudioRouting() } returns Unit
         }
         with(conferenceMock) {
@@ -136,12 +136,12 @@ class KaleyraCallServiceTest {
         val callMock = mockk<CallUI>(relaxed = true)
         every { KaleyraVideo.conference } returns conferenceMock
         every { conferenceMock.call } returns MutableStateFlow(callMock)
-        every { callMock.enableAudioRouting(withCallSounds = any(), any(), any(), any()) } returns Unit
+        every { callMock.enableAudioRouting(logger = any(), any(), any()) } returns Unit
         every { callMock.isLink } returns true
         val startType = service!!.onStartCommand(null, 0, 0)
         verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
         verify(exactly = 1) {
-            callMock.enableAudioRouting(true, logger, service!!.lifecycleScope, true)
+            callMock.enableAudioRouting(logger, service!!.lifecycleScope, true)
         }
         assertEquals(Service.START_STICKY, startType)
     }
