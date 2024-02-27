@@ -13,9 +13,13 @@ import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
@@ -24,6 +28,21 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
 
 internal object ConferenceUIExtensions {
+
+    fun ConferenceUI.configureCallSounds(logger: PriorityLogger?, coroutineScope: CoroutineScope) {
+        var soundScope: CoroutineScope? = null
+        call
+            .onEach { call ->
+                soundScope?.cancel()
+                soundScope = CoroutineScope(SupervisorJob(coroutineScope.coroutineContext[Job]))
+                call.state
+                    .takeWhile { it !is Call.State.Disconnected.Ended }
+                    .onCompletion { soundScope?.cancel() }
+                    .launchIn(coroutineScope)
+                call.enableCallSounds(logger, soundScope!!)
+            }
+            .launchIn(coroutineScope)
+    }
 
     fun ConferenceUI.configureCallServiceStart(activityClazz: Class<*>, logger: PriorityLogger?, coroutineScope: CoroutineScope) {
         call
@@ -79,4 +98,5 @@ internal object ConferenceUIExtensions {
             }
             .launchIn(coroutineScope)
     }
+
 }

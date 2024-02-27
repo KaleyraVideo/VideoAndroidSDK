@@ -7,6 +7,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
@@ -19,6 +20,8 @@ import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.coEvery
@@ -29,8 +32,11 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -80,12 +86,14 @@ class ConferenceUIExtensionsTest {
             NotificationManager,
             KaleyraCallService,
             TelecomManagerExtensions,
-            ContactDetailsManager
+            ContactDetailsManager,
+            CollaborationAudioExtensions
         )
         every { ContextRetainer.context } returns contextMock
         every { KaleyraCallService.start(any()) } returns Unit
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.showOnAppResumed(any()) } returns Unit
+        every { callMock.enableCallSounds(any(), any()) } returns Unit
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
         every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
         every { contextMock.getSystemService(Context.TELECOM_SERVICE) } returns telecomManagerMock
@@ -102,6 +110,24 @@ class ConferenceUIExtensionsTest {
     @After
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    fun testConfigureCallSounds() = runTest(UnconfinedTestDispatcher()) {
+        conferenceMock.configureCallSounds(logger, backgroundScope)
+        verify(exactly = 1) { callMock.enableCallSounds(logger, any()) }
+    }
+
+    @Test
+    fun callIsEnded_configureCallSounds_innerSoundScopeIsCancelled() = runTest(UnconfinedTestDispatcher()) {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connecting)
+        every { callMock.state } returns callState
+        conferenceMock.configureCallSounds(logger, backgroundScope)
+
+        callState.value = Call.State.Disconnected.Ended
+
+        verify(exactly = 1) { callMock.enableCallSounds(logger, any()) }
+        assertEquals(1, backgroundScope.coroutineContext.job.children.count())
     }
 
     @Test
