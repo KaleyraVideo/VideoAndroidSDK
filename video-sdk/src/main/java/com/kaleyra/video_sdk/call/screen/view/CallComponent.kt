@@ -70,6 +70,7 @@ import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.verticalGradientScrim
 
 /**
  * Call Component Tag
@@ -254,10 +255,15 @@ internal fun CallComponent(
                                                     y = if (index < callComponentState.columns) streamHeaderOffset else 0
                                                 )
                                             }
-                                            .statusBarsPadding()
                                             .graphicsLayer {
                                                 alpha = headerAlpha
                                             }
+                                            .verticalGradientScrim(
+                                                color = Color.Black.copy(alpha = .3f),
+                                                startYPercentage = 1f,
+                                                endYPercentage = 0f
+                                            )
+                                            .statusBarsPadding()
                                     }
                                 )
 
