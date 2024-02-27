@@ -23,8 +23,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
@@ -34,7 +32,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInteropFilter
@@ -44,7 +41,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -58,7 +54,6 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
-import com.kaleyra.video_sdk.call.stream.*
 import com.kaleyra.video_sdk.call.stream.view.core.DefaultStreamAvatarSize
 import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStream
 import com.kaleyra.video_sdk.call.stream.view.featured.HeaderAutoHideMs
@@ -361,7 +356,6 @@ private fun titleFor(callState: CallStateUi) =
         else -> ""
     }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun subtitleFor(callState: CallStateUi, groupCall: Boolean) =
     when (callState) {
@@ -378,17 +372,6 @@ private fun subtitleFor(callState: CallStateUi, groupCall: Boolean) =
 
         else -> null
     }
-
-private fun Modifier.streamClickable(onClick: () -> Unit): Modifier =
-    composed {
-        clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            role = Role.Button,
-            onClick = onClick
-        )
-    }
-
 
 @Preview
 @Composable
