@@ -7,6 +7,7 @@ import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
@@ -15,9 +16,11 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnect
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
 
 internal object ConferenceUIExtensions {
@@ -39,29 +42,33 @@ internal object ConferenceUIExtensions {
             .launchIn(coroutineScope)
     }
 
-    private suspend fun showProvisionalCallNotification(call: Call, callActivityClazz: Class<*>, coroutineScope: CoroutineScope) {
-        showCallNotification(call, callActivityClazz)
+    private fun showProvisionalCallNotification(call: Call, callActivityClazz: Class<*>, coroutineScope: CoroutineScope) {
+        showCallNotification(call, callActivityClazz, coroutineScope)
         call.state
             .takeWhile { it !is Call.State.Disconnected.Ended }
             .onCompletion { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
             .launchIn(coroutineScope)
     }
 
-    private suspend fun showCallNotification(call: Call, callActivityClazz: Class<*>) {
-        val participants = call.participants.value
-        val state = call.state.value
-        val notification = when {
-            CallExtensions.isIncoming(state, participants) -> {
-                CallNotificationProducer.buildIncomingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
-            }
-            CallExtensions.isOutgoing(state, participants) -> {
-                CallNotificationProducer.buildOutgoingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
+    private fun showCallNotification(call: Call, callActivityClazz: Class<*>, coroutineScope: CoroutineScope) {
+        combine(call.state, call.participants) { state, participants ->
+            ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
+
+            val notification = when {
+                CallExtensions.isIncoming(state, participants) -> {
+                    CallNotificationProducer.buildIncomingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
+                }
+                CallExtensions.isOutgoing(state, participants) -> {
+                    CallNotificationProducer.buildOutgoingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
+                }
+
+                else -> return@combine
             }
 
-            else -> return
+            NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
         }
-
-        NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
+            .take(1)
+            .launchIn(coroutineScope)
     }
 
     fun ConferenceUI.configureCallActivityShow(coroutineScope: CoroutineScope) {

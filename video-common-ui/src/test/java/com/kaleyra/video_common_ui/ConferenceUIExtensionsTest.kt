@@ -12,6 +12,7 @@ import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
@@ -22,8 +23,8 @@ import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
@@ -78,10 +79,9 @@ class ConferenceUIExtensionsTest {
             CallNotificationProducer,
             NotificationManager,
             KaleyraCallService,
-            TelecomManagerExtensions
+            TelecomManagerExtensions,
+            ContactDetailsManager
         )
-        mockkObject(ConferenceUIExtensions, recordPrivateCalls = true)
-        justRun { ConferenceUIExtensions invokeNoArgs "showCannotJoinUrlToast" }
         every { ContextRetainer.context } returns contextMock
         every { KaleyraCallService.start(any()) } returns Unit
         every { conferenceMock.call } returns MutableStateFlow(callMock)
@@ -96,6 +96,7 @@ class ConferenceUIExtensionsTest {
         coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any()) } returns outgoingNotificationMock
         every { NotificationManager.notify(any(), any()) } returns Unit
         every { NotificationManager.cancel(any()) } returns Unit
+        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
     }
 
     @After
@@ -168,7 +169,11 @@ class ConferenceUIExtensionsTest {
 
         conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
 
-        coVerify(exactly = 1) { CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false) }
+        val userIds = participantsMock.list.map { it.userId }.toTypedArray()
+        coVerifyOrder {
+            ContactDetailsManager.refreshContactDetails(*userIds)
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false)
+        }
         verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingNotificationMock) }
     }
 
@@ -180,7 +185,11 @@ class ConferenceUIExtensionsTest {
 
         conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
 
-        coVerify(exactly = 1) { CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false) }
+        val userIds = participantsMock.list.map { it.userId }.toTypedArray()
+        coVerifyOrder {
+            ContactDetailsManager.refreshContactDetails(*userIds)
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false)
+        }
         verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, outgoingNotificationMock) }
     }
 
@@ -222,4 +231,5 @@ class ConferenceUIExtensionsTest {
         conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 0) { callMock.showOnAppResumed(backgroundScope) }
     }
+
 }
