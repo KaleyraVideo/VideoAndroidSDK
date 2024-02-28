@@ -124,10 +124,18 @@ class DialingComponentTest {
     }
 
     @Test
-    fun isLinkTrue_connectingIsDisplayed() {
+    fun isLinkTrue_connectingSubtitleIsDisplayed() {
         uiState = uiState.copy(isLink = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
         composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
+    }
+
+    @Test
+    fun isConnectingTrueAndIsLinkTrue_connectingSubtitleIsNotDisplayed() {
+        uiState = uiState.copy(isLink = true, isConnecting = true)
+        val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithText(connecting).assertDoesNotExist()
     }
 
     @Test

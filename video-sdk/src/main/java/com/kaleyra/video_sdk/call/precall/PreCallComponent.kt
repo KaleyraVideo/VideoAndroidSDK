@@ -69,8 +69,8 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
                     onBackPressed = onBackPressed,
                     title = if (!uiState.isConnecting) uiState.participants.value.joinToString(separator = ", ") else stringResource(id = R.string.kaleyra_call_status_connecting),
                     subtitle = when {
-                        uiState.isLink -> stringResource(id = R.string.kaleyra_call_status_connecting)
                         uiState.isConnecting -> null
+                        uiState.isLink -> stringResource(id = R.string.kaleyra_call_status_connecting)
                         else -> subtitle
                     },
                     watermarkInfo = uiState.watermarkInfo,
