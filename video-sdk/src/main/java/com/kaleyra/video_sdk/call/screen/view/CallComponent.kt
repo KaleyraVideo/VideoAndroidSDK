@@ -180,12 +180,12 @@ internal fun CallComponent(
     }
 
     val density = LocalDensity.current
-    val insets = WindowInsets.statusBars
+    val statusBarsInsets = WindowInsets.statusBars
     var callInfoWidgetHeight by remember { mutableStateOf(0) }
     val streamHeaderHeight = remember { with(density) { FeaturedStreamHeaderHeight.toPx() } }
     val snackbarTopPadding = remember { with(density) { SnackbarPadding.toPx() } }
     val statusBarPadding = remember {
-        with(density) { insets.asPaddingValues(this).calculateTopPadding().toPx() }
+        with(density) { statusBarsInsets.asPaddingValues(this).calculateTopPadding().toPx() }
     }
 
     var streamsHeaderAutoHideResetFlag by remember { mutableStateOf(true) }
@@ -258,7 +258,7 @@ internal fun CallComponent(
                                                 startYPercentage = 1f,
                                                 endYPercentage = 0f
                                             )
-                                            .statusBarsPadding()
+                                            .padding(top = if (index < callComponentState.columns) statusBarsInsets.asPaddingValues(density).calculateTopPadding() else 0.dp)
                                     }
                                 )
 
