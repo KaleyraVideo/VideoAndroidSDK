@@ -99,9 +99,7 @@ internal fun FeaturedStream(
                 fullscreenVisible = fullscreenVisible,
                 onBackPressed = onBackPressed,
                 onFullscreenClick = onFullscreenClick,
-                modifier = Modifier
-                    .horizontalCutoutPadding()
-                    .then(headerModifier)
+                modifier = headerModifier.horizontalCutoutPadding()
             )
         }
     }
