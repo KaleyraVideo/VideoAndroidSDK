@@ -166,6 +166,15 @@ class RingingComponentTest {
     }
 
     @Test
+    fun ringingButtonsDoNotExistIfLinkIsTrue() {
+        val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
+        val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
+        uiState = uiState.copy(isLink = true)
+        composeTestRule.onNodeWithText(answer).assertDoesNotExist()
+        composeTestRule.onNodeWithText(decline).assertDoesNotExist()
+    }
+
+    @Test
     fun declineButtonIsDisplayed() {
         val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
         composeTestRule.assertRingingButtonIsDisplayed(decline)
@@ -217,7 +226,6 @@ class RingingComponentTest {
         composeTestRule.onAllNodesWithContentDescription(decline).onFirst().performClick()
         assert(declineClicked)
     }
-
 
     @Test
     fun callStateRinging_otherParticipantsUsernamesAreDisplayed() {
