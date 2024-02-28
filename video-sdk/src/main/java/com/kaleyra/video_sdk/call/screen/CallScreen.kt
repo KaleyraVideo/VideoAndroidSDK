@@ -386,11 +386,11 @@ internal fun CallScreen(
 
     if (shouldAskConnectionServicePermissions) {
         val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
-            viewModel.startConnectionService(activity)
             shouldAskInputPermissions = true
         }
         val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = ConnectionServicePermissions) { permissionsResult ->
             if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
+                viewModel.startConnectionService(activity)
                 contactsPermissionsState.launchMultiplePermissionRequest()
             } else {
                 viewModel.tryStartCallService()
