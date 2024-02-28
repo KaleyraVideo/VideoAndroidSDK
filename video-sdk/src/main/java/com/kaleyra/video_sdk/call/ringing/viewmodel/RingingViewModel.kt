@@ -19,6 +19,8 @@ package com.kaleyra.video_sdk.call.ringing.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
@@ -27,6 +29,7 @@ import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
@@ -47,6 +50,11 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
             .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
             .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
             .takeWhile { !it }
+            .launchIn(viewModelScope)
+
+        call
+            .flatMapLatest { it.state }
+            .onEach { state -> _uiState.update { it.clone(isConnecting = state is Call.State.Connecting) } }
             .launchIn(viewModelScope)
     }
 

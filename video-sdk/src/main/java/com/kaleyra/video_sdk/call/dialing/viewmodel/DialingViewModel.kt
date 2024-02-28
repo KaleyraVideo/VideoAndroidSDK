@@ -18,12 +18,24 @@ package com.kaleyra.video_sdk.call.dialing.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
 import com.kaleyra.video_sdk.call.precall.viewmodel.PreCallViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
 internal class DialingViewModel(configure: suspend () -> Configuration): PreCallViewModel<DialingUiState>(configure) {
 
     override fun initialState() = DialingUiState()
+
+    init {
+        call
+            .toInCallParticipants()
+            .onEach { participants -> _uiState.update { it.clone(isConnecting = participants.size > 1) } }
+            .launchIn(viewModelScope)
+    }
 
     companion object {
         fun provideFactory(configure: suspend () -> Configuration) =

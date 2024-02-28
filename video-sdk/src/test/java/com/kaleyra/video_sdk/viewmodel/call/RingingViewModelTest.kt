@@ -63,6 +63,16 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
     }
 
     @Test
+    fun testPreCallUiState_isConnectingUpdated() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        val current = viewModel.uiState.first().isConnecting
+        assertEquals(false, current)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first().isConnecting
+        assertEquals(true, new)
+    }
+
+    @Test
     fun testPreCallUiState_recordingUpdated() = runTest {
         every { callMock.recording } returns MutableStateFlow(recordingMock)
         every { recordingMock.type } returns Call.Recording.Type.OnConnect

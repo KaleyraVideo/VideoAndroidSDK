@@ -16,15 +16,24 @@
 
 package com.kaleyra.video_sdk.viewmodel.call
 
+import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
 import com.kaleyra.video_sdk.call.dialing.viewmodel.DialingViewModel
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
+import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class DialingViewModelTest: PreCallViewModelTest<DialingViewModel, DialingUiState>() {
 
     @Before
@@ -36,5 +45,16 @@ internal class DialingViewModelTest: PreCallViewModelTest<DialingViewModel, Dial
     @After
     override fun tearDown() {
         super.tearDown()
+    }
+
+    @Test
+    fun testPreCallUiState_isConnectingUpdated() = runTest {
+        every { callParticipantsMock.others } returns listOf(participantMock1)
+        every { participantMock1.state } returns MutableStateFlow(CallParticipant.State.InCall)
+        val current = viewModel.uiState.first().isConnecting
+        Assert.assertEquals(false, current)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first().isConnecting
+        Assert.assertEquals(true, new)
     }
 }
