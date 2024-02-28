@@ -111,10 +111,10 @@ internal fun OtherMessageItem(
                 username = if (isFirstChainMessage) participantDetails?.username else null,
                 messageState = null,
                 shape = RoundedCornerShape(
-                    topStart = 8.dp,
-                    topEnd = 6.dp,
-                    bottomStart = if (isLastChainMessage) 0.dp else 6.dp,
-                    bottomEnd = 6.dp
+                    topStart = BubbleCornerRadius,
+                    topEnd = BubbleCornerRadius,
+                    bottomStart = if (isLastChainMessage) 0.dp else BubbleCornerRadius,
+                    bottomEnd = BubbleCornerRadius
                 ),
                 backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
