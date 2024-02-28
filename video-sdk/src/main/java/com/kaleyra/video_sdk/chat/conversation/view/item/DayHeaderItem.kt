@@ -22,6 +22,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -52,6 +53,7 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
     ) {
         val text = TimestampUtils.parseDay(LocalContext.current, timestamp)
         Text(
+            modifier = Modifier.padding(horizontal = 2.dp),
             text = text,
             fontSize = MaterialTheme.typography.labelMedium.fontSize,
             style = MaterialTheme.typography.labelMedium,
