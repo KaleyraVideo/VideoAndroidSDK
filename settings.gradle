@@ -21,17 +21,15 @@ include ':app',
         ':video-sdk',
         ':video-glasses-sdk',
         ':video',
-        ':video-extension-audio',
-        ':bandyer-android-audiosession'
+        ':video-extension-audio'
+//        ':bandyer-android-audiosession'
 
 project(':app-utilities').projectDir = file('app-extensions/app-utilities')
 project(':app-configuration').projectDir = file('app-extensions/app-configuration')
 project(':app-design').projectDir = file('app-extensions/app-design')
 project(':video').projectDir = file('../bandyer-android-collaborationcenter/video/')
 project(':video-extension-audio').projectDir = file('../bandyer-android-collaborationcenter/video-extension-audio/')
-project(':bandyer-android-audiosession').projectDir = file('../Bandyer-Android-AudioSession/bandyer-android-audioSession/')
-
-
+//project(':bandyer-android-audiosession').projectDir = file('../Bandyer-Android-AudioSession/bandyer-android-audioSession/')
 
 dependencyResolutionManagement {
     repositories {
