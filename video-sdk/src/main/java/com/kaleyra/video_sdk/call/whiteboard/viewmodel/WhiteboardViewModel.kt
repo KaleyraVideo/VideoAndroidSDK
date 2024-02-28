@@ -24,6 +24,8 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
+import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
@@ -65,6 +67,11 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
                 if (it !is Call.State.Disconnected.Ended) return@onEach
                 whiteboard.getValue()?.unload()
             }.launchIn(viewModelScope)
+
+        call
+            .isFileSharingSupported()
+            .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
+            .launchIn(viewModelScope)
 
         call
             .isWhiteboardLoading()
