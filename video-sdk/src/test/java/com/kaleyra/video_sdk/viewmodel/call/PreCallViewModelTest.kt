@@ -212,17 +212,6 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
     }
 
     @Test
-    fun testPreCallUiState_isConnectingUpdated() = runTest {
-        every { callParticipantsMock.others } returns listOf(participantMock1)
-        every { participantMock1.state } returns MutableStateFlow(CallParticipant.State.InCall)
-        val current = viewModel.uiState.first().isConnecting
-        assertEquals(false, current)
-        advanceUntilIdle()
-        val new = viewModel.uiState.first().isConnecting
-        assertEquals(true, new)
-    }
-
-    @Test
     fun testPreCallUiState_avatarUpdated() = runTest {
         val current = viewModel.uiState.first().avatar
         assertEquals(null, current)

@@ -151,7 +151,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
     }
 
     private fun enterPipModeIfSupported() {
-        if (!isPipSupported) return
+        if (!isPipSupported || isActivityFinishing) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updatePipParams()?.let { params ->
                 enterPictureInPictureMode(params)

@@ -310,7 +310,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
 
     private fun logout() {
         LoginManager.logout(this)
-        KaleyraVideo.disconnect(true)
+        KaleyraVideo.reset()
         DefaultConfigurationManager.clearAll()
         binding!!.ongoingCallLabel.visibility = View.GONE
         LoginActivity.show(this)

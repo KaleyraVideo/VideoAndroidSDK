@@ -84,10 +84,5 @@ internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspe
                 _uiState.update { it.clone(avatar = ImmutableUri(avatar)) }
             }
             .launchIn(viewModelScope)
-
-        call
-            .toInCallParticipants()
-            .onEach { participants -> _uiState.update { it.clone(isConnecting = participants.size > 1) } }
-            .launchIn(viewModelScope)
     }
 }
