@@ -37,6 +37,8 @@ import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+private val DayHeaderItemCornerShape = 4.dp
+private val DayHeaderItemInternalHorizontalPadding = 2.dp
 
 @Composable
 internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
@@ -47,13 +49,13 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
             .highlightOnFocus(interactionSource)
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(size = 4.dp))
+                shape = RoundedCornerShape(size = DayHeaderItemCornerShape))
             .then(modifier),
         horizontalArrangement = Arrangement.Center
     ) {
         val text = TimestampUtils.parseDay(LocalContext.current, timestamp)
         Text(
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(horizontal = DayHeaderItemInternalHorizontalPadding),
             text = text,
             fontSize = MaterialTheme.typography.labelMedium.fontSize,
             style = MaterialTheme.typography.labelMedium,
