@@ -20,6 +20,8 @@ import android.util.Rational
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -385,22 +387,21 @@ internal fun CallScreen(
     var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
 
     if (shouldAskConnectionServicePermissions) {
-        val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
+        val contactsPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ ->
+            viewModel.startConnectionService(activity)
             shouldAskInputPermissions = true
         }
-        val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = ConnectionServicePermissions) { permissionsResult ->
+        val connectionServicePermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsResult ->
             if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
-                viewModel.startConnectionService(activity)
-                contactsPermissionsState.launchMultiplePermissionRequest()
+                contactsPermissions.launch(ContactsPermissions)
             } else {
                 viewModel.tryStartCallService()
                 shouldAskInputPermissions = true
             }
-            onConnectionServicePermissions()
         }
 
-        LaunchedEffect(connectionServicePermissionsState) {
-            connectionServicePermissionsState.launchMultiplePermissionRequest()
+        LaunchedEffect(connectionServicePermissions) {
+            connectionServicePermissions.launch(ConnectionServicePermissions)
         }
     }
 
