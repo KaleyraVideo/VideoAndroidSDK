@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.screen
 
+import android.os.Build
 import android.util.Rational
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -70,6 +71,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
@@ -386,13 +388,13 @@ internal fun CallScreen(
     val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
     var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
 
-    val contactsPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ ->
+    val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
         viewModel.startConnectionService(activity)
         shouldAskInputPermissions = true
     }
-    val connectionServicePermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsResult ->
+    val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = if (ConnectionServiceUtils.isConnectionServiceSupported) ConnectionServicePermissions else listOf()) { permissionsResult ->
         if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
-            contactsPermissions.launch(ContactsPermissions)
+            contactsPermissionsState.launchMultiplePermissionRequest()
         } else {
             viewModel.tryStartCallService()
             shouldAskInputPermissions = true
@@ -400,8 +402,8 @@ internal fun CallScreen(
     }
 
     if (shouldAskConnectionServicePermissions) {
-        LaunchedEffect(connectionServicePermissions) {
-            connectionServicePermissions.launch(ConnectionServicePermissions)
+        LaunchedEffect(connectionServicePermissionsState) {
+            connectionServicePermissionsState.launchMultiplePermissionRequest()
         }
     }
 

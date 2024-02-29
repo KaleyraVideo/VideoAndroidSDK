@@ -27,5 +27,5 @@ internal const val BluetoothScanPermission = Manifest.permission.BLUETOOTH_SCAN
 @RequiresApi(Build.VERSION_CODES.S)
 internal const val BluetoothConnectPermission = Manifest.permission.BLUETOOTH_CONNECT
 @RequiresApi(Build.VERSION_CODES.O)
-internal val ConnectionServicePermissions = arrayOf(Manifest.permission.CALL_PHONE, Manifest.permission.READ_PHONE_NUMBERS)
-internal val ContactsPermissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+internal val ConnectionServicePermissions = listOf(Manifest.permission.CALL_PHONE, Manifest.permission.READ_PHONE_NUMBERS)
+internal val ContactsPermissions = listOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
