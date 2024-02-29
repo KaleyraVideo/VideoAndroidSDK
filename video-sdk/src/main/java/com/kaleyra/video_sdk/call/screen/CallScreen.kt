@@ -386,20 +386,20 @@ internal fun CallScreen(
     val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
     var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
 
-    if (shouldAskConnectionServicePermissions) {
-        val contactsPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ ->
-            viewModel.startConnectionService(activity)
+    val contactsPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ ->
+        viewModel.startConnectionService(activity)
+        shouldAskInputPermissions = true
+    }
+    val connectionServicePermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsResult ->
+        if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
+            contactsPermissions.launch(ContactsPermissions)
+        } else {
+            viewModel.tryStartCallService()
             shouldAskInputPermissions = true
         }
-        val connectionServicePermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsResult ->
-            if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
-                contactsPermissions.launch(ContactsPermissions)
-            } else {
-                viewModel.tryStartCallService()
-                shouldAskInputPermissions = true
-            }
-        }
+    }
 
+    if (shouldAskConnectionServicePermissions) {
         LaunchedEffect(connectionServicePermissions) {
             connectionServicePermissions.launch(ConnectionServicePermissions)
         }
