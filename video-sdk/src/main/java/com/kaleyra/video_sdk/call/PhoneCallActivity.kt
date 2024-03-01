@@ -73,6 +73,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
         var isUsbCameraConnecting: Boolean = false
     }
+    private var isAskingInputPermissions: Boolean = false
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = enterPipModeIfSupported()
@@ -103,7 +104,8 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
                 onPipAspectRatio = ::onAspectRatio,
                 onUsbCameraConnected = ::onUsbConnecting,
                 onActivityFinishing = { isActivityFinishing = true },
-                onConnectionServicePermissions = ::onConnectionServicePermissions
+                onAskInputPermissions = { isAskingInputPermissions = it },
+                onConnectionServicePermissionsResult = ::onConnectionServicePermissions
             )
         }
         turnScreenOn()
@@ -167,7 +169,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (isUsbCameraConnecting) return
+        if (isAskingInputPermissions || isUsbCameraConnecting) return
         enterPipModeIfSupported()
     }
 

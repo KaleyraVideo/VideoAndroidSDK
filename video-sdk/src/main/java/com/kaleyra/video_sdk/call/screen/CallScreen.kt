@@ -16,13 +16,10 @@
 
 package com.kaleyra.video_sdk.call.screen
 
-import android.os.Build
 import android.util.Rational
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -74,6 +71,7 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContentState
@@ -108,6 +106,8 @@ import com.kaleyra.video_sdk.call.utils.BottomSheetStateExtensions.isNotDraggabl
 import com.kaleyra.video_sdk.call.utils.BottomSheetStateExtensions.isSheetFullScreen
 import com.kaleyra.video_sdk.call.utils.CameraPermission
 import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeDevice
+import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
+import com.kaleyra.video_sdk.call.utils.ContactsPermissions
 import com.kaleyra.video_sdk.call.utils.RecordAudioPermission
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.pipSettings
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -118,10 +118,6 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPaddi
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalSystemBarsPadding
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.CollaborationTheme
-import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
-import com.kaleyra.video_sdk.call.utils.ContactsPermissions
-import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -309,7 +305,8 @@ internal fun CallScreen(
     onWhiteboardVisibility: (Boolean) -> Unit,
     onUsbCameraConnected: (Boolean) -> Unit,
     onActivityFinishing: () -> Unit,
-    onConnectionServicePermissions: () -> Unit
+    onAskInputPermissions: (Boolean) -> Unit,
+    onConnectionServicePermissionsResult: () -> Unit
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val activity = LocalContext.current.findActivity() as FragmentActivity
@@ -327,6 +324,7 @@ internal fun CallScreen(
     // Needed this to handle properly a sequence of multiple permission
     // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
     val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(RecordAudioPermission, CameraPermission)) { permissionsResult ->
+        onAskInputPermissions(false)
         permissionsResult.forEach { (permission, isGranted) ->
             when {
                 permission == RecordAudioPermission && isGranted -> viewModel.startMicrophone(activity)
@@ -335,9 +333,11 @@ internal fun CallScreen(
         }
     }
     val micPermissionState = rememberPermissionState(permission = RecordAudioPermission) { isGranted ->
+        onAskInputPermissions(false)
         if (isGranted) viewModel.startMicrophone(activity)
     }
     val cameraPermissionState = rememberPermissionState(permission = CameraPermission) { isGranted ->
+        onAskInputPermissions(false)
         if (isGranted) viewModel.startCamera(activity)
     }
     val finishActivity = remember(activity) {
@@ -399,7 +399,7 @@ internal fun CallScreen(
             viewModel.tryStartCallService()
             shouldAskInputPermissions = true
         }
-        onConnectionServicePermissions()
+        onConnectionServicePermissionsResult()
     }
 
     if (shouldAskConnectionServicePermissions) {
@@ -409,8 +409,9 @@ internal fun CallScreen(
     }
 
     if (shouldAskInputPermissions) {
-        LaunchedEffect(inputPermissionsState) {
+        LaunchedEffect(inputPermissionsState, micPermissionState, cameraPermissionState) {
             viewModel.setOnAudioOrVideoChanged { isAudioEnabled, isVideoEnabled ->
+                onAskInputPermissions(true)
                 when {
                     isAudioEnabled && isVideoEnabled -> inputPermissionsState.launchMultiplePermissionRequest()
                     isAudioEnabled -> micPermissionState.launchPermissionRequest()
