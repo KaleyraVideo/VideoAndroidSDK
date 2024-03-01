@@ -399,6 +399,7 @@ internal fun CallScreen(
             viewModel.tryStartCallService()
             shouldAskInputPermissions = true
         }
+        onConnectionServicePermissions()
     }
 
     if (shouldAskConnectionServicePermissions) {
