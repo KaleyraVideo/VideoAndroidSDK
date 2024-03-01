@@ -78,7 +78,7 @@ internal object CallExtensions {
 
     fun CallUI.shouldShowAsActivity(): Boolean {
         val context = ContextRetainer.context
-        return (!context.isDND() && !context.isSilent()) || isOutgoing(state.value, participants.value) || isLink
+        return (!context.isDND() && !context.isSilent()) || isOutgoing(state.value, participants.value)
     }
 
     fun CallUI.showOnAppResumed(coroutineScope: CoroutineScope) {

@@ -366,17 +366,6 @@ class CallExtensionsTest {
     }
 
     @Test
-    fun linkCall_shouldShowAsActivity_true() {
-        mockkObject(ContextExtensions)
-        every { call.isLink } returns true
-        every { call.state } returns MutableStateFlow(Call.State.Disconnected)
-        every { context.isDND() } returns true
-        every { context.isSilent() } returns true
-        val result = call.shouldShowAsActivity()
-        assertEquals(true, result)
-    }
-
-    @Test
     fun testShowOnAppResumed() = runTest {
         val isInForeground = MutableStateFlow(false)
         every { AppLifecycle.isInForeground } returns isInForeground

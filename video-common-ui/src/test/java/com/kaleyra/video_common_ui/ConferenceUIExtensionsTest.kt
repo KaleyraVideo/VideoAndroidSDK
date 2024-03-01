@@ -235,27 +235,46 @@ class ConferenceUIExtensionsTest {
     }
 
     @Test
-    fun callStateDisconnectedEnded_configureCallActivityShow_showOnAppResumedNotInvoked() = runTest(UnconfinedTestDispatcher()) {
+    fun callStateDisconnectedEnded_configureCallActivityShow_showNotInvoked() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
+        every { callMock.isLink } returns false
         every { callMock.shouldShowAsActivity() } returns true
         conferenceMock.configureCallActivityShow(backgroundScope)
-        verify(exactly = 0) { callMock.showOnAppResumed(backgroundScope) }
+        verify(exactly = 0) { callMock.show() }
     }
 
     @Test
-    fun shouldShowAsActivityTrue_configureCallActivityShow_showOnAppResumedInvoked() = runTest(UnconfinedTestDispatcher()) {
-        every { callMock.state } returns MutableStateFlow(mockk())
-        every { callMock.shouldShowAsActivity() } returns true
+    fun callStateDisconnectedEndedAndIsLink_configureCallActivityShow_showOnAppResumedNotInvoked() = runTest(UnconfinedTestDispatcher()) {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
+        every { callMock.isLink } returns true
         conferenceMock.configureCallActivityShow(backgroundScope)
-        verify(exactly = 1) { callMock.showOnAppResumed(backgroundScope) }
+        verify(exactly = 0) { callMock.showOnAppResumed(any()) }
     }
 
     @Test
-    fun shouldShowAsActivityFalse_configureCallActivityShow_showOnAppResumedNotInvoked() = runTest(UnconfinedTestDispatcher()) {
+    fun shouldShowAsActivityTrue_configureCallActivityShow_showInvoked() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow(mockk())
+        every { callMock.isLink } returns false
+        every { callMock.shouldShowAsActivity() } returns true
+        conferenceMock.configureCallActivityShow(backgroundScope)
+        verify(exactly = 1) { callMock.show() }
+    }
+
+    @Test
+    fun shouldShowAsActivityFalse_configureCallActivityShow_showNotInvoked() = runTest(UnconfinedTestDispatcher()) {
+        every { callMock.state } returns MutableStateFlow(mockk())
+        every { callMock.isLink } returns false
         every { callMock.shouldShowAsActivity() } returns false
         conferenceMock.configureCallActivityShow(backgroundScope)
-        verify(exactly = 0) { callMock.showOnAppResumed(backgroundScope) }
+        verify(exactly = 0) { callMock.show() }
+    }
+
+    @Test
+    fun callIsLink_configureCallActivityShow_showOnAppResumedInvoked() = runTest(UnconfinedTestDispatcher()) {
+        every { callMock.state } returns MutableStateFlow(mockk())
+        every { callMock.isLink } returns true
+        conferenceMock.configureCallActivityShow(backgroundScope)
+        verify(exactly = 1) { callMock.showOnAppResumed(backgroundScope) }
     }
 
 }
