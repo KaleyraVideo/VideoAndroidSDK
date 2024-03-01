@@ -162,6 +162,7 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
             advanceUntilIdle()
             assertEquals(false, viewModel.uiState.first().isConnecting)
             viewModel.accept()
+            advanceUntilIdle()
             coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
             assertEquals(true, viewModel.uiState.first().isConnecting)
         }
