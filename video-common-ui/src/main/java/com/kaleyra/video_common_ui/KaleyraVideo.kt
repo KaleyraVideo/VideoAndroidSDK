@@ -203,7 +203,9 @@ object KaleyraVideo {
             logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo...")
             val connect = collaboration?.connect(userId, accessTokenProvider)
             if (connect == null) {
-                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo but KaleyraCollaboration is null")
+                val collaborationNullErrorMessage = "Connecting KaleyraVideo but KaleyraCollaboration is null"
+                logger?.error(logTarget = CORE_UI, message = collaborationNullErrorMessage)
+                completeExceptionally(CancellationException(collaborationNullErrorMessage))
                 return@launchBlocking
             }
 
