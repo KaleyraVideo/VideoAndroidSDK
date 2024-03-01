@@ -62,17 +62,18 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
         val isInPipMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
         val shouldShowFileShare: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-        var isActivityFinishing: Boolean = false
-
-        var isInForeground: Boolean = false
-
-        var isFileShareDisplayed: Boolean = false
-
-        var isWhiteboardDisplayed: Boolean = false
-
-        var isUsbCameraConnecting: Boolean = false
     }
+
+    private var isActivityFinishing: Boolean = false
+
+    private var isInForeground: Boolean = false
+
+    private var isFileShareDisplayed: Boolean = false
+
+    private var isWhiteboardDisplayed: Boolean = false
+
+    private var isUsbCameraConnecting: Boolean = false
+
     private var isAskingInputPermissions: Boolean = false
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
