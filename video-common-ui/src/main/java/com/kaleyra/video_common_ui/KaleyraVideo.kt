@@ -218,8 +218,10 @@ object KaleyraVideo {
                         complete(result.getOrNull()!!)
                     }
                 }
-            }.onFailure {
-                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo failed with error: ${it.message}")
+            }.onFailure { throwable ->
+                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo failed with error: ${throwable.message}")
+                completeExceptionally(CancellationException(throwable.message))
+                return@launchBlocking
             }
             termsAndConditionsRequester?.setUp(state, ::disconnect)
         }.invokeOnCompletion { completionException ->
