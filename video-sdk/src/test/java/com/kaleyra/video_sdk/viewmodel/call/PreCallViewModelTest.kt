@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.viewmodel.call
 import android.net.Uri
 import com.kaleyra.video.Company
 import com.kaleyra.video.conference.*
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI
@@ -226,6 +227,16 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
         advanceUntilIdle()
         val actual = viewModel.uiState.first().watermarkInfo
         assertEquals(WatermarkInfo(text = "Kaleyra", logo = Logo(dayLogo, nightLogo)), actual)
+    }
+
+    @Test
+    fun testPreCallUiState_isAudioVideoUpdated() = runTest {
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        val current = viewModel.uiState.first().isAudioVideo
+        assertEquals(false, current)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first().isAudioVideo
+        assertEquals(true, new)
     }
 
     @Test

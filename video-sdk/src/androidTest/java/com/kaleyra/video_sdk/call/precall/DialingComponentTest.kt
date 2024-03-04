@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.precall
 
+import android.Manifest
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
 import com.kaleyra.video_sdk.call.dialing.DialingComponent
@@ -53,6 +55,9 @@ class DialingComponentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    @get:Rule
+    val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.CAMERA)
 
     private val initialState = DialingUiState(video = streamUiMock.video, participants = ImmutableList(listOf("user1", "user2")))
 
@@ -183,6 +188,18 @@ class DialingComponentTest {
     fun streamViewNotNullAndVideoEnabled_overlayIsDisplayed() {
         uiState = uiState.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
         composeTestRule.onNodeWithTag(StreamOverlayTestTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun isAudioVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
+        uiState = uiState.copy(isAudioVideo = true, video = null)
+        composeTestRule.findAvatar().assertDoesNotExist()
+    }
+
+    @Test
+    fun isAudioVideoFalseAndVideoIsNull_avatarIsDisplayed() {
+        uiState = uiState.copy(isAudioVideo = false, video = null)
+        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test

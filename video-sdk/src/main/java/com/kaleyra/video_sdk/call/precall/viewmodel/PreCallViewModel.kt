@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.call.precall.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toMyStreamsUi
@@ -76,6 +77,11 @@ internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspe
                 if (avatar == null || uiState.value.avatar?.value == avatar) return@onEach
                 _uiState.update { it.clone(avatar = ImmutableUri(avatar)) }
             }
+            .launchIn(viewModelScope)
+
+        call
+            .isAudioVideo()
+            .onEach { isAudioVideo -> _uiState.update { it.clone(isAudioVideo = isAudioVideo) } }
             .launchIn(viewModelScope)
     }
 }

@@ -43,7 +43,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 
 @Composable
-internal fun <T: PreCallUiState<T>> PreCallComponent(
+internal fun <T : PreCallUiState<T>> PreCallComponent(
     uiState: T,
     subtitle: String,
     userMessage: UserMessage? = null,
@@ -61,7 +61,8 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
                     avatar = if (isGroupCall) ImmutableUri(Uri.EMPTY) else uiState.avatar,
                     avatarPlaceholder = if (isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold,
                     avatarError = if (isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold,
-                    avatarVisible = uiState.participants.value.isNotEmpty() && ((uiState.video == null && !context.hasCameraPermission()) || (uiState.video != null && uiState.video?.view == null && uiState.video?.isEnabled == false) || uiState.video?.isEnabled == false),
+                    avatarVisible = uiState.participants.value.isNotEmpty() &&
+                            ((uiState.video == null && !context.hasCameraPermission()) || (uiState.video == null && !uiState.isAudioVideo) || (uiState.video != null && uiState.video?.view == null && uiState.video?.isEnabled == false) || uiState.video?.isEnabled == false),
                     showOverlay = true
                 )
             }
@@ -69,7 +70,9 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
             Column {
                 CallInfoWidget(
                     onBackPressed = onBackPressed,
-                    title = if (!uiState.isConnecting) uiState.participants.value.joinToString(separator = ", ") else stringResource(id = R.string.kaleyra_call_status_connecting),
+                    title = if (!uiState.isConnecting) uiState.participants.value.joinToString(
+                        separator = ", "
+                    ) else stringResource(id = R.string.kaleyra_call_status_connecting),
                     subtitle = when {
                         uiState.isConnecting -> null
                         uiState.isLink -> stringResource(id = R.string.kaleyra_call_status_connecting)

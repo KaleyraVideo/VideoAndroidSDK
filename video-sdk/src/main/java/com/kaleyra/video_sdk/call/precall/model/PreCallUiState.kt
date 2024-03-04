@@ -31,6 +31,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * @property watermarkInfo WatermarkInfo? optional watermark info
  * @property isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
  * @property isConnecting Boolean flag representing if the call is connecting, true if connecting, false otherwise
+ * @property isAudioVideo Boolean flag representing if the call is audio-video, true if it is an audio-video call, false otherwise
  */
 interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
 
@@ -45,6 +46,8 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
     val isLink: Boolean
 
     val isConnecting: Boolean
+
+    val isAudioVideo: Boolean
 
     /**
      * Clone this state
@@ -63,5 +66,6 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
         watermarkInfo: WatermarkInfo? = this@PreCallUiState.watermarkInfo,
         isLink: Boolean = this@PreCallUiState.isLink,
         isConnecting: Boolean = this@PreCallUiState.isConnecting,
+        isAudioVideo: Boolean = this@PreCallUiState.isAudioVideo
     ): T
 }

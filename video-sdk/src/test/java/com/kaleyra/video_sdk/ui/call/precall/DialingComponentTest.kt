@@ -161,20 +161,20 @@ class DialingComponentTest {
     }
 
     @Test
-    fun cameraPermissionGrantedAndVideoIsNull_avatarIsNotDisplayed() {
+    fun cameraPermissionGrantedInAudioVideoCallAndVideoIsNull_avatarIsNotDisplayed() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val shadow = Shadows.shadowOf(context as Application)
         shadow.grantPermissions(Manifest.permission.CAMERA)
-        uiState = uiState.copy(video = null)
+        uiState = uiState.copy(video = null, isAudioVideo = true)
         composeTestRule.findAvatar().assertDoesNotExist()
     }
 
     @Test
-    fun cameraPermissionDeniedAndVideoIsNull_avatarIsDisplayed() {
+    fun cameraPermissionDeniedInAudioVideoCallAndVideoIsNull_avatarIsDisplayed() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val shadow = Shadows.shadowOf(context as Application)
         shadow.denyPermissions(Manifest.permission.CAMERA)
-        uiState = uiState.copy(video = null)
+        uiState = uiState.copy(video = null, isAudioVideo = true)
         composeTestRule.findAvatar().assertIsDisplayed()
     }
 
@@ -206,6 +206,24 @@ class DialingComponentTest {
     fun streamViewNotNullAndVideoEnabled_overlayIsDisplayed() {
         uiState = uiState.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
         composeTestRule.onNodeWithTag(StreamOverlayTestTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun isAudioVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(isAudioVideo = true, video = null)
+        composeTestRule.findAvatar().assertDoesNotExist()
+    }
+
+    @Test
+    fun isAudioVideoFalseAndVideoIsNull_avatarIsDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(isAudioVideo = false, video = null)
+        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test
