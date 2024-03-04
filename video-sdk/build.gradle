@@ -55,7 +55,7 @@ dependencies {
 
     /*** Testing ***/
     testImplementation kaleyraCatalog.kaleyraVideo
-    testImplementation catalog.roboelectric
+    testImplementation catalog.robolectric
     testImplementation catalog.junit
     testImplementation catalog.androidxComposeUiTestJunit4
     testImplementation catalog.androidxTestEspressoIntents

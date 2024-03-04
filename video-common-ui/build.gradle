@@ -57,7 +57,6 @@ dependencies {
     api catalog.material
     api catalog.googleAccompanistSystemUiController
     api catalog.googleAccompanistPermission
-    implementation 'androidx.test:core-ktx:1.5.0'
     coreLibraryDesugaring catalog.desugar
 
     /** UI **/
@@ -67,10 +66,10 @@ dependencies {
     /** Testing **/
     testImplementation catalog.junit
     testImplementation catalog.mockkAndroid
-//    testImplementation catalog.roboelectric
-    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation catalog.robolectric
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
+    implementation catalog.androidxTestCoreKtx
 //    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation project(':video-extension-audio')
     testImplementation kaleyraCatalog.kaleyraVideo
