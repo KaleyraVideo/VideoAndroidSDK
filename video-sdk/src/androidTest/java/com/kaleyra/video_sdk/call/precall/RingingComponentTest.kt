@@ -21,24 +21,29 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.ringing.RingingComponent
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
+import com.kaleyra.video_sdk.call.stream.model.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.core.StreamOverlayTestTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findAvatar
 import com.kaleyra.video_sdk.findBackButton
 import org.junit.After
@@ -88,13 +93,6 @@ class RingingComponentTest {
         backPressed = false
         answerClicked = false
         declineClicked = false
-    }
-
-    @Test
-    fun videoNull_avatarDisplayed() {
-        uiState = uiState.copy(video = null)
-        composeTestRule.onNodeWithTag(StreamViewTestTag).assertDoesNotExist()
-        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test
@@ -250,18 +248,6 @@ class RingingComponentTest {
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
         uiState = uiState.copy(amIWaitingOthers = true)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
-    }
-
-    @Test
-    fun isVideoIncomingTrueAndVideoIsNull_avatarIsNotDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = true, video = null)
-        composeTestRule.findAvatar().assertDoesNotExist()
-    }
-
-    @Test
-    fun isVideoIncomingFalseAndVideoIsNull_avatarIsDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = false, video = null)
-        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test

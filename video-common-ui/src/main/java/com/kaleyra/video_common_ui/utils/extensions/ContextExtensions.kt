@@ -354,6 +354,8 @@ object ContextExtensions {
 
     fun Context.hasCanDrawOverlaysPermission() = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(applicationContext)
 
+    fun Context.hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
+
     fun Context.getAppName(): CharSequence = applicationInfo.loadLabel(packageManager)
 
     private fun Context.hasPermission(permission: String): Boolean {

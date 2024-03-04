@@ -28,19 +28,18 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
 import com.kaleyra.video_sdk.call.dialing.DialingComponent
 import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
+import com.kaleyra.video_sdk.call.stream.model.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
-import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamOverlayTestTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findAvatar
 import com.kaleyra.video_sdk.findBackButton
 import org.junit.After
@@ -83,13 +82,6 @@ class DialingComponentTest {
     @Test
     fun callInfoWidgetIsDisplayed() {
         composeTestRule.onNodeWithTag(CallInfoWidgetTag).assertIsDisplayed()
-    }
-
-    @Test
-    fun videoNull_avatarDisplayed() {
-        uiState = uiState.copy(video = null)
-        composeTestRule.onNodeWithTag(StreamViewTestTag).assertDoesNotExist()
-        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test
@@ -161,18 +153,6 @@ class DialingComponentTest {
     fun callStateDialing_dialingSubtitleIsDisplayed() {
         val dialing = composeTestRule.activity.getString(R.string.kaleyra_call_status_ringing)
         composeTestRule.onNodeWithText(dialing).assertIsDisplayed()
-    }
-
-    @Test
-    fun isVideoIncomingTrueAndVideoIsNull_avatarIsNotDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = true, video = null)
-        composeTestRule.findAvatar().assertDoesNotExist()
-    }
-
-    @Test
-    fun isVideoIncomingFalseAndVideoIsNull_avatarIsDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = false, video = null)
-        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test

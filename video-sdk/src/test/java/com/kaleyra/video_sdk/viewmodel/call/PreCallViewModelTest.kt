@@ -229,16 +229,6 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
     }
 
     @Test
-    fun testPreCallUiState_isVideoIncomingUpdated() = runTest {
-        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
-        val current = viewModel.uiState.first().isVideoIncoming
-        assertEquals(false, current)
-        advanceUntilIdle()
-        val new = viewModel.uiState.first().isVideoIncoming
-        assertEquals(true, new)
-    }
-
-    @Test
     fun testUserMessage() = runTest {
         every { CallUserMessagesProvider.userMessage } returns flowOf(MutedMessage("admin"))
         advanceUntilIdle()

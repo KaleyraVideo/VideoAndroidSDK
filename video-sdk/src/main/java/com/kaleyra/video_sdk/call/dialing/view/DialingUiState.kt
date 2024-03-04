@@ -31,7 +31,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * @property watermarkInfo WatermarkInfo? optional watermark info
  * @property isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
  * @property isConnecting Boolean flag representing the connecting state, true if connecting, false otherwise
- * @property isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
  * @constructor
  */
 @Immutable
@@ -41,8 +40,7 @@ data class DialingUiState(
     override val participants: ImmutableList<String> = ImmutableList(listOf()),
     override val watermarkInfo: WatermarkInfo? = null,
     override val isLink: Boolean = false,
-    override val isConnecting: Boolean = false,
-    override val isVideoIncoming: Boolean = false
+    override val isConnecting: Boolean = false
 ): PreCallUiState<DialingUiState> {
 
     override fun clone(
@@ -51,8 +49,7 @@ data class DialingUiState(
         participants: ImmutableList<String>,
         watermarkInfo: WatermarkInfo?,
         isLink: Boolean,
-        isConnecting: Boolean,
-        isVideoIncoming: Boolean
+        isConnecting: Boolean
     ): DialingUiState {
         return copy(
             video = video,
@@ -60,8 +57,7 @@ data class DialingUiState(
             participants = participants,
             watermarkInfo = watermarkInfo,
             isLink = isLink,
-            isConnecting = isConnecting,
-            isVideoIncoming = isVideoIncoming
+            isConnecting = isConnecting
         )
     }
 }
