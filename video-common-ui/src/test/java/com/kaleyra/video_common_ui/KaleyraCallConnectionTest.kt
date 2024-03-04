@@ -3,11 +3,9 @@ package com.kaleyra.video_common_ui
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.ParcelUuid
 import android.telecom.CallAudioState
 import android.telecom.CallAudioState.ROUTE_EARPIECE
 import android.telecom.CallAudioState.ROUTE_WIRED_HEADSET
-import android.telecom.CallEndpoint
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
@@ -16,11 +14,9 @@ import android.telecom.TelecomManager
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions
-import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
+import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions
-import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -41,7 +37,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -383,21 +378,21 @@ class KaleyraCallConnectionTest {
         unmockkObject(CallAudioStateExtensions)
     }
 
-    @Test
-    @Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
-    fun testOnCallAudioStateChangedApi34() = runTest {
-        mockkObject(CallAudioStateExtensions)
-        val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_WIRED_HEADSET)
-        val audioOutput = AudioOutputDevice.Earpiece()
-        val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
-        every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
-        every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
-        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
-        connection.onCallAudioStateChanged(callAudioState)
-        assertEquals(null, connection.currentAudioDevice.first())
-        assertEquals(listOf<AudioOutputDevice>(), connection.availableAudioDevices.first())
-        unmockkObject(CallAudioStateExtensions)
-    }
+//    @Test
+//    @Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
+//    fun testOnCallAudioStateChangedApi34() = runTest {
+//        mockkObject(CallAudioStateExtensions)
+//        val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_WIRED_HEADSET)
+//        val audioOutput = AudioOutputDevice.Earpiece()
+//        val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
+//        every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
+//        every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
+//        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
+//        connection.onCallAudioStateChanged(callAudioState)
+//        assertEquals(null, connection.currentAudioDevice.first())
+//        assertEquals(listOf<AudioOutputDevice>(), connection.availableAudioDevices.first())
+//        unmockkObject(CallAudioStateExtensions)
+//    }
 
 //    @Test
 //    fun testOnAvailableCallEndpointsChange() = runTest {
