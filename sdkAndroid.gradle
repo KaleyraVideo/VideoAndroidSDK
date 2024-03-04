@@ -16,7 +16,7 @@
 android {
 
     namespace "com.kaleyra." + project.getName().replace("-", "_")
-    compileSdkVersion 34
+    compileSdkVersion catalog.versions.sdkVersion.get().toInteger()
     buildToolsVersion catalog.versions.toolsVersion.get()
 
     packagingOptions {
@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         minSdkVersion catalog.versions.minSdkVersion.get()
-        targetSdkVersion 34
+        targetSdkVersion catalog.versions.sdkVersion.get().toInteger()
         versionCode 1
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -77,12 +77,6 @@ android {
         singleVariant('release') {
             withJavadocJar()
         }
-    }
-
-    packagingOptions {
-        exclude 'META-INF/license.md'
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/LICENSE-notice.md'
     }
 
     resourcePrefix 'kaleyra'
