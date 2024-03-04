@@ -58,7 +58,10 @@ object CallAudioStateExtensions {
             AudioOutputDevice.Bluetooth(identifier = address).apply { name = this@mapToBluetoothDevice.name }
         } else {
             val bluetooth = context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
-            AudioOutputDevice.Bluetooth(identifier = address).apply { name = "$bluetooth ${supportedBluetoothDevices.indexOf(this@mapToBluetoothDevice) + 1}" }
+            AudioOutputDevice.Bluetooth(identifier = address).apply {
+                name = if (supportedBluetoothDevices.size == 1) {
+                    bluetooth
+                } else "$bluetooth ${supportedBluetoothDevices.indexOf(this@mapToBluetoothDevice) + 1}" }
         }.apply {
             bluetoothConnectionStatus = null
         }

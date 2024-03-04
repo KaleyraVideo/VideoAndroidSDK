@@ -229,15 +229,32 @@ class CallAudioStateExtensionsTest {
         every { context.hasBluetoothPermission() } returns false
         every { bluetoothDevice.address } returns "address"
         every { bluetoothDevice.name } returns "name"
-        val text =
-            context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
-        assertEquals(
-            AudioOutputDevice.Bluetooth(identifier = "address").apply {
-                name = "$text 1"
-                bluetoothConnectionStatus = null
-            },
-            bluetoothDevice.mapToBluetoothDevice(listOf(bluetoothDevice))
-        )
+        val text = context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
+        val result = bluetoothDevice.mapToBluetoothDevice(listOf(bluetoothDevice)) as AudioOutputDevice.Bluetooth
+        assertEquals("address", result.identifier)
+        assertEquals(null, result.bluetoothConnectionStatus)
+        assertEquals(text, result.name)
+        unmockkObject(ContextRetainer)
+        unmockkObject(ContextExtensions)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.S])
+    fun api31AndNoBluetoothPermissionWithMultipleDevices_mapToBluetoothOutput_bluetoothAudioOutputWithNoName() {
+        mockkObject(ContextRetainer)
+        mockkObject(ContextExtensions)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val bluetoothDevice = mockk<BluetoothDevice>()
+        val bluetoothDevice2 = mockk<BluetoothDevice>()
+        every { ContextRetainer.context } returns context
+        every { context.hasBluetoothPermission() } returns false
+        every { bluetoothDevice.address } returns "address"
+        every { bluetoothDevice.name } returns "name"
+        val text = context.getString(com.bandyer.android_audiosession.R.string.bandyer_audio_device_type_bluetooth)
+        val result = bluetoothDevice.mapToBluetoothDevice(listOf(bluetoothDevice, bluetoothDevice2)) as AudioOutputDevice.Bluetooth
+        assertEquals("address", result.identifier)
+        assertEquals(null, result.bluetoothConnectionStatus)
+        assertEquals("$text 1", result.name)
         unmockkObject(ContextRetainer)
         unmockkObject(ContextExtensions)
     }
