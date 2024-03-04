@@ -20,12 +20,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 
 @RequiresApi(Build.VERSION_CODES.M)
-class CallConnection private constructor(val call: Call, val coroutineScope: CoroutineScope) : Connection() {
+class KaleyraCallConnection private constructor(val call: Call, val coroutineScope: CoroutineScope) : Connection() {
 
     interface Listener {
-        fun onConnectionStateChange(connection: CallConnection) = Unit
+        fun onConnectionStateChange(connection: KaleyraCallConnection) = Unit
 
-        fun onShowIncomingCallUi(connection: CallConnection) = Unit
+        fun onShowIncomingCallUi(connection: KaleyraCallConnection) = Unit
 
         fun onSilence() = Unit
     }
@@ -36,8 +36,8 @@ class CallConnection private constructor(val call: Call, val coroutineScope: Cor
             request: ConnectionRequest,
             call: Call,
             coroutineScope: CoroutineScope = MainScope()
-        ): CallConnection {
-            return CallConnection(call, coroutineScope).apply {
+        ): KaleyraCallConnection {
+            return KaleyraCallConnection(call, coroutineScope).apply {
                 setInitializing()
                 setAddress(request.address, TelecomManager.PRESENTATION_ALLOWED)
                 connectionProperties = PROPERTY_SELF_MANAGED

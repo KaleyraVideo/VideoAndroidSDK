@@ -18,7 +18,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
-import com.kaleyra.video_common_ui.connectionservice.CallConnection
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions
 import com.kaleyra.video_common_ui.connectionservice.CallEndpointExtensions.mapToAudioOutputDevice
 import io.mockk.every
@@ -45,7 +45,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class CallConnectionTest {
+class KaleyraCallConnectionTest {
 
     private val callMock = mockk<Call>(relaxed = true)
 
@@ -65,20 +65,20 @@ class CallConnectionTest {
 
     @Test
     fun testCreate() = runTest {
-        mockkConstructor(CallConnection::class)
-        every { anyConstructed<CallConnection>().setInitializing() } returns Unit
+        mockkConstructor(KaleyraCallConnection::class)
+        every { anyConstructed<KaleyraCallConnection>().setInitializing() } returns Unit
         every {
-            anyConstructed<CallConnection>().setAddress(
+            anyConstructed<KaleyraCallConnection>().setAddress(
                 requestMock.address,
                 any()
             )
         } returns Unit
-        every { anyConstructed<CallConnection>().connectionProperties = any() } returns Unit
-        every { anyConstructed<CallConnection>().audioModeIsVoip = any() } returns Unit
-        every { anyConstructed<CallConnection>().connectionCapabilities = any() } returns Unit
-        every { anyConstructed<CallConnection>().extras = requestMock.extras } returns Unit
+        every { anyConstructed<KaleyraCallConnection>().connectionProperties = any() } returns Unit
+        every { anyConstructed<KaleyraCallConnection>().audioModeIsVoip = any() } returns Unit
+        every { anyConstructed<KaleyraCallConnection>().connectionCapabilities = any() } returns Unit
+        every { anyConstructed<KaleyraCallConnection>().extras = requestMock.extras } returns Unit
 
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         verify(exactly = 1) { connection.setInitializing() }
         verify(exactly = 1) {
             connection.setAddress(
@@ -93,13 +93,13 @@ class CallConnectionTest {
                 Connection.CAPABILITY_MUTE or Connection.CAPABILITY_HOLD or Connection.CAPABILITY_SUPPORT_HOLD
         }
         verify(exactly = 1) { connection.extras = requestMock.extras }
-        unmockkConstructor(CallConnection::class)
+        unmockkConstructor(KaleyraCallConnection::class)
     }
 
     @Test
     fun testOnAnswer() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = CallConnection.create(requestMock, call, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, call, backgroundScope)
         connection.onAnswer()
         verify(exactly = 1) { call.connect() }
         // on some devices the onAnswer is called multiple times, check the code is only executed once
@@ -110,7 +110,7 @@ class CallConnectionTest {
     @Test
     fun testOnAnswerWithVideoState() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = CallConnection.create(requestMock, call, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, call, backgroundScope)
         connection.onAnswer(0)
         verify(exactly = 1) { call.connect() }
         // on some devices the onAnswer is called multiple times, check the code is only executed once
@@ -120,13 +120,13 @@ class CallConnectionTest {
 
     @Test
     fun testOnStateChanged() = runTest {
-        var result: CallConnection? = null
-        val listener = object : CallConnection.Listener {
-            override fun onConnectionStateChange(connection: CallConnection) {
+        var result: KaleyraCallConnection? = null
+        val listener = object : KaleyraCallConnection.Listener {
+            override fun onConnectionStateChange(connection: KaleyraCallConnection) {
                 result = connection
             }
         }
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
         connection.onStateChanged(Connection.STATE_ACTIVE)
         assertEquals(connection, result)
@@ -135,7 +135,7 @@ class CallConnectionTest {
     @Test
     fun testOnHold() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onHold()
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -150,7 +150,7 @@ class CallConnectionTest {
     @Test
     fun testOnAbort() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onAbort()
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -165,7 +165,7 @@ class CallConnectionTest {
     @Test
     fun testOnReject() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject()
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -180,7 +180,7 @@ class CallConnectionTest {
     @Test
     fun testOnRejectReason() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject(0)
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -195,7 +195,7 @@ class CallConnectionTest {
     @Test
     fun testOnRejectReply() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject("")
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -210,7 +210,7 @@ class CallConnectionTest {
     @Test
     fun testOnDisconnect() = runTest {
         val call = mockk<Call>(relaxed = true)
-        val connection = spyk(CallConnection.create(requestMock, call, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onDisconnect()
         verify(exactly = 1) { call.end() }
         verify(exactly = 1) {
@@ -224,13 +224,13 @@ class CallConnectionTest {
 
     @Test
     fun testOnShowIncomingCall() = runTest {
-        var result: CallConnection? = null
-        val listener = object : CallConnection.Listener {
-            override fun onShowIncomingCallUi(connection: CallConnection) {
+        var result: KaleyraCallConnection? = null
+        val listener = object : KaleyraCallConnection.Listener {
+            override fun onShowIncomingCallUi(connection: KaleyraCallConnection) {
                 result = connection
             }
         }
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
         connection.onShowIncomingCallUi()
         assertEquals(connection, result)
@@ -239,7 +239,7 @@ class CallConnectionTest {
     @Test
     fun callStateConnected_connectionSetToActive() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Connected)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) { connection.setActive() }
     }
@@ -248,7 +248,7 @@ class CallConnectionTest {
     fun callStateAnsweredOnAnotherDevice_connectionSetToAnsweredElsewhere() =
         runTest(UnconfinedTestDispatcher()) {
             every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.AnsweredOnAnotherDevice)
-            val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+            val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
             connection.syncStateWithCall()
             verify(exactly = 1) {
                 connection.setDisconnected(withArg {
@@ -262,7 +262,7 @@ class CallConnectionTest {
     fun callStateAnsweredOnAnotherDeviceApi24_connectionSetToOther() =
         runTest(UnconfinedTestDispatcher()) {
             every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.AnsweredOnAnotherDevice)
-            val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+            val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
             connection.syncStateWithCall()
             verify(exactly = 1) {
                 connection.setDisconnected(withArg {
@@ -274,7 +274,7 @@ class CallConnectionTest {
     @Test
     fun callStateLineBusy_connectionSetToBusy() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.LineBusy)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -286,7 +286,7 @@ class CallConnectionTest {
     @Test
     fun callStateDeclined_connectionSetToRemote() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.Declined)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -298,7 +298,7 @@ class CallConnectionTest {
     @Test
     fun callStateHungUp_connectionSetToRemote() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.HungUp(""))
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -310,7 +310,7 @@ class CallConnectionTest {
     @Test
     fun callStateError_connectionSetToError() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.Error)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -322,7 +322,7 @@ class CallConnectionTest {
     @Test
     fun callStateTimeout_connectionSetToOther() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.Timeout)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -334,7 +334,7 @@ class CallConnectionTest {
     @Test
     fun callStateKicked_connectionSetToOther() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.Kicked(""))
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -346,7 +346,7 @@ class CallConnectionTest {
     @Test
     fun callStateEnded_connectionSetToOther() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended)
-        val connection = spyk(CallConnection.create(requestMock, callMock, backgroundScope))
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
         connection.syncStateWithCall()
         verify(exactly = 1) {
             connection.setDisconnected(withArg {
@@ -358,10 +358,10 @@ class CallConnectionTest {
     @Test
     fun testOnSilence() = runTest {
         var silenced = false
-        val listener = object : CallConnection.Listener {
+        val listener = object : KaleyraCallConnection.Listener {
             override fun onSilence() { silenced = true }
         }
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
         connection.onSilence()
         assertEquals(true, silenced)
@@ -376,7 +376,7 @@ class CallConnectionTest {
         val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
         every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
         every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.onCallAudioStateChanged(callAudioState)
         assertEquals(audioOutput, connection.currentAudioDevice.first())
         assertEquals(availableAudioOutputs, connection.availableAudioDevices.first())
@@ -392,7 +392,7 @@ class CallConnectionTest {
         val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Loudspeaker())
         every { callAudioState.mapCurrentRouteToAudioOutputDevice() } returns audioOutput
         every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
-        val connection = CallConnection.create(requestMock, callMock, backgroundScope)
+        val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.onCallAudioStateChanged(callAudioState)
         assertEquals(null, connection.currentAudioDevice.first())
         assertEquals(listOf<AudioOutputDevice>(), connection.availableAudioDevices.first())

@@ -35,13 +35,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-class KaleyraCallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, CallConnection.Listener {
+class KaleyraCallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, KaleyraCallConnection.Listener {
 
     companion object {
 
         var logger: PriorityLogger? = null
 
-        private var connection: MutableStateFlow<CallConnection?> = MutableStateFlow(null)
+        private var connection: MutableStateFlow<KaleyraCallConnection?> = MutableStateFlow(null)
 
         suspend fun answer() {
             connection.filterNotNull().firstOrNull()?.onAnswer()
@@ -103,20 +103,20 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         return connection
     }
 
-    private fun createConnection(request: ConnectionRequest, call: CallUI): CallConnection {
-        return CallConnection.create(request = request, call = call).apply {
+    private fun createConnection(request: ConnectionRequest, call: CallUI): KaleyraCallConnection {
+        return KaleyraCallConnection.create(request = request, call = call).apply {
             connection.value = this
             addListener(this@KaleyraCallConnectionService)
             configureService(call, this)
         }
     }
 
-    override fun onShowIncomingCallUi(connection: CallConnection) {
+    override fun onShowIncomingCallUi(connection: KaleyraCallConnection) {
         val call = KaleyraVideo.conference.call.replayCache.first()
         createOrUpdateConnectionContact(connection, call)
     }
 
-    private fun configureService(call: CallUI, connection: CallConnection) {
+    private fun configureService(call: CallUI, connection: KaleyraCallConnection) {
         this.call = call
         call.enableAudioRouting(
             connection = connection,
@@ -128,7 +128,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         callForegroundServiceWorker.bind(this, call)
     }
 
-    private fun createOrUpdateConnectionContact(connection: CallConnection, call: Call) {
+    private fun createOrUpdateConnectionContact(connection: KaleyraCallConnection, call: Call) {
         coroutineScope.launch {
             val participants = call.participants.value
             val callee = if (participants.others.size > 1) {
@@ -144,7 +144,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         }
     }
 
-    override fun onConnectionStateChange(connection: CallConnection) {
+    override fun onConnectionStateChange(connection: KaleyraCallConnection) {
         if (connection.state != Connection.STATE_DISCONNECTED) return
         connection.removeListener(this@KaleyraCallConnectionService)
         stopForegroundService()

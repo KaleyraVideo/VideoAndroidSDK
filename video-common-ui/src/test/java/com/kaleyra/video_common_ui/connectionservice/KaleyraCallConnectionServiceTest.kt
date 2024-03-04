@@ -74,7 +74,7 @@ class KaleyraCallConnectionServiceTest {
 
     private val otherParticipantMock = mockk<CallParticipant>(relaxed = true)
 
-    private val connectionMock = mockk<CallConnection>(relaxed = true)
+    private val connectionMock = mockk<KaleyraCallConnection>(relaxed = true)
 
     private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
@@ -101,7 +101,7 @@ class KaleyraCallConnectionServiceTest {
         mockkObject(ContactsController)
         mockkObject(CallExtensions)
         mockkObject(ContactDetailsManager)
-        mockkObject(CallConnection)
+        mockkObject(KaleyraCallConnection)
         mockkObject(KaleyraVideo)
         every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any()) } returns Unit
         every { anyConstructed<CallForegroundServiceWorker>().dispose() } returns Unit
@@ -112,7 +112,7 @@ class KaleyraCallConnectionServiceTest {
             every { showOnAppResumed(any()) } returns Unit
             every { participants } returns MutableStateFlow(participantsMock)
         }
-        every { CallConnection.create(any(), any(), any()) } returns connectionMock
+        every { KaleyraCallConnection.create(any(), any(), any()) } returns connectionMock
         every { KaleyraVideo.conference } returns conferenceMock
         with(conferenceMock) {
             every { call } returns MutableStateFlow(callMock)
@@ -254,7 +254,7 @@ class KaleyraCallConnectionServiceTest {
     @Test
     fun testOnCreateOutgoingConnection() {
         mockkObject(CollaborationAudioExtensions) {
-            val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk()) as CallConnection
+            val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk()) as KaleyraCallConnection
             assertEquals(connectionMock, createdConnection)
             verify { connectionMock.setDialing() }
             verify { connectionMock.addListener(service!!) }
@@ -279,7 +279,7 @@ class KaleyraCallConnectionServiceTest {
     @Test
     fun testOnCreateIncomingConnection() {
         mockkObject(CollaborationAudioExtensions) {
-            val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk()) as CallConnection
+            val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk()) as KaleyraCallConnection
             assertEquals(connectionMock, createdConnection)
             verify { connectionMock.setRinging() }
             verify { connectionMock.addListener(service!!) }
@@ -359,7 +359,7 @@ class KaleyraCallConnectionServiceTest {
 
     @Test
     fun connectionStateDisconnected_onConnectionStateChange_serviceIsStopped() {
-        val connection = mockk<CallConnection>(relaxed = true)
+        val connection = mockk<KaleyraCallConnection>(relaxed = true)
         every { connection.state } returns Connection.STATE_DISCONNECTED
         service!!.onConnectionStateChange(connection)
         verify { connection.removeListener(service!!) }
@@ -369,7 +369,7 @@ class KaleyraCallConnectionServiceTest {
 
     @Test
     fun genericConnectionState_onConnectionStateChange_serviceIsNotStopped() {
-        val connection = mockk<CallConnection>(relaxed = true)
+        val connection = mockk<KaleyraCallConnection>(relaxed = true)
         every { connection.state } returns mockk(relaxed = true)
         service!!.onConnectionStateChange(connection)
         verify(exactly = 0) { connection.removeListener(service!!) }
@@ -380,7 +380,7 @@ class KaleyraCallConnectionServiceTest {
     @Test
     fun testOnShowIncomingCallUi() {
         mockkObject(CollaborationAudioExtensions) {
-            val connection = mockk<CallConnection>(relaxed = true)
+            val connection = mockk<KaleyraCallConnection>(relaxed = true)
             service!!.onShowIncomingCallUi(connection)
             verify(exactly = 1) { ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, any()) }
         }
@@ -388,7 +388,7 @@ class KaleyraCallConnectionServiceTest {
 
     @Test
     fun groupCall_onShowIncomingCallUi_contactSetAsIncomingGroupCallText() {
-        val connection = mockk<CallConnection>(relaxed = true)
+        val connection = mockk<KaleyraCallConnection>(relaxed = true)
         val otherParticipantMock2 = mockk<CallParticipant>(relaxed = true)
         every { participantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2)
         service!!.onShowIncomingCallUi(connection)
@@ -400,7 +400,7 @@ class KaleyraCallConnectionServiceTest {
 
     @Test
     fun oneToOne_onShowIncomingCallUi_contactSetAsOtherUsername() {
-        val connection = mockk<CallConnection>(relaxed = true)
+        val connection = mockk<KaleyraCallConnection>(relaxed = true)
         every { participantsMock.others } returns listOf(otherParticipantMock)
         every { otherParticipantMock.combinedDisplayName } returns MutableStateFlow("otherDisplayName")
         service!!.onShowIncomingCallUi(connection)
