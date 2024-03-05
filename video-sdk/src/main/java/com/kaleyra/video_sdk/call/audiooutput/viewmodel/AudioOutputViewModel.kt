@@ -37,6 +37,9 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration) : Ba
 
     override fun initialState() = AudioOutputUiState()
 
+    val isConnectionServiceEnabled: Boolean
+        get() = ConnectionServiceUtils.isConnectionServiceEnabled
+
     init {
         call
             .toAvailableAudioDevicesUi()

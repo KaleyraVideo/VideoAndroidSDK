@@ -18,10 +18,10 @@ package com.kaleyra.video_sdk.call.audiooutput
 
 import android.content.res.Configuration
 import android.os.Build
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,10 +42,6 @@ import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-@ChecksSdkIntAtLeast(api = 34)
-private val ShouldAskBluetoothPermissionImmediately = Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU
-private val ShouldAskBluetoothPermissionOnClick = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun AudioOutputComponent(
@@ -57,12 +53,18 @@ internal fun AudioOutputComponent(
     modifier: Modifier = Modifier,
     isTesting: Boolean = false
 ) {
+    val isConnectionServiceEnabled = remember(viewModel) { viewModel.isConnectionServiceEnabled }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val shouldAskBluetoothPermissions by remember(uiState) {
+        derivedStateOf {
+            uiState.audioDeviceList.value.any { it is AudioDeviceUi.Bluetooth }
+        }
+    }
     val permissionsState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         rememberMultiplePermissionsState(permissions = listOf(BluetoothScanPermission, BluetoothConnectPermission))
     } else null
 
-    if (ShouldAskBluetoothPermissionImmediately && !isTesting) {
+    if (shouldAskBluetoothPermissions && isConnectionServiceEnabled && !isTesting) {
         LaunchedEffect(Unit) {
             permissionsState?.launchMultiplePermissionRequest()
         }
@@ -72,7 +74,7 @@ internal fun AudioOutputComponent(
         uiState = uiState,
         onItemClick = remember(viewModel, onDeviceConnected) {
             {
-                if (it is AudioDeviceUi.Bluetooth && ShouldAskBluetoothPermissionOnClick && !isTesting) {
+                if (it is AudioDeviceUi.Bluetooth && !isConnectionServiceEnabled && !isTesting) {
                     permissionsState?.launchMultiplePermissionRequest()
                 }
                 viewModel.setDevice(it)
