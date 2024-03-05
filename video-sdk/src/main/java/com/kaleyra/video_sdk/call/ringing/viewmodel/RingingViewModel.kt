@@ -29,6 +29,7 @@ import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
@@ -53,7 +54,12 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
 
         call
             .flatMapLatest { it.state }
-            .onEach { state -> _uiState.update { it.clone(isConnecting = state is Call.State.Connecting) } }
+            .map { state ->
+                val isConnecting = state is Call.State.Connecting
+                _uiState.update { it.clone(isConnecting = isConnecting) }
+                isConnecting
+            }
+            .takeWhile { !it }
             .launchIn(viewModelScope)
     }
 
