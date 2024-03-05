@@ -77,8 +77,11 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         call?.disableAudioRouting()
         notificationJob = null
         call = null
-        connection.value?.address?.also { ContactsController.deleteConnectionServiceContact(this, it) }
-        connection.value = null
+        connection.value?.also { conn ->
+            application.unregisterActivityLifecycleCallbacks(conn)
+            conn.address?.also { ContactsController.deleteConnectionServiceContact(this, it) }
+            connection.value = null
+        }
     }
 
     override fun onCreateOutgoingConnection(
@@ -108,6 +111,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
             connection.value = this
             addListener(this@KaleyraCallConnectionService)
             configureService(call, this)
+            application.registerActivityLifecycleCallbacks(this)
         }
     }
 

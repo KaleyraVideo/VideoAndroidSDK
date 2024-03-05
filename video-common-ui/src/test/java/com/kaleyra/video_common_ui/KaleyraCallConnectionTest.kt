@@ -1,9 +1,11 @@
 package com.kaleyra.video_common_ui
 
+import android.app.Activity
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.telecom.CallAudioState
+import android.telecom.CallAudioState.ROUTE_BLUETOOTH
 import android.telecom.CallAudioState.ROUTE_EARPIECE
 import android.telecom.CallAudioState.ROUTE_WIRED_HEADSET
 import android.telecom.Connection
@@ -31,6 +33,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.time.withTimeoutOrNull
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -42,7 +46,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 class KaleyraCallConnectionTest {
 
-    private val callMock = mockk<Call>(relaxed = true)
+    private val callMock = mockk<CallUI>(relaxed = true)
 
     private val requestMock = mockk<ConnectionRequest>(relaxed = true)
 
@@ -93,7 +97,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnAnswer() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = KaleyraCallConnection.create(requestMock, call, backgroundScope)
         connection.onAnswer()
         verify(exactly = 1) { call.connect() }
@@ -104,7 +108,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnAnswerWithVideoState() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = KaleyraCallConnection.create(requestMock, call, backgroundScope)
         connection.onAnswer(0)
         verify(exactly = 1) { call.connect() }
@@ -129,7 +133,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnHold() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onHold()
         verify(exactly = 1) { call.end() }
@@ -144,7 +148,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnAbort() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onAbort()
         verify(exactly = 1) { call.end() }
@@ -159,7 +163,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnReject() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject()
         verify(exactly = 1) { call.end() }
@@ -174,7 +178,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnRejectReason() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject(0)
         verify(exactly = 1) { call.end() }
@@ -189,7 +193,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnRejectReply() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onReject("")
         verify(exactly = 1) { call.end() }
@@ -204,7 +208,7 @@ class KaleyraCallConnectionTest {
 
     @Test
     fun testOnDisconnect() = runTest {
-        val call = mockk<Call>(relaxed = true)
+        val call = mockk<CallUI>(relaxed = true)
         val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
         connection.onDisconnect()
         verify(exactly = 1) { call.end() }
@@ -375,6 +379,44 @@ class KaleyraCallConnectionTest {
         connection.onCallAudioStateChanged(callAudioState)
         assertEquals(audioOutput, connection.currentAudioDevice.first())
         assertEquals(availableAudioOutputs, connection.availableAudioDevices.first())
+        unmockkObject(CallAudioStateExtensions)
+    }
+
+    @Test
+    fun testAudioDevicesUpdatedOnActivityResumedCallback() = runTest {
+        mockkObject(CallAudioStateExtensions)
+        val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_BLUETOOTH)
+        val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Bluetooth())
+        val call = mockk<CallUI>(relaxed = true)
+        val activity = mockk<Activity>()
+        every { call.activityClazz } returns activity::class.java
+        every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
+
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
+        every { connection.callAudioState } returns callAudioState
+        connection.onActivityResumed(activity)
+
+        assertEquals(availableAudioOutputs, connection.availableAudioDevices.first())
+        unmockkObject(CallAudioStateExtensions)
+    }
+
+    @Test
+    fun testAudioDevicesUpdatedOnlyOnCallActivityResumed() = runTest {
+        mockkObject(CallAudioStateExtensions)
+        val callAudioState = CallAudioState(true, ROUTE_EARPIECE, ROUTE_EARPIECE or ROUTE_BLUETOOTH)
+        val availableAudioOutputs = listOf(AudioOutputDevice.None(), AudioOutputDevice.Bluetooth())
+        val call = mockk<CallUI>(relaxed = true)
+        every { call.activityClazz } returns this@KaleyraCallConnectionTest::class.java
+        every { callAudioState.mapToAvailableAudioOutputDevices() } returns availableAudioOutputs
+
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
+        every { connection.callAudioState } returns callAudioState
+        connection.onActivityResumed(mockk())
+
+        val result = withTimeoutOrNull(100) {
+            connection.availableAudioDevices.first()
+        }
+        assertEquals(null, result)
         unmockkObject(CallAudioStateExtensions)
     }
 

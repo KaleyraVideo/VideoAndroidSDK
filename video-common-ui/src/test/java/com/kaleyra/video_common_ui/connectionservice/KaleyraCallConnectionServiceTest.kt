@@ -1,5 +1,7 @@
 package com.kaleyra.video_common_ui.connectionservice
 
+import android.app.Application
+import android.app.Application.ActivityLifecycleCallbacks
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.Service
@@ -136,12 +138,15 @@ class KaleyraCallConnectionServiceTest {
     fun testOnDestroy() {
         mockkObject(CollaborationAudioExtensions) {
             val uri = Uri.parse("")
+            val application = mockk<Application>(relaxed = true)
             every { connectionMock.address } returns uri
-            service!!.onCreateOutgoingConnection(mockk(), mockk())
+            every { service!!.application } returns application
+            val conn = service!!.onCreateOutgoingConnection(mockk(), mockk())
             service!!.onDestroy()
             verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
             verify(exactly = 1) { ContactsController.deleteConnectionServiceContact(service!!, uri) }
             verify(exactly = 1) { callMock.disableAudioRouting(any()) }
+            verify(exactly = 1) { application.unregisterActivityLifecycleCallbacks(conn as ActivityLifecycleCallbacks) }
         }
     }
 
@@ -254,6 +259,8 @@ class KaleyraCallConnectionServiceTest {
     @Test
     fun testOnCreateOutgoingConnection() {
         mockkObject(CollaborationAudioExtensions) {
+            val application = mockk<Application>(relaxed = true)
+            every { service!!.application } returns application
             val createdConnection = service!!.onCreateOutgoingConnection(mockk(), mockk()) as KaleyraCallConnection
             assertEquals(connectionMock, createdConnection)
             verify { connectionMock.setDialing() }
@@ -273,12 +280,15 @@ class KaleyraCallConnectionServiceTest {
                     coroutineScope
                 )
             }
+            verify(exactly = 1) { application.registerActivityLifecycleCallbacks(createdConnection as ActivityLifecycleCallbacks) }
         }
     }
 
     @Test
     fun testOnCreateIncomingConnection() {
         mockkObject(CollaborationAudioExtensions) {
+            val application = mockk<Application>(relaxed = true)
+            every { service!!.application } returns application
             val createdConnection = service!!.onCreateIncomingConnection(mockk(), mockk()) as KaleyraCallConnection
             assertEquals(connectionMock, createdConnection)
             verify { connectionMock.setRinging() }
@@ -298,6 +308,7 @@ class KaleyraCallConnectionServiceTest {
                     coroutineScope
                 )
             }
+            verify(exactly = 1) { application.registerActivityLifecycleCallbacks(createdConnection as ActivityLifecycleCallbacks) }
         }
     }
 

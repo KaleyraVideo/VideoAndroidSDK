@@ -1,6 +1,10 @@
 package com.kaleyra.video_common_ui.connectionservice
 
+import android.app.Activity
+import android.app.Application
+import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Build
+import android.os.Bundle
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
@@ -8,19 +12,22 @@ import android.telecom.TelecomManager
 import androidx.annotation.RequiresApi
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.M)
-class KaleyraCallConnection private constructor(val call: Call, val coroutineScope: CoroutineScope) : Connection() {
+class KaleyraCallConnection private constructor(val call: CallUI, val coroutineScope: CoroutineScope) : Connection(), ActivityLifecycleCallbacks {
 
     interface Listener {
         fun onConnectionStateChange(connection: KaleyraCallConnection) = Unit
@@ -34,7 +41,7 @@ class KaleyraCallConnection private constructor(val call: Call, val coroutineSco
         @RequiresApi(Build.VERSION_CODES.O)
         fun create(
             request: ConnectionRequest,
-            call: Call,
+            call: CallUI,
             coroutineScope: CoroutineScope = MainScope()
         ): KaleyraCallConnection {
             return KaleyraCallConnection(call, coroutineScope).apply {
@@ -49,9 +56,9 @@ class KaleyraCallConnection private constructor(val call: Call, val coroutineSco
         }
     }
 
-    private val _currentAudioDevice: MutableStateFlow<AudioOutputDevice?> = MutableStateFlow(null)
+    private val _currentAudioDevice: MutableSharedFlow<AudioOutputDevice?> = MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
 
-    private val _availableAudioDevices: MutableStateFlow<List<AudioOutputDevice>> = MutableStateFlow(listOf())
+    private val _availableAudioDevices: MutableSharedFlow<List<AudioOutputDevice>> = MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
 
     private val listeners: MutableList<Listener> = mutableListOf()
 
@@ -59,9 +66,9 @@ class KaleyraCallConnection private constructor(val call: Call, val coroutineSco
 
     private var wasRejected = false
 
-    val currentAudioDevice: StateFlow<AudioOutputDevice?> = _currentAudioDevice
+    val currentAudioDevice: SharedFlow<AudioOutputDevice?> = _currentAudioDevice
 
-    val availableAudioDevices: StateFlow<List<AudioOutputDevice>> = _availableAudioDevices
+    val availableAudioDevices: SharedFlow<List<AudioOutputDevice>> = _availableAudioDevices
 
     init {
         syncStateWithCall()
@@ -179,9 +186,30 @@ class KaleyraCallConnection private constructor(val call: Call, val coroutineSco
 
     @Deprecated("Deprecated in Java")
     override fun onCallAudioStateChanged(state: android.telecom.CallAudioState) {
-        _currentAudioDevice.value = state.mapCurrentRouteToAudioOutputDevice()
-        _availableAudioDevices.value = state.mapToAvailableAudioOutputDevices()
+        coroutineScope.launch {
+            _currentAudioDevice.emit(state.mapCurrentRouteToAudioOutputDevice())
+            _availableAudioDevices.emit(state.mapToAvailableAudioOutputDevices())
+        }
     }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+
+    override fun onActivityStarted(activity: Activity) = Unit
+
+    override fun onActivityResumed(activity: Activity) {
+        if (activity::class.java != call.activityClazz) return
+        coroutineScope.launch {
+            _availableAudioDevices.emit(callAudioState.mapToAvailableAudioOutputDevices())
+        }
+    }
+
+    override fun onActivityPaused(activity: Activity) = Unit
+
+    override fun onActivityStopped(activity: Activity) = Unit
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
+
+    override fun onActivityDestroyed(activity: Activity) = Unit
 
     ///// Audio API 34 /////
 
