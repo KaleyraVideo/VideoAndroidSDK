@@ -19,7 +19,6 @@ package com.kaleyra.video_common_ui.mapper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -77,7 +76,7 @@ object InputMapper {
      * @return Flow<Input.Audio.Event.Request.Mute> flow emitting whenever an audio mute event has been sent
      */
     fun Flow<Call>.toMuteEvents(): Flow<Input.Audio.Event.Request.Mute> =
-        this.toAudio()
+        this.toCameraStreamAudio()
             .filterNotNull()
             .flatMapLatest { it.events }
             .filterIsInstance()
@@ -87,7 +86,7 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Input.Audio?> flow emitting whenever an audio is available on a publishing local stream
      */
-    fun Flow<Call>.toAudio(): Flow<Input.Audio?> =
+    fun Flow<Call>.toCameraStreamAudio(): Flow<Input.Audio?> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }

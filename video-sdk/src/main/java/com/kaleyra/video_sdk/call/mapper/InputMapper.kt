@@ -20,7 +20,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_common_ui.mapper.InputMapper.toAudio
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraStreamAudio
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_common_ui.utils.UsbCameraUtils
@@ -76,7 +76,7 @@ internal object InputMapper {
             .distinctUntilChanged()
 
     fun Flow<Call>.isMyMicEnabled(): Flow<Boolean> =
-        this.toAudio()
+        this.toCameraStreamAudio()
             .flatMapLatest { it?.enabled ?: flowOf(false) }
             .distinctUntilChanged()
 
