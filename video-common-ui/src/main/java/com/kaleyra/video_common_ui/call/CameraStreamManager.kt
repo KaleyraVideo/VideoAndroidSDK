@@ -19,17 +19,19 @@ package com.kaleyra.video_common_ui.call
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
@@ -37,8 +39,12 @@ object CameraStreamConstants {
     const val CAMERA_STREAM_ID = "camera"
 }
 
-internal class CameraStreamManager(private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
-    
+internal class CameraStreamManager(
+    private val coroutineScope: CoroutineScope = CoroutineScope(
+        Dispatchers.IO
+    )
+) {
+
     private val jobs = mutableListOf<Job>()
 
     fun bind(call: Call) {
@@ -69,33 +75,28 @@ internal class CameraStreamManager(private val coroutineScope: CoroutineScope = 
     }
 
     fun handleCameraStreamAudio(call: Call) {
-        jobs += combine(
-            call.inputs.availableInputs
-                .map { it.filterIsInstance<Input.Audio>().firstOrNull() }
-                .filterNotNull(),
-            call.participants.mapNotNull { it.me }
-        ) { audio, me ->
-            val stream = me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } ?: return@combine
-            stream.audio.value = audio
+        val flow = flowOf(call)
+        jobs += combine(flow.toAudioInput(), flow.toMyCameraStream()) { audio, cameraStream ->
+            cameraStream.audio.value = audio
         }.launchIn(coroutineScope)
     }
 
     fun handleCameraStreamVideo(call: Call) {
+        val flow = flowOf(call)
         jobs += combine(
-            call.inputs.availableInputs
-                .map { inputs -> inputs.lastOrNull { it is Input.Video.Camera } }
-                .filterIsInstance<Input.Video.My>(),
+            flow.toCameraVideoInput(),
             call.preferredType,
-            call.participants.mapNotNull { it.me }
-        ) { video, preferredType, me ->
+            flow.toMyCameraStream()
+        ) { video, preferredType, cameraStream ->
             val hasVideo = preferredType.hasVideo()
             if (!hasVideo) return@combine
 
-            val stream = me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } ?: return@combine
-            val quality = if (DeviceUtils.isSmartGlass) Input.Video.Quality.Definition.HD else Input.Video.Quality.Definition.SD
+            val quality = if (DeviceUtils.isSmartGlass) {
+                Input.Video.Quality.Definition.HD
+            } else Input.Video.Quality.Definition.SD
             video.setQuality(quality)
             if (video is Input.Video.Camera.Usb) video.awaitPermission()
-            stream.video.value = video
+            cameraStream.video.value = video
         }.launchIn(coroutineScope)
     }
 

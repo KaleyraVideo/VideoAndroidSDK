@@ -18,8 +18,10 @@ package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
+import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * Call Input flow utilities
@@ -98,5 +101,20 @@ object InputMapper {
      * @return Flow<Boolean> flow emitting true whenever a screen sharing input is currently available
      */
     fun Flow<Call>.hasScreenSharingInput(): Flow<Boolean> =
-        this.flatMapLatest { it.inputs.availableInputs }.map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+        this.flatMapLatest { it.inputs.availableInputs }
+            .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+
+    fun Flow<Call>.toAudioInput(): Flow<Input.Audio> =
+        this.flatMapLatest { it.inputs.availableInputs }
+            .mapNotNull { it.filterIsInstance<Input.Audio>().firstOrNull() }
+
+    fun Flow<Call>.toCameraVideoInput(): Flow<Input.Video.My> =
+        this.flatMapLatest { it.inputs.availableInputs }
+            .mapNotNull { inputs -> inputs.lastOrNull { it is Input.Video.Camera } }
+            .filterIsInstance<Input.Video.My>()
+
+    fun Flow<Call>.toMyCameraStream(): Flow<Stream.Mutable> =
+        this.flatMapLatest { it.participants }
+            .flatMapLatestNotNull { it.me?.streams }
+            .mapNotNull { streams -> streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
 }
