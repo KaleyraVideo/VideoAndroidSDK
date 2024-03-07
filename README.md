@@ -22,7 +22,11 @@
 
 **Even though this sdk encloses strongly the UI/UX, it is fully styleable through default Android style system.**
 
-<img src="img/img0.png" height="360"/>
+### Phone UI
+<img src="img/img0.png"/>
+
+### Glass UI
+<img src="img/glass_1.png" width="360"/><img src="img/glass_2.png" width="360"/><img src="img/glass_3.png" width="360"/><img src="img/glass_4.png" width="360"/>
 
 ## Requirements
 
