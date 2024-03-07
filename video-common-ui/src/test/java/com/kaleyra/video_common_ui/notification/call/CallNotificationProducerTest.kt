@@ -2,7 +2,8 @@ package com.kaleyra.video_common_ui.notification.call
 
 import android.app.Notification
 import android.content.Context
-import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
@@ -11,7 +12,6 @@ import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
-import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
@@ -24,7 +24,9 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -32,12 +34,8 @@ import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -50,7 +48,7 @@ import org.junit.Test
 class CallNotificationProducerTest {
 
     @get:Rule
-    var mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
+    val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
     private val contextMock = mockk<Context>(relaxed = true)
 
@@ -81,13 +79,19 @@ class CallNotificationProducerTest {
 
     @Before
     fun setUp() {
+        mockkConstructor(Handler::class)
+        mockkStatic(Looper::getMainLooper)
+        every { Looper.getMainLooper() } returns mockk(relaxed = true)
         mockkObject(ContactDetailsManager)
         mockkObject(ContextExtensions)
-        mockkObject(NotificationManager)
         mockkObject(CallExtensions)
         mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns contextMock
+        val notificationManagerMock = mockk<android.app.NotificationManager>(relaxed = true)
+        every { contextMock.getSystemService(Context.NOTIFICATION_SERVICE) } returns notificationManagerMock
         mockkObject(DeviceUtils)
         mockkObject(AppLifecycle)
+        mockkObject(NotificationManager)
         with(NotificationManager) {
             every { buildIncomingCallNotification(any(), any(), any(), any(), any(), any()) } returns incomingCallNotification
             every { buildOutgoingCallNotification(any(), any(), any(), any(), any()) } returns outgoingCallNotification
@@ -95,7 +99,6 @@ class CallNotificationProducerTest {
             every { cancel(any()) } returns Unit
             every { notify(any(), any()) } returns Unit
         }
-        every { ContextRetainer.context } returns contextMock
         every { DeviceUtils.isSmartGlass } returns false
         coEvery { ContactDetailsManager.refreshContactDetails(any(), any()) } returns Unit
         with(ContextExtensions) {

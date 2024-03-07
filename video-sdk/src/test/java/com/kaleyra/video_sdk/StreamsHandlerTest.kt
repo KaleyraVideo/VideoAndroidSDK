@@ -22,6 +22,7 @@ import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,6 +88,7 @@ class StreamsHandlerTest {
     fun tearDown() {
         streamsFlow.value = listOf()
         nMaxFeaturedFlow.value = DefaultMaxFeatured
+        unmockkAll()
     }
 
     // test che mio stream viene messo nei thumbnail
