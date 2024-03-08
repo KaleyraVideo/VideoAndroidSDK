@@ -260,10 +260,10 @@ internal fun CallComponent(
                                     }
                                 )
 
-                                if (callUiState.amILeftAlone) {
+                                if (callUiState.amILeftAlone || callUiState.amIWaitingOthers) {
                                     val padding by animateDpAsState(targetValue = if (stream.video?.view == null || !stream.video.isEnabled) YouAreAloneAvatarPadding else 0.dp, label = "avatarPadding")
                                     Text(
-                                        text = stringResource(id = R.string.kaleyra_call_left_alone),
+                                        text = stringResource(id = if (callUiState.amIWaitingOthers) R.string.kaleyra_waiting_for_other_participants else R.string.kaleyra_call_left_alone),
                                         style = LocalTextStyle.current.shadow(),
                                         modifier = Modifier
                                             .align(Alignment.Center)
@@ -336,7 +336,7 @@ internal fun CallComponent(
 
 private fun CallUiState.shouldShowCallInfo(): State<Boolean> {
     return derivedStateOf {
-        callState is CallStateUi.Reconnecting || callState is CallStateUi.Disconnected || recording?.isRecording() ?: false
+        callState is CallStateUi.Connecting || callState is CallStateUi.Reconnecting || callState is CallStateUi.Disconnected || recording?.isRecording() ?: false
     }
 }
 
@@ -349,7 +349,7 @@ private fun CallUiState.shouldHideWatermark(): State<Boolean> {
 @Composable
 private fun titleFor(callState: CallStateUi) =
     when (callState) {
-        CallStateUi.Reconnecting -> stringResource(id = R.string.kaleyra_call_status_connecting)
+        CallStateUi.Connecting, CallStateUi.Reconnecting -> stringResource(id = R.string.kaleyra_call_status_connecting)
         is CallStateUi.Disconnected -> stringResource(id = R.string.kaleyra_call_status_ended)
         else -> ""
     }

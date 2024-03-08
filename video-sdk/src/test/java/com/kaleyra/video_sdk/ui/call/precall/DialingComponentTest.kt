@@ -133,7 +133,7 @@ class DialingComponentTest {
     fun isConnectingTrue_connectingIsDisplayed() {
         uiState = uiState.copy(isConnecting = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
-        composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
     }
 
     @Test

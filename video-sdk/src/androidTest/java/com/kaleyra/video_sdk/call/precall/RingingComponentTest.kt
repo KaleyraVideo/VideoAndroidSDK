@@ -139,13 +139,22 @@ class RingingComponentTest {
     fun isConnectingTrue_connectingIsDisplayed() {
         uiState = uiState.copy(isConnecting = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
-        composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
     }
 
     @Test
     fun answerButtonIsDisplayed() {
         val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
         composeTestRule.assertRingingButtonIsDisplayed(answer)
+    }
+
+    @Test
+    fun ringingButtonsDoNotExistIfConnectingIsTrue() {
+        val answer = composeTestRule.activity.getString(R.string.kaleyra_ringing_answer)
+        val decline = composeTestRule.activity.getString(R.string.kaleyra_ringing_decline)
+        uiState = uiState.copy(isConnecting = true)
+        composeTestRule.onNodeWithText(answer).assertDoesNotExist()
+        composeTestRule.onNodeWithText(decline).assertDoesNotExist()
     }
 
     @Test
@@ -264,16 +273,16 @@ class RingingComponentTest {
     }
 
     @Test
-    fun streamViewNotNullAndVideoEnabled_overlayIsDisplayed() {
-        uiState = uiState.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
-        composeTestRule.onNodeWithTag(StreamOverlayTestTag).assertIsDisplayed()
-    }
-
-    @Test
     fun userMessage_userMessageSnackbarIsDisplayed() {
         userMessage = RecordingMessage.Started
         val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    }
+
+    @Test
+    fun streamViewNotNullAndVideoEnabled_overlayIsDisplayed() {
+        uiState = uiState.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
+        composeTestRule.onNodeWithTag(StreamOverlayTestTag).assertIsDisplayed()
     }
 
     private fun ComposeTestRule.assertRingingButtonIsDisplayed(text: String) {

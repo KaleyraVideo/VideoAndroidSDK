@@ -46,7 +46,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-
 @RunWith(RobolectricTestRunner::class)
 class CallScreenContentTest : ComposeViewModelsMockTest() {
 
@@ -76,13 +75,29 @@ class CallScreenContentTest : ComposeViewModelsMockTest() {
 
     @Test
     fun callStateRinging_ringingContentIsDisplayed() {
-        callState = CallStateUi.Ringing()
+        callState = CallStateUi.Ringing
+        composeTestRule.onNodeWithTag(RingingContentTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun callStateConnectingAndPreviouslyRinging_ringingContentIsDisplayed() {
+        callState = CallStateUi.Ringing
+        composeTestRule.onNodeWithTag(RingingContentTag).assertIsDisplayed()
+        callState = CallStateUi.Connecting
         composeTestRule.onNodeWithTag(RingingContentTag).assertIsDisplayed()
     }
 
     @Test
     fun callStateDialing_dialingContentIsDisplayed() {
         callState = CallStateUi.Dialing
+        composeTestRule.onNodeWithTag(DialingContentTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun callStateConnectingAndPreviouslyDialing_ringingContentIsDisplayed() {
+        callState = CallStateUi.Dialing
+        composeTestRule.onNodeWithTag(DialingContentTag).assertIsDisplayed()
+        callState = CallStateUi.Connecting
         composeTestRule.onNodeWithTag(DialingContentTag).assertIsDisplayed()
     }
 
@@ -166,7 +181,7 @@ class CallScreenContentTest : ComposeViewModelsMockTest() {
 
     @Test
     fun callStateRinging_callInfoWidgetIsDisplayed() {
-        callState = CallStateUi.Ringing()
+        callState = CallStateUi.Ringing
         composeTestRule.onNodeWithTag(CallInfoWidgetTag).assertIsDisplayed()
     }
 
@@ -268,7 +283,7 @@ class CallScreenContentTest : ComposeViewModelsMockTest() {
 
     @Test
     fun callStateRinging_userClicksInfoWidgetBackButton_onBackPressedInvoked() {
-        callState = CallStateUi.Ringing()
+        callState = CallStateUi.Ringing
         composeTestRule.findBackButton().performClick()
         assert(backPressed)
     }

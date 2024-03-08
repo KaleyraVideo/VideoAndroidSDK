@@ -287,6 +287,12 @@ class CallComponentTest {
     }
 
     @Test
+    fun callStateConnecting_connectingTitleIsDisplayed() {
+        callUiState = CallUiState(CallStateUi.Connecting)
+        composeTestRule.assertConnectingTitleIsDisplayed()
+    }
+
+    @Test
     fun callStateDisconnected_endedTitleIsDisplayed() {
         callUiState = CallUiState(callState = CallStateUi.Disconnected)
         composeTestRule.assertEndedTitleIsDisplayed()
@@ -401,7 +407,7 @@ class CallComponentTest {
 
     @Test
     fun callStateConnecting_callInfoWidgetIsDisplayed() {
-        callUiState = CallUiState(callState = CallStateUi.Reconnecting)
+        callUiState = CallUiState(callState = CallStateUi.Connecting)
         composeTestRule.onNodeWithTag(CallInfoWidgetTag).assertIsDisplayed()
     }
 
@@ -441,6 +447,13 @@ class CallComponentTest {
     }
 
     @Test
+    fun amIWaitingForOthersTrue_waitingForOthersIsDisplayed() {
+        callUiState = CallUiState(callState = mockk(), amIWaitingOthers = true, featuredStreams =  ImmutableList(listOf(streamMock1)))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
     fun callStateEndedAndAmIAloneTrue_youAreAloneDoesNotExists() {
         callUiState = CallUiState(callState = CallStateUi.Disconnected.Ended, amILeftAlone = true, featuredStreams =  ImmutableList(listOf(streamMock1)))
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_left_alone)
@@ -448,9 +461,27 @@ class CallComponentTest {
     }
 
     @Test
+    fun callStateEndedAndAmIWaitingForOthersTrue_waitingForOthersDoesNotExists() {
+        callUiState = CallUiState(callState = CallStateUi.Disconnected.Ended, amIWaitingOthers = true, featuredStreams =  ImmutableList(listOf(streamMock1)))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
     fun amIAloneTrueAndVideoDisabled_youAreAloneIsDisplayedUnderTheVideoAvatar() {
         callUiState = CallUiState(callState = mockk(), amILeftAlone = true, featuredStreams = ImmutableList(listOf(streamMock1.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = false)))))
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_left_alone)
+        val avatar = composeTestRule.activity.getString(R.string.kaleyra_avatar)
+        val avatarBottom = composeTestRule.onNodeWithContentDescription(avatar).getUnclippedBoundsInRoot().bottom
+        val textTop = composeTestRule.onNodeWithText(text).getUnclippedBoundsInRoot().top
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        assert(avatarBottom < textTop)
+    }
+
+    @Test
+    fun awaitingForOthersAndVideoDisabled_waitingForOthersIsDisplayedUnderTheVideoAvatar() {
+        callUiState = CallUiState(callState = mockk(), amIWaitingOthers = true, featuredStreams = ImmutableList(listOf(streamMock1.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = false)))))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
         val avatar = composeTestRule.activity.getString(R.string.kaleyra_avatar)
         val avatarBottom = composeTestRule.onNodeWithContentDescription(avatar).getUnclippedBoundsInRoot().bottom
         val textTop = composeTestRule.onNodeWithText(text).getUnclippedBoundsInRoot().top
@@ -470,9 +501,31 @@ class CallComponentTest {
     }
 
     @Test
+    fun awaitingForOthersTrueAndVideoViewIsNull_waitingForOthersIsDisplayedUnderTheVideoAvatar() {
+        callUiState = CallUiState(callState = mockk(), amIWaitingOthers = true, featuredStreams = ImmutableList(listOf(streamMock1.copy(video = VideoUi(id = "videoId", view = null, isEnabled = false)))))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
+        val avatar = composeTestRule.activity.getString(R.string.kaleyra_avatar)
+        val avatarBottom = composeTestRule.onNodeWithContentDescription(avatar).getUnclippedBoundsInRoot().bottom
+        val textTop = composeTestRule.onNodeWithText(text).getUnclippedBoundsInRoot().top
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        assert(avatarBottom < textTop)
+    }
+
+    @Test
     fun amIAloneTrueAndVideoIsNull_youAreAloneIsDisplayedUnderTheVideoAvatar() {
         callUiState = CallUiState(callState = mockk(), amILeftAlone = true, featuredStreams = ImmutableList(listOf(streamMock1.copy(video = null))))
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_left_alone)
+        val avatar = composeTestRule.activity.getString(R.string.kaleyra_avatar)
+        val avatarBottom = composeTestRule.onNodeWithContentDescription(avatar).getUnclippedBoundsInRoot().bottom
+        val textTop = composeTestRule.onNodeWithText(text).getUnclippedBoundsInRoot().top
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        assert(avatarBottom < textTop)
+    }
+
+    @Test
+    fun awaitingForOthersTrueAndVideoIsNull_waitingForOthersIsDisplayedUnderTheVideoAvatar() {
+        callUiState = CallUiState(callState = mockk(), amIWaitingOthers = true, featuredStreams = ImmutableList(listOf(streamMock1.copy(video = null))))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
         val avatar = composeTestRule.activity.getString(R.string.kaleyra_avatar)
         val avatarBottom = composeTestRule.onNodeWithContentDescription(avatar).getUnclippedBoundsInRoot().bottom
         val textTop = composeTestRule.onNodeWithText(text).getUnclippedBoundsInRoot().top

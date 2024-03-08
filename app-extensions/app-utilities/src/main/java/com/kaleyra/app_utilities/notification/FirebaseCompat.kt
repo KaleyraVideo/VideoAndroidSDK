@@ -22,10 +22,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.google.firebase.crashlytics.CrashlyticsRegistrar
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.provider.FirebaseInitProvider
 import com.kaleyra.app_configuration.model.PushProvider
 import com.kaleyra.app_utilities.MultiDexApplication.Companion.restApi
 import com.kaleyra.app_utilities.networking.ConnectionStatusChangeReceiver.Companion.isConnected

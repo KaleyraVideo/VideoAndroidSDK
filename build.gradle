@@ -16,23 +16,8 @@
 
 buildscript {
 
-    ext.keyStoreAlias = { buildType -> return " " }
-    ext.keyStorePassword = { buildType -> return " " }
-    ext.keyStoreFilePath = { buildType -> return " " }
-    ext.keyStorePassword = { buildType -> return " " }
-
-    ext.playStoreCredentialsFilePath = { return " " }
-    ext.crashlyticsAppId = { -> return "" }
-
-    ext.getDistributionAppId = { -> return "" }
-    ext.getDistributionCredentialsFilePath = { buildType -> return " " }
-    ext.getDistributionReleaseNotes = { version -> return "" }
-    ext.getDistributionTestGroup = { -> return "" }
-
     ext.useLeakCanary = { -> return false }
     ext.useMockUserDetailsProvider = { -> return false }
-
-    ext.getHmsDistributionCredentialsFilePath = { -> return " " }
 
     repositories {
         mavenLocal()
@@ -43,8 +28,6 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url 'https://repo1.maven.org/maven2/' }
         maven { url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven" }
-        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         maven { url 'https://developer.huawei.com/repo/' }
         maven { url 'https://maven.bandyer.com/prebuilts' }
         maven { url 'https://maven.bandyer.com/releases' }
@@ -68,8 +51,6 @@ buildscript {
         // Documentation
         classpath "org.jetbrains.dokka:dokka-core:${catalog.versions.jetbrainsDokkaVersion.get()}"
 
-        // Firebase crashlytics
-        classpath "com.google.firebase:firebase-crashlytics-gradle:${sampleAppCatalog.plugins.firebaseCrashlytics.get().version}"
 
         // Push notifications
         classpath "com.google.gms:google-services:${sampleAppCatalog.plugins.gmsGoogleServices.get().version}"
@@ -79,6 +60,10 @@ buildscript {
         classpath "ru.cian:huawei-publish-gradle-plugin:${sampleAppCatalog.plugins.huaweiPublish.get().version}"
         classpath "com.github.triplet.gradle:play-publisher:${sampleAppCatalog.plugins.tripletPlay.get().version}"
     }
+}
+
+plugins {
+    alias(catalog.plugins.dokka)
 }
 
 allprojects {
@@ -91,8 +76,6 @@ allprojects {
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url 'https://repo1.maven.org/maven2/' }
         maven { url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven" }
-        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         maven { url 'https://developer.huawei.com/repo/' }
         maven { url 'https://maven.bandyer.com/prebuilts' }
         maven { url 'https://maven.bandyer.com/releases' }
@@ -101,4 +84,11 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.dokkaHtmlMultiModule {
+    moduleName.set(project.name)
+    moduleVersion.set(project.version.toString())
+    outputDirectory.set(file("docs"))
+
 }

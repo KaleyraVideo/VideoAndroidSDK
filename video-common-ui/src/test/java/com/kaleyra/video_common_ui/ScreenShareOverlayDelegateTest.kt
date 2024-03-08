@@ -16,7 +16,8 @@
 
 package com.kaleyra.video_common_ui
 
-import android.content.Context
+import android.app.Activity
+import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
@@ -38,7 +39,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ScreenShareOverlayDelegateTest {
 
-    private val contextMock = mockk<Context>(relaxed = true)
+    private val contextMock = mockk<Activity>(relaxed = true)
 
     private val callMock = mockk<Call>()
 

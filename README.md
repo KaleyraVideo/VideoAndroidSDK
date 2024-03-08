@@ -4,7 +4,7 @@
 <img src="img/kaleyra.png" alt="Kaleyra" title="Kaleyra" />
 </p>
 
-[![Download](https://badgen.net/maven/v/metadata-url/https/maven.bandyer.com/releases/com/kaleyra/video-sdk/maven-metadata.xml?label=maven.bandyer.com/releases) ](https://maven.bandyer.com/index.html#releases/com/kaleyra/video-sdk/)[![Android CI](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml/badge.svg?branch=develop)](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml)
+[![Download](https://badgen.net/maven/v/metadata-url/https/maven.bandyer.com/releases/com/kaleyra/video-sdk-bom/maven-metadata.xml?label=maven.bandyer.com/releases) ](https://maven.bandyer.com/index.html#releases/com/kaleyra/video-sdk-bom/)[![Android CI](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml/badge.svg?branch=develop)](https://github.com/KaleyraVideo/VideoAndroidSDK/actions/workflows/android.yml)
 
 **Kaleyra video** enables audio/video communication and collaboration from any platform and browser! Through its WebRTC architecture, it makes video communication simple and punctual.
 
@@ -22,7 +22,11 @@
 
 **Even though this sdk encloses strongly the UI/UX, it is fully styleable through default Android style system.**
 
-<img src="img/img0.png" height="360"/>
+### Phone UI
+<img src="img/img0.png"/>
+
+### Glass UI
+<img src="img/glass_1.png" width="360"/><img src="img/glass_2.png" width="360"/><img src="img/glass_3.png" width="360"/><img src="img/glass_4.png" width="360"/>
 
 ## Requirements
 
