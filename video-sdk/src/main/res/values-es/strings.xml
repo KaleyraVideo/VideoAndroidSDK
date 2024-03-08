@@ -206,4 +206,5 @@
         <item quantity="one">El usuario no ha respondido.</item>
         <item quantity="other">Ningún usuario ha respondido.</item>
     </plurals>
+    <string name="kaleyra_show_participants_descr">Mostrar participantes</string>
 </resources>
