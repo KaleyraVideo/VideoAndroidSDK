@@ -4,9 +4,9 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/Bandyer/Android-App-Extensions
+	remote = git@github.com:Bandyer/Android-App-Extensions.git
 	branch = master
-	commit = 27f692107691fac1bb21dc9bcf9b291652742fbe
-	parent = 397ebd2411e74b072f76faf9a574c62eec8b209b
+	commit = f83c2440087f78aef760847cd857142afa87f8e3
+	parent = cd33c9a0f5f63f943709d45be2f06ed4d40cc177
 	method = merge
 	cmdver = 0.4.6

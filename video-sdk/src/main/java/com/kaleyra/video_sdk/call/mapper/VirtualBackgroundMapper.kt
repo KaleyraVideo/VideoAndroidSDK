@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Effect
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -65,7 +65,7 @@ internal object VirtualBackgroundMapper {
             .mapNotNull { it.me }
             .flatMapLatest { it.streams }
             .map { streams ->
-                streams.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }
+                streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
             }
             .filterNotNull()
             .flatMapLatest { it.video }

@@ -25,6 +25,7 @@ import com.kaleyra.video_sdk.common.uistate.UiState
  * @property whiteboardView View? optional whiteboard rendering view
  * @property isLoading Boolean flag indicating if the whiteboard is loading, true if loading, false otherwise
  * @property isOffline Boolean flag indicating if the whiteboard id offline, true if offline, false otherwise
+ * @property isFileSharingSupported Boolean flag indicating if the file sharing is supported
  * @property upload WhiteboardUploadUi? optional whiteboard upload ui
  * @property text String? optional whiteboard text
  * @constructor
@@ -34,6 +35,7 @@ internal data class WhiteboardUiState(
     val whiteboardView: View? = null,
     val isLoading: Boolean = false,
     val isOffline: Boolean = false,
+    val isFileSharingSupported: Boolean = false,
     val upload: WhiteboardUploadUi? = null,
     val text: String? = null
 ) : UiState

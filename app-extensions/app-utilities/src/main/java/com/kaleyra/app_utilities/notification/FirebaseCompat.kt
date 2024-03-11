@@ -22,10 +22,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.google.firebase.crashlytics.CrashlyticsRegistrar
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.provider.FirebaseInitProvider
 import com.kaleyra.app_configuration.model.PushProvider
 import com.kaleyra.app_utilities.MultiDexApplication.Companion.restApi
 import com.kaleyra.app_utilities.networking.ConnectionStatusChangeReceiver.Companion.isConnected
@@ -85,7 +82,7 @@ object FirebaseCompat {
         refreshConfiguration(context, {
             try {
                 FirebaseMessaging.getInstance().token.addOnSuccessListener { devicePushToken: String ->
-                    restApi.registerDeviceForPushNotification(PushProvider.FCM, devicePushToken)
+                    restApi.registerDeviceForPushNotification(context, PushProvider.FCM, devicePushToken)
                 }.addOnFailureListener { error: Exception? -> Toast.makeText(context, "Wrong configuration for FCM.\nYou will not receive any notifications!", Toast.LENGTH_LONG).show() }
             } catch (e: Throwable) {
                 e.printStackTrace()

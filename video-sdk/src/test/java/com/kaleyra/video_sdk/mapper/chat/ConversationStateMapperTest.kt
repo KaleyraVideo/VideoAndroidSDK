@@ -24,6 +24,7 @@ import com.kaleyra.video_sdk.Mocks.conversationState
 import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.mapper.ConversationStateMapper.toConnectionState
 import io.mockk.every
+import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -48,6 +49,7 @@ class ConversationStateMapperTest {
         Mocks.conversationState.value = State.Connected
         Mocks.otherParticipantState.value = ChatParticipant.State.Invited
         Mocks.otherParticipantEvents.value = ChatParticipant.Event.Typing.Idle
+        unmockkAll()
     }
 
     @Test

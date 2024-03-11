@@ -25,21 +25,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
 import com.kaleyra.video_sdk.call.callactions.view.CallActionsContent
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun CallActionsComponent(
     viewModel: CallActionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallActionsViewModel.provideFactory(::requestConfiguration)
+        factory = CallActionsViewModel.provideFactory(::requestConfiguration,)
     ),
     onItemClick: (action: CallAction) -> Unit,
     isDarkTheme: Boolean = false,

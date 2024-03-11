@@ -46,13 +46,13 @@ open class PushyCompat : BroadcastReceiver() {
             Pushy.toggleNotifications(true, context)
             if (Pushy.isRegistered(context)) {
                 val devicePushToken = Pushy.getDeviceCredentials(context).token
-                restApi.registerDeviceForPushNotification(PushProvider.Pushy, devicePushToken)
+                restApi.registerDeviceForPushNotification(context, PushProvider.Pushy, devicePushToken)
                 return
             }
             AsyncTask.execute {
                 try {
                     val devicePushToken = Pushy.register(context)
-                    restApi.registerDeviceForPushNotification(PushProvider.Pushy, devicePushToken)
+                    restApi.registerDeviceForPushNotification(context, PushProvider.Pushy, devicePushToken)
                 } catch (e: Throwable) {
                     e.printStackTrace()
                 }

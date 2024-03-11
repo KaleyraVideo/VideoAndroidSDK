@@ -21,6 +21,7 @@ import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.Conversation
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -125,6 +127,8 @@ class ConversationUI(
                     if (lastMessage == null || lastMessagePerChat[chat.id] == lastMessage.id) return@messagesUI
                     lastMessagePerChat[chat.id] = lastMessage.id
                     it.showUnreadMsgs(chat.id, chatParticipants)
+                }.onCompletion {
+                    chats.forEach { NotificationManager.cancel(it.id.hashCode()) }
                 }.launchIn(msgsScope!!)
             }
         }.launchIn(chatScope)

@@ -18,20 +18,18 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_common_ui.mapper.InputMapper.toAudio
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraStreamAudio
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_common_ui.utils.UsbCameraUtils
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.failedAudioOutputDevice
-import com.kaleyra.video_sdk.call.mapper.StreamMapper.doIHaveStreams
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -40,11 +38,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 internal object InputMapper {
-
-    fun Flow<Call>.isVideoIncoming(): Flow<Boolean> =
-        combine(isAudioVideo(), doIHaveStreams()) { isVideoEnabled, doIHaveStreams ->
-            isVideoEnabled && doIHaveStreams
-        }.distinctUntilChanged()
 
     fun Flow<Call>.toAudioConnectionFailureMessage(): Flow<AudioConnectionFailureMessage> =
         this.flatMapLatest { it.failedAudioOutputDevice }
@@ -83,7 +76,7 @@ internal object InputMapper {
             .distinctUntilChanged()
 
     fun Flow<Call>.isMyMicEnabled(): Flow<Boolean> =
-        this.toAudio()
+        this.toCameraStreamAudio()
             .flatMapLatest { it?.enabled ?: flowOf(false) }
             .distinctUntilChanged()
 

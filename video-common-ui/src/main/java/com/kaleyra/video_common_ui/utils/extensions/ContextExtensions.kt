@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_common_ui.utils.extensions
 
+import android.Manifest
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
@@ -36,13 +37,14 @@ import android.util.Rational
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
-
 
 /**
  * Context extensions
@@ -333,5 +335,30 @@ object ContextExtensions {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasConnectionServicePermissions() = hasCallPhonePermission() && hasManageOwnCallsPermission() && hasReadPhoneNumbersPermission()
+
+    fun Context.hasCallPhonePermission() = hasPermission(Manifest.permission.CALL_PHONE)
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasReadPhoneNumbersPermission() = hasPermission(Manifest.permission.READ_PHONE_NUMBERS)
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Context.hasManageOwnCallsPermission() = hasPermission(Manifest.permission.MANAGE_OWN_CALLS)
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun Context.hasBluetoothPermission() = hasPermission(Manifest.permission.BLUETOOTH_CONNECT)
+
+    fun Context.hasContactsPermissions() = hasPermission(Manifest.permission.READ_CONTACTS) && hasPermission(
+        Manifest.permission.WRITE_CONTACTS)
+
     fun Context.hasCanDrawOverlaysPermission() = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(applicationContext)
+
+    fun Context.hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
+
+    fun Context.getAppName(): CharSequence = applicationInfo.loadLabel(packageManager)
+
+    private fun Context.hasPermission(permission: String): Boolean {
+        return PermissionChecker.checkSelfPermission(applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
+    }
 }

@@ -25,7 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -44,7 +46,16 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
@@ -80,8 +91,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         .hasUsbCamera()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val currentAudioOutput = call
-        .toCurrentAudioDeviceUi()
+    private val currentAudioDevice = call.toCurrentAudioDeviceUi()
         .filterNotNull()
         .debounce(300)
         .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
@@ -108,15 +118,15 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             isMyCameraEnabled,
             isMyMicEnabled,
             isSharingScreen,
-            currentAudioOutput,
+            currentAudioDevice,
             isVirtualBackgroundEnabled,
             hasUsbCamera,
             isMeParticipantsInitialed
-        ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioOutput, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
+        ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioDevice, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
             val actions = callActions
                 .updateActionIfExists(CallAction.Microphone(isToggled = !isMyMicEnabled, isEnabled = isMeParticipantsInitialed))
                 .updateActionIfExists(CallAction.Camera(isToggled = !isMyCameraEnabled, isEnabled = isMeParticipantsInitialed))
-                .updateActionIfExists(CallAction.Audio(device = currentAudioOutput))
+                .updateActionIfExists(CallAction.Audio(device = currentAudioDevice))
                 .updateActionIfExists(CallAction.FileShare(isEnabled = isCallConnected))
                 .updateActionIfExists(CallAction.ScreenShare(isToggled = isSharingScreen, isEnabled = isCallConnected))
                 .updateActionIfExists(CallAction.VirtualBackground(isToggled = isVirtualBackgroundEnabled))
@@ -158,7 +168,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             return
         }
 
-        val video = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID }?.video?.value
+        val video = me.streams.value.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }?.video?.value
         if (video != null && call.inputs.availableInputs.value.contains<Input>(video as Input)) {
             if (video.enabled.value) video.tryDisable() else video.tryEnable()
         } else {
@@ -182,7 +192,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-        call.getValue()?.end()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+        else call.getValue()?.end()
     }
 
     fun showChat(context: Context) {

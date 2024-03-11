@@ -21,8 +21,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.kaleyra.video_common_ui.R
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate.Companion.EXTRA_DOWNLOAD_ID
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
+
+object FileShareNotificationExtra {
+    const val NOTIFICATION_ACTION_EXTRA = "notificationAction"
+}
 
 internal interface FileShareNotificationManager {
 
@@ -85,7 +89,7 @@ internal interface FileShareNotificationManager {
             this.action = Intent.ACTION_MAIN
             this.addCategory(Intent.CATEGORY_LAUNCHER)
             this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.putExtra("notificationAction", FileShareNotificationActionReceiver.ACTION_DOWNLOAD)
+            this.putExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA, FileShareNotificationActionReceiver.ACTION_DOWNLOAD)
             intentExtras?.let { this.putExtras(it) }
         }
         return PendingIntent.getActivity(

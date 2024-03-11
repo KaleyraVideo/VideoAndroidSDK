@@ -29,6 +29,18 @@ apply from: '../sdkAndroid.gradle'
 apply from: '../publish.gradle'
 apply from: '../licenses.gradle'
 
+android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                maxParallelForks = Runtime.runtime.availableProcessors()
+                forkEvery = 100
+            }
+        }
+    }
+}
+
 dependencies {
 
     /** Platform **/
@@ -54,9 +66,10 @@ dependencies {
     /** Testing **/
     testImplementation catalog.junit
     testImplementation catalog.mockkAndroid
-    testImplementation catalog.roboelectric
+    testImplementation catalog.robolectric
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
+    implementation catalog.androidxTestCoreKtx
     testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
 
