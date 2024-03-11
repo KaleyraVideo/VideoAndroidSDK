@@ -35,7 +35,8 @@ internal fun DragLine(
                 onClickLabel = onClickLabel,
                 role = Role.Button,
                 onClick = onClick
-            ),
+            )
+            .testTag(LineTag),
         contentAlignment = Alignment.Center
     ) {
         Spacer(
@@ -45,7 +46,6 @@ internal fun DragLine(
                     color = MaterialTheme.colorScheme.onSurface,
                     shape = CircleShape
                 )
-                .testTag(LineTag)
         )
     }
 }
@@ -65,7 +65,8 @@ internal fun VerticalDragLine(
                 onClickLabel = onClickLabel,
                 role = Role.Button,
                 onClick = onClick
-            ),
+            )
+            .testTag(LineTag),
         contentAlignment = Alignment.Center
     ) {
         Spacer(
@@ -75,7 +76,6 @@ internal fun VerticalDragLine(
                     color = MaterialTheme.colorScheme.onSurface,
                     shape = CircleShape
                 )
-                .testTag(LineTag)
         )
     }
 }
