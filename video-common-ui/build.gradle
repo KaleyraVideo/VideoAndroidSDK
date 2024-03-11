@@ -70,8 +70,7 @@ dependencies {
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
-//    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
-    testImplementation project(':video-extension-audio')
+    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
 
     androidTestImplementation catalog.mockkAndroid
@@ -80,10 +79,8 @@ dependencies {
 
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
-//    compileOnly kaleyraCatalog.kaleyraVideo
-    implementation project(':video')
-//    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
-    implementation project(':video-extension-audio')
+    compileOnly kaleyraCatalog.kaleyraVideo
+    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
 }
 
 licenseReport {
