@@ -30,7 +30,7 @@ class ConnectionServiceUtilsTest {
         mockkObject(ConnectionServiceUtils, ContextRetainer, ContextExtensions, KaleyraVideo, DeviceUtils)
         every { ContextRetainer.context } returns contextMock
         every { contextMock.hasConnectionServicePermissions() } returns true
-        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enforced
     }
 
     @After
@@ -65,16 +65,16 @@ class ConnectionServiceUtilsTest {
     }
 
     @Test
-    fun connectionServiceEnabledOption_isConnectionServiceEnabled_true() {
+    fun connectionServiceEnforcedOption_isConnectionServiceEnabled_true() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enforced
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 
     @Test
-    fun connectionServiceOptionalOption_isConnectionServiceEnabled_true() {
+    fun connectionServiceDefaultOption_isConnectionServiceEnabled_true() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Optional
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Default
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 

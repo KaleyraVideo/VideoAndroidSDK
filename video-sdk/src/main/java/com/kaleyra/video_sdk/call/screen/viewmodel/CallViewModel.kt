@@ -34,7 +34,6 @@ import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
-import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -47,7 +46,6 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.WatermarkMapper.toWatermarkInfo
-import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -329,7 +327,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     fun tryStartCallService() {
         val behaviour = conference.getValue()?.connectionServiceOption
-        if (behaviour == ConnectionServiceOption.Optional) {
+        if (behaviour == ConnectionServiceOption.Default) {
             KaleyraCallService.start()
         } else {
             conference.getValue()?.call?.getValue()?.end()

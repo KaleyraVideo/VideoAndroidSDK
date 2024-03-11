@@ -61,7 +61,7 @@ class ConferenceUI(
     /**
      * The connection service option
      */
-    var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
+    var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Default
 
     init {
         configureCallServiceStart(callActivityClazz, logger, callScope)

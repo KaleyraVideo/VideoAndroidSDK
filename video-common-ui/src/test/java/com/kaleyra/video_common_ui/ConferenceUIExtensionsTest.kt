@@ -34,7 +34,6 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -95,7 +94,7 @@ class ConferenceUIExtensionsTest {
         every { callMock.showOnAppResumed(any()) } returns Unit
         every { callMock.enableCallSounds(any(), any()) } returns Unit
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
         every { contextMock.getSystemService(Context.TELECOM_SERVICE) } returns telecomManagerMock
         every { telecomManagerMock.addCall(call = any(), any()) } returns Unit
         every { callMock.participants } returns MutableStateFlow(participantsMock)

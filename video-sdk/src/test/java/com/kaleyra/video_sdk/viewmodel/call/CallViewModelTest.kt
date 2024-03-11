@@ -49,7 +49,6 @@ import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
-import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
@@ -225,15 +224,15 @@ class CallViewModelTest {
         mockkObject(ConnectionServiceUtils) {
             advanceUntilIdle()
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns false
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Optional
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Default
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
@@ -277,8 +276,8 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithConnectionServiceEnabled() = runTest {
-        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+    fun testTryStartCallServiceWithConnectionServiceEnforced() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
 
         advanceUntilIdle()
         viewModel.tryStartCallService()
@@ -295,10 +294,10 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithConnectionServiceOptional() = runTest {
+    fun testTryStartCallServiceWithConnectionServiceDefault() = runTest {
         mockkObject(KaleyraCallService) {
             every { KaleyraCallService.start() } returns Unit
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Optional
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Default
 
             advanceUntilIdle()
             viewModel.tryStartCallService()
