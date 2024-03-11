@@ -34,7 +34,6 @@ dependencies {
     /*** Notification ***/
     implementation sampleAppCatalog.firebaseMessaging
     implementation sampleAppCatalog.firebaseIid
-    implementation sampleAppCatalog.firebaseCrashlyticsNdk
     implementation sampleAppCatalog.androidxWorkRuntime
     implementation sampleAppCatalog.androidxWorkRuntimeKtx
 

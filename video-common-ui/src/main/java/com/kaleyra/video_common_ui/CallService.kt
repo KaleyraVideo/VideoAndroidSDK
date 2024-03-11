@@ -92,7 +92,7 @@ internal class CallService : LifecycleService(), CameraStreamPublisher, CameraSt
 
     private var call: CallUI? = null
 
-    private var onCallNewActivity: ((Context) -> Unit)? = null
+    private var onCallNewActivity: ((Activity) -> Unit)? = null
 
     private var recordingTextToSpeechNotifier: TextToSpeechNotifier? = null
 

@@ -332,4 +332,6 @@ object ContextExtensions {
             manager.getRunningTasks(Int.MAX_VALUE).any { it.topActivity?.className == activityClazz.name }
         }
     }
+
+    fun Context.hasCanDrawOverlaysPermission() = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(applicationContext)
 }

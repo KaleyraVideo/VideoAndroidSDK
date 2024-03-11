@@ -1,8 +1,11 @@
 ext.moduleGroupId = "com.kaleyra"
-ext.moduleVersion = "4.0.0-rc02"
+ext.moduleVersion = "4.0.0-rc06"
 
-def dryRun = true
-def moduleObsfuscated = false
+if (project.hasProperty("dryRun")) {
+    project.ext.setProperty("isPublishing", true)
+}
+def dryRun = project.hasProperty("dryRun") ? project.getProperty("dryRun").toBoolean() : true
+def moduleObsfuscated = project.hasProperty("moduleObsfuscated") ? project.getProperty("moduleObsfuscated").toBoolean() : false
 
 Properties properties = new Properties()
 if (project.rootProject.file("local.properties").exists()) {
@@ -35,7 +38,7 @@ afterEvaluate {
                 groupId = moduleGroupId
                 artifactId = project.getName()
                 version = moduleVersion
-                artifact kdocJar
+                artifact dokkaHtmlJar
                 if (!moduleObsfuscated) artifact sourcesJar
                 pom {
                     url.set("https://www.kaleyra.com/video/")
@@ -67,43 +70,39 @@ task invalidateCache(type: Exec) {
 task publishUpload {
     def publishTask = 'publishToMavenLocal'
     if (!dryRun) publishTask = 'publish'
-    dependsOn 'updateSdkVersion'
     dependsOn publishTask
     dependsOn 'invalidateCache'
     tasks.findByName('invalidateCache').mustRunAfter publishTask
 }
 
-dokkaHtml {
-    outputDirectory = new File("$buildDir/kDoc")
-    dokkaSourceSets {
-        configureEach {
-            moduleName.set(project.name)
-            reportUndocumented.set(true)
-            jdkVersion.set(8)
-            includeNonPublic.set(false)
-            skipEmptyPackages.set(true)
+tasks.forEach {
+    def parts = it.class.name.split("\\.")
+    def lastName = parts[(parts.length - 1)]
+    if (lastName.startsWith("DokkaTaskPartial")) {
+        it.configure {
+            dokkaSourceSets {
+                configureEach {
+                    moduleName.set(project.name)
+                    reportUndocumented.set(true)
+                    jdkVersion.set(8)
+                    includeNonPublic.set(false)
+                    skipEmptyPackages.set(true)
+                }
+            }
         }
     }
 }
 
 task updateSdkVersion(type: Exec) {
+    def nextVersion = project.hasProperty("newVersion") ? project.getProperty("newVersion") : moduleVersion
     workingDir '../scripts'
-    println("Updating sdk version into assets/kaleyra_video_wrapper_into.txt for module ${project.name} with version $moduleVersion")
-    commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion"
+    commandLine 'python3', './update_sdk_version.py', "${project.name}", "$moduleVersion", "$nextVersion"
 }
 
-task publishDocs(type: Exec) {
-    workingDir '../scripts'
-    commandLine 'python3', './publish_doc.py', "$moduleGroupId", "${project.name}", "$moduleVersion"
-}
-
-task dokkaDoc() {
-    dependsOn dokkaHtml
-}
-
-task kdocJar(type: Jar, dependsOn: dokkaHtml) {
-    from "$buildDir/kDoc"
-    archiveClassifier.set("kdocJar")
+tasks.register('dokkaHtmlJar', Jar.class) {
+    dependsOn(dokkaHtml)
+    from(dokkaHtml)
+    archiveClassifier.set("html-docs")
 }
 
 task sourcesJar(type: Jar) {
@@ -112,6 +111,6 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives kdocJar
+    archives dokkaHtmlJar
     if (!moduleObsfuscated) archives sourcesJar
 }

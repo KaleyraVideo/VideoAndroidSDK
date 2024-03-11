@@ -75,28 +75,6 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
     }
 
     @Test
-    fun testPreCallUiState_answeredUpdated() = runTest {
-        with(callMock) {
-            every { state } returns MutableStateFlow(Call.State.Connecting)
-            every { participants } returns MutableStateFlow(callParticipantsMock)
-        }
-        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
-        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
-        every { myStreamMock.state } returns MutableStateFlow(Stream.State.Live)
-        every { streamMock1.id } returns "streamId"
-        with(callParticipantsMock) {
-            every { me } returns participantMeMock
-            every { others } returns listOf(participantMock1)
-            every { creator() } returns mockk()
-        }
-        val current = viewModel.uiState.first().answered
-        assertEquals(false, current)
-        advanceUntilIdle()
-        val new = viewModel.uiState.first().answered
-        assertEquals(true, new)
-    }
-
-    @Test
     fun testPreCallUiState_amIWaitingForOthersUpdated() = runTest {
         with(callMock) {
             every { state } returns MutableStateFlow(Call.State.Connected)
@@ -151,15 +129,21 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
 
     @Test
     fun testCallAnswer() = runTest {
+        every { callParticipantsMock.others } returns listOf()
         advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().isConnecting)
         viewModel.accept()
         verify(exactly = 1) { callMock.connect() }
+        assertEquals(true, viewModel.uiState.first().isConnecting)
     }
 
     @Test
     fun testCallDecline() = runTest {
+        every { callParticipantsMock.others } returns listOf()
         advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().isConnecting)
         viewModel.decline()
         verify(exactly = 1) { callMock.end() }
+        assertEquals(true, viewModel.uiState.first().isConnecting)
     }
 }

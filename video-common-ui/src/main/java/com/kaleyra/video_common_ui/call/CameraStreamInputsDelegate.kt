@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
@@ -52,7 +53,8 @@ internal interface CameraStreamInputsDelegate {
             val hasVideo = preferredType.hasVideo()
             if (!hasVideo) return@combine
             val stream = me.streams.value.firstOrNull { it.id == CameraStreamPublisher.CAMERA_STREAM_ID } ?: return@combine
-            video.setQuality(Input.Video.Quality.Definition.HD)
+            val quality = if (DeviceUtils.isSmartGlass) Input.Video.Quality.Definition.HD else Input.Video.Quality.Definition.SD
+            video.setQuality(quality)
             if (video is Input.Video.Camera.Usb) video.awaitPermission()
             stream.video.value = video
         }.launchIn(coroutineScope)
