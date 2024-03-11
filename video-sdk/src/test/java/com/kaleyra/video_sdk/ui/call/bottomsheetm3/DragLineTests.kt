@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetm3
+package com.kaleyra.video_sdk.ui.call.bottomsheetm3
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,8 +12,9 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class DragLineTests {
 
     @get:Rule
