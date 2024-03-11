@@ -70,27 +70,30 @@ internal fun EllipsizeText(
     text: String,
     color: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
     fontWeight: FontWeight = FontWeight.Normal,
-    fontFamily: FontFamily = LocalTextStyle.current.fontFamily!!,
+    fontFamily: FontFamily? = LocalTextStyle.current.fontFamily,
     fontSize: TextUnit = 16.sp,
     ellipsize: Ellipsize,
     shadow: Shadow? = null,
     modifier: Modifier = Modifier
 ) {
+
     AndroidView(
         factory = { context -> TextView(context) },
-        update = {
-            val tf = createFontFamilyResolver(it.context).resolve(
-                fontFamily = fontFamily,
-                fontWeight = fontWeight
-            ).value as Typeface
+        update = { textView ->
+            val tf = fontFamily?.let {
+                createFontFamilyResolver(textView.context).resolve(
+                    fontFamily = fontFamily,
+                    fontWeight = fontWeight
+                ).value as Typeface
+            }
 
-            with(it) {
+            with(textView) {
                 this.text = text
 
                 maxLines = 1
                 textSize = fontSize.value
                 setTextColor(color.toArgb())
-                typeface = tf
+                tf.let { typeface = it }
                 this.ellipsize = ellipsize.value
 
                 if (ellipsize == Ellipsize.Marquee) {
