@@ -130,12 +130,12 @@ internal fun CallUiPhonePortraitSecondaryActions(
             ) {
                 Table(
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    columnCount = itemsPerRow,
+                    columnCount = 5,
                     data = callActionsUiState.secondaryActionList.value,
-                    cellContent = { index, action, itemsPerRow ->
+                    cellContent = { index, action, currentRowItemsCount ->
                         val availableWidth = this.maxWidth - 16.dp
                         val itemWidth = portraitActionWidth(maxWidth = availableWidth, itemsPerRow = itemsPerRow, index = index)
-                        val containerWidth = portraitActionContainerWidth(index = index, maxWidth = availableWidth, itemsCount = itemsPerRow)
+                        val containerWidth = portraitActionContainerWidth(index = index, maxWidth = availableWidth, itemsPerRow = itemsPerRow)
 
                         Box(modifier = Modifier, contentAlignment = Alignment.Center) {
                             Column {
@@ -154,7 +154,6 @@ internal fun CallUiPhonePortraitSecondaryActions(
 
                                                 }
                                             }),
-                                            badgeCount = 0,
                                             displayLabel = true,
                                             isDarkTheme = isSystemInDarkTheme
                                         )
@@ -175,7 +174,6 @@ internal fun CallUiPhonePortraitSecondaryActions(
 
                                                 }
                                             }),
-                                            badgeCount = 0,
                                             displayLabel = true,
                                             isDarkTheme = isSystemInDarkTheme
                                         )

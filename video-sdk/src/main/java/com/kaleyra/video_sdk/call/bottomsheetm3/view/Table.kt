@@ -15,28 +15,30 @@ fun <T> Table(
     modifier: Modifier = Modifier,
     columnCount: Int,
     data: List<T>,
-    cellContent: @Composable (index: Int, item: T, itemsPerRow: Int) -> Unit,
+    cellContent: @Composable (index: Int, item: T, currentRowItemsCount: Int) -> Unit,
 ) {
     Box(
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface).then(modifier)
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surface)
+            .then(modifier)
     ) {
         val rows = rowsCount(data.size, columnCount)
-        val lastRowElementsCount = lastRowItemsCount(data.size, columnCount)
+        val lastRowItemsCount = lastRowItemsCount(data.size, columnCount)
         LazyColumn {
-            items((1 .. rows).toList()) { row ->
+            items((1..rows).toList()) { row ->
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    if (lastRowElementsCount != 0 && row == rows) {
-                        items((1 .. lastRowElementsCount).toList()) { column ->
-                            val index = row * column
-                            cellContent(row * column, data[index - 1], lastRowElementsCount)
-                        }
-                    } else {
-                        items((1 .. columnCount).toList()) { column ->
-                            val index = row * column
-                            cellContent(row * column, data[index - 1], columnCount)
-                        }
+                    val rowIndex = row - 1
+                    val isLastRow = row == rows
+                    val rowStartIndex = columnCount * rowIndex
+                    if (isLastRow) items((0..<lastRowItemsCount).toList()) { column ->
+                        val index = rowStartIndex + column
+                        cellContent(index, data[index], lastRowItemsCount)
+                    }
+                    else items((0..<columnCount).toList()) { column ->
+                        val index = rowStartIndex + column
+                        cellContent(index, data[index], columnCount)
                     }
                 }
             }
@@ -45,4 +47,4 @@ fun <T> Table(
 }
 
 internal fun rowsCount(dataSize: Int, columnCount: Int): Int = (dataSize / columnCount).plus(if (dataSize % columnCount != 0) 1 else 0)
-internal fun lastRowItemsCount(dataSize: Int, columnCount: Int): Int = dataSize % columnCount
+internal fun lastRowItemsCount(dataSize: Int, columnCount: Int): Int = if (dataSize == columnCount) dataSize else dataSize % columnCount

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -37,7 +38,8 @@ class OrientationAwareComponentTest {
             OrientationAwareComponent(
                 portraitContent = {
                     CallActionM3(
-                        modifier = Modifier,
+                        buttonWidth = 48.dp,
+                        containerWidth = 96.dp,
                         configuration = CallActionM3Configuration.Clickable(action, {}),
                         isDarkTheme = isSystemInDarkTheme(),
                         displayLabel = false
@@ -45,7 +47,8 @@ class OrientationAwareComponentTest {
                 },
                 landscapeContent = {
                     CallActionLabelM3(
-                        modifier = Modifier,
+                        buttonWidth = 250.dp,
+                        containerWidth = 350.dp,
                         action = CallAction.Answer(),
                         onClick = {},
                         isDarkTheme = isSystemInDarkTheme()

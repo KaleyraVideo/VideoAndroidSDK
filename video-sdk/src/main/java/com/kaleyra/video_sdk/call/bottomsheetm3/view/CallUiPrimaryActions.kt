@@ -59,7 +59,7 @@ internal fun CallUiPrimaryActions(
 @Composable
 private fun CallUiPhonePortraitPrimaryActions(
     callActionsUiState: CallActionsM3UiState,
-    itemsPerRow: Int = kotlin.math.min(callActionsUiState.primaryActionList.value.count(), 5),
+    itemsPerRow: Int = 5,
     isDarkTheme: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -76,9 +76,9 @@ private fun CallUiPhonePortraitPrimaryActions(
             Table(
                 columnCount = itemsPerRow,
                 data = callActionsUiState.primaryActionList.value,
-                cellContent = { index, action, itemsPerRow ->
-                    val itemWidth = portraitActionWidth(maxWidth = maxWidth, maxItemsPerRow = 5, itemsPerRow = itemsPerRow, index = index)
-                    val containerWidth = portraitActionContainerWidth(index = index, itemsCount = itemsPerRow, maxWidth = maxWidth)
+                cellContent = { index, action, currentRowItemsCount ->
+                    val itemWidth = portraitActionWidth(index = index, itemsPerRow = currentRowItemsCount, maxWidth = maxWidth)
+                    val containerWidth = portraitActionContainerWidth(index = index, itemsPerRow = currentRowItemsCount, maxWidth = maxWidth)
 
                     Box(modifier = Modifier, contentAlignment = Alignment.Center) {
                         Column {
@@ -97,7 +97,6 @@ private fun CallUiPhonePortraitPrimaryActions(
 
                                             }
                                         }),
-                                        badgeCount = 0,
                                         displayLabel = itemWidth > CallActionM3Defaults.Size,
                                         isDarkTheme = isDarkTheme
                                     )
@@ -118,7 +117,6 @@ private fun CallUiPhonePortraitPrimaryActions(
 
                                             }
                                         }),
-                                        badgeCount = 0,
                                         displayLabel = itemWidth > CallActionM3Defaults.Size,
                                         isDarkTheme = isDarkTheme
                                     )
@@ -170,7 +168,6 @@ private fun CallUiPhoneLandscapePrimaryActions(
 
                                             }
                                         }),
-                                        badgeCount = 0,
                                         displayLabel = false,
                                         isDarkTheme = isDarkTheme
                                     )
@@ -191,7 +188,6 @@ private fun CallUiPhoneLandscapePrimaryActions(
 
                                             }
                                         }),
-                                        badgeCount = 0,
                                         displayLabel = false,
                                         isDarkTheme = isDarkTheme
                                     )
@@ -210,21 +206,21 @@ private fun CallUiPhoneLandscapePrimaryActions(
     }
 }
 
-internal fun portraitActionContainerWidth(index: Int, itemsCount: Int, maxWidth: Dp) = when {
-    itemsCount == 1 -> maxWidth
-    itemsCount == 2 -> maxWidth / 2
-    itemsCount == 3 && index == itemsCount -> (maxWidth / 5) * 3
-    itemsCount == 4 && index == itemsCount -> (maxWidth / 5) * 2
+internal fun portraitActionContainerWidth(index: Int, itemsPerRow: Int, maxWidth: Dp) = when {
+    itemsPerRow == 1 -> maxWidth
+    itemsPerRow == 2 -> maxWidth / 2
+    itemsPerRow == 3 && index + 1 == itemsPerRow -> (maxWidth / 5) * 3
+    itemsPerRow == 4 && index + 1 == itemsPerRow -> (maxWidth / 5) * 2
     else -> maxWidth / 5
 }
 
-internal fun portraitActionWidth(maxWidth: Dp, itemsPerRow: Int, maxItemsPerRow: Int = 5, index: Int): Dp {
+internal fun portraitActionWidth(index: Int, itemsPerRow: Int, maxItemsPerRow: Int = 5, maxWidth: Dp): Dp {
     val spacerWidth = (maxWidth - (maxItemsPerRow * 48).dp) / 4
     return when (itemsPerRow) {
         1 -> maxWidth
         2 -> (maxWidth - spacerWidth) / 2
-        3 -> if (index < 3) 48.dp else 144.dp + spacerWidth * 2
-        4 -> if (index < 4) 48.dp else 96.dp + spacerWidth
+        3 -> if (index + 1 < 3) 48.dp else 144.dp + spacerWidth * 2
+        4 -> if (index + 1 < 4) 48.dp else 96.dp + spacerWidth
         else -> 48.dp
     }
 }

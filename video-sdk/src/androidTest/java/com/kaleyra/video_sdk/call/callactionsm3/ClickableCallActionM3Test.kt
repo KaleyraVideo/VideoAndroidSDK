@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import com.kaleyra.video_sdk.R
@@ -56,7 +57,10 @@ class ClickableCallActionM3Test {
     fun setUp() {
         composeTestRule.setContent {
             Column {
-                CallActionM3(configuration = CallActionM3Configuration.Clickable(action = action, onClick = { hasClicked = true }))
+                CallActionM3(
+                    buttonWidth = 48.dp,
+                    containerWidth = 96.dp,
+                    configuration = CallActionM3Configuration.Clickable(action = action, onClick = { hasClicked = true }))
             }
         }
     }

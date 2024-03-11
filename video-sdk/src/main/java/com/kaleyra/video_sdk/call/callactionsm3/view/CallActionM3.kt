@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
@@ -89,7 +91,7 @@ sealed class CallActionM3Configuration {
 internal fun CallActionM3(
     buttonWidth: Dp,
     containerWidth: Dp,
-    badgeCount: Int = 0,
+    badgeDisplayText: String? = null,
     configuration: CallActionM3Configuration,
     isDarkTheme: Boolean = false,
     displayLabel: Boolean = false
@@ -113,8 +115,8 @@ internal fun CallActionM3(
         }
     }
     val badgedContent = @Composable {
-        if (badgeCount == 0) content()
-        else Badge(count = badgeCount, content = content)
+        if (badgeDisplayText == null) content()
+        else Badge(displayText = badgeDisplayText, content = content)
     }
 
     if (displayLabel && buttonWidth <= CallActionM3Defaults.Size) {
@@ -258,7 +260,7 @@ internal fun ToggleableCallActionM3(
 internal fun CallActionLabelM3(
     buttonWidth: Dp,
     containerWidth: Dp,
-    badgeCount: Int,
+    badgeDisplayText: String? = null,
     action: CallAction,
     onClick: () -> Unit,
     isDarkTheme: Boolean = false
@@ -310,7 +312,7 @@ internal fun CallActionLabelM3(
                 )
             )
         }
-        if (badgeCount > 0) Badge(count = badgeCount, content = button)
+        if (badgeDisplayText != null) Badge(displayText = badgeDisplayText, content = button)
         else button()
     }
 }
@@ -337,10 +339,10 @@ fun OrientationAwareComponent(
 
 @Composable
 fun Badge(
-    count: Int,
+    displayText: String,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
     content: @Composable () -> Unit
 ) {
-    val normalizedCountString = "${count.takeIf { it <= 99 } ?: "99+"}"
     Box(modifier = Modifier
         .wrapContentSize()) {
         Box {
@@ -351,7 +353,7 @@ fun Badge(
                 .defaultMinSize(12.dp, 12.dp)
                 .align(Alignment.TopEnd),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = backgroundColor
             ),
             shape = CircleShape,
         ) {
@@ -359,7 +361,7 @@ fun Badge(
                 modifier = Modifier
                     .padding(2.dp)
                     .defaultMinSize(14.dp, 14.dp),
-                text = normalizedCountString,
+                text = displayText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelSmall)
         }
@@ -371,7 +373,7 @@ fun CallActionFor(
     buttonWidth: Dp,
     containerWidth: Dp,
     actionConfiguration: CallActionM3Configuration,
-    badgeCount: Int = 0,
+    badgeDisplayText: String? = null,
     displayLabel: Boolean = false,
     isDarkTheme: Boolean) {
     val callAction = @Composable {
@@ -386,7 +388,7 @@ fun CallActionFor(
                     containerWidth = containerWidth,
                     configuration = actionConfiguration,
                     displayLabel = displayLabel,
-                    badgeCount = badgeCount,
+                    badgeDisplayText = badgeDisplayText,
                     isDarkTheme = isDarkTheme)
             }
             is CallAction.Answer -> {
@@ -398,7 +400,7 @@ fun CallActionFor(
                             containerWidth = containerWidth,
                             action = actionConfiguration.action,
                             onClick = actionConfiguration.onClick,
-                            badgeCount = badgeCount,
+                            badgeDisplayText = badgeDisplayText,
                             isDarkTheme = isDarkTheme,
                         )
                     },
@@ -408,7 +410,7 @@ fun CallActionFor(
                             containerWidth = containerWidth,
                             configuration = actionConfiguration,
                             isDarkTheme = isDarkTheme,
-                            badgeCount = badgeCount,
+                            badgeDisplayText = badgeDisplayText,
                             displayLabel = displayLabel
                         )
                     }
@@ -446,7 +448,7 @@ internal fun CallActionPreviewDark() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Composable
 internal fun CallActionDisabledPreview() {
-    CallActionToggleablePreview(CallAction.Microphone(isToggled = false, isEnabled = false), false)
+    CallActionToggleablePreview(CallAction.Microphone(isToggled = false, isEnabled = false),false)
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
@@ -512,7 +514,7 @@ private fun OrientationAwareCallActionPreview(action: CallAction, isDarkTheme: B
                     CallActionM3(
                         buttonWidth = 48.dp,
                         containerWidth = 96.dp,
-                        badgeCount = 2,
+                        badgeDisplayText = "2",
                         configuration = CallActionM3Configuration.Clickable(CallAction.Answer(), {}),
                         isDarkTheme = isDarkTheme,
                         displayLabel = false
@@ -524,7 +526,7 @@ private fun OrientationAwareCallActionPreview(action: CallAction, isDarkTheme: B
                         containerWidth = 400.dp,
                         action = action,
                         onClick = {},
-                        badgeCount = 3,
+                        badgeDisplayText = "3",
                         isDarkTheme = isDarkTheme
                     )
                 }
@@ -540,7 +542,7 @@ private fun CallActionPreview(action: CallAction, isDarkTheme: Boolean) {
             CallActionM3(
                 buttonWidth = 48.dp,
                 containerWidth = 96.dp,
-                badgeCount = 7,
+                badgeDisplayText = "7",
                 configuration = CallActionM3Configuration.Clickable(action, {}),
                 isDarkTheme = isDarkTheme
             )
@@ -557,6 +559,7 @@ private fun CallActionToggleablePreview(action: CallAction.Toggleable, isDarkThe
             CallActionM3(
                 buttonWidth = 48.dp,
                 containerWidth = 96.dp,
+                badgeDisplayText = if (action is CallAction.Microphone) "!" else null,
                 configuration = CallActionM3Configuration.Toggleable(mutableAction.value) {
                     mutableAction.value = mutableAction.value.copy(it)
                 },
