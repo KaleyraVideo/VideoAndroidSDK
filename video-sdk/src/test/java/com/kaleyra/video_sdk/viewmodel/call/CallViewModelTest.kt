@@ -232,7 +232,7 @@ class CallViewModelTest {
             assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Default
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
             assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
 
             every { isConnectionServiceSupported } returns true
@@ -294,10 +294,10 @@ class CallViewModelTest {
     }
 
     @Test
-    fun testTryStartCallServiceWithConnectionServiceDefault() = runTest {
+    fun testTryStartCallServiceWithConnectionServiceEnabled() = runTest {
         mockkObject(KaleyraCallService) {
             every { KaleyraCallService.start() } returns Unit
-            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Default
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
 
             advanceUntilIdle()
             viewModel.tryStartCallService()

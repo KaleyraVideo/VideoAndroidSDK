@@ -8,7 +8,7 @@ enum class ConnectionServiceOption {
      * The android connection service will be used when targeting at least api 28 and the logged user accepts the "android.permission.CALL_PHONE" permission when placing or receiving a call.
      * When the logged user denies the android.permission.CALL_PHONE" permission all the calls will be connected anyway but no one will not be promoted as a system call.
      **/
-    Default,
+    Enabled,
 
     /**
      * The android connection service will be enabled and enforced when targeting at least api 28.

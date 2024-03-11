@@ -74,7 +74,7 @@ class ConnectionServiceUtilsTest {
     @Test
     fun connectionServiceDefaultOption_isConnectionServiceEnabled_true() {
         every { ConnectionServiceUtils.isConnectionServiceSupported } returns true
-        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Default
+        every { KaleyraVideo.conference.connectionServiceOption } returns ConnectionServiceOption.Enabled
         assertEquals(true, ConnectionServiceUtils.isConnectionServiceEnabled)
     }
 

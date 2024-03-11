@@ -327,7 +327,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     fun tryStartCallService() {
         val behaviour = conference.getValue()?.connectionServiceOption
-        if (behaviour == ConnectionServiceOption.Default) {
+        if (behaviour == ConnectionServiceOption.Enabled) {
             KaleyraCallService.start()
         } else {
             conference.getValue()?.call?.getValue()?.end()
