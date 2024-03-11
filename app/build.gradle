@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId "com.kaleyra.demo_video_sdk"
         minSdkVersion sampleAppCatalog.versions.sampleAppMinSdkVersion.get().toInteger()
-        targetSdkVersion sampleAppCatalog.versions.sampleAppSdkVersion.get().toInteger()
+        targetSdkVersion 34//sampleAppCatalog.versions.sampleAppSdkVersion.get().toInteger()
         versionCode VERSION_CODE.toInteger()
         versionName kaleyraVideoSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
