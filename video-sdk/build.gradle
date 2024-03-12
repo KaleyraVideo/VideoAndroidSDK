@@ -75,7 +75,6 @@ dependencies {
     implementation catalog.coilCompose
 
     /** Kaleyra **/
-    api project(':video-common-ui')
     api kaleyraCatalog.kaleyraVideo
     implementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
