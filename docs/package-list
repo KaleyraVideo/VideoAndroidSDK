@@ -5,7 +5,9 @@ module:video-common-ui
 com.kaleyra.video_common_ui
 com.kaleyra.video_common_ui.call
 com.kaleyra.video_common_ui.call.widget
+com.kaleyra.video_common_ui.callservice
 com.kaleyra.video_common_ui.common
+com.kaleyra.video_common_ui.connectionservice
 com.kaleyra.video_common_ui.contactdetails
 com.kaleyra.video_common_ui.layout
 com.kaleyra.video_common_ui.mapper
