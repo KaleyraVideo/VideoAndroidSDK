@@ -22,14 +22,13 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.utils.UsbCameraUtils
 import com.kaleyra.video_extension_audio.extensions.AudioOutputConnectionError
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
@@ -38,12 +37,9 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermission
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isVideoIncoming
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toAudioConnectionFailureMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toUsbCameraMessage
-import com.kaleyra.video_sdk.call.mapper.StreamMapper
-import com.kaleyra.video_sdk.call.mapper.StreamMapper.doIHaveStreams
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
@@ -95,7 +91,7 @@ class InputMapperTest {
 
     @Test
     fun cameraStreamVideoEnabled_isMyCameraEnabled_true() = runTest {
-        every { streamMock.id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+        every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { videoMock.enabled } returns MutableStateFlow(true)
         val call = MutableStateFlow(callMock)
         val result = call.isMyCameraEnabled()
@@ -105,7 +101,7 @@ class InputMapperTest {
 
     @Test
     fun cameraStreamVideoDisabled_isMyCameraEnabled_false() = runTest {
-        every { streamMock.id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+        every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { videoMock.enabled } returns MutableStateFlow(false)
         val call = MutableStateFlow(callMock)
         val result = call.isMyCameraEnabled()
@@ -116,7 +112,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamVideoNull_isMyCameraEnabled_false() = runTest {
         with(streamMock) {
-            every { id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+            every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(null)
         }
         val call = MutableStateFlow(callMock)
@@ -137,7 +133,7 @@ class InputMapperTest {
 
     @Test
     fun cameraStreamAudioEnabled_isMyMicEnabled_true() = runTest {
-        every { streamMock.id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+        every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.enabled } returns MutableStateFlow(true)
         val call = MutableStateFlow(callMock)
         val result = call.isMyMicEnabled()
@@ -157,7 +153,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamAudioNull_isMyMicEnabled_false() = runTest {
         with(streamMock) {
-            every { id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+            every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
         val call = MutableStateFlow(callMock)
@@ -168,7 +164,7 @@ class InputMapperTest {
     
     @Test
     fun cameraStreamAudioDisable_isMyMicEnabled_false() = runTest {
-        every { streamMock.id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+        every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.enabled } returns MutableStateFlow(false)
         val call = MutableStateFlow(callMock)
         val result = call.isMyMicEnabled()
@@ -274,7 +270,7 @@ class InputMapperTest {
         val producer = mockk<CallParticipant>()
         every { producer.combinedDisplayName } returns MutableStateFlow("username")
         every { event.producer } returns producer
-        every { streamMock.id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+        every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.events } returns MutableStateFlow(event)
         val call = MutableStateFlow(callMock)
         val result = call.toMutedMessage()
@@ -346,39 +342,6 @@ class InputMapperTest {
         val call = MutableStateFlow(callMock)
         val actual = call.toAudioConnectionFailureMessage().first()
         assert(actual is AudioConnectionFailureMessage.InSystemCall)
-    }
-
-    @Test
-    fun audioVideoCallAndIHaveStreams_isVideoIncoming_true() = runTest {
-        mockkObject(InputMapper)
-        mockkObject(StreamMapper)
-        val flow = flowOf(callMock)
-        every { flow.isAudioVideo() } returns flowOf(true)
-        every { flow.doIHaveStreams() } returns flowOf(true)
-        val actual = flow.isVideoIncoming().first()
-        assertEquals(true, actual)
-    }
-
-    @Test
-    fun notAudioVideoCallAndIHaveStreams_isVideoIncoming_false() = runTest {
-        mockkObject(InputMapper)
-        mockkObject(StreamMapper)
-        val flow = flowOf(callMock)
-        every { flow.isAudioVideo() } returns flowOf(false)
-        every { flow.doIHaveStreams() } returns flowOf(true)
-        val actual = flow.isVideoIncoming().first()
-        assertEquals(false, actual)
-    }
-
-    @Test
-    fun audioVideoCallAndIHaveNoStreams_isVideoIncoming_false() = runTest {
-        mockkObject(InputMapper)
-        mockkObject(StreamMapper)
-        val flow = flowOf(callMock)
-        every { flow.isAudioVideo() } returns flowOf(true)
-        every { flow.doIHaveStreams() } returns flowOf(false)
-        val actual = flow.isVideoIncoming().first()
-        assertEquals(false, actual)
     }
 
     @Test

@@ -21,7 +21,7 @@ import android.content.Intent
 import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.notification.NotificationManager
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationDelegate.Companion.EXTRA_DOWNLOAD_ID
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import kotlinx.coroutines.CoroutineDispatcher
@@ -55,7 +55,7 @@ class FileShareNotificationActionReceiver internal constructor(val dispatcher: C
             requestConfigure().let {
                 if (!it) return@let context.goToLaunchingActivity()
                 KaleyraVideo.onCallReady(this) { call ->
-                    when (intent.extras?.getString("notificationAction")) {
+                    when (intent.extras?.getString(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA)) {
                         ACTION_DOWNLOAD -> {
                             val downloadId = intent.getStringExtra(EXTRA_DOWNLOAD_ID) ?: return@onCallReady
                             call.sharedFolder.download(downloadId)

@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.bandyer.android_audiosession.model.AudioOutputDevice
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.audioOutputDevicesList
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
@@ -28,12 +29,27 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 internal object AudioOutputMapper {
-    fun Flow<CallUI>.toCurrentAudioDeviceUi(): Flow<AudioDeviceUi?> =
-        this.flatMapLatest { it.currentAudioOutputDevice }
-            .map { it?.mapToAudioDeviceUi() }
-            .distinctUntilChanged()
 
-    fun Flow<CallUI>.toAudioDevicesUi(): Flow<List<AudioDeviceUi>> =
+    fun AudioDeviceUi.mapToAudioOutputDevice(call: Call): AudioOutputDevice? {
+        return when (this) {
+            is AudioDeviceUi.Bluetooth -> {
+                val devices = call.audioOutputDevicesList.replayCache.firstOrNull() ?: return null
+                devices.firstOrNull { it is AudioOutputDevice.Bluetooth && it.identifier == this.id }
+            }
+            AudioDeviceUi.EarPiece -> AudioOutputDevice.Earpiece()
+            AudioDeviceUi.LoudSpeaker -> AudioOutputDevice.Loudspeaker()
+            AudioDeviceUi.Muted -> AudioOutputDevice.None()
+            AudioDeviceUi.WiredHeadset -> AudioOutputDevice.WiredHeadset()
+        }
+    }
+
+    fun Flow<CallUI>.toCurrentAudioDeviceUi(): Flow<AudioDeviceUi?> {
+        return this.flatMapLatest { it.currentAudioOutputDevice }
+                .map { it?.mapToAudioDeviceUi() }
+                .distinctUntilChanged()
+    }
+
+    fun Flow<CallUI>.toAvailableAudioDevicesUi(): Flow<List<AudioDeviceUi>> =
         this.flatMapLatest { it.audioOutputDevicesList }
             .map { list -> list.map { it.mapToAudioDeviceUi() } }
             .distinctUntilChanged()
@@ -47,7 +63,7 @@ internal object AudioOutputMapper {
             is AudioOutputDevice.Bluetooth -> AudioDeviceUi.Bluetooth(
                 id = identifier,
                 name = name,
-                connectionState = bluetoothConnectionStatus.mapToBluetoothDeviceState(),
+                connectionState = bluetoothConnectionStatus?.mapToBluetoothDeviceState(),
                 batteryLevel = batteryLevel
             )
         }

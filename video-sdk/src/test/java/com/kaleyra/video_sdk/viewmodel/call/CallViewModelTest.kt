@@ -16,7 +16,9 @@
 
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.content.Context
 import android.net.Uri
+import android.telecom.TelecomManager
 import android.util.Rational
 import android.util.Size
 import androidx.fragment.app.FragmentActivity
@@ -28,7 +30,13 @@ import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.ConnectionServiceOption
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.callservice.KaleyraCallService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
@@ -41,7 +49,6 @@ import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
-import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
@@ -210,6 +217,92 @@ class CallViewModelTest {
     @After
     fun teardown() {
         unmockkAll()
+    }
+
+    @Test
+    fun testShouldAskConnectionServicePermissionsFlag() = runTest {
+        mockkObject(ConnectionServiceUtils) {
+            advanceUntilIdle()
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+            assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns false
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+            assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+            assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
+            assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
+        }
+    }
+
+    @Test
+    fun testStartConnectionServiceIfItIsSupported() = runTest {
+        mockkObject(ConnectionServiceUtils)
+        mockkObject(TelecomManagerExtensions)
+        val context = mockk<Context>()
+        val telecomManager = mockk<TelecomManager>(relaxed = true)
+        every { context.getSystemService(Context.TELECOM_SERVICE) } returns telecomManager
+        every { telecomManager.addCall(callMock, null) } returns Unit
+        every { isConnectionServiceSupported } returns true
+
+        advanceUntilIdle()
+        viewModel.startConnectionService(context)
+        verify(exactly = 1) { telecomManager.addCall(callMock, null) }
+        unmockkObject(ConnectionServiceUtils)
+        unmockkObject(TelecomManagerExtensions)
+    }
+
+    @Test
+    fun testStartConnectionServiceIfItIsNotSupported() = runTest {
+        mockkObject(ConnectionServiceUtils)
+        mockkObject(TelecomManagerExtensions)
+        val context = mockk<Context>()
+        val telecomManager = mockk<TelecomManager>(relaxed = true)
+        every { context.getSystemService(Context.TELECOM_SERVICE) } returns telecomManager
+        every { telecomManager.addCall(callMock, null) } returns Unit
+        every { isConnectionServiceSupported } returns false
+
+        advanceUntilIdle()
+        viewModel.startConnectionService(context)
+        verify(exactly = 0) { telecomManager.addCall(callMock, null) }
+        unmockkObject(ConnectionServiceUtils)
+        unmockkObject(TelecomManagerExtensions)
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceEnforced() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+
+        advanceUntilIdle()
+        viewModel.tryStartCallService()
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceDisabled() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
+
+        advanceUntilIdle()
+        viewModel.tryStartCallService()
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceEnabled() = runTest {
+        mockkObject(KaleyraCallService) {
+            every { KaleyraCallService.start() } returns Unit
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+
+            advanceUntilIdle()
+            viewModel.tryStartCallService()
+            verify(exactly = 1) { KaleyraCallService.start() }
+        }
     }
 
     @Test
@@ -755,13 +848,6 @@ class CallViewModelTest {
     fun testSwapThumbnail() {
         viewModel.swapThumbnail("streamId")
         verify { anyConstructed<StreamsHandler>().swapThumbnail("streamId") }
-    }
-
-    @Test
-    fun testHangUp() = runTest {
-        advanceUntilIdle()
-        viewModel.hangUp()
-        verify(exactly = 1) { callMock.end() }
     }
 
     @Test

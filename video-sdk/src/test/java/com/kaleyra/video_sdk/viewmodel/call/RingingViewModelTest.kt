@@ -18,14 +18,18 @@ package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
-import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel
 import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel.Companion.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,6 +64,31 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
     @After
     override fun tearDown() {
         super.tearDown()
+    }
+
+    @Test
+    fun testPreCallUiState_isConnectingUpdated() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        val current = viewModel.uiState.first().isConnecting
+        assertEquals(false, current)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first().isConnecting
+        assertEquals(true, new)
+    }
+
+    @Test
+    fun testPreCallUiState_isConnectingStateNotUpdatedWhenExitingConnectingState() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connecting)
+        every { callMock.state } returns callState
+
+        advanceUntilIdle()
+        val current = viewModel.uiState.first().isConnecting
+        assertEquals(true, current)
+
+        callState.value = Call.State.Connected
+        advanceUntilIdle()
+        val new = viewModel.uiState.first().isConnecting
+        assertEquals(true, new)
     }
 
     @Test
@@ -129,21 +158,55 @@ internal class RingingViewModelTest : PreCallViewModelTest<RingingViewModel, Rin
 
     @Test
     fun testCallAnswer() = runTest {
-        every { callParticipantsMock.others } returns listOf()
-        advanceUntilIdle()
-        assertEquals(false, viewModel.uiState.first().isConnecting)
-        viewModel.accept()
-        verify(exactly = 1) { callMock.connect() }
-        assertEquals(true, viewModel.uiState.first().isConnecting)
+        mockkObject(ConnectionServiceUtils) {
+            every { callParticipantsMock.others } returns listOf()
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
+            viewModel.accept()
+            verify(exactly = 1) { callMock.connect() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
+        }
+    }
+
+    @Test
+    fun testConnectionServiceAnswer() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { callParticipantsMock.others } returns listOf()
+            every { isConnectionServiceEnabled } returns true
+            advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
+            viewModel.accept()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
+        }
     }
 
     @Test
     fun testCallDecline() = runTest {
-        every { callParticipantsMock.others } returns listOf()
-        advanceUntilIdle()
-        assertEquals(false, viewModel.uiState.first().isConnecting)
-        viewModel.decline()
-        verify(exactly = 1) { callMock.end() }
-        assertEquals(true, viewModel.uiState.first().isConnecting)
+        mockkObject(ConnectionServiceUtils) {
+            every { callParticipantsMock.others } returns listOf()
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
+            viewModel.decline()
+            verify(exactly = 1) { callMock.end() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
+        }
+    }
+
+    @Test
+    fun testConnectionServiceDecline() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { callParticipantsMock.others } returns listOf()
+            every { isConnectionServiceEnabled } returns true
+            advanceUntilIdle()
+            assertEquals(false, viewModel.uiState.first().isConnecting)
+            viewModel.decline()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
+            assertEquals(true, viewModel.uiState.first().isConnecting)
+        }
     }
 }

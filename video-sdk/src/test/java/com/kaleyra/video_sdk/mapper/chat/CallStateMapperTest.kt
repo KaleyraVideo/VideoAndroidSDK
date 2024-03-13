@@ -22,6 +22,7 @@ import com.kaleyra.video_sdk.Mocks.conversationMock
 import com.kaleyra.video_sdk.Mocks.conversationState
 import com.kaleyra.video_sdk.chat.mapper.CallStateMapper.hasActiveCall
 import io.mockk.every
+import io.mockk.unmockkAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -40,6 +41,7 @@ class CallStateMapperTest {
     @After
     fun tearDown() {
         callState.value = Call.State.Connected
+        unmockkAll()
     }
 
     @Test

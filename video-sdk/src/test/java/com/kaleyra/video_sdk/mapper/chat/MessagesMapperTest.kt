@@ -36,6 +36,7 @@ import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.toUiMessage
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -49,6 +50,7 @@ class MessagesMapperTest {
     fun tearDown() {
         otherParticipantState.value = ChatParticipant.State.Invited
         otherParticipantEvents.value = ChatParticipant.Event.Typing.Idle
+        unmockkAll()
     }
 
     @Test

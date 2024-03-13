@@ -21,11 +21,14 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
@@ -66,6 +69,7 @@ import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video.conference.Call.Recording
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_utils.ContextRetainer
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.IItem
@@ -213,7 +217,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         intent.action = null
     }
 
-
     /**
      * There are two ways to use a link:
      *    - connect with a specific scope(in this case a call).
@@ -257,7 +260,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
 
                 else                                     -> Unit
             }
-            KaleyraVideo.conference.joinUrl(joinUrl)
+            val result = KaleyraVideo.conference.joinUrl(joinUrl)
+            val exception = result.exceptionOrNull()
+            if (exception != null) {
+                Toast.makeText(ContextRetainer.context, exception.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -304,7 +311,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
 
     private fun logout() {
         LoginManager.logout(this)
-        KaleyraVideo.disconnect(true)
+        KaleyraVideo.reset()
         DefaultConfigurationManager.clearAll()
         binding!!.ongoingCallLabel.visibility = View.GONE
         LoginActivity.show(this)

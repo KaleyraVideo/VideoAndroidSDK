@@ -31,12 +31,15 @@ import com.kaleyra.video_common_ui.mapper.StreamMapper.amIAlone
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doAnyOfMyStreamsIsLive
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
+import com.kaleyra.video_common_ui.mapper.StreamMapper.mapStreamsToVideos
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -373,5 +376,50 @@ class StreamMapperTest {
         val result = callFlow.amIWaitingOthers()
         val actual = result.first()
         Assert.assertEquals(false, actual)
+    }
+
+    @Test
+    fun emptyList_mapStreamsToVideos_emptyVideoList() = runTest {
+        val streams = listOf<Stream>()
+        val result = flowOf(streams).mapStreamsToVideos().first()
+        assertEquals(listOf<Input.Video>(), result)
+    }
+
+    @Test
+    fun streamList_mapStreamsToVideos_videoList() = runTest {
+        val stream1 = object : Stream {
+            override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
+            override val id: String = "id1"
+            override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
+            override val video: StateFlow<Input.Video?> = MutableStateFlow(videoMock)
+            override fun close() = Unit
+            override fun open() = Unit
+        }
+        val stream2 = object : Stream {
+            override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
+            override val id: String = "id2"
+            override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
+            override val video: StateFlow<Input.Video?> = MutableStateFlow(myVideoMock)
+            override fun close() = Unit
+            override fun open() = Unit
+        }
+        val streams = listOf(stream1, stream2,)
+        val result = flowOf(streams).mapStreamsToVideos().first()
+        assertEquals(listOf<Input.Video?>(videoMock, myVideoMock), result)
+    }
+
+    @Test
+    fun streamWithNullVideo_mapStreamsToVideos_listOfNull() = runTest {
+        val stream3 = object : Stream {
+            override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
+            override val id: String = "id3"
+            override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
+            override val video: StateFlow<Input.Video?> = MutableStateFlow(null)
+            override fun close() = Unit
+            override fun open() = Unit
+        }
+        val streams = listOf(stream3)
+        val result = flowOf(streams).mapStreamsToVideos().first()
+        assertEquals(listOf<Input.Video?>(null), result)
     }
 }

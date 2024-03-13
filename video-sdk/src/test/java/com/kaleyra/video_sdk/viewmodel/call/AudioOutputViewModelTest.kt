@@ -17,12 +17,10 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import com.bandyer.android_audiosession.model.AudioOutputDevice
-import com.kaleyra.video.conference.CallParticipant
-import com.kaleyra.video.conference.Input
-import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.audioOutputDevicesList
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
@@ -61,34 +59,23 @@ class AudioOutputViewModelTest {
 
     private val callMock = mockk<CallUI>(relaxed = true)
 
-    private val audioMock1 = mockk<Input.Audio>(relaxed = true)
-
-    private val audioMock2 = mockk<Input.Audio>(relaxed = true)
-
-    private val streamMock1 = mockk<Stream.Mutable>()
-
-    private val streamMock2 = mockk<Stream.Mutable>()
-
-    private val participantMock1 = mockk<CallParticipant>()
-
-    private val participantMock2 = mockk<CallParticipant>()
-
     @Before
     fun setUp() {
-        viewModel = AudioOutputViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))}
-        mockkObject(CollaborationAudioExtensions)
+        viewModel = AudioOutputViewModel {
+            Configuration.Success(
+                conferenceMock,
+                mockk(),
+                mockk(relaxed = true),
+                MutableStateFlow(mockk())
+            )
+        }
+        mockkObject(CollaborationAudioExtensions, ConnectionServiceUtils)
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns false
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.audioOutputDevicesList } returns MutableStateFlow(listOf(AudioOutputDevice.Loudspeaker(), AudioOutputDevice.WiredHeadset(), AudioOutputDevice.Earpiece(), AudioOutputDevice.Bluetooth("bluetoothId1"), AudioOutputDevice.Bluetooth("bluetoothId2"), AudioOutputDevice.None()))
-        every { callMock.participants } returns MutableStateFlow(mockk {
-            every { others } returns listOf(participantMock1, participantMock2)
-        })
-        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
-        every { participantMock2.streams } returns MutableStateFlow(listOf(streamMock2))
-        every { streamMock1.audio } returns MutableStateFlow(audioMock1)
-        every { streamMock2.audio } returns MutableStateFlow(audioMock2)
         val currentAudioOutputDeviceFlow = MutableSharedFlow<AudioOutputDevice>(replay = 1, extraBufferCapacity = 1)
         every { callMock.currentAudioOutputDevice } returns currentAudioOutputDeviceFlow
-        every { callMock.setAudioOutputDevice(any()) } answers { currentAudioOutputDeviceFlow.tryEmit(secondArg()) }
+        every { callMock.setAudioOutputDevice(any(), any()) } answers { currentAudioOutputDeviceFlow.tryEmit(secondArg()) }
     }
 
     @After
@@ -128,46 +115,44 @@ class AudioOutputViewModelTest {
     fun testSetLoudSpeakerDevice() = runTest {
         advanceUntilIdle()
         viewModel.setDevice(AudioDeviceUi.LoudSpeaker)
-        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Loudspeaker()) }
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Loudspeaker(), any()) }
     }
 
     @Test
     fun testSetEarpieceDevice() = runTest {
         advanceUntilIdle()
         viewModel.setDevice(AudioDeviceUi.EarPiece)
-        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Earpiece()) }
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Earpiece(), any()) }
     }
 
     @Test
     fun testSetWiredHeadsetDevice() = runTest {
         advanceUntilIdle()
         viewModel.setDevice(AudioDeviceUi.WiredHeadset)
-        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.WiredHeadset()) }
-    }
-
-    @Test
-    fun testSetMutedDevice() = runTest {
-        advanceUntilIdle()
-        viewModel.setDevice(AudioDeviceUi.Muted)
-        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.None()) }
-        verify(exactly = 1) { audioMock1.tryDisable() }
-        verify(exactly = 1) { audioMock2.tryDisable() }
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.WiredHeadset(), any()) }
     }
 
     @Test
     fun testSetBluetoothDevice() = runTest {
         advanceUntilIdle()
         viewModel.setDevice(AudioDeviceUi.Bluetooth(id = "bluetoothId2", connectionState = BluetoothDeviceState.Disconnected, name = null, batteryLevel = null))
-        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Bluetooth("bluetoothId2")) }
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Bluetooth("bluetoothId2"), any()) }
     }
 
     @Test
-    fun `restore participants audio if previous device was none`() = runTest {
+    fun testSetDeviceConnectionServiceDisabledFlag() = runTest {
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns false
         advanceUntilIdle()
-        viewModel.setDevice(AudioDeviceUi.Muted)
         viewModel.setDevice(AudioDeviceUi.LoudSpeaker)
-        verify(exactly = 1) { audioMock1.tryEnable() }
-        verify(exactly = 1) { audioMock2.tryEnable() }
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Loudspeaker(), false) }
+    }
+
+    @Test
+    fun testSetDeviceConnectionServiceEnabledFlag() = runTest {
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns true
+        advanceUntilIdle()
+        viewModel.setDevice(AudioDeviceUi.LoudSpeaker)
+        verify(exactly = 1) { callMock.setAudioOutputDevice(AudioOutputDevice.Loudspeaker(), true) }
     }
 
 }
