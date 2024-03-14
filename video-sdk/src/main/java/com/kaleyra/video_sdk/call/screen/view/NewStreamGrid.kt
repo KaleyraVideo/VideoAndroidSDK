@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.intermediateLayout
@@ -52,118 +53,145 @@ enum class ThumbnailsPosition {
     fun isVertical() = this == Top || this == Bottom
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun StreamGrid(
     maxWidth: Dp,
-    thumbnailsSize: Dp,
+    thumbnailSize: Dp,
     thumbnailsPosition: ThumbnailsPosition,
     thumbnailsCount: Int,
-    streams: @Composable LookaheadScope.() -> Unit
+    streams: @Composable () -> Unit
 ) {
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
-    val thumbnailSizePx = with(density) { thumbnailsSize.toPx().toInt() }
+    val thumbnailSizePx = with(density) { thumbnailSize.toPx().toInt() }
     val isPortrait by remember {
         derivedStateOf {
             configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         }
     }
 
-    LookaheadScope {
-        Layout(
-            content = { streams(this) }
-        ) { measurables, constraints ->
-            check(constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
-                "unbounded size not supported"
-            }
+    Layout(
+        content = streams
+    ) { measurables, constraints ->
+        check(constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+            "unbounded size not supported"
+        }
 
-            val pinnedItemsCount = measurables.count { (it.parentData as StreamParentData).pin }
-            val featuredItemsCount = pinnedItemsCount.takeIf { it != 0 } ?: measurables.size
-            val thumbnailsPosition = thumbnailsPosition.takeIf { pinnedItemsCount > 0 }
+        val pinnedItemsCount = measurables.count { (it.parentData as StreamParentData).pin }
+        val featuredItemsCount = pinnedItemsCount.takeIf { it != 0 } ?: measurables.size
+        val thumbnailsPosition = thumbnailsPosition.takeIf { pinnedItemsCount > 0 }
 
-            val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredItemsCount)
+        val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredItemsCount)
 
-            val featuredItemWidth = calculateFeaturedItemsWidth(thumbnailsPosition, thumbnailSizePx, columns,constraints)
-            val featuredItemHeight = calculateFeaturedItemsHeight(thumbnailsPosition, thumbnailSizePx, rows, constraints)
+        val featuredItemWidth = calculateFeaturedItemsWidth(thumbnailsPosition, thumbnailSizePx, columns, constraints)
+        val featuredItemHeight = calculateFeaturedItemsHeight(thumbnailsPosition, thumbnailSizePx, rows, constraints)
 
-            val featuredItemConstraints = constraints.copy(maxWidth = featuredItemWidth, maxHeight = featuredItemHeight)
+        val featuredItemConstraints = constraints.copy(maxWidth = featuredItemWidth, maxHeight = featuredItemHeight)
+        val thumbnailItemConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
 
-            val thumbnailsPadding = if (thumbnailsPosition?.isHorizontal() == false) thumbnailSizePx else 0
-            val featuredItemsPadding = calculateLastRowFeaturedPadding(rows, columns, featuredItemsCount, featuredItemWidth, thumbnailsPadding, constraints)
+        val (featuredItems, thumbnailItems) = measure(measurables, featuredItemConstraints, thumbnailItemConstraints)
 
-            val (featuredItems, thumbnailItems) = if (pinnedItemsCount == 0) {
-                measurables.map { it.measure(featuredItemConstraints) } to emptyList<Placeable>()
-            } else {
-                val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
+        val thumbnailsPadding = if (thumbnailsPosition?.isHorizontal() == true) thumbnailSizePx else 0
+        val featuredItemsPadding = calculateFeaturedItemsPadding(
+            rows = rows,
+            columns = columns,
+            featuredItemsCount = featuredItemsCount,
+            featuredItemConstraints = featuredItemConstraints,
+            thumbnailsPadding = thumbnailsPadding,
+            layoutConstraints = constraints
+        )
 
-                val featuredItems = mutableListOf<Placeable>()
-                val thumbnailItems = mutableListOf<Placeable>()
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            placeFeaturedItems(
+                items = featuredItems,
+                rows = rows,
+                columns = columns,
+                featuredItemConstraints = featuredItemConstraints,
+                featuredItemsPadding = featuredItemsPadding,
+                thumbnailItemConstraints = thumbnailItemConstraints,
+                thumbnailsPosition = thumbnailsPosition
+            )
 
-                measurables.map { measurable ->
-                    if ((measurable.parentData as StreamParentData).pin) {
-                        featuredItems.add(measurable.measure(featuredItemConstraints))
-                    } else {
-                        thumbnailItems.add(measurable.measure(thumbnailConstraints))
-                    }
-                }
-                featuredItems to thumbnailItems
-            }
-
-            layout(constraints.maxWidth, constraints.maxHeight) {
-                val startX = when (thumbnailsPosition) {
-                    null -> 0
-                    ThumbnailsPosition.Left -> thumbnailSizePx
-                    else -> 0
-                }
-                val startY = when (thumbnailsPosition) {
-                    null -> 0
-                    ThumbnailsPosition.Top -> thumbnailSizePx
-                    else -> 0
-                }
-                var x = startX
-                var y = startY
-                var nRow = 0
-
-                featuredItems.forEachIndexed { index, placeable ->
-                    placeable.place(x, y)
-
-                    if (index % columns == columns - 1) {
-                        x = startX
-                        y += featuredItemHeight
-                        nRow += 1
-                    } else {
-                        x += featuredItemWidth
-                    }
-
-                    if (x == startX && nRow == rows - 1) {
-                        x += featuredItemsPadding
-                    }
-                }
-
-                if (thumbnailsPosition != null && thumbnailItems.isNotEmpty()) {
-                    placeThumbnailItems(
-                        thumbnailItems.take(thumbnailsCount),
-                        thumbnailSizePx,
-                        thumbnailsPosition,
-                        constraints
-                    )
-                }
+            if (thumbnailsPosition != null && thumbnailItems.isNotEmpty()) {
+                placeThumbnailItems(
+                    items = thumbnailItems.take(thumbnailsCount),
+                    thumbnailSize = thumbnailSizePx,
+                    thumbnailsPosition = thumbnailsPosition,
+                    constraints = constraints
+                )
             }
         }
     }
 }
 
-private fun calculateLastRowFeaturedPadding(
+private fun Placeable.PlacementScope.placeFeaturedItems(
+    items: List<Placeable>,
+    rows: Int,
+    columns: Int,
+    featuredItemConstraints: Constraints,
+    featuredItemsPadding: Int,
+    thumbnailItemConstraints: Constraints,
+    thumbnailsPosition: ThumbnailsPosition?
+) {
+    val startX = thumbnailsPosition?.takeIf { it == ThumbnailsPosition.Left }
+        ?.let { thumbnailItemConstraints.maxWidth } ?: 0
+    val startY = thumbnailsPosition?.takeIf { it == ThumbnailsPosition.Top }
+        ?.let { thumbnailItemConstraints.maxHeight } ?: 0
+
+    var x = startX
+    var y = startY
+    var nRow = 0
+
+    val featuredHeight = featuredItemConstraints.maxHeight
+    val featuredWidth = featuredItemConstraints.maxWidth
+    items.forEachIndexed { index, placeable ->
+        placeable.place(x, y)
+
+        if (index % columns == columns - 1) {
+            x = startX
+            y += featuredHeight
+            nRow += 1
+        } else {
+            x += featuredWidth
+        }
+
+        if (x == startX && nRow == rows - 1) {
+            x += featuredItemsPadding
+        }
+    }
+}
+
+private fun measure(
+    measurables: List<Measurable>,
+    featuredItemConstraints: Constraints,
+    thumbnailItemConstraints: Constraints
+): Pair<List<Placeable>, List<Placeable>> {
+    val isAnyItemPinned = measurables.all { (it.parentData as? StreamParentData)?.pin != true }
+
+    return if (isAnyItemPinned) {
+        measurables.map { it.measure(featuredItemConstraints) } to listOf()
+    } else {
+        val featuredItems = mutableListOf<Placeable>()
+        val thumbnailItems = mutableListOf<Placeable>()
+        measurables.map { measurable ->
+            val isPinned = (measurable.parentData as? StreamParentData)?.pin == true
+            if (isPinned) featuredItems.add(measurable.measure(featuredItemConstraints))
+            else thumbnailItems.add(measurable.measure(thumbnailItemConstraints))
+        }
+        featuredItems to thumbnailItems
+    }
+}
+
+private fun calculateFeaturedItemsPadding(
     rows: Int,
     columns: Int,
     featuredItemsCount: Int,
-    featuredItemWidth: Int,
+    featuredItemConstraints: Constraints,
     thumbnailsPadding: Int,
-    constraints: Constraints
-) : Int {
+    layoutConstraints: Constraints
+): Int {
     val lastRowFeaturedItemsCount = featuredItemsCount - (columns * (rows - 1))
-    return (constraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredItemWidth)) / 2
+    return (layoutConstraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredItemConstraints.maxWidth)) / 2
 }
 
 private fun calculateFeaturedItemsWidth(
@@ -188,28 +216,32 @@ private fun calculateFeaturedItemsHeight(
 
 private fun Placeable.PlacementScope.placeThumbnailItems(
     items: List<Placeable>,
-    thumbnailsSize: Int,
+    thumbnailSize: Int,
     thumbnailsPosition: ThumbnailsPosition,
     constraints: Constraints
 ) {
     val startX = when (thumbnailsPosition) {
-        ThumbnailsPosition.Top, ThumbnailsPosition.Bottom -> (constraints.maxWidth - items.size * thumbnailsSize) / 2
-        ThumbnailsPosition.Right -> constraints.maxWidth - thumbnailsSize
+        ThumbnailsPosition.Top, ThumbnailsPosition.Bottom -> (constraints.maxWidth - items.size * thumbnailSize) / 2
+        ThumbnailsPosition.Right -> constraints.maxWidth - thumbnailSize
         ThumbnailsPosition.Left -> 0
     }
     val startY = when (thumbnailsPosition) {
-        ThumbnailsPosition.Left, ThumbnailsPosition.Right -> (constraints.maxHeight - items.size * thumbnailsSize) / 2
-        ThumbnailsPosition.Bottom -> constraints.maxHeight - thumbnailsSize
+        ThumbnailsPosition.Left, ThumbnailsPosition.Right -> (constraints.maxHeight - items.size * thumbnailSize) / 2
+        ThumbnailsPosition.Bottom -> constraints.maxHeight - thumbnailSize
         ThumbnailsPosition.Top -> 0
     }
 
     if (thumbnailsPosition.isVertical()) {
-        items.forEachIndexed { i, p -> p.place(x = startX + thumbnailsSize * i, y = startY) }
+        items.forEachIndexed { i, p -> p.place(x = startX + thumbnailSize * i, y = startY) }
     } else {
-        items.forEachIndexed { i, p -> p.place(x = startX, y = startY + thumbnailsSize * i) }
+        items.forEachIndexed { i, p -> p.place(x = startX, y = startY + thumbnailSize * i) }
     }
 }
 
+// tablet portrait -> 1..2 -> (max 2 r, 1c), 3..4 -> (2r, 2c), 5..6 -> (3 r, 2 c), 7..8 -> (4 r, 2 c)
+// tablet landscape -> 1..3 -> (1 r, max 3 c), 4 -> (2 r, 2c), 5..6 -> (2 r, 3c), 7..8 -> (2 r, 4 c)
+// smartphone portrait -> 1..3 -> (max 3 r, 1c), 4 -> (2r, 2c), 5..6 -> (3 r, 2 c), 7..8 -> (4 r, 2 c)
+// smartphone landscape -> 1..3 -> (1 r, max 3 c), 4 -> (2 r, 2c), 5..6 -> (2 r, 3c), 7..8 -> (2 r, 4 c)
 fun calculateRowsAndColumns(isPortrait: Boolean, maxWidth: Dp, itemsCount: Int): Pair<Int, Int> {
     val isAtLeastMediumSizeWidth = maxWidth.isAtLeastMediumSizeWidth()
     val columns: Int
