@@ -43,11 +43,21 @@ import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumS
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
+@Immutable
+enum class ThumbnailsPosition {
+    Top, Left, Bottom, Right;
+
+    fun isHorizontal() = this == Top || this == Bottom
+
+    fun isVertical() = this == Left || this == Right
+}
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun StreamGrid(
     maxWidth: Dp,
     thumbnailsSize: Dp,
+    thumbnailsPosition: ThumbnailsPosition,
     streams: @Composable LookaheadScope.() -> Unit
 ) {
     val density = LocalDensity.current
@@ -67,165 +77,125 @@ fun StreamGrid(
                 "unbounded size not supported"
             }
 
-            val thereIsAPinnedElement = measurables.any { (it.parentData as StreamParentData).pin }
+            val pinnedItemsCount = measurables.count { (it.parentData as StreamParentData).pin }
+            val featuredItemsCount = pinnedItemsCount.takeIf { it != 0 } ?: measurables.size
 
-            if (!thereIsAPinnedElement) {
-                val (rows, columns) = calculateRowsAndColumns(
-                    isPortrait,
-                    maxWidth,
-                    measurables.size
-                )
+            val areThereAnyThumbnailItems = pinnedItemsCount != 0
 
-                val itemWidth = constraints.maxWidth / columns
-                val itemHeight = if (rows != 0) constraints.maxHeight / rows else 0
-                val itemConstraints = constraints.copy(maxWidth = itemWidth, maxHeight = itemHeight)
+            val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredItemsCount)
 
-                val lastRowItemsCount =
-                    if (rows != 0) measurables.size - (columns * (rows - 1)) else 0
-                val lastRowPadding = (constraints.maxWidth - (lastRowItemsCount * itemWidth)) / 2
+            if (rows == 0 || columns == 0) {
+                return@Layout layout(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                    placementBlock = {})
+            }
 
-                val placeables = measurables.map { measurable ->
-                    measurable.measure(itemConstraints)
-                }
+            val featuredItemsWidth = when {
+                !areThereAnyThumbnailItems -> constraints.maxWidth / columns
+                thumbnailsPosition.isHorizontal() -> constraints.maxWidth / columns
+                else -> (constraints.maxWidth - thumbnailSizePx) / columns
+            }
 
-                layout(constraints.maxWidth, constraints.maxHeight) {
-                    var xPosition = 0
-                    var yPosition = 0
-                    var currentRow = 0
+            val featuredItemHeight = when {
+                !areThereAnyThumbnailItems -> constraints.maxHeight / rows
+                thumbnailsPosition.isHorizontal() -> (constraints.maxHeight - thumbnailSizePx) / rows
+                else -> constraints.maxHeight / rows
+            }
 
-                    placeables.forEachIndexed { index, placeable ->
-                        placeable.place(x = xPosition, y = yPosition)
+            val featuredItemConstraints =
+                constraints.copy(maxWidth = featuredItemsWidth, maxHeight = featuredItemHeight)
 
-                        if (index % columns == columns - 1) {
-                            xPosition = 0
-                            yPosition += itemHeight
-                            currentRow += 1
-                        } else {
-                            xPosition += itemWidth
-                        }
+            val lastRowFeaturedItemsCount = featuredItemsCount - (columns * (rows - 1))
 
-                        if (xPosition == 0 && currentRow == rows - 1) {
-                            xPosition += lastRowPadding
-                        }
-                    }
-                }
+            val lastRowBigItemsPadding = when {
+                !areThereAnyThumbnailItems -> (constraints.maxWidth - (lastRowFeaturedItemsCount * featuredItemsWidth)) / 2
+                thumbnailsPosition.isHorizontal() -> (constraints.maxWidth - (lastRowFeaturedItemsCount * featuredItemsWidth)) / 2
+                else -> ((constraints.maxWidth - thumbnailSizePx) - (lastRowFeaturedItemsCount * featuredItemsWidth)) / 2
+            }
+
+            val (featuredItems, thumbnailItems) = if (pinnedItemsCount == 0) {
+                measurables.map { it.measure(featuredItemConstraints) } to emptyList<Placeable>()
             } else {
-                val thumbnailsPosition = when {
-                    isPortrait -> 0 // bottom
-                    maxWidth >= 900.dp -> 1 // left
-                    else -> 2 // right
-                }
-                val pinnedItemsCount = measurables.count { (it.parentData as StreamParentData).pin }
-                val (rows, columns) = calculateRowsAndColumns(
-                    isPortrait,
-                    maxWidth,
-                    pinnedItemsCount
-                )
-
-                val itemWidth = when (thumbnailsPosition) {
-                    0 -> constraints.maxWidth / columns
-                    else -> (constraints.maxWidth - thumbnailSizePx) / columns
-                }
-                val itemHeight = when (thumbnailsPosition) {
-                    0 -> if (rows != 0) (constraints.maxHeight - thumbnailSizePx) / rows else 0
-                    else -> if (rows != 0) constraints.maxHeight / rows else 0
-                }
-
-                val itemConstraints = constraints.copy(maxWidth = itemWidth, maxHeight = itemHeight)
-
-                val lastRowItemsCount =
-                    if (rows != 0) pinnedItemsCount - (columns * (rows - 1)) else 0
-                val lastRowPadding = when (thumbnailsPosition) {
-                    0 -> (constraints.maxWidth - (lastRowItemsCount * itemWidth)) / 2
-                    else -> ((constraints.maxWidth - thumbnailSizePx) - (lastRowItemsCount * itemWidth)) / 2
-                }
-
                 val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
 
-                val pinned = mutableListOf<Placeable>()
-                val thumbnails = mutableListOf<Placeable>()
+                val featuredItems = mutableListOf<Placeable>()
+                val thumbnailItems = mutableListOf<Placeable>()
 
                 measurables.map { measurable ->
                     if ((measurable.parentData as StreamParentData).pin) {
-                        pinned.add(measurable.measure(itemConstraints))
+                        featuredItems.add(measurable.measure(featuredItemConstraints))
                     } else {
-                        thumbnails.add(measurable.measure(thumbnailConstraints))
+                        thumbnailItems.add(measurable.measure(thumbnailConstraints))
+                    }
+                }
+                featuredItems to thumbnailItems
+            }
+
+            layout(constraints.maxWidth, constraints.maxHeight) {
+                val startX = when {
+                    !areThereAnyThumbnailItems -> 0
+                    thumbnailsPosition == ThumbnailsPosition.Left -> thumbnailSizePx
+                    else -> 0
+                }
+                val startY = when {
+                    !areThereAnyThumbnailItems -> 0
+                    thumbnailsPosition == ThumbnailsPosition.Top -> thumbnailSizePx
+                    else -> 0
+                }
+                var x = startX
+                var y = startY
+                var nRow = 0
+
+                featuredItems.forEachIndexed { index, placeable ->
+                    placeable.place(x, y)
+
+                    if (index % columns == columns - 1) {
+                        x = startX
+                        y += featuredItemHeight
+                        nRow += 1
+                    } else {
+                        x += featuredItemsWidth
+                    }
+
+                    if (x == startX && nRow == rows - 1) {
+                        x += lastRowBigItemsPadding
                     }
                 }
 
-                layout(constraints.maxWidth, constraints.maxHeight) {
-                    val leftMargin = if (thumbnailsPosition == 1) thumbnailSizePx else 0
-                    var xPosition = leftMargin
-                    var yPosition = 0
-                    var currentRow = 0
-
-                    pinned.forEachIndexed { index, placeable ->
-                        placeable.place(x = xPosition, y = yPosition)
-
-                        if (index % columns == columns - 1) {
-                            xPosition = leftMargin
-                            yPosition += itemHeight
-                            currentRow += 1
-                        } else {
-                            xPosition += itemWidth
-                        }
-
-                        if (xPosition == leftMargin && currentRow == rows - 1) {
-                            xPosition += lastRowPadding
-                        }
-                    }
-
-                    when (thumbnailsPosition) {
-                        0 -> {
-                            val padding =
-                                (constraints.maxWidth - (thumbnails.size.coerceAtMost(3) * thumbnailSizePx)) / 2
-                            thumbnails
-                                .take(3)
-                                .forEachIndexed { index, placeable ->
-                                    placeable.place(
-                                        x = padding + thumbnailSizePx * index,
-                                        y = constraints.maxHeight - thumbnailSizePx
-                                    )
+                if (thumbnailItems.isEmpty()) return@layout
+                else {
+                    val items = thumbnailItems.take(3)
+                    items.forEachIndexed { index, placeable ->
+                        placeable.place(
+                            x = when(thumbnailsPosition) {
+                                ThumbnailsPosition.Top, ThumbnailsPosition.Bottom -> {
+                                    val padding = (constraints.maxWidth - items.size * thumbnailSizePx) / 2
+                                    padding + thumbnailSizePx * index
                                 }
-                        }
-
-                        1 -> {
-                            val padding =
-                                (constraints.maxHeight - (thumbnails.size.coerceAtMost(3) * thumbnailSizePx)) / 2
-                            thumbnails
-                                .take(3)
-                                .forEachIndexed { index, placeable ->
-                                    placeable.place(
-                                        x = 0,
-                                        y = padding + thumbnailSizePx * index
-                                    )
+                                ThumbnailsPosition.Left -> 0
+                                ThumbnailsPosition.Right -> constraints.maxWidth - thumbnailSizePx
+                            },
+                            y = when(thumbnailsPosition) {
+                                ThumbnailsPosition.Left, ThumbnailsPosition.Right -> {
+                                    val padding = (constraints.maxHeight - items.size * thumbnailSizePx) / 2
+                                    padding + thumbnailSizePx * index
                                 }
-                        }
-
-                        2 -> {
-                            val padding =
-                                (constraints.maxHeight - (thumbnails.size.coerceAtMost(3) * thumbnailSizePx)) / 2
-                            thumbnails
-                                .take(3)
-                                .forEachIndexed { index, placeable ->
-                                    placeable.place(
-                                        x = constraints.maxWidth - thumbnailSizePx,
-                                        y = padding + thumbnailSizePx * index
-                                    )
-                                }
-                        }
+                                ThumbnailsPosition.Top -> 0
+                                ThumbnailsPosition.Bottom -> constraints.maxHeight - thumbnailSizePx
+                            }
+                        )
                     }
                 }
             }
         }
-
     }
 }
 
 fun calculateRowsAndColumns(isPortrait: Boolean, maxWidth: Dp, itemsCount: Int): Pair<Int, Int> {
+    val isAtLeastMediumSizeWidth = maxWidth.isAtLeastMediumSizeWidth()
     val columns: Int
     val rows: Int
-    val isAtLeastMediumSizeWidth = maxWidth.isAtLeastMediumSizeWidth()
     when {
         isPortrait -> {
             columns = when {
