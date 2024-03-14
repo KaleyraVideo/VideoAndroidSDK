@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +55,16 @@ enum class ThumbnailsPosition {
 }
 
 @Composable
+fun isPortraitOrientation(): State<Boolean> {
+    val configuration = LocalConfiguration.current
+    return remember {
+        derivedStateOf {
+            configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        }
+    }
+}
+
+@Composable
 fun StreamGrid(
     maxWidth: Dp,
     thumbnailSize: Dp,
@@ -61,14 +72,8 @@ fun StreamGrid(
     thumbnailsCount: Int,
     streams: @Composable () -> Unit
 ) {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    val thumbnailSizePx = with(density) { thumbnailSize.toPx().toInt() }
-    val isPortrait by remember {
-        derivedStateOf {
-            configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        }
-    }
+    val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }
+    val isPortrait by isPortraitOrientation()
 
     Layout(
         content = streams
@@ -102,7 +107,7 @@ fun StreamGrid(
         )
 
         layout(constraints.maxWidth, constraints.maxHeight) {
-            placeFeaturedItems(
+            placeFeatured(
                 items = featuredItems,
                 rows = rows,
                 columns = columns,
@@ -113,7 +118,7 @@ fun StreamGrid(
             )
 
             if (thumbnailsPosition != null && thumbnailItems.isNotEmpty()) {
-                placeThumbnailItems(
+                placeThumbnails(
                     items = thumbnailItems.take(thumbnailsCount),
                     thumbnailSize = thumbnailSizePx,
                     thumbnailsPosition = thumbnailsPosition,
@@ -124,7 +129,7 @@ fun StreamGrid(
     }
 }
 
-private fun Placeable.PlacementScope.placeFeaturedItems(
+private fun Placeable.PlacementScope.placeFeatured(
     items: List<Placeable>,
     rows: Int,
     columns: Int,
@@ -214,7 +219,7 @@ private fun calculateFeaturedItemsHeight(
     else (constraints.maxHeight - thumbnailSize) / rows
 }
 
-private fun Placeable.PlacementScope.placeThumbnailItems(
+private fun Placeable.PlacementScope.placeThumbnails(
     items: List<Placeable>,
     thumbnailSize: Int,
     thumbnailsPosition: ThumbnailsPosition,
