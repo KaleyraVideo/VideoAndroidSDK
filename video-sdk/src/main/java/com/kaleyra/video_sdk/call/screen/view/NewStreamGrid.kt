@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
+import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeWidth
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -220,67 +222,32 @@ fun StreamGrid(
     }
 }
 
-// tablet portrait -> 1..2 -> (max 2 r, 1c), 3..4 -> (2r, 2c), 5..6 -> (3 r, 2 c), 7..8 -> (4 r, 2 c)
-// tablet landscape -> 1..3 -> (1 r, max 3 c), 4 -> (2 r, 2c), 5..6 -> (2 r, 3c), 7..8 -> (2 r, 4 c)
-// smartphone portrait -> 1..3 -> (max 3 r, 1c), 4 -> (2r, 2c), 5..6 -> (3 r, 2 c), 7..8 -> (4 r, 2 c)
-// smartphone landscape -> 1..3 -> (1 r, max 3 c), 4 -> (2 r, 2c), 5..6 -> (2 r, 3c), 7..8 -> (2 r, 4 c)
 fun calculateRowsAndColumns(isPortrait: Boolean, maxWidth: Dp, itemsCount: Int): Pair<Int, Int> {
     val columns: Int
     val rows: Int
+    val isAtLeastMediumSizeWidth = maxWidth.isAtLeastMediumSizeWidth()
     when {
-        isPortrait && maxWidth >= 600.dp -> {
-            columns = when (itemsCount) {
-                1, 2 -> 1
-                3, 4, 5, 6, 7, 8 -> 2
-                9, 10, 11, 12 -> 3
-                13, 14, 15, 16 -> 4
-                else -> 0
-            }
-            rows = when (itemsCount) {
-                0 -> 0
-                1 -> 1
-                2, 3, 4 -> 2
-                5, 6 -> 3
-                else -> 4
-            }
-        }
-
         isPortrait -> {
-            columns = when (itemsCount) {
-                1, 2, 3 -> 1
-                4, 5, 6, 7, 8 -> 2
-                9, 10, 11, 12 -> 3
-                13, 14, 15, 16 -> 4
-                else -> 0
+            columns = when {
+                isAtLeastMediumSizeWidth && itemsCount < 3 -> 1
+                isAtLeastMediumSizeWidth && itemsCount < 5 -> 2
+                itemsCount < 4 -> 1
+                itemsCount == 4 -> 2
+                else -> ceil(itemsCount / 4f).toInt()
             }
-            rows = when (itemsCount) {
-                0 -> 0
-                1 -> 1
-                2, 4 -> 2
-                3, 5, 6 -> 3
-                else -> 4
-            }
+            rows = ceil(itemsCount / columns.toFloat()).toInt()
         }
 
         else -> {
-            columns =
-                when (itemsCount) {
-                    0 -> 0
-                    1 -> 1
-                    2, 4 -> 2
-                    3, 5, 6 -> 3
-                    else -> 4
-                }
-            rows = when (itemsCount) {
-                1, 2, 3 -> 1
-                4, 5, 6, 7, 8 -> 2
-                9, 10, 11, 12 -> 3
-                13, 14, 15, 16 -> 4
-                else -> 0
+            rows =  when {
+                itemsCount < 4 -> 1
+                itemsCount == 4 -> 2
+                else -> ceil(itemsCount / 4f).toInt()
             }
+            columns = ceil(itemsCount / rows.toFloat()).toInt()
         }
     }
-    return Pair(rows, columns)
+    return rows to columns
 }
 
 
