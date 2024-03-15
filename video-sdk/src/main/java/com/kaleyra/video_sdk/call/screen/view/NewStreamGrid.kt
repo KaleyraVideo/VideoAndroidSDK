@@ -64,6 +64,7 @@ fun isPortraitOrientation(): State<Boolean> {
 
 @Composable
 fun StreamGrid(
+    modifier: Modifier = Modifier,
     maxWidth: Dp,
     thumbnailSize: Dp,
     thumbnailsArrangement: ThumbnailsArrangement,
@@ -74,7 +75,8 @@ fun StreamGrid(
     val isPortrait by isPortraitOrientation()
 
     Layout(
-        content = streams
+        content = streams,
+        modifier = modifier
     ) { measurables, constraints ->
         check(constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
             "unbounded size not supported"
