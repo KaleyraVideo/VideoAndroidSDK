@@ -7,7 +7,6 @@ import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.Spring.StiffnessMediumLow
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
@@ -26,7 +25,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.Placeable
@@ -40,7 +38,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeWidth
 import kotlinx.coroutines.launch
@@ -274,27 +271,29 @@ fun calculateRowsAndColumns(isPortrait: Boolean, maxWidth: Dp, itemsCount: Int):
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.animateConstraints() = composed {
-    var sizeAnimation: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
-    var targetSize: IntSize? by remember { mutableStateOf(null) }
+fun Modifier.animateConstraints(
+    animationSpec: AnimationSpec<IntSize> = spring()
+) = composed {
+    var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
+    var targetSize: IntSize by remember { mutableStateOf(IntSize.Zero) }
+
     LaunchedEffect(Unit) {
         snapshotFlow { targetSize }.collect { target ->
-            if (target != null && target != sizeAnimation?.targetValue) {
-                sizeAnimation?.run {
-                    launch { animateTo(target, tween(durationMillis = 100)) }
-                } ?: Animatable(target, IntSize.VectorConverter).let {
-                    sizeAnimation = it
-                }
+            val anim = animatable ?: Animatable(target, IntSize.VectorConverter).also {
+                animatable = it
+            }
+            if (anim.targetValue != target) {
+                launch { anim.animateTo(target, animationSpec) }
             }
         }
     }
 
     this@composed.intermediateLayout { measurable, _ ->
         targetSize = lookaheadSize
-        val (width, height) = sizeAnimation?.value ?: lookaheadSize
-        val animatedConstraints = Constraints.fixed(width, height)
+        val (width, height) = animatable?.value ?: lookaheadSize
+        val constraints = Constraints.fixed(width, height)
 
-        val placeable = measurable.measure(animatedConstraints)
+        val placeable = measurable.measure(constraints)
         layout(placeable.width, placeable.height) {
             placeable.place(0, 0)
         }
@@ -306,10 +305,9 @@ fun Modifier.animatePlacement(
     animationSpec: AnimationSpec<IntOffset> = spring(stiffness = StiffnessMediumLow)
 ): Modifier = composed {
     val scope = rememberCoroutineScope()
+    var animatable: Animatable<IntOffset, AnimationVector2D>? by remember { mutableStateOf(null) }
     var targetOffset by remember { mutableStateOf(initialOffset) }
-    var animatable by remember {
-        mutableStateOf<Animatable<IntOffset, AnimationVector2D>?>(null)
-    }
+
     this
         .onPlaced {
             targetOffset = it
