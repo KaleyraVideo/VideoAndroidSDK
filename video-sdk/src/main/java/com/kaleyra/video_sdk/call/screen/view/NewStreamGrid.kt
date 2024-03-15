@@ -45,9 +45,9 @@ import kotlin.math.ceil
 
 @Immutable
 enum class ThumbnailsArrangement {
-    Top, Left, Bottom, Right;
+    Top, Start, Bottom, End;
 
-    fun isHorizontal() = this == Left || this == Right
+    fun isHorizontal() = this == Start || this == End
 
     fun isVertical() = this == Top || this == Bottom
 }
@@ -138,7 +138,7 @@ private fun Placeable.PlacementScope.placeFeatured(
     thumbnailConstraints: Constraints,
     thumbnailsArrangement: ThumbnailsArrangement?
 ) {
-    val startX = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Left }
+    val startX = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Start }
         ?.let { thumbnailConstraints.maxWidth } ?: 0
     val startY = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Top }
         ?.let { thumbnailConstraints.maxHeight } ?: 0
@@ -227,11 +227,11 @@ private fun Placeable.PlacementScope.placeThumbnails(
 ) {
     val startX = when (thumbnailsArrangement) {
         ThumbnailsArrangement.Top, ThumbnailsArrangement.Bottom -> (constraints.maxWidth - placeables.size * thumbnailSize) / 2
-        ThumbnailsArrangement.Right -> constraints.maxWidth - thumbnailSize
-        ThumbnailsArrangement.Left -> 0
+        ThumbnailsArrangement.End -> constraints.maxWidth - thumbnailSize
+        ThumbnailsArrangement.Start -> 0
     }
     val startY = when (thumbnailsArrangement) {
-        ThumbnailsArrangement.Left, ThumbnailsArrangement.Right -> (constraints.maxHeight - placeables.size * thumbnailSize) / 2
+        ThumbnailsArrangement.Start, ThumbnailsArrangement.End -> (constraints.maxHeight - placeables.size * thumbnailSize) / 2
         ThumbnailsArrangement.Bottom -> constraints.maxHeight - thumbnailSize
         ThumbnailsArrangement.Top -> 0
     }
