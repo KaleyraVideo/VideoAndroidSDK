@@ -334,10 +334,8 @@ fun Modifier.animatePlacement(
 object StreamGridScope {
 
     @Stable
-    fun Modifier.pinMode(
-        pin: Boolean
-    ): Modifier {
-        return then(StreamParentData(pin = pin))
+    fun Modifier.pin(value: Boolean): Modifier {
+        return then(StreamParentData(pin = value))
     }
 }
 
