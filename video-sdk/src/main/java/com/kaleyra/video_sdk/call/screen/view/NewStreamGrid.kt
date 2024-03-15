@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.screen.view
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.Spring.StiffnessMediumLow
 import androidx.compose.animation.core.VectorConverter
@@ -300,9 +301,12 @@ fun Modifier.animateConstraints() = composed {
     }
 }
 
-fun Modifier.animatePlacement(): Modifier = composed {
+fun Modifier.animatePlacement(
+    initialOffset: IntOffset = IntOffset.Zero,
+    animationSpec: AnimationSpec<IntOffset> = spring(stiffness = StiffnessMediumLow)
+): Modifier = composed {
     val scope = rememberCoroutineScope()
-    var targetOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var targetOffset by remember { mutableStateOf(initialOffset) }
     var animatable by remember {
         mutableStateOf<Animatable<IntOffset, AnimationVector2D>?>(null)
     }
@@ -313,14 +317,15 @@ fun Modifier.animatePlacement(): Modifier = composed {
                 .round()
         }
         .offset {
-            val anim = animatable ?: Animatable(targetOffset, IntOffset.VectorConverter)
-                .also { animatable = it }
+            val anim = animatable ?: Animatable(targetOffset, IntOffset.VectorConverter).also {
+                animatable = it
+            }
             if (anim.targetValue != targetOffset) {
                 scope.launch {
-                    anim.animateTo(targetOffset, spring(stiffness = StiffnessMediumLow))
+                    anim.animateTo(targetOffset, animationSpec)
                 }
             }
-            animatable?.let { it.value - targetOffset } ?: IntOffset.Zero
+            anim.value - targetOffset
         }
 }
 
