@@ -82,44 +82,44 @@ fun StreamGrid(
             "unbounded size not supported"
         }
 
-        val pinnedItemsCount = measurables.count { (it.parentData as? StreamParentData)?.pin == true }
-        val featuredItemsCount = pinnedItemsCount.takeIf { it != 0 } ?: measurables.size
-        val layoutThumbnailsArrangement = thumbnailsArrangement.takeIf { pinnedItemsCount > 0 }
+        val pinnedCount = measurables.count { (it.parentData as? StreamParentData)?.pin == true }
+        val featuredCount = pinnedCount.takeIf { it != 0 } ?: measurables.size
+        val layoutThumbnailsArrangement = thumbnailsArrangement.takeIf { pinnedCount > 0 }
 
-        val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredItemsCount)
+        val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredCount)
 
-        val featuredItemWidth = calculateFeaturedItemsWidth(layoutThumbnailsArrangement, thumbnailSizePx, columns, constraints)
-        val featuredItemHeight = calculateFeaturedItemsHeight(layoutThumbnailsArrangement, thumbnailSizePx, rows, constraints)
+        val featuredWidth = calculateFeaturedItemsWidth(layoutThumbnailsArrangement, thumbnailSizePx, columns, constraints)
+        val featuredHeight = calculateFeaturedItemsHeight(layoutThumbnailsArrangement, thumbnailSizePx, rows, constraints)
 
-        val featuredItemConstraints = constraints.copy(maxWidth = featuredItemWidth, maxHeight = featuredItemHeight)
-        val thumbnailItemConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
+        val featuredConstraints = constraints.copy(maxWidth = featuredWidth, maxHeight = featuredHeight)
+        val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
 
-        val (featuredItems, thumbnailItems) = measure(measurables, featuredItemConstraints, thumbnailItemConstraints)
+        val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
 
         val thumbnailsPadding = if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
         val featuredItemsPadding = calculateFeaturedItemsPadding(
             rows = rows,
             columns = columns,
-            featuredItemsCount = featuredItemsCount,
-            featuredItemConstraints = featuredItemConstraints,
+            featuredCount = featuredCount,
+            featuredConstraints = featuredConstraints,
             thumbnailsPadding = thumbnailsPadding,
             layoutConstraints = constraints
         )
 
         layout(constraints.maxWidth, constraints.maxHeight) {
             placeFeatured(
-                items = featuredItems,
+                placeables = featuredPlaceables,
                 rows = rows,
                 columns = columns,
-                featuredItemConstraints = featuredItemConstraints,
-                featuredItemsPadding = featuredItemsPadding,
-                thumbnailItemConstraints = thumbnailItemConstraints,
+                featuredConstraints = featuredConstraints,
+                featuredPadding = featuredItemsPadding,
+                thumbnailConstraints = thumbnailConstraints,
                 thumbnailsArrangement = layoutThumbnailsArrangement
             )
 
-            if (layoutThumbnailsArrangement != null && thumbnailItems.isNotEmpty()) {
+            if (layoutThumbnailsArrangement != null && thumbnailPlaceables.isNotEmpty()) {
                 placeThumbnails(
-                    items = thumbnailItems.take(thumbnailsCount),
+                    placeables = thumbnailPlaceables.take(thumbnailsCount),
                     thumbnailSize = thumbnailSizePx,
                     thumbnailsArrangement = layoutThumbnailsArrangement,
                     constraints = constraints
@@ -130,26 +130,26 @@ fun StreamGrid(
 }
 
 private fun Placeable.PlacementScope.placeFeatured(
-    items: List<Placeable>,
+    placeables: List<Placeable>,
     rows: Int,
     columns: Int,
-    featuredItemConstraints: Constraints,
-    featuredItemsPadding: Int,
-    thumbnailItemConstraints: Constraints,
+    featuredConstraints: Constraints,
+    featuredPadding: Int,
+    thumbnailConstraints: Constraints,
     thumbnailsArrangement: ThumbnailsArrangement?
 ) {
     val startX = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Left }
-        ?.let { thumbnailItemConstraints.maxWidth } ?: 0
+        ?.let { thumbnailConstraints.maxWidth } ?: 0
     val startY = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Top }
-        ?.let { thumbnailItemConstraints.maxHeight } ?: 0
+        ?.let { thumbnailConstraints.maxHeight } ?: 0
 
     var x = startX
     var y = startY
     var nRow = 0
 
-    val featuredHeight = featuredItemConstraints.maxHeight
-    val featuredWidth = featuredItemConstraints.maxWidth
-    items.forEachIndexed { index, placeable ->
+    val featuredHeight = featuredConstraints.maxHeight
+    val featuredWidth = featuredConstraints.maxWidth
+    placeables.forEachIndexed { index, placeable ->
         placeable.place(x, y)
 
         if (index % columns == columns - 1) {
@@ -161,7 +161,7 @@ private fun Placeable.PlacementScope.placeFeatured(
         }
 
         if (x == startX && nRow == rows - 1) {
-            x += featuredItemsPadding
+            x += featuredPadding
         }
     }
 }
@@ -190,13 +190,13 @@ private fun measure(
 private fun calculateFeaturedItemsPadding(
     rows: Int,
     columns: Int,
-    featuredItemsCount: Int,
-    featuredItemConstraints: Constraints,
+    featuredCount: Int,
+    featuredConstraints: Constraints,
     thumbnailsPadding: Int,
     layoutConstraints: Constraints
 ): Int {
-    val lastRowFeaturedItemsCount = featuredItemsCount - (columns * (rows - 1))
-    return (layoutConstraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredItemConstraints.maxWidth)) / 2
+    val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
+    return (layoutConstraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
 }
 
 private fun calculateFeaturedItemsWidth(
@@ -220,26 +220,26 @@ private fun calculateFeaturedItemsHeight(
 }
 
 private fun Placeable.PlacementScope.placeThumbnails(
-    items: List<Placeable>,
+    placeables: List<Placeable>,
     thumbnailSize: Int,
     thumbnailsArrangement: ThumbnailsArrangement,
     constraints: Constraints
 ) {
     val startX = when (thumbnailsArrangement) {
-        ThumbnailsArrangement.Top, ThumbnailsArrangement.Bottom -> (constraints.maxWidth - items.size * thumbnailSize) / 2
+        ThumbnailsArrangement.Top, ThumbnailsArrangement.Bottom -> (constraints.maxWidth - placeables.size * thumbnailSize) / 2
         ThumbnailsArrangement.Right -> constraints.maxWidth - thumbnailSize
         ThumbnailsArrangement.Left -> 0
     }
     val startY = when (thumbnailsArrangement) {
-        ThumbnailsArrangement.Left, ThumbnailsArrangement.Right -> (constraints.maxHeight - items.size * thumbnailSize) / 2
+        ThumbnailsArrangement.Left, ThumbnailsArrangement.Right -> (constraints.maxHeight - placeables.size * thumbnailSize) / 2
         ThumbnailsArrangement.Bottom -> constraints.maxHeight - thumbnailSize
         ThumbnailsArrangement.Top -> 0
     }
 
     if (thumbnailsArrangement.isVertical()) {
-        items.forEachIndexed { i, p -> p.place(x = startX + thumbnailSize * i, y = startY) }
+        placeables.forEachIndexed { i, p -> p.place(x = startX + thumbnailSize * i, y = startY) }
     } else {
-        items.forEachIndexed { i, p -> p.place(x = startX, y = startY + thumbnailSize * i) }
+        placeables.forEachIndexed { i, p -> p.place(x = startX, y = startY + thumbnailSize * i) }
     }
 }
 
