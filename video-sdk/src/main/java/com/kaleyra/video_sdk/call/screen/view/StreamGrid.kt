@@ -1,42 +1,19 @@
 package com.kaleyra.video_sdk.call.screen.view
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.AnimationVector2D
-import androidx.compose.animation.core.Spring.StiffnessMediumLow
-import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.LayoutScopeMarker
-import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.layout.intermediateLayout
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.round
 import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
-import kotlinx.coroutines.launch
 
 @Immutable
 internal enum class ThumbnailsArrangement {
@@ -47,15 +24,21 @@ internal enum class ThumbnailsArrangement {
     fun isVertical() = this == Top || this == Bottom
 }
 
-//@Composable
-//fun isPortraitOrientation(): State<Boolean> {
-//    val configuration = LocalConfiguration.current
-//    return remember {
-//        derivedStateOf {
-//            configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-//        }
-//    }
-//}
+@LayoutScopeMarker
+@Immutable
+internal object StreamGridScope {
+
+    @Stable
+    fun Modifier.pin(value: Boolean): Modifier {
+        return then(StreamParentData(pin = value))
+    }
+}
+
+internal class StreamParentData(
+    val pin: Boolean
+) : ParentDataModifier {
+    override fun Density.modifyParentData(parentData: Any?) = this@StreamParentData
+}
 
 @Composable
 internal fun StreamGrid(
@@ -214,77 +197,4 @@ private fun Placeable.PlacementScope.placeThumbnails(
     } else {
         placeables.forEachIndexed { i, p -> p.place(x = startX, y = startY + thumbnailSize * i) }
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-internal fun Modifier.animateConstraints(
-    animationSpec: AnimationSpec<IntSize> = spring()
-) = composed {
-    var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
-    var targetSize: IntSize by remember { mutableStateOf(IntSize.Zero) }
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { targetSize }.collect { target ->
-            val anim = animatable ?: Animatable(target, IntSize.VectorConverter).also {
-                animatable = it
-            }
-            if (anim.targetValue != target) {
-                launch { anim.animateTo(target, animationSpec) }
-            }
-        }
-    }
-
-    this@composed.intermediateLayout { measurable, _ ->
-        targetSize = lookaheadSize
-        val (width, height) = animatable?.value ?: lookaheadSize
-        val constraints = Constraints.fixed(width, height)
-
-        val placeable = measurable.measure(constraints)
-        layout(placeable.width, placeable.height) {
-            placeable.place(0, 0)
-        }
-    }
-}
-
-internal fun Modifier.animatePlacement(
-    initialOffset: IntOffset = IntOffset.Zero,
-    animationSpec: AnimationSpec<IntOffset> = spring(stiffness = StiffnessMediumLow)
-): Modifier = composed {
-    val scope = rememberCoroutineScope()
-    var animatable: Animatable<IntOffset, AnimationVector2D>? by remember { mutableStateOf(null) }
-    var targetOffset by remember { mutableStateOf(initialOffset) }
-
-    this
-        .onPlaced {
-            targetOffset = it
-                .positionInParent()
-                .round()
-        }
-        .offset {
-            val anim = animatable ?: Animatable(targetOffset, IntOffset.VectorConverter).also {
-                animatable = it
-            }
-            if (anim.targetValue != targetOffset) {
-                scope.launch {
-                    anim.animateTo(targetOffset, animationSpec)
-                }
-            }
-            anim.value - targetOffset
-        }
-}
-
-@LayoutScopeMarker
-@Immutable
-internal object StreamGridScope {
-
-    @Stable
-    fun Modifier.pin(value: Boolean): Modifier {
-        return then(StreamParentData(pin = value))
-    }
-}
-
-internal class StreamParentData(
-    val pin: Boolean
-) : ParentDataModifier {
-    override fun Density.modifyParentData(parentData: Any?) = this@StreamParentData
 }
