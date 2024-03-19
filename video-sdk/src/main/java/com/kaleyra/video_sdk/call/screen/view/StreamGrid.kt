@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.screen.view
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector2D
@@ -13,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +28,6 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.intermediateLayout
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
@@ -39,12 +35,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.round
-import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeWidth
+import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 
 @Immutable
-enum class ThumbnailsArrangement {
+internal enum class ThumbnailsArrangement {
     Top, Start, Bottom, End;
 
     fun isHorizontal() = this == Start || this == End
@@ -52,27 +47,25 @@ enum class ThumbnailsArrangement {
     fun isVertical() = this == Top || this == Bottom
 }
 
-@Composable
-fun isPortraitOrientation(): State<Boolean> {
-    val configuration = LocalConfiguration.current
-    return remember {
-        derivedStateOf {
-            configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        }
-    }
-}
+//@Composable
+//fun isPortraitOrientation(): State<Boolean> {
+//    val configuration = LocalConfiguration.current
+//    return remember {
+//        derivedStateOf {
+//            configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+//        }
+//    }
+//}
 
 @Composable
-fun StreamGrid(
+internal fun StreamGrid(
     modifier: Modifier = Modifier,
-    maxWidth: Dp,
     thumbnailSize: Dp,
     thumbnailsArrangement: ThumbnailsArrangement,
     thumbnailsCount: Int,
     streams: @Composable () -> Unit
 ) {
     val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }
-    val isPortrait by isPortraitOrientation()
 
     Layout(
         content = streams,
@@ -86,12 +79,12 @@ fun StreamGrid(
         val featuredCount = pinnedCount.takeIf { it != 0 } ?: measurables.size
         val layoutThumbnailsArrangement = thumbnailsArrangement.takeIf { pinnedCount > 0 }
 
-        val (rows, columns) = calculateRowsAndColumns(isPortrait, maxWidth, featuredCount)
+        val featuredContainerWidth = constraints.maxWidth - if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
+        val featuredContainerHeight = constraints.maxHeight - if (layoutThumbnailsArrangement?.isVertical() == true) thumbnailSizePx else 0
 
-        val featuredWidth = calculateFeaturedItemsWidth(layoutThumbnailsArrangement, thumbnailSizePx, columns, constraints)
-        val featuredHeight = calculateFeaturedItemsHeight(layoutThumbnailsArrangement, thumbnailSizePx, rows, constraints)
+        val (rows, columns, featuredSize) = StreamGridHelper.calculateGridAndFeaturedSize(featuredContainerWidth, featuredContainerHeight, featuredCount)
 
-        val featuredConstraints = constraints.copy(maxWidth = featuredWidth, maxHeight = featuredHeight)
+        val featuredConstraints = constraints.copy(maxWidth = featuredSize.width, maxHeight = featuredSize.height)
         val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
 
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
@@ -199,26 +192,6 @@ private fun calculateFeaturedItemsPadding(
     return (layoutConstraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
 }
 
-private fun calculateFeaturedItemsWidth(
-    thumbnailsArrangement: ThumbnailsArrangement?,
-    thumbnailSize: Int,
-    columns: Int,
-    constraints: Constraints
-): Int {
-    return if (thumbnailsArrangement == null || thumbnailsArrangement.isVertical()) constraints.maxWidth / columns
-    else (constraints.maxWidth - thumbnailSize) / columns
-}
-
-private fun calculateFeaturedItemsHeight(
-    thumbnailsArrangement: ThumbnailsArrangement?,
-    thumbnailSize: Int,
-    rows: Int,
-    constraints: Constraints
-): Int {
-    return if (thumbnailsArrangement == null || thumbnailsArrangement.isHorizontal()) constraints.maxHeight / rows
-    else (constraints.maxHeight - thumbnailSize) / rows
-}
-
 private fun Placeable.PlacementScope.placeThumbnails(
     placeables: List<Placeable>,
     thumbnailSize: Int,
@@ -243,37 +216,8 @@ private fun Placeable.PlacementScope.placeThumbnails(
     }
 }
 
-fun calculateRowsAndColumns(isPortrait: Boolean, maxWidth: Dp, itemsCount: Int): Pair<Int, Int> {
-    val isAtLeastMediumSizeWidth = maxWidth.isAtLeastMediumSizeWidth()
-    val columns: Int
-    val rows: Int
-    when {
-        isPortrait -> {
-            columns = when {
-                isAtLeastMediumSizeWidth && itemsCount < 3 -> 1
-                isAtLeastMediumSizeWidth && itemsCount < 5 -> 2
-                itemsCount < 4 -> 1
-                itemsCount == 4 -> 2
-                else -> ceil(itemsCount / 4f).toInt()
-            }
-            rows = ceil(itemsCount / columns.toFloat()).toInt()
-        }
-
-        else -> {
-            rows = when {
-                itemsCount < 4 -> 1
-                itemsCount == 4 -> 2
-                else -> ceil(itemsCount / 4f).toInt()
-            }
-            columns = ceil(itemsCount / rows.toFloat()).toInt()
-        }
-    }
-
-    return rows to columns
-}
-
 @OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.animateConstraints(
+internal fun Modifier.animateConstraints(
     animationSpec: AnimationSpec<IntSize> = spring()
 ) = composed {
     var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
@@ -302,7 +246,7 @@ fun Modifier.animateConstraints(
     }
 }
 
-fun Modifier.animatePlacement(
+internal fun Modifier.animatePlacement(
     initialOffset: IntOffset = IntOffset.Zero,
     animationSpec: AnimationSpec<IntOffset> = spring(stiffness = StiffnessMediumLow)
 ): Modifier = composed {
@@ -331,7 +275,7 @@ fun Modifier.animatePlacement(
 
 @LayoutScopeMarker
 @Immutable
-object StreamGridScope {
+internal object StreamGridScope {
 
     @Stable
     fun Modifier.pin(value: Boolean): Modifier {
@@ -339,7 +283,7 @@ object StreamGridScope {
     }
 }
 
-class StreamParentData(
+internal class StreamParentData(
     val pin: Boolean
 ) : ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?) = this@StreamParentData
