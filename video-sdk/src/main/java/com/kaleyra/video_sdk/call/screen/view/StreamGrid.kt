@@ -73,14 +73,8 @@ internal fun StreamGrid(
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
 
         val thumbnailsPadding = if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
-        val featuredItemsPadding = calculateFeaturedItemsPadding(
-            rows = rows,
-            columns = columns,
-            featuredCount = featuredCount,
-            featuredConstraints = featuredConstraints,
-            thumbnailsPadding = thumbnailsPadding,
-            layoutConstraints = constraints
-        )
+        val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
+        val featuredItemsPadding = (constraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
 
         layout(constraints.maxWidth, constraints.maxHeight) {
             placeFeatured(
@@ -102,6 +96,27 @@ internal fun StreamGrid(
                 )
             }
         }
+    }
+}
+
+private fun measure(
+    measurables: List<Measurable>,
+    featuredItemConstraints: Constraints,
+    thumbnailItemConstraints: Constraints
+): Pair<List<Placeable>, List<Placeable>> {
+    val isAnyItemPinned = measurables.all { (it.parentData as? StreamParentData)?.pin != true }
+
+    return if (isAnyItemPinned) {
+        measurables.map { it.measure(featuredItemConstraints) } to listOf()
+    } else {
+        val featuredItems = mutableListOf<Placeable>()
+        val thumbnailItems = mutableListOf<Placeable>()
+        measurables.map { measurable ->
+            val isPinned = (measurable.parentData as? StreamParentData)?.pin == true
+            if (isPinned) featuredItems.add(measurable.measure(featuredItemConstraints))
+            else thumbnailItems.add(measurable.measure(thumbnailItemConstraints))
+        }
+        featuredItems to thumbnailItems
     }
 }
 
@@ -140,39 +155,6 @@ private fun Placeable.PlacementScope.placeFeatured(
             x += featuredPadding
         }
     }
-}
-
-private fun measure(
-    measurables: List<Measurable>,
-    featuredItemConstraints: Constraints,
-    thumbnailItemConstraints: Constraints
-): Pair<List<Placeable>, List<Placeable>> {
-    val isAnyItemPinned = measurables.all { (it.parentData as? StreamParentData)?.pin != true }
-
-    return if (isAnyItemPinned) {
-        measurables.map { it.measure(featuredItemConstraints) } to listOf()
-    } else {
-        val featuredItems = mutableListOf<Placeable>()
-        val thumbnailItems = mutableListOf<Placeable>()
-        measurables.map { measurable ->
-            val isPinned = (measurable.parentData as? StreamParentData)?.pin == true
-            if (isPinned) featuredItems.add(measurable.measure(featuredItemConstraints))
-            else thumbnailItems.add(measurable.measure(thumbnailItemConstraints))
-        }
-        featuredItems to thumbnailItems
-    }
-}
-
-private fun calculateFeaturedItemsPadding(
-    rows: Int,
-    columns: Int,
-    featuredCount: Int,
-    featuredConstraints: Constraints,
-    thumbnailsPadding: Int,
-    layoutConstraints: Constraints
-): Int {
-    val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
-    return (layoutConstraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
 }
 
 private fun Placeable.PlacementScope.placeThumbnails(
