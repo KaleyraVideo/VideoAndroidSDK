@@ -46,12 +46,12 @@ internal fun StreamGrid(
     thumbnailSize: Dp,
     thumbnailsArrangement: ThumbnailsArrangement,
     thumbnailsCount: Int,
-    streams: @Composable () -> Unit
+    content: @Composable StreamGridScope.() -> Unit
 ) {
     val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }
 
     Layout(
-        content = streams,
+        content = { StreamGridScope.content() } ,
         modifier = modifier
     ) { measurables, constraints ->
         check(constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
