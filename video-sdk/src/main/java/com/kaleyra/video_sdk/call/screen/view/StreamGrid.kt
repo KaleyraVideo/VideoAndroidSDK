@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
 
 @Immutable
@@ -65,7 +66,7 @@ internal fun StreamGrid(
         val featuredContainerWidth = constraints.maxWidth - if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
         val featuredContainerHeight = constraints.maxHeight - if (layoutThumbnailsArrangement?.isVertical() == true) thumbnailSizePx else 0
 
-        val (rows, columns, featuredSize) = StreamGridHelper.calculateGridAndFeaturedSize(featuredContainerWidth, featuredContainerHeight, featuredCount)
+        val (rows, columns, featuredSize) = calculateGridAndFeaturedSize(featuredContainerWidth, featuredContainerHeight, featuredCount)
 
         val featuredConstraints = constraints.copy(maxWidth = featuredSize.width, maxHeight = featuredSize.height)
         val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
@@ -96,6 +97,16 @@ internal fun StreamGrid(
                 )
             }
         }
+    }
+}
+
+private fun calculateGridAndFeaturedSize(containerWidth: Int, containerHeight: Int, itemsCount: Int): Triple<Int, Int, IntSize> {
+    // Apply the StreamGridHelper.calculateGridAndFeaturedSize logic only for more than 3 items
+    // in order to have the same stream layout up to 3 items on both Android and iOS sdks
+    return when {
+        itemsCount > 3 -> StreamGridHelper.calculateGridAndFeaturedSize(containerWidth, containerHeight, itemsCount)
+        containerWidth >= containerHeight -> Triple(1, itemsCount, IntSize(containerWidth / itemsCount, containerHeight))
+        else -> Triple(itemsCount, 1, IntSize(containerWidth,containerHeight / itemsCount))
     }
 }
 
