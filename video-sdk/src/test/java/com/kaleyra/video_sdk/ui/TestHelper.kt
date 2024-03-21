@@ -65,10 +65,35 @@ internal fun SemanticsNodeInteraction.performHorizontalSwipe(amount: Float) {
     }
 }
 
-internal fun SemanticsNodeInteraction.assertRightPositionInRootIsEqualTo(
-    expectedRight: Dp
+internal fun SemanticsNodeInteraction.assertLeftPositionInRootIsEqualTo(
+    expectedRight: Dp,
+    tolerance: Dp = Dp(.5f)
 ): SemanticsNodeInteraction {
-    getUnclippedBoundsInRoot().right.assertIsEqualTo(expectedRight, "right")
+    getUnclippedBoundsInRoot().left.assertIsEqualTo(expectedRight, "left", tolerance)
+    return this
+}
+
+internal fun SemanticsNodeInteraction.assertTopPositionInRootIsEqualTo(
+    expectedRight: Dp,
+    tolerance: Dp = Dp(.5f)
+): SemanticsNodeInteraction {
+    getUnclippedBoundsInRoot().top.assertIsEqualTo(expectedRight, "top", tolerance)
+    return this
+}
+
+internal fun SemanticsNodeInteraction.assertRightPositionInRootIsEqualTo(
+    expectedRight: Dp,
+    tolerance: Dp = Dp(.5f)
+): SemanticsNodeInteraction {
+    getUnclippedBoundsInRoot().right.assertIsEqualTo(expectedRight, "right", tolerance)
+    return this
+}
+
+internal fun SemanticsNodeInteraction.assertBottomPositionInRootIsEqualTo(
+    expectedBottom: Dp,
+    tolerance: Dp = Dp(.5f)
+): SemanticsNodeInteraction {
+    getUnclippedBoundsInRoot().bottom.assertIsEqualTo(expectedBottom, "bottom", tolerance)
     return this
 }
 
