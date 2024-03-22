@@ -137,9 +137,9 @@ object KaleyraVideo {
          * Push Notification Interceptor Option to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
          * from integrating app
          */
-    var pushNotificationInterceptorOption = PushNotificationInterceptorOption.Automatic
+    var pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
         set(value) {
-            KaleyraVideoSharedPrefs.putPushNotificationInterceptorOption(value)
+            KaleyraVideoSharedPrefs.putPushNotificationHandlingStrategy(value)
             field = value
         }
 

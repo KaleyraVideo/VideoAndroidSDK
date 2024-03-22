@@ -29,7 +29,7 @@ import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.KaleyraVideoService
-import com.kaleyra.video_common_ui.PushNotificationInterceptorOption
+import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
@@ -48,7 +48,7 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                 KaleyraVideo.configure(configuration)
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Disabled
-                KaleyraVideo.pushNotificationInterceptorOption = PushNotificationInterceptorOption.Automatic
+                KaleyraVideo.pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
                 KaleyraVideo.theme =
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,

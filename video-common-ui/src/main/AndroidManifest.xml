@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +35,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <queries>
         <intent>
@@ -60,9 +59,40 @@
         <service android:name=".connectionservice.ProximityService" />
 
         <receiver
-            android:name=".notification.CallNotificationActionReceiver"
-            android:exported="false">
+            android:name=".notification.receiver.fcm.FcmPushNotificationReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="999">
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".notification.receiver.hms.HmsPushNotificationReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <!-- Mandatory, be used to receive messages. -->
+                <action android:name="com.huawei.android.push.intent.RECEIVE" />
+                <!-- Mandatory, be used to receive notification bar message click event. -->
+                <action android:name="com.huawei.intent.action.PUSH_DELAY_NOTIFY" />
+                <!-- Optional, compatible with old huawei phones. -->
+                <action android:name="com.huawei.intent.action.PUSH" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".notification.receiver.hms.HmsStubPushNotificationService"
+            android:exported="false">
+            <intent-filter android:priority="999">
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".notification.CallNotificationActionReceiver"
+            android:exported="false" />
+
         <receiver
             android:name=".notification.ChatNotificationActionReceiver"
             android:exported="false">
@@ -81,8 +111,7 @@
         </receiver>
         <receiver
             android:name=".notification.fileshare.FileShareNotificationActionReceiver"
-            android:exported="false">
-        </receiver>
+            android:exported="false"></receiver>
         <receiver
             android:name=".notification.fileshare.FileShareVisibilityObserver"
             android:exported="false">
@@ -92,7 +121,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.kaleyra.video_common_ui.termsandconditions.notification.NotificationDisposer"/>
+        <receiver android:name="com.kaleyra.video_common_ui.termsandconditions.notification.NotificationDisposer" />
     </application>
 
 </manifest>
