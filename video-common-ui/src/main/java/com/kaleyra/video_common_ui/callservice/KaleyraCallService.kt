@@ -19,7 +19,6 @@ package com.kaleyra.video_common_ui.callservice
 import android.app.Notification
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.Synchronization
@@ -81,8 +80,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
         super.onStartCommand(intent, flags, startId)
         intent?.extras ?: stopSelf().also { return START_NOT_STICKY  }
 
-        Log.e("SERVICE", "onstartcommand")
-
         MainScope().launch {
             if (!KaleyraVideo.isConfigured) {
                 val requestConnectUserId = intent!!.extras!!.getString(REQUEST_CONNECT_USER_ID) ?: run {
@@ -92,7 +89,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
                 if (!hasConfigured) {
                     stopSelf()
                     if (!AppLifecycle.isInForeground.value) KaleyraVideo.disconnect()
-                    Log.e("SERVICE", "has not configured")
                     com.kaleyra.video_common_ui.notification.NotificationManager.cancel(CALL_NOTIFICATION_ID)
                     return@launch
                 }
@@ -100,7 +96,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
                 if (!hasConnected) {
                     stopSelf()
                     if (!AppLifecycle.isInForeground.value) KaleyraVideo.disconnect()
-                    Log.e("SERVICE", "has not connected")
                     com.kaleyra.video_common_ui.notification.NotificationManager.cancel(CALL_NOTIFICATION_ID)
                     return@launch
                 }
@@ -111,7 +106,6 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
                     com.kaleyra.video_common_ui.notification.NotificationManager.cancel(CALL_NOTIFICATION_ID)
                     return@launch
                 }
-                Log.e("SERVICE", "has synchronized")
             }
             val call = KaleyraVideo.conference.call.replayCache.first().apply {
                 call = this
