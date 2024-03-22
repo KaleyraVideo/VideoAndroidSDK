@@ -23,7 +23,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.State
 import com.kaleyra.video_common_ui.ChatActivity
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
@@ -42,7 +42,7 @@ internal class GlassChatActivity : ChatActivity(), com.kaleyra.video_glasses_sdk
     private lateinit var binding: KaleyraChatActivityGlassBinding
 
     override val viewModel: GlassChatViewModel by viewModels {
-        GlassChatViewModel.provideFactory(::requestConfiguration)
+        GlassChatViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     }
     private var glassTouchEventManager: com.kaleyra.video_glasses_sdk.GlassTouchEventManager? = null
 

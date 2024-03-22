@@ -28,7 +28,7 @@ abstract class KaleyraVideoBroadcastReceiver : BroadcastReceiver() {
      * @return true if is configured, false otherwise
      **/
     suspend fun requestConfigure(): Boolean {
-        if (!KaleyraVideo.isConfigured) KaleyraVideoService.get()?.onRequestKaleyraVideoConfigure()
+        requestConfiguration()
         return KaleyraVideo.isConfigured
     }
 }

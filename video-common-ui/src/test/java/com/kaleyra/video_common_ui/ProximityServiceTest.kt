@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.test.core.app.ApplicationProvider
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.TestUtils.getPrivateField
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
@@ -55,11 +56,12 @@ class ProximityServiceTest {
     @Before
     fun setup() {
         service = Robolectric.setupService(ProximityService::class.java)
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
         mockkConstructor(CallProximityDelegate::class)
         mockkConstructor(CallRecordingTextToSpeechNotifier::class)
         mockkConstructor(AwaitingParticipantsTextToSpeechNotifier::class)
         mockkConstructor(CallParticipantMutedTextToSpeechNotifier::class)
-        mockkObject(KaleyraVideo)
         mockkObject(CallExtensions)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
         every { KaleyraVideo.onCallReady(any(), captureCoroutine()) } answers {

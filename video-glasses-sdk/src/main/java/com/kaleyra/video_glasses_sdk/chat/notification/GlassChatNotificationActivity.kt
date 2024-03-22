@@ -201,7 +201,13 @@ internal class GlassChatNotificationActivity : AppCompatActivity(), com.kaleyra.
             isLayoutExpanded = true
             binding.kaleyraMessage.maxLines = Int.MAX_VALUE
             val chat = getChat(intent)
-            chat?.let { KaleyraVideo.conversation.show(this@GlassChatNotificationActivity, it) }
+            chat?.let {
+                KaleyraVideo.conversation.show(
+                    this@GlassChatNotificationActivity,
+                    KaleyraVideo.connectedUser.value!!.userId,
+                    it
+                )
+            }
             finishAndRemoveTask()
         }
     }

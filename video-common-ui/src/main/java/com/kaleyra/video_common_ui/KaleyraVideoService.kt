@@ -23,11 +23,15 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.kaleyra.video.State
 import com.kaleyra.video_common_ui.common.BoundService
 import com.kaleyra.video_common_ui.common.BoundServiceBinder
 import com.kaleyra.video_utils.ContextRetainer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -51,7 +55,12 @@ abstract class KaleyraVideoService : BoundService() {
     /**
      * Abstract callback that is called when the KaleyraVideoSDK is required to be configured in order to let KaleyraVideoSDK function properly
      */
-    abstract suspend fun onRequestKaleyraVideoConfigure()
+    abstract fun onRequestKaleyraVideoConfigure()
+
+    /**
+     * Abstract callback that is called when the KaleyraVideoSDK is required to be connected to let KaleyraVideoSDK function properly
+     */
+    abstract fun onRequestKaleyraVideoConnect()
 }
 
 @SuppressLint("QueryPermissionsNeeded")
@@ -78,9 +87,57 @@ private suspend fun getKaleyraVideoService(): KaleyraVideoService? = with(Contex
             }, 0)
             continuation.invokeOnCancellation {
                 Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be configured via KaleyraVideoService implementation, but no configuration has been received." +
-                    "Please implement KaleyraVideoService as requested in order to configure KaleyraVideoSDK when needed." +
-                    "For further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
+                    "\nPlease implement KaleyraVideoService as requested in order to configure KaleyraVideoSDK when needed." +
+                    "\nFor further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
             }
         }
     }
+}
+
+/**
+ * Request a new Configuration via KaleyraVideoService implementation
+ * @return CollaborationViewModel.Configuration returns the required configuration if the procedure succeed, a failure error otherwise.
+ * @return Boolean true if configure has been called, false otherwise
+ */
+internal suspend fun requestConfiguration(): Boolean {
+    if (!KaleyraVideo.isConfigured) KaleyraVideoService.get()?.onRequestKaleyraVideoConfigure()
+    if (!KaleyraVideo.isConfigured) Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be configured via KaleyraVideoService implementation, but no configuration has been received." +
+        "\nPlease implement KaleyraVideoService as requested in order to configure KaleyraVideoSDK when needed." +
+        "\nFor further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
+    return KaleyraVideo.isConfigured
+}
+
+/**
+ * Request a new connection via KaleyraVideoService implementation
+ * @param userId String? optional user id of the user to be connected via KaleyraVideo sdk
+ * @return Boolean true if connection has been called, false otherwise
+ */
+internal suspend fun requestConnect(userId: String? = null): Boolean {
+    if (KaleyraVideo.state.value !is State.Disconnected) return true
+
+    KaleyraVideoService.get()?.onRequestKaleyraVideoConnect()
+
+    val result = withTimeoutOrNull(500) {
+        KaleyraVideo.state.first { it !is State.Disconnected }
+    }
+
+    if (result == null) {
+        Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be connected with userId $userId via KaleyraVideoService implementation, but no connect api has been called." +
+            "\nPlease implement KaleyraVideoService as requested in order to connect KaleyraVideoSDK when needed." +
+            "\nFor further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
+        KaleyraVideo.disconnect()
+        return false
+    }
+
+    KaleyraVideo.state.first { it is State.Connected }
+
+    if (userId != null && KaleyraVideo.connectedUser.value?.userId != userId) {
+        Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be connected with userId $userId via KaleyraVideoService implementation, connect api has been called with another userId." +
+            "\nPlease implement KaleyraVideoService as requested in order to connect KaleyraVideoSDK when needed." +
+            "\nFor further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
+        KaleyraVideo.disconnect()
+        return false
+    }
+
+    return true
 }

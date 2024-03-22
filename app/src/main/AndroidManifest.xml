@@ -98,13 +98,19 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <!-- Huawei Notification Service -->
+
         <service
             android:name=".notification.HuaweiNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
-        </service> <!-- Pushy Notification Receiver -->
+        </service>
+
+        <!-- Pushy Notification Receiver -->
+
         <receiver
             android:name=".notification.PushyNotificationService"
             android:exported="false">
@@ -114,6 +120,7 @@
                 <action android:name="pushy.me" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

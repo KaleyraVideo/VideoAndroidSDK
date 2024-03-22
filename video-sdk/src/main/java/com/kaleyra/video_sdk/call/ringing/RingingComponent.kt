@@ -59,7 +59,7 @@ import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.call.countdowntimer.rememberCountdownTimerState
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 
 /**
@@ -81,7 +81,7 @@ val WaitingForOtherAvatarPadding = DefaultStreamAvatarSize / 2 + 24.dp
 internal fun RingingComponent(
     modifier: Modifier = Modifier,
     viewModel: RingingViewModel = viewModel(
-        factory = RingingViewModel.provideFactory(::requestConfiguration)
+        factory = RingingViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     isDarkTheme: Boolean = false,
     onBackPressed: () -> Unit

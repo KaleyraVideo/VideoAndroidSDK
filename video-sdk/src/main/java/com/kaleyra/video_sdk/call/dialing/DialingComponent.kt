@@ -30,7 +30,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 
 /**
@@ -42,7 +42,7 @@ const val DialingContentTag = "DialingContentTag"
 internal fun DialingComponent(
     modifier: Modifier = Modifier,
     viewModel: DialingViewModel = viewModel(
-        factory = DialingViewModel.provideFactory(::requestConfiguration)
+        factory = DialingViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onBackPressed: () -> Unit
 ) {

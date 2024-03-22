@@ -42,16 +42,16 @@ class FCMNotificationService : FirebaseMessagingService() {
      */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+        Log.e("PUSH", "received in app FCM receiver")
         try {
             val payload = remoteMessage.data["message"]
-            Log.d(TAG, "payload received: $payload")
+            Log.d(TAG, "FCM push notification payload received in KaleyraVideoSDK Demo App: $payload")
+            val isMissingPayloadNotification = isMissingCallMessage(payload)
+            if (!isMissingPayloadNotification) return
             val data = Builder()
                 .putString("payload", payload)
                 .build()
-            val mRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(
-                if (isMissingCallMessage(payload)) MissedNotificationPayloadWorker::class.java
-                else PushNotificationPayloadWorker::class.java
-            )
+            val mRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(MissedNotificationPayloadWorker::class.java)
                 .setInputData(data)
                 .build()
             WorkManager.getInstance(applicationContext).enqueue(mRequest)

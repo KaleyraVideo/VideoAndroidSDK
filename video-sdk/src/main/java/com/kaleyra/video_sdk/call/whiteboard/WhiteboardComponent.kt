@@ -18,7 +18,6 @@ package com.kaleyra.video_sdk.call.whiteboard
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -32,7 +31,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorState
@@ -47,13 +46,12 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
-import kotlinx.coroutines.flow.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun WhiteboardComponent(
     viewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = WhiteboardViewModel.provideFactory(::requestConfiguration, WhiteboardView(LocalContext.current))
+        factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     modifier: Modifier = Modifier
 ) {

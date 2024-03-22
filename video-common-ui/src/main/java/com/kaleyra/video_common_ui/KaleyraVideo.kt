@@ -130,6 +130,19 @@ object KaleyraVideo {
          */
     var theme: CompanyUI.Theme? = null
 
+
+    @get:Synchronized
+    @set:Synchronized
+        /**
+         * Push Notification Interceptor Option to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
+         * from integrating app
+         */
+    var pushNotificationInterceptorOption = PushNotificationInterceptorOption.Automatic
+        set(value) {
+            KaleyraVideoSharedPrefs.putPushNotificationInterceptorOption(value)
+            field = value
+        }
+
     /**
      * Configure
      *
@@ -200,6 +213,7 @@ object KaleyraVideo {
      */
     fun connect(userId: String, accessTokenProvider: AccessTokenProvider): Deferred<User> = CompletableDeferred<User>().apply {
         serialScope.launchBlocking {
+            requestConfiguration()
             logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo...")
             val connect = collaboration?.connect(userId, accessTokenProvider)
             if (connect == null) {
@@ -240,6 +254,7 @@ object KaleyraVideo {
      */
     fun connect(accessLink: String): Deferred<User> = CompletableDeferred<User>().apply {
         serialScope.launchBlocking {
+            requestConfiguration()
             val connect = collaboration?.connect(accessLink) ?: return@launchBlocking
             connect.awaitResult { result ->
                 if (result.isFailure) completeExceptionally(CancellationException(result.exceptionOrNull()?.message))

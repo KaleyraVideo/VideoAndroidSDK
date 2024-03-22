@@ -32,13 +32,13 @@ import com.kaleyra.video_sdk.call.virtualbackground.view.VirtualBackgroundConten
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 
 @Composable
 internal fun VirtualBackgroundComponent(
     viewModel: VirtualBackgroundViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = VirtualBackgroundViewModel.provideFactory(::requestConfiguration)
+        factory = VirtualBackgroundViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onItemClick: (VirtualBackgroundUi) -> Unit,
     onCloseClick: () -> Unit,

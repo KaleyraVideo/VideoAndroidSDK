@@ -88,7 +88,7 @@ class ConversationUI(
      * @param context context to bind the chat ui
      * @param chat The chat object that should be shown.
      */
-    fun show(context: Context, chat: ChatUI) {
+    fun show(context: Context, loggedUserId: String, chat: ChatUI) {
         chatScope.launch {
             val userIds = chat.participants.value.list.map { it.userId }
             ContactDetailsManager.refreshContactDetails(*userIds.toTypedArray())
@@ -96,6 +96,7 @@ class ConversationUI(
         KaleyraUIProvider.startChatActivity(
             context,
             chatActivityClazz,
+            loggedUserId,
             chat.participants.value.others.map { it.userId },
             chat.id.takeIf { chat.participants.value.others.size > 1 }
         )
@@ -111,7 +112,9 @@ class ConversationUI(
      * @param context launching context of the chat ui
      * @param userId the user id of the user to chat with
      */
-    fun chat(context: Context, userId: String): Result<ChatUI> = create(userId).onSuccess { show(context, it) }
+    fun chat(context: Context, userId: String): Result<ChatUI> = create(userId).onSuccess {
+        show(context, KaleyraVideo.connectedUser.value!!.userId, it)
+    }
 
     private fun listenToMessages() {
         var msgsScope: CoroutineScope? = null

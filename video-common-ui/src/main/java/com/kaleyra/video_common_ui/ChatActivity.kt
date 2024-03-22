@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video_common_ui.notification.DisplayedChatActivity
@@ -27,6 +28,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class ChatActivity : FragmentActivity() {
+
+    companion object {
+        internal const val LOGGED_USER_ID_KEY = "loggedUserId"
+        internal const val CHAT_ID_KEY = "chatId"
+        internal const val USER_IDS_KEY = "userIds"
+    }
 
     protected abstract val viewModel: ChatViewModel
 
@@ -53,21 +60,26 @@ abstract class ChatActivity : FragmentActivity() {
     }
 
     private fun setChatOrCloseActivity(intent: Intent) = lifecycleScope.launch {
-        when {
-            !viewModel.isCollaborationConfigured.first() -> ContextRetainer.context.goToLaunchingActivity()
-            setChat(intent) -> return@launch
+        runCatching {
+            when {
+                !viewModel.isCollaborationConfigured.first() -> ContextRetainer.context.goToLaunchingActivity()
+                setChat(intent) -> return@launch
+            }
+            finishAndRemoveTask()
+        }.onFailure {
+            Log.e("ERROR", "${it.message}")
         }
-        finishAndRemoveTask()
     }
 
     private suspend fun setChat(intent: Intent): Boolean {
-        val userIds = intent.extras?.getStringArray("userIds") ?: return false
-        val chatId = intent.extras?.getString("chatId")
+        val loggedUserId = intent.extras?.getString(LOGGED_USER_ID_KEY) ?: return false
+        val userIds = intent.extras?.getStringArray(USER_IDS_KEY) ?: return false
+        val chatId = intent.extras?.getString(CHAT_ID_KEY)
         if (userIds.size > 1 && chatId == null) return false
         val chat = if (userIds.size > 1) {
             return false
         } else {
-            viewModel.setChat(userIds.first()) ?: return false
+            viewModel.setChat(loggedUserId, userIds.first()) ?: return false
         }
         this@ChatActivity.chatId = chat.id
         sendChatAction(DisplayedChatActivity.ACTION_CHAT_VISIBLE, chat.id)

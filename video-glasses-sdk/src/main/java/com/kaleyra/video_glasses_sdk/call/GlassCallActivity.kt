@@ -44,7 +44,7 @@ import com.kaleyra.video_common_ui.call.widget.LivePointerView
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
@@ -104,7 +104,7 @@ internal class GlassCallActivity :
     private lateinit var binding: KaleyraCallActivityGlassBinding
 
     private val viewModel: CallViewModel by viewModels {
-        CallViewModel.provideFactory(::requestConfiguration, CallAudioManager(this))
+        CallViewModel.provideFactory(::requestCollaborationViewModelConfiguration, CallAudioManager(this))
     }
 
     private var glassTouchEventManager: com.kaleyra.video_glasses_sdk.GlassTouchEventManager? = null

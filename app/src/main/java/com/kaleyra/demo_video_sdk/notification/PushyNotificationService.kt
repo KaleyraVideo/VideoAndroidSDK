@@ -31,7 +31,7 @@ class PushyNotificationService : PushyCompat() {
     override fun onReceive(context: Context, intent: Intent) {
         try {
             val payload = intent.getStringExtra("payload")
-            Log.d(TAG, "Pushy payload received: $payload")
+            Log.d(TAG, "Push push notification payload received in KaleyraVideoSDK Demo App: $payload")
             val data = Builder()
                 .putString("payload", payload)
                 .build()

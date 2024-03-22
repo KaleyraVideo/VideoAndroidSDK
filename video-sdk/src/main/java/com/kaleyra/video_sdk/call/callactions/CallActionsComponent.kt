@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
@@ -39,7 +39,7 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun CallActionsComponent(
     viewModel: CallActionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallActionsViewModel.provideFactory(::requestConfiguration,)
+        factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration,)
     ),
     onItemClick: (action: CallAction) -> Unit,
     isDarkTheme: Boolean = false,

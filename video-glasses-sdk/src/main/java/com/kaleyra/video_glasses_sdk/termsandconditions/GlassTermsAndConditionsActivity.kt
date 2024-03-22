@@ -25,7 +25,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.termsandconditions.model.TermsAndConditions
 import com.kaleyra.video_common_ui.termsandconditions.constants.Constants.EXTRA_TERMS_AND_CONDITIONS_CONFIGURATION
 import com.kaleyra.video_common_ui.termsandconditions.extensions.TermsAndConditionsExt.decline
@@ -48,7 +48,7 @@ internal class GlassTermsAndConditionsActivity : AppCompatActivity(), OnDestinat
     private lateinit var binding: KaleyraActivityTermsAndConditionsGlassBinding
 
     private val viewModel: TermsAndConditionsViewModel by viewModels {
-        TermsAndConditionsViewModel.provideFactory(::requestConfiguration)
+        TermsAndConditionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     }
 
     private var glassTouchEventManager: com.kaleyra.video_glasses_sdk.GlassTouchEventManager? = null

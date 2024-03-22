@@ -16,7 +16,10 @@
 
 package com.kaleyra.video_common_ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
+import com.kaleyra.video.Synchronization
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
@@ -60,8 +63,20 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
      * @param userId String the other participant's userId
      * @return ChatUI? the retrieved ChatUI if available
      */
-    suspend fun setChat(userId: String): ChatUI? {
+    suspend fun setChat(loggedUserId: String, userId: String): ChatUI? {
         val conversation = conversation.first()
+
+        if (!KaleyraVideo.isConfigured) {
+            val hasConfigured = requestConfiguration()
+            if (!hasConfigured) return null
+        }
+
+        if (KaleyraVideo.conversation.state.value is State.Disconnected) {
+            val hasConnected = requestConnect(loggedUserId)
+            if (!hasConnected) return null
+            KaleyraVideo.conversation.state.first { it is State.Connected }
+        }
+
         val chat = conversation.create(userId).getOrNull() ?: return null
         _chat.tryEmit(chat)
         return chat

@@ -69,7 +69,7 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
@@ -294,7 +294,7 @@ internal class CallScreenState(
 @Composable
 internal fun CallScreen(
     viewModel: CallViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallViewModel.provideFactory(::requestConfiguration)
+        factory = CallViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     shouldShowFileShareComponent: Boolean,
     isInPipMode: Boolean,

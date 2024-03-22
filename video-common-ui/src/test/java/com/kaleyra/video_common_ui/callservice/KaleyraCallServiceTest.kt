@@ -31,9 +31,15 @@ import io.mockk.unmockkAll
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -80,6 +86,10 @@ class KaleyraCallServiceTest {
             .setContentText("content text")
         mockkConstructor(CallForegroundServiceWorker::class)
         mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk {
+            every { userId } returns "loggedUserId"
+        })
         mockkObject(CallExtensions)
         mockkObject(CollaborationAudioExtensions)
         mockkObject(ContextRetainer)
@@ -95,6 +105,8 @@ class KaleyraCallServiceTest {
         with(conferenceMock) {
             every { call } returns MutableStateFlow(callMock)
         }
+        mockkObject(com.kaleyra.video_common_ui.notification.NotificationManager)
+        every { com.kaleyra.video_common_ui.notification.NotificationManager.cancel(any()) } returns Unit
     }
 
     @After
@@ -138,17 +150,18 @@ class KaleyraCallServiceTest {
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.enableAudioRouting(logger = any(), any(), any()) } returns Unit
         every { callMock.isLink } returns true
-        val startType = service!!.onStartCommand(null, 0, 0)
+        val startType = service!!.onStartCommand(Intent().apply { putExtra("loggedUserId", "loggedUserId") }, 0, 0)
         verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().bind(service!!, callMock) }
         verify(exactly = 1) {
             callMock.enableAudioRouting(logger, service!!.lifecycleScope, true)
         }
-        assertEquals(Service.START_STICKY, startType)
+        assertEquals(Service.START_REDELIVER_INTENT, startType)
     }
 
     @Test
-    fun testOnDestroy() {
-        service!!.onStartCommand(null, 0, 0)
+    fun testOnDestroy() = runTest {
+        service!!.onStartCommand(Intent().apply { putExtra("loggedUserId", "loggedUserId") }, 0, 0)
+        delay(500)
         service!!.onDestroy()
         verify(exactly = 1) { anyConstructed<CallForegroundServiceWorker>().dispose() }
         verify(exactly = 1) { callMock.disableAudioRouting() }

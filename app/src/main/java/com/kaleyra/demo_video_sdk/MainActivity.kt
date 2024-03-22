@@ -21,8 +21,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -149,7 +147,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         selectedUsersItemAdapter.add(NoUserSelectedItem())
 
         DemoAppKaleyraVideoService.configure(this)
-        DemoAppKaleyraVideoService.connect(this)
 
         // Update the button colors based on their current module status to avoid interaction before the modules are ready.
         KaleyraVideo.conference.state.combine(KaleyraVideo.synchronization) { state, sync -> binding?.let { setButtonColor(it.call, state, sync) } }.launchIn(lifecycleScope)
@@ -177,6 +174,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
 
     override fun onResume() {
         super.onResume()
+
         if (configuration!!.isMockConfiguration()) {
             ConfigurationActivity.Companion.showNew(this, configuration, true)
             return
@@ -189,6 +187,8 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         if (usersList.isEmpty()) loadUsersList()
 
         if (isHandlingExternalUrl(intent)) intent.data = null
+
+        DemoAppKaleyraVideoService.connect(this)
     }
 
     private fun isHandlingExternalUrl(intent: Intent): Boolean = intent.data != null

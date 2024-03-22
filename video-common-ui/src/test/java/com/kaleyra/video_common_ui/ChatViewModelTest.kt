@@ -18,9 +18,11 @@
 
 package com.kaleyra.video_common_ui
 
+import com.kaleyra.video.State
 import com.kaleyra.video.conversation.ChatParticipants
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -49,6 +51,11 @@ class ChatViewModelTest {
 
     @Before
     fun setUp() {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
+        every { KaleyraVideo.conversation } returns mockk {
+            every { state } returns MutableStateFlow(State.Connected)
+        }
         viewModel = ChatViewModel { CollaborationViewModel.Configuration.Success(conference, conversation, mockk(), MutableStateFlow(mockk())) }
         every { conversation.create(any()) } returns Result.success(chat)
 //        every { conversation.create(any(), any()) } returns Result.success(chat)
@@ -63,7 +70,7 @@ class ChatViewModelTest {
     @Test
     fun setChatUser_getChatInstance() = runTest {
         advanceUntilIdle()
-        assertEquals(viewModel.setChat("user"), viewModel.chat.first())
+        assertEquals(viewModel.setChat("loggedUserId", "user"), viewModel.chat.first())
     }
 
 //    @Test
@@ -77,7 +84,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val messages = mockk<MessagesUI>()
         every { chat.messages } returns MutableStateFlow(messages)
-        viewModel.setChat("")
+        viewModel.setChat("loggedUserId", "")
         assertEquals(viewModel.messages.first(), messages)
     }
 
@@ -86,7 +93,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val actions = setOf(ChatUI.Action.ShowParticipants)
         every { chat.actions } returns MutableStateFlow(actions)
-        viewModel.setChat("")
+        viewModel.setChat("loggedUserId", "")
         assertEquals(viewModel.actions.first(), actions)
     }
 
@@ -95,7 +102,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val participants = mockk<ChatParticipants>()
         every { chat.participants } returns MutableStateFlow(participants)
-        viewModel.setChat("")
+        viewModel.setChat("loggedUserId", "")
         assertEquals(viewModel.participants.first(), participants)
     }
 

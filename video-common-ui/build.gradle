@@ -61,6 +61,7 @@ dependencies {
 
     /** UI **/
     api catalog.squareupPicasso
+    api catalog.coilCompose
     implementation catalog.androidxConstraintLayout
 
     /** Testing **/

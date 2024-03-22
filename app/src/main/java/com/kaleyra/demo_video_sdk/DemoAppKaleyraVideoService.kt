@@ -26,8 +26,10 @@ import com.kaleyra.app_utilities.storage.LoginManager
 import com.kaleyra.demo_video_sdk.storage.DefaultConfigurationManager
 import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIActions
 import com.kaleyra.video_common_ui.CompanyUI
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.KaleyraVideoService
+import com.kaleyra.video_common_ui.PushNotificationInterceptorOption
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
@@ -45,6 +47,8 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
             if (!KaleyraVideo.isConfigured) {
                 KaleyraVideo.configure(configuration)
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
+                KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Disabled
+                KaleyraVideo.pushNotificationInterceptorOption = PushNotificationInterceptorOption.Automatic
                 KaleyraVideo.theme =
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
@@ -84,5 +88,7 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
         }
     }
 
-    override suspend fun onRequestKaleyraVideoConfigure(): Unit = configure(applicationContext)
+    override fun onRequestKaleyraVideoConfigure() = configure(applicationContext)
+
+    override fun onRequestKaleyraVideoConnect() = connect(applicationContext)
 }
