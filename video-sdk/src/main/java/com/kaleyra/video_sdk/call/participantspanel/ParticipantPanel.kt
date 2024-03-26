@@ -56,7 +56,7 @@ internal fun ParticipantsPanel(
     streams: ImmutableList<StreamUi>,
     invited: ImmutableList<String>,
     onLayoutClick: (isGridLayout: Boolean) -> Unit,
-    onParticipantAction: (ParticipantAction) -> Unit,
+    onParticipantActionClick: (ParticipantAction) -> Unit,
     onCloseClick: () -> Unit
 ) {
     Surface {
@@ -110,11 +110,50 @@ internal fun ParticipantsPanel(
                                     adminsStreamsIds.value.contains(stream.id) -> "Admin"
                                     else -> "Participant"
                                 }
-                            },
-                            audio = stream.audio,
-                            amIAdmin = amIAdmin,
-                            onParticipantAction
-                        )
+                            }
+                        ) {
+                            if (amIAdmin) {
+                                IconButton(
+                                    onClick = remember(stream.audio) {
+                                        {
+                                            if (stream.audio?.isEnabled == true) onParticipantActionClick(ParticipantAction.DisableMic) else Unit
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = if (stream.audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
+                                        contentDescription = if (stream.audio?.isEnabled == true) "disable participant microphone" else "participant microphone already disabled"
+                                    )
+                                }
+                                IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
+                                        contentDescription = "show admin actions"
+                                    )
+                                }
+                            } else {
+                                IconButton(
+                                    onClick = remember(stream.audio) {
+                                        {
+                                            if (stream.audio != null) onParticipantActionClick(ParticipantAction.Mute(!stream.audio.isMuted)) else Unit
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = if (stream.audio == null || stream.audio.isMuted) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
+                                        contentDescription = if (stream.audio == null || stream.audio.isMuted) "unmute participant for you" else "mute participant for you"
+                                    )
+                                }
+                                IconButton(
+                                    onClick = remember { { } }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     item {
@@ -148,9 +187,7 @@ internal fun ParticipantItem(
     avatar: ImmutableUri?,
     title: String,
     subtitle: String,
-    audio: AudioUi?,
-    amIAdmin: Boolean,
-    onParticipantActionClick: (ParticipantAction) -> Unit
+    actions: @Composable () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(
@@ -174,47 +211,7 @@ internal fun ParticipantItem(
             )
         }
 
-        if (amIAdmin) {
-            IconButton(
-                onClick = remember(audio) {
-                    {
-                        if (audio?.isEnabled == true) onParticipantActionClick(ParticipantAction.DisableMic) else Unit
-                    }
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = if (audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
-                    contentDescription = if (audio?.isEnabled == true) "disable participant microphone" else "participant microphone already disabled"
-                )
-            }
-            IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
-                    contentDescription = "show admin actions"
-                )
-            }
-        } else {
-            IconButton(
-                onClick = remember(audio) {
-                    {
-                        if (audio != null) onParticipantActionClick(ParticipantAction.Mute(!audio.isMuted)) else Unit
-                    }
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = if (audio == null || audio.isMuted) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
-                    contentDescription = if (audio == null || audio.isMuted) "unmute participant for you" else "mute participant for you"
-                )
-            }
-            IconButton(
-                onClick = remember { { } }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
-                    contentDescription = null
-                )
-            }
-        }
+        actions()
     }
 }
 
@@ -344,7 +341,7 @@ internal fun ParticipantPanelPreview() {
                 )
             ),
             onLayoutClick = {},
-            onParticipantAction = {},
+            onParticipantActionClick = {},
             onCloseClick = {}
         )
     }
