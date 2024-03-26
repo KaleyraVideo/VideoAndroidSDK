@@ -35,12 +35,12 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 internal fun Avatar(
     uri: ImmutableUri?,
     contentDescription: String,
-    @DrawableRes placeholder: Int,
-    @DrawableRes error: Int,
     contentColor: Color,
     backgroundColor: Color,
     size: Dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    @DrawableRes placeholder: Int? = null,
+    @DrawableRes error: Int? = null
 ) {
     var isImageLoaded by remember { mutableStateOf(false) }
     val placeholderFilter by rememberUpdatedState(newValue = ColorFilter.tint(color = contentColor))
@@ -56,8 +56,8 @@ internal fun Avatar(
             .clip(CircleShape)
             .background(color = backgroundColor)
             .size(size),
-        placeholder = painterResource(id = placeholder),
-        error = painterResource(id = error),
+        placeholder = placeholder?.let { painterResource(it) },
+        error = error?.let { painterResource(it) },
         contentScale = ContentScale.Crop,
         onSuccess = { isImageLoaded = true },
         colorFilter = colorFilter

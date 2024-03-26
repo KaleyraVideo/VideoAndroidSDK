@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import com.kaleyra.video_sdk.R
 
 @Composable
-internal fun BackIconButton(iconTint: Color, onClick: () -> Unit) {
+internal fun BackIconButton(iconTint: Color = LocalContentColor.current, onClick: () -> Unit) {
     IconButton(
         icon = rememberVectorPainter(image = Icons.Filled.ArrowBack),
         iconDescription = stringResource(id = R.string.kaleyra_back),
