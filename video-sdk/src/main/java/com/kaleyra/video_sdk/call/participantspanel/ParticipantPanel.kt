@@ -30,6 +30,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun ParticipantsPanel(
     companyLogo: Logo,
     adminsStreamsIds: ImmutableList<String>,
+    pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
     streams: ImmutableList<StreamUi>,
     invited: ImmutableList<String>,
@@ -144,12 +147,17 @@ internal fun ParticipantsPanel(
                                         contentDescription = if (stream.audio == null || stream.audio.isMuted) "unmute participant for you" else "mute participant for you"
                                     )
                                 }
+                                val isStreamPinned by remember(pinnedStreamsIds) {
+                                    derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
+                                }
                                 IconButton(
-                                    onClick = remember { { } }
+                                    onClick = remember(isStreamPinned) {
+                                        { onParticipantActionClick(ParticipantAction.Pin(!isStreamPinned)) }
+                                    }
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
-                                        contentDescription = null
+                                        painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
+                                        contentDescription = if (isStreamPinned) "unpin stream" else "pin stream"
                                     )
                                 }
                             }
@@ -307,7 +315,7 @@ internal fun ParticipantPanelPreview() {
         ParticipantsPanel(
             companyLogo = Logo(),
             adminsStreamsIds = ImmutableList(listOf("id1")),
-            amIAdmin = true,
+            amIAdmin = false,
             streams = ImmutableList(
                 listOf(
                     StreamUi("id1", "username1", true, null, null),
@@ -316,6 +324,7 @@ internal fun ParticipantPanelPreview() {
                     StreamUi("id4", "username4", false, null, null)
                 )
             ),
+            pinnedStreamsIds = ImmutableList(),
             invited = ImmutableList(
                 listOf(
                     "ciao",
