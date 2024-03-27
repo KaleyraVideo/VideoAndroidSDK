@@ -19,18 +19,21 @@ package com.kaleyra.video_sdk.call.ringing.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
-import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
 import com.kaleyra.video_sdk.call.precall.viewmodel.PreCallViewModel
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class RingingViewModel(configure: suspend () -> Configuration): PreCallViewModel<RingingUiState>(configure) {
 
@@ -48,15 +51,27 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
             .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
             .takeWhile { !it }
             .launchIn(viewModelScope)
+
+        call
+            .flatMapLatest { it.state }
+            .map { state ->
+                val isConnecting = state is Call.State.Connecting
+                _uiState.update { it.clone(isConnecting = isConnecting) }
+                isConnecting
+            }
+            .takeWhile { !it }
+            .launchIn(viewModelScope)
     }
 
     fun accept() {
-        call.getValue()?.connect()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        else call.getValue()?.connect()
         _uiState.update { it.copy(isConnecting = true) }
     }
 
     fun decline() {
-        call.getValue()?.end()
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.reject() }
+        else call.getValue()?.end()
         _uiState.update { it.copy(isConnecting = true) }
     }
 

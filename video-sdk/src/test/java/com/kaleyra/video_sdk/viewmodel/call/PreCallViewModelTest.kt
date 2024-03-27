@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.viewmodel.call
 import android.net.Uri
 import com.kaleyra.video.Company
 import com.kaleyra.video.conference.*
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI
@@ -212,17 +213,6 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
     }
 
     @Test
-    fun testPreCallUiState_isConnectingUpdated() = runTest {
-        every { callParticipantsMock.others } returns listOf(participantMock1)
-        every { participantMock1.state } returns MutableStateFlow(CallParticipant.State.InCall)
-        val current = viewModel.uiState.first().isConnecting
-        assertEquals(false, current)
-        advanceUntilIdle()
-        val new = viewModel.uiState.first().isConnecting
-        assertEquals(true, new)
-    }
-
-    @Test
     fun testPreCallUiState_avatarUpdated() = runTest {
         val current = viewModel.uiState.first().avatar
         assertEquals(null, current)
@@ -240,12 +230,12 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
     }
 
     @Test
-    fun testPreCallUiState_isVideoIncomingUpdated() = runTest {
-        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
-        val current = viewModel.uiState.first().isVideoIncoming
+    fun testPreCallUiState_isAudioVideoUpdated() = runTest {
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        val current = viewModel.uiState.first().isAudioVideo
         assertEquals(false, current)
         advanceUntilIdle()
-        val new = viewModel.uiState.first().isVideoIncoming
+        val new = viewModel.uiState.first().isAudioVideo
         assertEquals(true, new)
     }
 

@@ -82,7 +82,7 @@ object FirebaseCompat {
         refreshConfiguration(context, {
             try {
                 FirebaseMessaging.getInstance().token.addOnSuccessListener { devicePushToken: String ->
-                    restApi.registerDeviceForPushNotification(PushProvider.FCM, devicePushToken)
+                    restApi.registerDeviceForPushNotification(context, PushProvider.FCM, devicePushToken)
                 }.addOnFailureListener { error: Exception? -> Toast.makeText(context, "Wrong configuration for FCM.\nYou will not receive any notifications!", Toast.LENGTH_LONG).show() }
             } catch (e: Throwable) {
                 e.printStackTrace()

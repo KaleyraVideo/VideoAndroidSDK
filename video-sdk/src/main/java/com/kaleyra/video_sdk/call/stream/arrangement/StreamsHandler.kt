@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.stream.arrangement
 
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -57,8 +58,7 @@ internal class StreamsHandler(
         ) { newStreams, nOfMaxFeatured ->
             mutex.withLock {
                 val addedStreams = updateStreams(newStreams).toSet()
-                val addedScreenShareStreams =
-                    addedStreams.filter { it.video?.isScreenShare == true }.toSet()
+                val addedScreenShareStreams = addedStreams.filter { it.video?.isScreenShare == true }.toSet()
                 val cameraStreams = addedStreams - addedScreenShareStreams
 
                 val newStreamsIds = newStreams.map { it.id }
@@ -117,8 +117,9 @@ internal class StreamsHandler(
     private fun updateStreams(newStreams: List<StreamUi>): List<StreamUi> {
         // Reset the streams arrangement if there was only one stream before
         if (newStreams.size > 1 && thumbnailsStreams.isEmpty()) {
+            val myCameraStream = newStreams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
             featuredStreams = listOf()
-            thumbnailsStreams = listOf()
+            thumbnailsStreams = if (myCameraStream != null) listOf(myCameraStream) else listOf()
         }
 
         val newFeaturedStreams = featuredStreams.toMutableList()

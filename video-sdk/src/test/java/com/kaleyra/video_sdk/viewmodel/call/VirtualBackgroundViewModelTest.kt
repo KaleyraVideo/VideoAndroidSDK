@@ -25,7 +25,7 @@ import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
@@ -75,7 +75,7 @@ class VirtualBackgroundViewModelTest {
         every { participantsMock.me } returns meMock
         every { meMock.streams } returns MutableStateFlow(listOf(myStreamMock))
         with(myStreamMock) {
-            every { id } returns CameraStreamPublisher.CAMERA_STREAM_ID
+            every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(myVideoMock)
         }
         every { callMock.effects } returns effectsMock

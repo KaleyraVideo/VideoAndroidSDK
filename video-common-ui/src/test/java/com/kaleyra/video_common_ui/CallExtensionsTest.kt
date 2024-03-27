@@ -226,8 +226,15 @@ class CallExtensionsTest {
     }
 
     @Test
-    fun callDisconnected_isOutgoing_false() {
-        assertEquals(false, isOutgoing(Call.State.Disconnected, mockk(relaxed = true)))
+    fun callDisconnectedAndIAmCallCreator_isOutgoing_true() {
+        every { callParticipants.creator() } returns me
+        assertEquals(true, isOutgoing(Call.State.Disconnected, callParticipants))
+    }
+
+    @Test
+    fun callDisconnectedAndIAmNotCallCreator_isOutgoing_false() {
+        every { callParticipants.creator() } returns mockk()
+        assertEquals(false, isOutgoing(Call.State.Disconnected, callParticipants))
     }
 
     @Test
@@ -356,17 +363,6 @@ class CallExtensionsTest {
         every { context.isSilent() } returns true
         val result = call.shouldShowAsActivity()
         assertEquals(false, result)
-    }
-
-    @Test
-    fun linkCall_shouldShowAsActivity_true() {
-        mockkObject(ContextExtensions)
-        every { call.isLink } returns true
-        every { call.state } returns MutableStateFlow(Call.State.Disconnected)
-        every { context.isDND() } returns true
-        every { context.isSilent() } returns true
-        val result = call.shouldShowAsActivity()
-        assertEquals(true, result)
     }
 
     @Test

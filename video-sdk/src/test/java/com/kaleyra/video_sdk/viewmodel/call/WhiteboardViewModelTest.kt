@@ -24,11 +24,15 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
-import io.mockk.*
+import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -66,6 +70,7 @@ class WhiteboardViewModelTest {
         viewModel = spyk(WhiteboardViewModel(configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, whiteboardView = mockk(relaxed = true)))
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.whiteboard } returns whiteboardMock
+        every { callMock.actions } returns MutableStateFlow(emptySet())
         with(sharedFileMock) {
             every { size } returns 1000L
             every { state } returns MutableStateFlow(SharedFile.State.Available)
@@ -95,6 +100,14 @@ class WhiteboardViewModelTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Loading)
         advanceUntilIdle()
         assertEquals(true, viewModel.uiState.first().isLoading)
+    }
+
+    @Test
+    fun testWhiteboardUiState_isSharingScreenSupportedUpdated() = runTest {
+        assertEquals(false, viewModel.uiState.first().isFileSharingSupported)
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.FileShare))
+        advanceUntilIdle()
+        assertEquals(true, viewModel.uiState.first().isFileSharingSupported)
     }
 
     @Test
