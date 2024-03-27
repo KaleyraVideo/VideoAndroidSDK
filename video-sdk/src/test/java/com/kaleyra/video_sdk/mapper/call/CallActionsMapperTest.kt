@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.mapper.call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
+import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
@@ -63,6 +64,22 @@ class CallActionsMapperTest {
     @After
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    fun fileShareActionExists_isFileSharingSupported_true() = runTest {
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.FileShare))
+        val result = callFlow.isFileSharingSupported()
+        val actual = result.first()
+        assertEquals(true, actual)
+    }
+
+    @Test
+    fun fileShareActionDoesNotExists_isFileSharingSupported_true() = runTest {
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ScreenShare))
+        val result = callFlow.isFileSharingSupported()
+        val actual = result.first()
+        assertEquals(false, actual)
     }
 
     @Test

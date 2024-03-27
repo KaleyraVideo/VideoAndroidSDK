@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.app.PictureInPictureParams
+import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -35,6 +36,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
@@ -59,17 +62,19 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
         val isInPipMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
         val shouldShowFileShare: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-        var isActivityFinishing: Boolean = false
-
-        var isInForeground: Boolean = false
-
-        var isFileShareDisplayed: Boolean = false
-
-        var isWhiteboardDisplayed: Boolean = false
-
-        var isUsbCameraConnecting: Boolean = false
     }
+
+    private var isActivityFinishing: Boolean = false
+
+    private var isInForeground: Boolean = false
+
+    private var isFileShareDisplayed: Boolean = false
+
+    private var isWhiteboardDisplayed: Boolean = false
+
+    private var isUsbCameraConnecting: Boolean = false
+
+    private var isAskingInputPermissions: Boolean = false
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = enterPipModeIfSupported()
@@ -100,6 +105,8 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
                 onPipAspectRatio = ::onAspectRatio,
                 onUsbCameraConnected = ::onUsbConnecting,
                 onActivityFinishing = { isActivityFinishing = true },
+                onAskInputPermissions = { isAskingInputPermissions = it },
+                onConnectionServicePermissionsResult = ::onConnectionServicePermissions
             )
         }
         turnScreenOn()
@@ -147,7 +154,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
     }
 
     private fun enterPipModeIfSupported() {
-        if (!isPipSupported) return
+        if (!isPipSupported || isActivityFinishing) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updatePipParams()?.let { params ->
                 enterPictureInPictureMode(params)
@@ -163,7 +170,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (isUsbCameraConnecting) return
+        if (isAskingInputPermissions || isUsbCameraConnecting) return
         enterPipModeIfSupported()
     }
 
@@ -174,24 +181,29 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
     }
 
     private fun handleIntentAction(intent: Intent): Boolean {
-        return when (intent.extras?.getString("notificationAction")) {
+        return when (intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)) {
             CallNotificationActionReceiver.ACTION_ANSWER, CallNotificationActionReceiver.ACTION_HANGUP -> {
-                sendBroadcast(Intent(this, CallNotificationActionReceiver::class.java).apply {
-                    putExtras(intent)
-                })
+                val isCallServiceRunning = intent.extras?.getBoolean(IS_CALL_SERVICE_RUNNING_EXTRA, true) ?: true
+                if (isCallServiceRunning) {
+                    forwardIntentToReceiver(intent, CallNotificationActionReceiver::class.java)
+                }
                 true
             }
 
             FileShareNotificationActionReceiver.ACTION_DOWNLOAD -> {
-                sendBroadcast(Intent(this, FileShareNotificationActionReceiver::class.java).apply {
-                    putExtras(intent)
-                })
+                forwardIntentToReceiver(intent, FileShareNotificationActionReceiver::class.java)
                 shouldShowFileShare.value = true
                 true
             }
 
             else -> false
         }
+    }
+
+    private fun <T: BroadcastReceiver> forwardIntentToReceiver(intent: Intent, receiver: Class<T>) {
+        sendBroadcast(Intent(this, receiver).apply {
+            putExtras(intent)
+        })
     }
 
     private fun onUsbConnecting(isUsbConnecting: Boolean) {
@@ -246,6 +258,12 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
         })
         moveToFront()
+    }
+
+    private fun onConnectionServicePermissions() {
+        val extra = intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)
+        if (extra != CallNotificationActionReceiver.ACTION_ANSWER && extra != CallNotificationActionReceiver.ACTION_HANGUP) return
+        forwardIntentToReceiver(intent, CallNotificationActionReceiver::class.java)
     }
 
     private fun restartActivityIfCurrentCallIsEnded(intent: Intent) {

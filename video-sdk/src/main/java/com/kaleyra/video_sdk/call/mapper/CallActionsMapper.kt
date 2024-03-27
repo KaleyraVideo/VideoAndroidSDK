@@ -26,8 +26,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 internal object CallActionsMapper {
+
+    fun Flow<CallUI>.isFileSharingSupported(): Flow<Boolean> {
+        return this.flatMapLatest { it.actions }.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
+    }
 
     fun Flow<CallUI>.toCallActions(companyId: Flow<String>): Flow<List<CallAction>> =
         combine(

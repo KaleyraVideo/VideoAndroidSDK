@@ -99,9 +99,7 @@ internal fun FeaturedStream(
                 fullscreenVisible = fullscreenVisible,
                 onBackPressed = onBackPressed,
                 onFullscreenClick = onFullscreenClick,
-                modifier = Modifier
-                    .horizontalCutoutPadding()
-                    .then(headerModifier)
+                modifier = headerModifier.horizontalCutoutPadding()
             )
         }
     }
@@ -116,7 +114,7 @@ private fun Header(
     onFullscreenClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.padding(horizontal = 4.dp)) {
+    Row(modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         if (onBackPressed != null) {
             IconButton(
                 icon = rememberVectorPainter(image = Icons.Filled.ArrowBack),

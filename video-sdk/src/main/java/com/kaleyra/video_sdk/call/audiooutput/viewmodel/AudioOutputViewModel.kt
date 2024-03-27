@@ -19,24 +19,30 @@ package com.kaleyra.video_sdk.call.audiooutput.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.bandyer.android_audiosession.model.AudioOutputDevice
-import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.audioOutputDevicesList
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.setAudioOutputDevice
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAudioDevicesUi
+import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioOutputDevice
+import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
 internal class AudioOutputViewModel(configure: suspend () -> Configuration) : BaseViewModel<AudioOutputUiState>(configure) {
 
     override fun initialState() = AudioOutputUiState()
 
+    val isConnectionServiceEnabled: Boolean
+        get() = ConnectionServiceUtils.isConnectionServiceEnabled
+
     init {
         call
-            .toAudioDevicesUi()
+            .toAvailableAudioDevicesUi()
             .onEach { audioDevices -> _uiState.update { it.copy(audioDeviceList = ImmutableList(audioDevices)) } }
             .launchIn(viewModelScope)
 
@@ -49,34 +55,9 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration) : Ba
 
     fun setDevice(device: AudioDeviceUi) {
         val call = call.getValue()
-        val devices = call?.audioOutputDevicesList?.getValue() ?: return
-        val outputDevice = when (device) {
-            is AudioDeviceUi.Bluetooth -> devices.first { it is AudioOutputDevice.Bluetooth && it.identifier == device.id }
-            AudioDeviceUi.EarPiece -> AudioOutputDevice.Earpiece()
-            AudioDeviceUi.LoudSpeaker -> AudioOutputDevice.Loudspeaker()
-            AudioDeviceUi.Muted -> AudioOutputDevice.None()
-            AudioDeviceUi.WiredHeadset -> AudioOutputDevice.WiredHeadset()
-        }
-        when {
-            shouldRestoreParticipantsAudio(device) -> disableParticipantsAudio(disable = false)
-            shouldMuteParticipantsAudio(device) -> disableParticipantsAudio(disable = true)
-        }
+        val outputDevice = call?.let { device.mapToAudioOutputDevice(it) } ?: return
+        call.setAudioOutputDevice(outputDevice, isConnectionServiceEnabled = ConnectionServiceUtils.isConnectionServiceEnabled)
         _uiState.update { it.copy(playingDeviceId = device.id) }
-        call.setAudioOutputDevice(outputDevice)
-    }
-
-    private fun shouldRestoreParticipantsAudio(selectedDevice: AudioDeviceUi) = uiState.value.playingDeviceId == AudioDeviceUi.Muted.id && selectedDevice.id != AudioDeviceUi.Muted.id
-
-    private fun shouldMuteParticipantsAudio(selectedDevice: AudioDeviceUi) = uiState.value.playingDeviceId != AudioDeviceUi.Muted.id && selectedDevice.id == AudioDeviceUi.Muted.id
-
-    private fun disableParticipantsAudio(disable: Boolean) {
-        val call = call.getValue() ?: return
-        val participants = call.participants
-        val others = participants.value.others
-        val streams = others.map { it.streams.value }.flatten()
-        val audio = streams.map { it.audio.value }
-        if (disable) audio.forEach { it?.tryDisable() }
-        else audio.forEach { it?.tryEnable() }
     }
 
     companion object {

@@ -20,9 +20,9 @@ import android.util.Rational
 
 internal object RationalExtensions {
 
-    private val MIN_PIP_RATIONAL = Rational(9, 21)
+    private val MIN_PIP_RATIONAL = Rational(9, 18)
 
-    private val MAX_PIP_RATIONAL = Rational(22, 9)
+    private val MAX_PIP_RATIONAL = Rational(18, 9)
 
     fun Rational.coerceRationalForPip() = coerceIn(MIN_PIP_RATIONAL, MAX_PIP_RATIONAL)
 }

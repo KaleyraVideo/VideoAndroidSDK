@@ -48,10 +48,10 @@ internal class FileShareNotification {
         val context: Context,
         val channelId: String,
         val channelName: String,
-        var contentText: String = "",
-        var contentTitle: String = "",
-        var contentIntent: PendingIntent? = null,
-        var downloadIntent: PendingIntent? = null,
+        private var contentText: String = "",
+        private var contentTitle: String = "",
+        private var contentIntent: PendingIntent? = null,
+        private var downloadIntent: PendingIntent? = null,
     ) {
 
         /**

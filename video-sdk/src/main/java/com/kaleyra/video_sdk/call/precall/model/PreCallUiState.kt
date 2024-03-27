@@ -31,7 +31,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * @property watermarkInfo WatermarkInfo? optional watermark info
  * @property isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
  * @property isConnecting Boolean flag representing if the call is connecting, true if connecting, false otherwise
- * @property isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
+ * @property isAudioVideo Boolean flag representing if the call is audio-video, true if it is an audio-video call, false otherwise
  */
 interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
 
@@ -47,7 +47,7 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
 
     val isConnecting: Boolean
 
-    val isVideoIncoming: Boolean
+    val isAudioVideo: Boolean
 
     /**
      * Clone this state
@@ -57,7 +57,6 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
      * @param watermarkInfo WatermarkInfo? optional watermark info
      * @param isLink Boolean flag representing if the call is a join url call, true if join url call, false otherwise
      * @param isConnecting Boolean flag representing if the call is connecting, true if connecting, false otherwise
-     * @param isVideoIncoming Boolean flag representing if video is incoming, true if incoming, false otherwise
      * @return T
      */
     fun clone(
@@ -67,6 +66,6 @@ interface PreCallUiState<out T> : UiState where T: PreCallUiState<T> {
         watermarkInfo: WatermarkInfo? = this@PreCallUiState.watermarkInfo,
         isLink: Boolean = this@PreCallUiState.isLink,
         isConnecting: Boolean = this@PreCallUiState.isConnecting,
-        isVideoIncoming: Boolean = this@PreCallUiState.isVideoIncoming
+        isAudioVideo: Boolean = this@PreCallUiState.isAudioVideo
     ): T
 }
