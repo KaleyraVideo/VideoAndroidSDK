@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,13 +54,16 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 @Composable
 internal fun ParticipantsPanel(
     companyLogo: Logo,
+    streams: ImmutableList<StreamUi>,
+    invited: ImmutableList<String>,
     adminsStreamsIds: ImmutableList<String>,
     pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
-    streams: ImmutableList<StreamUi>,
-    invited: ImmutableList<String>,
     onLayoutClick: (isGridLayout: Boolean) -> Unit,
-    onParticipantActionClick: (ParticipantAction) -> Unit,
+    onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
+    onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
+    onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
+    onKickParticipantClick: (streamId: String) -> Unit,
     onCloseClick: () -> Unit
 ) {
     Surface {
@@ -115,30 +119,20 @@ internal fun ParticipantsPanel(
                                 }
                             }
                         ) {
-                            if (amIAdmin) {
+                            if (amIAdmin || stream.mine) {
                                 IconButton(
-                                    onClick = remember(stream.audio) {
-                                        {
-                                            if (stream.audio?.isEnabled == true) onParticipantActionClick(ParticipantAction.DisableMic) else Unit
-                                        }
-                                    }
+                                    onClick = remember(stream.audio) { { if (stream.audio != null) onDisableMicClick(stream.id, !stream.audio.isEnabled) else Unit } }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (stream.audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
                                         contentDescription = if (stream.audio?.isEnabled == true) "disable participant microphone" else "participant microphone already disabled"
                                     )
                                 }
-                                IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
-                                        contentDescription = "show admin actions"
-                                    )
-                                }
                             } else {
                                 IconButton(
                                     onClick = remember(stream.audio) {
                                         {
-                                            if (stream.audio != null) onParticipantActionClick(ParticipantAction.Mute(!stream.audio.isMuted)) else Unit
+                                            if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMuted) else Unit
                                         }
                                     }
                                 ) {
@@ -147,13 +141,21 @@ internal fun ParticipantsPanel(
                                         contentDescription = if (stream.audio == null || stream.audio.isMuted) "unmute participant for you" else "mute participant for you"
                                     )
                                 }
+                            }
+
+                            if (amIAdmin) {
+                                IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
+                                        contentDescription = "show admin actions"
+                                    )
+                                }
+                            } else {
                                 val isStreamPinned by remember(pinnedStreamsIds) {
                                     derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
                                 }
                                 IconButton(
-                                    onClick = remember(isStreamPinned) {
-                                        { onParticipantActionClick(ParticipantAction.Pin(!isStreamPinned)) }
-                                    }
+                                    onClick = remember(isStreamPinned) { { onPinStreamClick(stream.id, !isStreamPinned) } }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
@@ -182,20 +184,12 @@ internal fun ParticipantsPanel(
     }
 }
 
-@Immutable
-internal sealed class ParticipantAction {
-    data object DisableMic : ParticipantAction()
-    data class Mute(val value: Boolean) : ParticipantAction()
-    data class Pin(val value: Boolean) : ParticipantAction()
-    data object Kick : ParticipantAction()
-}
-
 @Composable
 internal fun ParticipantItem(
     avatar: ImmutableUri?,
     title: String,
     subtitle: String,
-    actions: @Composable () -> Unit
+    actions: @Composable RowScope.() -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(
@@ -221,7 +215,7 @@ internal fun ParticipantItem(
             )
         }
 
-        actions()
+        actions(this)
     }
 }
 
@@ -352,7 +346,10 @@ internal fun ParticipantPanelPreview() {
                 )
             ),
             onLayoutClick = {},
-            onParticipantActionClick = {},
+            onDisableMicClick = {_,_ ->},
+            onKickParticipantClick = {},
+            onPinStreamClick = {_,_ ->},
+            onMuteStreamClick = {_,_ ->},
             onCloseClick = {}
         )
     }
