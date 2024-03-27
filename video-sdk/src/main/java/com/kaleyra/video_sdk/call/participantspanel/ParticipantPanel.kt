@@ -291,11 +291,7 @@ private fun DisableMicButton(streamId: String, audio: AudioUi?, onClick: (String
 @Composable
 private fun MuteForYouButton(streamId: String, audio: AudioUi?, onClick: (String, Boolean) -> Unit) {
     IconButton(
-        onClick = remember(audio) {
-            {
-                if (audio != null) onClick(streamId, !audio.isMutedForYou) else Unit
-            }
-        }
+        onClick = { if (audio != null) onClick(streamId, !audio.isMutedForYou) else Unit }
     ) {
         Icon(
             painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on),
@@ -324,7 +320,7 @@ private fun PinButton(
         derivedStateOf { pinnedStreamsIds.value.contains(streamId) }
     }
     IconButton(
-        onClick = remember(isStreamPinned) { { onClick(streamId, !isStreamPinned) } }
+        onClick = { onClick(streamId, !isStreamPinned) }
     ) {
         Icon(
             painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_participant_panel_unpin else R.drawable.ic_kaleyra_participant_panel_pin),
