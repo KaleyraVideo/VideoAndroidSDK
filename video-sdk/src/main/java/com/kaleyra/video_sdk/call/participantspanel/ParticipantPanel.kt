@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -121,27 +122,17 @@ internal fun ParticipantsPanel(
                             )
                         ) {
                             if (amIAdmin || stream.mine) {
-                                IconButton(
-                                    onClick = remember(stream.audio) { { if (stream.audio != null) onDisableMicClick(stream.id, !stream.audio.isEnabled) else Unit } }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = if (stream.audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
-                                        contentDescription = stringResource(id = if (stream.audio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
-                                    )
-                                }
+                                DisableMicButton(
+                                    streamId = stream.id,
+                                    audio = stream.audio,
+                                    onClick = onDisableMicClick
+                                )
                             } else {
-                                IconButton(
-                                    onClick = remember(stream.audio) {
-                                        {
-                                            if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMuted) else Unit
-                                        }
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = if (stream.audio == null || stream.audio.isMuted) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
-                                        contentDescription = stringResource(id = if (stream.audio == null || stream.audio.isMuted) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
-                                    )
-                                }
+                                MuteForYouButton(
+                                    streamId = stream.id,
+                                    audio = stream.audio,
+                                    onClick = onMuteStreamClick
+                                )
                             }
 
                             if (amIAdmin) {
@@ -152,17 +143,11 @@ internal fun ParticipantsPanel(
                                     )
                                 }
                             } else {
-                                val isStreamPinned by remember(pinnedStreamsIds) {
-                                    derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
-                                }
-                                IconButton(
-                                    onClick = remember(isStreamPinned) { { onPinStreamClick(stream.id, !isStreamPinned) } }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
-                                        contentDescription = stringResource(id = if (isStreamPinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
-                                    )
-                                }
+                                PinButton(
+                                    streamId = stream.id,
+                                    pinnedStreamsIds = pinnedStreamsIds,
+                                    onClick = onPinStreamClick
+                                )
                             }
                         }
                     }
@@ -181,6 +166,53 @@ internal fun ParticipantsPanel(
                     }
                 }
             }
+        )
+    }
+}
+
+@Composable
+private fun DisableMicButton(streamId: String, audio: AudioUi?, onClick: (String, Boolean) -> Unit) {
+    IconButton(
+        onClick = remember(audio) { { if (audio != null) onClick(streamId, !audio.isEnabled) else Unit } }
+    ) {
+        Icon(
+            painter = painterResource(id = if (audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
+            contentDescription = stringResource(id = if (audio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
+        )
+    }
+}
+
+@Composable
+private fun MuteForYouButton(streamId: String, audio: AudioUi?, onClick: (String, Boolean) -> Unit) {
+    IconButton(
+        onClick = remember(audio) {
+            {
+                if (audio != null) onClick(streamId, !audio.isMutedForYou) else Unit
+            }
+        }
+    ) {
+        Icon(
+            painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
+            contentDescription = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
+        )
+    }
+}
+
+@Composable
+private fun PinButton(
+    streamId: String,
+    pinnedStreamsIds: ImmutableList<String>,
+    onClick: (String, Boolean) -> Unit
+) {
+    val isStreamPinned by remember(pinnedStreamsIds) {
+        derivedStateOf { pinnedStreamsIds.value.contains(streamId) }
+    }
+    IconButton(
+        onClick = remember(isStreamPinned) { { onClick(streamId, !isStreamPinned) } }
+    ) {
+        Icon(
+            painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
+            contentDescription = stringResource(id = if (isStreamPinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
         )
     }
 }
