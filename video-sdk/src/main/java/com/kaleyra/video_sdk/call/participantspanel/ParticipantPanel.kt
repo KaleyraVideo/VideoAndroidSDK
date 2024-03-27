@@ -96,7 +96,7 @@ internal fun ParticipantsPanel(
                     }
 
                     item {
-                        LayoutSelector(onLayoutClick)
+                        StreamsLayoutSelector(onLayoutClick)
                     }
 
                     item {
@@ -245,7 +245,7 @@ internal fun ParticipantsTopAppBar(
         },
         title = {
             Text(
-                pluralStringResource(id = R.plurals.kaleyra_participants_panel_participants, count = participantsCount),
+                pluralStringResource(id = R.plurals.kaleyra_participants_panel_participants, count = participantsCount, participantsCount),
                 style = MaterialTheme.typography.titleMedium
             )
         },
@@ -261,7 +261,7 @@ internal fun ParticipantsTopAppBar(
 }
 
 @Composable
-internal fun LayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Unit) {
+internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween

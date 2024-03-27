@@ -36,6 +36,7 @@
     <plurals name="kaleyra_participants_panel_participants">
         <item quantity="one">%d Partecipante</item>
         <item quantity="many">%d Partecipanti</item>
+        <item quantity="other">%d Partecipanti</item>
     </plurals>
 
     <!-- Audio route labels -->

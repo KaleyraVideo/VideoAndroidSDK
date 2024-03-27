@@ -35,6 +35,7 @@
     <plurals name="kaleyra_participants_panel_participants">
         <item quantity="one">%d Participante</item>
         <item quantity="many">%d Participantes</item>
+        <item quantity="other">%d Participantes</item>
     </plurals>
 
     <string name="kaleyra_action_cancel">Cancelar</string>
