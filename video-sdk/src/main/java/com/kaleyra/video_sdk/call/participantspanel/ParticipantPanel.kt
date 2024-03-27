@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.participantspanel
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,13 +34,20 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +59,8 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+
+private val KickParticipantColor = Color(0xFFAE1300)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +92,20 @@ internal fun ParticipantsPanel(
                 )
             }
         ) { contentPadding ->
+            var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+
+            if (isSheetOpen) {
+                ModalBottomSheet(
+                    shape = RoundedCornerShape(16.dp),
+                    onDismissRequest = { isSheetOpen = false }
+                ) {
+                    AdminBottomSheetContent(
+                        avatar = ImmutableUri(),
+                        username = "username hardcoded"
+                    )
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -139,7 +164,7 @@ internal fun ParticipantsPanel(
                         }
 
                         if (amIAdmin) {
-                            ShowAdminModalSheetButton(onClick = { /*TODO show the bottom sheet*/ })
+                            ShowAdminModalSheetButton(onClick = { isSheetOpen = true })
                         } else {
                             PinButton(
                                 streamId = stream.id,
@@ -168,9 +193,93 @@ internal fun ParticipantsPanel(
 }
 
 @Composable
+internal fun AdminBottomSheetContent(
+    username: String,
+    avatar: ImmutableUri?,
+) {
+    LazyColumn(contentPadding = PaddingValues(bottom = 52.dp)) {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
+            ) {
+                Avatar(
+                    uri = avatar,
+                    contentDescription = stringResource(id = R.string.kaleyra_avatar),
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
+                    size = 34.dp
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = username,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.W600)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        item {
+            AdminSheetItem(
+                text = stringResource(id = R.string.kaleyra_participants_panel_pin),
+                painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
+                onClick = {}
+            )
+        }
+
+        item {
+            AdminSheetItem(
+                text = stringResource(id = R.string.kaleyra_participants_panel_mute_for_you),
+                painter = painterResource(id = R.drawable.ic_kaleyra_speaker_off_new),
+                onClick = {}
+            )
+        }
+
+        item {
+            AdminSheetItem(
+                text = stringResource(id = R.string.kaleyra_participants_panel_remove_from_call),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_kick),
+                color = KickParticipantColor,
+                onClick = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun AdminSheetItem(
+    text: String,
+    painter: Painter,
+    color: Color = Color.Unspecified,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable(
+                role = Role.Button,
+                onClick = onClick
+            )
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 12.dp)
+    ) {
+        Icon(
+            tint = color,
+            painter = painter,
+            modifier = Modifier.size(24.dp),
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.width(26.dp))
+        Text(text, color = color)
+    }
+}
+
+@Composable
 private fun DisableMicButton(streamId: String, audio: AudioUi?, onClick: (String, Boolean) -> Unit) {
     IconButton(
-        onClick = remember(audio) { { if (audio != null) onClick(streamId, !audio.isEnabled) else Unit } }
+        onClick = { if (audio != null) onClick(streamId, !audio.isEnabled) else Unit }
     ) {
         Icon(
             painter = painterResource(id = if (audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
