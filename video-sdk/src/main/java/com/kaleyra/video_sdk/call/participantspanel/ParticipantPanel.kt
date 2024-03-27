@@ -79,94 +79,91 @@ internal fun ParticipantsPanel(
                     scrollBehavior = scrollBehavior,
                     onCloseClick = onCloseClick
                 )
-            },
-            content = { contentPadding ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(contentPadding),
-                    contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.fillMaxWidth()
+            }
+        ) { contentPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+                contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    Text(
+                        text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    StreamsLayoutSelector(onLayoutClick)
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                items(items = streams.value, key = { it.id }) { stream ->
+                    ParticipantItem(
+                        avatar = stream.avatar,
+                        title = if (stream.mine) stringResource(
+                            id = R.string.kaleyra_participants_panel_you,
+                            stream.username
+                        ) else stream.username,
+                        subtitle = stringResource(
+                            when {
+                                stream.video?.isScreenShare == true -> R.string.kaleyra_participants_panel_screenshare
+                                adminsStreamsIds.value.contains(stream.id) -> R.string.kaleyra_participants_panel_admin
+                                else -> R.string.kaleyra_participants_panel_participant
+                            }
                         )
-                    }
-
-                    item {
-                        StreamsLayoutSelector(onLayoutClick)
-                    }
-
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    items(items = streams.value, key = { it.id }) { stream ->
-                        ParticipantItem(
-                            avatar = stream.avatar,
-                            title = if (stream.mine) stringResource(id = R.string.kaleyra_participants_panel_you, stream.username) else stream.username,
-                            subtitle = stringResource(
-                                when {
-                                    stream.video?.isScreenShare == true -> R.string.kaleyra_participants_panel_screenshare
-                                    adminsStreamsIds.value.contains(stream.id) -> R.string.kaleyra_participants_panel_admin
-                                    else -> R.string.kaleyra_participants_panel_participant
-                                }
+                    ) {
+                        if (amIAdmin || stream.mine) {
+                            DisableMicButton(
+                                streamId = stream.id,
+                                audio = stream.audio,
+                                onClick = onDisableMicClick
                             )
-                        ) {
-                            if (amIAdmin || stream.mine) {
-                                DisableMicButton(
-                                    streamId = stream.id,
-                                    audio = stream.audio,
-                                    onClick = onDisableMicClick
-                                )
-                            } else {
-                                MuteForYouButton(
-                                    streamId = stream.id,
-                                    audio = stream.audio,
-                                    onClick = onMuteStreamClick
-                                )
-                            }
+                        } else {
+                            MuteForYouButton(
+                                streamId = stream.id,
+                                audio = stream.audio,
+                                onClick = onMuteStreamClick
+                            )
+                        }
 
-                            if (amIAdmin) {
-                                IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
-                                        contentDescription = stringResource(id = R.string.kaleyra_participants_panel_show_more_actions)
-                                    )
-                                }
-                            } else {
-                                PinButton(
-                                    streamId = stream.id,
-                                    pinnedStreamsIds = pinnedStreamsIds,
-                                    onClick = onPinStreamClick
-                                )
-                            }
+                        if (amIAdmin) {
+                            ShowAdminModalSheetButton(onClick = { /*TODO show the bottom sheet*/ })
+                        } else {
+                            PinButton(
+                                streamId = stream.id,
+                                pinnedStreamsIds = pinnedStreamsIds,
+                                onClick = onPinStreamClick
+                            )
                         }
                     }
+                }
 
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = stringResource(R.string.kaleyra_participants_panel_users_invited),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.kaleyra_participants_panel_users_invited),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                    items(items = invited.value) { username ->
-                        Text(username, Modifier.fillMaxWidth())
-                    }
+                items(items = invited.value) { username ->
+                    Text(username, Modifier.fillMaxWidth())
                 }
             }
-        )
+        }
     }
 }
 
@@ -194,6 +191,16 @@ private fun MuteForYouButton(streamId: String, audio: AudioUi?, onClick: (String
         Icon(
             painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
             contentDescription = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
+        )
+    }
+}
+
+@Composable
+private fun ShowAdminModalSheetButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
+            contentDescription = stringResource(id = R.string.kaleyra_participants_panel_show_more_actions)
         )
     }
 }
