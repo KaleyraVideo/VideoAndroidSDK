@@ -83,17 +83,17 @@ class CallNotification {
         val channelId: String,
         val channelName: String,
         val type: Type,
-        var isHighImportance: Boolean = false,
-        var enableCallStyle: Boolean = true,
-        var color: Int? = null,
-        var user: String? = null,
-        var enableTimer: Boolean = false,
-        var contentText: String? = null,
-        var contentIntent: PendingIntent? = null,
-        var fullscreenIntent: PendingIntent? = null,
-        var answerIntent: PendingIntent? = null,
-        var declineIntent: PendingIntent? = null,
-        var screenShareIntent: PendingIntent? = null
+        private var isHighImportance: Boolean = false,
+        private var enableCallStyle: Boolean = true,
+        private var color: Int? = null,
+        private var user: String? = null,
+        private var enableTimer: Boolean = false,
+        private var contentText: String? = null,
+        private var contentIntent: PendingIntent? = null,
+        private var fullscreenIntent: PendingIntent? = null,
+        private var answerIntent: PendingIntent? = null,
+        private var declineIntent: PendingIntent? = null,
+        private var screenShareIntent: PendingIntent? = null
     ) {
         /**
          * Set the user

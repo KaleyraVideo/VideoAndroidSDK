@@ -21,12 +21,20 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.kaleyra.video_common_ui.KaleyraUIProvider
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA
+import com.kaleyra.video_common_ui.notification.CallNotificationExtra.NOTIFICATION_ACTION_EXTRA
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isScreenLocked
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.turnOnScreen
 import com.kaleyra.video_utils.ContextRetainer
+
+object CallNotificationExtra {
+    const val NOTIFICATION_ACTION_EXTRA = "notificationAction"
+    const val IS_CALL_SERVICE_RUNNING_EXTRA = "callServiceRunning"
+}
 
 /**
  * CallNotificationManager
@@ -43,6 +51,7 @@ internal interface CallNotificationManager {
         private const val CONTENT_REQUEST_CODE = 456
         private const val ANSWER_REQUEST_CODE = 789
         private const val DECLINE_REQUEST_CODE = 987
+        private const val HANGUP_REQUEST_CODE = 101
         private const val SCREEN_SHARING_REQUEST_CODE = 654
     }
 
@@ -60,7 +69,8 @@ internal interface CallNotificationManager {
         isGroupCall: Boolean,
         activityClazz: Class<*>,
         isHighPriority: Boolean,
-        enableCallStyle: Boolean
+        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass,
+        isCallServiceRunning: Boolean = true
     ): Notification {
         val context = ContextRetainer.context
 
@@ -80,11 +90,11 @@ internal interface CallNotificationManager {
             .importance(isHighPriority)
             .enableCallStyle(enableCallStyle)
             .contentText(tapToReturnText)
-            .contentIntent(contentPendingIntent(context, activityClazz))
+            .contentIntent(contentPendingIntent(context, activityClazz, isCallServiceRunning))
             .apply {
-                if (context.isScreenLocked() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) fullscreenIntent(fullScreenPendingIntent(context, activityClazz))
+                if (context.isScreenLocked() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) fullscreenIntent(fullScreenPendingIntent(context, activityClazz, isCallServiceRunning))
             }
-            .answerIntent(answerPendingIntent(context, activityClazz))
+            .answerIntent(answerPendingIntent(context, activityClazz, isCallServiceRunning))
             .declineIntent(declinePendingIntent(context))
 
         return builder.build()
@@ -102,11 +112,11 @@ internal interface CallNotificationManager {
         username: String,
         isGroupCall: Boolean,
         activityClazz: Class<*>,
-        enableCallStyle: Boolean
+        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass,
+        isCallServiceRunning: Boolean = true
     ): Notification {
         val context = ContextRetainer.context
-        val userText =
-            if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
+        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
         val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call)
         val builder = CallNotification
             .Builder(
@@ -117,10 +127,10 @@ internal interface CallNotificationManager {
             )
             .user(userText)
             .enableCallStyle(enableCallStyle)
-            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz)) }
+            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz, isCallServiceRunning)) }
             .contentText(tapToReturnText)
-            .contentIntent(contentPendingIntent(context, activityClazz))
-            .declineIntent(declinePendingIntent(context))
+            .contentIntent(contentPendingIntent(context, activityClazz, isCallServiceRunning))
+            .declineIntent(hangUpPendingIntent(context))
 
         return builder.build()
     }
@@ -146,16 +156,21 @@ internal interface CallNotificationManager {
         isSharingScreen: Boolean,
         isConnecting: Boolean,
         activityClazz: Class<*>,
-        enableCallStyle: Boolean
+        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass
     ): Notification {
         val context = ContextRetainer.context
-        val userText =
-            if (isGroupCall || isLink) context.resources.getString(if (isGroupCall) R.string.kaleyra_notification_ongoing_group_call else R.string.kaleyra_notification_ongoing_call) else username
-        val contentText = context.resources.getString(
+        val resources = context.resources
+        val userText = when {
+            isGroupCall -> resources.getString(R.string.kaleyra_notification_ongoing_group_call)
+            isLink -> resources.getString(R.string.kaleyra_notification_ongoing_call)
+            else -> username
+        }
+        val contentText = resources.getString(
             when {
                 isConnecting -> R.string.kaleyra_notification_connecting_call
                 isCallRecorded -> R.string.kaleyra_notification_call_recorded
-                else -> if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call
+                isGroupCall -> R.string.kaleyra_notification_tap_to_return_to_group_call
+                else -> R.string.kaleyra_notification_tap_to_return_to_call
             }
         )
         val builder = CallNotification
@@ -168,28 +183,35 @@ internal interface CallNotificationManager {
             .user(userText)
             .contentText(contentText)
             .enableCallStyle(enableCallStyle)
-            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz)) }
-            .contentIntent(contentPendingIntent(context, activityClazz))
-            .declineIntent(declinePendingIntent(context))
+            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) fullscreenIntent(fullScreenPendingIntent(context, activityClazz, isCallServiceRunning = true)) }
+            .contentIntent(contentPendingIntent(context, activityClazz, isCallServiceRunning = true))
+            .declineIntent(hangUpPendingIntent(context))
             .timer(!isConnecting)
             .apply { if (isSharingScreen) screenShareIntent(screenSharePendingIntent(context)) }
 
         return builder.build()
     }
 
-    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>) =
-        createCallActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE, activityClazz)
+    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, isCallServiceRunning: Boolean) =
+        createCallActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE, activityClazz, isCallServiceRunning)
 
-    private fun contentPendingIntent(context: Context, activityClazz: Class<*>) =
-        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE, activityClazz)
+    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, isCallServiceRunning: Boolean) =
+        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE, activityClazz, isCallServiceRunning)
 
-    private fun answerPendingIntent(context: Context, activityClazz: Class<*>) =
-        createCallActivityPendingIntent(context, ANSWER_REQUEST_CODE, activityClazz, CallNotificationActionReceiver.ACTION_ANSWER)
+    private fun answerPendingIntent(context: Context, activityClazz: Class<*>, isCallServiceRunning: Boolean) =
+        createCallActivityPendingIntent(context, ANSWER_REQUEST_CODE, activityClazz, isCallServiceRunning, CallNotificationActionReceiver.ACTION_ANSWER)
 
     private fun declinePendingIntent(context: Context) =
         createBroadcastPendingIntent(
             context,
             DECLINE_REQUEST_CODE,
+            CallNotificationActionReceiver.ACTION_DECLINE
+        )
+
+    private fun hangUpPendingIntent(context: Context) =
+        createBroadcastPendingIntent(
+            context,
+            HANGUP_REQUEST_CODE,
             CallNotificationActionReceiver.ACTION_HANGUP
         )
 
@@ -204,6 +226,7 @@ internal interface CallNotificationManager {
         context: Context,
         requestCode: Int,
         activityClazz: Class<T>,
+        isCallServiceRunning: Boolean,
         action: String? = null
     ): PendingIntent {
         val applicationContext = context.applicationContext
@@ -212,9 +235,9 @@ internal interface CallNotificationManager {
             // from notification if there is already an instance, instead of a creating a new one
             this.action = Intent.ACTION_MAIN
             this.addCategory(Intent.CATEGORY_LAUNCHER)
-            this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.putExtra("enableTilt", DeviceUtils.isSmartGlass)
-            action?.also { this.putExtra("notificationAction", it) }
+            this.putExtra(KaleyraUIProvider.ENABLE_TILT_EXTRA, DeviceUtils.isSmartGlass)
+            this.putExtra(IS_CALL_SERVICE_RUNNING_EXTRA, isCallServiceRunning)
+            action?.also { this.putExtra(NOTIFICATION_ACTION_EXTRA, it) }
         }
         return PendingIntent.getActivity(
             applicationContext,
@@ -229,7 +252,7 @@ internal interface CallNotificationManager {
             context,
             requestCode,
             Intent(context, CallNotificationActionReceiver::class.java).apply {
-                putExtra("notificationAction", action)
+                putExtra(NOTIFICATION_ACTION_EXTRA, action)
             },
             PendingIntentExtensions.updateFlags
         )

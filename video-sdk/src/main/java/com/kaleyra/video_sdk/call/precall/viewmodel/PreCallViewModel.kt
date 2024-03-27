@@ -17,20 +17,19 @@
 package com.kaleyra.video_sdk.call.precall.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isVideoIncoming
+import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toMyStreamsUi
 import com.kaleyra.video_sdk.call.mapper.WatermarkMapper.toWatermarkInfo
 import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
+import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -59,11 +58,6 @@ internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspe
         }
 
         call
-            .isVideoIncoming()
-            .onEach { isVideoIncoming -> _uiState.update { it.clone(isVideoIncoming = isVideoIncoming) } }
-            .launchIn(viewModelScope)
-
-        call
             .toMyStreamsUi()
             .onEach { streams -> _uiState.update { it.clone(video = streams.firstOrNull()?.video) } }
             .launchIn(viewModelScope)
@@ -86,8 +80,8 @@ internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspe
             .launchIn(viewModelScope)
 
         call
-            .toInCallParticipants()
-            .onEach { participants -> _uiState.update { it.clone(isConnecting = participants.size > 1) } }
+            .isAudioVideo()
+            .onEach { isAudioVideo -> _uiState.update { it.clone(isAudioVideo = isAudioVideo) } }
             .launchIn(viewModelScope)
     }
 }

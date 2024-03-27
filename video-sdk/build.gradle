@@ -64,8 +64,7 @@ dependencies {
 
     /*** Testing ***/
     testImplementation kaleyraCatalog.kaleyraVideo
-//    testImplementation catalog.roboelectric
-    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation catalog.robolectric
     testImplementation catalog.junit
     testImplementation catalog.androidxComposeUiTestJunit4
     testImplementation catalog.androidxTestEspressoIntents
@@ -86,7 +85,8 @@ dependencies {
 
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo
-    api kaleyraCatalog.kaleyraVideoExtensionAudio
+    implementation kaleyraCatalog.kaleyraVideoExtensionAudio
+
     def isPublishing = project.hasProperty("isPublishing")
     if (isPublishing) api "com.kaleyra:video-common-ui:$moduleVersion"
     else api project(':video-common-ui')

@@ -36,7 +36,7 @@ object HuaweiCompat {
             val configuration = ConfigurationPrefsManager.getConfiguration(context)
             configuration.hmsAppId ?: return@Thread
             val devicePushToken: String = instanceId.getToken(configuration.hmsAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
-            restApi.registerDeviceForPushNotification(PushProvider.HMS, devicePushToken)
+            restApi.registerDeviceForPushNotification(context, PushProvider.HMS, devicePushToken)
         }.start()
     }
 

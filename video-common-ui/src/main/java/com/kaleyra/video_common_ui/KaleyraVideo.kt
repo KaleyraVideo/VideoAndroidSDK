@@ -203,7 +203,9 @@ object KaleyraVideo {
             logger?.verbose(logTarget = CORE_UI, message = "Connecting KaleyraVideo...")
             val connect = collaboration?.connect(userId, accessTokenProvider)
             if (connect == null) {
-                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo but KaleyraCollaboration is null")
+                val collaborationNullErrorMessage = "Connecting KaleyraVideo but KaleyraCollaboration is null"
+                logger?.error(logTarget = CORE_UI, message = collaborationNullErrorMessage)
+                completeExceptionally(CancellationException(collaborationNullErrorMessage))
                 return@launchBlocking
             }
 
@@ -218,8 +220,10 @@ object KaleyraVideo {
                         complete(result.getOrNull()!!)
                     }
                 }
-            }.onFailure {
-                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo failed with error: ${it.message}")
+            }.onFailure { throwable ->
+                logger?.error(logTarget = CORE_UI, message = "Connecting KaleyraVideo failed with error: ${throwable.message}")
+                completeExceptionally(CancellationException(throwable.message))
+                return@launchBlocking
             }
             termsAndConditionsRequester?.setUp(state, ::disconnect)
         }.invokeOnCompletion { completionException ->
@@ -279,7 +283,7 @@ object KaleyraVideo {
  * @param scope CoroutineScope the scope on which to notify the callback
  * @param block Function1<[@kotlin.ParameterName] CallUI, Unit> the callback called when the call is ready to be displayed
  */
-internal fun KaleyraVideo.onCallReady(scope: CoroutineScope, block: (call: CallUI) -> Unit) {
+internal fun KaleyraVideo.onCallReady(scope: CoroutineScope, block: suspend (call: CallUI) -> Unit) {
     conference.call
         .take(1)
         .onEach { block.invoke(it) }

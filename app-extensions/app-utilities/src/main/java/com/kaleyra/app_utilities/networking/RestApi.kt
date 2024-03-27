@@ -18,6 +18,7 @@ package com.kaleyra.app_utilities.networking
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.Toast
 import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_configuration.model.PushProvider
 import com.kaleyra.app_utilities.MultiDexApplication.Companion.okHttpClient
@@ -26,19 +27,28 @@ import com.kaleyra.app_utilities.networking.models.BandyerUsers
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager.getConfiguration
 import com.kaleyra.app_utilities.storage.LoginManager
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.http.ContentType.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType.Application
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
@@ -112,6 +122,8 @@ class RestApi(val applicationContext: Context) {
                 preconfigured = okHttpClient
             }
 
+            install(HttpTimeout)
+
             install(HttpRequestRetry) {
                 retryOnServerErrors(maxRetries = Int.MAX_VALUE)
                 exponentialDelay()
@@ -158,13 +170,18 @@ class RestApi(val applicationContext: Context) {
         }
     }
 
-    fun registerDeviceForPushNotification(pushProvider: PushProvider, devicePushToken: String) {
+    fun registerDeviceForPushNotification(context: Context, pushProvider: PushProvider, devicePushToken: String) {
         scope.launch {
             updateConfiguration()
             kotlin.runCatching {
                 val response: HttpResponse =
                     client.post("$endpoint/mobile_push_notifications/rest/device") {
                         headers(configurationHeaders)
+                        timeout {
+                            this.connectTimeoutMillis = 5000L
+                            this.requestTimeoutMillis = 5000L
+                            this.socketTimeoutMillis = 5000L
+                        }
                         contentType(Application.Json)
                         setBody(
                             DeviceRegistrationInfo(
@@ -177,9 +194,16 @@ class RestApi(val applicationContext: Context) {
                     }
 
                 if (response.status != HttpStatusCode.OK) {
-                    Log.e("PushNotification", "Failed to register device for push notifications!")
+                    val registerDeviceErrorMessage = "Failed to register device for push notifications!"
+                    MainScope().launch { Toast.makeText(context, registerDeviceErrorMessage, Toast.LENGTH_LONG).show() }
+                    Log.e("PushNotification", registerDeviceErrorMessage)
+                } else {
+                    Log.d("PushNotification", "Push token registered serverside.")
                 }
-            }.onFailure { Log.e("PushNotification", it.message, it) }
+            }.onFailure {
+                MainScope().launch { Toast.makeText(context, it.message, Toast.LENGTH_LONG).show() }
+                Log.e("PushNotification", it.message, it)
+            }
         }
     }
 
