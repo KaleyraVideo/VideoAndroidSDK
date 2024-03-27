@@ -224,7 +224,7 @@ internal fun AdminBottomSheetContent(
         item {
             AdminSheetItem(
                 text = stringResource(id = R.string.kaleyra_participants_panel_pin),
-                painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
                 onClick = {}
             )
         }
@@ -232,7 +232,7 @@ internal fun AdminBottomSheetContent(
         item {
             AdminSheetItem(
                 text = stringResource(id = R.string.kaleyra_participants_panel_mute_for_you),
-                painter = painterResource(id = R.drawable.ic_kaleyra_speaker_off_new),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_speaker_off),
                 onClick = {}
             )
         }
@@ -282,7 +282,7 @@ private fun DisableMicButton(streamId: String, audio: AudioUi?, onClick: (String
         onClick = { if (audio != null) onClick(streamId, !audio.isEnabled) else Unit }
     ) {
         Icon(
-            painter = painterResource(id = if (audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
+            painter = painterResource(id = if (audio?.isEnabled == true) R.drawable.ic_kaleyra_participant_panel_mic_on else R.drawable.ic_kaleyra_participant_panel_mic_off),
             contentDescription = stringResource(id = if (audio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
         )
     }
@@ -298,7 +298,7 @@ private fun MuteForYouButton(streamId: String, audio: AudioUi?, onClick: (String
         }
     ) {
         Icon(
-            painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
+            painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on),
             contentDescription = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
         )
     }
@@ -308,7 +308,7 @@ private fun MuteForYouButton(streamId: String, audio: AudioUi?, onClick: (String
 private fun ShowAdminModalSheetButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
+            painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_more),
             contentDescription = stringResource(id = R.string.kaleyra_participants_panel_show_more_actions)
         )
     }
@@ -327,7 +327,7 @@ private fun PinButton(
         onClick = remember(isStreamPinned) { { onClick(streamId, !isStreamPinned) } }
     ) {
         Icon(
-            painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
+            painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_participant_panel_unpin else R.drawable.ic_kaleyra_participant_panel_pin),
             contentDescription = stringResource(id = if (isStreamPinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
         )
     }
@@ -400,7 +400,7 @@ internal fun ParticipantsTopAppBar(
         actions = {
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_close_new),
+                    painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_close),
                     contentDescription = stringResource(id = R.string.kaleyra_participants_panel_close)
                 )
             }
@@ -424,7 +424,7 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
             onClick = remember { { onLayoutClick(true) } }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_kaleyra_grid_new),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_grid),
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )
@@ -440,7 +440,7 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
             onClick = remember { { onLayoutClick(false) } }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_kaleyra_pin_new),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )
@@ -458,7 +458,7 @@ internal fun ParticipantPanelPreview() {
         ParticipantsPanel(
             companyLogo = Logo(),
             adminsStreamsIds = ImmutableList(listOf("id1")),
-            amIAdmin = false,
+            amIAdmin = true,
             streams = ImmutableList(
                 listOf(
                     StreamUi("id1", "username1", true, null, null),

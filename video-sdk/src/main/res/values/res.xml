@@ -16,15 +16,16 @@
   -->
 
 <resources>
-    <item name="ic_kaleyra_mic_off_new" type="drawable">@drawable/kaleyra_f_mic_off</item>
-    <item name="ic_kaleyra_mic_on_new" type="drawable">@drawable/kaleyra_f_mic_on</item>
-    <item name="ic_kaleyra_speaker_on_new" type="drawable">@drawable/kaleyra_f_speaker_on</item>
-    <item name="ic_kaleyra_speaker_off_new" type="drawable">@drawable/kaleyra_f_speaker_off</item>
-    <item name="ic_kaleyra_more_new" type="drawable">@drawable/kaleyra_f_more</item>
-    <item name="ic_kaleyra_unpin_new" type="drawable">@drawable/kaleyra_f_unpin</item>
-    <item name="ic_kaleyra_pin_new" type="drawable">@drawable/kaleyra_f_pin</item>
-    <item name="ic_kaleyra_grid_new" type="drawable">@drawable/kaleyra_f_grid</item>
-    <item name="ic_kaleyra_close_new" type="drawable">@drawable/kaleyra_f_close</item>
+    <item name="ic_kaleyra_participant_panel_mic_off" type="drawable">@drawable/kaleyra_f_mic_off</item>
+    <item name="ic_kaleyra_participant_panel_mic_on" type="drawable">@drawable/kaleyra_f_mic_on</item>
+    <item name="ic_kaleyra_participant_panel_speaker_on" type="drawable">@drawable/kaleyra_f_speaker_on</item>
+    <item name="ic_kaleyra_participant_panel_speaker_off" type="drawable">@drawable/kaleyra_f_speaker_off</item>
+    <item name="ic_kaleyra_participant_panel_more" type="drawable">@drawable/kaleyra_f_more</item>
+    <item name="ic_kaleyra_participant_panel_unpin" type="drawable">@drawable/kaleyra_f_unpin</item>
+    <item name="ic_kaleyra_participant_panel_pin" type="drawable">@drawable/kaleyra_f_pin</item>
+    <item name="ic_kaleyra_participant_panel_grid" type="drawable">@drawable/kaleyra_f_grid</item>
+    <item name="ic_kaleyra_participant_panel_close" type="drawable">@drawable/kaleyra_f_close</item>
+    <item name="ic_kaleyra_participant_panel_kick" type="drawable">@drawable/kaleyra_f_kick</item>
 
     <!-- CHAT ACTION BAR -->
     <item name="ic_kaleyra_audio_call" type="drawable">@drawable/ic_kaleyra_answer</item>
