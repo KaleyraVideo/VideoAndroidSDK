@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,12 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -89,8 +89,9 @@ internal fun ParticipantsPanel(
                 ) {
                     item {
                         Text(
-                            text = "Change Layout",
-                            style = MaterialTheme.typography.titleSmall
+                            text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
 
@@ -101,7 +102,7 @@ internal fun ParticipantsPanel(
                     item {
                         Spacer(Modifier.height(16.dp))
                         Text(
-                            text = "Users in call",
+                            text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -110,14 +111,14 @@ internal fun ParticipantsPanel(
                     items(items = streams.value, key = { it.id }) { stream ->
                         ParticipantItem(
                             avatar = stream.avatar,
-                            title = stream.username + if (stream.mine) " (You)" else "",
-                            subtitle = remember(stream, adminsStreamsIds) {
+                            title = if (stream.mine) stringResource(id = R.string.kaleyra_participants_panel_you, stream.username) else stream.username,
+                            subtitle = stringResource(
                                 when {
-                                    stream.video?.isScreenShare == true -> "Screenshare"
-                                    adminsStreamsIds.value.contains(stream.id) -> "Admin"
-                                    else -> "Participant"
+                                    stream.video?.isScreenShare == true -> R.string.kaleyra_participants_panel_screenshare
+                                    adminsStreamsIds.value.contains(stream.id) -> R.string.kaleyra_participants_panel_admin
+                                    else -> R.string.kaleyra_participants_panel_participant
                                 }
-                            }
+                            )
                         ) {
                             if (amIAdmin || stream.mine) {
                                 IconButton(
@@ -125,7 +126,7 @@ internal fun ParticipantsPanel(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (stream.audio?.isEnabled == true) R.drawable.ic_kaleyra_mic_on_new else R.drawable.ic_kaleyra_mic_off_new),
-                                        contentDescription = if (stream.audio?.isEnabled == true) "disable participant microphone" else "participant microphone already disabled"
+                                        contentDescription = stringResource(id = if (stream.audio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
                                     )
                                 }
                             } else {
@@ -138,7 +139,7 @@ internal fun ParticipantsPanel(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (stream.audio == null || stream.audio.isMuted) R.drawable.ic_kaleyra_speaker_off_new else R.drawable.ic_kaleyra_speaker_on_new),
-                                        contentDescription = if (stream.audio == null || stream.audio.isMuted) "unmute participant for you" else "mute participant for you"
+                                        contentDescription = stringResource(id = if (stream.audio == null || stream.audio.isMuted) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
                                     )
                                 }
                             }
@@ -147,7 +148,7 @@ internal fun ParticipantsPanel(
                                 IconButton(onClick = { /*TODO show the bottom sheet*/ }) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_kaleyra_more_new),
-                                        contentDescription = "show admin actions"
+                                        contentDescription = stringResource(id = R.string.kaleyra_participants_panel_show_more_actions)
                                     )
                                 }
                             } else {
@@ -159,7 +160,7 @@ internal fun ParticipantsPanel(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (isStreamPinned) R.drawable.ic_kaleyra_unpin_new else R.drawable.ic_kaleyra_pin_new),
-                                        contentDescription = if (isStreamPinned) "unpin stream" else "pin stream"
+                                        contentDescription = stringResource(id = if (isStreamPinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
                                     )
                                 }
                             }
@@ -169,7 +170,7 @@ internal fun ParticipantsPanel(
                     item {
                         Spacer(Modifier.height(16.dp))
                         Text(
-                            text = "Invited",
+                            text = stringResource(R.string.kaleyra_participants_panel_users_invited),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -194,7 +195,7 @@ internal fun ParticipantItem(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(
             uri = avatar,
-            contentDescription = "user avatar",
+            contentDescription = stringResource(id = R.string.kaleyra_avatar),
             backgroundColor = MaterialTheme.colorScheme.primary,
             contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
             size = 28.dp
@@ -235,7 +236,7 @@ internal fun ParticipantsTopAppBar(
                 uri = (if (isSystemInDarkTheme) companyLogo.dark else companyLogo.light)?.let {
                     ImmutableUri(it)
                 },
-                contentDescription = "company logo",
+                contentDescription = stringResource(id = R.string.kaleyra_company_logo),
                 backgroundColor = MaterialTheme.colorScheme.primary,
                 contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
                 size = 24.dp,
@@ -244,7 +245,7 @@ internal fun ParticipantsTopAppBar(
         },
         title = {
             Text(
-                "$participantsCount Participants",
+                pluralStringResource(id = R.plurals.kaleyra_participants_panel_participants, count = participantsCount),
                 style = MaterialTheme.typography.titleMedium
             )
         },
@@ -252,7 +253,7 @@ internal fun ParticipantsTopAppBar(
             IconButton(onClick = onCloseClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_kaleyra_close_new),
-                    contentDescription = "close panel"
+                    contentDescription = stringResource(id = R.string.kaleyra_participants_panel_close)
                 )
             }
         }
@@ -280,7 +281,7 @@ internal fun LayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Unit) {
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text("Grid")
+            Text(stringResource(R.string.kaleyra_participants_panel_grid))
         }
 
         Spacer(Modifier.width(14.dp))
@@ -296,7 +297,7 @@ internal fun LayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Unit) {
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text("Pin")
+            Text(stringResource(R.string.kaleyra_participants_panel_pin))
         }
     }
 }
