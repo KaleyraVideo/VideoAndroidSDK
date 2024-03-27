@@ -116,6 +116,7 @@ internal fun ParticipantsPanel(
                 item {
                     Text(
                         text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
+                        fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -129,6 +130,7 @@ internal fun ParticipantsPanel(
                     Spacer(Modifier.height(16.dp))
                     Text(
                         text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
+                        fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -178,6 +180,7 @@ internal fun ParticipantsPanel(
                 item {
                     Spacer(Modifier.height(16.dp))
                     Text(
+                        fontWeight = FontWeight.SemiBold,
                         text = stringResource(R.string.kaleyra_participants_panel_users_invited),
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.fillMaxWidth()
@@ -215,7 +218,8 @@ internal fun AdminBottomSheetContent(
                     text = username,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.W600)
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -390,6 +394,7 @@ internal fun ParticipantsTopAppBar(
         title = {
             Text(
                 pluralStringResource(id = R.plurals.kaleyra_participants_panel_participants, count = participantsCount, participantsCount),
+                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium
             )
         },
@@ -425,7 +430,7 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_panel_grid))
+            Text(stringResource(R.string.kaleyra_participants_panel_grid), fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(Modifier.width(14.dp))
@@ -441,7 +446,7 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_panel_pin))
+            Text(stringResource(R.string.kaleyra_participants_panel_pin), fontWeight = FontWeight.SemiBold)
         }
     }
 }
