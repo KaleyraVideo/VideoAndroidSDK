@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.participantspanel.StreamsLayout
+import com.kaleyra.video_sdk.call.participantspanel.model.StreamsLayout
 
 @Composable
 internal fun StreamsLayoutSelector(
@@ -40,12 +40,12 @@ internal fun StreamsLayoutSelector(
             onClick = { onLayoutClick(StreamsLayout.Grid) }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_grid),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_grid),
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_panel_grid), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.kaleyra_participants_component_grid), fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(Modifier.width(14.dp))
@@ -60,12 +60,12 @@ internal fun StreamsLayoutSelector(
             onClick = { onLayoutClick(StreamsLayout.Pin) }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_pin),
                 contentDescription = null,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_panel_pin), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.kaleyra_participants_component_pin), fontWeight = FontWeight.SemiBold)
         }
     }
 }

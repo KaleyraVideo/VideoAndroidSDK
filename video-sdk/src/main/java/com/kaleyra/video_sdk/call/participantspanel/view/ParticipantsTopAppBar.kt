@@ -47,7 +47,7 @@ internal fun ParticipantsTopAppBar(
         },
         title = {
             Text(
-                pluralStringResource(id = R.plurals.kaleyra_participants_panel_participants, count = participantsCount, participantsCount),
+                pluralStringResource(id = R.plurals.kaleyra_participants_component_participants, count = participantsCount, participantsCount),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium
             )
@@ -55,8 +55,8 @@ internal fun ParticipantsTopAppBar(
         actions = {
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_close),
-                    contentDescription = stringResource(id = R.string.kaleyra_participants_panel_close)
+                    painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_close),
+                    contentDescription = stringResource(id = R.string.kaleyra_participants_component_close)
                 )
             }
         }

@@ -16,24 +16,24 @@
 
 <resources>
 
-    <string name="kaleyra_participants_panel_change_layout">Cambia Layout</string>
-    <string name="kaleyra_participants_panel_users_in_call">Utenti nella chiamata</string>
-    <string name="kaleyra_participants_panel_users_invited">Altri Invitati</string>
-    <string name="kaleyra_participants_panel_grid">Griglia</string>
-    <string name="kaleyra_participants_panel_pin">Pin</string>
-    <string name="kaleyra_participants_panel_unpin">Rimuovi pin</string>
-    <string name="kaleyra_participants_panel_mute_for_you">Disattiva l\'audio per te</string>
-    <string name="kaleyra_participants_panel_unmute_for_you">Riattiva l\'audio per te</string>
-    <string name="kaleyra_participants_panel_you">%s (Tu)</string>
-    <string name="kaleyra_participants_panel_admin">Amministratore</string>
-    <string name="kaleyra_participants_panel_screenshare">Condivisione schermo</string>
-    <string name="kaleyra_participants_panel_participant">Partecipante</string>
-    <string name="kaleyra_participants_panel_remove_from_call">Rimuovi dalla chiamata</string>
-    <string name="kaleyra_participants_panel_disable_microphone">Disabilita microfono</string>
-    <string name="kaleyra_participants_panel_enable_microphone">Abilita microfono</string>
-    <string name="kaleyra_participants_panel_close">Chiudi pannello partecipanti</string>
-    <string name="kaleyra_participants_panel_show_more_actions">Mostra più azioni</string>
-    <plurals name="kaleyra_participants_panel_participants">
+    <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
+    <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>
+    <string name="kaleyra_participants_component_users_invited">Altri Invitati</string>
+    <string name="kaleyra_participants_component_grid">Griglia</string>
+    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_unpin">Rimuovi pin</string>
+    <string name="kaleyra_participants_component_mute_for_you">Disattiva l\'audio per te</string>
+    <string name="kaleyra_participants_component_unmute_for_you">Riattiva l\'audio per te</string>
+    <string name="kaleyra_participants_component_you">%s (Tu)</string>
+    <string name="kaleyra_participants_component_admin">Amministratore</string>
+    <string name="kaleyra_participants_component_screenshare">Condivisione schermo</string>
+    <string name="kaleyra_participants_component_participant">Partecipante</string>
+    <string name="kaleyra_participants_component_remove_from_call">Rimuovi dalla chiamata</string>
+    <string name="kaleyra_participants_component_disable_microphone">Disabilita microfono</string>
+    <string name="kaleyra_participants_component_enable_microphone">Abilita microfono</string>
+    <string name="kaleyra_participants_component_close">Chiudi pannello partecipanti</string>
+    <string name="kaleyra_participants_component_show_more_actions">Mostra più azioni</string>
+    <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Partecipante</item>
         <item quantity="many">%d Partecipanti</item>
         <item quantity="other">%d Partecipanti</item>

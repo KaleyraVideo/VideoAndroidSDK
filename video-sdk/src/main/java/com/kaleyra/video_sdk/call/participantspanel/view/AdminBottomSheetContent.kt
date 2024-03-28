@@ -83,8 +83,8 @@ internal fun AdminBottomSheetContent(
 
         item {
             AdminBottomSheetItem(
-                text = stringResource(id = R.string.kaleyra_participants_panel_remove_from_call),
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_kick),
+                text = stringResource(id = R.string.kaleyra_participants_component_remove_from_call),
+                painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_kick),
                 color = KickParticipantColor,
                 onClick = { onKickParticipantClick(streamId) }
             )

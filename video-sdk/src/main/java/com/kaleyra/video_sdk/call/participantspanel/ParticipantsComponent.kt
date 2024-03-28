@@ -18,8 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.participantspanel.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participantspanel.view.AdminBottomSheetContent
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantsTopAppBar
@@ -42,15 +41,9 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
 
-@Immutable
-internal enum class StreamsLayout {
-    Grid,
-    Pin
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ParticipantsPanel(
+internal fun ParticipantsComponent(
     companyLogo: Logo,
     streamsLayout: StreamsLayout,
     streams: ImmutableList<StreamUi>,
@@ -126,7 +119,7 @@ internal fun ParticipantsPanel(
         ) {
             item {
                 Text(
-                    text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
+                    text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.fillMaxWidth()
@@ -143,7 +136,7 @@ internal fun ParticipantsPanel(
 
             item {
                 Text(
-                    text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
+                    text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.fillMaxWidth()
@@ -170,7 +163,7 @@ internal fun ParticipantsPanel(
             item {
                 Text(
                     fontWeight = FontWeight.SemiBold,
-                    text = stringResource(R.string.kaleyra_participants_panel_users_invited),
+                    text = stringResource(R.string.kaleyra_participants_component_users_invited),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -191,7 +184,7 @@ internal fun ParticipantPanelPreview() {
         var streamsLayout by remember {
             mutableStateOf(StreamsLayout.Grid)
         }
-        ParticipantsPanel(
+        ParticipantsComponent(
             companyLogo = Logo(),
             streamsLayout = streamsLayout,
             adminsStreamsIds = ImmutableList(listOf("id1")),

@@ -9,24 +9,24 @@ import com.kaleyra.video_sdk.call.stream.model.AudioUi
 
 @Composable
 internal fun pinnedPainterFor(pinned: Boolean): Painter =
-    painterResource(id = if (pinned) R.drawable.ic_kaleyra_participant_panel_unpin else R.drawable.ic_kaleyra_participant_panel_pin)
+    painterResource(id = if (pinned) R.drawable.ic_kaleyra_participants_component_unpin else R.drawable.ic_kaleyra_participants_component_pin)
 
 @Composable
 internal fun pinnedTextFor(pinned: Boolean): String =
-    stringResource(id = if (pinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
+    stringResource(id = if (pinned) R.string.kaleyra_participants_component_unpin else R.string.kaleyra_participants_component_pin)
 
 @Composable
 internal fun disableMicPainterFor(streamAudio: AudioUi?): Painter =
-    painterResource(id = if (streamAudio?.isEnabled == true) R.drawable.ic_kaleyra_participant_panel_mic_on else R.drawable.ic_kaleyra_participant_panel_mic_off)
+    painterResource(id = if (streamAudio?.isEnabled == true) R.drawable.ic_kaleyra_participants_component_mic_on else R.drawable.ic_kaleyra_participant_panel_mic_off)
 
 @Composable
 internal fun disableMicTextFor(streamAudio: AudioUi?): String =
-    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
+    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_participants_component_disable_microphone else R.string.kaleyra_participants_component_enable_microphone)
 
 @Composable
 internal fun mutePainterFor(streamAudio: AudioUi?): Painter =
-    painterResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on)
+    painterResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.drawable.ic_kaleyra_participants_component_speaker_off else R.drawable.ic_kaleyra_participants_component_speaker_on)
 
 @Composable
 internal fun muteTextFor(streamAudio: AudioUi?): String =
-    stringResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)
+    stringResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.string.kaleyra_participants_component_unmute_for_you else R.string.kaleyra_participants_component_mute_for_you)

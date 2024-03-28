@@ -47,7 +47,7 @@ internal fun ParticipantItem(
         Column(Modifier.weight(1f)) {
             Text(
                 text = if (stream.mine) {
-                    stringResource(id = R.string.kaleyra_participants_panel_you, stream.username)
+                    stringResource(id = R.string.kaleyra_participants_component_you, stream.username)
                 } else stream.username,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -56,9 +56,9 @@ internal fun ParticipantItem(
             Text(
                 text = stringResource(
                     when {
-                        stream.video?.isScreenShare == true -> R.string.kaleyra_participants_panel_screenshare
-                        admin -> R.string.kaleyra_participants_panel_admin
-                        else -> R.string.kaleyra_participants_panel_participant
+                        stream.video?.isScreenShare == true -> R.string.kaleyra_participants_component_screenshare
+                        admin -> R.string.kaleyra_participants_component_admin
+                        else -> R.string.kaleyra_participants_component_participant
                     }
                 ),
                 maxLines = 1,
@@ -89,8 +89,8 @@ internal fun ParticipantItem(
                 onClick = onMoreClick,
                 content = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_more),
-                        contentDescription = stringResource(id = R.string.kaleyra_participants_panel_show_more_actions)
+                        painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
+                        contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
                     )
                 }
             )
