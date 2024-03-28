@@ -84,130 +84,126 @@ internal fun ParticipantsPanel(
     onKickParticipantClick: (streamId: String) -> Unit,
     onCloseClick: () -> Unit
 ) {
-    Surface {
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            ParticipantsTopAppBar(
+                companyLogo = companyLogo,
+                participantsCount = streams.count(),
+                scrollBehavior = scrollBehavior,
+                onCloseClick = onCloseClick
+            )
+        }
+    ) { contentPadding ->
+        var bottomSheetStream by remember { mutableStateOf<StreamUi?>(null) }
 
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                ParticipantsTopAppBar(
-                    companyLogo = companyLogo,
-                    participantsCount = streams.count(),
-                    scrollBehavior = scrollBehavior,
-                    onCloseClick = onCloseClick
+        bottomSheetStream?.apply {
+            val sheetState = rememberModalBottomSheetState(true)
+            val scope = rememberCoroutineScope()
+            val animateToDismiss = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        bottomSheetStream = null
+                    }
+                }
+            }
+
+            ModalBottomSheet(
+                sheetState = sheetState,
+                shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
+                onDismissRequest = { bottomSheetStream = null }
+            ) {
+                AdminBottomSheetContent(
+                    avatar = avatar,
+                    username = username,
+                    streamId = id,
+                    audio = audio,
+                    onMuteStreamClick = { streamId, value ->
+                        onMuteStreamClick(streamId, value)
+                        animateToDismiss()
+                    },
+                    onPinStreamClick = { streamId, value ->
+                        onPinStreamClick(streamId, value)
+                        animateToDismiss()
+                    },
+                    onKickParticipantClick = { streamId ->
+                        onKickParticipantClick(streamId)
+                        animateToDismiss()
+                    }
                 )
             }
-        ) { contentPadding ->
-            var bottomSheetStream by remember { mutableStateOf<StreamUi?>(null) }
+        }
 
-            bottomSheetStream?.apply {
-                val scope = rememberCoroutineScope()
-                val sheetState = rememberModalBottomSheetState(true)
-                ModalBottomSheet(
-                    sheetState = sheetState,
-                    shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
-                    onDismissRequest = { bottomSheetStream = null }
-                ) {
-                    AdminBottomSheetContent(
-                        avatar = avatar,
-                        username = username,
-                        streamId = id,
-                        audio = audio,
-                        onMuteStreamClick = { streamId, value ->
-                            onMuteStreamClick(streamId, value)
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    bottomSheetStream = null
-                                }
-                            }
-                        },
-                        onPinStreamClick = { streamId, value ->
-                            onPinStreamClick(streamId, value)
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    bottomSheetStream = null
-                                }
-                            }
-                        },
-                        onKickParticipantClick = { streamId ->
-                            onKickParticipantClick(streamId)
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    bottomSheetStream = null
-                                }
-                            }
-                        }
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(contentPadding),
+            contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(contentPadding),
-                contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    Text(
-                        text = stringResource(id = R.string.kaleyra_participants_panel_change_layout),
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            item {
+                StreamsLayoutSelector(streamsLayout, onLayoutClick)
+            }
+
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
+
+            item {
+                Text(
+                    text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            items(items = streams.value, key = { it.id }) { stream ->
+                val isStreamPinned by remember(pinnedStreamsIds) {
+                    derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
                 }
 
-                item {
-                    StreamsLayoutSelector(
-                        streamsLayout,
-                        onLayoutClick
-                    )
+                val isAdminsStream by remember(adminsStreamsIds) {
+                    derivedStateOf { adminsStreamsIds.value.contains(stream.id) }
                 }
 
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(id = R.string.kaleyra_participants_panel_users_in_call),
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                ParticipantItem(
+                    stream = stream,
+                    pinned = isStreamPinned,
+                    admin = isAdminsStream,
+                    enableAdminSheet = amIAdmin,
+                    onMuteStreamClick = onMuteStreamClick,
+                    onDisableMicClick = onDisableMicClick,
+                    onPinStreamClick = onPinStreamClick,
+                    onMoreClick = { bottomSheetStream = stream }
+                )
+            }
 
-                items(items = streams.value, key = { it.id }) { stream ->
-                    val isStreamPinned by remember(pinnedStreamsIds) {
-                        derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
-                    }
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
 
-                    val isAdminsStream by remember(adminsStreamsIds) {
-                        derivedStateOf { adminsStreamsIds.value.contains(stream.id) }
-                    }
+            item {
+                Text(
+                    fontWeight = FontWeight.SemiBold,
+                    text = stringResource(R.string.kaleyra_participants_panel_users_invited),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-                    ParticipantItem(
-                        stream = stream,
-                        pinned = isStreamPinned,
-                        admin = isAdminsStream,
-                        enableAdminSheet = amIAdmin,
-                        onMuteStreamClick = onMuteStreamClick,
-                        onDisableMicClick =  onDisableMicClick,
-                        onPinStreamClick = onPinStreamClick,
-                        onMoreClick = { bottomSheetStream = stream }
-                    )
-                }
-
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        fontWeight = FontWeight.SemiBold,
-                        text = stringResource(R.string.kaleyra_participants_panel_users_invited),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                items(items = invited.value) { username ->
-                    Text(username, Modifier.fillMaxWidth())
-                }
+            items(items = invited.value) { username ->
+                Text(username, Modifier.fillMaxWidth())
             }
         }
     }
@@ -260,7 +256,12 @@ internal fun AdminBottomSheetContent(
             AdminSheetItem(
                 text = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you),
                 painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on),
-                onClick = { if (audio != null) onMuteStreamClick(streamId, !audio.isMutedForYou) else Unit }
+                onClick = {
+                    if (audio != null) onMuteStreamClick(
+                        streamId,
+                        !audio.isMutedForYou
+                    ) else Unit
+                }
             )
         }
 
@@ -319,7 +320,7 @@ internal fun ParticipantPanelPreview() {
             streams = ImmutableList(
                 listOf(
                     StreamUi("id1", "username1", true, null, null),
-                    StreamUi("id2", "username2", false,null, null),
+                    StreamUi("id2", "username2", false, null, null),
                     StreamUi("id3", "username3", false, null, null),
                     StreamUi("id4", "username4", false, null, null)
                 )
@@ -352,10 +353,10 @@ internal fun ParticipantPanelPreview() {
                 )
             ),
             onLayoutClick = { streamsLayout = it },
-            onDisableMicClick = {_,_ ->},
+            onDisableMicClick = { _, _ -> },
             onKickParticipantClick = {},
-            onPinStreamClick = {_,_ ->},
-            onMuteStreamClick = {_,_ ->},
+            onPinStreamClick = { _, _ -> },
+            onMuteStreamClick = { _, _ -> },
             onCloseClick = {}
         )
     }
