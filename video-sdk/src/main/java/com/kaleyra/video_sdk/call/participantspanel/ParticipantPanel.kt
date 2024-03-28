@@ -104,7 +104,7 @@ internal fun ParticipantsPanel(
 
             bottomSheetStream?.apply {
                 val scope = rememberCoroutineScope()
-                val sheetState = rememberModalBottomSheetState()
+                val sheetState = rememberModalBottomSheetState(true)
                 ModalBottomSheet(
                     sheetState = sheetState,
                     shape = RoundedCornerShape(16.dp),
