@@ -2,12 +2,9 @@ package com.kaleyra.video_sdk.call.participantspanel
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.contentColorFor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,12 +27,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -54,12 +50,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantItem
+import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import kotlinx.coroutines.launch
 
 private val KickParticipantColor = Color(0xFFAE1300)
 
@@ -93,16 +92,45 @@ internal fun ParticipantsPanel(
                 )
             }
         ) { contentPadding ->
-            var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+            var bottomSheetStream by rememberSaveable { mutableStateOf<StreamUi?>(null) }
 
-            if (isSheetOpen) {
+            bottomSheetStream?.apply {
+                val scope = rememberCoroutineScope()
+                val sheetState = rememberModalBottomSheetState()
                 ModalBottomSheet(
+                    sheetState = sheetState,
                     shape = RoundedCornerShape(16.dp),
-                    onDismissRequest = { isSheetOpen = false }
+                    onDismissRequest = { bottomSheetStream = null }
                 ) {
                     AdminBottomSheetContent(
-                        avatar = ImmutableUri(),
-                        username = "username hardcoded"
+                        avatar = avatar,
+                        username = username,
+                        streamId = id,
+                        audio = audio,
+                        onMuteStreamClick = { streamId, value ->
+                            onMuteStreamClick(streamId, value)
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    bottomSheetStream = null
+                                }
+                            }
+                        },
+                        onPinStreamClick = { streamId, value ->
+                            onPinStreamClick(streamId, value)
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    bottomSheetStream = null
+                                }
+                            }
+                        },
+                        onKickParticipantClick = { streamId ->
+                            onKickParticipantClick(streamId)
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    bottomSheetStream = null
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -200,6 +228,11 @@ internal fun ParticipantsPanel(
 internal fun AdminBottomSheetContent(
     username: String,
     avatar: ImmutableUri?,
+    streamId: String,
+    audio: AudioUi?,
+    onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
+    onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
+    onKickParticipantClick: (streamId: String) -> Unit
 ) {
     LazyColumn(contentPadding = PaddingValues(bottom = 52.dp)) {
         item {
@@ -230,15 +263,15 @@ internal fun AdminBottomSheetContent(
             AdminSheetItem(
                 text = stringResource(id = R.string.kaleyra_participants_panel_pin),
                 painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
-                onClick = {}
+                onClick = { /* TODO */ }
             )
         }
 
         item {
             AdminSheetItem(
-                text = stringResource(id = R.string.kaleyra_participants_panel_mute_for_you),
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_speaker_off),
-                onClick = {}
+                text = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you),
+                painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on),
+                onClick = { if (audio != null) onMuteStreamClick(streamId, !audio.isMutedForYou) else Unit }
             )
         }
 
@@ -247,7 +280,7 @@ internal fun AdminBottomSheetContent(
                 text = stringResource(id = R.string.kaleyra_participants_panel_remove_from_call),
                 painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_kick),
                 color = KickParticipantColor,
-                onClick = {}
+                onClick = { onKickParticipantClick(streamId) }
             )
         }
     }
