@@ -100,7 +100,7 @@ internal fun ParticipantsPanel(
                 )
             }
         ) { contentPadding ->
-            var bottomSheetStream by rememberSaveable { mutableStateOf<StreamUi?>(null) }
+            var bottomSheetStream by remember { mutableStateOf<StreamUi?>(null) }
 
             bottomSheetStream?.apply {
                 val scope = rememberCoroutineScope()
