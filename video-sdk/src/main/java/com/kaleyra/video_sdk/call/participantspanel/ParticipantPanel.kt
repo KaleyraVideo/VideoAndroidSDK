@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,16 +63,23 @@ import kotlinx.coroutines.launch
 
 private val KickParticipantColor = Color(0xFFAE1300)
 
+@Immutable
+internal enum class StreamsLayout {
+    Grid,
+    Pin
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ParticipantsPanel(
     companyLogo: Logo,
+    streamsLayout: StreamsLayout,
     streams: ImmutableList<StreamUi>,
     invited: ImmutableList<String>,
     adminsStreamsIds: ImmutableList<String>,
     pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
-    onLayoutClick: (isGridLayout: Boolean) -> Unit,
+    onLayoutClick: (layout: StreamsLayout) -> Unit,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
@@ -152,7 +160,10 @@ internal fun ParticipantsPanel(
                 }
 
                 item {
-                    StreamsLayoutSelector(onLayoutClick)
+                    StreamsLayoutSelector(
+                        streamsLayout,
+                        onLayoutClick
+                    )
                 }
 
                 item {
@@ -368,7 +379,10 @@ private fun PinButton(
 }
 
 @Composable
-internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Unit) {
+internal fun StreamsLayoutSelector(
+    streamsLayout: StreamsLayout,
+    onLayoutClick: (streamsLayout: StreamsLayout) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -376,11 +390,11 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
+                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimary else it.onSurfaceVariant }
             ),
             modifier = Modifier.weight(1f),
-            onClick = remember { { onLayoutClick(true) } }
+            onClick = { onLayoutClick(StreamsLayout.Grid) }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_grid),
@@ -395,8 +409,12 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
 
         Button(
             shape = RoundedCornerShape(4.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant },
+                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimary else it.onSurfaceVariant }
+            ),
             modifier = Modifier.weight(1f),
-            onClick = remember { { onLayoutClick(false) } }
+            onClick = { onLayoutClick(StreamsLayout.Pin) }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
@@ -414,8 +432,12 @@ internal fun StreamsLayoutSelector(onLayoutClick: (isGridLayout: Boolean) -> Uni
 @Composable
 internal fun ParticipantPanelPreview() {
     KaleyraM3Theme {
+        var streamsLayout by remember {
+            mutableStateOf(StreamsLayout.Grid)
+        }
         ParticipantsPanel(
             companyLogo = Logo(),
+            streamsLayout = streamsLayout,
             adminsStreamsIds = ImmutableList(listOf("id1")),
             amIAdmin = true,
             streams = ImmutableList(
@@ -453,7 +475,7 @@ internal fun ParticipantPanelPreview() {
                     "ciao21"
                 )
             ),
-            onLayoutClick = {},
+            onLayoutClick = { streamsLayout = it },
             onDisableMicClick = {_,_ ->},
             onKickParticipantClick = {},
             onPinStreamClick = {_,_ ->},
