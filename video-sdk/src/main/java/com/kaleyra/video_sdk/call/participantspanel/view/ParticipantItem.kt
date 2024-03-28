@@ -12,13 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 
@@ -72,24 +70,19 @@ internal fun ParticipantItem(
         if (enableAdminSheet || stream.mine) {
             IconButton(
                 onClick = { if (stream.audio != null) onDisableMicClick(stream.id, !stream.audio.isEnabled) else Unit },
-                content = { Icon(disableMicPainter(stream.audio), disableMicText(stream.audio)) }
+                content = { Icon(disableMicPainterFor(stream.audio), disableMicTextFor(stream.audio)) }
             )
         } else {
             IconButton(
                 onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit },
-                content = { Icon(muteForYouPainter(stream.audio), muteForYouText(stream.audio)) }
+                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
             )
         }
 
         if (!enableAdminSheet || stream.mine) {
             IconButton(
                 onClick = { onPinStreamClick(stream.id, !pinned) },
-                content = {
-                    Icon(
-                        painter = painterResource(id = if (pinned) R.drawable.ic_kaleyra_participant_panel_unpin else R.drawable.ic_kaleyra_participant_panel_pin),
-                        contentDescription = stringResource(id = if (pinned) R.string.kaleyra_participants_panel_unpin else R.string.kaleyra_participants_panel_pin)
-                    )
-                }
+                content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
             )
         } else {
             IconButton(
@@ -104,19 +97,3 @@ internal fun ParticipantItem(
         }
     }
 }
-
-@Composable
-private fun disableMicPainter(streamAudio: AudioUi?): Painter =
-    painterResource(id = if (streamAudio?.isEnabled == true) R.drawable.ic_kaleyra_participant_panel_mic_on else R.drawable.ic_kaleyra_participant_panel_mic_off)
-
-@Composable
-private fun disableMicText(streamAudio: AudioUi?): String =
-    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_participants_panel_disable_microphone else R.string.kaleyra_participants_panel_enable_microphone)
-
-@Composable
-private fun muteForYouPainter(streamAudio: AudioUi?): Painter =
-    painterResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on)
-
-@Composable
-private fun muteForYouText(streamAudio: AudioUi?): String =
-    stringResource(id = if (streamAudio == null || streamAudio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you)

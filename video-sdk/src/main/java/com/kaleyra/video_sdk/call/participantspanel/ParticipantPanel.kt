@@ -1,27 +1,19 @@
 package com.kaleyra.video_sdk.call.participantspanel
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.contentColorFor
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,34 +24,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.participantspanel.view.AdminBottomSheetContent
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participantspanel.view.StreamsLayoutSelector
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
-
-private val KickParticipantColor = Color(0xFFAE1300)
 
 @Immutable
 internal enum class StreamsLayout {
@@ -118,7 +99,8 @@ internal fun ParticipantsPanel(
                     avatar = avatar,
                     username = username,
                     streamId = id,
-                    audio = audio,
+                    streamAudio = audio,
+                    streamPinned = pinnedStreamsIds.value.contains(id),
                     onMuteStreamClick = { streamId, value ->
                         onMuteStreamClick(streamId, value)
                         animateToDismiss()
@@ -169,18 +151,10 @@ internal fun ParticipantsPanel(
             }
 
             items(items = streams.value, key = { it.id }) { stream ->
-                val isStreamPinned by remember(pinnedStreamsIds) {
-                    derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
-                }
-
-                val isAdminsStream by remember(adminsStreamsIds) {
-                    derivedStateOf { adminsStreamsIds.value.contains(stream.id) }
-                }
-
                 ParticipantItem(
                     stream = stream,
-                    pinned = isStreamPinned,
-                    admin = isAdminsStream,
+                    pinned = pinnedStreamsIds.value.contains(stream.id),
+                    admin = adminsStreamsIds.value.contains(stream.id),
                     enableAdminSheet = amIAdmin,
                     onMuteStreamClick = onMuteStreamClick,
                     onDisableMicClick = onDisableMicClick,
@@ -206,101 +180,6 @@ internal fun ParticipantsPanel(
                 Text(username, Modifier.fillMaxWidth())
             }
         }
-    }
-}
-
-@Composable
-internal fun AdminBottomSheetContent(
-    username: String,
-    avatar: ImmutableUri?,
-    streamId: String,
-    audio: AudioUi?,
-    onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
-    onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
-    onKickParticipantClick: (streamId: String) -> Unit
-) {
-    LazyColumn(contentPadding = PaddingValues(bottom = 52.dp)) {
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
-            ) {
-                Avatar(
-                    uri = avatar,
-                    contentDescription = stringResource(id = R.string.kaleyra_avatar),
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
-                    size = 34.dp
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = username,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-
-        item {
-            AdminSheetItem(
-                text = stringResource(id = R.string.kaleyra_participants_panel_pin),
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_pin),
-                onClick = { /* TODO */ }
-            )
-        }
-
-        item {
-            AdminSheetItem(
-                text = stringResource(id = if (audio == null || audio.isMutedForYou) R.string.kaleyra_participants_panel_unmute_for_you else R.string.kaleyra_participants_panel_mute_for_you),
-                painter = painterResource(id = if (audio == null || audio.isMutedForYou) R.drawable.ic_kaleyra_participant_panel_speaker_off else R.drawable.ic_kaleyra_participant_panel_speaker_on),
-                onClick = {
-                    if (audio != null) onMuteStreamClick(
-                        streamId,
-                        !audio.isMutedForYou
-                    ) else Unit
-                }
-            )
-        }
-
-        item {
-            AdminSheetItem(
-                text = stringResource(id = R.string.kaleyra_participants_panel_remove_from_call),
-                painter = painterResource(id = R.drawable.ic_kaleyra_participant_panel_kick),
-                color = KickParticipantColor,
-                onClick = { onKickParticipantClick(streamId) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun AdminSheetItem(
-    text: String,
-    painter: Painter,
-    color: Color = LocalContentColor.current,
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clickable(
-                role = Role.Button,
-                onClick = onClick
-            )
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp, vertical = 12.dp)
-    ) {
-        Icon(
-            tint = color,
-            painter = painter,
-            modifier = Modifier.size(24.dp),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.width(26.dp))
-        Text(text, color = color)
     }
 }
 
