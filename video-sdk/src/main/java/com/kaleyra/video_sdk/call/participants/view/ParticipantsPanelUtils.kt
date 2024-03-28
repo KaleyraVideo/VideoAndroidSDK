@@ -17,7 +17,7 @@ internal fun pinnedTextFor(pinned: Boolean): String =
 
 @Composable
 internal fun disableMicPainterFor(streamAudio: AudioUi?): Painter =
-    painterResource(id = if (streamAudio?.isEnabled == true) R.drawable.ic_kaleyra_participants_component_mic_on else R.drawable.ic_kaleyra_participant_panel_mic_off)
+    painterResource(id = if (streamAudio?.isEnabled == true) R.drawable.ic_kaleyra_participants_component_mic_on else R.drawable.ic_kaleyra_participants_component_mic_off)
 
 @Composable
 internal fun disableMicTextFor(streamAudio: AudioUi?): String =
