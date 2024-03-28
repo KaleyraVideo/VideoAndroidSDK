@@ -107,7 +107,7 @@ internal fun ParticipantsPanel(
                 val sheetState = rememberModalBottomSheetState(true)
                 ModalBottomSheet(
                     sheetState = sheetState,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
                     onDismissRequest = { bottomSheetStream = null }
                 ) {
                     AdminBottomSheetContent(
