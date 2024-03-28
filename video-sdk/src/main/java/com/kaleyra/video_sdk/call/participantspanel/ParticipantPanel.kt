@@ -166,14 +166,14 @@ internal fun ParticipantsPanel(
                             )
                         }
 
-                        if (amIAdmin) {
-                            ShowAdminModalSheetButton(onClick = { isSheetOpen = true })
-                        } else {
+                        if (!amIAdmin || stream.mine) {
                             PinButton(
                                 streamId = stream.id,
                                 pinnedStreamsIds = pinnedStreamsIds,
                                 onClick = onPinStreamClick
                             )
+                        } else {
+                            ShowAdminModalSheetButton(onClick = { bottomSheetStream = stream })
                         }
                     }
                 }
