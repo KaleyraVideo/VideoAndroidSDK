@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.participantspanel.view
+package com.kaleyra.video_sdk.call.participants.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

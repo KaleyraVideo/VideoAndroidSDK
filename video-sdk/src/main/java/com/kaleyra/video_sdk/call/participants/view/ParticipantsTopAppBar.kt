@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.participantspanel.view
+package com.kaleyra.video_sdk.call.participants.view
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding

@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.participantspanel.model
+package com.kaleyra.video_sdk.call.participants.model
 
 import androidx.compose.runtime.Immutable
 

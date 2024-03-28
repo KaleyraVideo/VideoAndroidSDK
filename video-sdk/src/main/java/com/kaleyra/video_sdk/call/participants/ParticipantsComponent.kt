@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.participantspanel
+package com.kaleyra.video_sdk.call.participants
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.participantspanel.model.StreamsLayout
-import com.kaleyra.video_sdk.call.participantspanel.view.AdminBottomSheetContent
-import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantItem
-import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantsTopAppBar
-import com.kaleyra.video_sdk.call.participantspanel.view.StreamsLayoutSelector
+import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
+import com.kaleyra.video_sdk.call.participants.view.AdminBottomSheetContent
+import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
+import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
+import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
