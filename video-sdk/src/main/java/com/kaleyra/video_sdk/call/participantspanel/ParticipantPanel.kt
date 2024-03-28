@@ -15,11 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.contentColorFor
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,6 +50,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participantspanel.view.ParticipantsTopAppBar
+import com.kaleyra.video_sdk.call.participantspanel.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -177,44 +175,24 @@ internal fun ParticipantsPanel(
                 }
 
                 items(items = streams.value, key = { it.id }) { stream ->
-                    ParticipantItem(
-                        avatar = stream.avatar,
-                        title = if (stream.mine) stringResource(
-                            id = R.string.kaleyra_participants_panel_you,
-                            stream.username
-                        ) else stream.username,
-                        subtitle = stringResource(
-                            when {
-                                stream.video?.isScreenShare == true -> R.string.kaleyra_participants_panel_screenshare
-                                adminsStreamsIds.value.contains(stream.id) -> R.string.kaleyra_participants_panel_admin
-                                else -> R.string.kaleyra_participants_panel_participant
-                            }
-                        )
-                    ) {
-                        if (amIAdmin || stream.mine) {
-                            DisableMicButton(
-                                streamId = stream.id,
-                                audio = stream.audio,
-                                onClick = onDisableMicClick
-                            )
-                        } else {
-                            MuteForYouButton(
-                                streamId = stream.id,
-                                audio = stream.audio,
-                                onClick = onMuteStreamClick
-                            )
-                        }
-
-                        if (!amIAdmin || stream.mine) {
-                            PinButton(
-                                streamId = stream.id,
-                                pinnedStreamsIds = pinnedStreamsIds,
-                                onClick = onPinStreamClick
-                            )
-                        } else {
-                            ShowAdminModalSheetButton(onClick = { bottomSheetStream = stream })
-                        }
+                    val isStreamPinned by remember(pinnedStreamsIds) {
+                        derivedStateOf { pinnedStreamsIds.value.contains(stream.id) }
                     }
+
+                    val isAdminsStream by remember(adminsStreamsIds) {
+                        derivedStateOf { adminsStreamsIds.value.contains(stream.id) }
+                    }
+
+                    ParticipantItem(
+                        stream = stream,
+                        pinned = isStreamPinned,
+                        admin = isAdminsStream,
+                        enableAdminSheet = amIAdmin,
+                        onMuteStreamClick = onMuteStreamClick,
+                        onDisableMicClick =  onDisableMicClick,
+                        onPinStreamClick = onPinStreamClick,
+                        onMoreClick = { bottomSheetStream = stream }
+                    )
                 }
 
                 item {
