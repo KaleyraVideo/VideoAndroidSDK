@@ -179,7 +179,7 @@ internal fun ParticipantsComponent(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ParticipantPanelPreview() {
+internal fun ParticipantsComponentPreview() {
     KaleyraM3Theme {
         var streamsLayout by remember {
             mutableStateOf(StreamsLayout.Grid)

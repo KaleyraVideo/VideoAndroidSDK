@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.participants.view
 
+import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -15,11 +16,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,4 +61,14 @@ internal fun ParticipantsTopAppBar(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun ParticipantsTopAppBarPreview() {
+    KaleyraM3Theme {
+        ParticipantsTopAppBar(companyLogo = Logo(), participantsCount = 3, onCloseClick = {})
+    }
 }
