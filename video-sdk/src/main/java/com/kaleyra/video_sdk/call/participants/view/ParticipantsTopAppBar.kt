@@ -2,7 +2,6 @@ package com.kaleyra.video_sdk.call.participants.view
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.contentColorFor
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +26,7 @@ import com.kaleyra.video_sdk.common.avatar.view.Avatar
 internal fun ParticipantsTopAppBar(
     companyLogo: Logo,
     participantsCount: Int,
-    scrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     onCloseClick: () -> Unit
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
@@ -40,7 +39,6 @@ internal fun ParticipantsTopAppBar(
                 },
                 contentDescription = stringResource(id = R.string.kaleyra_company_logo),
                 backgroundColor = MaterialTheme.colorScheme.primary,
-                size = 24.dp,
                 modifier = Modifier.padding(12.dp)
             )
         },
