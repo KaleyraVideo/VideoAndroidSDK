@@ -147,8 +147,8 @@ internal fun ParticipantsComponent(
                 ParticipantItem(
                     stream = stream,
                     pinned = pinnedStreamsIds.value.contains(stream.id),
-                    admin = adminsStreamsIds.value.contains(stream.id),
-                    enableAdminSheet = amIAdmin,
+                    isAdminStream = adminsStreamsIds.value.contains(stream.id),
+                    amIAdmin = amIAdmin,
                     onMuteStreamClick = onMuteStreamClick,
                     onDisableMicClick = onDisableMicClick,
                     onPinStreamClick = onPinStreamClick,
