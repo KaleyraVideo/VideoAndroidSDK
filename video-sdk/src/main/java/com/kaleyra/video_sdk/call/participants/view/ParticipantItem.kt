@@ -19,12 +19,14 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 
+internal val ParticipantItemAvatarSize = 28.dp
+
 @Composable
 internal fun ParticipantItem(
     stream: StreamUi,
     pinned: Boolean,
-    admin: Boolean,
-    enableAdminSheet: Boolean,
+    isAdminStream: Boolean,
+    amIAdmin: Boolean,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
@@ -40,7 +42,7 @@ internal fun ParticipantItem(
             uri = stream.avatar,
             contentDescription = stringResource(id = R.string.kaleyra_avatar),
             backgroundColor = MaterialTheme.colorScheme.primary,
-            size = 28.dp
+            size = ParticipantItemAvatarSize
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
@@ -56,7 +58,7 @@ internal fun ParticipantItem(
                 text = stringResource(
                     when {
                         stream.video?.isScreenShare == true -> R.string.kaleyra_participants_component_screenshare
-                        admin -> R.string.kaleyra_participants_component_admin
+                        isAdminStream -> R.string.kaleyra_participants_component_admin
                         else -> R.string.kaleyra_participants_component_participant
                     }
                 ),
@@ -66,9 +68,9 @@ internal fun ParticipantItem(
             )
         }
 
-        if (enableAdminSheet || stream.mine) {
+        if (amIAdmin || stream.mine) {
             IconButton(
-                onClick = { if (stream.audio != null) onDisableMicClick(stream.id, !stream.audio.isEnabled) else Unit },
+                onClick = { if (stream.audio != null) onDisableMicClick(stream.id, stream.audio.isEnabled) else Unit },
                 content = { Icon(disableMicPainterFor(stream.audio), disableMicTextFor(stream.audio)) }
             )
         } else {
@@ -78,7 +80,7 @@ internal fun ParticipantItem(
             )
         }
 
-        if (!enableAdminSheet || stream.mine) {
+        if (!amIAdmin || stream.mine) {
             IconButton(
                 onClick = { onPinStreamClick(stream.id, !pinned) },
                 content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
