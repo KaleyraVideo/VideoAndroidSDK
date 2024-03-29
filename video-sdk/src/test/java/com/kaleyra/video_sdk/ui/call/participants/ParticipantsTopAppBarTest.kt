@@ -63,13 +63,13 @@ class ParticipantsTopAppBarTest {
     @Test
     fun testCloseIsDisplayed() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
     fun testOnCloseClick() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
-        composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(text).performClick()
         assertEquals(true, isCloseClicked)
     }
