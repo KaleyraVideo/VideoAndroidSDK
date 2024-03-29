@@ -181,55 +181,30 @@ internal fun ParticipantsComponent(
 @Composable
 internal fun ParticipantsComponentPreview() {
     KaleyraM3Theme {
-        var streamsLayout by remember {
-            mutableStateOf(StreamsLayout.Grid)
-        }
         ParticipantsComponent(
             companyLogo = Logo(),
-            streamsLayout = streamsLayout,
+            streamsLayout = StreamsLayout.Grid,
             adminsStreamsIds = ImmutableList(listOf("id1")),
             amIAdmin = true,
             streams = ImmutableList(
                 listOf(
-                    StreamUi("id1", "username1", true, null, null),
-                    StreamUi("id2", "username2", false, null, null),
-                    StreamUi("id3", "username3", false, null, null),
-                    StreamUi("id4", "username4", false, null, null)
+                    StreamUi("id1", "Marina", true, null, null),
+                    StreamUi("id2", "Viola Allen", false, null, null),
                 )
             ),
             pinnedStreamsIds = ImmutableList(),
             invited = ImmutableList(
                 listOf(
-                    "ciao",
-                    "ciao1",
-                    "ciao2",
-                    "ciao3",
-                    "ciao4",
-                    "ciao5",
-                    "ciao6",
-                    "ciao7",
-                    "ciao8",
-                    "ciao9",
-                    "ciao10",
-                    "ciao11",
-                    "ciao12",
-                    "ciao13",
-                    "ciao14",
-                    "ciao15",
-                    "ciao16",
-                    "ciao17",
-                    "ciao18",
-                    "ciao19",
-                    "ciao20",
-                    "ciao21"
+                    "Mario Rossi",
+                    "Alessandra Scaramelli",
                 )
             ),
-            onLayoutClick = { streamsLayout = it },
+            onLayoutClick = { },
             onDisableMicClick = { _, _ -> },
             onKickParticipantClick = {},
             onPinStreamClick = { _, _ -> },
             onMuteStreamClick = { _, _ -> },
-            onCloseClick = {}
+            onCloseClick = { }
         )
     }
 }
