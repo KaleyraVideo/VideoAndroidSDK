@@ -16,6 +16,9 @@
 
 package com.kaleyra.video_sdk
 
+import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
@@ -77,4 +80,13 @@ internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<
 internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.findAvatar(): SemanticsNodeInteraction {
     val avatar = activity.getString(R.string.kaleyra_avatar)
     return onNodeWithContentDescription(avatar)
+}
+
+internal fun Context.loadResourceUri(resourceId: Int): Uri = with(resources) {
+    Uri.Builder()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(getResourcePackageName(resourceId))
+        .appendPath(getResourceTypeName(resourceId))
+        .appendPath(getResourceEntryName(resourceId))
+        .build()
 }

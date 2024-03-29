@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.contentColorFor
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,10 +36,10 @@ internal fun ParticipantItem(
         modifier = modifier
     ) {
         Avatar(
+            text = stream.username[0].toString(),
             uri = stream.avatar,
             contentDescription = stringResource(id = R.string.kaleyra_avatar),
             backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
             size = 28.dp
         )
         Spacer(Modifier.width(12.dp))

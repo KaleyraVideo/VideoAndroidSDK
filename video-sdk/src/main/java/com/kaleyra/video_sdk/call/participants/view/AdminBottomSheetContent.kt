@@ -44,10 +44,10 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
             ) {
                 Avatar(
+                    text = username[0].toString(),
                     uri = avatar,
                     contentDescription = stringResource(id = R.string.kaleyra_avatar),
                     backgroundColor = MaterialTheme.colorScheme.primary,
-                    contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
                     size = 34.dp
                 )
                 Spacer(Modifier.width(12.dp))

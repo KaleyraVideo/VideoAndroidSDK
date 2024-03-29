@@ -40,7 +40,6 @@ internal fun ParticipantsTopAppBar(
                 },
                 contentDescription = stringResource(id = R.string.kaleyra_company_logo),
                 backgroundColor = MaterialTheme.colorScheme.primary,
-                contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
                 size = 24.dp,
                 modifier = Modifier.padding(12.dp)
             )
