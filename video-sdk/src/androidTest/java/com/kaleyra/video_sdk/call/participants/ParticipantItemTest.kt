@@ -189,7 +189,7 @@ class ParticipantItemTest {
     fun streamIsMineAndIsPinned_unpinButtonIsDisplayed() {
         stream = streamUiMock.copy(mine = true)
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -198,7 +198,7 @@ class ParticipantItemTest {
     fun streamIsMineAndIsNotPinned_pinButtonIsDisplayed() {
         stream = streamUiMock.copy(mine = true)
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -207,7 +207,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndIsPinned_unpinButtonIsDisplayed() {
         amIAdmin = false
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -216,7 +216,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndIsNotPinned_pinButtonIsDisplayed() {
         amIAdmin = false
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -272,7 +272,7 @@ class ParticipantItemTest {
     fun testOnUnpinStreamClick() {
         stream = streamUiMock.copy(id = "customStreamId", mine = true)
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(false, isStreamPinned)
@@ -282,7 +282,7 @@ class ParticipantItemTest {
     fun testOnPinStreamClick() {
         stream = streamUiMock.copy(id = "customStreamId", mine = true)
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(true, isStreamPinned)

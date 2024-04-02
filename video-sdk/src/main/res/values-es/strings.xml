@@ -20,7 +20,8 @@
     <string name="kaleyra_participants_component_users_invited">También Invitados</string>
     <string name="kaleyra_participants_component_grid">Rejilla</string>
     <string name="kaleyra_participants_component_pin">Pin</string>
-    <string name="kaleyra_participants_component_unpin">Desprender</string>
+    <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
+    <string name="kaleyra_participants_component_unpin_stream">Desprender stream</string>
     <string name="kaleyra_participants_component_mute_for_you">Silenciar para ti</string>
     <string name="kaleyra_participants_component_unmute_for_you">Quitar silencio para ti</string>
     <string name="kaleyra_participants_component_you">%s (Tú)</string>

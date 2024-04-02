@@ -104,7 +104,7 @@ class AdminBottomSheetContentTest {
     @Test
     fun streamIsNotPinned_pinButtonIsDisplayed() {
         streamPinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithText(description).assertHasClickAction()
         composeTestRule.onNodeWithText(description).assertIsDisplayed()
     }
@@ -112,7 +112,7 @@ class AdminBottomSheetContentTest {
     @Test
     fun streamIsPinned_unpinButtonIsDisplayed() {
         streamPinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithText(description).assertHasClickAction()
         composeTestRule.onNodeWithText(description).assertIsDisplayed()
     }
@@ -144,7 +144,7 @@ class AdminBottomSheetContentTest {
     fun testOnUnpinStreamClick() {
         streamId = "customStreamId"
         streamPinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithText(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(false, onClickStreamPinned)
@@ -154,7 +154,7 @@ class AdminBottomSheetContentTest {
     fun testOnPinStreamClick() {
         streamId = "customStreamId"
         streamPinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithText(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(true, onClickStreamPinned)

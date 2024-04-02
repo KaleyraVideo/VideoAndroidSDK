@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +41,8 @@ import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
+
+internal const val AdminBottomSheetTag = "AdminBottomSheetTag"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +89,8 @@ internal fun ParticipantsComponent(
             ModalBottomSheet(
                 sheetState = sheetState,
                 shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
-                onDismissRequest = { bottomSheetStream = null }
+                onDismissRequest = { bottomSheetStream = null },
+                modifier = Modifier.testTag(AdminBottomSheetTag)
             ) {
                 AdminBottomSheetContent(
                     avatar = avatar,

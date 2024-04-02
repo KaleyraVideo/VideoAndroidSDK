@@ -21,7 +21,8 @@
     <string name="kaleyra_participants_component_users_invited">Also invited</string>
     <string name="kaleyra_participants_component_grid">Grid</string>
     <string name="kaleyra_participants_component_pin">Pin</string>
-    <string name="kaleyra_participants_component_unpin">Unpin</string>
+    <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
+    <string name="kaleyra_participants_component_unpin_stream">Unpin stream</string>
     <string name="kaleyra_participants_component_mute_for_you">Mute for you</string>
     <string name="kaleyra_participants_component_unmute_for_you">Unmute for you</string>
     <string name="kaleyra_participants_component_you">%s (You)</string>

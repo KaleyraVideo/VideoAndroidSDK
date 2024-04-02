@@ -13,7 +13,7 @@ internal fun pinnedPainterFor(pinned: Boolean): Painter =
 
 @Composable
 internal fun pinnedTextFor(pinned: Boolean): String =
-    stringResource(id = if (pinned) R.string.kaleyra_participants_component_unpin else R.string.kaleyra_participants_component_pin)
+    stringResource(id = if (pinned) R.string.kaleyra_participants_component_unpin_stream else R.string.kaleyra_participants_component_pin_stream)
 
 @Composable
 internal fun disableMicPainterFor(streamAudio: AudioUi?): Painter =
