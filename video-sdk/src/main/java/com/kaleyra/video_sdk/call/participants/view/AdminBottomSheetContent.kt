@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +27,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal val KickParticipantColor = Color(0xFFAE1300)
@@ -69,7 +72,10 @@ internal fun AdminBottomSheetContent(
         }
 
         item {
+            val interactionSource = remember { MutableInteractionSource() }
             AdminBottomSheetItem(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 text = pinnedTextFor(streamPinned),
                 painter = pinnedPainterFor(streamPinned),
                 onClick = { onPinStreamClick(streamId, !streamPinned)  }
@@ -77,7 +83,10 @@ internal fun AdminBottomSheetContent(
         }
 
         item {
+            val interactionSource = remember { MutableInteractionSource() }
             AdminBottomSheetItem(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 text = muteTextFor(streamAudio),
                 painter = mutePainterFor(streamAudio),
                 onClick = { if (streamAudio != null) onMuteStreamClick(streamId, !streamAudio.isMutedForYou) else Unit }
@@ -85,7 +94,10 @@ internal fun AdminBottomSheetContent(
         }
 
         item {
+            val interactionSource = remember { MutableInteractionSource() }
             AdminBottomSheetItem(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 text = stringResource(id = R.string.kaleyra_participants_component_remove_from_call),
                 painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_kick),
                 color = KickParticipantColor,

@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
@@ -33,13 +36,17 @@ internal fun StreamsLayoutSelector(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val gridInteractionSource = remember { MutableInteractionSource() }
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
                 contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimary else it.onSurfaceVariant }
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .highlightOnFocus(gridInteractionSource),
+            interactionSource = gridInteractionSource,
             onClick = { onLayoutClick(StreamsLayout.Grid) }
         ) {
             Icon(
@@ -53,13 +60,17 @@ internal fun StreamsLayoutSelector(
 
         Spacer(Modifier.width(14.dp))
 
+        val pinInteractionSource = remember { MutableInteractionSource() }
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant },
                 contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimary else it.onSurfaceVariant }
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .highlightOnFocus(pinInteractionSource),
+            interactionSource = pinInteractionSource,
             onClick = { onLayoutClick(StreamsLayout.Pin) }
         ) {
             Icon(

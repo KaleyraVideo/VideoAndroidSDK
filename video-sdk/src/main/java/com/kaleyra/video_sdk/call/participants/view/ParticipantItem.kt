@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,6 +24,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal val ParticipantItemAvatarSize = 28.dp
@@ -74,24 +77,36 @@ internal fun ParticipantItem(
         }
 
         if (amIAdmin || stream.mine) {
+            val interactionSource = remember { MutableInteractionSource() }
             IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 onClick = { if (stream.audio != null) onDisableMicClick(stream.id, stream.audio.isEnabled) else Unit },
                 content = { Icon(disableMicPainterFor(stream.audio), disableMicTextFor(stream.audio)) }
             )
         } else {
+            val interactionSource = remember { MutableInteractionSource() }
             IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit },
                 content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
             )
         }
 
         if (!amIAdmin || stream.mine) {
+            val interactionSource = remember { MutableInteractionSource() }
             IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 onClick = { onPinStreamClick(stream.id, !pinned) },
                 content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
             )
         } else {
+            val interactionSource = remember { MutableInteractionSource() }
             IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
                 onClick = onMoreClick,
                 content = {
                     Icon(
