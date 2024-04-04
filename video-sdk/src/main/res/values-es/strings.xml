@@ -29,9 +29,9 @@
     <string name="kaleyra_participants_component_screenshare">Compartir pantalla</string>
     <string name="kaleyra_participants_component_participant">Partícipe</string>
     <string name="kaleyra_participants_component_remove_from_call">Eliminar de la llamada</string>
-    <string name="kaleyra_participants_component_disable_microphone">Silenciar micrófono</string>
-    <string name="kaleyra_participants_component_enable_microphone">Activar micrófono</string>
-    <string name="kaleyra_participants_component_close">Cerrar panel de participantes</string>
+    <string name="kaleyra_participants_component_disable_microphone">Desactivar micrófono</string>
+    <string name="kaleyra_participants_component_enable_microphone">Habilitar micrófono</string>
+    <string name="kaleyra_participants_component_close">Cerrar el panel de participantes</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostrar más acciones</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participante</item>

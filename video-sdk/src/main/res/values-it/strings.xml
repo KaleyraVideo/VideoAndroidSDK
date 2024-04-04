@@ -32,7 +32,7 @@
     <string name="kaleyra_participants_component_remove_from_call">Rimuovi dalla chiamata</string>
     <string name="kaleyra_participants_component_disable_microphone">Disabilita microfono</string>
     <string name="kaleyra_participants_component_enable_microphone">Abilita microfono</string>
-    <string name="kaleyra_participants_component_close">Chiudi pannello partecipanti</string>
+    <string name="kaleyra_participants_component_close">Chiudi il pannello dei partecipanti</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostra più azioni</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Partecipante</item>
