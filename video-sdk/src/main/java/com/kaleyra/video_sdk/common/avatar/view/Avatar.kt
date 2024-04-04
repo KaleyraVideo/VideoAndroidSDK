@@ -84,7 +84,7 @@ internal fun Avatar(
 @Composable
 internal fun Avatar(
     uri: ImmutableUri?,
-    contentDescription: String,
+    contentDescription: String?,
     backgroundColor: Color,
     text: String? = null,
     contentColor: Color = contentColorFor(backgroundColor),
