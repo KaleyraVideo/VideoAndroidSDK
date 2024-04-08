@@ -83,7 +83,10 @@ fun CalBottomSheet(
             body = {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = cornerShape.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp))
+                    shape = if (sheetDragHandle == null) cornerShape else cornerShape.copy(
+                        topStart = CornerSize(0.dp),
+                        topEnd = CornerSize(0.dp)
+                    )
                 ) {
                     Column(Modifier.fillMaxWidth()) {
                         content(this)
