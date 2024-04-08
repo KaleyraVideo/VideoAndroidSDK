@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -51,7 +53,6 @@ fun CalBottomSheet(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    // TODO can I remove remember
     val animateToDismiss: () -> Unit = remember(scope) {
         {
             scope.launch {
@@ -59,15 +60,16 @@ fun CalBottomSheet(
             }
         }
     }
-    val density = LocalDensity.current
     var sheetHeight by remember { mutableFloatStateOf(0f) }
-    // TODO improve anchor handling
-    val anchors = with(density) {
-        DraggableAnchors {
-            CallSheetValue.Expanded at -sheetHeight
-            CallSheetValue.Collapsed at 0f
+    val anchors by remember {
+        derivedStateOf {
+            DraggableAnchors {
+                CallSheetValue.Expanded at -sheetHeight
+                CallSheetValue.Collapsed at 0f
+            }
         }
     }
+
     SideEffect {
         sheetState.anchoredDraggableState.updateAnchors(anchors)
     }
@@ -80,6 +82,9 @@ fun CalBottomSheet(
         )
         CallBottomSheetLayout(
             modifier = modifier.padding(16.dp),
+            onSheetContentSize = { size ->
+                sheetHeight = size.height.toFloat()
+            },
             body = {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -91,8 +96,7 @@ fun CalBottomSheet(
                 }
             },
             dragHandle = { sheetDragHandle?.invoke() },
-            bottomSheet = { height ->
-                sheetHeight = height.toFloat()
+            bottomSheet = {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,7 +107,10 @@ fun CalBottomSheet(
                             orientation = Orientation.Vertical,
                             enabled = sheetDragHandle != null
                         ),
-                    shape = cornerShape.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                    shape = cornerShape.copy(
+                        bottomStart = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp)
+                    ),
                     content = {
                         Column(Modifier.fillMaxWidth()) {
                             Box(
@@ -134,7 +141,7 @@ fun CalBottomSheet(
                             ) {
                                 sheetDragHandle?.invoke()
                             }
-                           sheetContent()
+                            sheetContent()
                         }
                     }
                 )
@@ -149,8 +156,9 @@ private fun CallBottomSheetLayout(
     modifier: Modifier = Modifier,
     body: @Composable () -> Unit,
     dragHandle: @Composable () -> Unit,
-    bottomSheet: @Composable (Int) -> Unit,
-    sheetOffset: Float
+    bottomSheet: @Composable () -> Unit,
+    sheetOffset: Float,
+    onSheetContentSize: (IntSize) -> Unit
 ) {
     SubcomposeLayout(
         modifier = modifier
@@ -158,22 +166,21 @@ private fun CallBottomSheetLayout(
         val sheetOffsetY = sheetOffset.toInt()
 
         val handlePlaceable =
-            subcompose(CallBottomSheetLayoutSlots.SheetHandle, dragHandle)[0].measure(constraints)
+            subcompose(CallBottomSheetLayoutSlots.DragHandle, dragHandle)[0].measure(constraints)
         val bodyPlaceable =
             subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
-        val sheetPlaceable = subcompose(CallBottomSheetLayoutSlots.Sheet) {
-            bottomSheet(0)
-        }[0].measure(constraints)
+        val sheetPlaceable =
+            subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints)
 
-        val sheetHeight = sheetPlaceable.height - handlePlaceable.height
-        val resizedSheetPlaceable = subcompose(CallBottomSheetLayoutSlots.Sheet2) {
-            bottomSheet(sheetHeight)
-        }[0].measure(constraints.copy(maxHeight = handlePlaceable.height - sheetOffsetY))
+        val maxSheetHeight = handlePlaceable.height - sheetOffsetY
+        val resizedSheetPlaceable =
+            subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(constraints.copy(maxHeight = maxSheetHeight))
 
-        val totalWidth = bodyPlaceable.width
-        val totalHeight = bodyPlaceable.height + handlePlaceable.height
+        onSheetContentSize(IntSize(sheetPlaceable.width, sheetPlaceable.height - handlePlaceable.height))
 
-        layout(totalWidth, totalHeight) {
+        val layoutWidth = bodyPlaceable.width
+        val layoutHeight = bodyPlaceable.height + handlePlaceable.height
+        layout(layoutWidth, layoutHeight) {
             resizedSheetPlaceable.placeRelative(0, sheetOffsetY)
             bodyPlaceable.placeRelative(0, handlePlaceable.height)
         }
@@ -181,10 +188,10 @@ private fun CallBottomSheetLayout(
 }
 
 enum class CallBottomSheetLayoutSlots {
-    SheetHandle,
+    DragHandle,
     Body,
     Sheet,
-    Sheet2,
+    ResizedSheet,
 }
 
 @Composable
