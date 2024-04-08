@@ -81,7 +81,7 @@ fun CalBottomSheet(
             visible = sheetState.targetValue == CallSheetValue.Expanded
         )
         CallBottomSheetLayout(
-            modifier = modifier.padding(16.dp),
+            modifier = modifier,
             onSheetContentSize = { size ->
                 sheetHeight = size.height.toFloat()
             },
