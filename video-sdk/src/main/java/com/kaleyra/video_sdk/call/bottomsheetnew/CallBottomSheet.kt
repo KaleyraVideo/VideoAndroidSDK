@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -31,13 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -82,9 +79,7 @@ fun CalBottomSheet(
         )
         CallBottomSheetLayout(
             modifier = modifier,
-            onSheetContentSize = { size ->
-                sheetHeight = size.height.toFloat()
-            },
+            onSheetContentHeight = { sheetHeight = it.toFloat() },
             body = {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -95,7 +90,7 @@ fun CalBottomSheet(
                     }
                 }
             },
-            dragHandle = { sheetDragHandle?.invoke() },
+            dragHandle = sheetDragHandle,
             bottomSheet = {
                 Surface(
                     modifier = Modifier
@@ -155,34 +150,29 @@ fun CalBottomSheet(
 private fun CallBottomSheetLayout(
     modifier: Modifier = Modifier,
     body: @Composable () -> Unit,
-    dragHandle: @Composable () -> Unit,
+    dragHandle: @Composable (() -> Unit)?,
     bottomSheet: @Composable () -> Unit,
     sheetOffset: Float,
-    onSheetContentSize: (IntSize) -> Unit
+    onSheetContentHeight: (Int) -> Unit
 ) {
     SubcomposeLayout(
         modifier = modifier
     ) { constraints ->
         val sheetOffsetY = sheetOffset.toInt()
 
-        val handlePlaceable =
-            subcompose(CallBottomSheetLayoutSlots.DragHandle, dragHandle)[0].measure(constraints)
-        val bodyPlaceable =
-            subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
-        val sheetPlaceable =
-            subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints)
+        val sheetHeight = subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints).height
+        val dragHandleHeight = dragHandle?.let { subcompose(CallBottomSheetLayoutSlots.DragHandle, it)[0].measure(constraints).height } ?: 0
 
-        val maxSheetHeight = handlePlaceable.height - sheetOffsetY
-        val resizedSheetPlaceable =
-            subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(constraints.copy(maxHeight = maxSheetHeight))
+        val sheetPlaceable = subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(constraints.copy(maxHeight = dragHandleHeight - sheetOffsetY))
+        val bodyPlaceable = subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
 
-        onSheetContentSize(IntSize(sheetPlaceable.width, sheetPlaceable.height - handlePlaceable.height))
+        onSheetContentHeight(sheetHeight - dragHandleHeight)
 
         val layoutWidth = bodyPlaceable.width
-        val layoutHeight = bodyPlaceable.height + handlePlaceable.height
+        val layoutHeight = bodyPlaceable.height + dragHandleHeight
         layout(layoutWidth, layoutHeight) {
-            resizedSheetPlaceable.placeRelative(0, sheetOffsetY)
-            bodyPlaceable.placeRelative(0, handlePlaceable.height)
+            sheetPlaceable.placeRelative(0, sheetOffsetY)
+            bodyPlaceable.placeRelative(0, dragHandleHeight)
         }
     }
 }
