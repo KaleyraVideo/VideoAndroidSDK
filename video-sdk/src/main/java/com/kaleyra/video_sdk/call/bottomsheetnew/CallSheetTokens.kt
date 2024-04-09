@@ -8,4 +8,8 @@ internal object CallSheetTokens {
     val DragHandleHeight = 4.dp
 
     val DragHandleWidth = 32.dp
+
+    val VerticalDragHandleHeight = 32.dp
+
+    val VerticalDragHandleWidth = 4.dp
 }

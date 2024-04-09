@@ -53,7 +53,34 @@ object CallBottomSheetDefaults {
         val dragHandleDescription = "description"
         Surface(
             modifier = modifier
-                .padding(vertical = DragHandleVerticalPadding)
+                .padding(vertical = DragHandlePadding)
+                .semantics { contentDescription = dragHandleDescription },
+            color = color,
+            shape = shape
+        ) {
+            Box(
+                Modifier
+                    .size(
+                        width = width,
+                        height = height
+                    )
+            )
+        }
+    }
+
+    @Composable
+    fun VerticalDragHandle(
+        modifier: Modifier = Modifier,
+        width: Dp = CallSheetTokens.VerticalDragHandleWidth,
+        height: Dp = CallSheetTokens.VerticalDragHandleHeight,
+        shape: Shape = MaterialTheme.shapes.extraLarge,
+        color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(CallSheetTokens.DragHandleOpacity)
+    ) {
+        // TODO load a string resource
+        val dragHandleDescription = "description"
+        Surface(
+            modifier = modifier
+                .padding(horizontal = DragHandlePadding)
                 .semantics { contentDescription = dragHandleDescription },
             color = color,
             shape = shape
@@ -69,7 +96,7 @@ object CallBottomSheetDefaults {
     }
 }
 
-private val DragHandleVerticalPadding = 8.dp
+private val DragHandlePadding = 8.dp
 
 internal val Dp.toPixel: Float
     get() = value * Resources.getSystem().displayMetrics.density
