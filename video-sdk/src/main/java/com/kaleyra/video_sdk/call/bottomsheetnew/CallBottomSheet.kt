@@ -162,19 +162,24 @@ private fun CallBottomSheetLayout(
         modifier = modifier
     ) { constraints ->
         val sheetOffsetY = sheetOffset.toInt()
+        val dragHandleHeight = dragHandle?.let { subcompose(CallBottomSheetLayoutSlots.DragHandle, dragHandle)[0].measure(constraints) }?.height ?: 0
 
-        val sheetHeight = subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints).height
-        val dragHandleHeight = dragHandle?.let { subcompose(CallBottomSheetLayoutSlots.DragHandle, it)[0].measure(constraints).height } ?: 0
-
-        val sheetPlaceable = subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(constraints.copy(maxHeight = dragHandleHeight - sheetOffsetY))
         val bodyPlaceable = subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
-
-        onSheetContentHeight(sheetHeight - dragHandleHeight)
+        val sheetPlaceable = if (dragHandleHeight != 0) {
+            // measure the actual sheet height
+            val placeable = subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints)
+            // invoke the callback of the sheet content height
+            onSheetContentHeight(placeable.height - dragHandleHeight)
+            // remeasure the sheet composable by modifying the max height constraint
+            subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(
+                constraints.copy(maxHeight = dragHandleHeight - sheetOffsetY)
+            )
+        } else null
 
         val layoutWidth = bodyPlaceable.width
         val layoutHeight = bodyPlaceable.height + dragHandleHeight
         layout(layoutWidth, layoutHeight) {
-            sheetPlaceable.placeRelative(0, sheetOffsetY)
+            sheetPlaceable?.placeRelative(0, sheetOffsetY)
             bodyPlaceable.placeRelative(0, dragHandleHeight)
         }
     }
