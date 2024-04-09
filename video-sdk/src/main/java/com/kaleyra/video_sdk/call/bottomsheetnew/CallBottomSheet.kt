@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -51,12 +52,13 @@ fun CalBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
     val animateToDismiss: () -> Unit = remember(scope) {
-        {
-            scope.launch {
-                sheetState.collapse()
-            }
-        }
+        { scope.launch { sheetState.collapse() } }
     }
+    val settleToDismiss: (velocity: Float) -> Unit = remember(scope) {
+        { scope.launch { sheetState.settle(it) } }
+    }
+
+    val orientation = Orientation.Vertical
     var sheetHeight by remember { mutableFloatStateOf(0f) }
     val anchors by remember {
         derivedStateOf {
@@ -98,11 +100,16 @@ fun CalBottomSheet(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        // TODO add nested scroll handling
-//                        .nestedScroll()
+                        .nestedScroll(
+                            CallBottomSheetNestedScrollConnection(
+                                sheetState = sheetState,
+                                orientation = orientation,
+                                onFling = settleToDismiss
+                            )
+                        )
                         .anchoredDraggable(
                             state = sheetState.anchoredDraggableState,
-                            orientation = Orientation.Vertical,
+                            orientation = orientation,
                             enabled = sheetDragHandle != null
                         ),
                     shape = cornerShape.copy(
@@ -224,3 +231,4 @@ private fun Scrim(
         }
     }
 }
+
