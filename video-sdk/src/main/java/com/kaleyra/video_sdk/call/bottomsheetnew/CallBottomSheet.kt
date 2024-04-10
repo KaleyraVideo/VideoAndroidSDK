@@ -16,32 +16,32 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,27 +54,13 @@ fun CallBottomSheet(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val dragOrientation = Orientation.Vertical
     val scope = rememberCoroutineScope()
-    val animateToDismiss: () -> Unit = remember(scope) {
+    val animateToDismiss: () -> Unit = remember {
         { scope.launch { sheetState.collapse() } }
     }
-    val settleToDismiss: (velocity: Float) -> Unit = remember(scope) {
+    val settleToDismiss: (velocity: Float) -> Unit = remember {
         { scope.launch { sheetState.settle(it) } }
-    }
-
-    val dragOrientation = Orientation.Vertical
-    var sheetHeight by remember { mutableFloatStateOf(0f) }
-    val anchors by remember {
-        derivedStateOf {
-            DraggableAnchors {
-                CallSheetValue.Expanded at -sheetHeight
-                CallSheetValue.Collapsed at 0f
-            }
-        }
-    }
-
-    SideEffect {
-        sheetState.anchoredDraggableState.updateAnchors(anchors)
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -83,98 +69,58 @@ fun CallBottomSheet(
             onDismissRequest = animateToDismiss,
             visible = sheetState.targetValue == CallSheetValue.Expanded
         )
-        CallBottomSheetLayout(
-            modifier = modifier,
-            onSheetContentHeight = { sheetHeight = it.toFloat() },
-            body = {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = if (sheetDragHandle == null) cornerShape else cornerShape.copy(
-                        topStart = CornerSize(0.dp),
-                        topEnd = CornerSize(0.dp)
+        Column(modifier.clip(cornerShape)) {
+            Surface(
+                modifier = Modifier
+                    .offset {
+                        val offset = if (!sheetState.offset.isNaN()) sheetState.requireOffset().roundToInt() else 0
+                        IntOffset(x = 0, y = offset)
+                    }
+                    .nestedScroll(
+                        CallBottomSheetNestedScrollConnection(
+                            sheetState = sheetState,
+                            orientation = dragOrientation,
+                            onFling = settleToDismiss
+                        )
                     )
-                ) {
+                    .anchoredDraggable(
+                        state = sheetState.anchoredDraggableState,
+                        orientation = dragOrientation,
+                        enabled = sheetDragHandle != null
+                    ),
+                shape = cornerShape.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                content = {
                     Column(Modifier.fillMaxWidth()) {
-                        content(this)
+                        Box(
+                            Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .dragHandleSemantics(
+                                    sheetState = sheetState,
+                                    coroutineScope = scope,
+                                    onDismiss = animateToDismiss
+                                )
+                        ) {
+                            sheetDragHandle?.invoke()
+                        }
+                        Column(
+                            modifier = Modifier.onSizeChanged {
+                                val newAnchors = DraggableAnchors {
+                                    CallSheetValue.Expanded at 0f
+                                    CallSheetValue.Collapsed at it.height.toFloat()
+                                }
+                                sheetState.anchoredDraggableState.updateAnchors(newAnchors)
+                            },
+                            content = sheetContent
+                        )
                     }
                 }
-            },
-            dragHandle = sheetDragHandle,
-            bottomSheet = {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .nestedScroll(
-                            CallBottomSheetNestedScrollConnection(
-                                sheetState = sheetState,
-                                orientation = dragOrientation,
-                                onFling = settleToDismiss
-                            )
-                        )
-                        .anchoredDraggable(
-                            state = sheetState.anchoredDraggableState,
-                            orientation = dragOrientation,
-                            enabled = sheetDragHandle != null
-                        ),
-                    shape = cornerShape.copy(
-                        bottomStart = CornerSize(0.dp),
-                        bottomEnd = CornerSize(0.dp)
-                    ),
-                    content = {
-                        Column(Modifier.fillMaxWidth()) {
-                            Box(
-                                Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .dragHandleSemantics(
-                                        sheetState = sheetState,
-                                        coroutineScope = scope,
-                                        onDismiss = animateToDismiss
-                                    )
-                            ) {
-                                sheetDragHandle?.invoke()
-                            }
-                            sheetContent()
-                        }
-                    }
-                )
-            },
-            sheetOffset = if (!sheetState.offset.isNaN()) sheetState.requireOffset() else 0f
-        )
-    }
-}
-
-@Composable
-private fun CallBottomSheetLayout(
-    modifier: Modifier = Modifier,
-    body: @Composable () -> Unit,
-    dragHandle: @Composable (() -> Unit)?,
-    bottomSheet: @Composable () -> Unit,
-    sheetOffset: Float,
-    onSheetContentHeight: (Int) -> Unit
-) {
-    SubcomposeLayout(
-        modifier = modifier
-    ) { constraints ->
-        val sheetOffsetY = sheetOffset.toInt()
-        val dragHandleHeight = dragHandle?.let { subcompose(CallBottomSheetLayoutSlots.DragHandle, dragHandle)[0].measure(constraints) }?.height ?: 0
-
-        val bodyPlaceable = subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
-        val sheetPlaceable = if (dragHandleHeight != 0) {
-            // measure the actual sheet height
-            val placeable = subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints)
-            // invoke the callback of the sheet content height
-            onSheetContentHeight(placeable.height - dragHandleHeight)
-            // remeasure the sheet composable by modifying the max height constraint
-            subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(
-                constraints.copy(maxHeight = dragHandleHeight - sheetOffsetY)
             )
-        } else null
-
-        val layoutWidth = bodyPlaceable.width
-        val layoutHeight = bodyPlaceable.height + dragHandleHeight
-        layout(layoutWidth, layoutHeight) {
-            sheetPlaceable?.placeRelative(0, sheetOffsetY)
-            bodyPlaceable.placeRelative(0, dragHandleHeight)
+            Surface {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = content
+                )
+            }
         }
     }
 }
@@ -190,6 +136,7 @@ fun VerticalCallBottomSheet(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     content: @Composable RowScope.() -> Unit
 ) {
+    val dragOrientation = Orientation.Horizontal
     val scope = rememberCoroutineScope()
     val animateToDismiss: () -> Unit = remember(scope) {
         { scope.launch { sheetState.collapse() } }
@@ -198,128 +145,66 @@ fun VerticalCallBottomSheet(
         { scope.launch { sheetState.settle(it) } }
     }
 
-    val dragOrientation = Orientation.Horizontal
-    var sheetWidth by remember { mutableFloatStateOf(0f) }
-    val anchors by remember {
-        derivedStateOf {
-            DraggableAnchors {
-                CallSheetValue.Expanded at -sheetWidth
-                CallSheetValue.Collapsed at 0f
-            }
-        }
-    }
-
-    SideEffect {
-        sheetState.anchoredDraggableState.updateAnchors(anchors)
-    }
-
     Box(Modifier.fillMaxSize()) {
         Scrim(
             color = sheetScrimColor,
             onDismissRequest = animateToDismiss,
             visible = sheetState.targetValue == CallSheetValue.Expanded
         )
-        VerticalCallBottomSheetLayout(
-            modifier = modifier,
-            onSheetContentWidth = { sheetWidth = it.toFloat() },
-            body = {
-                Surface(
-                    modifier = Modifier.fillMaxHeight(),
-                    shape = if (sheetDragHandle == null) cornerShape else cornerShape.copy(
-                        topStart = CornerSize(0.dp),
-                        bottomStart = CornerSize(0.dp)
+        Row(modifier.clip(cornerShape)) {
+            Surface(
+                modifier = Modifier
+                    .offset {
+                        val offset = if (!sheetState.offset.isNaN()) sheetState.requireOffset().roundToInt() else 0
+                        IntOffset(x = offset, y = 0)
+                    }
+                    .nestedScroll(
+                        CallBottomSheetNestedScrollConnection(
+                            sheetState = sheetState,
+                            orientation = dragOrientation,
+                            onFling = settleToDismiss
+                        )
                     )
-                ) {
+                    .anchoredDraggable(
+                        state = sheetState.anchoredDraggableState,
+                        orientation = dragOrientation,
+                        enabled = sheetDragHandle != null
+                    ),
+                shape = cornerShape.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                content = {
                     Row(Modifier.fillMaxHeight()) {
-                        content(this)
+                        Box(
+                            Modifier
+                                .align(Alignment.CenterVertically)
+                                .dragHandleSemantics(
+                                    sheetState = sheetState,
+                                    coroutineScope = scope,
+                                    onDismiss = animateToDismiss
+                                )
+                        ) {
+                            sheetDragHandle?.invoke()
+                        }
+                        Row(
+                            modifier = Modifier.onSizeChanged {
+                                val newAnchors = DraggableAnchors {
+                                    CallSheetValue.Expanded at 0f
+                                    CallSheetValue.Collapsed at it.width.toFloat()
+                                }
+                                sheetState.anchoredDraggableState.updateAnchors(newAnchors)
+                            },
+                            content = sheetContent
+                        )
                     }
                 }
-            },
-            dragHandle = sheetDragHandle,
-            bottomSheet = {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .nestedScroll(
-                            CallBottomSheetNestedScrollConnection(
-                                sheetState = sheetState,
-                                orientation = dragOrientation,
-                                onFling = settleToDismiss
-                            )
-                        )
-                        .anchoredDraggable(
-                            state = sheetState.anchoredDraggableState,
-                            orientation = dragOrientation,
-                            enabled = sheetDragHandle != null
-                        ),
-                    shape = cornerShape.copy(
-                        topEnd = CornerSize(0.dp),
-                        bottomEnd = CornerSize(0.dp)
-                    ),
-                    content = {
-                        Row(Modifier.fillMaxHeight()) {
-                            Box(
-                                Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .dragHandleSemantics(
-                                        sheetState = sheetState,
-                                        coroutineScope = scope,
-                                        onDismiss = animateToDismiss
-                                    )
-                            ) {
-                                sheetDragHandle?.invoke()
-                            }
-                            sheetContent()
-                        }
-                    }
-                )
-            },
-            sheetOffset = if (!sheetState.offset.isNaN()) sheetState.requireOffset() else 0f
-        )
-    }
-}
-
-@Composable
-private fun VerticalCallBottomSheetLayout(
-    modifier: Modifier = Modifier,
-    body: @Composable () -> Unit,
-    dragHandle: @Composable (() -> Unit)?,
-    bottomSheet: @Composable () -> Unit,
-    sheetOffset: Float,
-    onSheetContentWidth: (Int) -> Unit
-) {
-    SubcomposeLayout(
-        modifier = modifier
-    ) { constraints ->
-        val sheetOffsetX = sheetOffset.toInt()
-        val dragHandleWidth = dragHandle?.let { subcompose(CallBottomSheetLayoutSlots.DragHandle, dragHandle)[0].measure(constraints) }?.width ?: 0
-
-        val bodyPlaceable = subcompose(CallBottomSheetLayoutSlots.Body, body)[0].measure(constraints)
-        val sheetPlaceable = if (dragHandleWidth != 0) {
-            // measure the actual sheet height
-            val placeable = subcompose(CallBottomSheetLayoutSlots.Sheet, bottomSheet)[0].measure(constraints)
-            // invoke the callback of the sheet content height
-            onSheetContentWidth(placeable.width - dragHandleWidth)
-            // remeasure the sheet composable by modifying the max height constraint
-            subcompose(CallBottomSheetLayoutSlots.ResizedSheet, bottomSheet)[0].measure(
-                constraints.copy(maxWidth = dragHandleWidth - sheetOffsetX)
             )
-        } else null
-
-        val layoutWidth = bodyPlaceable.width + dragHandleWidth
-        val layoutHeight = bodyPlaceable.height
-        layout(layoutWidth, layoutHeight) {
-            sheetPlaceable?.placeRelative(sheetOffsetX, 0)
-            bodyPlaceable.placeRelative(dragHandleWidth, 0)
+            Surface {
+                Row(
+                    modifier = Modifier.fillMaxHeight(),
+                    content = content
+                )
+            }
         }
     }
-}
-
-enum class CallBottomSheetLayoutSlots {
-    DragHandle,
-    Body,
-    Sheet,
-    ResizedSheet
 }
 
 @Composable
@@ -362,24 +247,20 @@ private fun Modifier.dragHandleSemantics(
 ): Modifier =
     semantics(mergeDescendants = true) {
         with(sheetState) {
-            // TODO add accessibility string
-            dismiss("dismiss bottom sheet") {
+            dismiss {
                 onDismiss()
                 true
             }
             if (currentValue == CallSheetValue.Collapsed) {
-                // TODO add accessibility string
-                expand("expand bottom sheet") {
+                expand {
                     coroutineScope.launch { expand() }
                     true
                 }
             } else {
-                // TODO add accessibility string
-                collapse("collapse bottom sheet") {
+                collapse {
                     coroutineScope.launch { collapse() }
                     true
                 }
             }
         }
     }
-
