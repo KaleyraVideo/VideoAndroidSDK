@@ -41,6 +41,26 @@ internal fun SemanticsNodeInteraction.performScrollUp() {
     }
 }
 
+internal fun SemanticsNodeInteraction.performVerticalSwipe(value: Int) {
+    performTouchInput {
+        swipe(
+            start = Offset(centerX, top),
+            end = Offset(centerX, top + value),
+            durationMillis = 200
+        )
+    }
+}
+
+internal fun SemanticsNodeInteraction.performHorizontalSwipe(value: Int) {
+    performTouchInput {
+        swipe(
+            start = Offset(left, centerY),
+            end = Offset(left + value, centerY),
+            durationMillis = 200
+        )
+    }
+}
+
 internal fun SemanticsNodeInteraction.performVerticalSwipe(amount: Float) {
     performTouchInput {
         val startY = top

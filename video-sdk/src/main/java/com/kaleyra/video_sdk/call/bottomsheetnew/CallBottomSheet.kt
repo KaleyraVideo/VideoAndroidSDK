@@ -73,7 +73,9 @@ fun CallBottomSheet(
             Surface(
                 modifier = Modifier
                     .offset {
-                        val offset = if (!sheetState.offset.isNaN()) sheetState.requireOffset().roundToInt() else 0
+                        val offset = if (!sheetState.offset.isNaN()) sheetState
+                            .requireOffset()
+                            .roundToInt() else 0
                         IntOffset(x = 0, y = offset)
                     }
                     .nestedScroll(
@@ -155,7 +157,9 @@ fun VerticalCallBottomSheet(
             Surface(
                 modifier = Modifier
                     .offset {
-                        val offset = if (!sheetState.offset.isNaN()) sheetState.requireOffset().roundToInt() else 0
+                        val offset = if (!sheetState.offset.isNaN()) sheetState
+                            .requireOffset()
+                            .roundToInt() else 0
                         IntOffset(x = offset, y = 0)
                     }
                     .nestedScroll(
