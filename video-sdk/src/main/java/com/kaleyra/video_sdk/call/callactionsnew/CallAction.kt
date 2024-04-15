@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,12 +38,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-
 
 object CallActionDefaults {
 
@@ -86,10 +85,10 @@ object CallActionDefaults {
 @Composable
 fun CallToggleAction(
     icon: Painter,
-    text: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    buttonText: String? = null,
     label: String? = null,
     contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
@@ -114,7 +113,7 @@ fun CallToggleAction(
             ) {
                 ButtonLayout(
                     icon = icon,
-                    text = text,
+                    text = buttonText,
                     contentPadding = contentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
@@ -126,9 +125,9 @@ fun CallToggleAction(
 @Composable
 fun CallAction(
     icon: Painter,
-    text: String,
     onClick: (() -> Unit),
     modifier: Modifier = Modifier,
+    buttonText: String? = null,
     label: String? = null,
     contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
@@ -152,7 +151,7 @@ fun CallAction(
             ) {
                 ButtonLayout(
                     icon = icon,
-                    text = text,
+                    text = buttonText,
                     contentPadding = contentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
@@ -168,9 +167,9 @@ private fun CallActionLayout(
     badge: (@Composable BoxScope.() -> Unit)?,
     label: String? = null
 ) {
-    Box {
+    Box(modifier.width(IntrinsicSize.Max)) {
         Column(
-            modifier = modifier.width(IntrinsicSize.Min),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             iconButton()
@@ -179,8 +178,7 @@ private fun CallActionLayout(
                 Text(
                     modifier = Modifier
                         .layout { measurable, constraints ->
-                            val placeable =
-                                measurable.measure(constraints.copy(maxWidth = Constraints.Infinity))
+                            val placeable = measurable.measure(constraints.copy(maxWidth = Constraints.Infinity))
                             layout(constraints.minWidth, placeable.height) {
                                 placeable.placeRelative(-placeable.width / 2, 0)
                             }
@@ -211,7 +209,7 @@ private fun CallActionLayout(
 @Composable
 private fun ButtonLayout(
     icon: Painter,
-    text: String,
+    text: String?,
     contentPadding: PaddingValues,
     onButtonTextDisplay: (isDisplayed: Boolean) -> Unit
 ) {
@@ -225,7 +223,7 @@ private fun ButtonLayout(
             // TODO set content description
             contentDescription = null
         )
-        if (shouldDisplayButtonText) {
+        if (text != null && shouldDisplayButtonText) {
             Spacer(Modifier.width(12.dp))
             Text(
                 modifier = Modifier
@@ -261,3 +259,4 @@ private fun Badge(
         )
     }
 }
+
