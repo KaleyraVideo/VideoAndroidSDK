@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.collapse
@@ -69,7 +70,7 @@ fun CallBottomSheet(
             onDismissRequest = animateToDismiss,
             visible = sheetState.targetValue == CallSheetValue.Expanded
         )
-        Column(modifier.clip(cornerShape)) {
+        CustomColumn(modifier.clip(cornerShape)) {
             Surface(
                 modifier = Modifier
                     .offset {
@@ -92,7 +93,7 @@ fun CallBottomSheet(
                     ),
                 shape = cornerShape.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
                 content = {
-                    Column(Modifier.fillMaxWidth()) {
+                    Column {
                         Box(
                             Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -118,11 +119,23 @@ fun CallBottomSheet(
                 }
             )
             Surface {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    content = content
-                )
+                Column(content = content)
             }
+        }
+    }
+}
+
+@Composable
+fun CustomColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(modifier = modifier, content = content) { measurables, constraints ->
+        val body = measurables[1].measure(constraints)
+        val bottomSheet = measurables[0].measure(constraints.copy(maxWidth = body.width))
+
+        val width = bottomSheet.width
+        val height = bottomSheet.height + body.height
+        layout(width, height) {
+            bottomSheet.placeRelative(0, 0)
+            body.placeRelative(0, bottomSheet.height)
         }
     }
 }
@@ -176,7 +189,7 @@ fun VerticalCallBottomSheet(
                     ),
                 shape = cornerShape.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
                 content = {
-                    Row(Modifier.fillMaxHeight()) {
+                    CustomRow {
                         Box(
                             Modifier
                                 .align(Alignment.CenterVertically)
@@ -202,11 +215,23 @@ fun VerticalCallBottomSheet(
                 }
             )
             Surface {
-                Row(
-                    modifier = Modifier.fillMaxHeight(),
-                    content = content
-                )
+                Row(content = content)
             }
+        }
+    }
+}
+
+@Composable
+fun CustomRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(modifier = modifier, content = content) { measurables, constraints ->
+        val body = measurables[1].measure(constraints)
+        val bottomSheet = measurables[0].measure(constraints.copy(maxHeight = body.height))
+
+        val width = bottomSheet.width + body.width
+        val height = body.height
+        layout(width, height) {
+            bottomSheet.placeRelative(0, 0)
+            body.placeRelative(bottomSheet.width, 0)
         }
     }
 }
