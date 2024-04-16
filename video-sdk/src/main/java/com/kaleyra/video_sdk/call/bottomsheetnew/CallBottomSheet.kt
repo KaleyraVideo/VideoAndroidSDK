@@ -214,7 +214,7 @@ internal fun CallBottomSheetLayout(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CallScreenLandscapeScaffold(
+internal fun CallScreenLandscapeScaffold(
     modifier: Modifier = Modifier,
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable RowScope.() -> Unit,
@@ -340,7 +340,7 @@ fun CallScreenLandscapeScaffold(
 }
 
 @Composable
-fun CallBottomSheetVerticalLayout(
+internal fun CallBottomSheetVerticalLayout(
     modifier: Modifier = Modifier,
     sheetDragContent: @Composable (() -> Unit)?,
     sheetContent: @Composable () -> Unit
