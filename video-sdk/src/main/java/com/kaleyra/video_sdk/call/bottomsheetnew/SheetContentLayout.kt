@@ -47,3 +47,42 @@ internal fun SheetContentLayout(
         }
     }
 }
+
+@Composable
+internal fun VerticalSheetContentLayout(
+    modifier: Modifier = Modifier,
+    verticalItemSpacing: Dp = 24.dp,
+    onLayout: ((itemsCount: Int) -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    val density = LocalDensity.current
+    val padding = with(density) { verticalItemSpacing.toPx().roundToInt() }
+    Layout(modifier = modifier, content = content) { measurables, constraints ->
+        var height = 0
+        val placeables = mutableListOf<Placeable>()
+        for (index in measurables.indices) {
+            val placeable = measurables[index].measure(constraints)
+            val newHeight = height + (padding.takeIf { index != 0 } ?: 0) + placeable.height
+            // if no more items can be laid out..
+            if (newHeight > constraints.maxHeight) {
+                onLayout?.invoke(index)
+                break
+            }
+            height = newHeight
+            placeables += placeable
+        }
+        // if all the items are laid out...
+        if (placeables.size == measurables.size) {
+            onLayout?.invoke(placeables.size)
+        }
+
+        val width = placeables.maxOf { it.width }
+        layout(width, height) {
+            var y = 0
+            placeables.forEachIndexed { index, placeable ->
+                placeable.placeRelative(0, y)
+                y += placeable.height + if (index < placeables.size - 1) padding else 0
+            }
+        }
+    }
+}
