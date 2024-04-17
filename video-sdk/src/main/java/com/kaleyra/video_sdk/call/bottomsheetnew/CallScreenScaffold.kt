@@ -58,7 +58,7 @@ import kotlin.math.roundToInt
 
 internal object CallScreenScaffoldDefaults {
 
-    val padding = PaddingValues(16.dp)
+    val paddingValues = PaddingValues(16.dp)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -75,7 +75,7 @@ internal fun CallScreenScaffold(
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
+    paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Vertical
@@ -255,7 +255,7 @@ internal fun CallScreenLandscapeScaffold(
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
+    paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Horizontal
