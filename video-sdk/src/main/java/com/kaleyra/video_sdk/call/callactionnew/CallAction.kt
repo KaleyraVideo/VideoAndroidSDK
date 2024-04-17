@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.callactionsnew
+package com.kaleyra.video_sdk.call.callactionnew
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -85,6 +85,7 @@ object CallActionDefaults {
 fun CallToggleAction(
     icon: Painter,
     checked: Boolean,
+    contentDescription: String,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     buttonText: String? = null,
@@ -92,7 +93,7 @@ fun CallToggleAction(
     contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
 ) {
-    var isButtonTextDisplayed by remember { mutableStateOf(true) }
+    var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
@@ -113,6 +114,7 @@ fun CallToggleAction(
                 ButtonLayout(
                     icon = icon,
                     text = buttonText,
+                    contentDescription = contentDescription,
                     contentPadding = contentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
@@ -124,6 +126,7 @@ fun CallToggleAction(
 @Composable
 fun CallAction(
     icon: Painter,
+    contentDescription: String,
     onClick: (() -> Unit),
     modifier: Modifier = Modifier,
     buttonText: String? = null,
@@ -131,7 +134,7 @@ fun CallAction(
     contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
 ) {
-    var isButtonTextDisplayed by remember { mutableStateOf(true) }
+    var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
@@ -151,6 +154,7 @@ fun CallAction(
                 ButtonLayout(
                     icon = icon,
                     text = buttonText,
+                    contentDescription = contentDescription,
                     contentPadding = contentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
@@ -209,6 +213,7 @@ private fun CallActionLayout(
 private fun ButtonLayout(
     icon: Painter,
     text: String?,
+    contentDescription: String,
     contentPadding: PaddingValues,
     onButtonTextDisplay: (isDisplayed: Boolean) -> Unit
 ) {
@@ -219,8 +224,7 @@ private fun ButtonLayout(
     ) {
         Icon(
             painter = icon,
-            // TODO set content description
-            contentDescription = null
+            contentDescription = contentDescription
         )
         if (text != null && shouldDisplayButtonText) {
             Spacer(Modifier.width(12.dp))
