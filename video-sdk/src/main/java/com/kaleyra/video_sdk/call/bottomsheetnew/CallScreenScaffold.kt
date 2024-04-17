@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -42,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss
@@ -52,6 +55,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
+internal object CallScreenScaffoldDefaults {
+
+    val padding = PaddingValues(16.dp)
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,6 +75,7 @@ internal fun CallScreenScaffold(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
+    paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Vertical
@@ -83,23 +92,31 @@ internal fun CallScreenScaffold(
     var sheetDragContentHeight by remember { mutableStateOf(0.dp) }
     var bottomSheetPadding by remember { mutableStateOf(0.dp) }
     var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val paddingValues by remember {
+    val contentPaddingValues by remember {
         derivedStateOf { PaddingValues(top = topAppBarPadding, bottom = bottomSheetPadding) }
     }
 
+    val layoutDirection = LocalLayoutDirection.current
+    val topPadding = paddingValues.calculateTopPadding()
+    val bottomPadding = paddingValues.calculateBottomPadding()
+    val startPadding = paddingValues.calculateStartPadding(layoutDirection)
+    val endPadding = paddingValues.calculateEndPadding(layoutDirection)
     Surface(
+        modifier = modifier,
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(modifier.fillMaxSize()) {
-            content(paddingValues)
-            Box(
-                modifier = Modifier
-                    .onSizeChanged {
-                        topAppBarPadding = with(density) { it.height.toDp() }
-                    },
-                content = { topAppBar() }
-            )
+        Box(Modifier.fillMaxSize()) {
+            Box(Modifier.padding(start = startPadding, top = topPadding, end = endPadding)) {
+                content(contentPaddingValues)
+                Box(
+                    modifier = Modifier
+                        .onSizeChanged {
+                            topAppBarPadding = with(density) { it.height.toDp() }
+                        },
+                    content = { topAppBar() }
+                )
+            }
             Scrim(
                 color = sheetScrimColor,
                 onDismissRequest = animateToDismiss,
@@ -109,6 +126,7 @@ internal fun CallScreenScaffold(
                 if (sheetPanelContent != null) {
                     Card(
                         modifier = Modifier
+                            .padding(start = startPadding, end = endPadding)
                             .align(Alignment.End)
                             .dragVerticalOffset(sheetState),
                         content = sheetPanelContent
@@ -121,6 +139,7 @@ internal fun CallScreenScaffold(
                             val height = with(density) { it.height.toDp() }
                             bottomSheetPadding = height - sheetDragContentHeight
                         }
+                        .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
                         .clip(cornerShape),
                     sheetContent = {
                         Surface {
@@ -236,6 +255,7 @@ internal fun CallScreenLandscapeScaffold(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
+    paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Horizontal
@@ -252,24 +272,32 @@ internal fun CallScreenLandscapeScaffold(
     var sheetDragContentWidth by remember { mutableStateOf(0.dp) }
     var bottomSheetPadding by remember { mutableStateOf(0.dp) }
     var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val paddingValues by remember {
+    val contentPaddingValues by remember {
         derivedStateOf { PaddingValues(top = topAppBarPadding, end = bottomSheetPadding) }
     }
 
+    val layoutDirection = LocalLayoutDirection.current
+    val topPadding = paddingValues.calculateTopPadding()
+    val bottomPadding = paddingValues.calculateBottomPadding()
+    val startPadding = paddingValues.calculateStartPadding(layoutDirection)
+    val endPadding = paddingValues.calculateEndPadding(layoutDirection)
     Surface(
+        modifier = modifier,
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(modifier.fillMaxSize()) {
-            content(paddingValues)
-            Box(
-                modifier = Modifier
-                    .padding(end = bottomSheetPadding)
-                    .onSizeChanged {
-                        topAppBarPadding = with(density) { it.height.toDp() }
-                    },
-                content = { topAppBar() }
-            )
+        Box(Modifier.fillMaxSize()) {
+            Box(Modifier.padding(start = startPadding, top = topPadding, bottom = endPadding)) {
+                content(contentPaddingValues)
+                Box(
+                    modifier = Modifier
+                        .padding(end = bottomSheetPadding)
+                        .onSizeChanged {
+                            topAppBarPadding = with(density) { it.height.toDp() }
+                        },
+                    content = { topAppBar() }
+                )
+            }
             Scrim(
                 color = sheetScrimColor,
                 onDismissRequest = animateToDismiss,
@@ -282,6 +310,7 @@ internal fun CallScreenLandscapeScaffold(
                         bottomSheetPadding = width - sheetDragContentWidth
                     }
                     .align(Alignment.CenterEnd)
+                    .padding(top = topPadding, bottom = bottomPadding, end = endPadding)
                     .clip(cornerShape),
                 sheetContent = {
                     Surface {
