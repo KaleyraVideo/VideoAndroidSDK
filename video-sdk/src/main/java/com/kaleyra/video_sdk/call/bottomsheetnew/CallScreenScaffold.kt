@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
@@ -51,17 +53,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-internal object CallScreenScaffoldDefault {
-
-    val contentPadding = PaddingValues(16.dp)
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CallScreenScaffold(
     modifier: Modifier = Modifier,
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable ColumnScope.() -> Unit,
+    sheetPanelContent: @Composable (ColumnScope.() -> Unit)? = null,
     sheetDragContent: @Composable ColumnScope.() -> Unit,
     sheetState: CallSheetState = rememberCallSheetState(),
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
@@ -69,7 +67,6 @@ internal fun CallScreenScaffold(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    contentPadding: PaddingValues = CallScreenScaffoldDefault.contentPadding,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Vertical
@@ -94,7 +91,7 @@ internal fun CallScreenScaffold(
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize()) {
             content(paddingValues)
             Box(
                 modifier = Modifier
@@ -108,78 +105,82 @@ internal fun CallScreenScaffold(
                 onDismissRequest = animateToDismiss,
                 visible = sheetState.targetValue == CallSheetValue.Expanded
             )
-            CallBottomSheetLayout(
-                modifier = modifier
-                    .onSizeChanged {
-                        val height = with(density) { it.height.toDp() }
-                        bottomSheetPadding = height - sheetDragContentHeight
-                    }
-                    .padding(contentPadding)
-                    .align(Alignment.BottomCenter)
-                    .clip(cornerShape),
-                sheetContent = {
-                    Surface {
-                        Column(content = sheetContent)
-                    }
-                },
-                sheetDragContent = sheetDragHandle?.let { dragHandle ->
-                    {
-                        Surface(
-                            modifier = Modifier
-                                .offset {
-                                    val offset = if (!sheetState.offset.isNaN()) sheetState
-                                        .requireOffset()
-                                        .roundToInt() else 0
-                                    IntOffset(x = 0, y = offset)
-                                }
-                                .nestedScroll(
-                                    CallBottomSheetNestedScrollConnection(
-                                        sheetState = sheetState,
-                                        orientation = dragOrientation,
-                                        onFling = settleToDismiss
-                                    )
-                                )
-                                .anchoredDraggable(
-                                    state = sheetState.anchoredDraggableState,
-                                    orientation = dragOrientation
-                                ),
-                            shape = cornerShape.copy(
-                                bottomStart = CornerSize(0.dp),
-                                bottomEnd = CornerSize(0.dp)
-                            ),
-                            content = {
-                                Column {
-                                    Box(
-                                        Modifier
-                                            .align(Alignment.CenterHorizontally)
-                                            .dragHandleSemantics(
-                                                sheetState = sheetState,
-                                                coroutineScope = scope,
-                                                onDismiss = animateToDismiss
-                                            )
-                                    ) {
-                                        dragHandle()
-                                    }
-                                    Column(
-                                        modifier = Modifier.onSizeChanged {
-                                            val newAnchors = DraggableAnchors {
-                                                CallSheetValue.Expanded at 0f
-                                                CallSheetValue.Collapsed at it.height.toFloat()
-                                            }
-                                            sheetDragContentHeight =
-                                                with(density) { it.height.toDp() }
-                                            sheetState.anchoredDraggableState.updateAnchors(
-                                                newAnchors
-                                            )
-                                        },
-                                        content = sheetDragContent
-                                    )
-                                }
-                            }
-                        )
-                    }
+            Column(Modifier.align(Alignment.BottomCenter)) {
+                if (sheetPanelContent != null) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .dragVerticalOffset(sheetState),
+                        content = sheetPanelContent
+                    )
+                    Spacer(Modifier.height(8.dp))
                 }
-            )
+                CallBottomSheetLayout(
+                    modifier = Modifier
+                        .onSizeChanged {
+                            val height = with(density) { it.height.toDp() }
+                            bottomSheetPadding = height - sheetDragContentHeight
+                        }
+                        .clip(cornerShape),
+                    sheetContent = {
+                        Surface {
+                            Column(content = sheetContent)
+                        }
+                    },
+                    sheetDragContent = sheetDragHandle?.let { dragHandle ->
+                        {
+                            Surface(
+                                modifier = Modifier
+                                    .dragVerticalOffset(sheetState)
+                                    .nestedScroll(
+                                        CallBottomSheetNestedScrollConnection(
+                                            sheetState = sheetState,
+                                            orientation = dragOrientation,
+                                            onFling = settleToDismiss
+                                        )
+                                    )
+                                    .anchoredDraggable(
+                                        state = sheetState.anchoredDraggableState,
+                                        orientation = dragOrientation
+                                    ),
+                                shape = cornerShape.copy(
+                                    bottomStart = CornerSize(0.dp),
+                                    bottomEnd = CornerSize(0.dp)
+                                ),
+                                content = {
+                                    Column {
+                                        Box(
+                                            Modifier
+                                                .align(Alignment.CenterHorizontally)
+                                                .dragHandleSemantics(
+                                                    sheetState = sheetState,
+                                                    coroutineScope = scope,
+                                                    onDismiss = animateToDismiss
+                                                )
+                                        ) {
+                                            dragHandle()
+                                        }
+                                        Column(
+                                            modifier = Modifier.onSizeChanged {
+                                                val newAnchors = DraggableAnchors {
+                                                    CallSheetValue.Expanded at 0f
+                                                    CallSheetValue.Collapsed at it.height.toFloat()
+                                                }
+                                                sheetDragContentHeight =
+                                                    with(density) { it.height.toDp() }
+                                                sheetState.anchoredDraggableState.updateAnchors(
+                                                    newAnchors
+                                                )
+                                            },
+                                            content = sheetDragContent
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 }
@@ -198,9 +199,10 @@ internal fun CallBottomSheetLayout(
         }
     ) { measurables, constraints ->
         val bodyMeasurable = measurables[0]
-        val sheetMeasurable = if (sheetDragContent != null) measurables[1] else null
+        val sheetMeasurable = measurables.getOrNull(1)
         val body = bodyMeasurable.measure(constraints)
-        val bottomSheet = sheetMeasurable?.measure(constraints.copy(minWidth = body.width, maxWidth = body.width))
+        val bottomSheet =
+            sheetMeasurable?.measure(constraints.copy(minWidth = body.width, maxWidth = body.width))
 
         val sheetHeight = bottomSheet?.height ?: 0
         val width = body.width
@@ -209,6 +211,15 @@ internal fun CallBottomSheetLayout(
             bottomSheet?.placeRelative(0, 0)
             body.placeRelative(0, sheetHeight)
         }
+    }
+}
+
+private fun Modifier.dragVerticalOffset(sheetState: CallSheetState): Modifier {
+    return offset {
+        val offset = if (!sheetState.offset.isNaN()) sheetState
+            .requireOffset()
+            .roundToInt() else 0
+        IntOffset(x = 0, y = offset)
     }
 }
 
@@ -225,7 +236,6 @@ internal fun CallScreenLandscapeScaffold(
     cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    contentPadding: PaddingValues = CallScreenScaffoldDefault.contentPadding,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Horizontal
@@ -250,7 +260,7 @@ internal fun CallScreenLandscapeScaffold(
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize()) {
             content(paddingValues)
             Box(
                 modifier = Modifier
@@ -266,30 +276,23 @@ internal fun CallScreenLandscapeScaffold(
                 visible = sheetState.targetValue == CallSheetValue.Expanded
             )
             CallBottomSheetVerticalLayout(
-                modifier = modifier
+                modifier = Modifier
                     .onSizeChanged {
                         val width = with(density) { it.width.toDp() }
                         bottomSheetPadding = width - sheetDragContentWidth
                     }
-                    .padding(contentPadding)
                     .align(Alignment.CenterEnd)
                     .clip(cornerShape),
                 sheetContent = {
                     Surface {
-                        // TODO add to defaults
-                        Row(modifier = Modifier.defaultMinSize(minWidth = 56.dp, minHeight = 200.dp), content = sheetContent)
+                        Row(content = sheetContent)
                     }
                 },
                 sheetDragContent = sheetDragHandle?.let { dragHandle ->
                     {
                         Surface(
                             modifier = Modifier
-                                .offset {
-                                    val offset = if (!sheetState.offset.isNaN()) sheetState
-                                        .requireOffset()
-                                        .roundToInt() else 0
-                                    IntOffset(x = offset, y = 0)
-                                }
+                                .dragHorizontalOffset(sheetState)
                                 .nestedScroll(
                                     CallBottomSheetNestedScrollConnection(
                                         sheetState = sheetState,
@@ -324,8 +327,11 @@ internal fun CallScreenLandscapeScaffold(
                                                 CallSheetValue.Expanded at 0f
                                                 CallSheetValue.Collapsed at it.width.toFloat()
                                             }
-                                            sheetDragContentWidth = with(density) { it.width.toDp() }
-                                            sheetState.anchoredDraggableState.updateAnchors(newAnchors)
+                                            sheetDragContentWidth =
+                                                with(density) { it.width.toDp() }
+                                            sheetState.anchoredDraggableState.updateAnchors(
+                                                newAnchors
+                                            )
                                         },
                                         content = sheetDragContent
                                     )
@@ -353,9 +359,14 @@ internal fun CallBottomSheetVerticalLayout(
         }
     ) { measurables, constraints ->
         val bodyMeasurable = measurables[0]
-        val sheetMeasurable = if (sheetDragContent != null) measurables[1] else null
+        val sheetMeasurable = measurables.getOrNull(1)
         val body = bodyMeasurable.measure(constraints)
-        val bottomSheet = sheetMeasurable?.measure(constraints.copy(minHeight = body.height, maxHeight = body.height))
+        val bottomSheet = sheetMeasurable?.measure(
+            constraints.copy(
+                minHeight = body.height,
+                maxHeight = body.height
+            )
+        )
 
         val sheetWidth = bottomSheet?.width ?: 0
         val width = body.width + sheetWidth
@@ -364,6 +375,15 @@ internal fun CallBottomSheetVerticalLayout(
             bottomSheet?.placeRelative(0, 0)
             body.placeRelative(sheetWidth, 0)
         }
+    }
+}
+
+private fun Modifier.dragHorizontalOffset(sheetState: CallSheetState): Modifier {
+    return offset {
+        val offset = if (!sheetState.offset.isNaN()) sheetState
+            .requireOffset()
+            .roundToInt() else 0
+        IntOffset(x = offset, y = 0)
     }
 }
 
