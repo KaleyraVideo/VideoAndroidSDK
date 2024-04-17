@@ -72,7 +72,7 @@ internal fun CallScreenScaffold(
     sheetState: CallSheetState = rememberCallSheetState(),
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.DragHandle() },
-    cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
+    sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
     paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
@@ -140,7 +140,7 @@ internal fun CallScreenScaffold(
                             bottomSheetPadding = height - sheetDragContentHeight
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
-                        .clip(cornerShape),
+                        .clip(sheetCornerShape),
                     sheetContent = {
                         Surface {
                             Column(content = sheetContent)
@@ -162,7 +162,7 @@ internal fun CallScreenScaffold(
                                         state = sheetState.anchoredDraggableState,
                                         orientation = dragOrientation
                                     ),
-                                shape = cornerShape.copy(
+                                shape = sheetCornerShape.copy(
                                     bottomStart = CornerSize(0.dp),
                                     bottomEnd = CornerSize(0.dp)
                                 ),
@@ -252,7 +252,7 @@ internal fun CallScreenLandscapeScaffold(
     sheetState: CallSheetState = rememberCallSheetState(),
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.VerticalDragHandle() },
-    cornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
+    sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
     paddingValues: PaddingValues = CallScreenScaffoldDefaults.padding,
@@ -311,7 +311,7 @@ internal fun CallScreenLandscapeScaffold(
                     }
                     .align(Alignment.CenterEnd)
                     .padding(top = topPadding, bottom = bottomPadding, end = endPadding)
-                    .clip(cornerShape),
+                    .clip(sheetCornerShape),
                 sheetContent = {
                     Surface {
                         Row(content = sheetContent)
@@ -333,7 +333,7 @@ internal fun CallScreenLandscapeScaffold(
                                     state = sheetState.anchoredDraggableState,
                                     orientation = dragOrientation
                                 ),
-                            shape = cornerShape.copy(
+                            shape = sheetCornerShape.copy(
                                 topEnd = CornerSize(0.dp),
                                 bottomEnd = CornerSize(0.dp)
                             ),
