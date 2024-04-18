@@ -287,7 +287,7 @@ internal fun CallScreenLandscapeScaffold(
         contentColor = contentColor
     ) {
         Box(Modifier.fillMaxSize()) {
-            Box(Modifier.padding(start = startPadding, top = topPadding, bottom = endPadding)) {
+            Box(Modifier.padding(start = startPadding, top = topPadding, bottom = bottomPadding)) {
                 content(contentPaddingValues)
                 Box(
                     modifier = Modifier

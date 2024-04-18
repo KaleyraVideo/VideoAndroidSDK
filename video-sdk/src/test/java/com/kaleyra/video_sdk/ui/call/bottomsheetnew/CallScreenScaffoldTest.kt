@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -46,6 +47,8 @@ class CallScreenScaffoldTest {
     private val sheetDragContentTag = "sheetDragContentTag"
 
     private val sheetContentTag = "SheetContentTag"
+
+    private val sheetWidth = 200.dp
 
     private val sheetDragContentHeight = 50.dp
 
@@ -196,12 +199,63 @@ class CallScreenScaffoldTest {
     @Test
     fun testCollapseBottomSheetOnScrimClick() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        composeTestRule.setCallBottomSheet(sheetState)
-        composeTestRule.onRoot().performClick()
+        val contentText = "contentText"
+        composeTestRule.setCallBottomSheet(
+            sheetState,
+            content = { Text(contentText) }
+        )
+        composeTestRule.onNodeWithText(contentText).performClick()
         composeTestRule.waitForIdle()
         val offset = sheetDragContentHeight.value * Resources.getSystem().displayMetrics.density
         assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
         assertEquals(offset, sheetState.offset, .5f)
+    }
+
+    @Test
+    fun testContentFillMaxSize() {
+        val contentText = "contentText"
+        composeTestRule.setCallBottomSheet(
+            content = {
+                Text(contentText, Modifier.fillMaxSize())
+            },
+            paddingValues = PaddingValues(0.dp)
+        )
+        val contentWidth = composeTestRule.onNodeWithText(contentText).getBoundsInRoot().width
+        val contentHeight = composeTestRule.onNodeWithText(contentText).getBoundsInRoot().height
+
+        val rootWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val rootHeight = composeTestRule.onRoot().getBoundsInRoot().height
+
+        contentWidth.assertIsEqualTo(rootWidth, "content width")
+        contentHeight.assertIsEqualTo(rootHeight, "content height")
+    }
+
+    @Test
+    fun testBottomSheetCollapseHeight() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Collapsed)
+        composeTestRule.setCallBottomSheet(sheetState, paddingValues = PaddingValues(0.dp))
+        val sheetContentBounds = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot()
+        val sheetHandleBounds = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot()
+        val sheetContentHeight = sheetContentBounds.height
+        val sheetHandleHeight = sheetHandleBounds.height
+
+        val sheetHeight = sheetContentBounds.bottom - sheetHandleBounds.top
+        sheetHeight.assertIsEqualTo(sheetContentHeight + sheetHandleHeight, "sheet height")
+    }
+
+    @Test
+    fun testBottomSheetExpandedHeight() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        composeTestRule.setCallBottomSheet(sheetState, paddingValues = PaddingValues(0.dp))
+        val sheetContentBounds = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot()
+        val sheetDragContentBounds = composeTestRule.onNodeWithTag(sheetDragContentTag, useUnmergedTree = true).getBoundsInRoot()
+        val sheetHandleBounds = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot()
+        val sheetContentHeight = sheetContentBounds.height
+        val sheetDragContentHeight = sheetDragContentBounds.height
+        val sheetHandleHeight = sheetHandleBounds.height
+
+        val sheetHeight = sheetContentBounds.bottom - sheetHandleBounds.top
+        sheetHeight.assertIsEqualTo(sheetContentHeight + sheetDragContentHeight + sheetHandleHeight, "sheet height")
     }
 
     private fun ComposeContentTestRule.setCallBottomSheet(
@@ -209,7 +263,7 @@ class CallScreenScaffoldTest {
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
-        content: @Composable (PaddingValues) -> Unit = {},
+        content: @Composable (PaddingValues) -> Unit = {}
     ) {
         setContent {
             CallScreenScaffold(
@@ -219,7 +273,7 @@ class CallScreenScaffoldTest {
                 sheetContent = {
                     Spacer(
                         Modifier
-                            .fillMaxWidth()
+                            .width(sheetWidth)
                             .height(80.dp)
                             .testTag(sheetContentTag)
                     )
@@ -227,20 +281,20 @@ class CallScreenScaffoldTest {
                 sheetDragContent = {
                     Spacer(
                         Modifier
-                            .fillMaxWidth()
+                            .width(100.dp)
                             .height(sheetDragContentHeight)
                             .testTag(sheetDragContentTag))
                 },
                 sheetDragHandle = {
                     Spacer(
                         Modifier
-                            .fillMaxWidth()
+                            .width(150.dp)
                             .height(30.dp)
                             .testTag(sheetHandleTag)
                     )
                 },
                 paddingValues = paddingValues,
-                content = content,
+                content = content
             )
         }
     }
