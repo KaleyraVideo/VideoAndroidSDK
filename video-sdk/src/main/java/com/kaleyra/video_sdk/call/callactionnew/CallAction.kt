@@ -28,6 +28,7 @@ import androidx.compose.material3.IconToggleButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,18 +57,44 @@ object CallActionDefaults {
 
     val badgeOffset = 4.dp
 
+    val containerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(.1f)
+
+    val contentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface
+
+    val checkedContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isSystemInDarkTheme()) 1f else .66f)
+
+    val checkedContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.surface
+
+    val badgeContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.primary
+
     @Composable
     fun iconButtonColors(
-        containerColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f)
+        containerColor: Color = CallActionDefaults.containerColor,
+        contentColor : Color = CallActionDefaults.contentColor
     ): IconButtonColors =
-        IconButtonDefaults.filledIconButtonColors(containerColor)
+        IconButtonDefaults.filledIconButtonColors(containerColor, contentColor)
 
     @Composable
     fun iconToggleButtonColors(
-        containerColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
-        contentColor: Color = MaterialTheme.colorScheme.onSurface,
-        checkedContainerColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isSystemInDarkTheme()) 1f else .66f),
-        checkedContentColor: Color = MaterialTheme.colorScheme.surface,
+        containerColor: Color =  CallActionDefaults.containerColor,
+        contentColor: Color =  CallActionDefaults.contentColor,
+        checkedContainerColor: Color = CallActionDefaults.checkedContainerColor,
+        checkedContentColor: Color = CallActionDefaults.checkedContentColor,
     ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
@@ -76,7 +103,7 @@ object CallActionDefaults {
     )
 
     @Composable
-    fun badgeColors(containerColor: Color = MaterialTheme.colorScheme.primary) =
+    fun badgeColors(containerColor: Color = badgeContainerColor) =
         CardDefaults.cardColors(containerColor)
 
 }
@@ -89,8 +116,8 @@ fun CallToggleAction(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     buttonText: String? = null,
+    buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     label: String? = null,
-    contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
@@ -115,7 +142,7 @@ fun CallToggleAction(
                     icon = icon,
                     text = buttonText,
                     contentDescription = contentDescription,
-                    contentPadding = contentPadding,
+                    contentPadding = buttonContentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
             }
@@ -130,8 +157,10 @@ fun CallAction(
     onClick: (() -> Unit),
     modifier: Modifier = Modifier,
     buttonText: String? = null,
+    buttonColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
+    buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
+    buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     label: String? = null,
-    contentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badge: (@Composable BoxScope.() -> Unit)? = null
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
@@ -148,14 +177,14 @@ fun CallAction(
                     )
                     .fillMaxWidth(),
                 shape = CallActionDefaults.buttonShape,
-                colors = CallActionDefaults.iconButtonColors(),
+                colors = CallActionDefaults.iconButtonColors(containerColor = buttonColor, contentColor = buttonContentColor),
                 onClick = onClick
             ) {
                 ButtonLayout(
                     icon = icon,
                     text = buttonText,
                     contentDescription = contentDescription,
-                    contentPadding = contentPadding,
+                    contentPadding = buttonContentPadding,
                     onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
             }
