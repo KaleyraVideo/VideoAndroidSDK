@@ -17,7 +17,9 @@
 package com.kaleyra.video_sdk.common.button
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,8 +31,8 @@ import com.kaleyra.video_sdk.R
 @Composable
 internal fun BackIconButton(
     modifier: Modifier = Modifier,
-    icon: Painter = rememberVectorPainter(image = Icons.Filled.ArrowBack),
-    iconTint: Color,
+    icon: Painter = rememberVectorPainter(image = Icons.AutoMirrored.Filled.ArrowBack),
+    iconTint: Color = LocalContentColor.current,
     onClick: () -> Unit
 ) {
     IconButton(
@@ -38,7 +40,6 @@ internal fun BackIconButton(
         iconDescription = stringResource(id = R.string.kaleyra_back),
         iconTint = iconTint,
         onClick = onClick,
-        supportRtl = true,
         modifier = modifier
     )
 }

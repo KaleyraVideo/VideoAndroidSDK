@@ -48,7 +48,6 @@ internal fun IconButton(
     iconTint: Color = LocalContentColor.current,
     iconSize: Dp = IconSize,
     enabled: Boolean = true,
-    supportRtl: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     indication: Indication? = rememberRipple(bounded = false, radius = IconSize),
     onClick: () -> Unit,
@@ -70,9 +69,7 @@ internal fun IconButton(
         val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
         CompositionLocalProvider(LocalContentAlpha provides contentAlpha) {
             val tint = if (enabled) iconTint else LocalContentColor.current.copy(alpha = DisabledAlpha)
-            val mod = Modifier
-                .size(iconSize)
-                .then(if (supportRtl) Modifier.supportRtl() else Modifier)
+            val mod = Modifier.size(iconSize)
             Icon(
                 painter = icon,
                 tint = tint,

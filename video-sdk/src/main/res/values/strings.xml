@@ -16,6 +16,29 @@
 
 <resources>
 
+    <string name="kaleyra_participants_component_change_layout">Change Layout</string>
+    <string name="kaleyra_participants_component_users_in_call">Users in call</string>
+    <string name="kaleyra_participants_component_users_invited">Also invited</string>
+    <string name="kaleyra_participants_component_grid">Grid</string>
+    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
+    <string name="kaleyra_participants_component_unpin_stream">Unpin stream</string>
+    <string name="kaleyra_participants_component_mute_for_you">Mute for you</string>
+    <string name="kaleyra_participants_component_unmute_for_you">Unmute for you</string>
+    <string name="kaleyra_participants_component_you">%s (You)</string>
+    <string name="kaleyra_participants_component_admin">Admin</string>
+    <string name="kaleyra_participants_component_screenshare">Screen share</string>
+    <string name="kaleyra_participants_component_participant">Participant</string>
+    <string name="kaleyra_participants_component_remove_from_call">Remove from call</string>
+    <string name="kaleyra_participants_component_disable_microphone">Disable microphone</string>
+    <string name="kaleyra_participants_component_enable_microphone">Enable microphone</string>
+    <string name="kaleyra_participants_component_close">Close participants\' panel</string>
+    <string name="kaleyra_participants_component_show_more_actions">Show more actions</string>
+    <plurals name="kaleyra_participants_component_participants">
+        <item quantity="one">%d Participant</item>
+        <item quantity="other">%d Participants</item>
+    </plurals>
+
     <!-- Audio route labels -->
     <string name="kaleyra_audio_route_title">Select an audio output</string>
     <string name="kaleyra_call_action_audio_route_bluetooth">Bluetooth</string>
