@@ -17,10 +17,16 @@
 package com.kaleyra.video_sdk.extensions
 
 import androidx.annotation.FloatRange
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -32,6 +38,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -41,7 +48,10 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
@@ -60,16 +70,24 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.intermediateLayout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import com.kaleyra.video_sdk.call.utils.LayoutCoordinatesExtensions.findRoot
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -193,6 +211,63 @@ internal object ModifierExtensions {
                 keyboardAppearedSinceLastFocused = false
             }
         }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    internal fun Modifier.animateConstraints(
+        animationSpec: AnimationSpec<IntSize> = spring()
+    ) = composed {
+        var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
+        var targetSize: IntSize by remember { mutableStateOf(IntSize.Zero) }
+
+        LaunchedEffect(Unit) {
+            snapshotFlow { targetSize }.collect { target ->
+                val anim = animatable ?: Animatable(target, IntSize.VectorConverter).also {
+                    animatable = it
+                }
+                if (anim.targetValue != target) {
+                    launch { anim.animateTo(target, animationSpec) }
+                }
+            }
+        }
+
+        this@composed.intermediateLayout { measurable, _ ->
+            targetSize = lookaheadSize
+            val (width, height) = animatable?.value ?: lookaheadSize
+            val constraints = Constraints.fixed(width, height)
+
+            val placeable = measurable.measure(constraints)
+            layout(placeable.width, placeable.height) {
+                placeable.place(0, 0)
+            }
+        }
+    }
+
+    internal fun Modifier.animatePlacement(
+        initialOffset: IntOffset = IntOffset.Zero,
+        animationSpec: AnimationSpec<IntOffset> = spring(stiffness = Spring.StiffnessMediumLow)
+    ): Modifier = composed {
+        val scope = rememberCoroutineScope()
+        var animatable: Animatable<IntOffset, AnimationVector2D>? by remember { mutableStateOf(null) }
+        var targetOffset by remember { mutableStateOf(initialOffset) }
+
+        this
+            .onPlaced {
+                targetOffset = it
+                    .positionInParent()
+                    .round()
+            }
+            .offset {
+                val anim = animatable ?: Animatable(targetOffset, IntOffset.VectorConverter).also {
+                    animatable = it
+                }
+                if (anim.targetValue != targetOffset) {
+                    scope.launch {
+                        anim.animateTo(targetOffset, animationSpec)
+                    }
+                }
+                anim.value - targetOffset
+            }
     }
 
     /**
