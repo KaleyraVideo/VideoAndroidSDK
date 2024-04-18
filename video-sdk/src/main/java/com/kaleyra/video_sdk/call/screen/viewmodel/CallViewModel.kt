@@ -16,15 +16,23 @@
 
 package com.kaleyra.video_sdk.call.screen.viewmodel
 
+import android.content.Context
+import android.telecom.TelecomManager
 import android.util.Rational
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.kaleyra.video.conference.*
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
+import com.kaleyra.video_common_ui.callservice.KaleyraCallService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
@@ -49,7 +57,24 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -63,6 +88,9 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     val theme = company
         .flatMapLatest { it.combinedTheme }
         .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
+
+    val shouldAskConnectionServicePermissions: Boolean
+        get() = ConnectionServiceUtils.isConnectionServiceSupported && conference.getValue()?.connectionServiceOption != ConnectionServiceOption.Disabled
 
     private val callState = call
         .toCallStateUi()
@@ -89,7 +117,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
 
-    private var onPipAspectRatio:  MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
+    private var onPipAspectRatio: MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
 
     private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
 
@@ -115,12 +143,18 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         streamsHandler.streamsArrangement
             .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
-                val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
-                _uiState.update {
-                    it.copy(
-                        featuredStreams = ImmutableList(featuredStreams),
-                        thumbnailStreams = ImmutableList(thumbnails)
-                    )
+                if (state is CallStateUi.Disconnected.Ended) {
+                    _uiState.update {
+                        it.copy(featuredStreams = ImmutableList(listOf()), thumbnailStreams = ImmutableList(listOf()))
+                    }
+                } else {
+                    val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
+                    _uiState.update {
+                        it.copy(
+                            featuredStreams = ImmutableList(featuredStreams),
+                            thumbnailStreams = ImmutableList(thumbnails)
+                        )
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -177,12 +211,22 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
             .onEach { isGroupCall -> _uiState.update { it.copy(isGroupCall = isGroupCall) } }
             .launchIn(viewModelScope)
 
-        callState
+        val doOthersHaveStreams = callState
             .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
-            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing }
+            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.Connecting }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
-            .debounce { doOthersHaveStreams -> if (!doOthersHaveStreams) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
-            .onEach { doOthersHaveStreams -> _uiState.update { it.copy(amILeftAlone = !doOthersHaveStreams) } }
+
+        doOthersHaveStreams
+            .debounce { if (!it) WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
+            .onEach { value -> _uiState.update { it.copy(amIWaitingOthers = !value) } }
+            .takeWhile { !it }
+            .onCompletion { _uiState.update { it.copy(amIWaitingOthers = false) } }
+            .launchIn(viewModelScope)
+
+        doOthersHaveStreams
+            .dropWhile { !it }
+            .debounce { if (!it) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
+            .onEach { value -> _uiState.update { it.copy(amILeftAlone = !value) } }
             .launchIn(viewModelScope)
 
         call
@@ -254,10 +298,6 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
         viewModelScope.launch { call.inputs.request(context, Inputs.Type.Camera.External) }
     }
 
-    fun hangUp() {
-        call.getValue()?.end()
-    }
-
     fun updateStreamsArrangement(isMediumSizeDevice: Boolean) {
         val count = when {
             !isMediumSizeDevice -> 2
@@ -276,6 +316,22 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
         val call = call.getValue() ?: return
         val me = call.participants.value.me ?: return
         me.feedback.value = CallParticipant.Me.Feedback(rating.toInt(), comment)
+    }
+
+    fun startConnectionService(context: Context) {
+        if (!ConnectionServiceUtils.isConnectionServiceSupported) return
+        val call = conference.getValue()?.call?.getValue() ?: return
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+        telecomManager.addCall(call)
+    }
+
+    fun tryStartCallService() {
+        val behaviour = conference.getValue()?.connectionServiceOption
+        if (behaviour == ConnectionServiceOption.Enabled) {
+            KaleyraCallService.start()
+        } else {
+            conference.getValue()?.call?.getValue()?.end()
+        }
     }
 
     fun setOnCallEnded(block: suspend (hasFeedback: Boolean, hasErrorOccurred: Boolean, hasBeenKicked: Boolean) -> Unit) {
@@ -314,6 +370,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         const val DEFAULT_FEATURED_STREAMS_COUNT = 2
         const val SINGLE_STREAM_DEBOUNCE_MILLIS = 5000L
+        const val WAITING_FOR_OTHERS_DEBOUNCE_MILLIS = 2000L
         const val AM_I_LEFT_ALONE_DEBOUNCE_MILLIS = 5000L
         const val NULL_CALL_TIMEOUT = 1000L
 

@@ -19,12 +19,15 @@ package com.kaleyra.video_common_ui.notification
 import android.content.Context
 import android.content.Intent
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.call.CallNotificationDelegate.Companion.CALL_NOTIFICATION_ID
+import com.kaleyra.video_common_ui.KaleyraVideoBroadcastReceiver
+import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import com.kaleyra.video_utils.ContextRetainer
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,12 +35,13 @@ import kotlinx.coroutines.launch
 /**
  * The call notification broadcast receiver, it handles the answer and hang up events
  */
-class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
+class CallNotificationActionReceiver internal constructor(val dispatcher: CoroutineDispatcher = Dispatchers.IO) : KaleyraVideoBroadcastReceiver() {
 
     /**
      * @suppress
      */
     companion object {
+
         /**
          * ActionAnswer
          */
@@ -47,6 +51,11 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
          * ActionHangUp
          */
         const val ACTION_HANGUP = "com.kaleyra.video_common_ui.HANGUP"
+
+        /**
+         * ActionDecline
+         */
+        const val ACTION_DECLINE = "com.kaleyra.video_common_ui.DECLINE"
 
         /**
          * ActionStopScreenShare
@@ -59,9 +68,9 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
      */
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
-        CoroutineScope(Dispatchers.IO).launch {
-            val notificationAction = intent.extras?.getString("notificationAction")
-            if (notificationAction == ACTION_HANGUP) {
+        CoroutineScope(dispatcher).launch {
+            val notificationAction = intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)
+            if (notificationAction == ACTION_DECLINE || notificationAction == ACTION_HANGUP) {
                 NotificationManager.cancel(CALL_NOTIFICATION_ID)
             }
             requestConfigure().let {
@@ -71,19 +80,29 @@ class CallNotificationActionReceiver : KaleyraVideoBroadcastReceiver() {
                 }
                 KaleyraVideo.onCallReady(this) { call ->
                     when (notificationAction) {
-                        ACTION_ANSWER -> call.connect()
-                        ACTION_HANGUP -> call.end()
+                        ACTION_ANSWER -> {
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.answer()
+                            else call.connect()
+                        }
+                        ACTION_DECLINE -> {
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.reject()
+                            else call.end()
+                        }
+                        ACTION_HANGUP -> {
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.hangUp()
+                            else call.end()
+                        }
                         ACTION_STOP_SCREEN_SHARE -> {
                             val screenShareInputs =
                                 call.inputs.availableInputs.value
-                                    .filter { input -> input is Input.Video.Screen || input is Input.Video.Application }
+                                    .filter { input -> input is Input.Video.Screen.My || input is Input.Video.Application }
                                     .filter { input -> input.enabled.value }
 
                             val me = call.participants.value.me ?: return@onCallReady
                             val streams = me.streams.value
                             val screenShareStreams = streams
                                 .filter { stream ->
-                                    stream.video.value is Input.Video.Application || stream.video.value is Input.Video.Screen
+                                    stream.video.value is Input.Video.Application || stream.video.value is Input.Video.Screen.My
                                 }
                             screenShareStreams.forEach { stream -> me.removeStream(stream) }
                             screenShareInputs.forEach { input -> input.tryDisable() }

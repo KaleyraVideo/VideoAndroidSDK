@@ -16,11 +16,13 @@
 
 package com.kaleyra.video_sdk
 
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +71,10 @@ class StreamsHandlerTest {
         every { id } returns "streamId6"
     }
 
+    private val myStreamMock = mockk<StreamUi>(relaxed = true) {
+        every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
+    }
+
     @Before
     fun setUp() {
         streamsHandler = StreamsHandler(
@@ -82,6 +88,7 @@ class StreamsHandlerTest {
     fun tearDown() {
         streamsFlow.value = listOf()
         nMaxFeaturedFlow.value = DefaultMaxFeatured
+        unmockkAll()
     }
 
     // test che mio stream viene messo nei thumbnail
@@ -366,6 +373,36 @@ class StreamsHandlerTest {
 
         assertEquals(listOf(streamMock1), newFeaturedStreams)
         assertEquals(listOf<StreamUi>(), newThumbnailsStreams)
+    }
+
+    @Test
+    fun testMyCameraStreamIsSetInThumbnailByDefault() = runTest {
+        val streams = listOf(streamMock1, streamMock2, streamMock3, myStreamMock)
+        streamsFlow.value = streams
+
+        advanceUntilIdle()
+        val (featuredStreams, thumbnailsStreams) = streamsHandler.streamsArrangement.first()
+        assertEquals(listOf(streamMock1, streamMock2), featuredStreams)
+        assertEquals(listOf(myStreamMock, streamMock3), thumbnailsStreams)
+    }
+
+    @Test
+    fun `set my camera stream in thumbnail by default when there was only one stream before`() = runTest {
+        val streams = listOf(streamMock1)
+        streamsFlow.value = streams
+
+        advanceUntilIdle()
+        val (featuredStreams, thumbnailsStreams) = streamsHandler.streamsArrangement.first()
+        assertEquals(listOf(streamMock1), featuredStreams)
+        assertEquals(0, thumbnailsStreams.count())
+
+        val newStreams = listOf(myStreamMock, streamMock2)
+        streamsFlow.value = newStreams
+
+        advanceUntilIdle()
+        val (newFeaturedStreams, newThumbnailsStreams) = streamsHandler.streamsArrangement.first()
+        assertEquals(listOf(streamMock2), newFeaturedStreams)
+        assertEquals(listOf(myStreamMock), newThumbnailsStreams)
     }
 
     companion object {

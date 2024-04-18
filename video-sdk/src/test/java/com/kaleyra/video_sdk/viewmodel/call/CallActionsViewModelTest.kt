@@ -21,13 +21,22 @@ import androidx.fragment.app.FragmentActivity
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.kaleyra.video.Company
 import com.kaleyra.video.Contact
-import com.kaleyra.video.conference.*
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.conference.Effect
+import com.kaleyra.video.conference.Effects
+import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.ConversationUI
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.currentAudioOutputDevice
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -37,8 +46,15 @@ import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import io.mockk.*
 import io.mockk.Ordering.ORDERED
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -103,7 +119,7 @@ class CallActionsViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = spyk(CallActionsViewModel {
+        viewModel = spyk(CallActionsViewModel{
             Configuration.Success(conferenceMock, conversationMock, companyMock, MutableStateFlow(mockk()))
         })
         every { conferenceMock.call } returns MutableStateFlow(callMock)
@@ -633,9 +649,22 @@ class CallActionsViewModelTest {
 
     @Test
     fun testHangUp() = runTest {
-        advanceUntilIdle()
-        viewModel.hangUp()
-        verify(exactly = 1) { callMock.end() }
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            advanceUntilIdle()
+            viewModel.hangUp()
+            verify(exactly = 1) { callMock.end() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceHangUp() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel.hangUp()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.hangUp() }
+        }
     }
 
     @Test
@@ -732,7 +761,7 @@ class CallActionsViewModelTest {
 //    }
 
     @Test
-    fun testStopDeviceScreenShare() = runTest {
+    fun testStopDeviceScreenShare() {
         testTryStopScreenShare(mockk<Input.Video.Screen>())
     }
 

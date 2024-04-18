@@ -28,28 +28,25 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  * Ringing Ui State
  * @property amIWaitingOthers Boolean flag indicating if the logged in-call participant is waiting for other participants to join the call
  * @property recording RecordingTypeUi? optional recording type
- * @property answered Boolean flag indicating if the call has been answered
  * @property video VideoUi? optional video component
  * @property avatar ImmutableUri? optional avatar uri
  * @property participants ImmutableList<String> participants identifiers
  * @property watermarkInfo WatermarkInfo? optional watermark info
  * @property isLink Boolean flag indicating if the call is a join url call, true if a join url call, false otherwise
  * @property isConnecting Boolean flag indicating if the call is connecting, true if connecting, false otherwise
- * @property isVideoIncoming Boolean flag indicating if the video is incoming, true if incoming, false otherwise
  * @constructor
  */
 @Immutable
 data class RingingUiState(
     val amIWaitingOthers: Boolean = false,
     val recording: RecordingTypeUi? = null,
-    val answered: Boolean = false,
     override val video: VideoUi? = null,
     override val avatar: ImmutableUri? = null,
     override val participants: ImmutableList<String> = ImmutableList(listOf()),
     override val watermarkInfo: WatermarkInfo? = null,
     override val isLink: Boolean = false,
     override val isConnecting: Boolean = false,
-    override val isVideoIncoming: Boolean = false
+    override val isAudioVideo: Boolean = false
 ): PreCallUiState<RingingUiState> {
 
     override fun clone(
@@ -59,7 +56,7 @@ data class RingingUiState(
         watermarkInfo: WatermarkInfo?,
         isLink: Boolean,
         isConnecting: Boolean,
-        isVideoIncoming: Boolean
+        isAudioVideo: Boolean
     ): RingingUiState {
         return copy(
             video = video,
@@ -68,7 +65,7 @@ data class RingingUiState(
             watermarkInfo = watermarkInfo,
             isLink = isLink,
             isConnecting = isConnecting,
-            isVideoIncoming = isVideoIncoming
+            isAudioVideo = isAudioVideo
         )
     }
 }

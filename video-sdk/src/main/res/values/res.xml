@@ -16,6 +16,10 @@
   -->
 
 <resources>
+    <item name="ic_kaleyra_arrow_back_new" type="drawable">@drawable/kaleyra_f_arrow_left</item>
+    <item name="ic_kaleyra_participants_new" type="drawable">@drawable/kaleyra_f_avatars</item>
+    <item name="ic_kaleyra_recording_dot_new" type="drawable">@drawable/kaleyra_f_rec</item>
+
     <!-- CHAT ACTION BAR -->
     <item name="ic_kaleyra_audio_call" type="drawable">@drawable/ic_kaleyra_answer</item>
     <item name="ic_kaleyra_audio_upgradable_call" type="drawable">@drawable/kaleyra_z_audio_upgradable</item>

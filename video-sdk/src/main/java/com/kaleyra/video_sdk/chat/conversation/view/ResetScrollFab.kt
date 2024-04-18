@@ -46,6 +46,9 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+private val ResetScrollFabIconSize = 16.dp
+private val ResetScrollFabHorizontalPadding = 8.dp
+
 @Composable
 internal fun ResetScrollFab(
     modifier: Modifier = Modifier,
@@ -67,14 +70,11 @@ internal fun ResetScrollFab(
             interactionSource = interactionSource
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = ResetScrollFabHorizontalPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (counter > 0) {
                     Text(
-                        modifier = Modifier
-                            .paddingFromBaseline(bottom = 6.dp)
-                            .padding(end = 4.dp),
                         text = "$counter",
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         style = MaterialTheme.typography.labelMedium
@@ -83,7 +83,7 @@ internal fun ResetScrollFab(
                 Icon(
                     painter = painterResource(id = R.drawable.kaleyra_z_arrow_down_3),
                     contentDescription = stringResource(id = R.string.kaleyra_chat_scroll_to_last_message),
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(ResetScrollFabIconSize)
                 )
             }
         }

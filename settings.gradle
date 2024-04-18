@@ -25,8 +25,6 @@ project(':app-utilities').projectDir = file('app-extensions/app-utilities')
 project(':app-configuration').projectDir = file('app-extensions/app-configuration')
 project(':app-design').projectDir = file('app-extensions/app-design')
 
-
-
 dependencyResolutionManagement {
     repositories {
         mavenLocal()
@@ -37,7 +35,7 @@ dependencyResolutionManagement {
         maven { url 'https://maven.bandyer.com/releases' }
     }
 
-    def catalogVersion = "2024.03.01"
+    def catalogVersion = "2024.03.03"
 
     versionCatalogs {
         create("kaleyraCatalog") {

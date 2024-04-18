@@ -118,7 +118,7 @@
 
     <string name="kaleyra_error_button_reload">Riprova</string>
     <string name="kaleyra_error_title">Si è verificato un errore</string>
-    <string name="kaleyra_error_subtitle">Perfavore tocca per riprovare</string>
+    <string name="kaleyra_error_subtitle">Per favore tocca per riprovare</string>
 
     <string name="kaleyra_share_whiteboard">Condividi sulla lavagna</string>
     <string name="kaleyra_download">Salva</string>
@@ -258,5 +258,6 @@
     <string name="kaleyra_already_in_system_call_audio_routing_error">Non è possibile cambiare il dispositivo di uscita audio mentre una chiamata di sistema è in corso.</string>
 
     <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
+    <string name="kaleyra_show_participants_descr">Mostra partecipanti</string>
 
 </resources>

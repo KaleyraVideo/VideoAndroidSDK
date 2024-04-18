@@ -30,19 +30,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
-import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCameraPermission
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidget
+import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
+import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamContainer
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
-import com.kaleyra.video_sdk.R
 
 @Composable
-internal fun <T: PreCallUiState<T>> PreCallComponent(
+internal fun <T : PreCallUiState<T>> PreCallComponent(
     uiState: T,
     subtitle: String,
     userMessage: UserMessage? = null,
@@ -50,16 +51,18 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
     modifier: Modifier = Modifier,
     content: @Composable (BoxScope.() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     CompositionLocalProvider(LocalContentColor provides Color.White) {
         Box(modifier = modifier.fillMaxSize()) {
             StreamContainer {
                 val isGroupCall = uiState.participants.count() > 1
                 Stream(
-                    streamView = uiState.video?.view?.featuredSettings() ?: ImmutableView(View(LocalContext.current)),
+                    streamView = uiState.video?.view?.featuredSettings() ?: ImmutableView(View(context)),
                     avatar = if (isGroupCall) ImmutableUri(Uri.EMPTY) else uiState.avatar,
                     avatarPlaceholder = if (isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold,
                     avatarError = if (isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold,
-                    avatarVisible = uiState.participants.value.isNotEmpty() && ((uiState.video == null && !uiState.isVideoIncoming) || (uiState.video != null && uiState.video?.view == null && uiState.video?.isEnabled == false) || uiState.video?.isEnabled == false),
+                    avatarVisible = uiState.participants.value.isNotEmpty() &&
+                            ((uiState.video == null && !context.hasCameraPermission()) || (uiState.video == null && !uiState.isAudioVideo) || (uiState.video != null && uiState.video?.view == null && uiState.video?.isEnabled == false) || uiState.video?.isEnabled == false),
                     showOverlay = true
                 )
             }
@@ -67,8 +70,14 @@ internal fun <T: PreCallUiState<T>> PreCallComponent(
             Column {
                 CallInfoWidget(
                     onBackPressed = onBackPressed,
-                    title = uiState.participants.value.joinToString(separator = ", "),
-                    subtitle = if (!uiState.isLink && !uiState.isConnecting) subtitle else stringResource(id = R.string.kaleyra_call_status_connecting),
+                    title = if (!uiState.isConnecting) uiState.participants.value.joinToString(
+                        separator = ", "
+                    ) else stringResource(id = R.string.kaleyra_call_status_connecting),
+                    subtitle = when {
+                        uiState.isConnecting -> null
+                        uiState.isLink -> stringResource(id = R.string.kaleyra_call_status_connecting)
+                        else -> subtitle
+                    },
                     watermarkInfo = uiState.watermarkInfo,
                     recording = false,
                     modifier = Modifier.statusBarsPadding()

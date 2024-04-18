@@ -23,15 +23,18 @@ sealed class CallStateUi {
 
     /**
      * Ringing Call State Ui
-     * @property isConnecting Boolean flag indicating if the call is connecting, true if connecting, false otherwise
-     * @constructor
      */
-    data class Ringing(val isConnecting: Boolean = false) : CallStateUi()
+    data object Ringing : CallStateUi()
 
     /**
      * Dialing Call State Ui
      */
     data object Dialing : CallStateUi()
+
+    /**
+     * Connecting Call State Ui
+     */
+    data object Connecting: CallStateUi()
 
     /**
      * Connected Call State Ui

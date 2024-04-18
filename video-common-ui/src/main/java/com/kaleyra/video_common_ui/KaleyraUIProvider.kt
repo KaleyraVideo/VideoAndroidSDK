@@ -26,6 +26,8 @@ import com.kaleyra.video_utils.ContextRetainer
  */
 object KaleyraUIProvider {
 
+    const val ENABLE_TILT_EXTRA = "enableTilt"
+
     /**
      * Starts requested call activity
      * @param activityClazz Class<*> the requested call activity's Class
@@ -34,7 +36,7 @@ object KaleyraUIProvider {
         with(ContextRetainer.context) {
             val intent = Intent(this, activityClazz).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                putExtra("enableTilt", isSmartGlass)
+                putExtra(ENABLE_TILT_EXTRA, isSmartGlass)
             }
             startActivity(intent)
         }
@@ -46,7 +48,7 @@ object KaleyraUIProvider {
     fun startChatActivity(context: Context, activityClazz: Class<*>, userIds: List<String>, chatId: String? = null) = with(context) {
         val intent = Intent(this, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra("enableTilt", isSmartGlass)
+            putExtra(ENABLE_TILT_EXTRA, isSmartGlass)
             putExtra("chatId", chatId)
             putExtra("userIds", userIds.toTypedArray())
         }

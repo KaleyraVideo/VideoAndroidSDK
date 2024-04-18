@@ -18,13 +18,18 @@ package com.kaleyra.video_common_ui.utils.extensions
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.view.WindowManager
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
 
 /**
  * ActivityExtensions
  */
 object ActivityExtensions {
+
+    private const val SCREEN_SHARE_REQUEST_CODE = 233
 
     /**
      * Turn and keep the screen on
@@ -63,4 +68,11 @@ object ActivityExtensions {
      */
     fun Activity.moveToFront() =
         startActivity(intent.apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })
+
+    fun Activity.requestOverlayPermission() {
+        if (hasCanDrawOverlaysPermission()) return
+        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.fromParts("package", application.packageName, null))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+        startActivityForResult(intent, SCREEN_SHARE_REQUEST_CODE)
+    }
 }

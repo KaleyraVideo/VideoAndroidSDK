@@ -19,13 +19,10 @@ package com.kaleyra.app_utilities
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jakewharton.processphoenix.ProcessPhoenix
 import com.kaleyra.app_utilities.networking.RestApi
-import com.kaleyra.app_utilities.notification.FirebaseCompat
 import com.kaleyra.app_utilities.notification.NotificationProxy
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
-import com.kaleyra.app_utilities.storage.LoginManager
 import okhttp3.OkHttpClient
 
 /**
@@ -48,9 +45,6 @@ abstract class MultiDexApplication : MultiDexApplication() {
 
         // If triggering restart of application skip
         if (ProcessPhoenix.isPhoenixProcess(this)) return
-
-        // Log crash reports
-        initCrashlytics()
 
         // Set LeakCanary
         LeakCanaryManager.enableLeakCanary(ConfigurationPrefsManager.getConfiguration(this).useLeakCanary)
@@ -77,30 +71,6 @@ abstract class MultiDexApplication : MultiDexApplication() {
      */
     private fun initFlipper() {
         FlipperManager.enable(this)
-    }
-
-
-    /***************************************Fabric**************************************************
-     * Using Crashlytics library to debug potential crashes and handle beta releases.
-     * For more information visit:
-     * https://fabric.io or https://firebase.google.com/
-     */
-    protected fun initCrashlytics() {
-        if (BuildConfig.DEBUG) return
-        val userAlias = LoginManager.getLoggedUser(this)
-        val configuration = ConfigurationPrefsManager.getConfiguration(this)
-        if (configuration.firebaseApiKey.isNullOrBlank()) return
-        if (!FirebaseCompat.isProcessValid(this)) return
-        if (userAlias.isNotEmpty()) {
-            FirebaseCompat.refreshConfiguration(this, Runnable {
-                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-                FirebaseCrashlytics.getInstance().setUserId(userAlias)
-            }, false)
-        } else {
-            FirebaseCompat.refreshConfiguration(this, Runnable {
-                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-            }, false)
-        }
     }
 
     /*********************************Firebase Cloud Messaging**************************************

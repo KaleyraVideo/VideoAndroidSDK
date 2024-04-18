@@ -41,6 +41,8 @@ import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+internal val TypingDotsPadding = 4.dp
+
 @Composable
 internal fun ChatAppBarContent(
     image: ImmutableUri,
@@ -82,7 +84,7 @@ internal fun ChatAppBarContent(
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .align(Alignment.Bottom)
-                            .padding(start = 4.dp, bottom = 4.dp)
+                            .padding(start = TypingDotsPadding, bottom = TypingDotsPadding)
                             .testTag(BouncingDotsTag)
                     )
                 }

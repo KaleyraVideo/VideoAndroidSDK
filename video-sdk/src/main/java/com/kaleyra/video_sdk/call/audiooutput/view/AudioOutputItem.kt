@@ -91,7 +91,9 @@ private fun titleFor(device: AudioDeviceUi): String =
 private fun subtitleFor(device: AudioDeviceUi): String? =
     when (device) {
         is AudioDeviceUi.Bluetooth -> {
-            val connectionState = device.connectionState
+            val connectionState = device.connectionState ?: run {
+                return null
+            }
             val batteryLevel = device.batteryLevel
 
             val deviceState = when {

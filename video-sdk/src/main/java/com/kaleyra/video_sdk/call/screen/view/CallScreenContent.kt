@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -55,13 +57,17 @@ internal fun CallScreenContent(
             .fillMaxSize()
             .background(color = Color.Black)
     ) {
+        var previousState by remember { mutableStateOf(-1) }
         val targetState by remember(callState) {
             derivedStateOf {
                 when (callState) {
-                    is CallStateUi.Ringing -> 0
+                    CallStateUi.Ringing -> 0
                     CallStateUi.Dialing -> 1
+                    CallStateUi.Connecting -> previousState
                     else -> 2
                 }
+            }.apply {
+                previousState = value
             }
         }
         when (targetState) {

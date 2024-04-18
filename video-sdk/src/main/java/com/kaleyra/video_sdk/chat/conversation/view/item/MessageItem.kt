@@ -71,6 +71,9 @@ internal val MessageItemAvatarSize = 28.dp
 internal val OtherBubbleAvatarSpacing = 8.dp
 internal val OtherBubbleLeftSpacing = 36.dp
 internal val BubbleCornerRadius = 8.dp
+internal val BubbleNoCornerRadius = 0.dp
+internal val BubbleInBetweenPaddingSmall = 3.dp
+internal val BubbleInBetweenPaddingMedium = 8.dp
 internal const val BubbleTestTag = "BubbleTestTag"
 
 @Composable
@@ -111,10 +114,10 @@ internal fun OtherMessageItem(
                 username = if (isFirstChainMessage) participantDetails?.username else null,
                 messageState = null,
                 shape = RoundedCornerShape(
-                    topStart = 8.dp,
-                    topEnd = 6.dp,
-                    bottomStart = if (isLastChainMessage) 0.dp else 6.dp,
-                    bottomEnd = 6.dp
+                    topStart = BubbleCornerRadius,
+                    topEnd = BubbleCornerRadius,
+                    bottomStart = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius,
+                    bottomEnd = BubbleCornerRadius
                 ),
                 backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -146,7 +149,7 @@ internal fun MyMessageItem(
                 topStart = BubbleCornerRadius,
                 topEnd = BubbleCornerRadius,
                 bottomStart = BubbleCornerRadius,
-                bottomEnd = if (isLastChainMessage) 0.dp else BubbleCornerRadius
+                bottomEnd = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius
             ),
             backgroundColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -169,8 +172,8 @@ internal fun MessageRow(
             .focusable(true, interactionSource)
             .highlightOnFocus(interactionSource)
             .padding(
-                bottom = if (isLastChainMessage) 8.dp else 3.dp,
-                top = if (isFirstChainMessage) 8.dp else 3.dp
+                bottom = if (isLastChainMessage) BubbleInBetweenPaddingMedium else BubbleInBetweenPaddingSmall,
+                top = if (isFirstChainMessage) BubbleInBetweenPaddingMedium else BubbleInBetweenPaddingSmall
             )
             .then(modifier),
         horizontalArrangement = horizontalArrangement,

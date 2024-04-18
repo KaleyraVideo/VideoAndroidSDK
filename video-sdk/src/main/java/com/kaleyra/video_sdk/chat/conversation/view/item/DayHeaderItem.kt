@@ -22,6 +22,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,6 +37,8 @@ import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+private val DayHeaderItemCornerShape = 4.dp
+private val DayHeaderItemInternalHorizontalPadding = 2.dp
 
 @Composable
 internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
@@ -46,12 +49,13 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
             .highlightOnFocus(interactionSource)
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(size = 4.dp))
+                shape = RoundedCornerShape(size = DayHeaderItemCornerShape))
             .then(modifier),
         horizontalArrangement = Arrangement.Center
     ) {
         val text = TimestampUtils.parseDay(LocalContext.current, timestamp)
         Text(
+            modifier = Modifier.padding(horizontal = DayHeaderItemInternalHorizontalPadding),
             text = text,
             fontSize = MaterialTheme.typography.labelMedium.fontSize,
             style = MaterialTheme.typography.labelMedium,

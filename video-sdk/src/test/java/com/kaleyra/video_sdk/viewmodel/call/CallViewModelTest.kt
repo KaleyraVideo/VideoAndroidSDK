@@ -16,7 +16,9 @@
 
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.content.Context
 import android.net.Uri
+import android.telecom.TelecomManager
 import android.util.Rational
 import android.util.Size
 import androidx.fragment.app.FragmentActivity
@@ -28,7 +30,13 @@ import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.call.CameraStreamPublisher.Companion.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.ConnectionServiceOption
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.callservice.KaleyraCallService
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
+import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
@@ -212,6 +220,92 @@ class CallViewModelTest {
     }
 
     @Test
+    fun testShouldAskConnectionServicePermissionsFlag() = runTest {
+        mockkObject(ConnectionServiceUtils) {
+            advanceUntilIdle()
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+            assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns false
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+            assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+            assertEquals(true, viewModel.shouldAskConnectionServicePermissions)
+
+            every { isConnectionServiceSupported } returns true
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
+            assertEquals(false, viewModel.shouldAskConnectionServicePermissions)
+        }
+    }
+
+    @Test
+    fun testStartConnectionServiceIfItIsSupported() = runTest {
+        mockkObject(ConnectionServiceUtils)
+        mockkObject(TelecomManagerExtensions)
+        val context = mockk<Context>()
+        val telecomManager = mockk<TelecomManager>(relaxed = true)
+        every { context.getSystemService(Context.TELECOM_SERVICE) } returns telecomManager
+        every { telecomManager.addCall(callMock, null) } returns Unit
+        every { isConnectionServiceSupported } returns true
+
+        advanceUntilIdle()
+        viewModel.startConnectionService(context)
+        verify(exactly = 1) { telecomManager.addCall(callMock, null) }
+        unmockkObject(ConnectionServiceUtils)
+        unmockkObject(TelecomManagerExtensions)
+    }
+
+    @Test
+    fun testStartConnectionServiceIfItIsNotSupported() = runTest {
+        mockkObject(ConnectionServiceUtils)
+        mockkObject(TelecomManagerExtensions)
+        val context = mockk<Context>()
+        val telecomManager = mockk<TelecomManager>(relaxed = true)
+        every { context.getSystemService(Context.TELECOM_SERVICE) } returns telecomManager
+        every { telecomManager.addCall(callMock, null) } returns Unit
+        every { isConnectionServiceSupported } returns false
+
+        advanceUntilIdle()
+        viewModel.startConnectionService(context)
+        verify(exactly = 0) { telecomManager.addCall(callMock, null) }
+        unmockkObject(ConnectionServiceUtils)
+        unmockkObject(TelecomManagerExtensions)
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceEnforced() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enforced
+
+        advanceUntilIdle()
+        viewModel.tryStartCallService()
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceDisabled() = runTest {
+        every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Disabled
+
+        advanceUntilIdle()
+        viewModel.tryStartCallService()
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
+    fun testTryStartCallServiceWithConnectionServiceEnabled() = runTest {
+        mockkObject(KaleyraCallService) {
+            every { KaleyraCallService.start() } returns Unit
+            every { conferenceMock.connectionServiceOption } returns ConnectionServiceOption.Enabled
+
+            advanceUntilIdle()
+            viewModel.tryStartCallService()
+            verify(exactly = 1) { KaleyraCallService.start() }
+        }
+    }
+
+    @Test
     fun `test streams updated after a debounce time if there is only one stream, there are still participants in call and the call is connected`() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         every { participantMock1.streams } returns MutableStateFlow(listOf())
@@ -223,6 +317,26 @@ class CallViewModelTest {
         advanceTimeBy(SINGLE_STREAM_DEBOUNCE_MILLIS)
         val new = viewModel.uiState.first().featuredStreams.value.map { it.id }
         assertEquals(listOf(myStreamMock.id), new)
+    }
+
+    @Test
+    fun `test streams cleaned on call ended`() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connected)
+        every { callMock.state } returns callState
+        every { participantMock1.streams } returns MutableStateFlow(listOf(streamMock1))
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        every { participantMeMock.streams } returns MutableStateFlow(listOf(myStreamMock))
+        advanceUntilIdle()
+        val featured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val thumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf(streamMock1.id), featured)
+        assertEquals(listOf(myStreamMock.id), thumbnail)
+        callState.value = Call.State.Disconnected.Ended
+        advanceUntilIdle()
+        val newFeatured = viewModel.uiState.first().featuredStreams.value.map { it.id }
+        val newThumbnail = viewModel.uiState.first().thumbnailStreams.value.map { it.id }
+        assertEquals(listOf<String>(), newFeatured)
+        assertEquals(listOf<String>(), newThumbnail)
     }
 
     @Test
@@ -486,19 +600,50 @@ class CallViewModelTest {
 
     @Test
     fun testCallUiState_amILeftAloneUpdated() = runTest {
-        every { participantMock1.streams } returns MutableStateFlow(listOf())
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
         val current = viewModel.uiState.first().amILeftAlone
         assertEquals(false, current)
+        participants1StreamsFlow.value = listOf()
         advanceUntilIdle()
         val new = viewModel.uiState.first().amILeftAlone
         assertEquals(true, new)
     }
 
     @Test
-    fun testCallUiState_amILeftAloneUpdatedAfterDebounceIfValueIsTrue() = runTest {
+    fun testCallUiState_waitingForOthersUpdatedAfterDebounceIfValueIsTrue() = runTest {
         every { participantMock1.streams } returns MutableStateFlow(listOf())
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceTimeBy(CallViewModel.WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+        advanceTimeBy(1)
+        assertEquals(true, viewModel.uiState.first().amIWaitingOthers)
+    }
+
+    @Test
+    fun testCallUiState_waitingForOthersNotUpdatedIfSomeonePreviouslyJoined() = runTest {
+        val participants1StreamsFlow = MutableStateFlow(listOf<Stream>())
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+        assertEquals(true, viewModel.uiState.first().amIWaitingOthers)
+        participants1StreamsFlow.value = listOf(streamMock1)
+        advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+        participants1StreamsFlow.value = listOf()
+        advanceUntilIdle()
+        assertEquals(false, viewModel.uiState.first().amIWaitingOthers)
+    }
+
+    @Test
+    fun testCallUiState_amILeftAloneUpdatedAfterDebounceIfValueIsTrue() = runTest {
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
+        every { participantMock1.streams } returns participants1StreamsFlow
+        every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+        participants1StreamsFlow.value = listOf()
         advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
         assertEquals(false, viewModel.uiState.first().amILeftAlone)
         advanceTimeBy(1)
@@ -507,9 +652,12 @@ class CallViewModelTest {
 
     @Test
     fun testCallUiState_amILeftAloneUpdatedImmediatelyIfValueIsFalse() = runTest {
-        val participants1StreamsFlow = MutableStateFlow(listOf<Stream>())
+        val participants1StreamsFlow = MutableStateFlow(listOf(streamMock1))
         every { participantMock1.streams } returns participants1StreamsFlow
         every { participantMock2.streams } returns MutableStateFlow(listOf())
+        advanceUntilIdle()
+
+        participants1StreamsFlow.value = listOf()
         advanceTimeBy(CallViewModel.AM_I_LEFT_ALONE_DEBOUNCE_MILLIS)
         runCurrent()
         assertEquals(true, viewModel.uiState.first().amILeftAlone)
@@ -700,13 +848,6 @@ class CallViewModelTest {
     fun testSwapThumbnail() {
         viewModel.swapThumbnail("streamId")
         verify { anyConstructed<StreamsHandler>().swapThumbnail("streamId") }
-    }
-
-    @Test
-    fun testHangUp() = runTest {
-        advanceUntilIdle()
-        viewModel.hangUp()
-        verify(exactly = 1) { callMock.end() }
     }
 
     @Test

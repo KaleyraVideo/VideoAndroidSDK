@@ -134,7 +134,7 @@ internal fun RingingComponent(
             )
         }
         AnimatedVisibility(
-            visible = !uiState.answered,
+            visible = !uiState.isLink && !uiState.isConnecting,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

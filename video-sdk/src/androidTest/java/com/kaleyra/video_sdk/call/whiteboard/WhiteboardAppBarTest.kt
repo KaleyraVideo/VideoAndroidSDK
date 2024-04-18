@@ -17,6 +17,10 @@
 package com.kaleyra.video_sdk.call.whiteboard
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -37,6 +41,8 @@ class WhiteboardAppBarTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private var isFileSharingSupported by mutableStateOf(true)
+
     private var isBackPressed = false
 
     private var isUploadClicked = false
@@ -45,6 +51,7 @@ class WhiteboardAppBarTest {
     fun setUp() {
         composeTestRule.setContent {
             WhiteboardAppBar(
+                isFileSharingSupported = isFileSharingSupported,
                 onBackPressed = { isBackPressed = true },
                 onUploadClick = { isUploadClicked = true }
             )
@@ -53,8 +60,24 @@ class WhiteboardAppBarTest {
 
     @After
     fun tearDown() {
+        isFileSharingSupported = true
         isBackPressed = false
         isUploadClicked = false
+    }
+
+    @Test
+    fun isFileSharingSupportedFalse_uploadButtonDoesNotExists() {
+        isFileSharingSupported = false
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertDoesNotExist()
+    }
+
+    @Test
+    fun isFileSharingSupportedTrue_uploadButtonIsDisplayed() {
+        isFileSharingSupported = true
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(upload).assertIsDisplayed()
     }
 
     @Test

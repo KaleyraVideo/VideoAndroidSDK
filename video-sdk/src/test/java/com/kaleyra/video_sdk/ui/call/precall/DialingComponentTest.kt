@@ -16,6 +16,9 @@
 
 package com.kaleyra.video_sdk.ui.call.precall
 
+import android.Manifest
+import android.app.Application
+import android.content.Context
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -27,6 +30,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
@@ -47,6 +51,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 
 @RunWith(RobolectricTestRunner::class)
 class DialingComponentTest {
@@ -85,13 +90,6 @@ class DialingComponentTest {
     }
 
     @Test
-    fun videoNull_avatarDisplayed() {
-        uiState = uiState.copy(video = null)
-        composeTestRule.onNodeWithTag(StreamViewTestTag).assertDoesNotExist()
-        composeTestRule.findAvatar().assertIsDisplayed()
-    }
-
-    @Test
     fun videoViewNull_avatarDisplayed() {
         val video = VideoUi(id = "videoId", view = null, isEnabled = false)
         uiState = uiState.copy(video = video)
@@ -123,17 +121,25 @@ class DialingComponentTest {
     }
 
     @Test
-    fun isLinkTrue_connectingIsDisplayed() {
+    fun isLinkTrue_connectingSubtitleIsDisplayed() {
         uiState = uiState.copy(isLink = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
         composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
     }
 
     @Test
+    fun isConnectingTrueAndIsLinkTrue_connectingSubtitleIsNotDisplayed() {
+        uiState = uiState.copy(isLink = true, isConnecting = true)
+        val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithText(connecting).assertDoesNotExist()
+    }
+
+    @Test
     fun isConnectingTrue_connectingIsDisplayed() {
         uiState = uiState.copy(isConnecting = true)
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
-        composeTestRule.onNodeWithText(connecting).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(connecting).assertIsDisplayed()
     }
 
     @Test
@@ -155,14 +161,20 @@ class DialingComponentTest {
     }
 
     @Test
-    fun isVideoIncomingTrueAndVideoIsNull_avatarIsNotDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = true, video = null)
+    fun cameraPermissionGrantedInAudioVideoCallAndVideoIsNull_avatarIsNotDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(video = null, isAudioVideo = true)
         composeTestRule.findAvatar().assertDoesNotExist()
     }
 
     @Test
-    fun isVideoIncomingFalseAndVideoIsNull_avatarIsDisplayed() {
-        uiState = uiState.copy(isVideoIncoming = false, video = null)
+    fun cameraPermissionDeniedInAudioVideoCallAndVideoIsNull_avatarIsDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.denyPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(video = null, isAudioVideo = true)
         composeTestRule.findAvatar().assertIsDisplayed()
     }
 
@@ -194,6 +206,24 @@ class DialingComponentTest {
     fun streamViewNotNullAndVideoEnabled_overlayIsDisplayed() {
         uiState = uiState.copy(video = VideoUi(id = "videoId", view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
         composeTestRule.onNodeWithTag(StreamOverlayTestTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun isAudioVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(isAudioVideo = true, video = null)
+        composeTestRule.findAvatar().assertDoesNotExist()
+    }
+
+    @Test
+    fun isAudioVideoFalseAndVideoIsNull_avatarIsDisplayed() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val shadow = Shadows.shadowOf(context as Application)
+        shadow.grantPermissions(Manifest.permission.CAMERA)
+        uiState = uiState.copy(isAudioVideo = false, video = null)
+        composeTestRule.findAvatar().assertIsDisplayed()
     }
 
     @Test
