@@ -16,11 +16,27 @@
   -->
 
 <resources>
+    <!-- call actions -->
+    <item name="ic_kaleyra_call_action_hang_up" type="drawable">@drawable/kaleyra_f_hang_up</item>
+    <item name="ic_kaleyra_call_action_enable_microphone" type="drawable">@drawable/kaleyra_f_mic_off</item>
+    <item name="ic_kaleyra_call_action_disable_microphone" type="drawable">@drawable/kaleyra_f_mic_on</item>
+    <item name="ic_kaleyra_call_action_enable_camera" type="drawable">@drawable/kaleyra_f_camera_off</item>
+    <item name="ic_kaleyra_call_action_disable_camera" type="drawable">@drawable/kaleyra_f_camera_on</item>
+    <item name="ic_kaleyra_call_action_more" type="drawable">@drawable/kaleyra_f_more</item>
+    <item name="ic_kaleyra_call_action_switch_camera" type="drawable">@drawable/kaleyra_f_switch_camera</item>
+    <item name="ic_kaleyra_call_action_chat" type="drawable">@drawable/kaleyra_f_chat</item>
+    <item name="ic_kaleyra_call_action_whiteboard" type="drawable">@drawable/kaleyra_f_whiteboard</item>
+    <item name="ic_kaleyra_call_action_speaker" type="drawable">@drawable/kaleyra_f_speaker_on</item>
+    <item name="ic_kaleyra_call_action_file_share" type="drawable">@drawable/kaleyra_f_file_share</item>
+    <item name="ic_kaleyra_call_action_screen_share" type="drawable">@drawable/kaleyra_f_screen_share</item>
+    <item name="ic_kaleyra_call_action_virtual_background" type="drawable">@drawable/kaleyra_f_virtual_bg</item>
 
+    <!-- call app bar -->
     <item name="ic_kaleyra_arrow_back_new" type="drawable">@drawable/kaleyra_f_arrow_left</item>
     <item name="ic_kaleyra_participants_new" type="drawable">@drawable/kaleyra_f_avatars</item>
     <item name="ic_kaleyra_recording_dot_new" type="drawable">@drawable/kaleyra_f_rec</item>
 
+    <!-- participants component -->
     <item name="ic_kaleyra_participants_component_mic_off" type="drawable">@drawable/kaleyra_f_mic_off</item>
     <item name="ic_kaleyra_participants_component_mic_on" type="drawable">@drawable/kaleyra_f_mic_on</item>
     <item name="ic_kaleyra_participants_component_speaker_on" type="drawable">@drawable/kaleyra_f_speaker_on</item>

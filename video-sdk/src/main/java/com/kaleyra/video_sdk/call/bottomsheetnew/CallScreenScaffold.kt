@@ -158,6 +158,7 @@ internal fun CallScreenScaffold(
                                             onFling = settleToDismiss
                                         )
                                     )
+                                    // TODO move this anchored draggable to CallBottomSheetLayout modifier
                                     .anchoredDraggable(
                                         state = sheetState.anchoredDraggableState,
                                         orientation = dragOrientation
@@ -329,6 +330,7 @@ internal fun CallScreenLandscapeScaffold(
                                         onFling = settleToDismiss
                                     )
                                 )
+                                // TODO move this anchored draggable to CallBottomSheetLayout modifier
                                 .anchoredDraggable(
                                     state = sheetState.anchoredDraggableState,
                                     orientation = dragOrientation
