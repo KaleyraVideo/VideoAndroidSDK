@@ -22,7 +22,11 @@ import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -194,6 +198,10 @@ fun CollaborationM3Theme(
 
         }
     }
+    val kaleyraColors = when {
+        isDarkTheme -> darkKaleyraColors()
+        else -> lightKaleyraColors()
+    }
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -207,15 +215,39 @@ fun CollaborationM3Theme(
         )
     }
 
-    androidx.compose.material3.MaterialTheme(
-        colorScheme = colors,
-        typography = typography,
-        content = { content(isDarkTheme) }
-    )
+    CompositionLocalProvider(value = LocalKaleyraColors provides kaleyraColors) {
+        androidx.compose.material3.MaterialTheme(
+            colorScheme = colors,
+            typography = typography,
+            content = { content(isDarkTheme) }
+        )
+    }
 }
 
 
 private fun onColorFor(color: Color) = if (color.luminance() > .5f) Color.Black else Color.White
+
+@Immutable
+internal data class KaleyraColors(val hangUp: Color = Color(0xFFE11900))
+
+internal val LocalKaleyraColors = compositionLocalOf { KaleyraColors() }
+
+internal fun lightKaleyraColors(
+    hangUp: Color = Color(0xFFE11900)
+) = KaleyraColors(hangUp = hangUp)
+
+internal fun darkKaleyraColors(
+    hangUp: Color = Color(0xFFAE1300)
+) = KaleyraColors(hangUp = hangUp)
+
+// TODO decide if this object will be used for a custom theme, or only some colors, so it's overkill
+internal object KaleyraTheme {
+
+    val colors: KaleyraColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalKaleyraColors.current
+}
 
 /**
  * Composable function to build the Kaleyra Theme
