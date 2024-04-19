@@ -22,7 +22,7 @@
     <item name="ic_kaleyra_call_sheet_disable_microphone" type="drawable">@drawable/kaleyra_f_mic_on</item>
     <item name="ic_kaleyra_call_sheet_enable_camera" type="drawable">@drawable/kaleyra_f_camera_off</item>
     <item name="ic_kaleyra_call_sheet_disable_camera" type="drawable">@drawable/kaleyra_f_camera_on</item>
-    <item name="ic_kaleyra_call_sheet_more" type="drawable">@drawable/kaleyra_f_more</item>
+    <item name="ic_kaleyra_call_sheet_more" type="drawable">@drawable/kaleyra_f_more_vertical</item>
     <item name="ic_kaleyra_call_sheet_flip_camera" type="drawable">@drawable/kaleyra_f_switch_camera</item>
     <item name="ic_kaleyra_call_sheet_chat" type="drawable">@drawable/kaleyra_f_chat</item>
     <item name="ic_kaleyra_call_sheet_whiteboard" type="drawable">@drawable/kaleyra_f_whiteboard</item>
