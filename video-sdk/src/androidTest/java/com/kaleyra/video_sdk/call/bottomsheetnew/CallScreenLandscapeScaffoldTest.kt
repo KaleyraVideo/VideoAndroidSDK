@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
 import com.kaleyra.video_sdk.performHorizontalSwipe
+import com.kaleyra.video_sdk.performVerticalSwipe
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -136,6 +137,16 @@ class CallScreenLandscapeScaffoldTest {
         val sheetState = CallSheetState()
         composeTestRule.setCallBottomSheet(sheetState)
         composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).performHorizontalSwipe(-500)
+        composeTestRule.waitForIdle()
+        Assert.assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        Assert.assertEquals(0f, sheetState.offset)
+    }
+
+    @Test
+    fun testSwipeUpSheetContent() {
+        val sheetState = CallSheetState()
+        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).performHorizontalSwipe(-500)
         composeTestRule.waitForIdle()
         Assert.assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
         Assert.assertEquals(0f, sheetState.offset)

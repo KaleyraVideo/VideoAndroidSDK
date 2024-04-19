@@ -149,6 +149,16 @@ class CallScreenLandscapeScaffoldTest {
     }
 
     @Test
+    fun testSwipeUpSheetContent() {
+        val sheetState = CallSheetState()
+        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).performHorizontalSwipe(-500)
+        composeTestRule.waitForIdle()
+        Assert.assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        Assert.assertEquals(0f, sheetState.offset)
+    }
+
+    @Test
     fun testSwipeDownHandle() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
         composeTestRule.setCallBottomSheet(sheetState)

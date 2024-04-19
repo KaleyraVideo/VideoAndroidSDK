@@ -140,7 +140,11 @@ internal fun CallScreenScaffold(
                             bottomSheetPadding = height - sheetDragContentHeight
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
-                        .clip(sheetCornerShape),
+                        .clip(sheetCornerShape)
+                        .anchoredDraggable(
+                            state = sheetState.anchoredDraggableState,
+                            orientation = dragOrientation
+                        ),
                     sheetContent = {
                         Surface {
                             Column(content = sheetContent)
@@ -157,11 +161,6 @@ internal fun CallScreenScaffold(
                                             orientation = dragOrientation,
                                             onFling = settleToDismiss
                                         )
-                                    )
-                                    // TODO move this anchored draggable to CallBottomSheetLayout modifier
-                                    .anchoredDraggable(
-                                        state = sheetState.anchoredDraggableState,
-                                        orientation = dragOrientation
                                     ),
                                 shape = sheetCornerShape.copy(
                                     bottomStart = CornerSize(0.dp),
@@ -312,7 +311,11 @@ internal fun CallScreenLandscapeScaffold(
                     }
                     .align(Alignment.CenterEnd)
                     .padding(top = topPadding, bottom = bottomPadding, end = endPadding)
-                    .clip(sheetCornerShape),
+                    .clip(sheetCornerShape)
+                    .anchoredDraggable(
+                        state = sheetState.anchoredDraggableState,
+                        orientation = dragOrientation
+                    ),
                 sheetContent = {
                     Surface {
                         Row(content = sheetContent)
@@ -329,11 +332,6 @@ internal fun CallScreenLandscapeScaffold(
                                         orientation = dragOrientation,
                                         onFling = settleToDismiss
                                     )
-                                )
-                                // TODO move this anchored draggable to CallBottomSheetLayout modifier
-                                .anchoredDraggable(
-                                    state = sheetState.anchoredDraggableState,
-                                    orientation = dragOrientation
                                 ),
                             shape = sheetCornerShape.copy(
                                 topEnd = CornerSize(0.dp),
