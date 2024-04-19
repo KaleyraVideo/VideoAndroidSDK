@@ -16,6 +16,7 @@ internal fun AudioAction(
     audioDevice: AudioDeviceUi,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false
 ) {
     val icon = painterResource(
@@ -32,6 +33,7 @@ internal fun AudioAction(
         modifier = modifier,
         icon = icon,
         contentDescription = text,
+        enabled = enabled,
         buttonText = text,
         label = if (label) text else null,
         onClick = onClick

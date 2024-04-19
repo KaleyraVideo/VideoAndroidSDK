@@ -14,6 +14,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun WhiteboardAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false,
     badgeText: String? = null
 ) {
@@ -22,6 +23,7 @@ internal fun WhiteboardAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_whiteboard),
         contentDescription = text,
+        enabled = enabled,
         buttonText = text,
         label = if (label) text else null,
         badgeText = badgeText,

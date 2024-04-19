@@ -14,12 +14,14 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun VirtualBackgroundAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_virtual_background)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_virtual_background),
+        enabled = enabled,
         contentDescription = text,
         buttonText = text,
         label = if (label) text else null,

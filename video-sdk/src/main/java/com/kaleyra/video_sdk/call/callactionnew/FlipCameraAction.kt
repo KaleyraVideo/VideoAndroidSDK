@@ -14,6 +14,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun FlipCameraAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_flip_camera)
@@ -22,6 +23,7 @@ internal fun FlipCameraAction(
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_flip_camera),
         contentDescription = text,
         buttonText = text,
+        enabled = enabled,
         label = if (label) text else null,
         onClick = onClick
     )

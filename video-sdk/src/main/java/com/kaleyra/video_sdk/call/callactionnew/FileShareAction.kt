@@ -14,6 +14,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun FileShareAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false,
     badgeText: String? = null
 ) {
@@ -23,6 +24,7 @@ internal fun FileShareAction(
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_file_share),
         contentDescription = text,
         buttonText = text,
+        enabled = enabled,
         label = if (label) text else null,
         badgeText = badgeText,
         onClick = onClick

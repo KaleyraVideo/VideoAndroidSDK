@@ -18,6 +18,8 @@ import org.junit.Test
 
 class CallActionTest {
 
+    // TODO test enabled, update badge test
+
     @get:Rule
     val composeTestRule = createComposeRule()
 

@@ -118,6 +118,7 @@ fun CallToggleAction(
     contentDescription: String,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     buttonText: String? = null,
     buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
     badgeText: String? = null,
@@ -136,6 +137,7 @@ fun CallToggleAction(
             FilledIconToggleButton(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
+                enabled = enabled,
                 modifier = Modifier
                     .defaultMinSize(
                         minWidth = CallActionDefaults.minButtonSize,
@@ -163,6 +165,7 @@ fun CallAction(
     contentDescription: String,
     onClick: (() -> Unit),
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     buttonText: String? = null,
     buttonColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
     buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -187,6 +190,7 @@ fun CallAction(
                         minHeight = CallActionDefaults.minButtonSize
                     )
                     .fillMaxWidth(),
+                enabled = enabled,
                 shape = CallActionDefaults.buttonShape,
                 colors = CallActionDefaults.iconButtonColors(containerColor = buttonColor, contentColor = buttonContentColor),
                 onClick = onClick

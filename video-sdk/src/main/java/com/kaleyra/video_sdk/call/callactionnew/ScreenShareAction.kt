@@ -15,6 +15,7 @@ internal fun ScreenShareAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: Boolean = false
 ) {
     val buttonText = stringResource(id = R.string.kaleyra_call_sheet_screen_share)
@@ -22,6 +23,7 @@ internal fun ScreenShareAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_screen_share),
         contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_stop_screen_share else R.string.kaleyra_call_sheet_screen_share),
+        enabled = enabled,
         buttonText = buttonText,
         label = if (label) buttonText else null,
         checked = checked,

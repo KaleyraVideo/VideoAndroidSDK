@@ -17,6 +17,7 @@ internal fun CameraAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     warning: Boolean = false,
     error: Boolean = false
 ) {
@@ -26,6 +27,7 @@ internal fun CameraAction(
         contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_enable_camera else R.string.kaleyra_call_sheet_description_disable_camera),
         checked = checked,
         onCheckedChange = onCheckedChange,
+        enabled = enabled,
         badgeText = if (warning || error) "!" else null,
         badgeBackgroundColor = if (error) MaterialTheme.colorScheme.error else KaleyraTheme.colors.warning,
         badgeContentColor = if (error) MaterialTheme.colorScheme.onError else KaleyraTheme.colors.onWarning
