@@ -3,7 +3,6 @@ package com.kaleyra.video_sdk.call.callactionnew
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
@@ -38,9 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import kotlin.math.roundToInt
 
 object CallActionDefaults {
@@ -53,9 +56,9 @@ object CallActionDefaults {
 
     val badgeShape = CircleShape
 
-    val badgeSize = 20.dp
+    val badgeSize = 24.dp
 
-    val badgeOffset = 4.dp
+    val badgeOffset = 6.dp
 
     val containerColor: Color
         @Composable
@@ -103,8 +106,8 @@ object CallActionDefaults {
     )
 
     @Composable
-    fun badgeColors(containerColor: Color = badgeContainerColor) =
-        CardDefaults.cardColors(containerColor)
+    fun badgeColors(containerColor: Color = badgeContainerColor, contentColor: Color = contentColorFor(badgeContainerColor)) =
+        CardDefaults.cardColors(containerColor, contentColor)
 
 }
 
@@ -117,14 +120,18 @@ fun CallToggleAction(
     modifier: Modifier = Modifier,
     buttonText: String? = null,
     buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
-    label: String? = null,
-    badge: (@Composable BoxScope.() -> Unit)? = null
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+    label: String? = null
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
-        badge = badge,
+        badgeText = badgeText,
+        badgeBackgroundColor = badgeBackgroundColor,
+        badgeContentColor = badgeContentColor,
         iconButton = {
             FilledIconToggleButton(
                 checked = checked,
@@ -160,14 +167,18 @@ fun CallAction(
     buttonColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
     buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
     buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
-    label: String? = null,
-    badge: (@Composable BoxScope.() -> Unit)? = null
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+    label: String? = null
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
-        badge = badge,
+        badgeText = badgeText,
+        badgeBackgroundColor = badgeBackgroundColor,
+        badgeContentColor = badgeContentColor,
         iconButton = {
             FilledIconButton(
                 modifier = Modifier
@@ -196,8 +207,10 @@ fun CallAction(
 private fun CallActionLayout(
     modifier: Modifier,
     iconButton: @Composable () -> Unit,
-    badge: (@Composable BoxScope.() -> Unit)?,
-    label: String? = null
+    label: String? = null,
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor)
 ) {
     Box(modifier.width(IntrinsicSize.Max)) {
         Column(
@@ -220,8 +233,11 @@ private fun CallActionLayout(
                 )
             }
         }
-        if (badge != null) {
+        if (badgeText != null) {
             Badge(
+                text = badgeText,
+                containerColor = badgeBackgroundColor,
+                contentColor = badgeContentColor,
                 modifier = modifier
                     .align(Alignment.TopEnd)
                     .offset {
@@ -231,8 +247,7 @@ private fun CallActionLayout(
                                 .roundToInt()
                             IntOffset(offset, -offset)
                         }
-                    },
-                content = badge
+                    }
             )
         }
     }
@@ -275,20 +290,28 @@ private fun ButtonLayout(
 
 @Composable
 private fun Badge(
+    text: String,
     modifier: Modifier = Modifier,
-    content: @Composable (BoxScope.() -> Unit)
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = contentColorFor(containerColor)
 ) {
     Card(
         modifier = modifier,
-        colors = CallActionDefaults.badgeColors(),
+        colors = CallActionDefaults.badgeColors(containerColor, contentColor),
         shape = CallActionDefaults.badgeShape
     ) {
         Box(
             modifier = Modifier
-                .defaultMinSize(CallActionDefaults.badgeSize)
-                .align(Alignment.CenterHorizontally),
-            content = content
-        )
+                .size(CallActionDefaults.badgeSize)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = text,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelMedium.clearFontPadding()
+            )
+        }
     }
 }
 

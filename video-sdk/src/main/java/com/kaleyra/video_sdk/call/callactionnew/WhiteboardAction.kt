@@ -14,7 +14,8 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun WhiteboardAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    label: Boolean = false
+    label: Boolean = false,
+    badgeText: String? = null
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_whiteboard)
     CallAction(
@@ -23,6 +24,7 @@ internal fun WhiteboardAction(
         contentDescription = text,
         buttonText = text,
         label = if (label) text else null,
+        badgeText = badgeText,
         onClick = onClick
     )
 }

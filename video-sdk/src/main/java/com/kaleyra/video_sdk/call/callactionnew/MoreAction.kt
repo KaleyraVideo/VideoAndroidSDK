@@ -13,12 +13,14 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 @Composable
 internal fun MoreAction(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    badgeText: String? = null
 ) {
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_more),
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_more_actions),
+        badgeText = badgeText,
         onClick = onClick
     )
 }
