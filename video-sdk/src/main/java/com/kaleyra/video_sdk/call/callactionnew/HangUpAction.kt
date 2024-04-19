@@ -21,7 +21,7 @@ internal fun HangUpAction(
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_hang_up),
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
         buttonColor = KaleyraTheme.colors.hangUp,
-        buttonContentColor = Color.White,
+        buttonContentColor = KaleyraTheme.colors.onHangUp,
         onClick = onClick
     )
 }
