@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature
         android:name="android.hardware.bluetooth"
@@ -44,6 +45,9 @@
     </queries>
 
     <application>
+
+        <!-- call services -->
+
         <service
             android:name=".connectionservice.KaleyraCallConnectionService"
             android:exported="true"
@@ -53,10 +57,13 @@
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
+
         <service
             android:name=".callservice.KaleyraCallService"
             android:foregroundServiceType="phoneCall|mediaProjection|camera|microphone" />
         <service android:name=".connectionservice.ProximityService" />
+
+        <!-- push notifications -->
 
         <receiver
             android:name=".notification.receiver.fcm.FcmPushNotificationReceiver"
@@ -101,6 +108,13 @@
                 <action android:name="com.kaleyra.video_common_ui.MARK_AS_READ" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".notification.fileshare.FileShareNotificationActionReceiver"
+            android:exported="false"></receiver>
+
+        <receiver android:name="com.kaleyra.video_common_ui.termsandconditions.notification.NotificationDisposer" />
+
         <receiver
             android:name=".notification.DisplayedChatActivity"
             android:exported="false">
@@ -109,9 +123,8 @@
                 <action android:name="com.kaleyra.video_common_ui.CHAT_CLOSE" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".notification.fileshare.FileShareNotificationActionReceiver"
-            android:exported="false"></receiver>
+
+
         <receiver
             android:name=".notification.fileshare.FileShareVisibilityObserver"
             android:exported="false">
@@ -121,7 +134,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.kaleyra.video_common_ui.termsandconditions.notification.NotificationDisposer" />
     </application>
 
 </manifest>
