@@ -16,20 +16,29 @@
 
 package com.kaleyra.video_sdk.chat
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import com.kaleyra.video_common_ui.ChatActivity
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.utils.Android12ChatActivityTasksFixService
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 
-internal class PhoneChatActivity : ChatActivity() {
+internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
 
     override val viewModel: PhoneChatViewModel by viewModels {
         PhoneChatViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     }
+
+    private val isAndroid12 = Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S.inc()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,5 +46,21 @@ internal class PhoneChatActivity : ChatActivity() {
         setContent {
             ChatScreen(onBackPressed = this::finishAndRemoveTask, viewModel = viewModel)
         }
+
+        // fixes the resuming of a task on android 12
+        // https://issuetracker.google.com/issues/207397151#comment17
+        if (isAndroid12) {
+            Intent(this, Android12ChatActivityTasksFixService::class.java).also { intent ->
+                startService(intent)
+                bindService(intent, this, Context.BIND_AUTO_CREATE)
+            }
+        }
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isAndroid12) runCatching { unbindService(this) }
+    }
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) = Unit
+
+    override fun onServiceDisconnected(name: ComponentName?) = Unit
 }

@@ -57,6 +57,10 @@
             android:resizeableActivity="false"
             android:theme="@style/Theme.AppCompat"
             tools:targetApi="n" />
+
+        <service android:name=".call.utils.Android12CallActivityTasksFixService" />
+
+        <service android:name=".call.utils.Android12ChatActivityTasksFixService" />
     </application>
 
 </manifest>
