@@ -158,8 +158,6 @@ class ProximityServiceTest {
     fun testOnActivityCreated() {
         val callActivity = object : Activity(), ProximityCallActivity {
             override val disableProximity: Boolean = false
-            override fun disableWindowTouch() = Unit
-            override fun enableWindowTouch() =  Unit
         }
         every { callMock.activityClazz } returns callActivity::class.java
         service!!.onStartCommand(null, 0, 0)
@@ -171,8 +169,6 @@ class ProximityServiceTest {
     fun testOnActivityDestroyed() {
         val callActivity = object : Activity(), ProximityCallActivity {
             override val disableProximity: Boolean = false
-            override fun disableWindowTouch() = Unit
-            override fun enableWindowTouch() =  Unit
         }
         every { callMock.activityClazz } returns callActivity::class.java
         service!!.onStartCommand(null, 0, 0)

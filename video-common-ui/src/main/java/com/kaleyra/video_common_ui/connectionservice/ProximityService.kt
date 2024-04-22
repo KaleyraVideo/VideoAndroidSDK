@@ -118,10 +118,6 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
             lifecycleContext = this,
             call = call,
             disableProximity = { proximityCallActivity?.disableProximity ?: false },
-            disableWindowTouch = { disableWindowTouch ->
-                if (disableWindowTouch) proximityCallActivity?.disableWindowTouch()
-                else proximityCallActivity?.enableWindowTouch()
-            }
         ).apply { bind() }
     }
 
