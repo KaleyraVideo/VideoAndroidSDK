@@ -6,12 +6,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.callactionnew.CallAction
 import com.kaleyra.video_sdk.call.callactionnew.CallToggleAction
 import org.junit.Assert
 import org.junit.Rule
@@ -137,6 +140,7 @@ class CallToggleActionTest {
                 checked = false
             )
         }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(descr).performClick()
         Assert.assertEquals(true, checked)
     }
@@ -153,6 +157,7 @@ class CallToggleActionTest {
                 checked = true
             )
         }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(descr).performClick()
         Assert.assertEquals(false, checked)
     }
@@ -166,9 +171,23 @@ class CallToggleActionTest {
                 contentDescription = "",
                 onCheckedChange = {},
                 checked = false,
-                badge = { Text(badgeText) }
+                badgeText = badgeText
             )
         }
         composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+    }
+
+    @Test
+    fun testClickOnButtonDisabled() {
+        val descr = "enable mic"
+        composeTestRule.setContent {
+            CallAction(
+                icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
+                contentDescription = descr,
+                enabled = false,
+                onClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsNotEnabled()
     }
 }

@@ -1,11 +1,12 @@
 package com.kaleyra.video_sdk.call.callactionnew
 
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -17,8 +18,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class CallActionTest {
-
-    // TODO test enabled, update badge test
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -128,6 +127,7 @@ class CallActionTest {
                 onClick = { clicked = true }
             )
         }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(descr).performClick()
         assertEquals(true, clicked)
     }
@@ -140,9 +140,25 @@ class CallActionTest {
                 icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
                 contentDescription = "",
                 onClick = {},
-                badge = { Text(badgeText) }
+                badgeText = badgeText,
             )
         }
         composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+    }
+
+    // TODO test enabled, update badge test
+
+    @Test
+    fun testClickOnButtonDisabled() {
+        val descr = "enable mic"
+        composeTestRule.setContent {
+            CallAction(
+                icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
+                contentDescription = descr,
+                enabled = false,
+                onClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsNotEnabled()
     }
 }
