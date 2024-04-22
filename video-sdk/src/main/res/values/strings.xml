@@ -19,8 +19,8 @@
     <string name="kaleyra_call_sheet_chat">Chat</string>
     <string name="kaleyra_call_sheet_whiteboard">Whiteboard</string>
     <string name="kaleyra_call_sheet_audio">Audio</string>
-    <string name="kaleyra_call_sheet_file_share">File Share</string>
-    <string name="kaleyra_call_sheet_screen_share">Screen share</string>
+    <string name="kaleyra_call_sheet_file_share">File share</string>
+    <string name="kaleyra_call_sheet_screen_share">Screenshare</string>
     <string name="kaleyra_call_sheet_virtual_background">Virtual background</string>
     <string name="kaleyra_call_sheet_pin">Pin</string>
     <string name="kaleyra_call_sheet_unpin">Unpin</string>
