@@ -151,8 +151,6 @@ class CallActionTest {
         composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
     }
 
-    // TODO test enabled, update badge test
-
     @Test
     fun testClickOnButtonDisabled() {
         val descr = "enable mic"

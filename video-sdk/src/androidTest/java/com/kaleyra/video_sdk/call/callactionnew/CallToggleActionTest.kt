@@ -175,11 +175,12 @@ class CallToggleActionTest {
     fun testClickOnButtonDisabled() {
         val descr = "enable mic"
         composeTestRule.setContent {
-            CallAction(
+            CallToggleAction(
                 icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
                 contentDescription = descr,
                 enabled = false,
-                onClick = { }
+                checked = false,
+                onCheckedChange = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(descr).assertIsNotEnabled()
