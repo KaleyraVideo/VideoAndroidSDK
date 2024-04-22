@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -59,6 +60,8 @@ object CallActionDefaults {
     val badgeSize = 24.dp
 
     val badgeOffset = 6.dp
+
+    val labelWidth = minButtonSize + 24.dp
 
     val containerColor: Color
         @Composable
@@ -94,8 +97,8 @@ object CallActionDefaults {
 
     @Composable
     fun iconToggleButtonColors(
-        containerColor: Color =  CallActionDefaults.containerColor,
-        contentColor: Color =  CallActionDefaults.contentColor,
+        containerColor: Color = CallActionDefaults.containerColor,
+        contentColor: Color = CallActionDefaults.contentColor,
         checkedContainerColor: Color = CallActionDefaults.checkedContainerColor,
         checkedContentColor: Color = CallActionDefaults.checkedContentColor,
     ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
@@ -106,7 +109,9 @@ object CallActionDefaults {
     )
 
     @Composable
-    fun badgeColors(containerColor: Color = badgeContainerColor, contentColor: Color = contentColorFor(badgeContainerColor)) =
+    fun badgeColors(containerColor: Color = badgeContainerColor, contentColor: Color = contentColorFor(
+        badgeContainerColor
+    )) =
         CardDefaults.cardColors(containerColor, contentColor)
 
 }
@@ -227,12 +232,15 @@ private fun CallActionLayout(
                 Text(
                     modifier = Modifier
                         .layout { measurable, constraints ->
-                            val placeable = measurable.measure(constraints.copy(maxWidth = Constraints.Infinity))
+                            val minWidth = CallActionDefaults.labelWidth.toPx().roundToInt()
+                            val maxWidth = constraints.maxWidth.takeIf { it > minWidth } ?: minWidth
+                            val placeable = measurable.measure(constraints.copy(minWidth = minWidth, maxWidth = maxWidth))
                             layout(constraints.minWidth, placeable.height) {
                                 placeable.placeRelative(-placeable.width / 2, 0)
                             }
                         },
                     text = label,
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelMedium
                 )
             }
