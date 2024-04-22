@@ -28,6 +28,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -94,6 +95,16 @@ class CompanyThemeManagerTest {
             day = companyUITheme.day.copy(logo = dayStyle.logo),
             night = companyUITheme.night.copy(logo = nightStyle.logo)
         )
-        assertEquals(expected, company.combinedTheme.first())
+        assertEquals(expected, company.combinedTheme.drop(1).first())
+    }
+
+    @Test
+    fun `theme uses local logo if remote logo is not defined`() = runTest {
+        val companyUITheme = CompanyUI.Theme(
+            fontFamily = FontFamily.SansSerif,
+            defaultStyle = CompanyUI.Theme.DefaultStyle.System
+        )
+        every { KaleyraVideo.theme } returns companyUITheme
+        assertEquals(companyUITheme, company.combinedTheme.first())
     }
 }
