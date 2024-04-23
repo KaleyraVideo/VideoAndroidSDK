@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.kaleyra.video_common_ui.contactdetails
 
 import android.net.Uri
 import com.kaleyra.video.Contact
 import com.kaleyra.video_common_ui.contactdetails.provider.CollaborationContactDetailsProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
