@@ -18,7 +18,6 @@ package com.kaleyra.video_common_ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video_common_ui.notification.DisplayedChatActivity
@@ -66,20 +65,17 @@ abstract class ChatActivity : FragmentActivity() {
                 setChat(intent) -> return@launch
             }
             finishAndRemoveTask()
-        }.onFailure {
-            Log.e("ERROR", "${it.message}")
         }
     }
 
     private suspend fun setChat(intent: Intent): Boolean {
-        val loggedUserId = intent.extras?.getString(LOGGED_USER_ID_KEY) ?: return false
         val userIds = intent.extras?.getStringArray(USER_IDS_KEY) ?: return false
         val chatId = intent.extras?.getString(CHAT_ID_KEY)
         if (userIds.size > 1 && chatId == null) return false
         val chat = if (userIds.size > 1) {
             return false
         } else {
-            viewModel.setChat(loggedUserId, userIds.first()) ?: return false
+            viewModel.setChat(intent.extras?.getString(LOGGED_USER_ID_KEY, null), userIds.first()) ?: return false
         }
         this@ChatActivity.chatId = chat.id
         sendChatAction(DisplayedChatActivity.ACTION_CHAT_VISIBLE, chat.id)

@@ -99,7 +99,7 @@ private suspend fun getKaleyraVideoService(): KaleyraVideoService? = with(Contex
  * @return CollaborationViewModel.Configuration returns the required configuration if the procedure succeed, a failure error otherwise.
  * @return Boolean true if configure has been called, false otherwise
  */
-internal suspend fun requestConfiguration(): Boolean {
+suspend fun requestConfiguration(): Boolean {
     if (!KaleyraVideo.isConfigured) KaleyraVideoService.get()?.onRequestKaleyraVideoConfigure()
     if (!KaleyraVideo.isConfigured) Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be configured via KaleyraVideoService implementation, but no configuration has been received." +
         "\nPlease implement KaleyraVideoService as requested in order to configure KaleyraVideoSDK when needed." +
@@ -112,12 +112,12 @@ internal suspend fun requestConfiguration(): Boolean {
  * @param userId String? optional user id of the user to be connected via KaleyraVideo sdk
  * @return Boolean true if connection has been called, false otherwise
  */
-internal suspend fun requestConnect(userId: String? = null): Boolean {
+suspend fun requestConnect(userId: String? = null): Boolean {
     if (KaleyraVideo.state.value !is State.Disconnected) return true
 
     KaleyraVideoService.get()?.onRequestKaleyraVideoConnect()
 
-    val result = withTimeoutOrNull(500) {
+    val result = withTimeoutOrNull(1000) {
         KaleyraVideo.state.first { it !is State.Disconnected }
     }
 

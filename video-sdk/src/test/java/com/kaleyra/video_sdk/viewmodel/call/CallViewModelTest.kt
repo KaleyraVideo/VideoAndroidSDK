@@ -31,6 +31,8 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
 import com.kaleyra.video_common_ui.ConnectionServiceOption
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.KaleyraVideoService
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
@@ -124,6 +126,10 @@ class CallViewModelTest {
     fun setUp() {
         mockkConstructor(StreamsHandler::class)
         every { anyConstructed<StreamsHandler>().swapThumbnail(any()) } returns Unit
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
+        every { KaleyraVideo.connectedUser } returns mockk(relaxed = true)
+        every { KaleyraVideo.conversation } returns mockk(relaxed = true)
         mockkObject(CallUserMessagesProvider)
         mockkObject(ContactDetailsManager)
         mockkObject(CompanyThemeManager)
@@ -212,6 +218,8 @@ class CallViewModelTest {
         }
         every { companyMock.combinedTheme } returns flowOf(themeMock)
         viewModel = spyk(CallViewModel { Success(conferenceMock, mockk(), companyMock, MutableStateFlow(mockk())) })
+        mockkObject(KaleyraVideoService.Companion)
+        coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
     }
 
     @After

@@ -222,7 +222,7 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     fun onAllMessagesScrolled() {
         val messages = messages.getValue()?.other ?: return
-        messages.first().markAsRead()
+        messages.firstOrNull()?.markAsRead()
     }
 
     fun showCall() {
