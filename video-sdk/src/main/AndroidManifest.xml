@@ -37,7 +37,7 @@
         <activity
             android:name=".call.PhoneCallActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:showForAllUsers="true"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
@@ -47,7 +47,6 @@
             tools:targetApi="o_mr1" />
         <activity
             android:name=".chat.PhoneChatActivity"
-            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
