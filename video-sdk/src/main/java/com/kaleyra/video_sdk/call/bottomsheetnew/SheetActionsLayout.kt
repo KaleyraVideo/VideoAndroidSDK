@@ -10,10 +10,10 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 @Composable
-internal fun SheetContentLayout(
+internal fun SheetActionsLayout(
     modifier: Modifier = Modifier,
     horizontalItemSpacing: Dp = 24.dp,
-    onLayout: ((itemsCount: Int) -> Unit)? = null,
+    onItemsPlaced: ((itemsCount: Int) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val density = LocalDensity.current
@@ -22,11 +22,11 @@ internal fun SheetContentLayout(
         var width = 0
         val placeables = mutableListOf<Placeable>()
         for (index in measurables.indices) {
-            val placeable = measurables[index].measure(constraints)
+            val placeable = measurables[index].measure(constraints.copy(minWidth = 0))
             val newWidth = width + (padding.takeIf { index != 0 } ?: 0) + placeable.width
             // if no more items can be laid out..
             if (newWidth > constraints.maxWidth) {
-                onLayout?.invoke(index)
+                onItemsPlaced?.invoke(index)
                 break
             }
             width = newWidth
@@ -34,10 +34,10 @@ internal fun SheetContentLayout(
         }
         // if all the items are laid out...
         if (placeables.size == measurables.size) {
-            onLayout?.invoke(placeables.size)
+            onItemsPlaced?.invoke(placeables.size)
         }
 
-        val height = placeables.maxOf { it.height }
+        val height = placeables.maxOfOrNull { it.height } ?: 0
         layout(width, height) {
             var x = 0
             placeables.forEachIndexed { index, placeable ->
@@ -49,10 +49,10 @@ internal fun SheetContentLayout(
 }
 
 @Composable
-internal fun VerticalSheetContentLayout(
+internal fun VerticalSheetActionsLayout(
     modifier: Modifier = Modifier,
     verticalItemSpacing: Dp = 24.dp,
-    onLayout: ((itemsCount: Int) -> Unit)? = null,
+    onItemsPlaced: ((itemsCount: Int) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val density = LocalDensity.current
@@ -61,11 +61,11 @@ internal fun VerticalSheetContentLayout(
         var height = 0
         val placeables = mutableListOf<Placeable>()
         for (index in measurables.indices) {
-            val placeable = measurables[index].measure(constraints)
+            val placeable = measurables[index].measure(constraints.copy(minHeight = 0))
             val newHeight = height + (padding.takeIf { index != 0 } ?: 0) + placeable.height
             // if no more items can be laid out..
             if (newHeight > constraints.maxHeight) {
-                onLayout?.invoke(index)
+                onItemsPlaced?.invoke(index)
                 break
             }
             height = newHeight
@@ -73,15 +73,15 @@ internal fun VerticalSheetContentLayout(
         }
         // if all the items are laid out...
         if (placeables.size == measurables.size) {
-            onLayout?.invoke(placeables.size)
+            onItemsPlaced?.invoke(placeables.size)
         }
 
-        val width = placeables.maxOf { it.width }
+        val width = placeables.maxOfOrNull { it.width } ?: 0
         layout(width, height) {
-            var y = 0
+            var y = height - (placeables.getOrNull(0)?.height ?: 0)
             placeables.forEachIndexed { index, placeable ->
                 placeable.placeRelative(0, y)
-                y += placeable.height + if (index < placeables.size - 1) padding else 0
+                y -= placeable.height + if (index < placeables.size - 1) padding else 0
             }
         }
     }
