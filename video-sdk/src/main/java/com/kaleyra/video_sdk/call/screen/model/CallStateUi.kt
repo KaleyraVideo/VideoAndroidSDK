@@ -27,6 +27,11 @@ sealed class CallStateUi {
     data object Ringing : CallStateUi()
 
     /**
+     * Ringing Remotely Call State Ui
+     */
+    data object RingingRemotely : CallStateUi()
+
+    /**
      * Dialing Call State Ui
      */
     data object Dialing : CallStateUi()

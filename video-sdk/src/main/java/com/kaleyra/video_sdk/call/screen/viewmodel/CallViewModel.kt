@@ -213,7 +213,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         val doOthersHaveStreams = callState
             .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
-            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.Connecting }
+            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Connecting }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
 
         doOthersHaveStreams
