@@ -37,7 +37,6 @@ class MyApplication : MultiDexApplication() {
 
     override fun create() {
         // init
-        HMSLog.init(this, -1, "test")
     }
 
 }
