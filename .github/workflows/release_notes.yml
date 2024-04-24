@@ -48,12 +48,17 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      - name: Get commit summary
+        uses: actions/commit-summary@v1
+        id: get_commit_summary
+        with:
+          ref: ${{ github.event.inputs.tag || '' }}
       - name: Release notes
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           draft: true
           files: |
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
+          append_body: ${{ steps.get_commit_summary.outputs.summary }}
