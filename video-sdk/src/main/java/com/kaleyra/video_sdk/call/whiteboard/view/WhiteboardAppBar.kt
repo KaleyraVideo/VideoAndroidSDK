@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
@@ -41,7 +41,7 @@ import com.kaleyra.video_sdk.R
 @Composable
 internal fun WhiteboardAppBar(
     viewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = WhiteboardViewModel.provideFactory(::requestConfiguration, WhiteboardView(LocalContext.current))
+        factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier

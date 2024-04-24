@@ -69,7 +69,7 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
@@ -277,7 +277,7 @@ internal class CallScreenState(
                 }
             }
 
-            else                                                                                                                               -> Unit
+            else -> Unit
         }
     }
 
@@ -294,7 +294,7 @@ internal class CallScreenState(
 @Composable
 internal fun CallScreen(
     viewModel: CallViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallViewModel.provideFactory(::requestConfiguration)
+        factory = CallViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     shouldShowFileShareComponent: Boolean,
     isInPipMode: Boolean,
@@ -353,11 +353,11 @@ internal fun CallScreen(
             {
                 when {
                     callUiState.callState is CallStateUi.Disconnected.Ended -> finishActivity()
-                    callUiState.fullscreenStream != null                    -> {
+                    callUiState.fullscreenStream != null -> {
                         viewModel.fullscreenStream(null)
                     }
 
-                    else                                                    -> enterPip()
+                    else -> enterPip()
                 }
             }
         }
@@ -368,7 +368,7 @@ internal fun CallScreen(
             onActivityFinishing()
             when {
                 isInPipMode || !activity.isAtLeastResumed() -> activity.finishAndRemoveTask()
-                !hasFeedback && !hasBeenKicked              -> {
+                !hasFeedback && !hasBeenKicked -> {
                     val delayMs = if (hasErrorOccurred) ActivityFinishErrorDelay else ActivityFinishDelay
                     delay(delayMs)
                     activity.finishAndRemoveTask()
@@ -497,8 +497,13 @@ internal fun CallScreen(
 
     LaunchedEffect(callUiState) {
         when {
-            callUiState.callState != CallStateUi.Dialing && callUiState.callState != CallStateUi.Connected && callUiState.callState != CallStateUi.Reconnecting && callUiState.callState != CallStateUi.Connecting -> callScreenState.hideSheet()
-            callScreenState.isSheetHidden                                                                                                                                                                          -> callScreenState.halfExpandSheet()
+            !callUiState.areCallActionsReady ||
+                (callUiState.callState != CallStateUi.Dialing
+                && callUiState.callState != CallStateUi.Connected
+                && callUiState.callState != CallStateUi.Reconnecting
+                && callUiState.callState != CallStateUi.RingingRemotely
+                && callUiState.callState != CallStateUi.Connecting) -> callScreenState.hideSheet()
+            callScreenState.isSheetHidden -> callScreenState.halfExpandSheet()
         }
     }
 

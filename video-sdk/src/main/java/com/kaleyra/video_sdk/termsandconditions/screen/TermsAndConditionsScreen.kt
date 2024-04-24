@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.termsandconditions.model.TermsAndConditionsUiState
 import com.kaleyra.video_sdk.termsandconditions.viewmodel.TermsAndConditionsViewModel
@@ -62,7 +62,7 @@ internal const val TermsProgressIndicatorTag = "TermsProgressIndicatorTag"
 @Composable
 internal fun TermsAndConditionsScreen(
     viewModel: TermsAndConditionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = TermsAndConditionsViewModel.provideFactory(::requestConfiguration)
+        factory = TermsAndConditionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     title: String,
     message: String,

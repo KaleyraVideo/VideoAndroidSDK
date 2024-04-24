@@ -17,6 +17,7 @@
 package com.kaleyra.demo_video_sdk
 
 import android.content.Context
+import com.huawei.hms.support.log.HMSLog
 import com.kaleyra.app_utilities.MultiDexApplication
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.video.configuration.Configuration

@@ -28,7 +28,6 @@ internal class CallProximityDelegate<T>(
     private val lifecycleContext: T,
     private val call: CallUI,
     private val disableProximity: () -> Boolean,
-    private val disableWindowTouch: (Boolean) -> Unit,
     private val wakeLockProximityDelegate: WakeLockProximityDelegate = WakeLockProximityDelegateImpl(lifecycleContext.applicationContext as Application, call),
     private val cameraProximityDelegate: CameraProximityDelegate = CameraProximityDelegateImpl(call),
     private val audioProximityDelegate: AudioProximityDelegate = AudioProximityDelegateImpl(AudioCallSession.getInstance())
@@ -54,12 +53,8 @@ internal class CallProximityDelegate<T>(
                 wakeLockProximityDelegate.tryTurnScreenOff()
                 cameraProximityDelegate.tryDisableCamera(forceDisableCamera = wakeLockProximityDelegate.isScreenTurnedOff)
             }
-            if (wakeLockProximityDelegate.isScreenTurnedOff) {
-                disableWindowTouch(true)
-            }
             audioProximityDelegate.trySwitchToEarpiece()
         } else {
-            disableWindowTouch(false)
             wakeLockProximityDelegate.restoreScreenOn()
             cameraProximityDelegate.restoreCamera()
             audioProximityDelegate.tryRestoreToLoudspeaker()

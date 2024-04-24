@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import com.kaleyra.video_common_ui.ChatActivity
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_utils.ContextRetainer
@@ -58,18 +59,20 @@ internal interface ChatNotificationManager {
     /**
      * Build the chat notification
      *
-     * @param myUserId The user id
-     * @param myUsername The user name
-     * @param myAvatar The user avatar
+     * @param loggedUserId Logged user id
+     * @param otherUserId The other user id
+     * @param otherUserName The other user name
+     * @param otherUserAvatar The other user avatar
      * @param messages The list of messages
      * @param activityClazz The chat activity Class<*>
      * @param fullScreenIntentClazz The fullscreen intent activity Class<*>?
      * @return Notification
      */
-    fun buildChatNotification(
-        myUserId: String,
-        myUsername: String,
-        myAvatar: Uri,
+    suspend fun buildChatNotification(
+        loggedUserId: String,
+        otherUserId: String,
+        otherUserName: String,
+        otherUserAvatar: Uri,
         chatId: String?,
         messages: List<ChatNotificationMessage>,
         activityClazz: Class<*>,
@@ -78,7 +81,7 @@ internal interface ChatNotificationManager {
         val context = ContextRetainer.context
 
         val otherUserIds = messages.map { it.userId }.distinct()
-        val contentIntent = contentPendingIntent(context, activityClazz, otherUserIds, chatId)
+        val contentIntent = contentPendingIntent(context, activityClazz, loggedUserId, otherUserIds, chatId)
         // Pending intent =
         //      API <24 (M and below): activity so the lock-screen presents the auth challenge.
         //      API 24+ (N and above): this should be a Service or BroadcastReceiver.
@@ -90,9 +93,10 @@ internal interface ChatNotificationManager {
                 DEFAULT_CHANNEL_ID,
                 context.resources.getString(R.string.kaleyra_notification_chat_channel_name)
             )
-            .userId(myUserId)
-            .username(myUsername)
-            .avatar(myAvatar)
+            .userId(otherUserId)
+            .loggedUserId(loggedUserId)
+            .username(otherUserName)
+            .avatar(otherUserAvatar)
             .isGroupChat(true) // Always true because of a notification ui bug
 //            .isGroupChat(messages.map { it.userId }.distinct().count() > 1)
             .contentIntent(contentIntent)
@@ -100,28 +104,30 @@ internal interface ChatNotificationManager {
 //            .markAsReadIntent(markAsReadIntent(context, otherUserId))
             .messages(messages)
 
-        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it, otherUserIds, chatId)) }
+        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it,loggedUserId, otherUserIds, chatId)) }
         return builder.build()
     }
 
-    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, userIds, chatId)
+    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
 
-    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, userIds, chatId)
+    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
 
     private fun <T> createChatActivityPendingIntent(
         context: Context,
         requestCode: Int,
         activityClazz: Class<T>,
+        loggedUserId: String,
         userIds: List<String>,
         chatId: String?
     ): PendingIntent {
         val applicationContext = context.applicationContext
         val intent = Intent(applicationContext, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra("userIds", userIds.toTypedArray())
-            chatId?.let { putExtra("chatId", it) }
+            putExtra(ChatActivity.USER_IDS_KEY, userIds.toTypedArray())
+            putExtra(ChatActivity.LOGGED_USER_ID_KEY, loggedUserId)
+            chatId?.let { putExtra(ChatActivity.CHAT_ID_KEY, it) }
         }
         return PendingIntent.getActivity(
             applicationContext,

@@ -506,7 +506,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun sheetCollapsed_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.Collapsed, areVisible = true)
@@ -514,7 +514,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun sheetHalfExpanded_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.HalfExpanded, areVisible = true)
@@ -522,7 +522,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun sheetExpanded_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.Expanded, areVisible = true)
@@ -590,35 +590,35 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun callStateConnected_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Connected)
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateDialing_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Dialing)
+        callUiState = CallUiState(callState = CallStateUi.Dialing, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateReconnecting_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Reconnecting)
+        callUiState = CallUiState(callState = CallStateUi.Reconnecting, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateRingingAndIsConnectingFalse_sheetIsHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Ringing)
+        callUiState = CallUiState(callState = CallStateUi.Ringing, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateConnecting_sheetIsHalfExpanded() {
-        callUiState = CallUiState(callState = CallStateUi.Connecting)
+        callUiState = CallUiState(callState = CallStateUi.Connecting, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
     }
@@ -669,7 +669,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun userDoubleClicksThumbnail_onThumbnailStreamDoubleClickInvoked() {
-        callUiState = CallUiState(callState = CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         composeTestRule.onNodeWithTag(ThumbnailTag).performDoubleClick()

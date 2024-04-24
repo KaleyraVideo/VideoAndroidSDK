@@ -28,10 +28,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.color.MaterialColors
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
 import com.kaleyra.video_utils.HostAppInfo
+import kotlinx.coroutines.withTimeoutOrNull
+
 
 /**
  * ChatNotification
@@ -54,6 +58,7 @@ internal class ChatNotification {
      * @property context The context used to construct the notification
      * @property channelId The notification channel id
      * @property channelName The notification channel name showed to the users
+     * @property loggedUserId The logged user id
      * @property username The local user name
      * @property userId The local user id
      * @property avatar The local user avatar
@@ -71,6 +76,7 @@ internal class ChatNotification {
         val channelId: String,
         val channelName: String,
         var username: String = "",
+        var loggedUserId: String = "",
         var userId: String = "",
         var avatar: Uri = Uri.EMPTY,
         var contentTitle: String = "",
@@ -93,10 +99,18 @@ internal class ChatNotification {
         /**
          * Set the user id
          *
-         * @param text The user id
+         * @param userId The user id
          * @return Builder
          */
-        fun userId(text: String) = apply { this.userId = text }
+        fun userId(userId: String) = apply { this.userId = userId }
+
+        /**
+         * Set the logged id
+         *
+         * @param loggedUsedId The logged id
+         * @return Builder
+         */
+        fun loggedUserId(loggedUsedId: String) = apply { this.loggedUserId = loggedUsedId }
 
         /**
          * Set the user avatar
@@ -173,13 +187,17 @@ internal class ChatNotification {
          *
          * @return Notification
          */
-        fun build(): Notification {
+        suspend fun build(): Notification {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 createNotificationChannel(context, channelId, channelName)
+
+            val bitmapAvatar = withTimeoutOrNull(3000) { avatar.toBitmap().getOrNull() }
+            val iconAvatar = bitmapAvatar?.let { IconCompat.createWithBitmap(bitmapAvatar) }
 
             val applicationIcon =
                 context.applicationContext.packageManager.getApplicationIcon(HostAppInfo.name)
             val person = Person.Builder()
+                .also { builder -> iconAvatar?.let { builder.setIcon(iconAvatar) } }
                 .setName(username.takeIf { it.isNotEmpty() } ?: " ")
                 .setKey(userId)
                 .build()
@@ -202,6 +220,7 @@ internal class ChatNotification {
             messages.forEach {
                 val participant = Person.Builder()
                     .setName(it.username.takeIf { it.isNotEmpty() } ?: " ")
+                    .also { builder -> iconAvatar?.let { builder.setIcon(iconAvatar) } }
                     .setKey(it.userId)
                     .build()
                 val message = NotificationCompat.MessagingStyle.Message(
@@ -213,11 +232,12 @@ internal class ChatNotification {
             }
 
             val messageCount = messages.count()
+
             val builder =
                 NotificationCompat.Builder(context.applicationContext, channelId)
                     .setStyle(messagingStyle)
                     .setSmallIcon(R.drawable.ic_kaleyra_chat)
-                    .setLargeIcon(applicationIcon.toBitmap())
+                    .setLargeIcon(bitmapAvatar ?: applicationIcon.toBitmap())
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     // Auto-bundling is enabled for 4 or more notifications on API 24+ (N+)
                     // devices and all Wear devices. If you have more than one notification and

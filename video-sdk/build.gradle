@@ -72,8 +72,6 @@ dependencies {
     androidTestImplementation catalog.androidxComposeUiTooling
     androidTestImplementation catalog.androidxComposeUiTestManifest
 
-    implementation catalog.coilCompose
-
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo
     implementation kaleyraCatalog.kaleyraVideoExtensionAudio

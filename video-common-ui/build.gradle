@@ -61,6 +61,7 @@ dependencies {
 
     /** UI **/
     api catalog.squareupPicasso
+    api catalog.coilCompose
     implementation catalog.androidxConstraintLayout
 
     /** Testing **/
@@ -77,6 +78,8 @@ dependencies {
     androidTestImplementation catalog.androidxTestEspressoIntents
     androidTestImplementation catalog.junitTestExt
 
+    implementation sampleAppCatalog.androidxWorkRuntime
+    implementation sampleAppCatalog.androidxWorkRuntimeKtx
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
     compileOnly kaleyraCatalog.kaleyraVideo

@@ -20,13 +20,16 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.app.PictureInPictureParams
 import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Rational
-import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
@@ -45,6 +48,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScree
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getScreenAspectRatio
 import com.kaleyra.video_sdk.call.screen.CallScreen
+import com.kaleyra.video_sdk.call.utils.Android12CallActivityTasksFixService
 import com.kaleyra.video_sdk.extensions.RationalExtensions.coerceRationalForPip
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -54,7 +58,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * @property disableProximity Boolean true to disable proximity listener to trigger camera and display on/off, false otherwise
  * @property isPipSupported Boolean true if picture-in-picture mode is supported, false otherwise
  */
-internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
+internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, ServiceConnection {
 
     private companion object {
         var pictureInPictureAspectRatio: Rational = Rational(9, 16)
@@ -79,6 +83,8 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() = enterPipModeIfSupported()
     }
+
+    private val isAndroid12 = Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S.inc()
 
     override val disableProximity: Boolean
         get() = !isInForeground || isInPipMode.value || isWhiteboardDisplayed || isFileShareDisplayed
@@ -110,6 +116,15 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
             )
         }
         turnScreenOn()
+
+        // fixes the resuming of a task on android 12
+        // https://issuetracker.google.com/issues/207397151#comment17
+        if (isAndroid12) {
+            Intent(this, Android12CallActivityTasksFixService::class.java).also { intent ->
+                startService(intent)
+                bindService(intent, this, Context.BIND_AUTO_CREATE)
+            }
+        }
     }
 
     override fun onResume() {
@@ -126,15 +141,8 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (isAndroid12) runCatching { unbindService(this) }
         turnScreenOff()
-    }
-
-    override fun disableWindowTouch() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    override fun enableWindowTouch() {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -272,5 +280,9 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity {
             startActivity(intent)
         }
     }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) = Unit
+
+    override fun onServiceDisconnected(name: ComponentName?) = Unit
 
 }

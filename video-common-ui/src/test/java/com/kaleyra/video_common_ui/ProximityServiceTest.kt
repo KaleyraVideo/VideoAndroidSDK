@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.test.core.app.ApplicationProvider
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.TestUtils.getPrivateField
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
@@ -55,11 +56,12 @@ class ProximityServiceTest {
     @Before
     fun setup() {
         service = Robolectric.setupService(ProximityService::class.java)
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
         mockkConstructor(CallProximityDelegate::class)
         mockkConstructor(CallRecordingTextToSpeechNotifier::class)
         mockkConstructor(AwaitingParticipantsTextToSpeechNotifier::class)
         mockkConstructor(CallParticipantMutedTextToSpeechNotifier::class)
-        mockkObject(KaleyraVideo)
         mockkObject(CallExtensions)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
         every { KaleyraVideo.onCallReady(any(), captureCoroutine()) } answers {
@@ -156,8 +158,6 @@ class ProximityServiceTest {
     fun testOnActivityCreated() {
         val callActivity = object : Activity(), ProximityCallActivity {
             override val disableProximity: Boolean = false
-            override fun disableWindowTouch() = Unit
-            override fun enableWindowTouch() =  Unit
         }
         every { callMock.activityClazz } returns callActivity::class.java
         service!!.onStartCommand(null, 0, 0)
@@ -169,8 +169,6 @@ class ProximityServiceTest {
     fun testOnActivityDestroyed() {
         val callActivity = object : Activity(), ProximityCallActivity {
             override val disableProximity: Boolean = false
-            override fun disableWindowTouch() = Unit
-            override fun enableWindowTouch() =  Unit
         }
         every { callMock.activityClazz } returns callActivity::class.java
         service!!.onStartCommand(null, 0, 0)

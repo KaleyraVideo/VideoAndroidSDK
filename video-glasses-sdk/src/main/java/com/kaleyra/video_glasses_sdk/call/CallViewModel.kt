@@ -403,7 +403,9 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
         currentLens.zoom.value?.tryZoom(value)
     }
 
-    fun showChat(context: Context) = chat.value?.let { KaleyraVideo.conversation.show(context, it) }
+    fun showChat(context: Context) = chat.value?.let {
+        KaleyraVideo.conversation.show(context, KaleyraVideo.connectedUser.value!!.userId, it)
+    }
 
     private inline fun Flow<CallParticipants>.forEachParticipant(
         scope: CoroutineScope,

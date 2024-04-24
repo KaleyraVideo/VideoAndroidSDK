@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Inputs
@@ -30,12 +31,16 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
+import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.CallUiStateMapper.toPipAspectRatio
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
@@ -127,6 +132,11 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     init {
         viewModelScope.launch {
+            if (!KaleyraVideo.isConfigured) requestConfiguration()
+            if (KaleyraVideo.conversation.state.value is State.Disconnected) requestConnect()
+        }
+
+        viewModelScope.launch {
             val result = withTimeoutOrNull(NULL_CALL_TIMEOUT) {
                 call.firstOrNull()
             }
@@ -168,6 +178,12 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
             .flatMapLatest { it.combinedTheme }
             .toWatermarkInfo(company.flatMapLatest { it.name })
             .onEach { watermarkInfo -> _uiState.update { it.copy(watermarkInfo = watermarkInfo) } }
+            .launchIn(viewModelScope)
+
+        call
+            .toCallActions(company.flatMapLatest { it.id })
+            .shareInEagerly(viewModelScope)
+            .onEach { _uiState.update { it.copy(areCallActionsReady = true) } }
             .launchIn(viewModelScope)
 
         call
@@ -213,7 +229,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
         val doOthersHaveStreams = callState
             .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
-            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.Connecting }
+            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Connecting }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
 
         doOthersHaveStreams
@@ -288,14 +304,23 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     fun startMicrophone(context: FragmentActivity) {
         val call = call.getValue() ?: return
         if (call.toMyCameraStream()?.audio?.value != null) return
-        viewModelScope.launch { call.inputs.request(context, Inputs.Type.Microphone) }
+        viewModelScope.launch {
+            call.participants.first { it.me != null }
+            call.inputs.request(context, Inputs.Type.Microphone)
+        }
     }
 
     fun startCamera(context: FragmentActivity) {
         val call = call.getValue() ?: return
         if (call.toMyCameraStream()?.video?.value != null) return
-        viewModelScope.launch { call.inputs.request(context, Inputs.Type.Camera.Internal) }
-        viewModelScope.launch { call.inputs.request(context, Inputs.Type.Camera.External) }
+        viewModelScope.launch {
+            call.participants.first { it.me != null }
+            call.inputs.request(context, Inputs.Type.Camera.Internal)
+        }
+        viewModelScope.launch {
+            call.participants.first { it.me != null }
+            call.inputs.request(context, Inputs.Type.Camera.External)
+        }
     }
 
     fun updateStreamsArrangement(isMediumSizeDevice: Boolean) {

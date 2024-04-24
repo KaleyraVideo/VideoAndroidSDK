@@ -101,8 +101,8 @@ class AppViewOverlay(val view: View, val desiredType: ViewOverlayAttacher.Overla
         val applicationContext = context.applicationContext
         val pckName = applicationContext.packageName
         appOpsCallback = callback@{ op, packageName ->
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW != op || packageName != pckName || !initialized) return@callback
             MainScope().launch {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW != op || packageName != pckName || !initialized) return@launch
                 hide()
                 show(context)
             }

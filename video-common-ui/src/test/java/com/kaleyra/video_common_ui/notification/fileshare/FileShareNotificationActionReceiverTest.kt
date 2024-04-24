@@ -26,6 +26,7 @@ import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver.Companion.ACTION_DOWNLOAD
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.onCallReady
+import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import io.mockk.coEvery
@@ -65,6 +66,8 @@ internal class FileShareNotificationActionReceiverTest {
 
     @Before
     fun setUp() {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
         mockkObject(ContextExtensions)
         mockkObject(NotificationManager)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
@@ -88,7 +91,6 @@ internal class FileShareNotificationActionReceiverTest {
             putExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_DOWNLOAD)
             putExtra(EXTRA_DOWNLOAD_ID, downloadId)
         }
-        coEvery { fileShareNotificationActionReceiver.requestConfigure() } returns true
         fileShareNotificationActionReceiver.onReceive(mockk(relaxed = true), intent)
         advanceUntilIdle()
         verify { sharedFolderMock.download(downloadId) }
@@ -97,7 +99,10 @@ internal class FileShareNotificationActionReceiverTest {
 
     @Test
     fun testOnReceiveWithCollaborationNotConfigured() = runTest {
-        coEvery { fileShareNotificationActionReceiver.requestConfigure() } returns false
+        mockkObject(KaleyraVideo)
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        coEvery { requestConfiguration() } returns false
+        every { KaleyraVideo.isConfigured } returns false
         fileShareNotificationActionReceiver.onReceive(contextMock, mockk(relaxed = true))
         advanceUntilIdle()
         verify { contextMock.goToLaunchingActivity() }
