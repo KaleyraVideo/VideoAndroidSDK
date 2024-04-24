@@ -70,6 +70,23 @@ class CallActionTest {
     }
 
     @Test
+    fun buttonTextIsDisplayed_buttonHasNoContentDescription() {
+        val contentDescrText = "contentDescrText"
+        val buttonText = "text"
+        composeTestRule.setContent {
+            CallAction(
+                modifier = Modifier.width(200.dp),
+                icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
+                contentDescription = "contentDescrText",
+                buttonText = buttonText,
+                onClick = {}
+            )
+        }
+        composeTestRule.onNodeWithText(buttonText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(contentDescrText).assertDoesNotExist()
+    }
+
+    @Test
     fun buttonTextHasNotEnoughSpace_buttonTextDoesNotExits() {
         val buttonText = "text"
         composeTestRule.setContent {
