@@ -280,7 +280,7 @@ private fun ButtonLayout(
     ) {
         Icon(
             painter = icon,
-            contentDescription = contentDescription
+            contentDescription = contentDescription.takeIf { text == null || !shouldDisplayButtonText }
         )
         if (text != null && shouldDisplayButtonText) {
             Spacer(Modifier.width(12.dp))
