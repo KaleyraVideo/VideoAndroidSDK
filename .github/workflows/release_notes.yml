@@ -53,6 +53,8 @@ jobs:
         id: get_commit_summary
         with:
           ref: ${{ github.event.inputs.tag || '' }}
+      - name: Print commit summary
+        run: echo ${{ steps.get_commit_summary.outputs.summary }}
       - name: Release notes
         uses: softprops/action-gh-release@v1
         with:
