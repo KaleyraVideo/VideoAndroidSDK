@@ -115,6 +115,8 @@ android {
 
 [Call UI Display Mode](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Call-UI-Display-Mode)
 
+[Android Connection Service](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Android-Connection-Service)
+
 [Proguard](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Proguard)
 
 ### Extensions
