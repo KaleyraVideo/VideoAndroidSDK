@@ -20,13 +20,13 @@ internal fun SheetDragContent(
     itemsPerRow: Int,
     modifier: Modifier = Modifier
 ) {
+    val shouldExtendLastButton = dragActions.count() / itemsPerRow < 1
     FlowRow(
         modifier = modifier,
         maxItemsInEachRow = itemsPerRow,
         horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding),
         verticalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding)
     ) {
-        val shouldExtendLastButton = dragActions.count() / itemsPerRow < 1
         dragActions.value.forEachIndexed { index, action ->
             val itemModifier = if (shouldExtendLastButton && index == dragActions.count() - 1) Modifier.weight(1f) else Modifier
             action(itemModifier, true)
