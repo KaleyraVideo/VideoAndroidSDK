@@ -1,1 +1,1 @@
-VideoAndroidSDK/4.0.0-rc07
+VideoAndroidSDK/4.0.0-rc08
