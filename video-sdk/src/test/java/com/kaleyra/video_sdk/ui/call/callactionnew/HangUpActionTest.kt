@@ -1,11 +1,17 @@
 package com.kaleyra.video_sdk.ui.call.callactionnew
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContentItemSpacing
+import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.HangUpAction
 import org.junit.Assert
 import org.junit.Rule
@@ -18,6 +24,20 @@ class HangUpActionTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    @Test
+    fun testExtendedButton() {
+        val testTag = "testTag"
+        composeTestRule.setContent {
+            HangUpAction(
+                extended = true,
+                onClick = { },
+                modifier = Modifier.testTag(testTag)
+            )
+        }
+        val width =  CallActionDefaults.minButtonSize * 2 + SheetContentItemSpacing
+        composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
+    }
 
     @Test
     fun testOnClickInvoked() {
