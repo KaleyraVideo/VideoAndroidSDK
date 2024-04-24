@@ -49,7 +49,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       - name: Get commit summary
-        uses: kristiyan-petrov/commit-summary@v1
+        uses: kristiyan-petrov/commit-summary@v2
         id: get_commit_summary
         with:
           ref: ${{ github.event.inputs.tag || '' }}
