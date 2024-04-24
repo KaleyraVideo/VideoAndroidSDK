@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <string name="kaleyra_call_sheet_join">Join</string>
+    <string name="kaleyra_call_sheet_answer">Join</string>
     <string name="kaleyra_call_sheet_chat">Chat</string>
     <string name="kaleyra_call_sheet_whiteboard">Whiteboard</string>
     <string name="kaleyra_call_sheet_audio">Audio</string>

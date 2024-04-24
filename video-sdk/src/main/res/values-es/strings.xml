@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <string name="kaleyra_call_sheet_join">Unirse</string>
+    <string name="kaleyra_call_sheet_answer">Unirse</string>
     <string name="kaleyra_call_sheet_chat">Chat</string>
     <string name="kaleyra_call_sheet_whiteboard">Pizarra</string>
     <string name="kaleyra_call_sheet_audio">Audio</string>

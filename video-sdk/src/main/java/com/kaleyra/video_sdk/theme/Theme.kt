@@ -232,7 +232,9 @@ internal data class KaleyraColors(
     val warning: Color = Color(0xFFFFD02B),
     val onWarning: Color = Color.White,
     val hangUp: Color = Color(0xFFE11900),
-    val onHangUp: Color = Color.White
+    val onHangUp: Color = Color.White,
+    val answer: Color = Color(0xFF1A7924),
+    val onAnswer: Color = Color.White
 )
 
 internal val LocalKaleyraColors = compositionLocalOf { KaleyraColors() }
@@ -241,24 +243,32 @@ internal fun lightKaleyraColors(
     warning: Color = Color(0xFFFFD02B),
     onWarning: Color = Color.White,
     hangUp: Color = Color(0xFFE11900),
-    onHangUp: Color = Color.White
+    onHangUp: Color = Color.White,
+    answer: Color = Color(0xFF1A7924),
+    onAnswer: Color = Color.White
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
     hangUp = hangUp,
-    onHangUp = onHangUp
+    onHangUp = onHangUp,
+    answer = answer,
+    onAnswer = onAnswer
 )
 
 internal fun darkKaleyraColors(
     warning: Color = Color(0xFFFFD02B),
     onWarning: Color = Color.White,
     hangUp: Color = Color(0xFFAE1300),
-    onHangUp: Color = Color.White
+    onHangUp: Color = Color.White,
+    answer: Color = Color(0xFF1A7924),
+    onAnswer: Color = Color.White
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
     hangUp = hangUp,
-    onHangUp = onHangUp
+    onHangUp = onHangUp,
+    answer = answer,
+    onAnswer = onAnswer
 )
 
 // TODO decide if this object will be used for a custom theme, or only some colors, so it's overkill
