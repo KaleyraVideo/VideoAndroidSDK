@@ -49,10 +49,13 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       - name: Get commit summary
-        uses: kristiyan-petrov/commit-summary@v3
         id: get_commit_summary
-        with:
-          ref: ${{ github.event.inputs.tag || '' }}
+        run: |
+            new_tag=${{ github.event.inputs.tag || '' }}
+            previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
+            commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
+            commit_summary="${commit_summary//$'\n'/'%0A'}"
+            echo "commit_summary=${commit_summary}" >> $GITHUB_OUTPUT
       - name: Print commit summary
         run: echo ${{ steps.get_commit_summary.outputs.summary }}
       - name: Release notes
