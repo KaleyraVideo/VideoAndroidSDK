@@ -49,6 +49,7 @@ data class CallUiState(
     val recording: RecordingUi? = null,
     val isAudioOnly: Boolean = false,
     val isGroupCall: Boolean = false,
+    val areCallActionsReady: Boolean = false,
     val amIWaitingOthers: Boolean = false,
     val amILeftAlone: Boolean = false,
     val showFeedback: Boolean = false,

@@ -19,13 +19,14 @@ package com.kaleyra.video_sdk.mapper.call
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.isConnected
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -68,6 +69,8 @@ class CallStateMapperTest {
             every { me } returns participantMeMock
             every { others } returns listOf(participantMock)
         }
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk(relaxed = true))
     }
 
     @After
@@ -83,19 +86,34 @@ class CallStateMapperTest {
     }
 
     @Test
-    fun stateConnectingAndIAmCallCreator_toCallStateUi_callStateDialing() = runTest {
+    fun stateConnectingAndCallCreatorIsMe_toCallStateUi_callStateDialing() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
         every { callParticipantsMock.creator() } returns participantMeMock
+        every { callParticipantsMock.others } returns listOf(mockk(relaxed = true) {
+            every { state } returns MutableStateFlow(CallParticipant.State.NotInCall)
+        })
         val result = callFlow.toCallStateUi()
         Assert.assertEquals(CallStateUi.Dialing, result.first())
     }
 
     @Test
-    fun stateConnectingAndCallCreatorIsNull_toCallStateUi_callStateDialing() = runTest {
+    fun connectedUserNull_toCallStateUi_callStateConnecting() = runTest {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
         every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
         every { callParticipantsMock.creator() } returns null
         val result = callFlow.toCallStateUi()
-        Assert.assertEquals(CallStateUi.Dialing, result.first())
+        Assert.assertEquals(CallStateUi.Connecting, result.first())
+    }
+
+    @Test
+    fun stateConnecting_toCallStateUi_callStateConnecting() = runTest {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callParticipantsMock.creator() } returns callParticipantsMock.me
+        val result = callFlow.toCallStateUi()
+        Assert.assertEquals(CallStateUi.Connecting, result.first())
     }
 
     @Test
@@ -115,6 +133,17 @@ class CallStateMapperTest {
         every { callParticipantsMock.creator() } returns mockk()
         val result = callFlow.toCallStateUi()
         Assert.assertEquals(CallStateUi.Ringing, result.first())
+    }
+
+    @Test
+    fun stateConnectingAndIAmCallCreatorAndOtherIsRinging_toCallStateUi_callStateRingingRemotely() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callParticipantsMock.creator() } returns callParticipantsMock.me
+        every { callParticipantsMock.others } returns listOf(mockk(relaxed = true) {
+            every { state } returns MutableStateFlow(CallParticipant.State.NotInCall.Ringing)
+        })
+        val result = callFlow.toCallStateUi()
+        Assert.assertEquals(CallStateUi.RingingRemotely, result.first())
     }
 
     @Test
@@ -216,6 +245,9 @@ class CallStateMapperTest {
     fun stateDisconnected_toCallStateUi_callStateDisconnected() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected)
         every { callParticipantsMock.creator() } returns participantMeMock
+        every { callParticipantsMock.others } returns listOf(mockk(relaxed = true) {
+            every { state } returns MutableStateFlow(CallParticipant.State.NotInCall)
+        })
         val result = callFlow.toCallStateUi()
         Assert.assertEquals(CallStateUi.Disconnected, result.first())
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Kaleyra @ https://www.kaleyra.com
+q * Copyright 2023 Kaleyra @ https://www.kaleyra.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,17 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 
 internal object ChatActionsMapper {
     internal fun Set<ChatUI.Action>.mapToChatActions(call: (Call.PreferredType) -> Unit): Set<ChatAction> {
-        return mutableSetOf<ChatAction>().apply {
+        val actionsSet = mutableSetOf<ChatAction>()
             val actions = this@mapToChatActions.filterIsInstance<ChatUI.Action.CreateCall>()
             actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
-                add(ChatAction.AudioCall { call(action.preferredType) })
+                actionsSet.add(ChatAction.AudioCall { call(action.preferredType) })
             }
             actions.firstOrNull { !it.preferredType.isVideoEnabled() }?.also { action ->
-                add(ChatAction.AudioUpgradableCall { call(action.preferredType) })
+                actionsSet.add(ChatAction.AudioUpgradableCall { call(action.preferredType) })
             }
             actions.firstOrNull { it.preferredType.isVideoEnabled() }?.also { action ->
-                add(ChatAction.VideoCall { call(action.preferredType) })
+                actionsSet.add(ChatAction.VideoCall { call(action.preferredType) })
             }
-        }
+        return actionsSet
     }
 }

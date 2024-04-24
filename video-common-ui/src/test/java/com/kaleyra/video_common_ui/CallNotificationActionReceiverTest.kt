@@ -75,7 +75,8 @@ class CallNotificationActionReceiverTest {
         coEvery { KaleyraCallConnectionService.answer() } returns Unit
         coEvery { KaleyraCallConnectionService.reject() } returns Unit
         coEvery { KaleyraCallConnectionService.hangUp() } returns Unit
-        coEvery { receiver.requestConfigure() } returns true
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
         every { receiver.goAsync() } returns mockk(relaxed = true)
     }
 
@@ -86,7 +87,8 @@ class CallNotificationActionReceiverTest {
 
     @Test
     fun testRequestConfigurationFails() = runTest {
-        coEvery { receiver.requestConfigure() } returns false
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns false
 
         receiver.onReceive(contextMock, Intent())
 

@@ -125,6 +125,7 @@ abstract class ComposeViewModelsMockTest {
             every { callActionsViewModelFactory.create<CallActionsViewModel>(any(), any()) } returns callActionsViewModel
             every { callActionsViewModel.uiState } returns MutableStateFlow(CallActionsUiState(actionList = mockCallActions))
 
+            every { WhiteboardViewModel.provideFactory(any(), any()) } returns whiteboardViewModelFactory
             every { whiteboardViewModelFactory.create<WhiteboardViewModel>(any(), any()) } returns whiteboardViewModel
             every { whiteboardViewModel.uiState } returns MutableStateFlow(WhiteboardUiState(isLoading = false, isOffline = true))
 

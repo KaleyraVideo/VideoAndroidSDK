@@ -23,25 +23,25 @@ import androidx.work.WorkManager
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
 import com.kaleyra.app_utilities.notification.HuaweiCompat.registerDevice
-import com.kaleyra.demo_video_sdk.notification.MissedNotificationPayloadWorker
 import com.kaleyra.demo_video_sdk.notification.MissedNotificationPayloadWorker.Companion.isMissingCallMessage
+import com.kaleyra.video_utils.ContextRetainer
 
 class HuaweiNotificationService : HmsMessageService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+
         try {
             val payload = remoteMessage.data
-            Log.d(TAG, "payload received: $payload")
+            Log.d(TAG, "Hms push notification payload received in KaleyraVideoSDK Demo App: $payload")
+            val isMissingPayloadNotification = isMissingCallMessage(payload)
+            if (!isMissingPayloadNotification) return
             val data = Builder()
                 .putString("payload", payload)
                 .build()
-            val mRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(
-                if (isMissingCallMessage(payload)) MissedNotificationPayloadWorker::class.java
-                else PushNotificationPayloadWorker::class.java
-            )
+            val mRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(MissedNotificationPayloadWorker::class.java)
                 .setInputData(data)
                 .build()
-            WorkManager.getInstance(applicationContext).enqueue(mRequest)
+            WorkManager.getInstance(ContextRetainer.context).enqueue(mRequest)
         } catch (e: Throwable) {
             e.printStackTrace()
         }

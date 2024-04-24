@@ -33,13 +33,13 @@ import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 
 @Composable
 internal fun ScreenShareComponent(
     viewModel: ScreenShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ScreenShareViewModel.provideFactory(::requestConfiguration)
+        factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onItemClick: (ScreenShareTargetUi) -> Unit,
     onCloseClick: () -> Unit,

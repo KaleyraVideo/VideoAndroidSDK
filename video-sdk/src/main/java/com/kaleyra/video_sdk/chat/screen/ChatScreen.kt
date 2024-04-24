@@ -125,11 +125,11 @@ internal fun ChatScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
 
-    if (!uiState.isUserConnected || uiState.connectionState is ConnectionState.Error) {
-        LaunchedEffect(Unit) {
-            activity.finishAndRemoveTask()
-        }
-    }
+//    if (!uiState.isUserConnected || uiState.connectionState is ConnectionState.Error) {
+//        LaunchedEffect(Unit) {
+//            activity.finishAndRemoveTask()
+//        }
+//    }
 
     CollaborationM3Theme(theme = theme) {
         ChatScreen(

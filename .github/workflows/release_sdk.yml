@@ -18,6 +18,8 @@ on:
 jobs:
   update_sdk_version:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.output_tag.outputs.TAG }}
     steps:
       - name: Generate a token
         id: generate_token
@@ -74,4 +76,18 @@ jobs:
     with:
       release_version: ${{ github.event.inputs.release_version }}
       specific_release_version: ${{ github.event.inputs.specific_release_version }}
+    secrets: inherit
+
+  release_apps:
+    needs: [update_sdk_version, update_bom_version]
+    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
+    with:
+      tag: "v${{needs.update_sdk_version.outputs.tag}}"
+    secrets: inherit
+
+  release_notes:
+    needs: [update_sdk_version, update_bom_version]
+    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
+    with:
+      tag: "v${{needs.update_sdk_version.outputs.tag}}"
     secrets: inherit

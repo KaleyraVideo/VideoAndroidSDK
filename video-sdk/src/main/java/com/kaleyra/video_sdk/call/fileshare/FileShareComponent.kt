@@ -55,7 +55,7 @@ import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
@@ -70,7 +70,7 @@ const val ProgressIndicatorTag = "ProgressIndicatorTag"
 @Composable
 internal fun FileShareComponent(
     viewModel: FileShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = FileShareViewModel.provideFactory(configure = ::requestConfiguration, filePickProvider = FilePickBroadcastReceiver)
+        factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     modifier: Modifier = Modifier,
     isTesting: Boolean = false

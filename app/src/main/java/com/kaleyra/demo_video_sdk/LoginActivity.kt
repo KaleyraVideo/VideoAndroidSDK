@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +39,8 @@ import com.kaleyra.demo_video_sdk.R.string
 import com.kaleyra.demo_video_sdk.databinding.ActivityLoginBinding
 import com.kaleyra.demo_video_sdk.ui.activities.CollapsingToolbarActivity
 import com.kaleyra.demo_video_sdk.ui.adapter_items.UserItem
+import com.kaleyra.video.State
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -46,6 +49,7 @@ import com.mikepenz.fastadapter.extensions.ExtensionsFactories.register
 import com.mikepenz.fastadapter.listeners.ItemFilterListener
 import com.mikepenz.fastadapter.select.SelectExtension
 import com.mikepenz.fastadapter.select.SelectExtensionFactory
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -87,11 +91,15 @@ class LoginActivity : CollapsingToolbarActivity(), OnQueryTextListener {
         val selectExtension = fastAdapter.getOrCreateExtension<SelectExtension<UserItem>>(SelectExtension::class.java)!!
         selectExtension.isSelectable = true
         fastAdapter.onPreClickListener = { view: View?, userItemIAdapter: IAdapter<UserItem>?, userItem: UserItem, integer: Int? ->
-            userAlias = userItem.userAlias
-            if (!isUserLogged(this@LoginActivity)) login(this@LoginActivity, userAlias!!)
-            hideKeyboard(true)
-            MainActivity.show(this@LoginActivity)
-            finish()
+            if (isInCall()) {
+                Toast.makeText(this@LoginActivity, R.string.you_cannot_login_while_already_in_call, Toast.LENGTH_LONG).show()
+            } else {
+                userAlias = userItem.userAlias
+                if (!isUserLogged(this@LoginActivity)) login(this@LoginActivity, userAlias!!)
+                hideKeyboard(true)
+                MainActivity.show(this@LoginActivity)
+                finish()
+            }
             false
         }
         itemAdapter.itemFilter.filterPredicate = { userSelectionItem: UserItem, constraint: CharSequence? -> userSelectionItem.userAlias.lowercase(Locale.getDefault()).contains(constraint.toString().lowercase(Locale.getDefault())) }
@@ -170,3 +178,7 @@ class LoginActivity : CollapsingToolbarActivity(), OnQueryTextListener {
         }
     }
 }
+
+fun isInCall() =
+    if (!KaleyraVideo.isConfigured) false
+    else with(KaleyraVideo.conference.call.replayCache.firstOrNull()?.state?.value) { this is Call.State.Connecting || this is Call.State.Connected }

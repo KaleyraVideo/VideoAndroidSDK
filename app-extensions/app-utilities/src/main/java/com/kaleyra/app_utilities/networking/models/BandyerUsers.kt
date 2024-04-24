@@ -28,4 +28,7 @@ import kotlinx.serialization.Serializable
  * @author kristiyan
  */
 @Serializable
-data class BandyerUsers(val user_id_list: List<String> = listOf())
+data class KaleyraVideoUsers(val users: List<KaleyraVideoUser> = listOf())
+
+@Serializable
+data class KaleyraVideoUser(val id: String)

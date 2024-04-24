@@ -49,7 +49,7 @@ class CallScreenRecreationTest : ComposeViewModelsMockTest() {
         val restorationTester = StateRestorationTester(composeTestRule)
         restorationTester.setContent {
             CallScreen(
-                callUiState = CallUiState(callState = CallStateUi.Connected),
+                callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true),
                 callScreenState = rememberCallScreenState(
                     sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Expanded),
                     sheetContentState = rememberBottomSheetContentState(

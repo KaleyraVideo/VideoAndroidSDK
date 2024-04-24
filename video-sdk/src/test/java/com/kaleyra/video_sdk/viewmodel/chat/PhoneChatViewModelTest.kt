@@ -24,6 +24,7 @@ import com.kaleyra.video.conversation.ChatParticipant
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MessagesUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
@@ -58,7 +59,13 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.spyk
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -103,6 +110,11 @@ class PhoneChatViewModelTest {
 
     @Before
     fun setUp() {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.isConfigured } returns true
+        every { KaleyraVideo.state } returns MutableStateFlow(State.Connected)
+        every { KaleyraVideo.conversation } returns conversationMock
+        every { KaleyraVideo.conference } returns conferenceMock
         mockkObject(ContactDetailsManager)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
@@ -152,7 +164,7 @@ class PhoneChatViewModelTest {
                 connectedUserFlow
             )
         })
-        TestScope().launch { viewModel.setChat("userId") }
+        TestScope().launch { viewModel.setChat("userId", "loggedUserId") }
     }
 
     @Test

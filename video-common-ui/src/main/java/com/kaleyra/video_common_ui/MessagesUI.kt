@@ -21,6 +21,7 @@ import com.kaleyra.video.conversation.ChatParticipants
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video.conversation.Messages
 import com.kaleyra.video.conversation.OtherMessage
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.ChatNotificationMessage
@@ -28,6 +29,7 @@ import com.kaleyra.video_common_ui.notification.CustomChatNotificationManager
 import com.kaleyra.video_common_ui.notification.DisplayedChatActivity
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.AppLifecycle
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 
 /**
@@ -70,21 +72,26 @@ class MessagesUI(
         chatParticipants: ChatParticipants,
         chatCustomNotificationActivity: Class<*>? = null
     ) {
+        ContactDetailsManager.refreshContactDetails(*chatParticipants.list.map { it.userId }.toTypedArray())
+
         val messages = other
             .filter { it.state.value is Message.State.Received }
             .map { it.toChatNotificationMessage(chatParticipants) }
             .sortedBy { it.timestamp }
         val me = chatParticipants.me ?: return
+
         val notification = NotificationManager.buildChatNotification(
+            KaleyraVideo.connectedUser.value!!.userId,
             me.userId,
-            me.combinedDisplayName.firstOrNull() ?: "",
-            me.combinedDisplayImage.firstOrNull() ?: Uri.EMPTY,
+            me.combinedDisplayName.filterNotNull().firstOrNull() ?: " ",
+            me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
             chatId.takeIf { chatParticipants.others.size > 1 },
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity
         )
+        if (DisplayedChatActivity.chatId.value == chatId) return
         NotificationManager.notify(chatId.hashCode(), notification)
     }
 
@@ -92,8 +99,8 @@ class MessagesUI(
         val otherParticipant = chatParticipants.others.find { it.userId == creator.userId }
         return  ChatNotificationMessage(
             creator.userId,
-            otherParticipant?.combinedDisplayName?.firstOrNull() ?: "",
-            otherParticipant?.combinedDisplayImage?.firstOrNull() ?: Uri.EMPTY,
+            otherParticipant?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: "",
+            otherParticipant?.combinedDisplayImage?.filterNotNull()?.firstOrNull() ?: Uri.EMPTY,
             (content as? Message.Content.Text)?.message ?: "",
             creationDate.time
         )

@@ -11,16 +11,19 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.onCallReady
 import com.kaleyra.video_common_ui.proximity.CallProximityDelegate
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
+import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.CallParticipantMutedTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.CallRecordingTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.TextToSpeechNotifier
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_utils.ContextRetainer
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -74,20 +77,27 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        KaleyraVideo.onCallReady(lifecycleScope) { call ->
-            application.registerActivityLifecycleCallbacks(this)
-            callActivityClazz = call.activityClazz
-            combine(call.state, call.participants) { st, pa -> CallExtensions.isIncoming(st, pa) }
-                .onEach {
-                    // if the call is incoming, don't immediately bind the proximity
-                    if (it) return@onEach
-                    setUpProximityDelegate(call)
-                    setUpRecordingTextToSpeech(call, proximityDelegate!!)
-                    setUpMutedTextToSpeech(call, proximityDelegate!!)
-                    setUpAwaitingParticipantsTextToSpeech(call, proximityDelegate!!)
-                }
-                .takeWhile { it }
-                .launchIn(lifecycleScope)
+        MainScope().launch {
+            val hasConfigured = requestConfiguration()
+            if (!hasConfigured) {
+                stopSelf()
+                return@launch
+            }
+            KaleyraVideo.onCallReady(lifecycleScope) { call ->
+                application.registerActivityLifecycleCallbacks(this@ProximityService)
+                callActivityClazz = call.activityClazz
+                combine(call.state, call.participants) { st, pa -> CallExtensions.isIncoming(st, pa) }
+                    .onEach {
+                        // if the call is incoming, don't immediately bind the proximity
+                        if (it) return@onEach
+                        setUpProximityDelegate(call)
+                        setUpRecordingTextToSpeech(call, proximityDelegate!!)
+                        setUpMutedTextToSpeech(call, proximityDelegate!!)
+                        setUpAwaitingParticipantsTextToSpeech(call, proximityDelegate!!)
+                    }
+                    .takeWhile { it }
+                    .launchIn(lifecycleScope)
+            }
         }
         return START_STICKY
     }
@@ -108,10 +118,6 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
             lifecycleContext = this,
             call = call,
             disableProximity = { proximityCallActivity?.disableProximity ?: false },
-            disableWindowTouch = { disableWindowTouch ->
-                if (disableWindowTouch) proximityCallActivity?.disableWindowTouch()
-                else proximityCallActivity?.enableWindowTouch()
-            }
         ).apply { bind() }
     }
 

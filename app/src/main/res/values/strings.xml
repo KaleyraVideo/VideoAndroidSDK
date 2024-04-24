@@ -43,7 +43,7 @@
     <string name="join_call_url" translatable="false">Join call in Bandyer</string>
     <string name="biometric_notification_title" translatable="false">User authentication request.</string>
     <string name="biometric_notification_description" translatable="false">Please click on notification to verify your identity.</string>
-
+    <string name="you_cannot_login_while_already_in_call" translatable="false">You cannot login while already in call.</string>
 
     <string name="search" translatable="false">Search&#8230;</string>
     <string name="button_allow" translatable="false">Allow</string>

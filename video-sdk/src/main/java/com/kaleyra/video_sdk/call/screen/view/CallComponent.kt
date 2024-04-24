@@ -59,7 +59,7 @@ import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStream
 import com.kaleyra.video_sdk.call.stream.view.featured.HeaderAutoHideMs
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestConfiguration
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
@@ -135,7 +135,7 @@ internal class CallComponentState(
 @Composable
 internal fun CallComponent(
     viewModel: CallViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = CallViewModel.provideFactory(::requestConfiguration)
+        factory = CallViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     maxWidth: Dp,
     onBackPressed: () -> Unit,

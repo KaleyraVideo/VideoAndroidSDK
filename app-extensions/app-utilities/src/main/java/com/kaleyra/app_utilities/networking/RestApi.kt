@@ -23,7 +23,7 @@ import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_configuration.model.PushProvider
 import com.kaleyra.app_utilities.MultiDexApplication.Companion.okHttpClient
 import com.kaleyra.app_utilities.networking.models.AccessToken
-import com.kaleyra.app_utilities.networking.models.BandyerUsers
+import com.kaleyra.app_utilities.networking.models.KaleyraVideoUsers
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager.getConfiguration
 import com.kaleyra.app_utilities.storage.LoginManager
@@ -143,7 +143,7 @@ class RestApi(val applicationContext: Context) {
     private val endpoint: String
         get() {
             val envName = restConfiguration?.environment.takeIf { it != "production" }?.prependIndent(".") ?: ""
-            return "https://cs$envName.${restConfiguration?.region}.bandyer.com"
+            return "https://api$envName.${restConfiguration?.region}.bandyer.com"
         }
     private var apiKey = restConfiguration?.apiKey ?: ""
     private var appId = restConfiguration?.appId ?: ""
@@ -151,7 +151,7 @@ class RestApi(val applicationContext: Context) {
         get() = LoginManager.getLoggedUser(applicationContext)
 
     var configurationHeaders: HeadersBuilder.() -> Unit = {
-        append("apiKey", apiKey)
+        append("apikey", apiKey)
     }
 
     private var currentAccessToken: String? = null
@@ -159,11 +159,17 @@ class RestApi(val applicationContext: Context) {
     suspend fun listUsers(): List<String> {
         return try {
             updateConfiguration()
-            val response: HttpResponse = client.get("$endpoint/rest/user/list") {
-                headers(configurationHeaders)
-                contentType(Application.Json)
-            }
-            withContext(Dispatchers.Main) { response.body<BandyerUsers>().user_id_list }
+            val users: MutableList<String> = mutableListOf()
+
+            var offset = 0
+            while (client.get("$endpoint/v2/users?offset=$offset&limit=100") {
+                    headers(configurationHeaders)
+                    contentType(Application.Json)
+                }.body<KaleyraVideoUsers>().users.apply {
+                    offset += count()
+                    users.addAll(this.map { it.id })
+                }.isNotEmpty()) { }
+            withContext(Dispatchers.Main) { users.sorted() }
         } catch (t: Throwable) {
             Log.e("GetListUsers", t.message, t)
             withContext(Dispatchers.Main) { emptyList() }
@@ -227,7 +233,7 @@ class RestApi(val applicationContext: Context) {
         scope.launch {
             updateConfiguration()
             kotlin.runCatching {
-                val response: HttpResponse = client.post("$endpoint/rest/sdk/credentials") {
+                val response: HttpResponse = client.post("$endpoint/v2/sdk/credentials") {
                     headers(configurationHeaders)
                     contentType(Application.Json)
                     setBody(AccessToken.Request(userId))

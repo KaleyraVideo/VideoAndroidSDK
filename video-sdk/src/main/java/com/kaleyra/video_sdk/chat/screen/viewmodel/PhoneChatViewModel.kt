@@ -46,7 +46,17 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private data class PhoneChatViewModelState(
@@ -145,7 +155,10 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         }
 
         actions
-            .map { it.mapToChatActions(call = { pt -> call(pt) }) }
+            // mapNotNull instead of map because sometimes is received a null value causing crash
+            .mapNotNull {
+                it.mapToChatActions(call = { pt -> call(pt) })
+            }
             .onEach { actions -> viewModelState.update { it.copy(actions = ImmutableSet(actions)) } }
             .launchIn(viewModelScope)
 
@@ -209,7 +222,7 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     fun onAllMessagesScrolled() {
         val messages = messages.getValue()?.other ?: return
-        messages.first().markAsRead()
+        messages.firstOrNull()?.markAsRead()
     }
 
     fun showCall() {
