@@ -1,6 +1,12 @@
 name: Create release notes
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Define the tag
+        type: string
+        required: true
   workflow_call:
     inputs:
       tag:
