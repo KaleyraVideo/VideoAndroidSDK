@@ -2,11 +2,17 @@ name: Release app on stores
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Define the tag
+        type: string
+        required: true
   workflow_call:
-    tag:
-      description: Define the tag
-      type: string
-      required: true
+    inputs:
+      tag:
+        description: Define the tag
+        type: string
+        required: true
 jobs:
   build_aab:
     runs-on: ubuntu-latest
