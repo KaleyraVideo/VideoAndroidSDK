@@ -12,8 +12,11 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-val AnswerButtonWidth = CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
-val AnswerButtonExtendedWidth = CallActionDefaults.minButtonSize * 3 + SheetActionsSpacing * 2
+val AnswerButtonMultiplier = 2
+val AnswerButtonExtendedMultiplier = 2
+
+val AnswerButtonWidth = CallActionDefaults.minButtonSize * AnswerButtonMultiplier + SheetActionsSpacing
+val AnswerButtonExtendedWidth = CallActionDefaults.minButtonSize * AnswerButtonExtendedMultiplier + SheetActionsSpacing * (AnswerButtonExtendedMultiplier - 1)
 
 @Composable
 internal fun AnswerAction(
