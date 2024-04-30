@@ -242,7 +242,7 @@ private fun CallActionLayout(
                         },
                     text = label,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
             }
         }
