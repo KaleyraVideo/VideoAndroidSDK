@@ -37,7 +37,7 @@ import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.typography
 
-internal val CallInfoBarHeight = 36.dp
+internal val CallInfoBarHeight = 40.dp
 internal val RecordingDotTag = "RecordingDotTag"
 
 // TODO rename this to CallAppBar at the end of the new ui development
