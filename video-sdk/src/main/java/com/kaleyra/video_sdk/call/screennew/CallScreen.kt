@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.CallInfoBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
@@ -27,7 +25,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallScreenScaffold
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.SheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetActions
 import com.kaleyra.video_sdk.call.callactionnew.AudioAction
 import com.kaleyra.video_sdk.call.callactionnew.CameraAction
 import com.kaleyra.video_sdk.call.callactionnew.ChatAction
@@ -219,7 +217,6 @@ fun CallScreen(
         onWhiteboardClick = onWhiteboardClick,
         onVirtualBackgroundClick = onVirtualBackgroundClick
     )
-    var showMoreItem by remember { mutableStateOf(true) }
     var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember {
         mutableStateOf(ImmutableList())
     }
@@ -228,9 +225,8 @@ fun CallScreen(
             sheetDragActions.value.isNotEmpty()
         }
     }
-    val scope = rememberCoroutineScope()
+    var displayAnswerButton by remember { mutableStateOf(true) }
     val sheetState = rememberCallSheetState()
-
     CallScreenScaffold(
         sheetState = sheetState,
         paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
@@ -256,27 +252,21 @@ fun CallScreen(
             }
         },
         sheetContent = {
-            SheetContent(
+            SheetActions(
                 modifier = if (hasSheetDragContent) {
                     Modifier.padding(start = 14.dp, top = 2.dp, end = 14.dp, bottom = 14.dp)
                 } else {
                     Modifier.padding(14.dp)
                 },
+                sheetState = sheetState,
                 actions = actionsComposables,
-                // false -> dialing or drag actions are 0
-                showMoreItem = showMoreItem,
-                onMoreItemClick = {
-                    scope.launch {
-                        if (sheetState.currentValue == CallSheetValue.Expanded) {
-                            sheetState.collapse()
-                        } else {
-                            sheetState.expand()
-                        }
-                    }
+                showAnswerAction = displayAnswerButton,
+                maxActions = Int.MAX_VALUE,
+                onAnswerActionClick = {
+                    displayAnswerButton = false
                 },
-                onItemsPlaced = { itemsCount ->
-                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsCount))
-                    showMoreItem = sheetDragActions.value.isNotEmpty()
+                onActionsPlaced = { itemsPlaced ->
+                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
                 }
             )
         },
