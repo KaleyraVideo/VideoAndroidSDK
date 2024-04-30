@@ -4,17 +4,17 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContentItemSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * 2 + SheetContentItemSpacing
+val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
 
+// TODO add enabled
 @Composable
 internal fun HangUpAction(
     onClick: () -> Unit,

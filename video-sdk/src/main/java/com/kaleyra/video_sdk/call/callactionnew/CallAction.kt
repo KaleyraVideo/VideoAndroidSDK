@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import kotlin.math.roundToInt
 
@@ -61,7 +62,7 @@ object CallActionDefaults {
 
     val badgeOffset = 6.dp
 
-    val labelWidth = minButtonSize + 24.dp
+    val labelWidth = minButtonSize + SheetActionsSpacing
 
     val containerColor: Color
         @Composable

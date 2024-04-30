@@ -6,15 +6,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsLayout
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.call.bottomsheetnew.VerticalSheetActionsLayout
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.row.ReversibleRow
 
-internal val SheetContentItemSpacing = 24.dp
-
+// TODO add participant item if ringing
 @Composable
 internal fun SheetContent(
     actions: ImmutableList<@Composable (Modifier, Boolean) -> Unit>,
@@ -47,12 +46,12 @@ internal fun VerticalSheetContent(
     Column(modifier) {
         if (showMoreItem) {
             MoreAction(onClick = onMoreItemClick)
-            Spacer(Modifier.height(SheetContentItemSpacing))
+            Spacer(Modifier.height(SheetActionsSpacing))
         }
         VerticalSheetActionsLayout(
             onItemsPlaced = onItemsPlaced,
-            verticalItemSpacing = SheetContentItemSpacing,
-            content = { actions.value.forEach { action -> action(Modifier, false) } }
+            verticalItemSpacing = SheetActionsSpacing,
+            content = { actions.value.forEach { action -> action() } }
         )
     }
 }

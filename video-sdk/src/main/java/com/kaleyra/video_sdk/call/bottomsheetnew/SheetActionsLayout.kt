@@ -9,10 +9,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
+internal val SheetActionsSpacing = 20.dp
+
+// TODO add max number of children
 @Composable
 internal fun SheetActionsLayout(
     modifier: Modifier = Modifier,
-    horizontalItemSpacing: Dp = 24.dp,
+    horizontalItemSpacing: Dp = SheetActionsSpacing,
     onItemsPlaced: ((itemsCount: Int) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {

@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContentItemSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
-internal val SheetDragHorizontalPadding = SheetContentItemSpacing
+internal val SheetDragHorizontalPadding = SheetActionsSpacing
 internal val SheetDragVerticalPadding = 30.dp
 
 @OptIn(ExperimentalLayoutApi::class)
