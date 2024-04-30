@@ -181,15 +181,13 @@ internal fun CallScreenScaffold(
                                         }
                                         Column(
                                             modifier = Modifier.onSizeChanged {
+                                                if (it.height == 0) return@onSizeChanged
                                                 val newAnchors = DraggableAnchors {
                                                     CallSheetValue.Expanded at 0f
                                                     CallSheetValue.Collapsed at it.height.toFloat()
                                                 }
-                                                sheetDragContentHeight =
-                                                    with(density) { it.height.toDp() }
-                                                sheetState.anchoredDraggableState.updateAnchors(
-                                                    newAnchors
-                                                )
+                                                sheetDragContentHeight = with(density) { it.height.toDp() }
+                                                sheetState.anchoredDraggableState.updateAnchors(newAnchors)
                                             },
                                             content = sheetDragContent
                                         )
@@ -352,15 +350,13 @@ internal fun CallScreenLandscapeScaffold(
                                     }
                                     Row(
                                         modifier = Modifier.onSizeChanged {
+                                            if (it.width == 0) return@onSizeChanged
                                             val newAnchors = DraggableAnchors {
                                                 CallSheetValue.Expanded at 0f
                                                 CallSheetValue.Collapsed at it.width.toFloat()
                                             }
-                                            sheetDragContentWidth =
-                                                with(density) { it.width.toDp() }
-                                            sheetState.anchoredDraggableState.updateAnchors(
-                                                newAnchors
-                                            )
+                                            sheetDragContentWidth = with(density) { it.width.toDp() }
+                                            sheetState.anchoredDraggableState.updateAnchors(newAnchors)
                                         },
                                         content = sheetDragContent
                                     )
