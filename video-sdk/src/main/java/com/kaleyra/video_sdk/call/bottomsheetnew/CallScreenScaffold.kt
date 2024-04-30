@@ -102,11 +102,10 @@ internal fun CallScreenScaffold(
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
     Surface(
-        modifier = modifier,
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize()) {
             Box(Modifier.padding(start = startPadding, top = topPadding, end = endPadding)) {
                 content(contentPaddingValues)
                 Box(
@@ -280,11 +279,10 @@ internal fun CallScreenLandscapeScaffold(
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
     Surface(
-        modifier = modifier,
         color = containerColor,
         contentColor = contentColor
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize()) {
             Box(Modifier.padding(start = startPadding, top = topPadding, bottom = bottomPadding)) {
                 content(contentPaddingValues)
                 Box(
