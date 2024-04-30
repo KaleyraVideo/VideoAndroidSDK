@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,6 +59,11 @@ internal fun CallInfoBar(
             .fillMaxWidth()
             .height(CallInfoBarHeight)
     ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+            content = { Title(recording = recording, title = title) }
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -78,8 +84,6 @@ internal fun CallInfoBar(
                         .size(22.dp)
                 )
             }
-
-            Title(recording = recording, title = title)
 
             CallParticipantsButton(
                 participantCount = participantCount,
