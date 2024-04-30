@@ -277,7 +277,8 @@ private fun ButtonLayout(
     var shouldDisplayButtonText by remember { mutableStateOf(true) }
     Row(
         modifier = Modifier.padding(contentPadding),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = icon,
