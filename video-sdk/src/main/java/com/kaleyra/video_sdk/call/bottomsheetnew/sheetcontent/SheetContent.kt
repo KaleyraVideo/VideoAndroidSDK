@@ -16,7 +16,7 @@ import com.kaleyra.video_sdk.common.row.ReversibleRow
 // TODO add participant item if ringing
 @Composable
 internal fun SheetContent(
-    actions: ImmutableList<@Composable (Modifier, Boolean) -> Unit>,
+    actions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
     showMoreItem: Boolean,
     onMoreItemClick: (() -> Unit),
     onItemsPlaced: (Int) -> Unit,
@@ -25,19 +25,19 @@ internal fun SheetContent(
     ReversibleRow(modifier, reverseLayout = true) {
         if (showMoreItem) {
             MoreAction(onClick = onMoreItemClick)
-            Spacer(Modifier.width(SheetContentItemSpacing))
+            Spacer(Modifier.width(SheetActionsSpacing))
         }
         SheetActionsLayout(
             onItemsPlaced = onItemsPlaced,
-            horizontalItemSpacing = SheetContentItemSpacing,
-            content = { actions.value.forEach { action -> action(Modifier, false) } }
+            horizontalItemSpacing = SheetActionsSpacing,
+            content = { actions.value.forEach { action -> action(false, Modifier) } }
         )
     }
 }
 
 @Composable
 internal fun VerticalSheetContent(
-    actions: ImmutableList<@Composable (Modifier, Boolean) -> Unit>,
+    actions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
     showMoreItem: Boolean,
     onMoreItemClick: (() -> Unit),
     onItemsPlaced: (Int) -> Unit,
@@ -51,7 +51,7 @@ internal fun VerticalSheetContent(
         VerticalSheetActionsLayout(
             onItemsPlaced = onItemsPlaced,
             verticalItemSpacing = SheetActionsSpacing,
-            content = { actions.value.forEach { action -> action() } }
+            content = { actions.value.forEach { action -> action(false, Modifier) } }
         )
     }
 }
