@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -44,5 +45,17 @@ class HangUpActionTest {
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(text).performClick()
         Assert.assertEquals(true, clicked)
+    }
+
+    @Test
+    fun testClickOnButtonDisabled() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        composeTestRule.setContent {
+            HangUpAction(
+                enabled = false,
+                onClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(text).assertIsNotEnabled()
     }
 }

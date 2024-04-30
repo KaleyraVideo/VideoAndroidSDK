@@ -1,17 +1,13 @@
 package com.kaleyra.video_sdk.call.screennew
 
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -21,6 +17,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.CallInfoBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
@@ -59,7 +58,13 @@ fun actionsComposablesFor(
 ): ImmutableList<@Composable (label: Boolean, modifier: Modifier) -> Unit> {
     with(actions) {
         val hangUpAction: @Composable (Boolean, Modifier) -> Unit =
-            { _, modifier -> HangUpAction(onClick = onHangUpClick, modifier = modifier) }
+            { _, modifier ->
+                HangUpAction(
+                    enabled = hangUpAction.isEnabled,
+                    onClick = onHangUpClick,
+                    modifier = modifier
+                )
+            }
         val micAction: @Composable ((Boolean, Modifier) -> Unit)? = microphoneAction?.let {
             { _, modifier ->
                 MicAction(
@@ -175,6 +180,17 @@ fun actionsComposablesFor(
     }
 }
 
+@Composable
+private fun scaffoldPaddingValues(horizontal: Dp, vertical: Dp): PaddingValues {
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+    return PaddingValues(
+        start = systemBarsPadding.calculateStartPadding(layoutDirection) + horizontal,
+        top = systemBarsPadding.calculateTopPadding() + vertical,
+        end = systemBarsPadding.calculateEndPadding(layoutDirection) + horizontal,
+        bottom = systemBarsPadding.calculateBottomPadding() + vertical
+    )
+}
 
 @Composable
 fun CallScreen(
@@ -214,10 +230,10 @@ fun CallScreen(
     }
     val scope = rememberCoroutineScope()
     val sheetState = rememberCallSheetState()
+
     CallScreenScaffold(
         sheetState = sheetState,
-        containerColor = Color.LightGray,
-        paddingValues = PaddingValues(start = 4.dp, top = 12.dp, end = 4.dp, bottom = 32.dp),
+        paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
         topAppBar = {
             CallInfoBar(
                 title = "title",
@@ -228,9 +244,6 @@ fun CallScreen(
                 onBackPressed = {},
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
-        },
-        sheetPanelContent = {
-            Box(Modifier.size(56.dp))
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
@@ -267,6 +280,7 @@ fun CallScreen(
                 }
             )
         },
+        containerColor = Color.DarkGray,
         sheetDragHandle = if (hasSheetDragContent) {
             { CallBottomSheetDefaults.DragHandle() }
         } else null

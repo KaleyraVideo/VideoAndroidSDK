@@ -14,11 +14,11 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
 
-// TODO add enabled
 @Composable
 internal fun HangUpAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     extended: Boolean = false
 ) {
     CallAction(
@@ -27,6 +27,7 @@ internal fun HangUpAction(
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
         buttonColor = KaleyraTheme.colors.hangUp,
         buttonContentColor = KaleyraTheme.colors.onHangUp,
+        enabled = enabled,
         onClick = onClick
     )
 }
