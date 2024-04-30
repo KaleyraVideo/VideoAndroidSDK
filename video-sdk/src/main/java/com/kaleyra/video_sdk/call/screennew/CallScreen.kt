@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -202,10 +203,14 @@ fun CallScreen(
         onWhiteboardClick = onWhiteboardClick,
         onVirtualBackgroundClick = onVirtualBackgroundClick
     )
-    var hasSheetDragContent by remember { mutableStateOf(false) }
     var showMoreItem by remember { mutableStateOf(true) }
     var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember {
         mutableStateOf(ImmutableList())
+    }
+    val hasSheetDragContent by remember {
+        derivedStateOf {
+            sheetDragActions.value.isNotEmpty()
+        }
     }
     val scope = rememberCoroutineScope()
     val sheetState = rememberCallSheetState()
@@ -258,8 +263,7 @@ fun CallScreen(
                 },
                 onItemsPlaced = { itemsCount ->
                     sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsCount))
-                    hasSheetDragContent = sheetDragActions.value.isNotEmpty()
-                    showMoreItem = hasSheetDragContent
+                    showMoreItem = sheetDragActions.value.isNotEmpty()
                 }
             )
         },
