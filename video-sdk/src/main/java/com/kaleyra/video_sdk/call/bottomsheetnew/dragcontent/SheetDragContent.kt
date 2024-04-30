@@ -1,9 +1,9 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -13,44 +13,48 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 internal val SheetDragHorizontalPadding = SheetActionsSpacing
 internal val SheetDragVerticalPadding = 30.dp
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SheetDragContent(
-    dragActions: ImmutableList<@Composable (Modifier, Boolean) -> Unit>,
+    dragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
     itemsPerRow: Int,
     modifier: Modifier = Modifier
 ) {
     val shouldExtendLastButton = dragActions.count() / itemsPerRow < 1
-    FlowRow(
+    val chunkedActions = dragActions.value.chunked(itemsPerRow)
+    Column(
         modifier = modifier,
-        maxItemsInEachRow = itemsPerRow,
-        horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding),
         verticalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding)
     ) {
-        dragActions.value.forEachIndexed { index, action ->
-            val itemModifier = if (shouldExtendLastButton && index == dragActions.count() - 1) Modifier.weight(1f) else Modifier
-            action(itemModifier, true)
+        chunkedActions.forEachIndexed { actionsIndex, actions ->
+            Row(horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)) {
+                actions.forEachIndexed { index, action ->
+                    val itemModifier =
+                        if (shouldExtendLastButton && actionsIndex == chunkedActions.size - 1 && index == actions.size - 1) {
+                            Modifier.weight(1f)
+                        } else Modifier
+                    action(true, itemModifier)
+                }
+            }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun VerticalSheetDragContent(
-    dragActions: ImmutableList<@Composable (Modifier, Boolean) -> Unit>,
+    dragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
     itemsPerColumn: Int,
     modifier: Modifier = Modifier
 ) {
     val chunkedActions = dragActions.value.chunked(itemsPerColumn)
-    FlowColumn(
+    Row(
         modifier = modifier,
-        maxItemsInEachColumn = itemsPerColumn,
-        horizontalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding),
-        verticalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)
+        horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)
     ) {
         chunkedActions.forEach { actions ->
-            actions.reversed().forEach { action ->
-                action(Modifier, false)
+            Column(verticalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding)) {
+                actions.reversed().forEach { action ->
+                    action(false, Modifier)
+                }
             }
         }
     }
