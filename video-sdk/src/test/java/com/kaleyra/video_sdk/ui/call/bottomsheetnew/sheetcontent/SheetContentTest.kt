@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +17,15 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class SheetContentTest {
 
     @get:Rule

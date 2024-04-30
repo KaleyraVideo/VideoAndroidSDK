@@ -48,10 +48,10 @@ internal fun VerticalSheetDragContent(
     val chunkedActions = dragActions.value.chunked(itemsPerColumn)
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)
+        horizontalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding)
     ) {
         chunkedActions.forEach { actions ->
-            Column(verticalArrangement = Arrangement.spacedBy(SheetDragVerticalPadding)) {
+            Column(verticalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)) {
                 actions.reversed().forEach { action ->
                     action(false, Modifier)
                 }

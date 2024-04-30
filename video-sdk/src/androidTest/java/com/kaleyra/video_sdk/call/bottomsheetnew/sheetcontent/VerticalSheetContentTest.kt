@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -95,9 +96,9 @@ class VerticalSheetContentTest {
         val childBounds3 = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
         childBounds1.bottom.assertIsEqualTo(rootBounds.bottom, "child 1 bottom")
-        childBounds2.bottom.assertIsEqualTo(childBounds1.top - SheetContentItemSpacing, "child 2 bottom")
-        childBounds3.bottom.assertIsEqualTo(childBounds2.top - SheetContentItemSpacing, "child 3 bottom")
-        moreChild.bottom.assertIsEqualTo(childBounds3.top - SheetContentItemSpacing, "more child top")
+        childBounds2.bottom.assertIsEqualTo(childBounds1.top - SheetActionsSpacing, "child 2 bottom")
+        childBounds3.bottom.assertIsEqualTo(childBounds2.top - SheetActionsSpacing, "child 3 bottom")
+        moreChild.bottom.assertIsEqualTo(childBounds3.top - SheetActionsSpacing, "more child top")
         moreChild.top.assertIsEqualTo(rootBounds.top, "more child top")
     }
 

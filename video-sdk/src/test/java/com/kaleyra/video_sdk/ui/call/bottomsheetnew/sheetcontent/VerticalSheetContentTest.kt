@@ -1,8 +1,8 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
@@ -17,12 +17,16 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VerticalSheetContent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class SheetContentTest {
+@RunWith(RobolectricTestRunner::class)
+class VerticalSheetContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -31,7 +35,7 @@ class SheetContentTest {
     fun testShowMoreItemTrue() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            SheetContent(
+            VerticalSheetContent(
                 actions = ImmutableList(),
                 showMoreItem = true,
                 onMoreItemClick = { },
@@ -45,7 +49,7 @@ class SheetContentTest {
     fun testShowMoreItemFalse() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            SheetContent(
+            VerticalSheetContent(
                 actions = ImmutableList(),
                 showMoreItem = false,
                 onMoreItemClick = { },
@@ -60,7 +64,7 @@ class SheetContentTest {
         var isMoreClicked = false
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            SheetContent(
+            VerticalSheetContent(
                 actions = ImmutableList(),
                 showMoreItem = true,
                 onMoreItemClick = { isMoreClicked = true },
@@ -76,7 +80,7 @@ class SheetContentTest {
     fun testSheetContentItemsPlacing() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            SheetContent(
+            VerticalSheetContent(
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Text("text1") },
@@ -94,24 +98,24 @@ class SheetContentTest {
         val childBounds2 = composeTestRule.onNodeWithText("text2").getBoundsInRoot()
         val childBounds3 = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
-        childBounds1.left.assertIsEqualTo(rootBounds.left, "child 1 left")
-        childBounds2.left.assertIsEqualTo(childBounds1.right + SheetActionsSpacing, "child 2 left")
-        childBounds3.left.assertIsEqualTo(childBounds2.right + SheetActionsSpacing, "child 3 left")
-        moreChild.left.assertIsEqualTo(childBounds3.right + SheetActionsSpacing, "more child left")
-        moreChild.right.assertIsEqualTo(rootBounds.right, "more child right")
+        childBounds1.bottom.assertIsEqualTo(rootBounds.bottom, "child 1 bottom")
+        childBounds2.bottom.assertIsEqualTo(childBounds1.top - SheetActionsSpacing, "child 2 bottom")
+        childBounds3.bottom.assertIsEqualTo(childBounds2.top - SheetActionsSpacing, "child 3 bottom")
+        moreChild.bottom.assertIsEqualTo(childBounds3.top - SheetActionsSpacing, "more child top")
+        moreChild.top.assertIsEqualTo(rootBounds.top, "more child top")
     }
 
     @Test
     fun testOnItemsPlacedCallback() {
         var itemsCount = -1
         composeTestRule.setContent {
-            SheetContent(
-                modifier = Modifier.width(75.dp),
+            VerticalSheetContent(
+                modifier = Modifier.height(75.dp),
                 actions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.width(24.dp)) },
-                        { _, _ -> Spacer(Modifier.width(24.dp)) },
-                        { _, _ -> Spacer(Modifier.width(24.dp)) }
+                        { _, _ -> Spacer(Modifier.height(24.dp)) },
+                        { _, _ -> Spacer(Modifier.height(24.dp)) },
+                        { _, _ -> Spacer(Modifier.height(24.dp)) }
                     )
                 ),
                 showMoreItem = false,

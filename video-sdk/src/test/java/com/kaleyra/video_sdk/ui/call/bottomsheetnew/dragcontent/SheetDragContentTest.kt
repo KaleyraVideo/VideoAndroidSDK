@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.dragcontent
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -9,11 +9,17 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.SheetDragContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.SheetDragHorizontalPadding
+import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.SheetDragVerticalPadding
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class SheetDragContentTest {
 
     @get:Rule
