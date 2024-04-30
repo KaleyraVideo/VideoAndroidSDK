@@ -40,6 +40,7 @@ import com.kaleyra.video_sdk.theme.typography
 internal val CallInfoBarHeight = 36.dp
 internal val RecordingDotTag = "RecordingDotTag"
 
+// TODO rename this to CallAppBar at the end of the new ui development
 @Composable
 internal fun CallInfoBar(
     modifier: Modifier = Modifier,
