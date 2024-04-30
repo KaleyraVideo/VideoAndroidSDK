@@ -35,7 +35,7 @@ internal object AnchoredDraggableCallSheetDefaults {
 
 object CallBottomSheetDefaults {
 
-    val Shape: RoundedCornerShape = RoundedCornerShape(12.dp)
+    val Shape: RoundedCornerShape = RoundedCornerShape(22.dp)
 
     val ScrimColor: Color @Composable get() = MaterialTheme.colorScheme.scrim.copy(ScrimOpacity)
 
