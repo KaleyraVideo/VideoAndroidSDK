@@ -11,7 +11,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 internal val SheetDragHorizontalPadding = SheetActionsSpacing
-internal val SheetDragVerticalPadding = 30.dp
+internal val SheetDragVerticalPadding = 20.dp
 
 @Composable
 internal fun SheetDragContent(
