@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.ui.call.callactionnew
 
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.assertHasClickAction
@@ -14,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactionnew.CallAction
 import com.kaleyra.video_sdk.call.callactionnew.CallToggleAction
 import org.junit.Assert
 import org.junit.Rule

@@ -10,7 +10,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContentItemSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.HangUpAction
 import org.junit.Assert
@@ -35,7 +35,7 @@ class HangUpActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 2 + SheetContentItemSpacing
+        val width =  CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 

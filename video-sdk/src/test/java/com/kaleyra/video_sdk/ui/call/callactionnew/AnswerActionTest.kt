@@ -6,11 +6,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.SheetContentItemSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import org.junit.Assert
@@ -35,7 +36,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 2 + SheetContentItemSpacing
+        val width =  CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
@@ -49,7 +50,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 3 + SheetContentItemSpacing * 2
+        val width =  CallActionDefaults.minButtonSize * 3 + SheetActionsSpacing * 2
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
@@ -58,7 +59,7 @@ class AnswerActionTest {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         var clicked = false
         composeTestRule.setContent {
-            AnswerAction(onClick = { clicked = true })
+            AnswerAction(onClick = { clicked = true }, extended = true)
         }
         composeTestRule.onNodeWithText(text).assertIsEnabled()
         composeTestRule.onNodeWithText(text).performClick()
