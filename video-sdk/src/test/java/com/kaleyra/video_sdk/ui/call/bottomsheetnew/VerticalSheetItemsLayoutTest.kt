@@ -1,22 +1,28 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.width
+import com.kaleyra.video_sdk.call.bottomsheetnew.VerticalSheetItemsLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class VerticalSheetActionsLayoutTest {
+@RunWith(RobolectricTestRunner::class)
+class VerticalSheetItemsLayoutTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -24,14 +30,36 @@ class VerticalSheetActionsLayoutTest {
     @Test
     fun testNoItems() {
         composeTestRule.setContent {
-            VerticalSheetActionsLayout {}
+            VerticalSheetItemsLayout {}
         }
+    }
+
+    @Test
+    fun testMaxItems() {
+        val maxItems = 2
+        var itemsPlaced = -1
+        composeTestRule.setContent {
+            VerticalSheetItemsLayout(
+                maxItems = maxItems,
+                onItemsPlaced = { itemsPlaced = it }
+            ) {
+                Text("text1")
+                Text("text2")
+                Text("text3")
+                Text("text4")
+            }
+        }
+        composeTestRule.onNodeWithText("text1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("text2").assertIsDisplayed()
+        composeTestRule.onNodeWithText("text3").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("text4").assertIsNotDisplayed()
+        assertEquals(maxItems, itemsPlaced)
     }
 
     @Test
     fun testLayoutWidth() {
         composeTestRule.setContent {
-            VerticalSheetActionsLayout {
+            VerticalSheetItemsLayout {
                 Spacer(Modifier.width(20.dp))
                 Spacer(Modifier.width(10.dp))
                 Spacer(Modifier.width(30.dp))
@@ -46,7 +74,7 @@ class VerticalSheetActionsLayoutTest {
         val spacing = 26.dp
         var itemsCount = -1
         composeTestRule.setContent {
-            VerticalSheetActionsLayout(
+            VerticalSheetItemsLayout(
                 verticalItemSpacing = spacing,
                 onItemsPlaced = { itemsCount = it }
             ) {
@@ -69,7 +97,7 @@ class VerticalSheetActionsLayoutTest {
     fun testNoSpacingAddedAtTheTop() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            VerticalSheetActionsLayout(verticalItemSpacing = spacing) {
+            VerticalSheetItemsLayout(verticalItemSpacing = spacing) {
                 Text("text1")
                 Text("text2")
                 Text("text3")
@@ -85,7 +113,7 @@ class VerticalSheetActionsLayoutTest {
         val layoutHeight = 75.dp
         var itemsCount = -1
         composeTestRule.setContent {
-            VerticalSheetActionsLayout(
+            VerticalSheetItemsLayout(
                 modifier = Modifier.height(layoutHeight),
                 verticalItemSpacing = 0.dp,
                 onItemsPlaced = { itemsCount = it }

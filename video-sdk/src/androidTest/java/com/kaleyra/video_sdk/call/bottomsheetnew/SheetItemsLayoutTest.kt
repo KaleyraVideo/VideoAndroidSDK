@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -16,7 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class SheetActionsLayoutTest {
+class SheetItemsLayoutTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -24,14 +27,36 @@ class SheetActionsLayoutTest {
     @Test
     fun testNoItems() {
         composeTestRule.setContent {
-            SheetActionsLayout {}
+            SheetItemsLayout {}
         }
+    }
+
+    @Test
+    fun testMaxItems() {
+        val maxItems = 2
+        var itemsPlaced = -1
+        composeTestRule.setContent {
+            SheetItemsLayout(
+                maxItems = maxItems,
+                onItemsPlaced = { itemsPlaced = it }
+            ) {
+                Text("text1")
+                Text("text2")
+                Text("text3")
+                Text("text4")
+            }
+        }
+        composeTestRule.onNodeWithText("text1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("text2").assertIsDisplayed()
+        composeTestRule.onNodeWithText("text3").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("text4").assertIsNotDisplayed()
+        assertEquals(maxItems, itemsPlaced)
     }
 
     @Test
     fun testLayoutHeight() {
         composeTestRule.setContent {
-            SheetActionsLayout {
+            SheetItemsLayout {
                 Spacer(Modifier.height(20.dp))
                 Spacer(Modifier.height(10.dp))
                 Spacer(Modifier.height(30.dp))
@@ -45,7 +70,7 @@ class SheetActionsLayoutTest {
     fun testItemsPlacement() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            SheetActionsLayout(
+            SheetItemsLayout(
                 horizontalItemSpacing = spacing
             ) {
                 Text("text1")
@@ -65,7 +90,7 @@ class SheetActionsLayoutTest {
     fun testNoSpacingAddedAtTheEnd() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            SheetActionsLayout(
+            SheetItemsLayout(
                 horizontalItemSpacing = spacing
             ) {
                 Text("text1")
@@ -81,18 +106,18 @@ class SheetActionsLayoutTest {
     @Test
     fun testOnItemsPlaced() {
         val layoutWidth = 75.dp
-        var itemsCount = -1
+        var itemsPlaced = -1
         composeTestRule.setContent {
-            SheetActionsLayout(
+            SheetItemsLayout(
                 modifier = Modifier.width(layoutWidth),
                 horizontalItemSpacing = 0.dp,
-                onItemsPlaced = { itemsCount = it }
+                onItemsPlaced = { itemsPlaced = it }
             ) {
                 repeat(5) {
                     Spacer(Modifier.width(24.dp))
                 }
             }
         }
-        assertEquals(3, itemsCount)
+        assertEquals(3, itemsPlaced)
     }
 }
