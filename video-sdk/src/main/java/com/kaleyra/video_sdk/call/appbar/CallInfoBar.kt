@@ -35,6 +35,7 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.button.BackIconButton
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.typography
 
@@ -102,7 +103,8 @@ private fun Title(recording: Boolean, title: String) {
                 contentDescription = null,
                 tint = Color.Unspecified,
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(18.dp)
+                    .pulse()
                     .testTag(RecordingDotTag)
             )
         }
@@ -120,7 +122,7 @@ private fun Title(recording: Boolean, title: String) {
 
 @Composable
 private fun CallParticipantsButton(
-    participantCount : Int,
+    participantCount: Int,
     onClick: () -> Unit
 ) {
     androidx.compose.material3.IconButton(
