@@ -87,11 +87,14 @@ android {
 [Home](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Home)
 
 ### Integration
-1. [Get your credentials](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Get-Your-Credentials)
-1. [Get started](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Get-Started)
-1. [Terminology](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Terminology)
-1. [Android Studio Setup](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Android-Studio-Setup)
-1. [Configure KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK)
+1. [Project Setup](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup)
+   - [Get your credentials](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#get-your-credentials)
+   - [Add dependency](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#add-dependency)
+   - [Android Studio Project Setup](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#android-studio-project-setup)
+1. [Quick start guide | Use Cases](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-use-cases)
+
+### Advanced integration
+1. [Configure KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#configure-kaleyravideo-sdk)
 1. [Use KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK)
     - [Connect](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK#connect-kaleyravideo-sdk)
     - [Disconnect](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Connect-KaleyraVideoSDK#disconnect-kaleyravideo-sdk)
@@ -102,13 +105,14 @@ android {
 1. [Start a Chat](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Start-a-chat)
 1. [Observe Chat Events](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Observe-Chat-Events)
 1. [Handle Push Notifications](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-Push-Notifications)
-1. [Handle Links](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-Links)
+1. [Handle Call Links](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Handle-Links)
 
 
 ### User Details Display Customization
 [User Details Provider](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Customize-user-details#user-details-provider)
 
-### More
+
+### Advanced topics
 [Logging](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Logging)
 
 [KaleyraVideo State&Synchronization Observer](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/KaleyraVideoSDK-Observers)
@@ -120,14 +124,17 @@ android {
 [Proguard](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Proguard)
 
 ### Extensions
+
 [USB Camera](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/USB-Camera)
 
 [Virtual Backgrounds](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Virtual-Backgrounds)
 
 ### Theme Customization
+
 🎨  &nbsp; [Logo&Colors](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Theme-Customization)
 
 ### Migrations
+
 [Upgrade to v4.+](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Upgrade-to-Kaleyra-Video-SDK-v4.x)
 
 ### Other
