@@ -91,7 +91,10 @@ android {
    - [Get your credentials](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#get-your-credentials)
    - [Add dependency](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#add-dependency)
    - [Android Studio Project Setup](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Setup#android-studio-project-setup)
-1. [Quick start guide | Use Cases](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-use-cases)
+1. [Quick start guide | Use Cases](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-Use-Cases)
+    - [Receive calls (outbound calls)](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-Use-Cases#receive-calls-outbound-calls)
+    - [Place calls (inbound calls)](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-Use-Cases#place-calls-inbound-calls)
+    - [Call links](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Quick-start-guide-%7C-Use-Cases#call-links)  
 
 ### Advanced integration
 1. [Configure KaleyraVideo](https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#configure-kaleyravideo-sdk)
