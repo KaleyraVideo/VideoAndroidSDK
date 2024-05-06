@@ -17,30 +17,28 @@
 package com.kaleyra.video_sdk.ui.call.callscreen
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.*
-import androidx.compose.ui.test.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
+import com.kaleyra.video.State
+import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.screen.CallScreen
-import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBarTag
-import com.kaleyra.video_sdk.call.screen.CallScreenState
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screen.model.CallUiState
-import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
-import com.kaleyra.video_sdk.call.*
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingUi
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
-import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
-import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.AudioOutputComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContentState
@@ -55,16 +53,34 @@ import com.kaleyra.video_sdk.call.bottomsheet.LineTag
 import com.kaleyra.video_sdk.call.bottomsheet.ScreenShareComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.VirtualBackgroundComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.WhiteboardComponentTag
+import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
+import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+import com.kaleyra.video_sdk.call.screen.CallScreen
+import com.kaleyra.video_sdk.call.screen.CallScreenState
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.rememberCallScreenState
+import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBarTag
+import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
+import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
+import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.ui.ComposeViewModelsMockTest
 import com.kaleyra.video_sdk.ui.findBackButton
 import com.kaleyra.video_sdk.ui.performDoubleClick
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkConstructor
+import io.mockk.mockkObject
 import io.mockk.spyk
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -83,7 +99,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var callUiState by mutableStateOf(CallUiState())
+    private var callUiState by mutableStateOf(CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true))
 
     private var sheetState by mutableStateOf(spyk(BottomSheetState(BottomSheetValue.Expanded)))
 
@@ -109,6 +125,14 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Before
     fun setUp() {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.conference } returns mockk(relaxed = true) {
+            every { call } returns MutableSharedFlow<CallUI>(replay = 1).apply {
+                mockk<Unit>(relaxed = true).apply {
+                    every { state } returns MutableStateFlow(State.Connected)
+                }
+            }
+        }
         composeTestRule.setContent {
             CallScreen(
                 callUiState = callUiState,
@@ -139,7 +163,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
     @After
     fun tearDown() {
         callScreenState = null
-        callUiState = CallUiState()
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true)
         sheetState = spyk(BottomSheetState(BottomSheetValue.Expanded))
         shouldShowFileShareComponent = false
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
@@ -261,16 +285,20 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun callActionsComponentHalfExpandedAndNotCollapsable_userPerformsBack_activityIsFinishing() {
+        callUiState = CallUiState()
         sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded, isCollapsable = false)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
+        composeTestRule.waitForIdle()
         Espresso.pressBackUnconditionally()
         assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
     @Test
     fun callActionsComponentCollapsed_userPerformsBack_activityIsFinishing() {
+        callUiState = CallUiState()
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
+        composeTestRule.waitForIdle()
         Espresso.pressBackUnconditionally()
         assertEquals(true, composeTestRule.activity.isFinishing)
     }
@@ -618,6 +646,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun callStateConnecting_sheetIsHalfExpanded() {
+        sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded)
         callUiState = CallUiState(callState = CallStateUi.Connecting, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
@@ -678,6 +707,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Test
     fun userClicksBackButton_onBackPressedInvoked() {
+        callUiState = CallUiState()
         composeTestRule.findBackButton().performClick()
         assert(backPressed)
     }

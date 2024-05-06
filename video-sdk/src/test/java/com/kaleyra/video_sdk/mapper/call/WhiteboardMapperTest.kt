@@ -20,6 +20,8 @@ import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardCloseEvents
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardOpenEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
@@ -113,10 +115,62 @@ class WhiteboardMapperTest {
 
     @Test
     fun whiteboardShowRequestEvent_getWhiteboardTextEvents_eventNotReceived() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show)
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId"))
         val flow = MutableStateFlow(callMock)
         val actual = withTimeoutOrNull(50) {
             flow.getWhiteboardTextEvents().first()
+        }
+        assertEquals(null, actual)
+    }
+
+    @Test
+    fun whiteboardShowRequestEvent_getWhiteboardOpenEvents_eventReceived() = runTest {
+        val event = Whiteboard.Event.Request.Show(adminUserId = "userId")
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardOpenEvents().first()
+        }
+        assertEquals(event, actual)
+    }
+
+    @Test
+    fun whiteboardShowRequestEvent_getWhiteboardCloseEvents_eventNotReceived() = runTest {
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardCloseEvents().first()
+        }
+        assertEquals(null, actual)
+    }
+
+    @Test
+    fun whiteboardHideRequestEvent_getWhiteboardCloseEvents_eventReceived() = runTest {
+        val event = Whiteboard.Event.Request.Hide(adminUserId = "userId")
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardCloseEvents().first()
+        }
+        assertEquals(event, actual)
+    }
+
+    @Test
+    fun whiteboardHideRequestEvent_getWhiteboardTextEvents_eventNotReceived() = runTest {
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardTextEvents().first()
+        }
+        assertEquals(null, actual)
+    }
+
+    @Test
+    fun whiteboardHideRequestEvent_getWhiteboardOpenEvents_eventNotReceived() = runTest {
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardOpenEvents().first()
         }
         assertEquals(null, actual)
     }

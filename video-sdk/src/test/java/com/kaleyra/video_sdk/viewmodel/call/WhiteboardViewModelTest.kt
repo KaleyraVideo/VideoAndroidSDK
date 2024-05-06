@@ -82,7 +82,6 @@ class WhiteboardViewModelTest {
         every { whiteboardMock.view } returns MutableStateFlow(null)
         advanceUntilIdle()
         val result = viewModel.uiState.first().whiteboardView
-        verify(exactly = 1) { whiteboardMock.load() }
         assertNotEquals(null, result)
         assertEquals(result, whiteboardMock.view.value)
     }
@@ -127,9 +126,8 @@ class WhiteboardViewModelTest {
     @Test
     fun testOnReloadClick() = runTest {
         advanceUntilIdle()
-        verify(exactly = 1) { whiteboardMock.load() }
         viewModel.onReloadClick()
-        verify(exactly = 2) { whiteboardMock.load() }
+        verify(exactly = 1) { whiteboardMock.load() }
     }
 
     @Test

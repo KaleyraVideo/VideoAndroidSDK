@@ -52,7 +52,8 @@ dependencies {
     api catalog.fastadapterExtensionsDiff
 
     /** Kaleyra **/
-    api kaleyraCatalog.kaleyraVideo
+//    api kaleyraCatalog.kaleyraVideo
+    api project(":video")
     implementation kaleyraCatalog.kaleyraVideoExtensionAudio
     def isPublishing = project.hasProperty("isPublishing")
     if (isPublishing) api "com.kaleyra:video-common-ui:$moduleVersion"

@@ -19,11 +19,13 @@ include ':app',
         ':app-design',
         ':video-common-ui',
         ':video-sdk',
-        ':video-glasses-sdk'
+        ':video-glasses-sdk',
+        ':video'
 
 project(':app-utilities').projectDir = file('app-extensions/app-utilities')
 project(':app-configuration').projectDir = file('app-extensions/app-configuration')
 project(':app-design').projectDir = file('app-extensions/app-design')
+project(':video').projectDir = file('../bandyer-android-collaborationcenter/video')
 
 dependencyResolutionManagement {
     repositories {

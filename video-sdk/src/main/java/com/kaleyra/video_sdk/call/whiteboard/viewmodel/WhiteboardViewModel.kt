@@ -26,6 +26,8 @@ import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardCloseEvents
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardOpenEvents
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
@@ -88,6 +90,19 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
                 onTextConfirmed.value = onCompletion
                 _uiState.update { it.copy(text = text) }
             }.launchIn(viewModelScope)
+
+        call
+            .getWhiteboardOpenEvents()
+            .onEach { event ->
+                whiteboard.getValue()?.load()
+                _uiState.update { it.copy(showingRequest = event) }
+            }.launchIn(viewModelScope)
+
+        call
+            .getWhiteboardCloseEvents()
+            .onEach { event ->
+                _uiState.update { it.copy(showingRequest = event) }
+            }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -120,7 +135,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
 
     private fun setUpWhiteboard(whiteboard: Whiteboard, whiteboardView: WhiteboardView) {
         whiteboard.view.value = whiteboardView
-        whiteboard.load()
         _uiState.update { it.copy(whiteboardView = whiteboardView) }
     }
 

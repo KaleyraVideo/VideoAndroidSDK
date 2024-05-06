@@ -16,18 +16,34 @@
 
 package com.kaleyra.video_sdk.call.bottomsheet
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video.whiteboard.Whiteboard
+import com.kaleyra.video.whiteboard.WhiteboardView
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.callactions.CallActionsComponent
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -35,7 +51,18 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
-import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * Call Actions Component tag
@@ -67,13 +94,15 @@ const val WhiteboardComponentTag = "WhiteboardComponentTag"
  */
 const val VirtualBackgroundComponentTag = "VirtualBackgroundComponentTag"
 
+@Immutable
 internal enum class BottomSheetComponent {
     CallActions, AudioOutput, ScreenShare, FileShare, Whiteboard, VirtualBackground
 }
 
-internal class BottomSheetContentState(
-    initialComponent: BottomSheetComponent,
-    initialLineState: LineState
+@Immutable
+internal data class BottomSheetContentState(
+    val initialComponent: BottomSheetComponent,
+    val initialLineState: LineState
 ) {
 
     var currentComponent: BottomSheetComponent by mutableStateOf(initialComponent)
@@ -115,34 +144,69 @@ internal fun rememberBottomSheetContentState(
 internal fun BottomSheetContent(
     contentState: BottomSheetContentState,
     modifier: Modifier = Modifier,
-    onLineClick: () -> Unit = { },
-    onCallActionClick: (CallAction) -> Unit = { },
-    onAudioDeviceClick: () -> Unit = { },
-    onScreenShareTargetClick: () -> Unit = { },
-    onVirtualBackgroundClick: () -> Unit = {},
+    onLineClick: () -> Unit,
+    onCallActionClick: (CallAction) -> Unit,
+    onAudioDeviceClick: () -> Unit,
+    onScreenShareTargetClick: () -> Unit,
+    onVirtualBackgroundClick: () -> Unit,
     contentVisible: Boolean = true,
     isDarkTheme: Boolean = false,
     isTesting: Boolean = false
 ) {
+    val whiteboardScope = rememberCoroutineScope()
+
+    val whiteboardViewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
+    )
+
+    LaunchedEffect(whiteboardViewModel.uiState) {
+        whiteboardViewModel.uiState.map { it.showingRequest }.filterNotNull().onEach { showingRequest ->
+            val adminDisplayName = KaleyraVideo.conference.call.replayCache.firstOrNull()?.participants?.value?.list?.firstOrNull {
+                it.userId == showingRequest.adminUserId
+            }?.combinedDisplayName?.firstOrNull()
+
+            when (showingRequest) {
+                is Whiteboard.Event.Request.Show -> {
+                    val displaySnackbar = contentState.currentComponent != BottomSheetComponent.Whiteboard
+                    contentState.navigateToComponent(BottomSheetComponent.Whiteboard)
+                    onCallActionClick(CallAction.Whiteboard())
+                    if (!displaySnackbar) return@onEach
+                    delay(500)
+                    CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(adminDisplayName))
+                }
+                is Whiteboard.Event.Request.Hide -> {
+                    if (contentState.currentComponent != BottomSheetComponent.Whiteboard) return@onEach
+                    contentState.navigateToComponent(BottomSheetComponent.CallActions)
+                    delay(500)
+                    CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(adminDisplayName))
+                }
+            }
+        }.launchIn(whiteboardScope)
+    }
+
     Column(modifier) {
         Line(
             state = contentState.currentLineState,
             onClickLabel = stringResource(id = R.string.kaleyra_call_show_buttons),
             onClick = onLineClick
         )
+
         AnimatedVisibility(
             visible = contentVisible,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            AnimatedContent(
-                targetState = contentState.currentComponent,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(220, delayMillis = 90)) with fadeOut(animationSpec = tween(90))
-                },
-                label = "bottomSheetContent"
-            ) { target ->
-                when (target) {
+//            AnimatedContent(
+//                targetState = contentState.currentComponent,
+//                transitionSpec = {
+//                    fadeIn(animationSpec = tween(220, delayMillis = 90)) with fadeOut(animationSpec = tween(90))
+//                },
+//                label = "bottomSheetContent"
+//            ) { target ->
+
+                println("recomposition on target: ${contentState.currentComponent}")
+
+                when (contentState.currentComponent) {
                     BottomSheetComponent.CallActions -> {
                         CallActionsComponent(
                             onItemClick = { action ->
@@ -151,7 +215,12 @@ internal fun BottomSheetContent(
                                         is CallAction.Audio -> BottomSheetComponent.AudioOutput
                                         is CallAction.ScreenShare -> BottomSheetComponent.ScreenShare
                                         is CallAction.FileShare -> BottomSheetComponent.FileShare
-                                        is CallAction.Whiteboard -> BottomSheetComponent.Whiteboard
+                                        is CallAction.Whiteboard -> {
+                                            whiteboardScope.launch {
+                                                KaleyraVideo.conference.call.firstOrNull()?.whiteboard?.load()
+                                            }
+                                            BottomSheetComponent.Whiteboard
+                                        }
                                         is CallAction.VirtualBackground -> BottomSheetComponent.VirtualBackground
                                         else -> BottomSheetComponent.CallActions
                                     }
@@ -187,6 +256,7 @@ internal fun BottomSheetContent(
                     }
                     BottomSheetComponent.Whiteboard -> {
                         WhiteboardComponent(
+                            viewModel = whiteboardViewModel,
                             modifier = Modifier
                                 .padding(top = 12.dp)
                                 .testTag(WhiteboardComponentTag)
@@ -202,7 +272,7 @@ internal fun BottomSheetContent(
                     }
                 }
             }
-        }
+//        }
     }
 }
 

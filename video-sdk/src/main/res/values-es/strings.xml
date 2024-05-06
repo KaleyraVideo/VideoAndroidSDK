@@ -206,4 +206,8 @@
         <item quantity="one">El usuario no ha respondido.</item>
         <item quantity="other">Ningún usuario ha respondido.</item>
     </plurals>
+    <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s solicitaron abrir la whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">Se le ha pedido que abra la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitaron cerrar la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_user_message">Se le ha pedido que cierre la whiteboard</string>
 </resources>

@@ -251,5 +251,9 @@
     <string name="kaleyra_already_in_system_call_audio_routing_error">Não é possível alterar o dispositivo de saída de áudio enquanto uma chamada do sistema já estiver em curso.</string>
 
     <string name="kaleyra_waiting_for_other_participants">Aguardando outros participantes…</string>
+    <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s solicitou a abertura do whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">Você foi solicitado a abrir a whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitou fechar a whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_user_message">Você foi solicitado a fechar a whiteboard</string>
 
 </resources>

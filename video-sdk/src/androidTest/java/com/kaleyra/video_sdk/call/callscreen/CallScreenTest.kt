@@ -17,32 +17,30 @@
 package com.kaleyra.video_sdk.call.callscreen
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.*
-import androidx.compose.ui.test.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.lifecycle.Lifecycle
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.kaleyra.video.configuration.Configuration
+import com.kaleyra.video.configuration.Environment
+import com.kaleyra.video.configuration.Region
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.screen.CallScreen
-import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBarTag
-import com.kaleyra.video_sdk.call.screen.CallScreenState
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screen.model.CallUiState
-import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
-import com.kaleyra.video_sdk.call.*
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingUi
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
-import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
-import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.AudioOutputComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContentState
@@ -57,8 +55,23 @@ import com.kaleyra.video_sdk.call.bottomsheet.LineTag
 import com.kaleyra.video_sdk.call.bottomsheet.ScreenShareComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.VirtualBackgroundComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.WhiteboardComponentTag
+import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
+import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+import com.kaleyra.video_sdk.call.screen.CallScreen
+import com.kaleyra.video_sdk.call.screen.CallScreenState
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.rememberCallScreenState
+import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBarTag
+import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
+import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
+import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findBackButton
 import com.kaleyra.video_sdk.performDoubleClick
@@ -86,7 +99,7 @@ class CallScreenTest {
     @get:Rule
     val mockCallViewModelsStatesRule = com.kaleyra.video_sdk.MockCallViewModelsStatesRule()
 
-    private var callUiState by mutableStateOf(CallUiState())
+    private var callUiState by mutableStateOf(CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true))
 
     private var sheetState by mutableStateOf(spyk(BottomSheetState(BottomSheetValue.Expanded)))
 
@@ -112,6 +125,7 @@ class CallScreenTest {
 
     @Before
     fun setUp() {
+        KaleyraVideo.configure(Configuration("appId", Environment.Production, Region.Europe))
         composeTestRule.setContent {
             CallScreen(
                 callUiState = callUiState,
@@ -130,7 +144,7 @@ class CallScreenTest {
                 onFileShareVisibility = { fileShareDisplayed = it },
                 onWhiteboardVisibility = { whiteboardDisplayed = it },
                 onCallEndedBack = { finishActivity = true },
-                onUserFeedback = { _,_ -> }
+                onUserFeedback = { _,_ -> },
             )
             LaunchedEffect(sideEffect) {
                 sideEffect.invoke()
@@ -141,7 +155,7 @@ class CallScreenTest {
     @After
     fun tearDown() {
         callScreenState = null
-        callUiState = CallUiState()
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true)
         sheetState = spyk(BottomSheetState(BottomSheetValue.Expanded))
         shouldShowFileShareComponent = false
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
@@ -233,8 +247,10 @@ class CallScreenTest {
     private fun expandedComponent_userPerformsBack_callActionsDisplayed(initialComponent: BottomSheetComponent) {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded)
         sheetContentState = BottomSheetContentState(initialComponent, LineState.Expanded)
+        composeTestRule.waitForIdle()
         assertEquals(initialComponent, sheetContentState.currentComponent)
         Espresso.pressBack()
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
         assertEquals(BottomSheetValue.Expanded, sheetState.currentValue)
     }
@@ -260,25 +276,30 @@ class CallScreenTest {
     }
 
     @Test
-    fun callActionsComponentHalfExpandedAndNotCollapsable_userPerformsBack_activityIsFinished() {
+    fun callActionsComponentHalfExpandedAndNotCollapsable_userPerformsBack_activityIsFinishing() {
+        callUiState = CallUiState()
         sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded, isCollapsable = false)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
+        composeTestRule.waitForIdle()
         Espresso.pressBackUnconditionally()
-        assertEquals(Lifecycle.State.DESTROYED, composeTestRule.activityRule.scenario.state)
+        assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
     @Test
-    fun callActionsComponentCollapsed_userPerformsBack_activityIsFinished() {
+    fun callActionsComponentCollapsed_userPerformsBack_activityIsFinishing() {
+        callUiState = CallUiState()
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
+        composeTestRule.waitForIdle()
         Espresso.pressBackUnconditionally()
-        assertEquals(Lifecycle.State.DESTROYED, composeTestRule.activityRule.scenario.state)
+        assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
     @Test
     fun callStateEnded_userPerformsBack_finishActivityInvoked() {
         callUiState = CallUiState(callState = CallStateUi.Disconnected.Ended)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
+        composeTestRule.waitForIdle()
         Espresso.pressBack()
         assertEquals(true, finishActivity)
     }
@@ -505,7 +526,7 @@ class CallScreenTest {
 
     @Test
     fun sheetCollapsed_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.Collapsed, areVisible = true)
@@ -513,7 +534,7 @@ class CallScreenTest {
 
     @Test
     fun sheetHalfExpanded_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.HalfExpanded, areVisible = true)
@@ -521,7 +542,7 @@ class CallScreenTest {
 
     @Test
     fun sheetExpanded_thumbnailStreamsAreDisplayed() {
-        callUiState = CallUiState(CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         checkThumbnailStreamsVisibility(sheetValue = BottomSheetValue.Expanded, areVisible = true)
@@ -589,35 +610,36 @@ class CallScreenTest {
 
     @Test
     fun callStateConnected_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Connected)
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateDialing_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Dialing)
+        callUiState = CallUiState(callState = CallStateUi.Dialing, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateReconnecting_sheetIsNotHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Reconnecting)
+        callUiState = CallUiState(callState = CallStateUi.Reconnecting, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertNotEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateRingingAndIsConnectingFalse_sheetIsHidden() {
-        callUiState = CallUiState(callState = CallStateUi.Ringing)
+        callUiState = CallUiState(callState = CallStateUi.Ringing, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.Hidden, sheetState.currentValue)
     }
 
     @Test
     fun callStateConnecting_sheetIsHalfExpanded() {
-        callUiState = CallUiState(callState = CallStateUi.Connecting)
+        sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded)
+        callUiState = CallUiState(callState = CallStateUi.Connecting, areCallActionsReady = true)
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
     }
@@ -668,7 +690,7 @@ class CallScreenTest {
 
     @Test
     fun userDoubleClicksThumbnail_onThumbnailStreamDoubleClickInvoked() {
-        callUiState = CallUiState(callState = CallStateUi.Connected, thumbnailStreams = ImmutableList(listOf(
+        callUiState = CallUiState(callState = CallStateUi.Connected, areCallActionsReady = true, thumbnailStreams = ImmutableList(listOf(
             streamUiMock
         )))
         composeTestRule.onNodeWithTag(ThumbnailTag).performDoubleClick()
@@ -677,6 +699,7 @@ class CallScreenTest {
 
     @Test
     fun userClicksBackButton_onBackPressedInvoked() {
+        callUiState = CallUiState()
         composeTestRule.findBackButton().performClick()
         assert(backPressed)
     }

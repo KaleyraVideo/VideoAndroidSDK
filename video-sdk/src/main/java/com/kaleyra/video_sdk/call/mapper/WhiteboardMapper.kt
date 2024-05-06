@@ -39,6 +39,16 @@ internal object WhiteboardMapper {
             .flatMapLatest { it.events }
             .filterIsInstance()
 
+    fun Flow<CallUI>.getWhiteboardOpenEvents(): Flow<Whiteboard.Event.Request.Show> =
+        this.map { it.whiteboard }
+            .flatMapLatest { it.events }
+            .filterIsInstance()
+
+    fun Flow<CallUI>.getWhiteboardCloseEvents(): Flow<Whiteboard.Event.Request.Hide> =
+        this.map { it.whiteboard }
+            .flatMapLatest { it.events }
+            .filterIsInstance()
+
     fun SharedFile.toWhiteboardUploadUi(): Flow<WhiteboardUploadUi?> {
         return state.map { state ->
             val progress = when (state) {

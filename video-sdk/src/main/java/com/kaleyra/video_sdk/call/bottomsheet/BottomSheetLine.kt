@@ -1,19 +1,3 @@
-/*
- * Copyright 2023 Kaleyra @ https://www.kaleyra.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.kaleyra.video_sdk.call.bottomsheet
 
 import android.content.res.Configuration
@@ -30,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,9 +35,14 @@ internal val CollapsedLineWidth = 4.dp
 private val LineHeight = 4.dp
 
 // Serializable is needed to save the line state in {@link BottomSheetContentState#Saver}
+@Immutable
 internal sealed class LineState : Serializable {
-    object Expanded : LineState()
+
+    @Immutable
+    data object Expanded : LineState()
+
     // Argb int color to make the parameter serializable
+    @Immutable
     data class Collapsed(val argbColor: Int? = null) : LineState()
 }
 

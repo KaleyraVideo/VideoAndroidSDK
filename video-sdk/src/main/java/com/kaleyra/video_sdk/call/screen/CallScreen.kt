@@ -38,6 +38,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -186,14 +187,15 @@ internal fun rememberCallScreenState(
     )
 }
 
-internal class CallScreenState(
+@Immutable
+internal data class CallScreenState(
     val sheetState: BottomSheetState,
     val sheetContentState: BottomSheetContentState,
     val shouldShowFileShareComponent: Boolean,
     private val systemUiController: SystemUiController,
     private val isDarkMode: Boolean,
     private val scope: CoroutineScope,
-    density: Density
+    val density: Density
 ) {
 
     private val hasCurrentSheetComponentAppBar by derivedStateOf {
