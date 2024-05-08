@@ -153,7 +153,7 @@
     <string name="kaleyra_whiteboard_error_subtitle">Something went wrong</string>
 
     <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s has requested to show the whiteboard</string>
-    <string name="kaleyra_whiteboard_show_request_user_message">A request to show the whiteboard has been received.</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">A request to show the whiteboard has been received</string>
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s has requested to close the whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">A request to close the whiteboard has been received.</string>
 

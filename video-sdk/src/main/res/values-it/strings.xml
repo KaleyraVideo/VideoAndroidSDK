@@ -254,7 +254,7 @@
 
     <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
     <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s ha richiesto di aprire la whiteboard</string>
-    <string name="kaleyra_whiteboard_show_request_user_message">È stato richeisto di aprire la whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">È stato richiesto di aprire la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s ha richiesto di chiudere la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">È stato richeisto di chiudere la whiteboard</string>
 
