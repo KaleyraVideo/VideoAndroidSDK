@@ -94,7 +94,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     override val userMessage: Flow<UserMessage>
         get() = CallUserMessagesProvider.userMessage
 
-    private val _whiteboardRequest: Channel<WhiteboardRequest> = Channel(Channel.BUFFERED)
+    private val _whiteboardRequest: Channel<WhiteboardRequest> = Channel(Channel.CONFLATED)
     val whiteboardRequest: Flow<WhiteboardRequest> = _whiteboardRequest.receiveAsFlow()
 
     val theme = company
