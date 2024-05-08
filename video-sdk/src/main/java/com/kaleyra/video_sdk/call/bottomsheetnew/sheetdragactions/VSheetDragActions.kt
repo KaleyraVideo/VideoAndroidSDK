@@ -1,0 +1,34 @@
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+
+internal val VSheetDragHorizontalPadding = 20.dp
+internal val VSheetDragVerticalPadding = SheetItemsSpacing
+
+@Composable
+internal fun VSheetDragActions(
+    actions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
+    itemsPerColumn: Int,
+    modifier: Modifier = Modifier
+) {
+    val chunkedActions = actions.value.chunked(itemsPerColumn)
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(VSheetDragHorizontalPadding)
+    ) {
+        chunkedActions.forEach { actions ->
+            Column(verticalArrangement = Arrangement.spacedBy(VSheetDragVerticalPadding)) {
+                actions.reversed().forEach { action ->
+                    action(false, Modifier)
+                }
+            }
+        }
+    }
+}

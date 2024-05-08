@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -14,7 +14,7 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 
-class VerticalSheetDragContentTest {
+class VSheetDragActionsTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -22,8 +22,8 @@ class VerticalSheetDragContentTest {
     @Test
     fun testItemsPlacement() {
         composeTestRule.setContent {
-            VerticalSheetDragContent(
-                dragActions = ImmutableList(
+            VSheetDragActions(
+                actions = ImmutableList(
                     listOf(
                         { _, _ -> Text("text1", modifier = Modifier.size(24.dp)) },
                         { _, _ -> Text("text2", modifier = Modifier.size(24.dp)) },
@@ -39,21 +39,21 @@ class VerticalSheetDragContentTest {
         val childBounds2 = composeTestRule.onNodeWithText("text2").getBoundsInRoot()
         val childBounds3 = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
         val childBounds4 = composeTestRule.onNodeWithText("text4").getBoundsInRoot()
-        childBounds1.top.assertIsEqualTo(childBounds2.bottom + SheetDragHorizontalPadding, "child 1 top bound")
+        childBounds1.top.assertIsEqualTo(childBounds2.bottom + VSheetDragVerticalPadding, "child 1 top bound")
         childBounds1.bottom.assertIsEqualTo(rootBounds.bottom, "child 1 bottom bound")
         childBounds2.top.assertIsEqualTo(rootBounds.top, "child 2 top bound")
-        childBounds3.top.assertIsEqualTo(childBounds4.bottom + SheetDragHorizontalPadding, "child 3 top bound")
+        childBounds3.top.assertIsEqualTo(childBounds4.bottom + VSheetDragVerticalPadding, "child 3 top bound")
         childBounds3.bottom.assertIsEqualTo(rootBounds.bottom, "child 3 bottom bound")
         childBounds4.top.assertIsEqualTo(rootBounds.top, "child 4 top bound")
-        childBounds3.left.assertIsEqualTo(childBounds1.right + SheetDragVerticalPadding, "child 3 left bound")
-        childBounds4.left.assertIsEqualTo(childBounds2.right + SheetDragVerticalPadding, "child 4 left bound")
+        childBounds3.left.assertIsEqualTo(childBounds1.right + VSheetDragHorizontalPadding, "child 3 left bound")
+        childBounds4.left.assertIsEqualTo(childBounds2.right + VSheetDragHorizontalPadding, "child 4 left bound")
     }
 
     @Test
     fun testLabelFlag() {
         composeTestRule.setContent {
-            VerticalSheetDragContent(
-                dragActions = ImmutableList(
+            VSheetDragActions(
+                actions = ImmutableList(
                     listOf(
                         { flag, _ -> Assert.assertEquals(flag, false) },
                         { flag, _ -> Assert.assertEquals(flag, false) },

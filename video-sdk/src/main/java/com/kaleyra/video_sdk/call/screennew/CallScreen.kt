@@ -23,8 +23,8 @@ import com.kaleyra.video_sdk.call.appbar.CallInfoBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallScreenLandscapeScaffold
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallScreenScaffold
-import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.SheetDragContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent.VerticalSheetDragContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
@@ -248,11 +248,11 @@ fun CallScreen(
             if (hasSheetDragContent) {
                 val itemsPerRow =
                     actionsComposables.count() - sheetDragActions.count() + if (displayAnswerButton) AnswerButtonMultiplier else 1
-                SheetDragContent(
+                HSheetDragActions(
                     modifier = Modifier
                         .animateContentSize()
                         .padding(14.dp),
-                    dragActions = sheetDragActions,
+                    actions = sheetDragActions,
                     itemsPerRow = itemsPerRow
                 )
             }
@@ -337,11 +337,11 @@ fun VCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val itemsPerColumn = actionsComposables.count() - sheetDragActions.count() + if (displayAnswerButton) AnswerButtonMultiplier else 1
-                VerticalSheetDragContent(
+                VSheetDragActions(
                     modifier = Modifier
                         .animateContentSize()
                         .padding(14.dp),
-                    dragActions = sheetDragActions,
+                    actions = sheetDragActions,
                     itemsPerColumn = itemsPerColumn
                 )
             }
