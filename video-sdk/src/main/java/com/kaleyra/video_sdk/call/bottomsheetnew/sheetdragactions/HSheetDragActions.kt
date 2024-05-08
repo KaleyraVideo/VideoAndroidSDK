@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
@@ -24,9 +25,9 @@ internal fun HSheetDragActions(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(HSheetDragVerticalPadding)
     ) {
-        chunkedActions.forEachIndexed { actionsIndex, actions ->
+        chunkedActions.fastForEachIndexed { actionsIndex, actions ->
             Row(horizontalArrangement = Arrangement.spacedBy(HSheetDragHorizontalPadding)) {
-                actions.forEachIndexed { index, action ->
+                actions.fastForEachIndexed { index, action ->
                     val itemModifier = if (shouldExtendLastButton && actionsIndex == chunkedActions.size - 1 && index == actions.size - 1) Modifier.weight(1f) else Modifier
                     action(true, itemModifier)
                 }

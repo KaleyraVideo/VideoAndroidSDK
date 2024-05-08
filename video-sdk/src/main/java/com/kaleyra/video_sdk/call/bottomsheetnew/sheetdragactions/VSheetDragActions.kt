@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachReversed
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
@@ -23,9 +25,9 @@ internal fun VSheetDragActions(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(VSheetDragHorizontalPadding)
     ) {
-        chunkedActions.forEach { actions ->
+        chunkedActions.fastForEach { actions ->
             Column(verticalArrangement = Arrangement.spacedBy(VSheetDragVerticalPadding)) {
-                actions.reversed().forEach { action ->
+                actions.fastForEachReversed { action ->
                     action(false, Modifier)
                 }
             }
