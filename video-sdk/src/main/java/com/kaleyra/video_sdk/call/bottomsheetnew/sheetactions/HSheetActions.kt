@@ -1,8 +1,6 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +13,6 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetItemsLayout
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.VerticalSheetItemsLayout
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -23,7 +20,7 @@ import com.kaleyra.video_sdk.common.row.ReversibleRow
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun SheetActions(
+internal fun HSheetActions(
     modifier: Modifier = Modifier,
     actions: ImmutableList<@Composable (label: Boolean, modifier: Modifier) -> Unit>,
     sheetState: CallSheetState,
@@ -64,29 +61,7 @@ internal fun SheetActions(
                 onActionsPlaced(itemsPlaced)
             },
             horizontalItemSpacing = SheetActionsSpacing,
-            maxItems = maxActions - if (showAnswerAction || showMoreAction) 1 else 0,
-            content = { actions.value.forEach { action -> action(false, Modifier) } }
-        )
-    }
-}
-
-// TODO update this composable like SheetActions above
-@Composable
-internal fun VerticalSheetActions(
-    actions: ImmutableList<@Composable (label: Boolean, modifier: Modifier) -> Unit>,
-    showMoreItem: Boolean,
-    onMoreItemClick: (() -> Unit),
-    onItemsPlaced: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-        if (showMoreItem) {
-            MoreAction(onClick = onMoreItemClick)
-            Spacer(Modifier.height(SheetActionsSpacing))
-        }
-        VerticalSheetItemsLayout(
-            onItemsPlaced = onItemsPlaced,
-            verticalItemSpacing = SheetActionsSpacing,
+            maxItems = maxActions - if (showAnswerAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )
     }
