@@ -50,8 +50,8 @@ internal object WhiteboardMapper {
                 val participants =  this@getWhiteboardRequestEvents.firstOrNull()?.participants?.value?.list
                 val displayName = participants?.firstOrNull { it.userId == request.adminUserId }?.combinedDisplayName?.firstOrNull()
                 when (request) {
-                    is Whiteboard.Event.Request.Show -> WhiteboardRequest.Show(displayName)
-                    is Whiteboard.Event.Request.Hide -> WhiteboardRequest.Hide(displayName)
+                    is Whiteboard.Event.Request.Show -> WhiteboardRequest.Show(username = displayName)
+                    is Whiteboard.Event.Request.Hide -> WhiteboardRequest.Hide(username = displayName)
                 }
             }
     }

@@ -1025,15 +1025,15 @@ class CallViewModelTest {
     fun testShowWhiteboardRequestReceived() = runTest {
         every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Show("userId1"))
         val actual = viewModel.whiteboardRequest.first()
-        val expected = WhiteboardRequest.Show("displayName1")
-        assertEquals(expected, actual)
+        assertEquals(true, actual is WhiteboardRequest.Show)
+        assertEquals("displayName1", actual.username)
     }
 
     @Test
     fun testHideWhiteboardRequestReceived() = runTest {
         every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide("userId1"))
         val actual = viewModel.whiteboardRequest.first()
-        val expected = WhiteboardRequest.Hide("displayName1")
-        assertEquals(expected, actual)
+        assertEquals(true, actual is WhiteboardRequest.Hide)
+        assertEquals("displayName1", actual.username)
     }
 }

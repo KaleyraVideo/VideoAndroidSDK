@@ -756,7 +756,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         composeTestRule.waitForIdle()
         verify(exactly = 1) {
             CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardShowRequestMessage> {
-                assertEquals("username", it.adminUserId)
+                assertEquals("username", it.username)
             })
         }
     }
@@ -778,7 +778,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         composeTestRule.waitForIdle()
         verify(exactly = 1) {
             CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardHideRequestMessage> {
-                assertEquals("username", it.adminUserId)
+                assertEquals("username", it.username)
             })
         }
     }

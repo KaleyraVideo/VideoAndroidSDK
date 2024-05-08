@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.common.snackbar.AudioOutputGenericFailureSnackbar
 import com.kaleyra.video_sdk.common.snackbar.AudioOutputInSystemCallFailureSnackbar
@@ -80,8 +79,8 @@ internal fun UserMessageSnackbarHandler(
                     message = when (it) {
                         is MutedMessage -> it.admin ?: ""
                         is UsbCameraMessage.Connected -> it.name
-                        is WhiteboardShowRequestMessage -> it.adminUserId ?: ""
-                        is WhiteboardHideRequestMessage -> it.adminUserId ?: ""
+                        is WhiteboardShowRequestMessage -> it.username ?: ""
+                        is WhiteboardHideRequestMessage -> it.username ?: ""
                         else -> ""
                     },
                     actionLabel = when (it) {

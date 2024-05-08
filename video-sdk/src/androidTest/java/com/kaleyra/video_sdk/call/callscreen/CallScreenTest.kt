@@ -300,9 +300,7 @@ class CallScreenTest {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
         composeTestRule.waitForIdle()
-        composeTestRule.activityRule.scenario.onActivity { activity ->
-            activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeTestRule.pressBack()
         assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
@@ -758,7 +756,7 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
         verify(exactly = 1) {
             CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardShowRequestMessage> {
-                assertEquals("username", it.adminUserId)
+                assertEquals("username", it.username)
             })
         }
     }
@@ -780,7 +778,7 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
         verify(exactly = 1) {
             CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardHideRequestMessage> {
-                assertEquals("username", it.adminUserId)
+                assertEquals("username", it.username)
             })
         }
     }
