@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew
+package com.kaleyra.video_sdk.call.callscreenscaffold
 
 import android.content.res.Resources
 import androidx.compose.foundation.layout.ColumnScope
@@ -25,12 +25,14 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.performVerticalSwipe
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class CallScreenScaffoldTest {
+class VCallScreenScaffoldTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -48,7 +50,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testTopAppBarIsDisplayed() {
         val appBarText = "appBarText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             topAppBar = { Text(appBarText) }
         )
         composeTestRule.onNodeWithText(appBarText).assertIsDisplayed()
@@ -57,7 +59,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSheetPanelContentIsDisplayed() {
         val panelText = "panelText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             panelContent = { Text(panelText) }
         )
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
@@ -66,7 +68,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testContentIsDisplayed() {
         val contentText = "contentText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             content = { Text(contentText) }
         )
         composeTestRule.onNodeWithText(contentText).assertIsDisplayed()
@@ -76,7 +78,7 @@ class CallScreenScaffoldTest {
     fun testAppBarIsAboveContent() {
         val appBarText = "appBarText"
         val contentText = "contentText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             topAppBar = { Text(appBarText) },
             content = { Text(contentText) }
         )
@@ -88,7 +90,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSheetPanelIsAboveSheet() {
         val panelText = "panelText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             panelContent = { Text(panelText) }
         )
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
@@ -103,7 +105,7 @@ class CallScreenScaffoldTest {
         val topBarText = "topBarText"
         val contentText = "contentText"
         val paddingValues = PaddingValues(start = 10.dp, top = 12.dp, end = 14.dp, bottom = 8.dp)
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             paddingValues = paddingValues,
             topAppBar = {
                 Text(topBarText, Modifier.fillMaxWidth().height(48.dp))
@@ -140,7 +142,7 @@ class CallScreenScaffoldTest {
     fun testContentPaddingValues() {
         val topBarHeight = 48.dp
         var paddingValues: PaddingValues? = null
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             topAppBar = {
                 Spacer(Modifier.fillMaxWidth().height(topBarHeight))
             },
@@ -160,7 +162,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSwipeUpHandle() {
         val sheetState = CallSheetState()
-        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.setCallScreenScaffold(sheetState)
         composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).performVerticalSwipe(-500)
         composeTestRule.waitForIdle()
         assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
@@ -170,7 +172,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSwipeUpSheetContent() {
         val sheetState = CallSheetState()
-        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.setCallScreenScaffold(sheetState)
         composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).performVerticalSwipe(-500)
         composeTestRule.waitForIdle()
         assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
@@ -180,7 +182,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSwipeDownHandle() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.setCallScreenScaffold(sheetState)
         composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).performVerticalSwipe(500)
         composeTestRule.waitForIdle()
         val offset = sheetDragContentHeight.value * Resources.getSystem().displayMetrics.density
@@ -191,7 +193,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testSwipeDownBottomSheetContent() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        composeTestRule.setCallBottomSheet(sheetState)
+        composeTestRule.setCallScreenScaffold(sheetState)
         composeTestRule.onNodeWithTag(sheetDragContentTag, useUnmergedTree = true).performVerticalSwipe(500)
         composeTestRule.waitForIdle()
         val offset = sheetDragContentHeight.value * Resources.getSystem().displayMetrics.density
@@ -203,7 +205,7 @@ class CallScreenScaffoldTest {
     fun testCollapseBottomSheetOnScrimClick() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
         val contentText = "contentText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             sheetState,
             content = { Text(contentText) }
         )
@@ -217,7 +219,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testContentFillMaxSize() {
         val contentText = "contentText"
-        composeTestRule.setCallBottomSheet(
+        composeTestRule.setCallScreenScaffold(
             content = {
                 Text(contentText, Modifier.fillMaxSize())
             },
@@ -236,7 +238,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testBottomSheetCollapseHeight() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Collapsed)
-        composeTestRule.setCallBottomSheet(sheetState, paddingValues = PaddingValues(0.dp))
+        composeTestRule.setCallScreenScaffold(sheetState, paddingValues = PaddingValues(0.dp))
         val sheetContentBounds = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot()
         val sheetHandleBounds = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot()
         val sheetContentHeight = sheetContentBounds.height
@@ -249,7 +251,7 @@ class CallScreenScaffoldTest {
     @Test
     fun testBottomSheetExpandedHeight() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        composeTestRule.setCallBottomSheet(sheetState, paddingValues = PaddingValues(0.dp))
+        composeTestRule.setCallScreenScaffold(sheetState, paddingValues = PaddingValues(0.dp))
         val sheetContentBounds = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot()
         val sheetDragContentBounds = composeTestRule.onNodeWithTag(sheetDragContentTag, useUnmergedTree = true).getBoundsInRoot()
         val sheetHandleBounds = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot()
@@ -261,7 +263,7 @@ class CallScreenScaffoldTest {
         sheetHeight.assertIsEqualTo(sheetContentHeight + sheetDragContentHeight + sheetHandleHeight, "sheet height")
     }
 
-    private fun ComposeContentTestRule.setCallBottomSheet(
+    private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
@@ -269,7 +271,7 @@ class CallScreenScaffoldTest {
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
         setContent {
-            CallScreenScaffold(
+            VCallScreenScaffold(
                 sheetState = sheetState,
                 topAppBar = topAppBar,
                 sheetPanelContent = panelContent,

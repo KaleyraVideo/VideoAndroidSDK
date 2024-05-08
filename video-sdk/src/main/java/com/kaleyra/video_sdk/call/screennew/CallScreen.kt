@@ -21,14 +21,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.CallInfoBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallScreenLandscapeScaffold
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallScreenScaffold
+import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
+import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
-import com.kaleyra.video_sdk.call.callactionnew.AnswerButtonMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AudioAction
 import com.kaleyra.video_sdk.call.callactionnew.CameraAction
 import com.kaleyra.video_sdk.call.callactionnew.ChatAction
@@ -41,7 +40,6 @@ import com.kaleyra.video_sdk.call.callactionnew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.callactionnew.WhiteboardAction
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 
 @Composable
 fun actionsComposablesFor(
@@ -63,7 +61,7 @@ fun actionsComposablesFor(
                 HangUpAction(
                     enabled = hangUpAction.isEnabled,
                     onClick = onHangUpClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         val micAction: @Composable ((Boolean, Modifier) -> Unit)? = microphoneAction?.let {
@@ -74,7 +72,7 @@ fun actionsComposablesFor(
                     warning = it.state == InputCallAction.State.Warning,
                     error = it.state == InputCallAction.State.Error,
                     onCheckedChange = onMicToggled,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -86,7 +84,7 @@ fun actionsComposablesFor(
                     warning = it.state == InputCallAction.State.Warning,
                     error = it.state == InputCallAction.State.Error,
                     onCheckedChange = onCameraToggled,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -96,7 +94,7 @@ fun actionsComposablesFor(
                     label = label,
                     enabled = it.isEnabled,
                     onClick = onFlipCameraClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -107,7 +105,7 @@ fun actionsComposablesFor(
                     label = label,
                     enabled = it.isEnabled,
                     onClick = onAudioClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -117,7 +115,7 @@ fun actionsComposablesFor(
                     label = label,
                     enabled = it.isEnabled,
                     onClick = onChatClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -127,7 +125,7 @@ fun actionsComposablesFor(
                     label = label,
                     enabled = it.isEnabled,
                     onClick = onFileShareClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -138,7 +136,7 @@ fun actionsComposablesFor(
                     enabled = it.isEnabled,
                     checked = it.isToggled,
                     onCheckedChange = onScreenShareToggle,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -148,7 +146,7 @@ fun actionsComposablesFor(
                     label = label,
                     enabled = it.isEnabled,
                     onClick = onWhiteboardClick,
-                    modifier = modifier.animatePlacement()
+                    modifier = modifier
                 )
             }
         }
@@ -159,7 +157,7 @@ fun actionsComposablesFor(
                         label = label,
                         enabled = it.isEnabled,
                         onClick = onVirtualBackgroundClick,
-                        modifier = modifier.animatePlacement()
+                        modifier = modifier
                     )
                 }
             }
@@ -228,9 +226,8 @@ fun CallScreen(
             sheetDragActions.value.isNotEmpty()
         }
     }
-    var displayAnswerButton by remember { mutableStateOf(true) }
     val sheetState = rememberCallSheetState()
-    CallScreenScaffold(
+    VCallScreenScaffold(
         sheetState = sheetState,
         paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
         topAppBar = {
@@ -247,7 +244,8 @@ fun CallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val itemsPerRow =
-                    actionsComposables.count() - sheetDragActions.count() + if (displayAnswerButton) AnswerButtonMultiplier else 1
+                    actionsComposables.count() - sheetDragActions.count()
+//                + if (displayAnswerButton) AnswerButtonMultiplier else 1
                 HSheetDragActions(
                     modifier = Modifier
                         .animateContentSize()
@@ -262,8 +260,8 @@ fun CallScreen(
                 sheetState = sheetState,
                 actions = actionsComposables,
                 maxActions = 8,
-                showAnswerAction = displayAnswerButton,
-                onAnswerActionClick = { displayAnswerButton = false },
+                showAnswerAction = false,
+                onAnswerActionClick = { },
                 onActionsPlaced = { itemsPlaced ->
                     sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
                 },
@@ -271,7 +269,7 @@ fun CallScreen(
                     Modifier.padding(start = 14.dp, top = 2.dp, end = 14.dp, bottom = 14.dp)
                 } else {
                     Modifier.padding(14.dp)
-                }.animateContentSize(),
+                },
             )
         },
         containerColor = Color.DarkGray,
@@ -310,17 +308,14 @@ fun VCallScreen(
         onWhiteboardClick = onWhiteboardClick,
         onVirtualBackgroundClick = onVirtualBackgroundClick
     )
-    var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember {
-        mutableStateOf(ImmutableList())
-    }
+    var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember {
         derivedStateOf {
             sheetDragActions.value.isNotEmpty()
         }
     }
-    var displayAnswerButton by remember { mutableStateOf(true) }
     val sheetState = rememberCallSheetState()
-    CallScreenLandscapeScaffold(
+    HCallScreenScaffold(
         sheetState = sheetState,
         paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
         topAppBar = {
@@ -336,7 +331,8 @@ fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerColumn = actionsComposables.count() - sheetDragActions.count() + if (displayAnswerButton) AnswerButtonMultiplier else 1
+                val itemsPerColumn = actionsComposables.count() - sheetDragActions.count()
+//                + if (displayAnswerButton) AnswerButtonMultiplier else 1
                 VSheetDragActions(
                     modifier = Modifier
                         .animateContentSize()
@@ -351,8 +347,8 @@ fun VCallScreen(
                 sheetState = sheetState,
                 actions = actionsComposables,
                 maxActions = 8,
-                showAnswerAction = displayAnswerButton,
-                onAnswerActionClick = { displayAnswerButton = false },
+                showAnswerAction = false,
+                onAnswerActionClick = { },
                 onActionsPlaced = { itemsPlaced ->
                     sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
                 },
@@ -360,7 +356,7 @@ fun VCallScreen(
                     Modifier.padding(start = 2.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
                 } else {
                     Modifier.padding(14.dp)
-                }.animateContentSize(),
+                },
             )
         },
         containerColor = Color.DarkGray,
