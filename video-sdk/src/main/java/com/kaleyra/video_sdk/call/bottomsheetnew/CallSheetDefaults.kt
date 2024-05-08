@@ -42,7 +42,7 @@ object CallBottomSheetDefaults {
     val ScrimOpacity = .32f
 
     @Composable
-    fun DragHandle(
+    fun HDragHandle(
         modifier: Modifier = Modifier,
         width: Dp = CallSheetTokens.DragHandleWidth,
         height: Dp = CallSheetTokens.DragHandleHeight,
@@ -69,7 +69,7 @@ object CallBottomSheetDefaults {
     }
 
     @Composable
-    fun VerticalDragHandle(
+    fun VDragHandle(
         modifier: Modifier = Modifier,
         width: Dp = CallSheetTokens.VerticalDragHandleWidth,
         height: Dp = CallSheetTokens.VerticalDragHandleHeight,

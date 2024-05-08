@@ -276,7 +276,7 @@ fun CallScreen(
         },
         containerColor = Color.DarkGray,
         sheetDragHandle = if (hasSheetDragContent) {
-            { CallBottomSheetDefaults.DragHandle() }
+            { CallBottomSheetDefaults.HDragHandle() }
         } else null
     ) { paddingValues ->
 
@@ -365,7 +365,7 @@ fun VCallScreen(
         },
         containerColor = Color.DarkGray,
         sheetDragHandle = if (hasSheetDragContent) {
-            { CallBottomSheetDefaults.VerticalDragHandle() }
+            { CallBottomSheetDefaults.VDragHandle() }
         } else null
     ) { paddingValues ->
 
