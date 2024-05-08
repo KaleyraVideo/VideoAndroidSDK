@@ -31,7 +31,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso
 import com.kaleyra.video.configuration.Configuration
 import com.kaleyra.video.configuration.Environment
 import com.kaleyra.video.configuration.Region
@@ -80,6 +79,7 @@ import com.kaleyra.video_sdk.ui.ComposeViewModelsMockTest
 import com.kaleyra.video_sdk.ui.findBackButton
 import com.kaleyra.video_sdk.ui.performDoubleClick
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
+import com.kaleyra.video_sdk.ui.pressBack
 import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
@@ -256,7 +256,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         sheetContentState = BottomSheetContentState(initialComponent, LineState.Expanded)
         composeTestRule.waitForIdle()
         assertEquals(initialComponent, sheetContentState.currentComponent)
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
         assertEquals(BottomSheetValue.Expanded, sheetState.currentValue)
@@ -267,7 +267,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
         composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.Collapsed, sheetState.currentValue)
     }
@@ -277,7 +277,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded, isCollapsable = false)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
         composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         composeTestRule.waitForIdle()
         assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
     }
@@ -288,7 +288,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded, isCollapsable = false)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
         composeTestRule.waitForIdle()
-        Espresso.pressBackUnconditionally()
+        composeTestRule.pressBack()
         assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
@@ -298,7 +298,9 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         sheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
         composeTestRule.waitForIdle()
-        Espresso.pressBackUnconditionally()
+        composeTestRule.activityRule.scenario.onActivity { activity ->
+            activity.onBackPressedDispatcher.onBackPressed()
+        }
         assertEquals(true, composeTestRule.activity.isFinishing)
     }
 
@@ -307,7 +309,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         callUiState = CallUiState(callState = CallStateUi.Disconnected.Ended)
         sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assertEquals(true, finishActivity)
     }
 
