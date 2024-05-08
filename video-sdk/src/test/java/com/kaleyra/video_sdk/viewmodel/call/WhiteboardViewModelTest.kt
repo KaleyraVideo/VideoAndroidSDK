@@ -67,7 +67,6 @@ class WhiteboardViewModelTest {
     @Before
     fun setUp() {
         mockkObject(CallUserMessagesProvider)
-        viewModel = spyk(WhiteboardViewModel(configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, whiteboardView = mockk(relaxed = true)))
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.whiteboard } returns whiteboardMock
         every { callMock.actions } returns MutableStateFlow(emptySet())
@@ -75,6 +74,13 @@ class WhiteboardViewModelTest {
             every { size } returns 1000L
             every { state } returns MutableStateFlow(SharedFile.State.Available)
         }
+        viewModel = spyk(WhiteboardViewModel(configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, whiteboardView = mockk(relaxed = true)))
+    }
+
+    @Test
+    fun testWhiteboardLoaded() = runTest {
+        advanceUntilIdle()
+        verify(exactly = 1) { whiteboardMock.load() }
     }
 
     @Test
@@ -126,8 +132,9 @@ class WhiteboardViewModelTest {
     @Test
     fun testOnReloadClick() = runTest {
         advanceUntilIdle()
-        viewModel.onReloadClick()
         verify(exactly = 1) { whiteboardMock.load() }
+        viewModel.onReloadClick()
+        verify(exactly = 2) { whiteboardMock.load() }
     }
 
     @Test

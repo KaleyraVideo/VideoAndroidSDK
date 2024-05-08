@@ -17,11 +17,11 @@
 package com.kaleyra.video_sdk.call.screen.model
 
 import androidx.compose.runtime.Immutable
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.common.uistate.UiState
-import com.kaleyra.video_sdk.call.recording.model.RecordingUi
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
+import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.uistate.UiState
 
 /**
  * Call Ui State representing the Ui state used in the Call Ui

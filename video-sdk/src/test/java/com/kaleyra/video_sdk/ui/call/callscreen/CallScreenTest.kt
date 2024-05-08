@@ -32,8 +32,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
-import com.kaleyra.video.State
-import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video.configuration.Configuration
+import com.kaleyra.video.configuration.Environment
+import com.kaleyra.video.configuration.Region
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
@@ -70,17 +71,20 @@ import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.ComposeViewModelsMockTest
 import com.kaleyra.video_sdk.ui.findBackButton
 import com.kaleyra.video_sdk.ui.performDoubleClick
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.spyk
-import kotlinx.coroutines.flow.MutableSharedFlow
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -103,7 +107,9 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     private var sheetState by mutableStateOf(spyk(BottomSheetState(BottomSheetValue.Expanded)))
 
-    private var sheetContentState by mutableStateOf(BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded))
+    private var sheetContentState by mutableStateOf(spyk(BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)))
+
+    private var whiteboardRequest by mutableStateOf<WhiteboardRequest?>(null)
 
     private var shouldShowFileShareComponent by mutableStateOf(false)
 
@@ -125,17 +131,11 @@ class CallScreenTest: ComposeViewModelsMockTest() {
 
     @Before
     fun setUp() {
-        mockkObject(KaleyraVideo)
-        every { KaleyraVideo.conference } returns mockk(relaxed = true) {
-            every { call } returns MutableSharedFlow<CallUI>(replay = 1).apply {
-                mockk<Unit>(relaxed = true).apply {
-                    every { state } returns MutableStateFlow(State.Connected)
-                }
-            }
-        }
+        KaleyraVideo.configure(Configuration("appId", Environment.Production, Region.Europe))
         composeTestRule.setContent {
             CallScreen(
                 callUiState = callUiState,
+                whiteboardRequest = whiteboardRequest,
                 callScreenState = rememberCallScreenState(
                     sheetState = sheetState,
                     sheetContentState = sheetContentState,
@@ -152,7 +152,6 @@ class CallScreenTest: ComposeViewModelsMockTest() {
                 onWhiteboardVisibility = { whiteboardDisplayed = it },
                 onCallEndedBack = { finishActivity = true },
                 onUserFeedback = { _,_ -> },
-                isTesting = true
             )
             LaunchedEffect(sideEffect) {
                 sideEffect.invoke()
@@ -739,4 +738,47 @@ class CallScreenTest: ComposeViewModelsMockTest() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_manual_recording_disclaimer)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
+
+    @Test
+    fun showWhiteboardRequestReceived_whiteboardDisplayed() {
+        whiteboardRequest = WhiteboardRequest.Show("username")
+        composeTestRule.waitForIdle()
+        verify { sheetContentState.navigateToComponent(BottomSheetComponent.Whiteboard) }
+        assertEquals(BottomSheetComponent.Whiteboard, sheetContentState.currentComponent)
+    }
+
+    @Test
+    fun showWhiteboardRequestReceived_whiteboardUserMessageDisplayed() = mockkObject(CallUserMessagesProvider) {
+        every { CallUserMessagesProvider.sendUserMessage(any()) } returns Unit
+        whiteboardRequest = WhiteboardRequest.Show("username")
+        composeTestRule.waitForIdle()
+        verify(exactly = 1) {
+            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardShowRequestMessage> {
+                assertEquals("username", it.adminUserId)
+            })
+        }
+    }
+
+    @Test
+    fun hideWhiteboardRequestReceived_whiteboardDisplayed() {
+        sheetContentState.navigateToComponent(BottomSheetComponent.Whiteboard)
+        whiteboardRequest = WhiteboardRequest.Hide("username")
+        composeTestRule.waitForIdle()
+        verify { sheetContentState.navigateToComponent(BottomSheetComponent.CallActions) }
+        assertEquals(BottomSheetComponent.CallActions, sheetContentState.currentComponent)
+    }
+
+    @Test
+    fun hideWhiteboardRequestReceived_whiteboardUserMessageDisplayed() = mockkObject(CallUserMessagesProvider) {
+        every { CallUserMessagesProvider.sendUserMessage(any()) } returns Unit
+        sheetContentState.navigateToComponent(BottomSheetComponent.Whiteboard)
+        whiteboardRequest = WhiteboardRequest.Hide("username")
+        composeTestRule.waitForIdle()
+        verify(exactly = 1) {
+            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardHideRequestMessage> {
+                assertEquals("username", it.adminUserId)
+            })
+        }
+    }
+
 }

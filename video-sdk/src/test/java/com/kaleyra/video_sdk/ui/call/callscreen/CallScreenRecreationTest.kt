@@ -57,6 +57,7 @@ class CallScreenRecreationTest : ComposeViewModelsMockTest() {
                         initialLineState = LineState.Expanded
                     )
                 ),
+                whiteboardRequest = null,
                 onBackPressed = { },
                 onConfigurationChange = { },
                 onThumbnailStreamClick = { },

@@ -37,7 +37,6 @@ import com.kaleyra.video_sdk.common.uistate.UiState
 @Immutable
 internal data class WhiteboardUiState(
     val whiteboardView: View? = null,
-    val showingRequest: Whiteboard.Event.Request? = null,
     val isLoading: Boolean = false,
     val isOffline: Boolean = false,
     val isFileSharingSupported: Boolean = false,

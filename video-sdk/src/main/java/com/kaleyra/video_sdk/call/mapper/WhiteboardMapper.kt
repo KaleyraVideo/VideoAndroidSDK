@@ -19,10 +19,13 @@ package com.kaleyra.video_sdk.call.mapper
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
@@ -39,15 +42,19 @@ internal object WhiteboardMapper {
             .flatMapLatest { it.events }
             .filterIsInstance()
 
-    fun Flow<CallUI>.getWhiteboardOpenEvents(): Flow<Whiteboard.Event.Request.Show> =
-        this.map { it.whiteboard }
+    fun Flow<CallUI>.getWhiteboardRequestEvents(): Flow<WhiteboardRequest> {
+        return this.map { it.whiteboard }
             .flatMapLatest { it.events }
-            .filterIsInstance()
-
-    fun Flow<CallUI>.getWhiteboardCloseEvents(): Flow<Whiteboard.Event.Request.Hide> =
-        this.map { it.whiteboard }
-            .flatMapLatest { it.events }
-            .filterIsInstance()
+            .filterIsInstance<Whiteboard.Event.Request>()
+            .map { request ->
+                val participants =  this@getWhiteboardRequestEvents.firstOrNull()?.participants?.value?.list
+                val displayName = participants?.firstOrNull { it.userId == request.adminUserId }?.combinedDisplayName?.firstOrNull()
+                when (request) {
+                    is Whiteboard.Event.Request.Show -> WhiteboardRequest.Show(displayName)
+                    is Whiteboard.Event.Request.Hide -> WhiteboardRequest.Hide(displayName)
+                }
+            }
+    }
 
     fun SharedFile.toWhiteboardUploadUi(): Flow<WhiteboardUploadUi?> {
         return state.map { state ->
