@@ -34,11 +34,8 @@ internal fun HSheetActions(
     val onMoreClick: () -> Unit = remember {
         {
             scope.launch {
-                if (sheetState.currentValue == CallSheetValue.Expanded) {
-                    sheetState.collapse()
-                } else {
-                    sheetState.expand()
-                }
+                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
+                else sheetState.expand()
             }
         }
     }
@@ -60,7 +57,6 @@ internal fun HSheetActions(
                 showMoreAction = actions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
-            horizontalItemSpacing = SheetItemsSpacing,
             maxItems = maxActions - if (showAnswerAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )

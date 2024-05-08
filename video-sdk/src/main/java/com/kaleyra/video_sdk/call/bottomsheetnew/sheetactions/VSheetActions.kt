@@ -36,11 +36,8 @@ internal fun VSheetActions(
     val onMoreClick: () -> Unit = remember {
         {
             scope.launch {
-                if (sheetState.currentValue == CallSheetValue.Expanded) {
-                    sheetState.collapse()
-                } else {
-                    sheetState.expand()
-                }
+                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
+                else sheetState.expand()
             }
         }
     }
@@ -65,7 +62,6 @@ internal fun VSheetActions(
                 showMoreAction = actions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
-            verticalItemSpacing = SheetItemsSpacing,
             maxItems = maxActions - if (showAnswerAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )

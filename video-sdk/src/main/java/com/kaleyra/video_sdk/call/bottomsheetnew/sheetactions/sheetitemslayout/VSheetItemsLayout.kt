@@ -6,7 +6,6 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -14,7 +13,7 @@ import kotlin.math.roundToInt
 internal fun VSheetItemsLayout(
     modifier: Modifier = Modifier,
     maxItems: Int = Int.MAX_VALUE,
-    verticalItemSpacing: Dp = 24.dp,
+    verticalItemSpacing: Dp = SheetItemsSpacing,
     onItemsPlaced: ((itemsPlaced: Int) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
