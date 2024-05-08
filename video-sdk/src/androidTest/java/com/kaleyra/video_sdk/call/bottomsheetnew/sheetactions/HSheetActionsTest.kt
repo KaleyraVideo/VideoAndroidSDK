@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
@@ -225,9 +225,9 @@ class HSheetActionsTest {
         val childBounds2 = composeTestRule.onNodeWithTag("tag2").getBoundsInRoot()
         val childBounds3 = composeTestRule.onNodeWithTag("tag3").getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
-        childBounds2.left.assertIsEqualTo(childBounds1.right + SheetActionsSpacing, "child 2 left")
-        childBounds3.left.assertIsEqualTo(childBounds2.right + SheetActionsSpacing, "child 2 left")
-        moreChild.left.assertIsEqualTo(childBounds3.right + SheetActionsSpacing, "more child left")
+        childBounds2.left.assertIsEqualTo(childBounds1.right + SheetItemsSpacing, "child 2 left")
+        childBounds3.left.assertIsEqualTo(childBounds2.right + SheetItemsSpacing, "child 2 left")
+        moreChild.left.assertIsEqualTo(childBounds3.right + SheetItemsSpacing, "more child left")
     }
 
     @Test

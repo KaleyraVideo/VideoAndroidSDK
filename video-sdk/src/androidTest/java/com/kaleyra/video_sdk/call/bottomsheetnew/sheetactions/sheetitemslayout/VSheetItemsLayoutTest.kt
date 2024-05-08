@@ -1,11 +1,10 @@
-package com.kaleyra.video_sdk.ui.call.bottomsheetnew
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -14,16 +13,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.height
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetItemsLayout
+import androidx.compose.ui.unit.width
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class SheetItemsLayoutTest {
+class VSheetItemsLayoutTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -31,7 +26,7 @@ class SheetItemsLayoutTest {
     @Test
     fun testNoItems() {
         composeTestRule.setContent {
-            SheetItemsLayout {}
+            VSheetItemsLayout {}
         }
     }
 
@@ -40,7 +35,7 @@ class SheetItemsLayoutTest {
         val maxItems = 2
         var itemsPlaced = -1
         composeTestRule.setContent {
-            SheetItemsLayout(
+            VSheetItemsLayout(
                 maxItems = maxItems,
                 onItemsPlaced = { itemsPlaced = it }
             ) {
@@ -58,45 +53,47 @@ class SheetItemsLayoutTest {
     }
 
     @Test
-    fun testLayoutHeight() {
+    fun testLayoutWidth() {
         composeTestRule.setContent {
-            SheetItemsLayout {
-                Spacer(Modifier.height(20.dp))
-                Spacer(Modifier.height(10.dp))
-                Spacer(Modifier.height(30.dp))
+            VSheetItemsLayout {
+                Spacer(Modifier.width(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(30.dp))
             }
         }
         val rootBounds = composeTestRule.onRoot().getBoundsInRoot()
-        rootBounds.height.assertIsEqualTo(30.dp, "root height")
+        rootBounds.width.assertIsEqualTo(30.dp, "root width")
     }
 
     @Test
     fun testItemsPlacement() {
         val spacing = 26.dp
+        var itemsCount = -1
         composeTestRule.setContent {
-            SheetItemsLayout(
-                horizontalItemSpacing = spacing
+            VSheetItemsLayout(
+                verticalItemSpacing = spacing,
+                onItemsPlaced = { itemsCount = it }
             ) {
                 Text("text1")
                 Text("text2")
                 Text("text3")
             }
         }
+        val parentBounds = composeTestRule.onRoot().getBoundsInRoot()
         val childBounds1 = composeTestRule.onNodeWithText("text1").getBoundsInRoot()
         val childBounds2 = composeTestRule.onNodeWithText("text2").getBoundsInRoot()
         val childBounds3 = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
-        childBounds1.left.assertIsEqualTo(0.dp, "child 1 left bound")
-        childBounds2.left.assertIsEqualTo(childBounds1.right + spacing, "child 2 left bound")
-        childBounds3.left.assertIsEqualTo(childBounds2.right + spacing, "child 3 left bound")
+        childBounds1.bottom.assertIsEqualTo(parentBounds.bottom, "child 1 top bound")
+        childBounds2.bottom.assertIsEqualTo(childBounds1.top - spacing, "child 2 top bound")
+        childBounds3.bottom.assertIsEqualTo(childBounds2.top - spacing, "child 3 top bound")
+        assertEquals(3, itemsCount)
     }
 
     @Test
-    fun testNoSpacingAddedAtTheEnd() {
+    fun testNoSpacingAddedAtTheTop() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            SheetItemsLayout(
-                horizontalItemSpacing = spacing
-            ) {
+            VSheetItemsLayout(verticalItemSpacing = spacing) {
                 Text("text1")
                 Text("text2")
                 Text("text3")
@@ -104,24 +101,24 @@ class SheetItemsLayoutTest {
         }
         val childBounds = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
         val rootBounds = composeTestRule.onRoot().getBoundsInRoot()
-        childBounds.right.assertIsEqualTo(rootBounds.right, "last child right bound")
+        childBounds.top.assertIsEqualTo(rootBounds.top, "last child top bound")
     }
 
     @Test
     fun testOnItemsPlaced() {
-        val layoutWidth = 75.dp
-        var itemsPlaced = -1
+        val layoutHeight = 75.dp
+        var itemsCount = -1
         composeTestRule.setContent {
-            SheetItemsLayout(
-                modifier = Modifier.width(layoutWidth),
-                horizontalItemSpacing = 0.dp,
-                onItemsPlaced = { itemsPlaced = it }
+            VSheetItemsLayout(
+                modifier = Modifier.height(layoutHeight),
+                verticalItemSpacing = 0.dp,
+                onItemsPlaced = { itemsCount = it }
             ) {
                 repeat(5) {
-                    Spacer(Modifier.width(24.dp))
+                    Spacer(Modifier.height(24.dp))
                 }
             }
         }
-        assertEquals(3, itemsPlaced)
+        assertEquals(3, itemsCount)
     }
 }

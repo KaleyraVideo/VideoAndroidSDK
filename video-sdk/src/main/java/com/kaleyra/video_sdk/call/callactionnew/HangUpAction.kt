@@ -8,14 +8,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 val HangUpButtonMultiplier = 1
 val HangUpButtonExtendedMultiplier = 2
 
-val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * HangUpButtonExtendedMultiplier + SheetActionsSpacing
+val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * HangUpButtonExtendedMultiplier + SheetItemsSpacing
 
 @Composable
 internal fun HangUpAction(

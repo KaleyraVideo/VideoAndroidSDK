@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.VerticalSheetItemsLayout
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.VSheetItemsLayout
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
@@ -52,20 +52,20 @@ internal fun VSheetActions(
                     onClick = onAnswerActionClick,
                     modifier = Modifier.size(CallActionDefaults.minButtonSize)
                 )
-                Spacer(Modifier.height(SheetActionsSpacing))
+                Spacer(Modifier.height(SheetItemsSpacing))
             }
             showMoreAction -> {
                 MoreAction(onClick = onMoreClick)
-                Spacer(Modifier.height(SheetActionsSpacing))
+                Spacer(Modifier.height(SheetItemsSpacing))
             }
         }
 
-        VerticalSheetItemsLayout(
+        VSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = actions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
-            verticalItemSpacing = SheetActionsSpacing,
+            verticalItemSpacing = SheetItemsSpacing,
             maxItems = maxActions - if (showAnswerAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )

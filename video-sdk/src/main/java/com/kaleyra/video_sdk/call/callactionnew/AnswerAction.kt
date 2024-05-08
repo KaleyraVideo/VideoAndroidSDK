@@ -8,15 +8,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 val AnswerButtonMultiplier = 2
 val AnswerButtonExtendedMultiplier = 2
 
-val AnswerButtonWidth = CallActionDefaults.minButtonSize * AnswerButtonMultiplier + SheetActionsSpacing
-val AnswerButtonExtendedWidth = CallActionDefaults.minButtonSize * AnswerButtonExtendedMultiplier + SheetActionsSpacing * (AnswerButtonExtendedMultiplier - 1)
+val AnswerButtonWidth = CallActionDefaults.minButtonSize * AnswerButtonMultiplier + SheetItemsSpacing
+val AnswerButtonExtendedWidth = CallActionDefaults.minButtonSize * AnswerButtonExtendedMultiplier + SheetItemsSpacing * (AnswerButtonExtendedMultiplier - 1)
 
 @Composable
 internal fun AnswerAction(

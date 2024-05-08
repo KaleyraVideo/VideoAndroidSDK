@@ -6,12 +6,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -31,7 +30,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 2 + SheetActionsSpacing
+        val width =  CallActionDefaults.minButtonSize * 2 + SheetItemsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
@@ -45,7 +44,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 3 + SheetActionsSpacing * 2
+        val width =  CallActionDefaults.minButtonSize * 3 + SheetItemsSpacing * 2
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 

@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetItemsLayout
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.HSheetItemsLayout
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -47,20 +47,20 @@ internal fun HSheetActions(
         when {
             showAnswerAction -> {
                 AnswerAction(onClick = onAnswerActionClick)
-                Spacer(Modifier.width(SheetActionsSpacing))
+                Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {
                 MoreAction(onClick = onMoreClick)
-                Spacer(Modifier.width(SheetActionsSpacing))
+                Spacer(Modifier.width(SheetItemsSpacing))
             }
         }
 
-        SheetItemsLayout(
+        HSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = actions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
-            horizontalItemSpacing = SheetActionsSpacing,
+            horizontalItemSpacing = SheetItemsSpacing,
             maxItems = maxActions - if (showAnswerAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )

@@ -2,15 +2,14 @@ package com.kaleyra.video_sdk.call.bottomsheetnew.dragcontent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetActionsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
-internal val SheetDragHorizontalPadding = SheetActionsSpacing
+internal val SheetDragHorizontalPadding = SheetItemsSpacing
 internal val SheetDragVerticalPadding = 20.dp
 
 @Composable
@@ -28,10 +27,7 @@ internal fun SheetDragContent(
         chunkedActions.forEachIndexed { actionsIndex, actions ->
             Row(horizontalArrangement = Arrangement.spacedBy(SheetDragHorizontalPadding)) {
                 actions.forEachIndexed { index, action ->
-                    val itemModifier =
-                        if (shouldExtendLastButton && actionsIndex == chunkedActions.size - 1 && index == actions.size - 1) {
-                            Modifier.weight(1f)
-                        } else Modifier
+                    val itemModifier = if (shouldExtendLastButton && actionsIndex == chunkedActions.size - 1 && index == actions.size - 1) Modifier.weight(1f) else Modifier
                     action(true, itemModifier)
                 }
             }

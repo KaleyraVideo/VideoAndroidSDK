@@ -1,11 +1,10 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetactions.sheetitemslayout
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -15,11 +14,15 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.HSheetItemsLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class SheetItemsLayoutTest {
+@RunWith(RobolectricTestRunner::class)
+class HSheetItemsLayoutTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -27,7 +30,7 @@ class SheetItemsLayoutTest {
     @Test
     fun testNoItems() {
         composeTestRule.setContent {
-            SheetItemsLayout {}
+            HSheetItemsLayout {}
         }
     }
 
@@ -36,7 +39,7 @@ class SheetItemsLayoutTest {
         val maxItems = 2
         var itemsPlaced = -1
         composeTestRule.setContent {
-            SheetItemsLayout(
+            HSheetItemsLayout(
                 maxItems = maxItems,
                 onItemsPlaced = { itemsPlaced = it }
             ) {
@@ -56,7 +59,7 @@ class SheetItemsLayoutTest {
     @Test
     fun testLayoutHeight() {
         composeTestRule.setContent {
-            SheetItemsLayout {
+            HSheetItemsLayout {
                 Spacer(Modifier.height(20.dp))
                 Spacer(Modifier.height(10.dp))
                 Spacer(Modifier.height(30.dp))
@@ -70,7 +73,7 @@ class SheetItemsLayoutTest {
     fun testItemsPlacement() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            SheetItemsLayout(
+            HSheetItemsLayout(
                 horizontalItemSpacing = spacing
             ) {
                 Text("text1")
@@ -90,7 +93,7 @@ class SheetItemsLayoutTest {
     fun testNoSpacingAddedAtTheEnd() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            SheetItemsLayout(
+            HSheetItemsLayout(
                 horizontalItemSpacing = spacing
             ) {
                 Text("text1")
@@ -108,7 +111,7 @@ class SheetItemsLayoutTest {
         val layoutWidth = 75.dp
         var itemsPlaced = -1
         composeTestRule.setContent {
-            SheetItemsLayout(
+            HSheetItemsLayout(
                 modifier = Modifier.width(layoutWidth),
                 horizontalItemSpacing = 0.dp,
                 onItemsPlaced = { itemsPlaced = it }

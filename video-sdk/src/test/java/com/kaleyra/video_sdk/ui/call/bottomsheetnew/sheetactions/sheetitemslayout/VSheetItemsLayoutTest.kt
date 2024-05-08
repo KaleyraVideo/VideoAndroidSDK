@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetactions.sheetitemslayout
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,11 +14,15 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.width
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.VSheetItemsLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class VerticalSheetItemsLayoutTest {
+@RunWith(RobolectricTestRunner::class)
+class VSheetItemsLayoutTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -26,7 +30,7 @@ class VerticalSheetItemsLayoutTest {
     @Test
     fun testNoItems() {
         composeTestRule.setContent {
-            VerticalSheetItemsLayout {}
+            VSheetItemsLayout {}
         }
     }
 
@@ -35,7 +39,7 @@ class VerticalSheetItemsLayoutTest {
         val maxItems = 2
         var itemsPlaced = -1
         composeTestRule.setContent {
-            VerticalSheetItemsLayout(
+            VSheetItemsLayout(
                 maxItems = maxItems,
                 onItemsPlaced = { itemsPlaced = it }
             ) {
@@ -55,7 +59,7 @@ class VerticalSheetItemsLayoutTest {
     @Test
     fun testLayoutWidth() {
         composeTestRule.setContent {
-            VerticalSheetItemsLayout {
+            VSheetItemsLayout {
                 Spacer(Modifier.width(20.dp))
                 Spacer(Modifier.width(10.dp))
                 Spacer(Modifier.width(30.dp))
@@ -70,7 +74,7 @@ class VerticalSheetItemsLayoutTest {
         val spacing = 26.dp
         var itemsCount = -1
         composeTestRule.setContent {
-            VerticalSheetItemsLayout(
+            VSheetItemsLayout(
                 verticalItemSpacing = spacing,
                 onItemsPlaced = { itemsCount = it }
             ) {
@@ -93,7 +97,7 @@ class VerticalSheetItemsLayoutTest {
     fun testNoSpacingAddedAtTheTop() {
         val spacing = 26.dp
         composeTestRule.setContent {
-            VerticalSheetItemsLayout(verticalItemSpacing = spacing) {
+            VSheetItemsLayout(verticalItemSpacing = spacing) {
                 Text("text1")
                 Text("text2")
                 Text("text3")
@@ -109,7 +113,7 @@ class VerticalSheetItemsLayoutTest {
         val layoutHeight = 75.dp
         var itemsCount = -1
         composeTestRule.setContent {
-            VerticalSheetItemsLayout(
+            VSheetItemsLayout(
                 modifier = Modifier.height(layoutHeight),
                 verticalItemSpacing = 0.dp,
                 onItemsPlaced = { itemsCount = it }
