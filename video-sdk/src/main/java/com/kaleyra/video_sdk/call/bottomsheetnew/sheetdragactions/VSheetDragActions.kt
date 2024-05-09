@@ -1,8 +1,10 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,9 +22,10 @@ internal fun VSheetDragActions(
     itemsPerColumn: Int,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     val chunkedActions = actions.value.chunked(itemsPerColumn)
     Row(
-        modifier = modifier,
+        modifier = modifier.horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(VSheetDragHorizontalPadding)
     ) {
         chunkedActions.fastForEach { actions ->
