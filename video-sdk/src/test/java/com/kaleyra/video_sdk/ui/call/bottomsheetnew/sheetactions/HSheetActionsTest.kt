@@ -20,9 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -41,10 +40,10 @@ class HSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -56,10 +55,10 @@ class HSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -72,10 +71,10 @@ class HSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = true,
                 onAnswerActionClick = { isAnswerClicked = true  },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -85,12 +84,36 @@ class HSheetActionsTest {
     }
 
     @Test
+    fun testOnMoreActionClick() {
+        var isMoreClicked = false
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        composeTestRule.setContent {
+            HSheetActions(
+                modifier = Modifier.width(150.dp),
+                actions = ImmutableList(
+                    listOf(
+                        { _, _ -> Spacer(Modifier.size(24.dp)) },
+                        { _, _ -> Spacer(Modifier.size(24.dp)) },
+                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                    )
+                ),
+                showAnswerAction = false,
+                onAnswerActionClick = { },
+                onMoreActionClick = { isMoreClicked = true },
+                onActionsPlaced = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
+        assertEquals(true, isMoreClicked)
+    }
+
+    @Test
     fun onlySomeActionsCanBeDisplayed_moreActionIsDisplayed() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -101,6 +124,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -113,7 +137,6 @@ class HSheetActionsTest {
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -122,6 +145,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -135,7 +159,6 @@ class HSheetActionsTest {
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(200.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -146,6 +169,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -154,64 +178,11 @@ class HSheetActionsTest {
     }
 
     @Test
-    fun testExpandOnMoreActionClick() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Collapsed)
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
-        composeTestRule.setContent {
-            HSheetActions(
-                modifier = Modifier.width(75.dp),
-                sheetState = sheetState,
-                actions = ImmutableList(
-                    listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
-                    )
-                ),
-                showAnswerAction = false,
-                onAnswerActionClick = { },
-                onActionsPlaced = { }
-            )
-        }
-        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
-        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-    }
-
-    @Test
-    fun testCollapseOnMoreActionClick() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
-        composeTestRule.setContent {
-            HSheetActions(
-                modifier = Modifier.width(75.dp),
-                sheetState = sheetState,
-                actions = ImmutableList(
-                    listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
-                    )
-                ),
-                showAnswerAction = false,
-                onAnswerActionClick = { },
-                onActionsPlaced = { }
-            )
-        }
-        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
-        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-    }
-
-    @Test
-    fun testSheetContentItemsPlacing() {
+    fun testSheetContentActionsPlacing() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(200.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -222,6 +193,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -235,12 +207,11 @@ class HSheetActionsTest {
     }
 
     @Test
-    fun testOnItemsPlacedCallback() {
+    fun testOnActionsPlacedCallback() {
         var itemsCount = -1
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -251,6 +222,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }
@@ -265,7 +237,6 @@ class HSheetActionsTest {
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -275,6 +246,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }
@@ -293,7 +265,6 @@ class HSheetActionsTest {
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -303,6 +274,7 @@ class HSheetActionsTest {
                 ),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }

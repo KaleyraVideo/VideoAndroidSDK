@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHasClickAction
@@ -14,14 +15,14 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -40,10 +41,10 @@ class VSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             VSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -55,10 +56,10 @@ class VSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             VSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -71,10 +72,10 @@ class VSheetActionsTest {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             VSheetActions(
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(),
                 showAnswerAction = true,
                 onAnswerActionClick = { isAnswerClicked = true  },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -84,12 +85,36 @@ class VSheetActionsTest {
     }
 
     @Test
+    fun testOnMoreActionClick() {
+        var isMoreClicked = false
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        composeTestRule.setContent {
+            VSheetActions(
+                modifier = Modifier.height(150.dp),
+                actions = ImmutableList(
+                    listOf(
+                        { _, _ -> Spacer(Modifier.size(24.dp)) },
+                        { _, _ -> Spacer(Modifier.size(24.dp)) },
+                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                    )
+                ),
+                showAnswerAction = false,
+                onAnswerActionClick = { },
+                onMoreActionClick = { isMoreClicked = true },
+                onActionsPlaced = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
+        assertEquals(true, isMoreClicked)
+    }
+
+    @Test
     fun onlySomeActionsCanBeDisplayed_moreActionIsDisplayed() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             VSheetActions(
                 modifier = Modifier.height(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -100,6 +125,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -112,7 +138,6 @@ class VSheetActionsTest {
         composeTestRule.setContent {
             VSheetActions(
                 modifier = Modifier.height(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -121,6 +146,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -134,7 +160,6 @@ class VSheetActionsTest {
         composeTestRule.setContent {
             VSheetActions(
                 modifier = Modifier.height(200.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -145,6 +170,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -153,64 +179,11 @@ class VSheetActionsTest {
     }
 
     @Test
-    fun testExpandOnMoreActionClick() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Collapsed)
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
-        composeTestRule.setContent {
-            VSheetActions(
-                modifier = Modifier.height(75.dp),
-                sheetState = sheetState,
-                actions = ImmutableList(
-                    listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
-                    )
-                ),
-                showAnswerAction = false,
-                onAnswerActionClick = { },
-                onActionsPlaced = { }
-            )
-        }
-        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
-        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-    }
-
-    @Test
-    fun testCollapseOnMoreActionClick() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
-        composeTestRule.setContent {
-            VSheetActions(
-                modifier = Modifier.height(75.dp),
-                sheetState = sheetState,
-                actions = ImmutableList(
-                    listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
-                    )
-                ),
-                showAnswerAction = false,
-                onAnswerActionClick = { },
-                onActionsPlaced = { }
-            )
-        }
-        composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
-        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-    }
-
-    @Test
-    fun testSheetContentItemsPlacing() {
+    fun testSheetContentActionsPlacing() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             VSheetActions(
                 modifier = Modifier.height(200.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -221,6 +194,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { }
             )
         }
@@ -234,12 +208,11 @@ class VSheetActionsTest {
     }
 
     @Test
-    fun testOnItemsPlacedCallback() {
+    fun testOnActionsPlacedCallback() {
         var itemsCount = -1
         composeTestRule.setContent {
             VSheetActions(
                 modifier = Modifier.height(150.dp),
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -250,6 +223,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }
@@ -264,7 +238,6 @@ class VSheetActionsTest {
         composeTestRule.setContent {
             VSheetActions(
                 maxActions = maxActions,
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -274,6 +247,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }
@@ -292,7 +266,6 @@ class VSheetActionsTest {
         composeTestRule.setContent {
             VSheetActions(
                 maxActions = maxActions,
-                sheetState = rememberCallSheetState(),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -302,6 +275,7 @@ class VSheetActionsTest {
                 ),
                 showAnswerAction = true,
                 onAnswerActionClick = { },
+                onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
             )
         }

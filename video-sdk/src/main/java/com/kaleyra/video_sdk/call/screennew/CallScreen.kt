@@ -1,18 +1,33 @@
 package com.kaleyra.video_sdk.call.screennew
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +36,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.CallInfoBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
@@ -40,6 +57,10 @@ import com.kaleyra.video_sdk.call.callactionnew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.callactionnew.WhiteboardAction
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.launch
+
+internal typealias ActionComposable = @Composable (label: Boolean, modifier: Modifier) -> Unit
+
 
 @Composable
 fun actionsComposablesFor(
@@ -54,9 +75,9 @@ fun actionsComposablesFor(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit
-): ImmutableList<@Composable (label: Boolean, modifier: Modifier) -> Unit> {
+): ImmutableList<ActionComposable> {
     with(actions) {
-        val hangUpAction: @Composable (Boolean, Modifier) -> Unit =
+        val hangUpAction: ActionComposable =
             { _, modifier ->
                 HangUpAction(
                     enabled = hangUpAction.isEnabled,
@@ -64,7 +85,7 @@ fun actionsComposablesFor(
                     modifier = modifier
                 )
             }
-        val micAction: @Composable ((Boolean, Modifier) -> Unit)? = microphoneAction?.let {
+        val micAction: ActionComposable? = microphoneAction?.let {
             { _, modifier ->
                 MicAction(
                     checked = it.isToggled,
@@ -76,7 +97,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val cameraAction: @Composable ((Boolean, Modifier) -> Unit)? = cameraAction?.let {
+        val cameraAction: ActionComposable? = cameraAction?.let {
             { _, modifier ->
                 CameraAction(
                     checked = it.isToggled,
@@ -88,7 +109,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val flipCameraAction: @Composable ((Boolean, Modifier) -> Unit)? = flipCameraAction?.let {
+        val flipCameraAction: ActionComposable? = flipCameraAction?.let {
             { label, modifier ->
                 FlipCameraAction(
                     label = label,
@@ -98,7 +119,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val audioAction: @Composable ((Boolean, Modifier) -> Unit)? = audioAction?.let {
+        val audioAction: ActionComposable? = audioAction?.let {
             { label, modifier ->
                 AudioAction(
                     audioDevice = it.audioDevice,
@@ -109,7 +130,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val chatAction: @Composable ((Boolean, Modifier) -> Unit)? = chatAction?.let {
+        val chatAction: ActionComposable? = chatAction?.let {
             { label, modifier ->
                 ChatAction(
                     label = label,
@@ -119,7 +140,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val fileShareAction: @Composable ((Boolean, Modifier) -> Unit)? = fileShareAction?.let {
+        val fileShareAction: ActionComposable? = fileShareAction?.let {
             { label, modifier ->
                 FileShareAction(
                     label = label,
@@ -129,7 +150,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val screenShareAction: @Composable ((Boolean, Modifier) -> Unit)? = screenShareAction?.let {
+        val screenShareAction: ActionComposable? = screenShareAction?.let {
             { label, modifier ->
                 ScreenShareAction(
                     label = label,
@@ -140,7 +161,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val whiteboardAction: @Composable ((Boolean, Modifier) -> Unit)? = whiteboardAction?.let {
+        val whiteboardAction: ActionComposable? = whiteboardAction?.let {
             { label, modifier ->
                 WhiteboardAction(
                     label = label,
@@ -150,7 +171,7 @@ fun actionsComposablesFor(
                 )
             }
         }
-        val virtualBackgroundAction: @Composable ((Boolean, Modifier) -> Unit)? =
+        val virtualBackgroundAction: ActionComposable? =
             virtualBackgroundAction?.let {
                 { label, modifier ->
                     VirtualBackgroundAction(
@@ -180,19 +201,8 @@ fun actionsComposablesFor(
 }
 
 @Composable
-private fun scaffoldPaddingValues(horizontal: Dp, vertical: Dp): PaddingValues {
-    val layoutDirection = LocalLayoutDirection.current
-    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
-    return PaddingValues(
-        start = systemBarsPadding.calculateStartPadding(layoutDirection) + horizontal,
-        top = systemBarsPadding.calculateTopPadding() + vertical,
-        end = systemBarsPadding.calculateEndPadding(layoutDirection) + horizontal,
-        bottom = systemBarsPadding.calculateBottomPadding() + vertical
-    )
-}
-
-@Composable
-fun CallScreen(
+internal fun CallScreen(
+    windowSizeClass: WindowSizeClass,
     actions: CallActionsUI,
     onMicToggled: (Boolean) -> Unit,
     onCameraToggled: (Boolean) -> Unit,
@@ -205,6 +215,8 @@ fun CallScreen(
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit
 ) {
+    val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+
     val actionsComposables = actionsComposablesFor(
         actions = actions,
         onMicToggled = onMicToggled,
@@ -218,18 +230,51 @@ fun CallScreen(
         onWhiteboardClick = onWhiteboardClick,
         onVirtualBackgroundClick = onVirtualBackgroundClick
     )
-    var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember {
-        mutableStateOf(ImmutableList())
-    }
-    val hasSheetDragContent by remember {
-        derivedStateOf {
-            sheetDragActions.value.isNotEmpty()
+    val sheetState = rememberCallSheetState()
+
+    val scope = rememberCoroutineScope()
+    val flipSheetState: () -> Unit = remember {
+        {
+            scope.launch {
+                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
+                else sheetState.expand()
+            }
         }
     }
-    val sheetState = rememberCallSheetState()
+
+    if (isCompactHeight) {
+        HCallScreen(
+            sheetState = sheetState,
+            actions = actionsComposables,
+            flipSheetState = flipSheetState
+        )
+    } else {
+        VCallScreen(
+            windowSizeClass = windowSizeClass,
+            sheetState = sheetState,
+            actions = actionsComposables,
+            flipSheetState = flipSheetState
+        )
+    }
+}
+
+@Composable
+internal fun VCallScreen(
+    windowSizeClass: WindowSizeClass,
+    sheetState: CallSheetState,
+    actions: ImmutableList<ActionComposable>,
+    flipSheetState: () -> Unit
+) {
+    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+   
+    var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
+    val hasSheetDragContent by remember { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
+   
+    var showSheetPanelContent by remember { mutableStateOf(false) }
+
     VCallScreenScaffold(
         sheetState = sheetState,
-        paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
+        paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
             CallInfoBar(
                 title = "title",
@@ -241,10 +286,28 @@ fun CallScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
+        sheetPanelContent = {
+            AnimatedVisibility(
+                visible = isLargeScreen and showSheetPanelContent,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Card(Modifier.width(320.dp)) {
+                    Column {
+                        Text("ciao")
+                        Text("ciao")
+                        Text("ciao")
+                        Text("ciao")
+                        Text("ciao")
+                        Text("ciao")
+                        Text("ciao")
+                    }
+                }
+            }
+        },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow =
-                    actionsComposables.count() - sheetDragActions.count()
+                val itemsPerRow = actions.count() - sheetDragActions.count() + 1
 //                + if (displayAnswerButton) AnswerButtonMultiplier else 1
                 HSheetDragActions(
                     modifier = Modifier
@@ -257,19 +320,18 @@ fun CallScreen(
         },
         sheetContent = {
             HSheetActions(
-                sheetState = sheetState,
-                actions = actionsComposables,
+                actions = actions,
                 maxActions = 8,
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = {
+                    if (hasSheetDragContent) flipSheetState()
+                    else showSheetPanelContent = !showSheetPanelContent
+                },
                 onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
+                    sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))
                 },
-                modifier = if (hasSheetDragContent) {
-                    Modifier.padding(start = 14.dp, top = 2.dp, end = 14.dp, bottom = 14.dp)
-                } else {
-                    Modifier.padding(14.dp)
-                },
+                modifier = Modifier.padding(14.dp),
             )
         },
         containerColor = Color.DarkGray,
@@ -282,42 +344,17 @@ fun CallScreen(
 }
 
 @Composable
-fun VCallScreen(
-    actions: CallActionsUI,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onHangUpClick: () -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
+internal fun HCallScreen(
+    sheetState: CallSheetState,
+    actions: ImmutableList<ActionComposable>,
+    flipSheetState: () -> Unit
 ) {
-    val actionsComposables = actionsComposablesFor(
-        actions = actions,
-        onMicToggled = onMicToggled,
-        onCameraToggled = onCameraToggled,
-        onScreenShareToggle = onScreenShareToggle,
-        onHangUpClick = onHangUpClick,
-        onFlipCameraClick = onFlipCameraClick,
-        onAudioClick = onAudioClick,
-        onChatClick = onChatClick,
-        onFileShareClick = onFileShareClick,
-        onWhiteboardClick = onWhiteboardClick,
-        onVirtualBackgroundClick = onVirtualBackgroundClick
-    )
-    var sheetDragActions: ImmutableList<@Composable (Boolean, Modifier) -> Unit> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember {
-        derivedStateOf {
-            sheetDragActions.value.isNotEmpty()
-        }
-    }
-    val sheetState = rememberCallSheetState()
+    var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
+    val hasSheetDragContent by remember { derivedStateOf { sheetDragActions.value.isNotEmpty() } }
+
     HCallScreenScaffold(
         sheetState = sheetState,
-        paddingValues = scaffoldPaddingValues(horizontal = 4.dp, vertical = 12.dp),
+        paddingValues = callScreenScaffoldPaddingValues(horizontal = 8.dp, vertical = 4.dp),
         topAppBar = {
             CallInfoBar(
                 title = "title",
@@ -331,7 +368,7 @@ fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerColumn = actionsComposables.count() - sheetDragActions.count()
+                val itemsPerColumn = actions.count() - sheetDragActions.count() + 1
 //                + if (displayAnswerButton) AnswerButtonMultiplier else 1
                 VSheetDragActions(
                     modifier = Modifier
@@ -344,19 +381,15 @@ fun VCallScreen(
         },
         sheetContent = {
             VSheetActions(
-                sheetState = sheetState,
-                actions = actionsComposables,
+                actions = actions,
                 maxActions = 8,
                 showAnswerAction = false,
                 onAnswerActionClick = { },
+                onMoreActionClick = flipSheetState,
                 onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
+                    sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))
                 },
-                modifier = if (hasSheetDragContent) {
-                    Modifier.padding(start = 2.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-                } else {
-                    Modifier.padding(14.dp)
-                },
+                modifier = Modifier.padding(14.dp),
             )
         },
         containerColor = Color.DarkGray,
@@ -366,4 +399,12 @@ fun VCallScreen(
     ) { paddingValues ->
 
     }
+}
+
+@Composable
+private fun callScreenScaffoldPaddingValues(horizontal: Dp, vertical: Dp): PaddingValues {
+    return WindowInsets.systemBars
+        .add(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+        .add(WindowInsets(left = horizontal, top = vertical, right = horizontal, bottom = vertical))
+        .asPaddingValues()
 }

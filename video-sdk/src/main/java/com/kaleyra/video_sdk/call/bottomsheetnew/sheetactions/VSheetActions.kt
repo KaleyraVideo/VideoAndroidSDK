@@ -8,39 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.VSheetItemsLayout
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
+import com.kaleyra.video_sdk.call.screennew.ActionComposable
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun VSheetActions(
     modifier: Modifier = Modifier,
-    actions: ImmutableList<@Composable (label: Boolean, modifier: Modifier) -> Unit>,
-    sheetState: CallSheetState,
+    actions: ImmutableList<ActionComposable>,
     maxActions: Int = Int.MAX_VALUE,
     showAnswerAction: Boolean,
     onAnswerActionClick: () -> Unit,
+    onMoreActionClick: () -> Unit,
     onActionsPlaced: (actionsPlaced: Int) -> Unit
 ) {
     var showMoreAction by remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
-    val onMoreClick: () -> Unit = remember {
-        {
-            scope.launch {
-                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
-                else sheetState.expand()
-            }
-        }
-    }
 
     Column(modifier) {
         when {
@@ -52,7 +40,7 @@ internal fun VSheetActions(
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
             showMoreAction -> {
-                MoreAction(onClick = onMoreClick)
+                MoreAction(onClick = onMoreActionClick)
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
         }
