@@ -33,7 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.common.button.IconButton
-import com.kaleyra.video_sdk.call.appbar.CallAppBar
+import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
@@ -66,7 +66,7 @@ internal fun WhiteboardAppBar(
     onUploadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    CallAppBar(
+    ComponentAppBar(
         onBackPressed = onBackPressed,
         title = stringResource(id = R.string.kaleyra_whiteboard),
         actions = {

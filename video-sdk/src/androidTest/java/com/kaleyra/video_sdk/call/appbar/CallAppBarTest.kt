@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.appbar
+package com.kaleyra.video_sdk.call.appbar
 
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -12,18 +12,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.appbar.CallInfoBar
-import com.kaleyra.video_sdk.call.appbar.RecordingDotTag
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class CallInfoBarTest {
+class CallAppBarTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -43,7 +38,7 @@ class CallInfoBarTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            CallInfoBar(
+            CallAppBar(
                 logo = logo,
                 recording = recording,
                 title = title,

@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -31,10 +29,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.appbar.CallInfoBar
+import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
@@ -213,7 +210,9 @@ internal fun CallScreen(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
+    onVirtualBackgroundClick: () -> Unit,
+    onParticipantClick: () -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
@@ -233,7 +232,7 @@ internal fun CallScreen(
     val sheetState = rememberCallSheetState()
 
     val scope = rememberCoroutineScope()
-    val flipSheetState: () -> Unit = remember {
+    val onChangeSheetState: () -> Unit = remember {
         {
             scope.launch {
                 if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
@@ -244,16 +243,20 @@ internal fun CallScreen(
 
     if (isCompactHeight) {
         HCallScreen(
-            sheetState = sheetState,
             actions = actionsComposables,
-            flipSheetState = flipSheetState
+            sheetState = sheetState,
+            onChangeSheetState = onChangeSheetState,
+            onParticipantClick = onParticipantClick,
+            onBackPressed = onBackPressed
         )
     } else {
         VCallScreen(
             windowSizeClass = windowSizeClass,
-            sheetState = sheetState,
             actions = actionsComposables,
-            flipSheetState = flipSheetState
+            sheetState = sheetState,
+            onChangeSheetState = onChangeSheetState,
+            onParticipantClick = onParticipantClick,
+            onBackPressed = onBackPressed
         )
     }
 }
@@ -261,9 +264,11 @@ internal fun CallScreen(
 @Composable
 internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
-    sheetState: CallSheetState,
     actions: ImmutableList<ActionComposable>,
-    flipSheetState: () -> Unit
+    sheetState: CallSheetState,
+    onChangeSheetState: () -> Unit,
+    onParticipantClick: () -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
    
@@ -276,13 +281,13 @@ internal fun VCallScreen(
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
-            CallInfoBar(
+            CallAppBar(
                 title = "title",
                 logo = Logo(),
                 recording = false,
                 participantCount = 3,
-                onParticipantClick = { },
-                onBackPressed = {},
+                onParticipantClick = onParticipantClick,
+                onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
@@ -325,7 +330,7 @@ internal fun VCallScreen(
                 showAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {
-                    if (hasSheetDragContent) flipSheetState()
+                    if (hasSheetDragContent) onChangeSheetState()
                     else showSheetPanelContent = !showSheetPanelContent
                 },
                 onActionsPlaced = { itemsPlaced ->
@@ -345,9 +350,11 @@ internal fun VCallScreen(
 
 @Composable
 internal fun HCallScreen(
-    sheetState: CallSheetState,
     actions: ImmutableList<ActionComposable>,
-    flipSheetState: () -> Unit
+    sheetState: CallSheetState,
+    onChangeSheetState: () -> Unit,
+    onParticipantClick: () -> Unit,
+    onBackPressed: () -> Unit
 ) {
     var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember { derivedStateOf { sheetDragActions.value.isNotEmpty() } }
@@ -356,13 +363,13 @@ internal fun HCallScreen(
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 8.dp, vertical = 4.dp),
         topAppBar = {
-            CallInfoBar(
+            CallAppBar(
                 title = "title",
                 logo = Logo(),
                 recording = false,
                 participantCount = 3,
-                onParticipantClick = { },
-                onBackPressed = {},
+                onParticipantClick = onParticipantClick,
+                onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
@@ -385,7 +392,7 @@ internal fun HCallScreen(
                 maxActions = 8,
                 showAnswerAction = false,
                 onAnswerActionClick = { },
-                onMoreActionClick = flipSheetState,
+                onMoreActionClick = onChangeSheetState,
                 onActionsPlaced = { itemsPlaced ->
                     sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))
                 },
