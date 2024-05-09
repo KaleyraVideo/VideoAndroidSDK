@@ -14,7 +14,8 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 val HangUpActionExtendedMultiplier = 2
 
-val HangUpActionExtendedWidth = CallActionDefaults.minButtonSize * HangUpActionExtendedMultiplier + SheetItemsSpacing
+val HangUpActionExtendedWidth = CallActionDefaults.minButtonSize * HangUpActionExtendedMultiplier
+//+ SheetItemsSpacing
 
 @Composable
 internal fun HangUpAction(
