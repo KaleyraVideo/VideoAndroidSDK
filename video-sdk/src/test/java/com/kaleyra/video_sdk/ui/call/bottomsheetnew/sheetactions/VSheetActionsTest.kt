@@ -90,7 +90,7 @@ class VSheetActionsTest {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             VSheetActions(
-                modifier = Modifier.height(150.dp),
+                modifier = Modifier.height(100.dp),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -183,7 +183,7 @@ class VSheetActionsTest {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             VSheetActions(
-                modifier = Modifier.height(200.dp),
+                modifier = Modifier.height(150.dp),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -200,11 +200,9 @@ class VSheetActionsTest {
         }
         val childBounds1 = composeTestRule.onNodeWithTag("tag1").getBoundsInRoot()
         val childBounds2 = composeTestRule.onNodeWithTag("tag2").getBoundsInRoot()
-        val childBounds3 = composeTestRule.onNodeWithTag("tag3").getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
         childBounds2.bottom.assertIsEqualTo(childBounds1.top - SheetItemsSpacing, "child 2 bottom")
-        childBounds3.bottom.assertIsEqualTo(childBounds2.top - SheetItemsSpacing, "child 3 bottom")
-        moreChild.bottom.assertIsEqualTo(childBounds3.top - SheetItemsSpacing, "more child top")
+        moreChild.bottom.assertIsEqualTo(childBounds2.top - SheetItemsSpacing, "more child top")
     }
 
     @Test
@@ -232,9 +230,10 @@ class VSheetActionsTest {
     }
 
     @Test
-    fun testMaxActions() {
+    fun testMaxActionsLessThanActualActions() {
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         var itemsCount = -1
-        val maxActions = 2
+        val maxActions = 3
         composeTestRule.setContent {
             VSheetActions(
                 maxActions = maxActions,
@@ -242,7 +241,8 @@ class VSheetActionsTest {
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) }
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
                     )
                 ),
                 showAnswerAction = false,
@@ -255,6 +255,39 @@ class VSheetActionsTest {
         composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
         composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
         composeTestRule.onNodeWithTag("tag3").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("tag4").assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
+        assertEquals(maxActions - 1, itemsCount)
+    }
+
+    @Test
+    fun testMaxActionsEqualToActualActions() {
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        var itemsCount = -1
+        val maxActions = 4
+        composeTestRule.setContent {
+            VSheetActions(
+                maxActions = maxActions,
+                actions = ImmutableList(
+                    listOf(
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
+                    )
+                ),
+                showAnswerAction = false,
+                onAnswerActionClick = { },
+                onMoreActionClick = {},
+                onActionsPlaced = { itemsCount = it }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag3").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag4").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
         assertEquals(maxActions, itemsCount)
     }
 

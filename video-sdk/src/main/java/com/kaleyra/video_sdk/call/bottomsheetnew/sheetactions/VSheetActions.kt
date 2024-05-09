@@ -28,7 +28,7 @@ internal fun VSheetActions(
     onMoreActionClick: () -> Unit,
     onActionsPlaced: (actionsPlaced: Int) -> Unit
 ) {
-    var showMoreAction by remember { mutableStateOf(true) }
+    var showMoreAction by remember { mutableStateOf(false) }
 
     Column(modifier) {
         when {
@@ -47,10 +47,10 @@ internal fun VSheetActions(
 
         VSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
-                showMoreAction = actions.count() > itemsPlaced
+                showMoreAction = actions.count() > itemsPlaced && !showAnswerAction
                 onActionsPlaced(itemsPlaced)
             },
-            maxItems = maxActions - if (showAnswerAction) 1 else 0,
+            maxItems = maxActions - if (showAnswerAction || showMoreAction) 1 else 0,
             content = { actions.value.forEach { action -> action(false, Modifier) } }
         )
     }

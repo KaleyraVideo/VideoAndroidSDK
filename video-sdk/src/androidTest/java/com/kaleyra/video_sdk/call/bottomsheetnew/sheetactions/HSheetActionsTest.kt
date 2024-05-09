@@ -89,7 +89,7 @@ class HSheetActionsTest {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
-                modifier = Modifier.width(150.dp),
+                modifier = Modifier.width(100.dp),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp)) },
@@ -104,6 +104,7 @@ class HSheetActionsTest {
                 onActionsPlaced = { }
             )
         }
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithContentDescription(moreDescription).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(moreDescription).performClick()
         assertEquals(true, isMoreClicked)
@@ -186,7 +187,7 @@ class HSheetActionsTest {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
-                modifier = Modifier.width(200.dp),
+                modifier = Modifier.width(150.dp),
                 actions = ImmutableList(
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
@@ -204,11 +205,9 @@ class HSheetActionsTest {
         }
         val childBounds1 = composeTestRule.onNodeWithTag("tag1").getBoundsInRoot()
         val childBounds2 = composeTestRule.onNodeWithTag("tag2").getBoundsInRoot()
-        val childBounds3 = composeTestRule.onNodeWithTag("tag3").getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
         childBounds2.left.assertIsEqualTo(childBounds1.right + SheetItemsSpacing, "child 2 left")
-        childBounds3.left.assertIsEqualTo(childBounds2.right + SheetItemsSpacing, "child 2 left")
-        moreChild.left.assertIsEqualTo(childBounds3.right + SheetItemsSpacing, "more child left")
+        moreChild.left.assertIsEqualTo(childBounds2.right + SheetItemsSpacing, "more child left")
     }
 
     @Test
@@ -237,9 +236,10 @@ class HSheetActionsTest {
     }
 
     @Test
-    fun testMaxActions() {
+    fun testMaxActionsLessThanActualActions() {
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         var itemsCount = -1
-        val maxActions = 2
+        val maxActions = 3
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
@@ -247,7 +247,8 @@ class HSheetActionsTest {
                     listOf(
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
                         { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) }
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
                     )
                 ),
                 showAnswerAction = false,
@@ -261,6 +262,40 @@ class HSheetActionsTest {
         composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
         composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
         composeTestRule.onNodeWithTag("tag3").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("tag4").assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
+        assertEquals(maxActions - 1, itemsCount)
+    }
+
+    @Test
+    fun testMaxActionsEqualToActualActions() {
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        var itemsCount = -1
+        val maxActions = 4
+        composeTestRule.setContent {
+            HSheetActions(
+                maxActions = maxActions,
+                actions = ImmutableList(
+                    listOf(
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
+                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
+                    )
+                ),
+                showAnswerAction = false,
+                extendedAnswerAction = false,
+                onAnswerActionClick = { },
+                onMoreActionClick = {},
+                onActionsPlaced = { itemsCount = it }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag3").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tag4").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
         assertEquals(maxActions, itemsCount)
     }
 

@@ -58,7 +58,6 @@ import kotlinx.coroutines.launch
 
 internal typealias ActionComposable = @Composable (label: Boolean, modifier: Modifier) -> Unit
 
-
 @Composable
 fun actionsComposablesFor(
     actions: CallActionsUI,
@@ -333,7 +332,7 @@ internal fun VCallScreen(
         sheetContent = {
             HSheetActions(
                 actions = actions,
-                maxActions = 8,
+                maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                 showAnswerAction = showAnswerAction,
                 extendedAnswerAction = isLargeScreen,
                 onAnswerActionClick = onAnswerActionClick,
@@ -347,14 +346,15 @@ internal fun VCallScreen(
                 modifier = Modifier.padding(14.dp),
             )
         },
-        containerColor = Color.DarkGray,
-        sheetDragHandle = if (hasSheetDragContent) {
-            { CallBottomSheetDefaults.HDragHandle() }
-        } else null
+        containerColor = Color.Gray,
+        sheetDragHandle = if (hasSheetDragContent) { { CallBottomSheetDefaults.HDragHandle() } } else null
     ) { paddingValues ->
 
     }
 }
+
+internal const val CompactScreenMaxActions = 5
+internal const val LargeScreenMaxActions = 8
 
 @Composable
 internal fun HCallScreen(
@@ -396,7 +396,7 @@ internal fun HCallScreen(
         sheetContent = {
             VSheetActions(
                 actions = actions,
-                maxActions = 8,
+                maxActions = CompactScreenMaxActions,
                 showAnswerAction = showAnswerAction,
                 onAnswerActionClick = onAnswerActionClick,
                 onMoreActionClick = onChangeSheetState,
@@ -406,10 +406,8 @@ internal fun HCallScreen(
                 modifier = Modifier.padding(14.dp),
             )
         },
-        containerColor = Color.DarkGray,
-        sheetDragHandle = if (hasSheetDragContent) {
-            { CallBottomSheetDefaults.VDragHandle() }
-        } else null
+        containerColor = Color.Gray,
+        sheetDragHandle = if (hasSheetDragContent) { { CallBottomSheetDefaults.VDragHandle() } } else null
     ) { paddingValues ->
 
     }
