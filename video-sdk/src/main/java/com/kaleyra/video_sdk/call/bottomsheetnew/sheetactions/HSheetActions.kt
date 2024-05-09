@@ -22,6 +22,7 @@ internal fun HSheetActions(
     actions: ImmutableList<ActionComposable>,
     maxActions: Int = Int.MAX_VALUE,
     showAnswerAction: Boolean,
+    extendedAnswerAction: Boolean,
     onAnswerActionClick: () -> Unit,
     onMoreActionClick: () -> Unit,
     onActionsPlaced: (actionsPlaced: Int) -> Unit
@@ -31,7 +32,7 @@ internal fun HSheetActions(
     ReversibleRow(modifier, reverseLayout = true) {
         when {
             showAnswerAction -> {
-                AnswerAction(onClick = onAnswerActionClick)
+                AnswerAction(extended = extendedAnswerAction, onClick = onAnswerActionClick)
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {

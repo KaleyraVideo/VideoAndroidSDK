@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.screennew
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
@@ -42,6 +41,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActi
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AudioAction
 import com.kaleyra.video_sdk.call.callactionnew.CameraAction
 import com.kaleyra.video_sdk.call.callactionnew.ChatAction
@@ -62,6 +62,7 @@ internal typealias ActionComposable = @Composable (label: Boolean, modifier: Mod
 @Composable
 fun actionsComposablesFor(
     actions: CallActionsUI,
+    extendedActions: Boolean,
     onMicToggled: (Boolean) -> Unit,
     onCameraToggled: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
@@ -79,6 +80,7 @@ fun actionsComposablesFor(
                 HangUpAction(
                     enabled = hangUpAction.isEnabled,
                     onClick = onHangUpClick,
+                    extended = extendedActions,
                     modifier = modifier
                 )
             }
@@ -215,9 +217,11 @@ internal fun CallScreen(
     onBackPressed: () -> Unit
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
 
     val actionsComposables = actionsComposablesFor(
         actions = actions,
+        extendedActions = !isCompactHeight and isLargeScreen,
         onMicToggled = onMicToggled,
         onCameraToggled = onCameraToggled,
         onScreenShareToggle = onScreenShareToggle,
@@ -230,6 +234,8 @@ internal fun CallScreen(
         onVirtualBackgroundClick = onVirtualBackgroundClick
     )
     val sheetState = rememberCallSheetState()
+
+    var showAnswerAction by remember { mutableStateOf(true) }
 
     val scope = rememberCoroutineScope()
     val onChangeSheetState: () -> Unit = remember {
@@ -245,17 +251,21 @@ internal fun CallScreen(
         HCallScreen(
             actions = actionsComposables,
             sheetState = sheetState,
+            showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
             onParticipantClick = onParticipantClick,
+            onAnswerActionClick = { showAnswerAction = false },
             onBackPressed = onBackPressed
         )
     } else {
         VCallScreen(
-            windowSizeClass = windowSizeClass,
+            isLargeScreen = isLargeScreen,
             actions = actionsComposables,
             sheetState = sheetState,
+            showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
             onParticipantClick = onParticipantClick,
+            onAnswerActionClick = { showAnswerAction = false },
             onBackPressed = onBackPressed
         )
     }
@@ -263,15 +273,15 @@ internal fun CallScreen(
 
 @Composable
 internal fun VCallScreen(
-    windowSizeClass: WindowSizeClass,
+    isLargeScreen: Boolean,
     actions: ImmutableList<ActionComposable>,
     sheetState: CallSheetState,
+    showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
     onParticipantClick: () -> Unit,
+    onAnswerActionClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
-   
     var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
    
@@ -312,12 +322,9 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow = actions.count() - sheetDragActions.count() + 1
-//                + if (displayAnswerButton) AnswerButtonMultiplier else 1
+                val itemsPerRow = actions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
                 HSheetDragActions(
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(14.dp),
+                    modifier = Modifier.padding(14.dp),
                     actions = sheetDragActions,
                     itemsPerRow = itemsPerRow
                 )
@@ -327,8 +334,9 @@ internal fun VCallScreen(
             HSheetActions(
                 actions = actions,
                 maxActions = 8,
-                showAnswerAction = false,
-                onAnswerActionClick = { },
+                showAnswerAction = showAnswerAction,
+                extendedAnswerAction = isLargeScreen,
+                onAnswerActionClick = onAnswerActionClick,
                 onMoreActionClick = {
                     if (hasSheetDragContent) onChangeSheetState()
                     else showSheetPanelContent = !showSheetPanelContent
@@ -352,8 +360,10 @@ internal fun VCallScreen(
 internal fun HCallScreen(
     actions: ImmutableList<ActionComposable>,
     sheetState: CallSheetState,
+    showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
     onParticipantClick: () -> Unit,
+    onAnswerActionClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
     var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
@@ -376,11 +386,8 @@ internal fun HCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val itemsPerColumn = actions.count() - sheetDragActions.count() + 1
-//                + if (displayAnswerButton) AnswerButtonMultiplier else 1
                 VSheetDragActions(
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(14.dp),
+                    modifier = Modifier.padding(14.dp),
                     actions = sheetDragActions,
                     itemsPerColumn = itemsPerColumn
                 )
@@ -390,8 +397,8 @@ internal fun HCallScreen(
             VSheetActions(
                 actions = actions,
                 maxActions = 8,
-                showAnswerAction = false,
-                onAnswerActionClick = { },
+                showAnswerAction = showAnswerAction,
+                onAnswerActionClick = onAnswerActionClick,
                 onMoreActionClick = onChangeSheetState,
                 onActionsPlaced = { itemsPlaced ->
                     sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))

@@ -12,10 +12,9 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.S
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-val HangUpButtonMultiplier = 1
-val HangUpButtonExtendedMultiplier = 2
+val HangUpActionExtendedMultiplier = 2
 
-val HangUpButtonExtendedWidth = CallActionDefaults.minButtonSize * HangUpButtonExtendedMultiplier + SheetItemsSpacing
+val HangUpActionExtendedWidth = CallActionDefaults.minButtonSize * HangUpActionExtendedMultiplier + SheetItemsSpacing
 
 @Composable
 internal fun HangUpAction(
@@ -25,7 +24,7 @@ internal fun HangUpAction(
     extended: Boolean = false
 ) {
     CallAction(
-        modifier = if (extended) modifier.width(HangUpButtonExtendedWidth) else modifier,
+        modifier = if (extended) modifier.width(HangUpActionExtendedWidth) else modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_hang_up),
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
         buttonColor = KaleyraTheme.colors.hangUp,

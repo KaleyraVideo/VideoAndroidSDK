@@ -12,11 +12,11 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.S
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-val AnswerButtonMultiplier = 2
-val AnswerButtonExtendedMultiplier = 2
+val AnswerActionMultiplier = 2
+val AnswerActionExtendedMultiplier = 3
 
-val AnswerButtonWidth = CallActionDefaults.minButtonSize * AnswerButtonMultiplier + SheetItemsSpacing
-val AnswerButtonExtendedWidth = CallActionDefaults.minButtonSize * AnswerButtonExtendedMultiplier + SheetItemsSpacing * (AnswerButtonExtendedMultiplier - 1)
+val AnswerActionWidth = CallActionDefaults.minButtonSize * AnswerActionMultiplier + SheetItemsSpacing
+val AnswerActionExtendedWidth = CallActionDefaults.minButtonSize * AnswerActionExtendedMultiplier + SheetItemsSpacing * (AnswerActionExtendedMultiplier - 1)
 
 @Composable
 internal fun AnswerAction(
@@ -26,7 +26,7 @@ internal fun AnswerAction(
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_answer)
     CallAction(
-        modifier = if (extended) modifier.width(AnswerButtonExtendedWidth) else modifier.width(AnswerButtonWidth),
+        modifier = if (extended) modifier.width(AnswerActionExtendedWidth) else modifier.width(AnswerActionWidth),
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_answer),
         contentDescription = text,
         buttonText = text,

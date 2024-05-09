@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -18,10 +19,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionWidth
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -42,6 +43,7 @@ class HSheetActionsTest {
             HSheetActions(
                 actions = ImmutableList(),
                 showAnswerAction = true,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -57,6 +59,7 @@ class HSheetActionsTest {
             HSheetActions(
                 actions = ImmutableList(),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -73,6 +76,7 @@ class HSheetActionsTest {
             HSheetActions(
                 actions = ImmutableList(),
                 showAnswerAction = true,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { isAnswerClicked = true  },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -98,6 +102,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = { isMoreClicked = true },
                 onActionsPlaced = { }
@@ -123,6 +128,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -144,6 +150,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -168,6 +175,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = true,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -192,6 +200,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { }
@@ -221,6 +230,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
@@ -245,6 +255,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = false,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
@@ -273,6 +284,7 @@ class HSheetActionsTest {
                     )
                 ),
                 showAnswerAction = true,
+                extendedAnswerAction = false,
                 onAnswerActionClick = { },
                 onMoreActionClick = {},
                 onActionsPlaced = { itemsCount = it }
@@ -284,5 +296,39 @@ class HSheetActionsTest {
         composeTestRule.onNodeWithTag("tag3").assertIsNotDisplayed()
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
         assertEquals(maxActions - 1, itemsCount)
+    }
+
+    @Test
+    fun extendedAnswerActionFalse_answerActionWidthIsRegular() {
+        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        composeTestRule.setContent {
+            HSheetActions(
+                actions = ImmutableList(),
+                showAnswerAction = true,
+                extendedAnswerAction = false,
+                onAnswerActionClick = { },
+                onMoreActionClick = { },
+                onActionsPlaced = { }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText(answerDescription).assertWidthIsEqualTo(AnswerActionWidth)
+    }
+
+    @Test
+    fun extendedAnswerActionTrue_answerActionWidthIsExtended() {
+        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        composeTestRule.setContent {
+            HSheetActions(
+                actions = ImmutableList(),
+                showAnswerAction = true,
+                extendedAnswerAction = true,
+                onAnswerActionClick = { },
+                onMoreActionClick = { },
+                onActionsPlaced = { }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText(answerDescription).assertWidthIsEqualTo(AnswerActionExtendedWidth)
     }
 }
