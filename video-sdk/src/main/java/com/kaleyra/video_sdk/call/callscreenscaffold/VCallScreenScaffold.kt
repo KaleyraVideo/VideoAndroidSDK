@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
@@ -110,7 +109,7 @@ internal fun VCallScreenScaffold(
             )
             Column(Modifier.align(Alignment.BottomCenter)) {
                 if (sheetPanelContent != null) {
-                    Card(
+                    Column(
                         modifier = Modifier
                             .padding(start = startPadding, end = endPadding)
                             .align(Alignment.End)
