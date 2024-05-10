@@ -48,7 +48,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.S
 import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import kotlin.math.roundToInt
 
-object CallActionDefaults {
+internal object CallActionDefaults {
 
     val buttonShape = RoundedCornerShape(18.dp)
 
@@ -118,7 +118,7 @@ object CallActionDefaults {
 }
 
 @Composable
-fun CallToggleAction(
+internal fun CallToggleAction(
     icon: Painter,
     checked: Boolean,
     contentDescription: String,
@@ -166,7 +166,7 @@ fun CallToggleAction(
 }
 
 @Composable
-fun CallAction(
+internal fun CallAction(
     icon: Painter,
     contentDescription: String,
     onClick: (() -> Unit),

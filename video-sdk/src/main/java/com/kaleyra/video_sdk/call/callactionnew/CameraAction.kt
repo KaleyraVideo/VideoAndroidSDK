@@ -12,6 +12,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
+// TODO add label
 @Composable
 internal fun CameraAction(
     checked: Boolean,
