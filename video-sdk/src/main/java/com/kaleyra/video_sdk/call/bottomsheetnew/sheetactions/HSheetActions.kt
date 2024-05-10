@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.util.fastForEach
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.HSheetItemsLayout
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
@@ -47,7 +48,7 @@ internal fun HSheetActions(
                 onActionsPlaced(itemsPlaced)
             },
             maxItems = maxActions - if (showAnswerAction || showMoreAction) 1 else 0,
-            content = { actions.value.forEach { action -> action(false, Modifier) } }
+            content = { actions.value.fastForEach { composable -> composable(false, Modifier) } }
         )
     }
 }
