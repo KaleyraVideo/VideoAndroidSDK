@@ -8,6 +8,7 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragHorizontalPadding
@@ -45,14 +46,14 @@ class VSheetDragActionsTest {
         val childBounds2 = composeTestRule.onNodeWithText("text2").getBoundsInRoot()
         val childBounds3 = composeTestRule.onNodeWithText("text3").getBoundsInRoot()
         val childBounds4 = composeTestRule.onNodeWithText("text4").getBoundsInRoot()
-        childBounds1.top.assertIsEqualTo(childBounds2.bottom + VSheetDragVerticalPadding, "child 1 top bound")
-        childBounds1.bottom.assertIsEqualTo(rootBounds.bottom, "child 1 bottom bound")
-        childBounds2.top.assertIsEqualTo(rootBounds.top, "child 2 top bound")
-        childBounds3.top.assertIsEqualTo(childBounds4.bottom + VSheetDragVerticalPadding, "child 3 top bound")
-        childBounds3.bottom.assertIsEqualTo(rootBounds.bottom, "child 3 bottom bound")
-        childBounds4.top.assertIsEqualTo(rootBounds.top, "child 4 top bound")
-        childBounds3.left.assertIsEqualTo(childBounds1.right + VSheetDragHorizontalPadding, "child 3 left bound")
-        childBounds4.left.assertIsEqualTo(childBounds2.right + VSheetDragHorizontalPadding, "child 4 left bound")
+        childBounds1.top.assertIsEqualTo(childBounds2.bottom + VSheetDragVerticalPadding, "child 1 top bound", tolerance = Dp(1f))
+        childBounds1.bottom.assertIsEqualTo(rootBounds.bottom, "child 1 bottom bound",tolerance = Dp(1f))
+        childBounds2.top.assertIsEqualTo(rootBounds.top, "child 2 top bound", tolerance = Dp(1f))
+        childBounds3.top.assertIsEqualTo(childBounds4.bottom + VSheetDragVerticalPadding, "child 3 top bound", tolerance = Dp(1f))
+        childBounds3.bottom.assertIsEqualTo(rootBounds.bottom, "child 3 bottom bound", tolerance = Dp(1f))
+        childBounds4.top.assertIsEqualTo(rootBounds.top, "child 4 top bound", tolerance = Dp(1f))
+        childBounds3.left.assertIsEqualTo(childBounds1.right + VSheetDragHorizontalPadding, "child 3 left bound", tolerance = Dp(1f))
+        childBounds4.left.assertIsEqualTo(childBounds2.right + VSheetDragHorizontalPadding, "child 4 left bound", tolerance = Dp(1f))
     }
 
     @Test

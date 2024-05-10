@@ -1,40 +1,43 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import com.cheonjaeung.compose.grid.SimpleGridCells
+import com.cheonjaeung.compose.grid.VerticalGrid
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.screennew.ActionComposable
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 
 internal val HSheetDragHorizontalPadding = SheetItemsSpacing
 internal val HSheetDragVerticalPadding = 20.dp
 
+internal val HDragActionModifier = Modifier.animatePlacement()
+
 @Composable
 internal fun HSheetDragActions(
-    actions: ImmutableList<@Composable (Boolean, Modifier) -> Unit>,
+    actions: ImmutableList<ActionComposable>,
     itemsPerRow: Int,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-    val shouldExtendLastButton = actions.count() / itemsPerRow < 1
-    val chunkedActions = actions.value.chunked(itemsPerRow)
-    Column(
-        modifier = modifier.verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(HSheetDragVerticalPadding)
+    val actionsCount = actions.count()
+    val hasOneRow = actionsCount < itemsPerRow
+    VerticalGrid(
+        columns = SimpleGridCells.Fixed(itemsPerRow),
+        horizontalArrangement = Arrangement.spacedBy(HSheetDragHorizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(HSheetDragVerticalPadding),
+        modifier = modifier
     ) {
-        chunkedActions.fastForEachIndexed { actionsIndex, actions ->
-            Row(horizontalArrangement = Arrangement.spacedBy(HSheetDragHorizontalPadding)) {
-                actions.fastForEachIndexed { index, action ->
-                    val itemModifier = if (shouldExtendLastButton && actionsIndex == chunkedActions.size - 1 && index == actions.size - 1) Modifier.weight(1f) else Modifier
-                    action(true, itemModifier)
-                }
-            }
+        actions.value.fastForEachIndexed { index, composable ->
+            val isLastIndex = index == actionsCount - 1
+            val mod = if (isLastIndex && hasOneRow) {
+                val spanCount = itemsPerRow - (actionsCount % itemsPerRow) + 1
+                HDragActionModifier.span(spanCount)
+            } else HDragActionModifier
+            composable(true, mod)
         }
     }
 }

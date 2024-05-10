@@ -1,6 +1,8 @@
 package com.kaleyra.video_sdk.call.screennew
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
@@ -34,13 +36,11 @@ import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
-import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AudioAction
 import com.kaleyra.video_sdk.call.callactionnew.CameraAction
@@ -53,150 +53,12 @@ import com.kaleyra.video_sdk.call.callactionnew.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactionnew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.callactionnew.WhiteboardAction
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
+import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.launch
 
 internal typealias ActionComposable = @Composable (label: Boolean, modifier: Modifier) -> Unit
-
-@Composable
-fun actionsComposablesFor(
-    actions: CallActionsUI,
-    extendedActions: Boolean,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onHangUpClick: () -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
-): ImmutableList<ActionComposable> {
-    with(actions) {
-        val hangUpAction: ActionComposable =
-            { _, modifier ->
-                HangUpAction(
-                    enabled = hangUpAction.isEnabled,
-                    onClick = onHangUpClick,
-                    extended = extendedActions,
-                    modifier = modifier
-                )
-            }
-        val micAction: ActionComposable? = microphoneAction?.let {
-            { _, modifier ->
-                MicAction(
-                    checked = it.isToggled,
-                    enabled = it.isEnabled,
-                    warning = it.state == InputCallAction.State.Warning,
-                    error = it.state == InputCallAction.State.Error,
-                    onCheckedChange = onMicToggled,
-                    modifier = modifier
-                )
-            }
-        }
-        val cameraAction: ActionComposable? = cameraAction?.let {
-            { _, modifier ->
-                CameraAction(
-                    checked = it.isToggled,
-                    enabled = it.isEnabled,
-                    warning = it.state == InputCallAction.State.Warning,
-                    error = it.state == InputCallAction.State.Error,
-                    onCheckedChange = onCameraToggled,
-                    modifier = modifier
-                )
-            }
-        }
-        val flipCameraAction: ActionComposable? = flipCameraAction?.let {
-            { label, modifier ->
-                FlipCameraAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onFlipCameraClick,
-                    modifier = modifier
-                )
-            }
-        }
-        val audioAction: ActionComposable? = audioAction?.let {
-            { label, modifier ->
-                AudioAction(
-                    audioDevice = it.audioDevice,
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onAudioClick,
-                    modifier = modifier
-                )
-            }
-        }
-        val chatAction: ActionComposable? = chatAction?.let {
-            { label, modifier ->
-                ChatAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onChatClick,
-                    modifier = modifier
-                )
-            }
-        }
-        val fileShareAction: ActionComposable? = fileShareAction?.let {
-            { label, modifier ->
-                FileShareAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onFileShareClick,
-                    modifier = modifier
-                )
-            }
-        }
-        val screenShareAction: ActionComposable? = screenShareAction?.let {
-            { label, modifier ->
-                ScreenShareAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    checked = it.isToggled,
-                    onCheckedChange = onScreenShareToggle,
-                    modifier = modifier
-                )
-            }
-        }
-        val whiteboardAction: ActionComposable? = whiteboardAction?.let {
-            { label, modifier ->
-                WhiteboardAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onWhiteboardClick,
-                    modifier = modifier
-                )
-            }
-        }
-        val virtualBackgroundAction: ActionComposable? =
-            virtualBackgroundAction?.let {
-                { label, modifier ->
-                    VirtualBackgroundAction(
-                        label = label,
-                        enabled = it.isEnabled,
-                        onClick = onVirtualBackgroundClick,
-                        modifier = modifier
-                    )
-                }
-            }
-
-        return ImmutableList(
-            listOfNotNull(
-                hangUpAction,
-                micAction,
-                cameraAction,
-                flipCameraAction,
-                audioAction,
-                chatAction,
-                fileShareAction,
-                screenShareAction,
-                whiteboardAction,
-                virtualBackgroundAction
-            )
-        )
-    }
-}
 
 @Composable
 internal fun CallScreen(
@@ -216,7 +78,10 @@ internal fun CallScreen(
     onBackPressed: () -> Unit
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
+        WindowWidthSizeClass.Medium,
+        WindowWidthSizeClass.Expanded
+    )
 
     val actionsComposables = actionsComposablesFor(
         actions = actions,
@@ -259,28 +124,65 @@ internal fun CallScreen(
     } else {
         VCallScreen(
             isLargeScreen = isLargeScreen,
-            actions = actionsComposables,
+            callActions = actions,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
             onParticipantClick = onParticipantClick,
             onAnswerActionClick = { showAnswerAction = false },
+            onHangUpClick = onHangUpClick,
+            onMicToggled = onMicToggled,
+            onCameraToggled = onCameraToggled,
+            onScreenShareToggle = onScreenShareToggle,
+            onFlipCameraClick = onFlipCameraClick,
+            onAudioClick = onAudioClick,
+            onChatClick = onChatClick,
+            onFileShareClick = onFileShareClick,
+            onWhiteboardClick = onWhiteboardClick,
+            onVirtualBackgroundClick = onVirtualBackgroundClick,
             onBackPressed = onBackPressed
         )
-    }   
+    }
 }
+
+internal const val CompactScreenMaxActions = 5
+internal const val LargeScreenMaxActions = 8
 
 @Composable
 internal fun VCallScreen(
     isLargeScreen: Boolean,
-    actions: ImmutableList<ActionComposable>,
+    callActions: CallActionsUI,
     sheetState: CallSheetState,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
-    onParticipantClick: () -> Unit,
     onAnswerActionClick: () -> Unit,
+    onHangUpClick: () -> Unit,
+    onMicToggled: (Boolean) -> Unit,
+    onCameraToggled: (Boolean) -> Unit,
+    onScreenShareToggle: (Boolean) -> Unit,
+    onFlipCameraClick: () -> Unit,
+    onAudioClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onFileShareClick: () -> Unit,
+    onWhiteboardClick: () -> Unit,
+    onVirtualBackgroundClick: () -> Unit,
+    onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
+    val actionsComposables = actionsComposablesFor(
+        actions = callActions,
+        extendedActions = isLargeScreen,
+        onMicToggled = onMicToggled,
+        onCameraToggled = onCameraToggled,
+        onScreenShareToggle = onScreenShareToggle,
+        onHangUpClick = onHangUpClick,
+        onFlipCameraClick = onFlipCameraClick,
+        onAudioClick = onAudioClick,
+        onChatClick = onChatClick,
+        onFileShareClick = onFileShareClick,
+        onWhiteboardClick = onWhiteboardClick,
+        onVirtualBackgroundClick = onVirtualBackgroundClick
+    )
     var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
     val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
@@ -304,7 +206,7 @@ internal fun VCallScreen(
         sheetPanelContent = {
             if (isLargeScreen) {
                 AnimatedVisibility(
-                    visible = true,
+                    visible = showSheetPanelContent,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
@@ -324,17 +226,19 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow = actions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
+                val itemsPerRow = actionsComposables.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
                 HSheetDragActions(
-                    modifier = Modifier.padding(14.dp),
                     actions = sheetDragActions,
-                    itemsPerRow = itemsPerRow
+                    itemsPerRow = itemsPerRow,
+                    modifier = Modifier
+                        .padding(14.dp)
+                        .animateContentSize(tween(durationMillis = 500))
                 )
             }
         },
         sheetContent = {
             HSheetActions(
-                actions = actions,
+                actions = actionsComposables,
                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                 showAnswerAction = showAnswerAction,
                 extendedAnswerAction = isLargeScreen,
@@ -344,20 +248,19 @@ internal fun VCallScreen(
                     else showSheetPanelContent = !showSheetPanelContent
                 },
                 onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))
+                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
                 },
                 modifier = Modifier.padding(14.dp),
             )
         },
         containerColor = Color.Gray,
-        sheetDragHandle = if (hasSheetDragContent) { { CallBottomSheetDefaults.HDragHandle() } } else null
+        sheetDragHandle = if (hasSheetDragContent) {
+            { CallBottomSheetDefaults.HDragHandle() }
+        } else null
     ) { paddingValues ->
 
     }
 }
-
-internal const val CompactScreenMaxActions = 5
-internal const val LargeScreenMaxActions = 8
 
 @Composable
 internal fun HCallScreen(
@@ -390,9 +293,11 @@ internal fun HCallScreen(
             if (hasSheetDragContent) {
                 val itemsPerColumn = actions.count() - sheetDragActions.count() + 1
                 VSheetDragActions(
-                    modifier = Modifier.padding(14.dp),
                     actions = sheetDragActions,
-                    itemsPerColumn = itemsPerColumn
+                    itemsPerColumn = itemsPerColumn,
+                    modifier = Modifier
+                        .padding(14.dp)
+                        .animateContentSize(tween(durationMillis = 500)),
                 )
             }
         },
@@ -404,16 +309,159 @@ internal fun HCallScreen(
                 onAnswerActionClick = onAnswerActionClick,
                 onMoreActionClick = onChangeSheetState,
                 onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(actions.value.takeLast(actions.count() - itemsPlaced))
+                    val newDragActions = actions.value.takeLast(actions.count() - itemsPlaced)
+                    if (sheetDragActions.value != newDragActions) {
+                        sheetDragActions = ImmutableList(newDragActions)
+                    }
                 },
                 modifier = Modifier.padding(14.dp),
             )
         },
         containerColor = Color.Gray,
-        sheetDragHandle = if (hasSheetDragContent) { { CallBottomSheetDefaults.VDragHandle() } } else null
+        sheetDragHandle = if (hasSheetDragContent) {
+            { CallBottomSheetDefaults.VDragHandle() }
+        } else null
     ) { paddingValues ->
 
     }
+}
+
+@Composable
+private fun actionsComposablesFor(
+    actions: CallActionsUI,
+    extendedActions: Boolean,
+    onMicToggled: (Boolean) -> Unit,
+    onCameraToggled: (Boolean) -> Unit,
+    onScreenShareToggle: (Boolean) -> Unit,
+    onHangUpClick: () -> Unit,
+    onFlipCameraClick: () -> Unit,
+    onAudioClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onFileShareClick: () -> Unit,
+    onWhiteboardClick: () -> Unit,
+    onVirtualBackgroundClick: () -> Unit
+): ImmutableList<ActionComposable> = with(actions) {
+    val hangUpAction: ActionComposable =
+        { _, modifier ->
+            HangUpAction(
+                enabled = hangUpAction.isEnabled,
+                onClick = onHangUpClick,
+                extended = extendedActions,
+                modifier = modifier
+            )
+        }
+    val micAction: ActionComposable? = microphoneAction?.let {
+        { _, modifier ->
+            MicAction(
+                checked = it.isToggled,
+                enabled = it.isEnabled,
+                warning = it.state == InputCallAction.State.Warning,
+                error = it.state == InputCallAction.State.Error,
+                onCheckedChange = onMicToggled,
+                modifier = modifier
+            )
+        }
+    }
+    val cameraAction: ActionComposable? = cameraAction?.let {
+        { _, modifier ->
+            CameraAction(
+                checked = it.isToggled,
+                enabled = it.isEnabled,
+                warning = it.state == InputCallAction.State.Warning,
+                error = it.state == InputCallAction.State.Error,
+                onCheckedChange = onCameraToggled,
+                modifier = modifier
+            )
+        }
+    }
+    val flipCameraAction: ActionComposable? = flipCameraAction?.let {
+        { label, modifier ->
+            FlipCameraAction(
+                label = label,
+                enabled = it.isEnabled,
+                onClick = onFlipCameraClick,
+                modifier = modifier
+            )
+        }
+    }
+    val audioAction: ActionComposable? = audioAction?.let {
+        { label, modifier ->
+            AudioAction(
+                audioDevice = it.audioDevice,
+                label = label,
+                enabled = it.isEnabled,
+                onClick = onAudioClick,
+                modifier = modifier
+            )
+        }
+    }
+    val chatAction: ActionComposable? = chatAction?.let {
+        { label, modifier ->
+            ChatAction(
+                label = label,
+                enabled = it.isEnabled,
+                onClick = onChatClick,
+                modifier = modifier
+            )
+        }
+    }
+    val fileShareAction: ActionComposable? = fileShareAction?.let {
+        { label, modifier ->
+            FileShareAction(
+                label = label,
+                enabled = it.isEnabled,
+                onClick = onFileShareClick,
+                modifier = modifier
+            )
+        }
+    }
+    val screenShareAction: ActionComposable? = screenShareAction?.let {
+        { label, modifier ->
+            ScreenShareAction(
+                label = label,
+                enabled = it.isEnabled,
+                checked = it.isToggled,
+                onCheckedChange = onScreenShareToggle,
+                modifier = modifier
+            )
+        }
+    }
+    val whiteboardAction: ActionComposable? = whiteboardAction?.let {
+        { label, modifier ->
+            WhiteboardAction(
+                label = label,
+                enabled = it.isEnabled,
+                onClick = onWhiteboardClick,
+                modifier = modifier
+            )
+        }
+    }
+    val virtualBackgroundAction: ActionComposable? =
+        virtualBackgroundAction?.let {
+            { label, modifier ->
+                VirtualBackgroundAction(
+                    label = label,
+                    enabled = it.isEnabled,
+                    onClick = onVirtualBackgroundClick,
+                    modifier = modifier
+                )
+            }
+        }
+
+    return ImmutableList(
+        listOfNotNull(
+            hangUpAction,
+            micAction,
+            cameraAction,
+            flipCameraAction,
+            audioAction,
+            whiteboardAction,
+            fileShareAction,
+            screenShareAction,
+            virtualBackgroundAction,
+            chatAction
+        )
+    )
 }
 
 @Composable
