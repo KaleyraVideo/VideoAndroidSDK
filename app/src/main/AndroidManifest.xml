@@ -40,7 +40,7 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:theme="@style/BaseTheme.SplashScreen" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.kaleyra.video_sdk.call.screennew.NewCallScreenActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:exported="true"
             android:launchMode="singleTask"
