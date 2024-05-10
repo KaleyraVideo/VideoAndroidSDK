@@ -267,7 +267,7 @@ internal fun CallScreen(
             onAnswerActionClick = { showAnswerAction = false },
             onBackPressed = onBackPressed
         )
-    }
+    }   
 }
 
 @Composable
@@ -282,9 +282,10 @@ internal fun VCallScreen(
     onBackPressed: () -> Unit
 ) {
     var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
-   
-    var showSheetPanelContent by remember { mutableStateOf(false) }
+    // TODO do a resize test when writing test
+    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
+    // TODO test reset on resize
+    var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
     VCallScreenScaffold(
         sheetState = sheetState,
@@ -301,20 +302,22 @@ internal fun VCallScreen(
             )
         },
         sheetPanelContent = {
-            AnimatedVisibility(
-                visible = isLargeScreen and showSheetPanelContent,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Card(Modifier.width(320.dp)) {
-                    Column {
-                        Text("ciao")
-                        Text("ciao")
-                        Text("ciao")
-                        Text("ciao")
-                        Text("ciao")
-                        Text("ciao")
-                        Text("ciao")
+            if (isLargeScreen) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Card(Modifier.width(320.dp)) {
+                        Column {
+                            Text("ciao")
+                            Text("ciao")
+                            Text("ciao")
+                            Text("ciao")
+                            Text("ciao")
+                            Text("ciao")
+                            Text("ciao")
+                        }
                     }
                 }
             }

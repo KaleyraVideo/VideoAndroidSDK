@@ -25,9 +25,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
+import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.callscreenscaffold.CallScreenScaffoldDefaults
+import com.kaleyra.video_sdk.call.callscreenscaffold.SheetPanelContentPadding
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
 import org.junit.Assert.assertEquals
@@ -93,16 +95,44 @@ class VCallScreenScaffoldTest {
     }
 
     @Test
-    fun testSheetPanelIsAboveSheet() {
+    fun testSheetPanelPositionWhenSheetIsCollapsed() {
         val panelText = "panelText"
         composeTestRule.setCallScreenScaffold(
+            sheetState = CallSheetState(CallSheetValue.Collapsed),
             panelContent = { Text(panelText) }
         )
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
 
-        val panelTop = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().top
+        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        assert(panelTop < handleTop)
+        panelBottom.assertIsEqualTo(handleTop - SheetPanelContentPadding, "sheet panel bottom")
+    }
+
+    @Test
+    fun testSheetPanelPositionWhenSheetIsExpanded() {
+        val panelText = "panelText"
+        composeTestRule.setCallScreenScaffold(
+            sheetState = CallSheetState(CallSheetValue.Expanded),
+            panelContent = { Text(panelText) }
+        )
+        composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
+
+        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
+        val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
+        panelBottom.assertIsEqualTo(handleTop - SheetPanelContentPadding, "sheet panel bottom")
+    }
+
+    @Test
+    fun testSheetPanelPositionWhenDragHandleIsNull() {
+        val panelText = "panelText"
+        composeTestRule.setCallScreenScaffold(
+            dragHandle = null,
+            panelContent = { Text(panelText) }
+        )
+        composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
+        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
+        val contentTop = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot().top
+        panelBottom.assertIsEqualTo(contentTop - SheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -272,6 +302,14 @@ class VCallScreenScaffoldTest {
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
+        dragHandle: @Composable (() -> Unit)? = {
+            Spacer(
+                Modifier
+                    .width(150.dp)
+                    .height(30.dp)
+                    .testTag(sheetHandleTag)
+            )
+        },
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
@@ -295,14 +333,7 @@ class VCallScreenScaffoldTest {
                             .height(sheetDragContentHeight)
                             .testTag(sheetDragContentTag))
                 },
-                sheetDragHandle = {
-                    Spacer(
-                        Modifier
-                            .width(150.dp)
-                            .height(30.dp)
-                            .testTag(sheetHandleTag)
-                    )
-                },
+                sheetDragHandle = dragHandle,
                 paddingValues = paddingValues,
                 content = content
             )

@@ -46,6 +46,8 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+internal val SheetPanelContentPadding = 8.dp
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun VCallScreenScaffold(
@@ -113,10 +115,10 @@ internal fun VCallScreenScaffold(
                         modifier = Modifier
                             .padding(start = startPadding, end = endPadding)
                             .align(Alignment.End)
-                            .dragVerticalOffset(sheetState),
+                            .let { if (sheetDragHandle != null) it.dragVerticalOffset(sheetState) else it },
                         content = sheetPanelContent
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(SheetPanelContentPadding))
                 }
                 CallBottomSheetLayout(
                     modifier = Modifier
