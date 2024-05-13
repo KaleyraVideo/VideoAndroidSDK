@@ -41,3 +41,14 @@ internal fun WhiteboardActionPreview() {
         }
     }
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun WhiteboardActionBadgePreview() {
+    KaleyraM3Theme {
+        Surface {
+            WhiteboardAction({}, badgeText = "1")
+        }
+    }
+}

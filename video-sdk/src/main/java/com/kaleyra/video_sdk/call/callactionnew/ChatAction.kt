@@ -41,3 +41,14 @@ internal fun ChatActionPreview() {
         }
     }
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun ChatActionBadgePreview() {
+    KaleyraM3Theme {
+        Surface {
+            ChatAction({}, badgeText = "1")
+        }
+    }
+}

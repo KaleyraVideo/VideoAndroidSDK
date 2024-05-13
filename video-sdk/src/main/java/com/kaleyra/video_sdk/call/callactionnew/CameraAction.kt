@@ -45,3 +45,25 @@ internal fun CameraActionPreview() {
         }
     }
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun CameraActionWarningPreview() {
+    KaleyraM3Theme {
+        Surface {
+            CameraAction(false, {}, warning = true)
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun CameraActionErrorPreview() {
+    KaleyraM3Theme {
+        Surface {
+            CameraAction(false, {}, error = true)
+        }
+    }
+}

@@ -42,28 +42,16 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
-import com.kaleyra.video_sdk.call.callactionnew.AudioAction
-import com.kaleyra.video_sdk.call.callactionnew.CameraAction
-import com.kaleyra.video_sdk.call.callactionnew.ChatAction
-import com.kaleyra.video_sdk.call.callactionnew.FileShareAction
-import com.kaleyra.video_sdk.call.callactionnew.FlipCameraAction
-import com.kaleyra.video_sdk.call.callactionnew.HangUpAction
-import com.kaleyra.video_sdk.call.callactionnew.MicAction
-import com.kaleyra.video_sdk.call.callactionnew.ScreenShareAction
-import com.kaleyra.video_sdk.call.callactionnew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.callactionnew.WhiteboardAction
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.launch
 
-internal typealias ActionComposable = @Composable (label: Boolean, modifier: Modifier) -> Unit
-
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
-    actions: CallActionsUI,
+    actions: ImmutableList<CallActionUI>,
     onMicToggled: (Boolean) -> Unit,
     onCameraToggled: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
@@ -83,20 +71,6 @@ internal fun CallScreen(
         WindowWidthSizeClass.Expanded
     )
 
-    val actionsComposables = actionsComposablesFor(
-        actions = actions,
-        extendedActions = !isCompactHeight and isLargeScreen,
-        onMicToggled = onMicToggled,
-        onCameraToggled = onCameraToggled,
-        onScreenShareToggle = onScreenShareToggle,
-        onHangUpClick = onHangUpClick,
-        onFlipCameraClick = onFlipCameraClick,
-        onAudioClick = onAudioClick,
-        onChatClick = onChatClick,
-        onFileShareClick = onFileShareClick,
-        onWhiteboardClick = onWhiteboardClick,
-        onVirtualBackgroundClick = onVirtualBackgroundClick
-    )
     val sheetState = rememberCallSheetState()
 
     var showAnswerAction by remember { mutableStateOf(true) }
@@ -113,12 +87,22 @@ internal fun CallScreen(
 
     if (isCompactHeight) {
         HCallScreen(
-            actions = actionsComposables,
+            callActions = actions,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
             onParticipantClick = onParticipantClick,
             onAnswerActionClick = { showAnswerAction = false },
+            onHangUpClick = onHangUpClick,
+            onMicToggled = onMicToggled,
+            onCameraToggled = onCameraToggled,
+            onScreenShareToggle = onScreenShareToggle,
+            onFlipCameraClick = onFlipCameraClick,
+            onAudioClick = onAudioClick,
+            onChatClick = onChatClick,
+            onFileShareClick = onFileShareClick,
+            onWhiteboardClick = onWhiteboardClick,
+            onVirtualBackgroundClick = onVirtualBackgroundClick,
             onBackPressed = onBackPressed
         )
     } else {
@@ -151,8 +135,8 @@ internal const val LargeScreenMaxActions = 8
 @Composable
 internal fun VCallScreen(
     isLargeScreen: Boolean,
-    callActions: CallActionsUI,
     sheetState: CallSheetState,
+    callActions: ImmutableList<CallActionUI>,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
     onAnswerActionClick: () -> Unit,
@@ -169,21 +153,7 @@ internal fun VCallScreen(
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    val actionsComposables = actionsComposablesFor(
-        actions = callActions,
-        extendedActions = isLargeScreen,
-        onMicToggled = onMicToggled,
-        onCameraToggled = onCameraToggled,
-        onScreenShareToggle = onScreenShareToggle,
-        onHangUpClick = onHangUpClick,
-        onFlipCameraClick = onFlipCameraClick,
-        onAudioClick = onAudioClick,
-        onChatClick = onChatClick,
-        onFileShareClick = onFileShareClick,
-        onWhiteboardClick = onWhiteboardClick,
-        onVirtualBackgroundClick = onVirtualBackgroundClick
-    )
-    var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
+    var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
     val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
     // TODO test reset on resize
@@ -226,10 +196,20 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow = actionsComposables.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
+                val itemsPerRow = callActions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
                 HSheetDragActions(
-                    actions = sheetDragActions,
+                    callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
+                    onHangUpClick = onHangUpClick,
+                    onMicToggled = onMicToggled,
+                    onCameraToggled = onCameraToggled,
+                    onScreenShareToggle = onScreenShareToggle,
+                    onFlipCameraClick = onFlipCameraClick,
+                    onAudioClick = onAudioClick,
+                    onChatClick = onChatClick,
+                    onFileShareClick = onFileShareClick,
+                    onWhiteboardClick = onWhiteboardClick,
+                    onVirtualBackgroundClick = onVirtualBackgroundClick,
                     modifier = Modifier
                         .padding(14.dp)
                         .animateContentSize(tween(durationMillis = 500))
@@ -238,19 +218,29 @@ internal fun VCallScreen(
         },
         sheetContent = {
             HSheetActions(
-                actions = actionsComposables,
+                isLargeScreen = isLargeScreen,
+                callActions = callActions,
                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                 showAnswerAction = showAnswerAction,
-                extendedAnswerAction = isLargeScreen,
+                onActionsPlaced = { itemsPlaced ->
+                    sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                },
                 onAnswerActionClick = onAnswerActionClick,
+                onHangUpClick = onHangUpClick,
+                onMicToggled = onMicToggled,
+                onCameraToggled = onCameraToggled,
+                onScreenShareToggle = onScreenShareToggle,
+                onFlipCameraClick = onFlipCameraClick,
+                onAudioClick = onAudioClick,
+                onChatClick = onChatClick,
+                onFileShareClick = onFileShareClick,
+                onWhiteboardClick = onWhiteboardClick,
+                onVirtualBackgroundClick = onVirtualBackgroundClick,
                 onMoreActionClick = {
                     if (hasSheetDragContent) onChangeSheetState()
                     else showSheetPanelContent = !showSheetPanelContent
                 },
-                onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(actionsComposables.value.takeLast(actionsComposables.count() - itemsPlaced))
-                },
-                modifier = Modifier.padding(14.dp),
+                modifier = Modifier.padding(14.dp)
             )
         },
         containerColor = Color.Gray,
@@ -264,15 +254,25 @@ internal fun VCallScreen(
 
 @Composable
 internal fun HCallScreen(
-    actions: ImmutableList<ActionComposable>,
+    callActions: ImmutableList<CallActionUI>,
     sheetState: CallSheetState,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
     onParticipantClick: () -> Unit,
     onAnswerActionClick: () -> Unit,
+    onHangUpClick: () -> Unit,
+    onMicToggled: (Boolean) -> Unit,
+    onCameraToggled: (Boolean) -> Unit,
+    onScreenShareToggle: (Boolean) -> Unit,
+    onFlipCameraClick: () -> Unit,
+    onAudioClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onFileShareClick: () -> Unit,
+    onWhiteboardClick: () -> Unit,
+    onVirtualBackgroundClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    var sheetDragActions: ImmutableList<ActionComposable> by remember { mutableStateOf(ImmutableList()) }
+    var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember { derivedStateOf { sheetDragActions.value.isNotEmpty() } }
 
     HCallScreenScaffold(
@@ -291,30 +291,47 @@ internal fun HCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerColumn = actions.count() - sheetDragActions.count() + 1
+                val itemsPerColumn = callActions.count() - sheetDragActions.count() + 1
                 VSheetDragActions(
-                    actions = sheetDragActions,
+                    callActions = sheetDragActions,
                     itemsPerColumn = itemsPerColumn,
+                    onHangUpClick = onHangUpClick,
+                    onMicToggled = onMicToggled,
+                    onCameraToggled = onCameraToggled,
+                    onScreenShareToggle = onScreenShareToggle,
+                    onFlipCameraClick = onFlipCameraClick,
+                    onAudioClick = onAudioClick,
+                    onChatClick = onChatClick,
+                    onFileShareClick = onFileShareClick,
+                    onWhiteboardClick = onWhiteboardClick,
+                    onVirtualBackgroundClick = onVirtualBackgroundClick,
                     modifier = Modifier
                         .padding(14.dp)
-                        .animateContentSize(tween(durationMillis = 500)),
+                        .animateContentSize(tween(durationMillis = 500))
                 )
             }
         },
         sheetContent = {
             VSheetActions(
-                actions = actions,
+                callActions = callActions,
                 maxActions = CompactScreenMaxActions,
                 showAnswerAction = showAnswerAction,
-                onAnswerActionClick = onAnswerActionClick,
-                onMoreActionClick = onChangeSheetState,
                 onActionsPlaced = { itemsPlaced ->
-                    val newDragActions = actions.value.takeLast(actions.count() - itemsPlaced)
-                    if (sheetDragActions.value != newDragActions) {
-                        sheetDragActions = ImmutableList(newDragActions)
-                    }
+                    sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
                 },
-                modifier = Modifier.padding(14.dp),
+                onAnswerActionClick = onAnswerActionClick,
+                onHangUpClick = onHangUpClick,
+                onMicToggled = onMicToggled,
+                onCameraToggled = onCameraToggled,
+                onScreenShareToggle = onScreenShareToggle,
+                onFlipCameraClick = onFlipCameraClick,
+                onAudioClick = onAudioClick,
+                onChatClick = onChatClick,
+                onFileShareClick = onFileShareClick,
+                onWhiteboardClick = onWhiteboardClick,
+                onVirtualBackgroundClick = onVirtualBackgroundClick,
+                onMoreActionClick = onChangeSheetState,
+                modifier = Modifier.padding(14.dp).width(56.dp)
             )
         },
         containerColor = Color.Gray,
@@ -324,144 +341,6 @@ internal fun HCallScreen(
     ) { paddingValues ->
 
     }
-}
-
-@Composable
-private fun actionsComposablesFor(
-    actions: CallActionsUI,
-    extendedActions: Boolean,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onHangUpClick: () -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
-): ImmutableList<ActionComposable> = with(actions) {
-    val hangUpAction: ActionComposable =
-        { _, modifier ->
-            HangUpAction(
-                enabled = hangUpAction.isEnabled,
-                onClick = onHangUpClick,
-                extended = extendedActions,
-                modifier = modifier
-            )
-        }
-    val micAction: ActionComposable? = microphoneAction?.let {
-        { _, modifier ->
-            MicAction(
-                checked = it.isToggled,
-                enabled = it.isEnabled,
-                warning = it.state == InputCallAction.State.Warning,
-                error = it.state == InputCallAction.State.Error,
-                onCheckedChange = onMicToggled,
-                modifier = modifier
-            )
-        }
-    }
-    val cameraAction: ActionComposable? = cameraAction?.let {
-        { _, modifier ->
-            CameraAction(
-                checked = it.isToggled,
-                enabled = it.isEnabled,
-                warning = it.state == InputCallAction.State.Warning,
-                error = it.state == InputCallAction.State.Error,
-                onCheckedChange = onCameraToggled,
-                modifier = modifier
-            )
-        }
-    }
-    val flipCameraAction: ActionComposable? = flipCameraAction?.let {
-        { label, modifier ->
-            FlipCameraAction(
-                label = label,
-                enabled = it.isEnabled,
-                onClick = onFlipCameraClick,
-                modifier = modifier
-            )
-        }
-    }
-    val audioAction: ActionComposable? = audioAction?.let {
-        { label, modifier ->
-            AudioAction(
-                audioDevice = it.audioDevice,
-                label = label,
-                enabled = it.isEnabled,
-                onClick = onAudioClick,
-                modifier = modifier
-            )
-        }
-    }
-    val chatAction: ActionComposable? = chatAction?.let {
-        { label, modifier ->
-            ChatAction(
-                label = label,
-                enabled = it.isEnabled,
-                onClick = onChatClick,
-                modifier = modifier
-            )
-        }
-    }
-    val fileShareAction: ActionComposable? = fileShareAction?.let {
-        { label, modifier ->
-            FileShareAction(
-                label = label,
-                enabled = it.isEnabled,
-                onClick = onFileShareClick,
-                modifier = modifier
-            )
-        }
-    }
-    val screenShareAction: ActionComposable? = screenShareAction?.let {
-        { label, modifier ->
-            ScreenShareAction(
-                label = label,
-                enabled = it.isEnabled,
-                checked = it.isToggled,
-                onCheckedChange = onScreenShareToggle,
-                modifier = modifier
-            )
-        }
-    }
-    val whiteboardAction: ActionComposable? = whiteboardAction?.let {
-        { label, modifier ->
-            WhiteboardAction(
-                label = label,
-                enabled = it.isEnabled,
-                onClick = onWhiteboardClick,
-                modifier = modifier
-            )
-        }
-    }
-    val virtualBackgroundAction: ActionComposable? =
-        virtualBackgroundAction?.let {
-            { label, modifier ->
-                VirtualBackgroundAction(
-                    label = label,
-                    enabled = it.isEnabled,
-                    onClick = onVirtualBackgroundClick,
-                    modifier = modifier
-                )
-            }
-        }
-
-    return ImmutableList(
-        listOfNotNull(
-            hangUpAction,
-            micAction,
-            cameraAction,
-            flipCameraAction,
-            audioAction,
-            whiteboardAction,
-            fileShareAction,
-            screenShareAction,
-            virtualBackgroundAction,
-            chatAction
-        )
-    )
 }
 
 @Composable

@@ -41,3 +41,14 @@ internal fun FileShareActionPreview() {
         }
     }
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun FileShareActionBadgePreview() {
+    KaleyraM3Theme {
+        Surface {
+            FileShareAction({}, badgeText = "1")
+        }
+    }
+}

@@ -45,3 +45,25 @@ internal fun MicActionPreview() {
         }
     }
 }
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun MicActionWarningPreview() {
+    KaleyraM3Theme {
+        Surface {
+            MicAction(false, {}, warning = true)
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun MicActionErrorPreview() {
+    KaleyraM3Theme {
+        Surface {
+            MicAction(false, {}, error = true)
+        }
+    }
+}

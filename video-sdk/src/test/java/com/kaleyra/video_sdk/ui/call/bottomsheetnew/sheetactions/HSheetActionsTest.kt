@@ -1,11 +1,8 @@
 package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetactions
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
@@ -14,7 +11,6 @@ import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -23,6 +19,18 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedWidth
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionWidth
+import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactionnew.HangUpActionWidth
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -38,15 +46,26 @@ class HSheetActionsTest {
 
     @Test
     fun showAnswerActionTrue_answerActionIsDisplayed() {
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                actions = ImmutableList(),
+                callActions = ImmutableList(),
                 showAnswerAction = true,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -54,32 +73,344 @@ class HSheetActionsTest {
 
     @Test
     fun showAnswerActionFalse_answerActionIsNotDisplayed() {
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                actions = ImmutableList(),
+                callActions = ImmutableList(),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertDoesNotExist()
     }
 
     @Test
-    fun testOnAnswerActionClick() {
-        var isAnswerClicked = false
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+    fun testOnHangUpActionClick() {
+        var isHangUpClicked = false
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
             HSheetActions(
-                actions = ImmutableList(),
+                callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
-                extendedAnswerAction = false,
-                onAnswerActionClick = { isAnswerClicked = true  },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { isHangUpClicked = true },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).performClick()
+        assertEquals(true, isHangUpClicked)
+    }
+
+    @Test
+    fun testOnMicActionClick() {
+        var isMicClicked: Boolean? = null
+        val micDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(MicAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { isMicClicked = it },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(micDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(micDescription).performClick()
+        assertEquals(true, isMicClicked)
+    }
+
+    @Test
+    fun testOnCameraActionClick() {
+        var isCameraClicked: Boolean? = null
+        val cameraDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(CameraAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { isCameraClicked = it },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(cameraDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(cameraDescription).performClick()
+        assertEquals(true, isCameraClicked)
+    }
+
+    @Test
+    fun testOnScreenShareActionClick() {
+        var isScreenShareClicked: Boolean? = null
+        val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(ScreenShareAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { isScreenShareClicked = true },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(screenShareDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(screenShareDescription).performClick()
+        assertEquals(true, isScreenShareClicked)
+    }
+
+    @Test
+    fun testOnFlipCameraActionClick() {
+        var isFlipCameraClicked = false
+        val flipDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(FlipCameraAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { isFlipCameraClicked = true },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(flipDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(flipDescription).performClick()
+        assertEquals(true, isFlipCameraClicked)
+    }
+
+    @Test
+    fun testOnAudioActionClick() {
+        var isAudioClicked = false
+        val audioDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(AudioAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { isAudioClicked = true },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(audioDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(audioDescription).performClick()
+        assertEquals(true, isAudioClicked)
+    }
+
+    @Test
+    fun testOnChatActionClick() {
+        var isChatClicked = false
+        val chatDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(ChatAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { isChatClicked = true },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(chatDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(chatDescription).performClick()
+        assertEquals(true, isChatClicked)
+    }
+
+    @Test
+    fun testOnFileShareActionClick() {
+        var isFileShareClicked = false
+        val fileShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(FileShareAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { isFileShareClicked = true },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(fileShareDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(fileShareDescription).performClick()
+        assertEquals(true, isFileShareClicked)
+    }
+
+    @Test
+    fun testOnWhiteboardActionClick() {
+        var isWhiteboardClicked = false
+        val whiteboardDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(WhiteboardAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { isWhiteboardClicked = true },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(whiteboardDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(whiteboardDescription).performClick()
+        assertEquals(true, isWhiteboardClicked)
+    }
+
+    @Test
+    fun testOnVirtualBackgroundActionClick() {
+        var isVirtualClicked = false
+        val virtualDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(VirtualBackgroundAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { isVirtualClicked = true },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(virtualDescription).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(virtualDescription).performClick()
+        assertEquals(true, isVirtualClicked)
+    }
+
+    @Test
+    fun testOnAnswerActionClick() {
+        var isAnswerClicked = false
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { isAnswerClicked = true },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertHasClickAction()
@@ -90,22 +421,33 @@ class HSheetActionsTest {
     @Test
     fun testOnMoreActionClick() {
         var isMoreClicked = false
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(100.dp),
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = { isMoreClicked = true },
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { isMoreClicked = true }
             )
         }
         composeTestRule.waitForIdle()
@@ -116,23 +458,34 @@ class HSheetActionsTest {
 
     @Test
     fun onlySomeActionsCanBeDisplayed_moreActionIsDisplayed() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(150.dp),
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
@@ -140,21 +493,32 @@ class HSheetActionsTest {
 
     @Test
     fun allActionsCanBeDisplayed_moreActionDoesNotExists() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(150.dp),
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                        FlipCameraAction(),
+                        FlipCameraAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
@@ -162,24 +526,36 @@ class HSheetActionsTest {
 
     @Test
     fun answerActionIsDisplayed_moreActionIsNotDisplayed() {
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        val moreDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
             HSheetActions(
                 modifier = Modifier.width(200.dp),
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
                     )
                 ),
                 showAnswerAction = true,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -189,26 +565,38 @@ class HSheetActionsTest {
     @Test
     fun testSheetContentActionsPlacing() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
             HSheetActions(
-                modifier = Modifier.width(150.dp),
-                actions = ImmutableList(
+                modifier = Modifier.width(200.dp),
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
+                        FlipCameraAction(),
+                        CameraAction(),
+                        MicAction(),
+                        ChatAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
-        val childBounds1 = composeTestRule.onNodeWithTag("tag1").getBoundsInRoot()
-        val childBounds2 = composeTestRule.onNodeWithTag("tag2").getBoundsInRoot()
+        val childBounds1 = composeTestRule.onNodeWithContentDescription(flip).getBoundsInRoot()
+        val childBounds2 = composeTestRule.onNodeWithContentDescription(camera).getBoundsInRoot()
         val moreChild = composeTestRule.onNodeWithContentDescription(moreDescription).getBoundsInRoot()
         childBounds2.left.assertIsEqualTo(childBounds1.right + SheetItemsSpacing, "child 2 left")
         moreChild.left.assertIsEqualTo(childBounds2.right + SheetItemsSpacing, "more child left")
@@ -219,20 +607,30 @@ class HSheetActionsTest {
         var itemsCount = -1
         composeTestRule.setContent {
             HSheetActions(
-                modifier = Modifier.width(150.dp),
-                actions = ImmutableList(
+                modifier = Modifier.width(200.dp),
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) },
-                        { _, _ -> Spacer(Modifier.size(24.dp)) }
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { itemsCount = it },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { itemsCount = it }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -242,31 +640,45 @@ class HSheetActionsTest {
     @Test
     fun testMaxActionsLessThanActualActions() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         var itemsCount = -1
         val maxActions = 3
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
+                        FlipCameraAction(),
+                        CameraAction(),
+                        MicAction(),
+                        ChatAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { itemsCount = it },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { itemsCount = it }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag3").assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag("tag4").assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(flip).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(mic).assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(chat).assertIsNotDisplayed()
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
         assertEquals(maxActions - 1, itemsCount)
     }
@@ -274,31 +686,45 @@ class HSheetActionsTest {
     @Test
     fun testMaxActionsEqualToActualActions() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         var itemsCount = -1
         val maxActions = 4
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag4")) }
+                        FlipCameraAction(),
+                        CameraAction(),
+                        MicAction(),
+                        ChatAction()
                     )
                 ),
                 showAnswerAction = false,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { itemsCount = it },
                 onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { itemsCount = it }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag2").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag3").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag4").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(flip).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(mic).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(chat).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
         assertEquals(maxActions, itemsCount)
     }
@@ -306,44 +732,68 @@ class HSheetActionsTest {
     @Test
     fun answerActionIsDisplayed_actionsAreOneLess() {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         var itemsCount = -1
         val maxActions = 2
         composeTestRule.setContent {
             HSheetActions(
                 maxActions = maxActions,
-                actions = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag1")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag2")) },
-                        { _, _ -> Spacer(Modifier.size(24.dp).testTag("tag3")) }
+                        FlipCameraAction(),
+                        CameraAction(),
+                        MicAction()
                     )
                 ),
                 showAnswerAction = true,
-                extendedAnswerAction = false,
-                onAnswerActionClick = { },
-                onMoreActionClick = {},
-                onActionsPlaced = { itemsCount = it }
+                isLargeScreen = false,
+                onActionsPlaced = { itemsCount = it },
+                onAnswerActionClick = {  },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("tag1").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tag2").assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag("tag3").assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(flip).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(camera).assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(mic).assertIsNotDisplayed()
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
         assertEquals(maxActions - 1, itemsCount)
     }
 
     @Test
-    fun extendedAnswerActionFalse_answerActionWidthIsRegular() {
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+    fun isLargeScreenFalse_answerActionWidthIsRegular() {
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                actions = ImmutableList(),
+                callActions = ImmutableList(),
                 showAnswerAction = true,
-                extendedAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = { },
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -351,19 +801,84 @@ class HSheetActionsTest {
     }
 
     @Test
-    fun extendedAnswerActionTrue_answerActionWidthIsExtended() {
-        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+    fun isLargeScreenTrue_answerActionWidthIsExtended() {
+        val answerDescription =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
             HSheetActions(
-                actions = ImmutableList(),
+                callActions = ImmutableList(),
                 showAnswerAction = true,
-                extendedAnswerAction = true,
+                isLargeScreen = true,
+                onActionsPlaced = { },
                 onAnswerActionClick = { },
-                onMoreActionClick = { },
-                onActionsPlaced = { }
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
             )
         }
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(answerDescription).assertWidthIsEqualTo(AnswerActionExtendedWidth)
+    }
+
+    @Test
+    fun isLargeScreenFalse_hangUpActionWidthIsRegular() {
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(HangUpAction())),
+                showAnswerAction = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(HangUpActionWidth)
+    }
+
+    @Test
+    fun isLargeScreenTrue_hangUpActionWidthIsExtended() {
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        composeTestRule.setContent {
+            HSheetActions(
+                callActions = ImmutableList(listOf(HangUpAction())),
+                showAnswerAction = true,
+                isLargeScreen = true,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(HangUpActionExtendedWidth)
     }
 }
