@@ -188,7 +188,16 @@ internal fun VCallScreen(
                     Card(Modifier.width(320.dp)) {
                         SheetPanelContent(
                             items = sheetDragActions,
-                            onItemClick = {}
+                            onItemClick = { callAction ->
+                                when(callAction) {
+                                    is FlipCameraAction -> onFlipCameraClick()
+                                    is AudioAction -> onAudioClick()
+                                    is ChatAction -> onChatClick()
+                                    is FileShareAction -> onFileShareClick()
+                                    is WhiteboardAction -> onWhiteboardClick()
+                                    is VirtualBackgroundAction -> onVirtualBackgroundClick()
+                                }
+                            }
                         )
                     }
                 }
