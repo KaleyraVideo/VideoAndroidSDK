@@ -36,9 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
@@ -60,9 +58,9 @@ internal object CallActionDefaults {
 
     val badgeShape = CircleShape
 
-    val badgeSize = 24.dp
+    val badgeSize = 20.dp
 
-    val badgeOffset = 6.dp
+    val badgeOffset = 5.dp
 
     val labelWidth = minButtonSize + SheetItemsSpacing
 
@@ -249,7 +247,7 @@ private fun CallActionLayout(
             }
         }
         if (badgeText != null) {
-            Badge(
+            CallActionBadge(
                 text = badgeText,
                 containerColor = badgeBackgroundColor,
                 contentColor = badgeContentColor,
@@ -305,7 +303,7 @@ private fun ButtonLayout(
 }
 
 @Composable
-private fun Badge(
+internal fun CallActionBadge(
     text: String,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
