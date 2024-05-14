@@ -19,15 +19,7 @@ internal fun AudioAction(
     enabled: Boolean = true,
     label: Boolean = false
 ) {
-    val icon = painterResource(
-        id = when (audioDevice) {
-            AudioDeviceUi.LoudSpeaker -> R.drawable.ic_kaleyra_call_sheet_speaker
-            AudioDeviceUi.WiredHeadset -> R.drawable.ic_kaleyra_call_sheet_wired_headset
-            AudioDeviceUi.EarPiece -> R.drawable.ic_kaleyra_call_sheet_earpiece
-            AudioDeviceUi.Muted -> R.drawable.ic_kaleyra_call_sheet_muted
-            is AudioDeviceUi.Bluetooth -> R.drawable.ic_kaleyra_call_sheet_bluetooth
-        }
-    )
+    val icon = audioPainterFor(audioDevice)
     val text = stringResource(id = R.string.kaleyra_call_sheet_audio)
     CallAction(
         modifier = modifier,
@@ -39,6 +31,18 @@ internal fun AudioAction(
         onClick = onClick
     )
 }
+
+@Composable
+internal fun audioPainterFor(audioDevice: AudioDeviceUi) =
+    painterResource(
+        id = when (audioDevice) {
+            AudioDeviceUi.LoudSpeaker -> R.drawable.ic_kaleyra_call_sheet_speaker
+            AudioDeviceUi.WiredHeadset -> R.drawable.ic_kaleyra_call_sheet_wired_headset
+            AudioDeviceUi.EarPiece -> R.drawable.ic_kaleyra_call_sheet_earpiece
+            AudioDeviceUi.Muted -> R.drawable.ic_kaleyra_call_sheet_muted
+            is AudioDeviceUi.Bluetooth -> R.drawable.ic_kaleyra_call_sheet_bluetooth
+        }
+    )
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.screenshare
+package com.kaleyra.video_sdk.call.screenshare
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue

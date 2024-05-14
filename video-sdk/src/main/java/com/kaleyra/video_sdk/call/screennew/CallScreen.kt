@@ -42,6 +42,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
@@ -178,19 +179,14 @@ internal fun VCallScreen(
             if (isLargeScreen) {
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    enter = fadeIn(tween()),
+                    exit = fadeOut(tween())
                 ) {
                     Card(Modifier.width(320.dp)) {
-                        Column {
-                            Text("ciao")
-                            Text("ciao")
-                            Text("ciao")
-                            Text("ciao")
-                            Text("ciao")
-                            Text("ciao")
-                            Text("ciao")
-                        }
+                        SheetPanelContent(
+                            items = sheetDragActions,
+                            onItemClick = {}
+                        )
                     }
                 }
             }
@@ -327,8 +323,7 @@ internal fun HCallScreen(
                     maxActions = CompactScreenMaxActions,
                     showAnswerAction = showAnswerAction,
                     onActionsPlaced = { itemsPlaced ->
-                        sheetDragActions =
-                            ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                        sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
                     },
                     onAnswerActionClick = onAnswerActionClick,
                     onHangUpClick = onHangUpClick,
