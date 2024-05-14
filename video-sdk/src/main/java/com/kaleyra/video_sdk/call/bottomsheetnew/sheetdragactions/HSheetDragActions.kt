@@ -1,7 +1,8 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -23,7 +24,7 @@ private const val MaxHSheetDragActions = 5
 @Composable
 internal fun HSheetDragActions(
     modifier: Modifier = Modifier,
-    itemsPerRow : Int = MaxHSheetDragActions,
+    itemsPerRow: Int = MaxHSheetDragActions,
     callActions: ImmutableList<CallActionUI>,
     onHangUpClick: () -> Unit,
     onMicToggled: (Boolean) -> Unit,
@@ -55,7 +56,7 @@ internal fun HSheetDragActions(
                 SheetCallAction(
                     callAction = callAction,
                     modifier = callActionModifier,
-                    label = false,
+                    label = true,
                     extended = false,
                     onHangUpClick = onHangUpClick,
                     onMicToggled = onMicToggled,
