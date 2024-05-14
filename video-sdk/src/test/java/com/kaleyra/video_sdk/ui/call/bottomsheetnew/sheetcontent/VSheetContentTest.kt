@@ -1,8 +1,7 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -15,7 +14,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.ChatAction
@@ -30,8 +30,11 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class VSheetActionsTest {
+@RunWith(RobolectricTestRunner::class)
+class VSheetContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -41,7 +44,7 @@ class VSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -67,7 +70,7 @@ class VSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = false,
                 onActionsPlaced = { },
@@ -93,7 +96,7 @@ class VSheetActionsTest {
         var isHangUpClicked = false
         val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -121,7 +124,7 @@ class VSheetActionsTest {
         var isMicClicked: Boolean? = null
         val micDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -149,7 +152,7 @@ class VSheetActionsTest {
         var isCameraClicked: Boolean? = null
         val cameraDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -177,7 +180,7 @@ class VSheetActionsTest {
         var isScreenShareClicked: Boolean? = null
         val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -205,7 +208,7 @@ class VSheetActionsTest {
         var isFlipCameraClicked = false
         val flipDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -233,7 +236,7 @@ class VSheetActionsTest {
         var isAudioClicked = false
         val audioDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -261,7 +264,7 @@ class VSheetActionsTest {
         var isChatClicked = false
         val chatDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -289,7 +292,7 @@ class VSheetActionsTest {
         var isFileShareClicked = false
         val fileShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -317,7 +320,7 @@ class VSheetActionsTest {
         var isWhiteboardClicked = false
         val whiteboardDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -345,7 +348,7 @@ class VSheetActionsTest {
         var isVirtualClicked = false
         val virtualDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -374,7 +377,7 @@ class VSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 onActionsPlaced = { },
@@ -403,7 +406,7 @@ class VSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(100.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -439,7 +442,7 @@ class VSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(150.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -473,7 +476,7 @@ class VSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(150.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -507,7 +510,7 @@ class VSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -543,7 +546,7 @@ class VSheetActionsTest {
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -580,7 +583,7 @@ class VSheetActionsTest {
     fun testOnActionsPlacedCallback() {
         var itemsCount = -1
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 modifier = Modifier.height(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -620,7 +623,7 @@ class VSheetActionsTest {
         var itemsCount = -1
         val maxActions = 3
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(
@@ -665,7 +668,7 @@ class VSheetActionsTest {
         var itemsCount = -1
         val maxActions = 4
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(
@@ -709,7 +712,7 @@ class VSheetActionsTest {
         var itemsCount = -1
         val maxActions = 2
         composeTestRule.setContent {
-            VSheetActions(
+            VSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(

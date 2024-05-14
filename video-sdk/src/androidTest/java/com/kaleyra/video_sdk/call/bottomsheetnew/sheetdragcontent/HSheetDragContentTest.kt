@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetdragactions
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
@@ -12,10 +12,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragHorizontalPadding
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragVerticalPadding
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
@@ -30,11 +27,8 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class HSheetDragActionsTest {
+class HSheetDragContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -48,7 +42,7 @@ class HSheetDragActionsTest {
         val fileshare = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(
                     listOf(
                         FlipCameraAction(),
@@ -92,7 +86,7 @@ class HSheetDragActionsTest {
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(
                     listOf(
                         FlipCameraAction(),
@@ -125,7 +119,7 @@ class HSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 onHangUpClick = { },
                 onMicToggled = { isClicked = it },
@@ -149,7 +143,7 @@ class HSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -173,7 +167,7 @@ class HSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -197,7 +191,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -221,7 +215,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -245,7 +239,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -269,7 +263,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -293,7 +287,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -317,7 +311,7 @@ class HSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            HSheetDragActions(
+            HSheetDragContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 onHangUpClick = { },
                 onMicToggled = { },

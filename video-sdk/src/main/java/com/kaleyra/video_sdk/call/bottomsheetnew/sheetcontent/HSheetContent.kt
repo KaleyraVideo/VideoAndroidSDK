@@ -1,9 +1,7 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -12,23 +10,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastForEach
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetCallAction
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.VSheetItemsLayout
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.HSheetItemsLayout
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
-import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.row.ReversibleRow
 
-private const val MaxVSheetActions = 5
+private const val MaxHSheetItems = 5
 
 @Composable
-internal fun VSheetActions(
+internal fun HSheetContent(
     modifier: Modifier = Modifier,
+    maxActions: Int = MaxHSheetItems,
     callActions: ImmutableList<CallActionUI>,
-    maxActions: Int = MaxVSheetActions,
     showAnswerAction: Boolean,
+    isLargeScreen: Boolean,
     onActionsPlaced: (actionsPlaced: Int) -> Unit,
     onAnswerActionClick: () -> Unit,
     onHangUpClick: () -> Unit,
@@ -45,22 +44,19 @@ internal fun VSheetActions(
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
 
-    Column(modifier) {
+    ReversibleRow(modifier, reverseLayout = true) {
         when {
             showAnswerAction -> {
-                AnswerAction(
-                    onClick = onAnswerActionClick,
-                    modifier = Modifier.size(CallActionDefaults.minButtonSize)
-                )
-                Spacer(Modifier.height(SheetItemsSpacing))
+                AnswerAction(extended = isLargeScreen, onClick = onAnswerActionClick)
+                Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {
                 MoreAction(onClick = onMoreActionClick)
-                Spacer(Modifier.height(SheetItemsSpacing))
+                Spacer(Modifier.width(SheetItemsSpacing))
             }
         }
 
-        VSheetItemsLayout(
+        HSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = callActions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
@@ -69,10 +65,10 @@ internal fun VSheetActions(
             content = {
                 callActions.value.fastForEach { callAction ->
                     key(callAction.id) {
-                        SheetCallAction(
+                        CallSheetItem(
                             callAction = callAction,
                             label = false,
-                            extended = false,
+                            extended = isLargeScreen,
                             onHangUpClick = onHangUpClick,
                             onMicToggled = onMicToggled,
                             onCameraToggled = onCameraToggled,

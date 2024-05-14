@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetactions.sheetitemslayout
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,14 +14,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.HSheetItemsLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class HSheetItemsLayoutTest {
 
     @get:Rule

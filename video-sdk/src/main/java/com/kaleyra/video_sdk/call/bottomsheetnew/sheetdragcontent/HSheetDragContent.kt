@@ -1,8 +1,6 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -10,21 +8,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import com.cheonjaeung.compose.grid.SimpleGridCells
 import com.cheonjaeung.compose.grid.VerticalGrid
-import com.kaleyra.video_sdk.call.bottomsheetnew.SheetCallAction
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheetnew.SheetCallActionModifier
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 internal val HSheetDragHorizontalPadding = SheetItemsSpacing
 internal val HSheetDragVerticalPadding = 20.dp
 
-private const val MaxHSheetDragActions = 5
+private const val MaxHSheetDragItems = 5
 
 @Composable
-internal fun HSheetDragActions(
+internal fun HSheetDragContent(
     modifier: Modifier = Modifier,
-    itemsPerRow: Int = MaxHSheetDragActions,
+    itemsPerRow: Int = MaxHSheetDragItems,
     callActions: ImmutableList<CallActionUI>,
     onHangUpClick: () -> Unit,
     onMicToggled: (Boolean) -> Unit,
@@ -53,7 +51,7 @@ internal fun HSheetDragActions(
             } else SheetCallActionModifier
 
             key(callAction.id) {
-                SheetCallAction(
+                CallSheetItem(
                     callAction = callAction,
                     modifier = callActionModifier,
                     label = true,

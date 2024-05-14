@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetactions
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
@@ -15,8 +15,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedWidth
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionWidth
 import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedWidth
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class HSheetActionsTest {
+class HSheetContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -49,7 +49,7 @@ class HSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -76,7 +76,7 @@ class HSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = false,
                 isLargeScreen = false,
@@ -103,7 +103,7 @@ class HSheetActionsTest {
         var isHangUpClicked = false
         val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -132,7 +132,7 @@ class HSheetActionsTest {
         var isMicClicked: Boolean? = null
         val micDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -161,7 +161,7 @@ class HSheetActionsTest {
         var isCameraClicked: Boolean? = null
         val cameraDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -190,7 +190,7 @@ class HSheetActionsTest {
         var isScreenShareClicked: Boolean? = null
         val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -219,7 +219,7 @@ class HSheetActionsTest {
         var isFlipCameraClicked = false
         val flipDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -248,7 +248,7 @@ class HSheetActionsTest {
         var isAudioClicked = false
         val audioDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -277,7 +277,7 @@ class HSheetActionsTest {
         var isChatClicked = false
         val chatDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -306,7 +306,7 @@ class HSheetActionsTest {
         var isFileShareClicked = false
         val fileShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -335,7 +335,7 @@ class HSheetActionsTest {
         var isWhiteboardClicked = false
         val whiteboardDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -364,7 +364,7 @@ class HSheetActionsTest {
         var isVirtualClicked = false
         val virtualDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -394,7 +394,7 @@ class HSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -424,7 +424,7 @@ class HSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(100.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -461,7 +461,7 @@ class HSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(150.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -496,7 +496,7 @@ class HSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(150.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -531,7 +531,7 @@ class HSheetActionsTest {
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -568,7 +568,7 @@ class HSheetActionsTest {
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -606,7 +606,7 @@ class HSheetActionsTest {
     fun testOnActionsPlacedCallback() {
         var itemsCount = -1
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 modifier = Modifier.width(200.dp),
                 callActions = ImmutableList(
                     listOf(
@@ -647,7 +647,7 @@ class HSheetActionsTest {
         var itemsCount = -1
         val maxActions = 3
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(
@@ -693,7 +693,7 @@ class HSheetActionsTest {
         var itemsCount = -1
         val maxActions = 4
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(
@@ -738,7 +738,7 @@ class HSheetActionsTest {
         var itemsCount = -1
         val maxActions = 2
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 maxActions = maxActions,
                 callActions = ImmutableList(
                     listOf(
@@ -777,7 +777,7 @@ class HSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -805,7 +805,7 @@ class HSheetActionsTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = true,
@@ -832,7 +832,7 @@ class HSheetActionsTest {
     fun isLargeScreenFalse_hangUpActionWidthIsRegular() {
         val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
@@ -859,7 +859,7 @@ class HSheetActionsTest {
     fun isLargeScreenTrue_hangUpActionWidthIsExtended() {
         val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            HSheetActions(
+            HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = true,

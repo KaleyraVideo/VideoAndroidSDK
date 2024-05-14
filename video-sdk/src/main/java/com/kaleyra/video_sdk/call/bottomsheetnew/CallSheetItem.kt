@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 internal val SheetCallActionModifier = Modifier.animatePlacement()
 
 @Composable
-internal fun SheetCallAction(
+internal fun CallSheetItem(
     modifier: Modifier = Modifier,
     callAction: CallActionUI,
     label: Boolean,

@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetdragactions
+package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetdragcontent
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.height
@@ -10,12 +10,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragHorizontalPadding
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragVerticalPadding
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragHorizontalPadding
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragVerticalPadding
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
@@ -34,7 +33,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class VSheetDragActionsTest {
+class VSheetDragContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -48,7 +47,7 @@ class VSheetDragActionsTest {
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(
                     listOf(
                         FlipCameraAction(),
@@ -91,7 +90,7 @@ class VSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 onHangUpClick = { },
                 onMicToggled = { isClicked = it },
@@ -115,7 +114,7 @@ class VSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -139,7 +138,7 @@ class VSheetDragActionsTest {
         var isClicked: Boolean? = null
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -163,7 +162,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -187,7 +186,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -211,7 +210,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -235,7 +234,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -259,7 +258,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 onHangUpClick = { },
                 onMicToggled = { },
@@ -283,7 +282,7 @@ class VSheetDragActionsTest {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            VSheetDragActions(
+            VSheetDragContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 onHangUpClick = { },
                 onMicToggled = { },

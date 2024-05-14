@@ -37,7 +37,7 @@ class SheetCallActionTest {
     fun hangUpActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = HangUpAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -61,7 +61,7 @@ class SheetCallActionTest {
     fun hangUpActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = HangUpAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -85,7 +85,7 @@ class SheetCallActionTest {
     fun micActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = MicAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -109,7 +109,7 @@ class SheetCallActionTest {
     fun micActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = MicAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -133,7 +133,7 @@ class SheetCallActionTest {
     fun cameraActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = CameraAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -157,7 +157,7 @@ class SheetCallActionTest {
     fun cameraActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = CameraAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -181,7 +181,7 @@ class SheetCallActionTest {
     fun flipCameraActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FlipCameraAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -205,7 +205,7 @@ class SheetCallActionTest {
     fun flipCameraActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FlipCameraAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -229,7 +229,7 @@ class SheetCallActionTest {
     fun audioActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = AudioAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -253,7 +253,7 @@ class SheetCallActionTest {
     fun audioActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = AudioAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -277,7 +277,7 @@ class SheetCallActionTest {
     fun chatActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -301,7 +301,7 @@ class SheetCallActionTest {
     fun chatActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -325,7 +325,7 @@ class SheetCallActionTest {
     fun fileShareActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -349,7 +349,7 @@ class SheetCallActionTest {
     fun fileShareActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -373,7 +373,7 @@ class SheetCallActionTest {
     fun screenShareActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ScreenShareAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -397,7 +397,7 @@ class SheetCallActionTest {
     fun screenShareActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ScreenShareAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -421,7 +421,7 @@ class SheetCallActionTest {
     fun whiteboardActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -445,7 +445,7 @@ class SheetCallActionTest {
     fun whiteboardActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -469,7 +469,7 @@ class SheetCallActionTest {
     fun virtualBackgroundActionEnabled_actionIsEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = VirtualBackgroundAction(isEnabled = true),
                 label = false,
                 extended = false,
@@ -493,7 +493,7 @@ class SheetCallActionTest {
     fun virtualBackgroundActionDisabled_actionIsNotEnabled() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = VirtualBackgroundAction(isEnabled = false),
                 label = false,
                 extended = false,
@@ -518,7 +518,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = HangUpAction(),
                 label = false,
                 extended = false,
@@ -544,7 +544,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = MicAction(),
                 label = false,
                 extended = false,
@@ -570,7 +570,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = CameraAction(),
                 label = false,
                 extended = false,
@@ -596,7 +596,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FlipCameraAction(),
                 label = false,
                 extended = false,
@@ -622,7 +622,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = AudioAction(),
                 label = false,
                 extended = false,
@@ -648,7 +648,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(),
                 label = false,
                 extended = false,
@@ -674,7 +674,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(),
                 label = false,
                 extended = false,
@@ -700,7 +700,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ScreenShareAction(),
                 label = false,
                 extended = false,
@@ -726,7 +726,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(),
                 label = false,
                 extended = false,
@@ -752,7 +752,7 @@ class SheetCallActionTest {
         var clicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = VirtualBackgroundAction(),
                 label = false,
                 extended = false,
@@ -777,7 +777,7 @@ class SheetCallActionTest {
     fun hangUpActionNotExtended_actionHasDefaultWidth() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = HangUpAction(),
                 label = false,
                 extended = false,
@@ -801,7 +801,7 @@ class SheetCallActionTest {
     fun hangUpActionExtended_actionHasExtendedWidth() {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = HangUpAction(),
                 label = false,
                 extended = true,
@@ -825,7 +825,7 @@ class SheetCallActionTest {
     fun flipCameraActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FlipCameraAction(),
                 label = true,
                 extended = false,
@@ -848,7 +848,7 @@ class SheetCallActionTest {
     fun flipCameraActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FlipCameraAction(),
                 label = false,
                 extended = false,
@@ -871,7 +871,7 @@ class SheetCallActionTest {
     fun audioActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = AudioAction(),
                 label = true,
                 extended = false,
@@ -894,7 +894,7 @@ class SheetCallActionTest {
     fun audioActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = AudioAction(),
                 label = false,
                 extended = false,
@@ -917,7 +917,7 @@ class SheetCallActionTest {
     fun chatActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(),
                 label = true,
                 extended = false,
@@ -940,7 +940,7 @@ class SheetCallActionTest {
     fun chatActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(),
                 label = false,
                 extended = false,
@@ -963,7 +963,7 @@ class SheetCallActionTest {
     fun fileShareActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(),
                 label = true,
                 extended = false,
@@ -986,7 +986,7 @@ class SheetCallActionTest {
     fun fileShareActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(),
                 label = false,
                 extended = false,
@@ -1009,7 +1009,7 @@ class SheetCallActionTest {
     fun screenShareActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ScreenShareAction(),
                 label = true,
                 extended = false,
@@ -1032,7 +1032,7 @@ class SheetCallActionTest {
     fun screenShareActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ScreenShareAction(),
                 label = false,
                 extended = false,
@@ -1055,7 +1055,7 @@ class SheetCallActionTest {
     fun whiteboardActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(),
                 label = true,
                 extended = false,
@@ -1078,7 +1078,7 @@ class SheetCallActionTest {
     fun whiteboardActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(),
                 label = false,
                 extended = false,
@@ -1101,7 +1101,7 @@ class SheetCallActionTest {
     fun virtualBackgroundActionLabelTrue_actionHasLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = VirtualBackgroundAction(),
                 label = true,
                 extended = false,
@@ -1124,7 +1124,7 @@ class SheetCallActionTest {
     fun virtualBackgroundActionLabelFalse_actionHasNoLabel() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = VirtualBackgroundAction(),
                 label = false,
                 extended = false,
@@ -1146,7 +1146,7 @@ class SheetCallActionTest {
     @Test
     fun chatActionBadgeCountIsZero_actionBadgeDoesNotExists() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(),
                 label = false,
                 extended = false,
@@ -1168,7 +1168,7 @@ class SheetCallActionTest {
     @Test
     fun chatActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = ChatAction(notificationCount = 3),
                 label = false,
                 extended = false,
@@ -1190,7 +1190,7 @@ class SheetCallActionTest {
     @Test
     fun fileShareActionBadgeCountIsZero_actionBadgeDoesNotExists() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(),
                 label = false,
                 extended = false,
@@ -1212,7 +1212,7 @@ class SheetCallActionTest {
     @Test
     fun fileShareActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = FileShareAction(notificationCount = 3),
                 label = false,
                 extended = false,
@@ -1234,7 +1234,7 @@ class SheetCallActionTest {
     @Test
     fun whiteboardActionBadgeCountIsZero_actionBadgeDoesNotExists() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(),
                 label = false,
                 extended = false,
@@ -1256,7 +1256,7 @@ class SheetCallActionTest {
     @Test
     fun whiteboardActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = WhiteboardAction(notificationCount = 3),
                 label = false,
                 extended = false,
@@ -1278,7 +1278,7 @@ class SheetCallActionTest {
     @Test
     fun micActionWarning_warningBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = MicAction(state = InputCallAction.State.Warning),
                 label = false,
                 extended = false,
@@ -1300,7 +1300,7 @@ class SheetCallActionTest {
     @Test
     fun micActionError_errorBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = MicAction(state = InputCallAction.State.Error),
                 label = false,
                 extended = false,
@@ -1322,7 +1322,7 @@ class SheetCallActionTest {
     @Test
     fun cameraActionWarning_warningBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = CameraAction(state = InputCallAction.State.Warning),
                 label = false,
                 extended = false,
@@ -1344,7 +1344,7 @@ class SheetCallActionTest {
     @Test
     fun cameraActionError_errorBadgeIsDisplayed() {
         composeTestRule.setContent {
-            SheetCallAction(
+            CallSheetItem(
                 callAction = CameraAction(state = InputCallAction.State.Error),
                 label = false,
                 extended = false,

@@ -38,10 +38,10 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.HSheetActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.VSheetActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.HSheetDragActions
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragactions.VSheetDragActions
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
@@ -206,7 +206,7 @@ internal fun VCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val itemsPerRow = callActions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
-                HSheetDragActions(
+                HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
                     onHangUpClick = onHangUpClick,
@@ -227,7 +227,7 @@ internal fun VCallScreen(
         },
         sheetContent = {
             Box(Modifier.animateContentSize()) {
-                HSheetActions(
+                HSheetContent(
                     isLargeScreen = isLargeScreen,
                     callActions = callActions,
                     maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
@@ -309,7 +309,7 @@ internal fun HCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val itemsPerColumn = callActions.count() - sheetDragActions.count() + 1
-                VSheetDragActions(
+                VSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerColumn = itemsPerColumn,
                     onHangUpClick = onHangUpClick,
@@ -330,7 +330,7 @@ internal fun HCallScreen(
         },
         sheetContent = {
             Box(Modifier.animateContentSize()) {
-                VSheetActions(
+                VSheetContent(
                     callActions = callActions,
                     maxActions = CompactScreenMaxActions,
                     showAnswerAction = showAnswerAction,

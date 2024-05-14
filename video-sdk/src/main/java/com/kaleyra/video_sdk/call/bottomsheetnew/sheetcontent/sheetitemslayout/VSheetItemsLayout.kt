@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.bottomsheetnew.sheetactions.sheetitemslayout
+package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
