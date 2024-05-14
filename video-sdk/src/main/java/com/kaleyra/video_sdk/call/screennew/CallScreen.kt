@@ -210,9 +210,7 @@ internal fun VCallScreen(
                     onFileShareClick = onFileShareClick,
                     onWhiteboardClick = onWhiteboardClick,
                     onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    modifier = Modifier
-                        .padding(14.dp)
-                        .animateContentSize(tween(durationMillis = 500))
+                    modifier = Modifier.padding(14.dp)
                 )
             }
         },
@@ -305,9 +303,7 @@ internal fun HCallScreen(
                     onFileShareClick = onFileShareClick,
                     onWhiteboardClick = onWhiteboardClick,
                     onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    modifier = Modifier
-                        .padding(14.dp)
-                        .animateContentSize(tween(durationMillis = 500))
+                    modifier = Modifier.padding(14.dp)
                 )
             }
         },
