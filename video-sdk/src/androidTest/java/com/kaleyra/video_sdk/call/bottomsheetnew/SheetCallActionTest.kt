@@ -19,6 +19,7 @@ import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
 import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.InputCallAction
 import com.kaleyra.video_sdk.call.screennew.MicAction
 import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
@@ -1140,5 +1141,225 @@ class SheetCallActionTest {
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = ChatAction(),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun chatActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = ChatAction(notificationCount = 3),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = FileShareAction(),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun fileShareActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = FileShareAction(notificationCount = 3),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun whiteboardActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = WhiteboardAction(),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun whiteboardActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = WhiteboardAction(notificationCount = 3),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun micActionWarning_warningBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = MicAction(state = InputCallAction.State.Warning),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun micActionError_errorBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = MicAction(state = InputCallAction.State.Error),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraActionWarning_warningBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = CameraAction(state = InputCallAction.State.Warning),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraActionError_errorBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            SheetCallAction(
+                callAction = CameraAction(state = InputCallAction.State.Error),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
     }
 }
