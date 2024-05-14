@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -210,11 +211,14 @@ internal fun VCallScreen(
                     onFileShareClick = onFileShareClick,
                     onWhiteboardClick = onWhiteboardClick,
                     onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    modifier = Modifier.padding(14.dp)
+                    modifier = Modifier
+                        .animateContentSize()
+                        .padding(14.dp)
                 )
             }
         },
         sheetContent = {
+            Box(Modifier.animateContentSize()) {
                 HSheetActions(
                     isLargeScreen = isLargeScreen,
                     callActions = callActions,
@@ -246,6 +250,7 @@ internal fun VCallScreen(
                             bottom = 14.dp
                         )
                 )
+            }
         },
         containerColor = Color.Gray,
         sheetDragHandle = if (hasSheetDragContent) {
@@ -309,32 +314,42 @@ internal fun HCallScreen(
                     onFileShareClick = onFileShareClick,
                     onWhiteboardClick = onWhiteboardClick,
                     onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    modifier = Modifier.padding(14.dp)
+                    modifier = Modifier
+                        .animateContentSize()
+                        .padding(14.dp)
                 )
             }
         },
         sheetContent = {
-            VSheetActions(
-                callActions = callActions,
-                maxActions = CompactScreenMaxActions,
-                showAnswerAction = showAnswerAction,
-                onActionsPlaced = { itemsPlaced ->
-                    sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
-                },
-                onAnswerActionClick = onAnswerActionClick,
-                onHangUpClick = onHangUpClick,
-                onMicToggled = onMicToggled,
-                onCameraToggled = onCameraToggled,
-                onScreenShareToggle = onScreenShareToggle,
-                onFlipCameraClick = onFlipCameraClick,
-                onAudioClick = onAudioClick,
-                onChatClick = onChatClick,
-                onFileShareClick = onFileShareClick,
-                onWhiteboardClick = onWhiteboardClick,
-                onVirtualBackgroundClick = onVirtualBackgroundClick,
-                onMoreActionClick = onChangeSheetState,
-                modifier = Modifier.padding(start = 5.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-            )
+            Box(Modifier.animateContentSize()) {
+                VSheetActions(
+                    callActions = callActions,
+                    maxActions = CompactScreenMaxActions,
+                    showAnswerAction = showAnswerAction,
+                    onActionsPlaced = { itemsPlaced ->
+                        sheetDragActions =
+                            ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                    },
+                    onAnswerActionClick = onAnswerActionClick,
+                    onHangUpClick = onHangUpClick,
+                    onMicToggled = onMicToggled,
+                    onCameraToggled = onCameraToggled,
+                    onScreenShareToggle = onScreenShareToggle,
+                    onFlipCameraClick = onFlipCameraClick,
+                    onAudioClick = onAudioClick,
+                    onChatClick = onChatClick,
+                    onFileShareClick = onFileShareClick,
+                    onWhiteboardClick = onWhiteboardClick,
+                    onVirtualBackgroundClick = onVirtualBackgroundClick,
+                    onMoreActionClick = onChangeSheetState,
+                    modifier = Modifier.padding(
+                        start = 5.dp,
+                        top = 14.dp,
+                        end = 14.dp,
+                        bottom = 14.dp
+                    )
+                )
+            }
         },
         containerColor = Color.Gray,
         sheetDragHandle = if (hasSheetDragContent) {
