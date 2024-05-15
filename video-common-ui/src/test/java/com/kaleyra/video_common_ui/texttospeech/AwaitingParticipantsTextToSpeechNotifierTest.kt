@@ -19,7 +19,9 @@ package com.kaleyra.video_common_ui.texttospeech
 import android.content.Context
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.VoicePrompts
 import com.kaleyra.video_common_ui.mapper.StreamMapper
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_utils.ContextRetainer
@@ -60,6 +62,8 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
         every { contextMock.getString(any()) } returns ""
         every { notifier.shouldNotify } returns true
         every { any<Flow<Call>>().amIWaitingOthers() } returns MutableStateFlow(true)
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.voicePrompts } returns VoicePrompts.Enabled
     }
 
     @Test
@@ -82,6 +86,22 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
         every { any<Flow<Call>>().amIWaitingOthers() } returns MutableStateFlow(false)
         every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
 
+        notifier.start(backgroundScope)
+
+        advanceTimeBy(AwaitingParticipantsTextToSpeechNotifier.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
+        runCurrent()
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) }
+        verify(exactly = 0) { callTextToSpeechMock.speak("text") }
+    }
+
+    @Test
+    fun `test i am waiting others utterance not played with voice prompts disabled`() = runTest {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.voicePrompts } returns VoicePrompts.Disabled
+        every { any<Flow<Call>>().amIWaitingOthers() } returns MutableStateFlow(false)
+        every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
+
+        val notifier = spyk(AwaitingParticipantsTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
         notifier.start(backgroundScope)
 
         advanceTimeBy(AwaitingParticipantsTextToSpeechNotifier.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)

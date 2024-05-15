@@ -19,7 +19,9 @@ package com.kaleyra.video_common_ui.texttospeech
 import android.content.Context
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.VoicePrompts
 import com.kaleyra.video_common_ui.mapper.InputMapper
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents
 import com.kaleyra.video_utils.ContextRetainer
@@ -60,6 +62,8 @@ class CallParticipantMutedTextToSpeechNotifierTest {
         every { contextMock.getString(any()) } returns ""
         every { notifier.shouldNotify } returns true
         every { any<Flow<Call>>().toMuteEvents() } returns MutableStateFlow(mockk())
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.voicePrompts } returns VoicePrompts.Enabled
     }
 
     @Test
@@ -71,6 +75,19 @@ class CallParticipantMutedTextToSpeechNotifierTest {
         runCurrent()
         verify(exactly = 1) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
+    }
+
+    @Test
+    fun `test participant muted utterance not reproduced with voice prompts disabled`() = runTest {
+        every { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) } returns "text"
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.voicePrompts } returns VoicePrompts.Disabled
+        val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
+        notifier.start(backgroundScope)
+
+        runCurrent()
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
+        verify(exactly = 0) { callTextToSpeechMock.speak("text") }
     }
 
     @Test

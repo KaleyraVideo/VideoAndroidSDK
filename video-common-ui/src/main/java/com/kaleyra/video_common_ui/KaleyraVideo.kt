@@ -144,6 +144,13 @@ object KaleyraVideo {
             field = value
         }
 
+    @get:Synchronized
+    @set:Synchronized
+    /**
+     * The call recording utterance option enabled by default
+     */
+    var voicePrompts: VoicePrompts = VoicePrompts.Enabled
+
     /**
      * Configure
      *
