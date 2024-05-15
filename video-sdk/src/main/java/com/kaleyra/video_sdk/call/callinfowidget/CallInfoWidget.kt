@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.callinfowidget
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +41,7 @@ import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
+import com.kaleyra.video_sdk.call.callinfowidget.view.DESIGN_PREFS
 import com.kaleyra.video_sdk.call.callinfowidget.view.Watermark
 import com.kaleyra.video_sdk.call.recording.view.RecordingLabel
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
@@ -115,6 +118,8 @@ private fun Header(
     subtitle: String?,
     modifier: Modifier = Modifier
 ) {
+    val customText = LocalContext.current.kaleyraCollaborationSuiteUIPrefs().getString("call_watermark_text", null)?.takeIf { it.isNotBlank() } ?: subtitle
+
     Column(
         modifier = modifier.height(56.dp),
         verticalArrangement = Arrangement.Center
@@ -126,15 +131,17 @@ private fun Header(
             ellipsize = Ellipsize.Marquee,
             shadow = textStyle.shadow
         )
-        if (subtitle != null) {
+        customText?.let {
             Text(
-                text = subtitle,
+                text = it,
                 fontSize = 12.sp,
                 style = textStyle
             )
         }
     }
 }
+
+internal fun Context.kaleyraCollaborationSuiteUIPrefs() = getSharedPreferences(DESIGN_PREFS, Context.MODE_PRIVATE)
 
 @Preview
 @Composable
