@@ -47,7 +47,6 @@
     <string name="kaleyra_user_data_consent_agreement_notification_title">Términos y condiciones</string>
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_call">Llamada entrante</string>
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_message">Tienes un nuevo mensaje</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">Esta llamada puede ser grabada</string>
     <string name="kaleyra_utterance_recording_call_will_be_recorded">Esta llamada será grabada</string>
     <string name="kaleyra_utterance_recording_failed">Error al grabar. Cuelga y vuelve a intentarlo</string>
     <string name="kaleyra_utterance_recording_started">Grabación iniciada ahora</string>

@@ -233,7 +233,6 @@
     <string name="kaleyra_manual_recording_disclaimer">The call may be recorded</string>
 
     <string name="kaleyra_utterance_recording_call_will_be_recorded">This call will be recorded</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">This call may be recorded</string>
     <string name="kaleyra_utterance_recording_started">Recording starting now</string>
     <string name="kaleyra_utterance_recording_stopped">Recording stopped</string>
     <string name="kaleyra_utterance_recording_failed">Recording failed. Hang up and retry</string>

@@ -229,7 +229,6 @@
     <string name="kaleyra_manual_recording_disclaimer">Questa chiamata potrebbe essere registrata</string>
 
     <string name="kaleyra_utterance_recording_call_will_be_recorded">Questa chiamata verrà registrata</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">Questa chiamata potrebbe essere registrata</string>
     <string name="kaleyra_utterance_recording_started">Registrazione avviata</string>
     <string name="kaleyra_utterance_recording_stopped">Registrazione interrotta</string>
     <string name="kaleyra_utterance_recording_failed">Registrazione fallita. Chiudi la chiamata e riprova</string>
