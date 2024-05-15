@@ -135,10 +135,10 @@ object KaleyraVideo {
     @get:Synchronized
     @set:Synchronized
         /**
-         * Push Notification Interceptor Option to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
+         * Push Notification Handling Strategy to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
          * from integrating app
          */
-    var pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
+    var pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
         set(value) {
             KaleyraVideoSharedPrefs.putPushNotificationHandlingStrategy(value)
             field = value
