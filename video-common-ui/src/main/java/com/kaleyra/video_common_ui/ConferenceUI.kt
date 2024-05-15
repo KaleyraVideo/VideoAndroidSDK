@@ -59,7 +59,7 @@ class ConferenceUI(
     var callActions: Set<CallUI.Action> = CallUI.Action.default
 
     /**
-     * The connection service option
+     * The connection service option enabled by default
      */
     var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
 
