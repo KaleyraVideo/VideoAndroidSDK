@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -119,13 +120,18 @@ internal fun HCallScreenScaffold(
                         orientation = dragOrientation
                     ),
                 sheetContent = {
-                    Surface {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ) {
                         Row(content = sheetContent)
                     }
                 },
                 sheetDragContent = sheetDragHandle?.let { dragHandle ->
                     {
                         Surface(
+                            color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .dragHorizontalOffset(sheetState)
                                 .nestedScroll(
