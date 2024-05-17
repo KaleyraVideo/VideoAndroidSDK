@@ -13,6 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
@@ -23,11 +26,11 @@ class NewCallScreenActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.attributes.layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
         setContent {
             val micAction = MicAction()
+            val cameraAction = CameraAction(isEnabled = false)
             val screenShareAction = ScreenShareAction()
             var callActionsUI by remember {
                 mutableStateOf(
@@ -35,7 +38,7 @@ class NewCallScreenActivity : ComponentActivity() {
                         listOf(
                             HangUpAction(),
                             micAction,
-                            CameraAction(),
+                            cameraAction,
                             FlipCameraAction(),
                             AudioAction(),
                             FileShareAction(),
@@ -48,14 +51,25 @@ class NewCallScreenActivity : ComponentActivity() {
                 )
             }
 
+            var inputMessage by remember { mutableStateOf<InputMessage?>(null) }
             KaleyraM3Theme {
                 CallScreen(
                     windowSizeClass = calculateWindowSizeClass(this),
                     actions = callActionsUI,
+                    inputMessage = inputMessage,
                     onMicToggled = { toggled ->
-//                        micAction.copy(isToggled = toggled)
+                        val index = callActionsUI.value.indexOfFirst { it is MicAction }
+                        val list = callActionsUI.value.toMutableList()
+                        list[index] = micAction.copy(isToggled = toggled)
+                        callActionsUI = ImmutableList(list)
+                        inputMessage = if (toggled) MicMessage.Disabled else MicMessage.Enabled
                     },
                     onCameraToggled = { toggled ->
+                        val index = callActionsUI.value.indexOfFirst { it is CameraAction }
+                        val list = callActionsUI.value.toMutableList()
+                        list[index] = cameraAction.copy(isToggled = toggled)
+                        callActionsUI = ImmutableList(list)
+                        inputMessage = if (toggled) CameraMessage.Disabled else CameraMessage.Enabled
                     },
                     onScreenShareToggle = { toggled ->
                         val index = callActionsUI.value.indexOfFirst { it is ScreenShareAction }
