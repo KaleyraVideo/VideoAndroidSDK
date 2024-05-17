@@ -82,16 +82,9 @@ internal fun ChatScreen(
     onBackPressed: () -> Unit,
     viewModel: PhoneChatViewModel
 ) {
-    val activity = LocalContext.current.findActivity()
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
-
-//    if (!uiState.isUserConnected || uiState.connectionState is ConnectionState.Error) {
-//        LaunchedEffect(Unit) {
-//            activity.finishAndRemoveTask()
-//        }
-//    }
 
     CollaborationTheme(theme = theme) {
         ChatScreen(
