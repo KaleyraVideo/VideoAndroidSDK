@@ -24,7 +24,7 @@
     <string name="kaleyra_call_sheet_virtual_background">Virtual background</string>
     <string name="kaleyra_call_sheet_pin">Pin</string>
     <string name="kaleyra_call_sheet_unpin">Rimuovi pin</string>
-    <string name="kaleyra_call_sheet_fullscreen">Schermo intero</string>
+    <string name="kaleyra_call_sheet_fullscreen_on">Schermo intero</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Riduci</string>
     <string name="kaleyra_call_sheet_flip_camera">Cambia camera</string>
     <string name="kaleyra_call_sheet_recording">Registrazione</string>

@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.screennew
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -20,7 +21,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -51,6 +54,8 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.VStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
@@ -164,9 +169,10 @@ internal fun VCallScreen(
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
+    var button by remember { mutableStateOf(true) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
-    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen and sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && button && sheetDragActions.value.isNotEmpty() } }
     // TODO test reset on resize
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
@@ -214,8 +220,7 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow =
-                    callActions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
+                val itemsPerRow = callActions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
@@ -236,60 +241,88 @@ internal fun VCallScreen(
             }
         },
         sheetContent = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                if (isLargeScreen) {
-                    Box(
-                        modifier = Modifier
-                            .width(250.dp)
-                            .animateContentSize()
-                            .padding(top = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        InputMessageHost(
-                            inputMessage = inputMessage,
-                            micMessage = { enabled -> MicMessageText(enabled) },
-                            cameraMessage = { enabled -> CameraMessageText(enabled) }
-                        )
-                    }
-                }
-                Box(Modifier.animateContentSize()) {
-                    HSheetContent(
-                        isLargeScreen = isLargeScreen,
-                        callActions = callActions,
-                        maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
-                        showAnswerAction = showAnswerAction,
-                        onActionsPlaced = { itemsPlaced ->
-                            sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
-                        },
-                        onAnswerActionClick = onAnswerActionClick,
-                        onHangUpClick = onHangUpClick,
-                        onMicToggled = onMicToggled,
-                        onCameraToggled = onCameraToggled,
-                        onScreenShareToggle = onScreenShareToggle,
-                        onFlipCameraClick = onFlipCameraClick,
-                        onAudioClick = onAudioClick,
-                        onChatClick = onChatClick,
-                        onFileShareClick = onFileShareClick,
-                        onWhiteboardClick = onWhiteboardClick,
-                        onVirtualBackgroundClick = onVirtualBackgroundClick,
-                        onMoreActionClick = {
-                            if (hasSheetDragContent) onChangeSheetState()
-                            else showSheetPanelContent = !showSheetPanelContent
-                        },
-                        modifier = Modifier
-                            .padding(
-                                start = 14.dp,
-                                top = if (isLargeScreen) 14.dp else 5.dp,
-                                end = 14.dp,
-                                bottom = 14.dp
+            AnimatedContent(
+                targetState = button,
+                contentAlignment = Alignment.Center,
+                label = "sheet content"
+            ) {
+                if (it) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (isLargeScreen) {
+                            Box(
+                                modifier = Modifier
+                                    .width(250.dp)
+                                    .animateContentSize()
+                                    .padding(top = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                InputMessageHost(
+                                    inputMessage = inputMessage,
+                                    micMessage = { enabled -> MicMessageText(enabled) },
+                                    cameraMessage = { enabled -> CameraMessageText(enabled) }
+                                )
+                            }
+                        }
+                        Box(Modifier.animateContentSize()) {
+                            HSheetContent(
+                                isLargeScreen = isLargeScreen,
+                                callActions = callActions,
+                                maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
+                                showAnswerAction = showAnswerAction,
+                                onActionsPlaced = { itemsPlaced ->
+                                    sheetDragActions =
+                                        ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                                },
+                                onAnswerActionClick = onAnswerActionClick,
+                                onHangUpClick = onHangUpClick,
+                                onMicToggled = onMicToggled,
+                                onCameraToggled = onCameraToggled,
+                                onScreenShareToggle = onScreenShareToggle,
+                                onFlipCameraClick = onFlipCameraClick,
+                                onAudioClick = onAudioClick,
+                                onChatClick = onChatClick,
+                                onFileShareClick = onFileShareClick,
+                                onWhiteboardClick = onWhiteboardClick,
+                                onVirtualBackgroundClick = onVirtualBackgroundClick,
+                                onMoreActionClick = {
+                                    if (hasSheetDragContent) onChangeSheetState()
+                                    else showSheetPanelContent = !showSheetPanelContent
+                                },
+                                modifier = Modifier
+                                    .padding(
+                                        start = 14.dp,
+                                        top = if (isLargeScreen) 14.dp else 5.dp,
+                                        end = 14.dp,
+                                        bottom = 14.dp
+                                    )
                             )
+                        }
+                    }
+                } else {
+                    HStreamMenuContent(
+                        fullscreen = false,
+                        pin = false,
+                        onCancelClick = { button = true },
+                        onFullscreenClick = {},
+                        onPinClick = {}
                     )
                 }
             }
         },
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
-        sheetDragHandle = (@Composable { InputMessageHandle(inputMessage) }).takeIf { !isLargeScreen && hasSheetDragContent }
-    ) { paddingValues -> }
+        sheetDragHandle = (@Composable { InputMessageHandle(inputMessage) }).takeIf { hasSheetDragContent }
+    ) { paddingValues ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Button(onClick = { button = !button }) {
+                Text(text = "KABOOM")
+            }
+        }
+    }
 }
 
 @Composable
@@ -313,8 +346,9 @@ internal fun HCallScreen(
     onVirtualBackgroundClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
+    var button by remember { mutableStateOf(true) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember { derivedStateOf { sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember { derivedStateOf {  button && sheetDragActions.value.isNotEmpty() } }
 
     HCallScreenScaffold(
         sheetState = sheetState,
@@ -353,45 +387,63 @@ internal fun HCallScreen(
             }
         },
         sheetContent = {
-            Box(Modifier.animateContentSize()) {
-                VSheetContent(
-                    callActions = callActions,
-                    maxActions = CompactScreenMaxActions,
-                    showAnswerAction = showAnswerAction,
-                    onActionsPlaced = { itemsPlaced ->
-                        sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
-                    },
-                    onAnswerActionClick = onAnswerActionClick,
-                    onHangUpClick = onHangUpClick,
-                    onMicToggled = onMicToggled,
-                    onCameraToggled = onCameraToggled,
-                    onScreenShareToggle = onScreenShareToggle,
-                    onFlipCameraClick = onFlipCameraClick,
-                    onAudioClick = onAudioClick,
-                    onChatClick = onChatClick,
-                    onFileShareClick = onFileShareClick,
-                    onWhiteboardClick = onWhiteboardClick,
-                    onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    onMoreActionClick = onChangeSheetState,
-                    modifier = Modifier.padding(
-                        start = 5.dp,
-                        top = 14.dp,
-                        end = 14.dp,
-                        bottom = 14.dp
+            AnimatedContent(
+                targetState = button,
+                contentAlignment = Alignment.Center,
+                label = "sheet content"
+            ) {
+                if (it) {
+                    Box(Modifier.animateContentSize()) {
+                        VSheetContent(
+                            callActions = callActions,
+                            maxActions = CompactScreenMaxActions,
+                            showAnswerAction = showAnswerAction,
+                            onActionsPlaced = { itemsPlaced ->
+                                sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                            },
+                            onAnswerActionClick = onAnswerActionClick,
+                            onHangUpClick = onHangUpClick,
+                            onMicToggled = onMicToggled,
+                            onCameraToggled = onCameraToggled,
+                            onScreenShareToggle = onScreenShareToggle,
+                            onFlipCameraClick = onFlipCameraClick,
+                            onAudioClick = onAudioClick,
+                            onChatClick = onChatClick,
+                            onFileShareClick = onFileShareClick,
+                            onWhiteboardClick = onWhiteboardClick,
+                            onVirtualBackgroundClick = onVirtualBackgroundClick,
+                            onMoreActionClick = onChangeSheetState,
+                            modifier = Modifier.padding(
+                                start = 5.dp,
+                                top = 14.dp,
+                                end = 14.dp,
+                                bottom = 14.dp
+                            )
+                        )
+                    }
+                } else {
+                    VStreamMenuContent(
+                        fullscreen = false,
+                        pin = false,
+                        onCancelClick = { button = true },
+                        onFullscreenClick = {},
+                        onPinClick = {}
                     )
-                )
+                }
             }
+
         },
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
-        sheetDragHandle = if (hasSheetDragContent) {
-            { CallBottomSheetDefaults.VDragHandle() }
-        } else null
+        sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         Box(
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            Button(onClick = { button = !button }, modifier = Modifier.align(Alignment.Center)) {
+                Text(text = "KABOOM")
+            }
             InputMessageHost(
                 inputMessage = inputMessage,
                 modifier = Modifier

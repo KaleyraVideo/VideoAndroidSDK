@@ -24,7 +24,7 @@
     <string name="kaleyra_call_sheet_virtual_background">Fondo virtual</string>
     <string name="kaleyra_call_sheet_pin">Fijar</string>
     <string name="kaleyra_call_sheet_unpin">Desfijar</string>
-    <string name="kaleyra_call_sheet_fullscreen">Pantalla completa</string>
+    <string name="kaleyra_call_sheet_fullscreen_on">Pantalla completa</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Reducir</string>
     <string name="kaleyra_call_sheet_flip_camera">Voltear cámara</string>
     <string name="kaleyra_call_sheet_recording">Grabación</string>
