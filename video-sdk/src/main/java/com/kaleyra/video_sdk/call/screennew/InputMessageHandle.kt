@@ -29,8 +29,8 @@ internal fun InputMessageHandle(inputMessage: InputMessage?) {
     }
     Box(
         modifier = Modifier
-            .animateContentSize()
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .animateContentSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         if (showHandle) {
