@@ -84,9 +84,8 @@ object KaleyraVideo {
     private var termsAndConditionsRequester: TermsAndConditionsRequester? = null
 
     private var logger: PriorityLogger? = null
-    private var _conference: ConferenceUI? by cached { ConferenceUI(collaboration!!.conference, callActivityClazz, logger) }
-    private var _conversation: ConversationUI? by cached { ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz) }
-
+    private var _conference: ConferenceUI? = null
+    private var _conversation: ConversationUI? = null
 
     @get:Synchronized
         /**
@@ -179,6 +178,8 @@ object KaleyraVideo {
         Collaboration.create(configuration).apply {
             collaboration = this
         }
+        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger)
+        _conversation = ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz)
 
         termsAndConditionsActivityClazz?.also {
             termsAndConditionsRequester = TermsAndConditionsRequester(it)
