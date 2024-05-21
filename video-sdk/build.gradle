@@ -54,8 +54,7 @@ dependencies {
     coreLibraryDesugaring catalog.desugar
 
     /*** Testing ***/
-//    testImplementation kaleyraCatalog.kaleyraVideo
-    testImplementation project(":video")
+    testImplementation kaleyraCatalog.kaleyraVideo
     testImplementation catalog.robolectric
     testImplementation catalog.junit
     testImplementation catalog.androidxComposeUiTestJunit4
@@ -74,8 +73,7 @@ dependencies {
     androidTestImplementation catalog.androidxComposeUiTestManifest
 
     /** Kaleyra **/
-//    api kaleyraCatalog.kaleyraVideo
-    api project(":video")
+    api kaleyraCatalog.kaleyraVideo
     implementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
     def isPublishing = project.hasProperty("isPublishing")

@@ -71,6 +71,7 @@ dependencies {
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
+    testImplementation catalog.javaAssist
     testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
 
@@ -82,8 +83,7 @@ dependencies {
     implementation sampleAppCatalog.androidxWorkRuntimeKtx
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
-//    compileOnly kaleyraCatalog.kaleyraVideo
-    implementation project(":video")
+    compileOnly kaleyraCatalog.kaleyraVideo
     compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
 }
 
@@ -112,6 +112,7 @@ licenseReport {
 tasks.withType(Test) {
     jvmArgs(
             "--add-opens", "java.base/java.time=ALL-UNNAMED",
-            "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED"
+            "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+            "--add-opens=java.base/java.lang=ALL-UNNAMED",
     )
 }
