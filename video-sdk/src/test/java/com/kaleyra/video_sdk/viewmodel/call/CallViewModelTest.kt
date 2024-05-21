@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.conference.*
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 import com.kaleyra.video_common_ui.ConferenceUI
@@ -47,6 +48,7 @@ import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
 import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -56,11 +58,13 @@ import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler.Companion.STREAMS_HANDLER_UPDATE_DEBOUNCE
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -1015,5 +1019,21 @@ class CallViewModelTest {
         advanceUntilIdle()
         val actual = viewModel.userMessage.first()
         assert(actual is MutedMessage && actual.admin == "admin")
+    }
+
+    @Test
+    fun testShowWhiteboardRequestReceived() = runTest {
+        every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Show("userId1"))
+        val actual = viewModel.whiteboardRequest.first()
+        assertEquals(true, actual is WhiteboardRequest.Show)
+        assertEquals("displayName1", actual.username)
+    }
+
+    @Test
+    fun testHideWhiteboardRequestReceived() = runTest {
+        every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide("userId1"))
+        val actual = viewModel.whiteboardRequest.first()
+        assertEquals(true, actual is WhiteboardRequest.Hide)
+        assertEquals("displayName1", actual.username)
     }
 }

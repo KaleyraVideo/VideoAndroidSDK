@@ -20,6 +20,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.unit.Dp
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 
@@ -77,4 +78,10 @@ internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<
 internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.findAvatar(): SemanticsNodeInteraction {
     val avatar = activity.getString(R.string.kaleyra_avatar)
     return onNodeWithContentDescription(avatar)
+}
+
+internal inline fun <reified A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.pressBack() {
+    activityRule.scenario.onActivity { activity ->
+        activity.onBackPressedDispatcher.onBackPressed()
+    }
 }

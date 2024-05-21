@@ -51,6 +51,7 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.WatermarkMapper.toWatermarkInfo
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -58,10 +59,12 @@ import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,6 +80,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
@@ -89,6 +93,9 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     override val userMessage: Flow<UserMessage>
         get() = CallUserMessagesProvider.userMessage
+
+    private val _whiteboardRequest: Channel<WhiteboardRequest> = Channel(Channel.CONFLATED)
+    val whiteboardRequest: Flow<WhiteboardRequest> = _whiteboardRequest.receiveAsFlow()
 
     val theme = company
         .flatMapLatest { it.combinedTheme }
@@ -294,6 +301,11 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
         ) { isUsbConnecting, onUsbCameraConnected ->
             onUsbCameraConnected.invoke(isUsbConnecting)
         }.launchIn(viewModelScope)
+
+        call
+            .getWhiteboardRequestEvents()
+            .onEach { event -> _whiteboardRequest.send(event) }
+            .launchIn(viewModelScope)
     }
 
     override fun onCleared() {

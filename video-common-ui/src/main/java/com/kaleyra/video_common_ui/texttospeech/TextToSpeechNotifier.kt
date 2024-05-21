@@ -25,6 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 
 internal interface TextToSpeechNotifier {
 
+    val voicePromptsEnabled: Boolean
+
     val call: CallUI
 
     val proximitySensor: ProximitySensor

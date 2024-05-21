@@ -40,6 +40,7 @@ import com.kaleyra.video_sdk.call.utils.BottomSheetStateExtensions.PreUpPostDown
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@Immutable
 internal enum class BottomSheetValue {
     Hidden,
     Collapsed,
@@ -48,8 +49,9 @@ internal enum class BottomSheetValue {
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-internal class BottomSheetState(
-    initialValue: BottomSheetValue,
+@Immutable
+internal data class BottomSheetState(
+    val initialValue: BottomSheetValue,
     val animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
     val isCollapsable: Boolean = true,
     val confirmStateChange: (BottomSheetValue) -> Boolean = { true }
@@ -90,9 +92,13 @@ internal class BottomSheetState(
         else animateTo(BottomSheetValue.Collapsed)
     }
 
-    suspend fun halfExpand() = animateTo(BottomSheetValue.HalfExpanded)
+    suspend fun halfExpand() {
+        animateTo(BottomSheetValue.HalfExpanded)
+    }
 
-    suspend fun hide() = animateTo(BottomSheetValue.Hidden)
+    suspend fun hide() {
+        animateTo(BottomSheetValue.Hidden)
+    }
 
     companion object {
         fun Saver(

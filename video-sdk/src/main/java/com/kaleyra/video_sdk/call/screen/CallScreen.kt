@@ -38,6 +38,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -110,9 +111,13 @@ import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
 import com.kaleyra.video_sdk.call.utils.ContactsPermissions
 import com.kaleyra.video_sdk.call.utils.RecordAudioPermission
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.pipSettings
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPadding
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalSystemBarsPadding
@@ -122,6 +127,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -186,14 +192,15 @@ internal fun rememberCallScreenState(
     )
 }
 
-internal class CallScreenState(
+@Immutable
+internal data class CallScreenState(
     val sheetState: BottomSheetState,
     val sheetContentState: BottomSheetContentState,
     val shouldShowFileShareComponent: Boolean,
     private val systemUiController: SystemUiController,
     private val isDarkMode: Boolean,
     private val scope: CoroutineScope,
-    density: Density
+    val density: Density
 ) {
 
     private val hasCurrentSheetComponentAppBar by derivedStateOf {
@@ -269,6 +276,13 @@ internal class CallScreenState(
         }
     }
 
+    fun navigateToWhiteboardComponent() {
+        scope.launch {
+            sheetContentState.navigateToComponent(BottomSheetComponent.Whiteboard)
+            sheetState.expand()
+        }
+    }
+
     fun onCallActionClick(action: CallAction) {
         when (action) {
             is CallAction.Audio, is CallAction.ScreenShare, is CallAction.FileShare, is CallAction.Whiteboard, is CallAction.VirtualBackground -> {
@@ -311,6 +325,7 @@ internal fun CallScreen(
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val activity = LocalContext.current.findActivity() as FragmentActivity
     val callUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val whiteboardRequest by viewModel.whiteboardRequest.collectAsStateWithLifecycle(initialValue = null)
     val sheetState = rememberBottomSheetState(
         initialValue = BottomSheetValue.Hidden,
         collapsable = !callUiState.isAudioOnly,
@@ -429,6 +444,7 @@ internal fun CallScreen(
         CallScreen(
             callUiState = callUiState,
             callScreenState = callScreenState,
+            whiteboardRequest = whiteboardRequest,
             onThumbnailStreamClick = viewModel::swapThumbnail,
             onThumbnailStreamDoubleClick = viewModel::fullscreenStream,
             onFullscreenStreamClick = viewModel::fullscreenStream,
@@ -439,7 +455,7 @@ internal fun CallScreen(
             isInPipMode = isInPipMode,
             isDarkTheme = isDarkTheme,
             onFileShareVisibility = onFileShareVisibility,
-            onWhiteboardVisibility = onWhiteboardVisibility
+            onWhiteboardVisibility = onWhiteboardVisibility,
         )
     }
 }
@@ -448,6 +464,7 @@ internal fun CallScreen(
 internal fun CallScreen(
     callUiState: CallUiState,
     callScreenState: CallScreenState,
+    whiteboardRequest: WhiteboardRequest?,
     onBackPressed: () -> Unit,
     isInPipMode: Boolean = false,
     isDarkTheme: Boolean = false,
@@ -520,6 +537,24 @@ internal fun CallScreen(
                     if (timer != 0L) return@onEach
                     callScreenState.collapseSheet()
                 }.launchIn(this)
+        }
+    }
+
+    LaunchedEffect(whiteboardRequest) {
+        when (whiteboardRequest) {
+            is WhiteboardRequest.Show -> {
+                if (callScreenState.sheetContentState.currentComponent == BottomSheetComponent.Whiteboard) return@LaunchedEffect
+                callScreenState.navigateToWhiteboardComponent()
+                snapshotFlow { callScreenState.sheetContentState.currentComponent }.first { it == BottomSheetComponent.Whiteboard }
+                CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
+            }
+            is WhiteboardRequest.Hide -> {
+                if (callScreenState.sheetContentState.currentComponent != BottomSheetComponent.Whiteboard) return@LaunchedEffect
+                callScreenState.navigateToCallActionsComponent()
+                snapshotFlow { callScreenState.sheetContentState.currentComponent }.first { it == BottomSheetComponent.CallActions }
+                CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
+            }
+            else -> Unit
         }
     }
 
@@ -674,9 +709,9 @@ internal fun DefaultCallScreen(
                 )
             },
             content = {
-                val shouldShowUserMessages by remember(callScreenState) {
+                val shouldShowUserMessages by remember {
                     derivedStateOf {
-                        callScreenState.sheetContentState.currentComponent.let {
+                        callScreenState.sheetContentState.targetComponent.let {
                             it != BottomSheetComponent.FileShare && it != BottomSheetComponent.Whiteboard
                         }
                     }

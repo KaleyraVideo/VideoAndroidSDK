@@ -17,7 +17,9 @@
 package com.kaleyra.video_common_ui.texttospeech
 
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.VoicePrompts
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +33,8 @@ import kotlinx.coroutines.flow.onEach
 internal class AwaitingParticipantsTextToSpeechNotifier(
     override val call: CallUI,
     override val proximitySensor: ProximitySensor,
-    override val callTextToSpeech: CallTextToSpeech = CallTextToSpeech()
+    override val callTextToSpeech: CallTextToSpeech = CallTextToSpeech(),
+    override val voicePromptsEnabled: Boolean = KaleyraVideo.voicePrompts == VoicePrompts.Enabled
 ): TextToSpeechNotifier {
 
     companion object {
@@ -47,7 +50,7 @@ internal class AwaitingParticipantsTextToSpeechNotifier(
             .amIWaitingOthers()
             .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
             .onEach { amIAwaiting ->
-                if (!amIAwaiting || !shouldNotify) return@onEach
+                if (!amIAwaiting || !shouldNotify || !voicePromptsEnabled) return@onEach
                 val text = context.getString(R.string.kaleyra_call_waiting_for_other_participants)
                 callTextToSpeech.speak(text)
             }

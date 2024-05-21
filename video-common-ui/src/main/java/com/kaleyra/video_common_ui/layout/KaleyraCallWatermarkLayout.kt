@@ -23,6 +23,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.kaleyra.video_common_ui.databinding.KaleyraCallWatermarkBinding
+import com.kaleyra.video_common_ui.utils.DESIGN_PREFS
 import com.kaleyra.video_common_ui.utils.kaleyraCollaborationSuiteUIPrefs
 import com.squareup.picasso.Picasso
 import java.io.File

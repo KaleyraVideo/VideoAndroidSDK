@@ -16,19 +16,27 @@
 
 package com.kaleyra.video_sdk.mapper.call
 
+import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
@@ -113,7 +121,60 @@ class WhiteboardMapperTest {
 
     @Test
     fun whiteboardShowRequestEvent_getWhiteboardTextEvents_eventNotReceived() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show)
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardTextEvents().first()
+        }
+        assertEquals(null, actual)
+    }
+
+    @Test
+    fun whiteboardShowRequestEvent_getWhiteboardRequestEvents_eventReceived() = runTest {
+        mockkObject(ContactDetailsManager)
+        val participant1 = mockk<CallParticipant> {
+            every { userId } returns "userId1"
+            every { combinedDisplayName } returns flowOf("username1")
+        }
+        val participant2 = mockk<CallParticipant> {
+            every { userId } returns "userId2"
+            every { combinedDisplayName } returns flowOf("username2")
+        }
+        every { callMock.participants.value.list } returns listOf(participant1, participant2)
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId2"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardRequestEvents().first()
+        }
+        assertEquals(true, actual is WhiteboardRequest.Show)
+        assertEquals("username2", actual?.username)
+        unmockkObject(ContactDetailsManager)
+    }
+
+    @Test
+    fun whiteboardHideRequestEvent_getWhiteboardRequestEvents_eventReceived() = runTest {
+        mockkObject(ContactDetailsManager)
+        val participant1 = mockk<CallParticipant> {
+            every { userId } returns "userId1"
+            every { combinedDisplayName } returns flowOf("username1")
+        }
+        val participant2 = mockk<CallParticipant> {
+            every { userId } returns "userId2"
+            every { combinedDisplayName } returns flowOf("username2")
+        }
+        every { callMock.participants.value.list } returns listOf(participant1, participant2)
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId2"))
+        val flow = MutableStateFlow(callMock)
+        val actual = withTimeoutOrNull(50) {
+            flow.getWhiteboardRequestEvents().first()
+        }
+        assertEquals(true, actual is WhiteboardRequest.Hide)
+        assertEquals("username2", actual?.username)
+    }
+
+    @Test
+    fun whiteboardHideRequestEvent_getWhiteboardTextEvents_eventNotReceived() = runTest {
+        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId"))
         val flow = MutableStateFlow(callMock)
         val actual = withTimeoutOrNull(50) {
             flow.getWhiteboardTextEvents().first()

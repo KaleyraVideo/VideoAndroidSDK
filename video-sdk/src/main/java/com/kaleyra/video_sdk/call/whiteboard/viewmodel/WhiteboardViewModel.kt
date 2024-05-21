@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.whiteboard.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,6 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel

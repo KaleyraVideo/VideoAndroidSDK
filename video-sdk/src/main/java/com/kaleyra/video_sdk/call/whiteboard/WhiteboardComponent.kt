@@ -20,9 +20,21 @@ import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorState
@@ -45,7 +58,6 @@ import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.R
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

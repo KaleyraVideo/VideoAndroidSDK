@@ -173,7 +173,6 @@
     <string name="kaleyra_upload_file">Subir archivo</string>
     <string name="kaleyra_upload_file_error">Se produjo un error al subir la imagen del archivo</string>
     <string name="kaleyra_user_has_no_video_permissions">Tu usuario no tiene permisos para publicar video.</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">Esta llamada puede ser grabada</string>
     <string name="kaleyra_utterance_recording_call_will_be_recorded">Esta llamada será grabada</string>
     <string name="kaleyra_utterance_recording_failed">Error de grabación. Cuelga y vuelve a intentarlo</string>
     <string name="kaleyra_utterance_recording_started">Comenzando la grabación ahora</string>
@@ -206,4 +205,8 @@
         <item quantity="one">El usuario no ha respondido.</item>
         <item quantity="other">Ningún usuario ha respondido.</item>
     </plurals>
+    <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s solicitó abrir la whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">Se le ha pedido que abra la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitaron cerrar la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_user_message">Se le ha pedido que cierre la whiteboard</string>
 </resources>

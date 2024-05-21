@@ -47,8 +47,6 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
             if (!KaleyraVideo.isConfigured) {
                 KaleyraVideo.configure(configuration)
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
-                KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
-                KaleyraVideo.pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
                 KaleyraVideo.theme =
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,

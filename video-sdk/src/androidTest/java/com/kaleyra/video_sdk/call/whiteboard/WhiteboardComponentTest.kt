@@ -26,20 +26,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertRangeInfoEquals
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.LinearProgressIndicatorTag
 import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorState
 import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorValue
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardViewTag
+import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.pressBack
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -263,7 +273,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Editing(TextFieldValue()))
         uiState = WhiteboardUiState(text = "text")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assertEquals(TextEditorValue.Discard, textEditorState.currentValue)
     }
 
@@ -273,7 +283,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Discard)
         uiState = WhiteboardUiState(text = "")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assertEquals(TextEditorValue.Editing(TextFieldValue("")), textEditorState.currentValue)
     }
 
@@ -283,7 +293,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Empty)
         uiState = WhiteboardUiState(text = "")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assert(isTextDismissed)
     }
 

@@ -40,6 +40,7 @@ import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorValue
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardViewTag
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.ui.pressBack
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -264,7 +265,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Editing(TextFieldValue()))
         uiState = WhiteboardUiState(text = "text")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assertEquals(TextEditorValue.Discard, textEditorState.currentValue)
     }
 
@@ -274,7 +275,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Discard)
         uiState = WhiteboardUiState(text = "")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assertEquals(TextEditorValue.Editing(TextFieldValue("")), textEditorState.currentValue)
     }
 
@@ -284,7 +285,7 @@ class WhiteboardComponentTest {
         textEditorState = TextEditorState(TextEditorValue.Empty)
         uiState = WhiteboardUiState(text = "")
         composeTestRule.waitForIdle()
-        Espresso.pressBack()
+        composeTestRule.pressBack()
         assert(isTextDismissed)
     }
 
