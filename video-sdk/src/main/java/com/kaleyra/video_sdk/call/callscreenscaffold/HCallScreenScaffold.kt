@@ -110,7 +110,7 @@ internal fun HCallScreenScaffold(
                 modifier = Modifier
                     .onSizeChanged {
                         val width = with(density) { it.width.toDp() }
-                        bottomSheetPadding = width - sheetDragContentWidth
+                        bottomSheetPadding = width - (sheetDragContentWidth.takeIf { sheetDragHandle != null } ?: 0.dp)
                     }
                     .align(Alignment.CenterEnd)
                     .padding(top = topPadding, bottom = bottomPadding, end = endPadding)
@@ -196,12 +196,7 @@ private fun CallBottomSheetLayout(
         val bodyMeasurable = measurables[0]
         val sheetMeasurable = measurables.getOrNull(1)
         val body = bodyMeasurable.measure(constraints)
-        val bottomSheet = sheetMeasurable?.measure(
-            constraints.copy(
-                minHeight = body.height,
-                maxHeight = body.height
-            )
-        )
+        val bottomSheet = sheetMeasurable?.measure(constraints.copy(minHeight = body.height, maxHeight = body.height))
 
         val sheetWidth = bottomSheet?.width ?: 0
         val width = body.width + sheetWidth

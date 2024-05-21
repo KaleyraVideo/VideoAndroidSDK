@@ -125,7 +125,7 @@ internal fun VCallScreenScaffold(
                     modifier = Modifier
                         .onSizeChanged {
                             val height = with(density) { it.height.toDp() }
-                            bottomSheetPadding = height - sheetDragContentHeight
+                            bottomSheetPadding = height - (sheetDragContentHeight.takeIf { sheetDragHandle != null } ?: 0.dp)
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
                         .clip(sheetCornerShape)
@@ -211,8 +211,7 @@ private fun CallBottomSheetLayout(
         val bodyMeasurable = measurables[0]
         val sheetMeasurable = measurables.getOrNull(1)
         val body = bodyMeasurable.measure(constraints)
-        val bottomSheet =
-            sheetMeasurable?.measure(constraints.copy(minWidth = body.width, maxWidth = body.width))
+        val bottomSheet = sheetMeasurable?.measure(constraints.copy(minWidth = body.width, maxWidth = body.width))
 
         val sheetHeight = bottomSheet?.height ?: 0
         val width = body.width
