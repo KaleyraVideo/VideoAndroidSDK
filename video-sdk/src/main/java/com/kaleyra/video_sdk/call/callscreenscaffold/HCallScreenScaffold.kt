@@ -114,16 +114,15 @@ internal fun HCallScreenScaffold(
                     }
                     .align(Alignment.CenterEnd)
                     .padding(top = topPadding, bottom = bottomPadding, end = endPadding)
-                    .clip(sheetCornerShape)
-                    .anchoredDraggable(
-                        state = sheetState.anchoredDraggableState,
-                        orientation = dragOrientation,
-                        enabled = sheetDragHandle != null
-                    ),
+                    .clip(sheetCornerShape),
                 sheetContent = {
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                        contentColor = MaterialTheme.colorScheme.onSurface
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.anchoredDraggable(
+                            state = sheetState.anchoredDraggableState,
+                            orientation = dragOrientation,
+                        )
                     ) {
                         Row(content = sheetContent)
                     }
@@ -135,6 +134,10 @@ internal fun HCallScreenScaffold(
                             contentColor = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .dragHorizontalOffset(sheetState)
+                                .anchoredDraggable(
+                                    state = sheetState.anchoredDraggableState,
+                                    orientation = dragOrientation,
+                                )
                                 .nestedScroll(
                                     CallBottomSheetNestedScrollConnection(
                                         sheetState = sheetState,

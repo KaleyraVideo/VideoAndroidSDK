@@ -128,16 +128,16 @@ internal fun VCallScreenScaffold(
                             bottomSheetPadding = height - (sheetDragContentHeight.takeIf { sheetDragHandle != null } ?: 0.dp)
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
-                        .clip(sheetCornerShape)
-                        .anchoredDraggable(
-                            state = sheetState.anchoredDraggableState,
-                            orientation = dragOrientation,
-                            enabled = sheetDragHandle != null
-                        ),
+                        .clip(sheetCornerShape),
                     sheetContent = {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                            contentColor = MaterialTheme.colorScheme.onSurface
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.anchoredDraggable(
+                                state = sheetState.anchoredDraggableState,
+                                orientation = dragOrientation,
+                                enabled = sheetDragHandle != null
+                            )
                         ) {
                             Column(content = sheetContent)
                         }
@@ -149,6 +149,10 @@ internal fun VCallScreenScaffold(
                                 contentColor = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)
+                                    .anchoredDraggable(
+                                        state = sheetState.anchoredDraggableState,
+                                        orientation = dragOrientation,
+                                    )
                                     .nestedScroll(
                                         CallBottomSheetNestedScrollConnection(
                                             sheetState = sheetState,
