@@ -19,6 +19,7 @@ import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.screennew.NotifiableCallAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 private const val MaxVSheetItems = 5
@@ -44,6 +45,7 @@ internal fun VSheetContent(
     onMoreActionClick: () -> Unit
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
+    val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }
 
     Column(modifier) {
         when {
@@ -55,7 +57,7 @@ internal fun VSheetContent(
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
             showMoreAction -> {
-                MoreAction(onClick = onMoreActionClick)
+                MoreAction(badgeText = "$moreNotificationCount", onClick = onMoreActionClick)
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
         }

@@ -16,6 +16,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.S
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.screennew.NotifiableCallAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.row.ReversibleRow
 
@@ -43,6 +44,7 @@ internal fun HSheetContent(
     onMoreActionClick: () -> Unit
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
+    val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }
 
     ReversibleRow(modifier, reverseLayout = true) {
         when {
@@ -51,7 +53,7 @@ internal fun HSheetContent(
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {
-                MoreAction(onClick = onMoreActionClick)
+                MoreAction(badgeText = "$moreNotificationCount", onClick = onMoreActionClick)
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
         }

@@ -45,6 +45,39 @@ class HSheetContentTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
+    fun testMoreActionNotificationCountIsDisplayed() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.width(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 2),
+                        WhiteboardAction(notificationCount = 3),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("5").assertIsDisplayed()
+    }
+
+    @Test
     fun showAnswerActionTrue_answerActionIsDisplayed() {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
