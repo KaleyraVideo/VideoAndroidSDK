@@ -82,12 +82,12 @@ jobs:
     needs: [update_sdk_version, update_bom_version]
     uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
     with:
-      tag: "v${{needs.update_sdk_version.outputs.tag}}"
+      tag: "${{needs.update_sdk_version.outputs.tag}}"
     secrets: inherit
 
   release_notes:
     needs: [update_sdk_version, update_bom_version]
     uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
     with:
-      tag: "v${{needs.update_sdk_version.outputs.tag}}"
+      tag: "${{needs.update_sdk_version.outputs.tag}}"
     secrets: inherit
