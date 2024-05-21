@@ -117,7 +117,8 @@ internal fun HCallScreenScaffold(
                     .clip(sheetCornerShape)
                     .anchoredDraggable(
                         state = sheetState.anchoredDraggableState,
-                        orientation = dragOrientation
+                        orientation = dragOrientation,
+                        enabled = sheetDragHandle != null
                     ),
                 sheetContent = {
                     Surface(

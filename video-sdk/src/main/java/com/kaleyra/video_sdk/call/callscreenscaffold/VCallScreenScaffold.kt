@@ -116,7 +116,7 @@ internal fun VCallScreenScaffold(
                         modifier = Modifier
                             .padding(start = startPadding, end = endPadding)
                             .align(Alignment.End)
-                            .let { if (sheetDragHandle != null) it.dragVerticalOffset(sheetState) else it },
+                            .dragVerticalOffset(sheetState),
                         content = sheetPanelContent
                     )
                     Spacer(Modifier.height(SheetPanelContentPadding))
@@ -131,7 +131,8 @@ internal fun VCallScreenScaffold(
                         .clip(sheetCornerShape)
                         .anchoredDraggable(
                             state = sheetState.anchoredDraggableState,
-                            orientation = dragOrientation
+                            orientation = dragOrientation,
+                            enabled = sheetDragHandle != null
                         ),
                     sheetContent = {
                         Surface(
