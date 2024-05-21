@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || '' }}
+          ref: ${{ github.event.inputs.tag }}
       - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -51,7 +51,7 @@ jobs:
       - name: Get commit summary
         id: get_commit_summary
         run: |
-            new_tag=${{ github.event.inputs.tag || '' }}
+            new_tag=${{ github.event.inputs.tag }}
             previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
             commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
             commit_summary="${commit_summary//$'\n'/'%0A'}"
