@@ -56,7 +56,6 @@ jobs:
             new_tag=${{ github.event.inputs.tag }}
             previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
             commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
-            commit_summary="${commit_summary//$'\n'/'%0A'}"
             echo "commit_summary=${commit_summary}" >> $GITHUB_OUTPUT
       - name: Print commit summary
         run: echo ${{ steps.get_commit_summary.outputs.commit_summary }}
