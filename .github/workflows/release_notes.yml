@@ -59,7 +59,7 @@ jobs:
             commit_summary="${commit_summary//$'\n'/'%0A'}"
             echo "commit_summary=${commit_summary}" >> $GITHUB_OUTPUT
       - name: Print commit summary
-        run: echo ${{ steps.get_commit_summary.outputs.summary }}
+        run: echo ${{ steps.get_commit_summary.outputs.commit_summary }}
       - name: Release notes
         uses: softprops/action-gh-release@v1
         with:
@@ -68,4 +68,4 @@ jobs:
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
-          append_body: ${{ steps.get_commit_summary.outputs.summary }}
+          append_body: ${{ steps.get_commit_summary.outputs.commit_summary }}
