@@ -70,4 +70,4 @@ jobs:
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
-          append_body: ${{ steps.get_commit_summary.outputs.commit_summary }}
+          body: ${{ steps.get_commit_summary.outputs.commit_summary }}
