@@ -55,7 +55,7 @@ jobs:
         run: |
             new_tag=${{ github.event.inputs.tag }}
             previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
-            commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
+            commit_summary="$(git log --pretty=format:%h\ %s --no-decorate $previous_tag..$new_tag)"
             {
               echo "commit_summary<<EOF"
               echo "$commit_summary"
