@@ -50,11 +50,13 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      - name: 📋 Get Changes between Tags
-        id: changes
-        uses: simbo/changes-between-tags-action@v1
-      - name: Print commit summary
-        run: echo ${{ steps.changes.outputs.changes }}
+      - name: Get commit summary
+        id: get_commit_summary
+        run: |
+            new_tag=${{ github.event.inputs.tag }}
+            previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
+            commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
+            echo "commit_summary=${commit_summary}" >> $GITHUB_OUTPUT
       - name: Release notes
         uses: softprops/action-gh-release@v2
         with:
@@ -65,4 +67,4 @@ jobs:
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
-          body: ${{ steps.changes.outputs.changes }}
+          body: ${{ steps.get_commit_summary.outputs.commit_summary }}
