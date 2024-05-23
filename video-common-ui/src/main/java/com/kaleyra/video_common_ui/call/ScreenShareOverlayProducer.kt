@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -46,7 +47,7 @@ import kotlinx.coroutines.withContext
 internal class ScreenShareOverlayProducer(
     private val application: Application,
     private val coroutineScope: CoroutineScope = MainScope()
-): ActivityLifecycleCallbacks {
+) : ActivityLifecycleCallbacks {
 
     private var call: CallUI? = null
 
@@ -56,9 +57,9 @@ internal class ScreenShareOverlayProducer(
         syncScreenShareOverlay(activity, call)
     }
 
-    override fun onActivityStarted(activity: Activity) = Unit
-
     override fun onActivityResumed(activity: Activity) = Unit
+
+    override fun onActivityStarted(activity: Activity) = Unit
 
     override fun onActivityPaused(activity: Activity) = Unit
 
@@ -76,13 +77,13 @@ internal class ScreenShareOverlayProducer(
      * @param call CallUI
      */
     fun bind(call: CallUI) {
+        application.registerActivityLifecycleCallbacks(this@ScreenShareOverlayProducer)
         this.call = call
-        application.registerActivityLifecycleCallbacks(this)
     }
 
-    fun stop() {
-        application.unregisterActivityLifecycleCallbacks(this)
+    fun dispose() {
         jobs.forEach { it.cancel() }
+        application.unregisterActivityLifecycleCallbacks(this)
     }
 
     private fun syncScreenShareOverlay(activity: Activity, call: Call) {
@@ -90,6 +91,7 @@ internal class ScreenShareOverlayProducer(
         var appScreenShareOverlay: AppViewOverlay? = null
 
         jobs.forEach { it.cancel() }
+
         jobs += flowOf(call)
             .isDeviceScreenInputActive()
             .onEach {
@@ -104,8 +106,10 @@ internal class ScreenShareOverlayProducer(
                     }
                 }
             }.onCompletion {
-                deviceScreenShareOverlay?.hide()
-                deviceScreenShareOverlay = null
+                MainScope().launch {
+                    deviceScreenShareOverlay?.hide()
+                    deviceScreenShareOverlay = null
+                }
             }.launchIn(coroutineScope)
 
         jobs += flowOf(call)
@@ -121,9 +125,10 @@ internal class ScreenShareOverlayProducer(
                     }
                 }
             }.onCompletion {
-                appScreenShareOverlay?.hide()
-                appScreenShareOverlay = null
+                MainScope().launch {
+                    appScreenShareOverlay?.hide()
+                    appScreenShareOverlay = null
+                }
             }.launchIn(coroutineScope)
     }
-
 }
