@@ -176,8 +176,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     updatePipParams()?.let { params ->
-                        val hasEnteredInPip = enterPictureInPictureMode(params)
-                        if (!hasEnteredInPip) moveTaskToBack(false)
+                        enterPictureInPictureMode(params)
                     }
                 }
             }
