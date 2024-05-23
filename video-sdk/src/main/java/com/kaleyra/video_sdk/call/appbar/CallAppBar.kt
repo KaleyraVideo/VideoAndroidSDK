@@ -41,7 +41,13 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.typography
 
-internal val CallAppBarHeight = 40.dp
+internal object CallAppBarDefaults {
+
+    val height = 40.dp
+
+    val elevation = 2.dp
+}
+
 internal val RecordingDotTag = "RecordingDotTag"
 
 @Composable
@@ -56,12 +62,12 @@ internal fun CallAppBar(
 ) {
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
-        color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = CallAppBarDefaults.elevation,
         shape = RoundedCornerShape(percent = 50),
         modifier = modifier
             .fillMaxWidth()
-            .height(CallAppBarHeight)
+            .height(CallAppBarDefaults.height)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),

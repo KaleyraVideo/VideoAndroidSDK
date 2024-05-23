@@ -47,7 +47,13 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-internal val SheetPanelContentPadding = 8.dp
+internal object VCallScreenScaffoldDefaults {
+
+    val sheetPanelContentPadding = 8.dp
+
+    val sheetElevation = 2.dp
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -119,7 +125,7 @@ internal fun VCallScreenScaffold(
                             .dragVerticalOffset(sheetState),
                         content = sheetPanelContent
                     )
-                    Spacer(Modifier.height(SheetPanelContentPadding))
+                    Spacer(Modifier.height(VCallScreenScaffoldDefaults.sheetPanelContentPadding))
                 }
                 CallBottomSheetLayout(
                     modifier = Modifier
@@ -131,8 +137,8 @@ internal fun VCallScreenScaffold(
                         .clip(sheetCornerShape),
                     sheetContent = {
                         Surface(
-                            color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.surface,
+                            tonalElevation = VCallScreenScaffoldDefaults.sheetElevation,
                             modifier = Modifier.anchoredDraggable(
                                 state = sheetState.anchoredDraggableState,
                                 orientation = dragOrientation,
@@ -145,8 +151,8 @@ internal fun VCallScreenScaffold(
                     sheetDragContent = sheetDragHandle?.let { dragHandle ->
                         {
                             Surface(
-                                color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                                contentColor = MaterialTheme.colorScheme.onSurface,
+                                color = MaterialTheme.colorScheme.surface,
+                                tonalElevation = VCallScreenScaffoldDefaults.sheetElevation,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)
                                     .anchoredDraggable(
