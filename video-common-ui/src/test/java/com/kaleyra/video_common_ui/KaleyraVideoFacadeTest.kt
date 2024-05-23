@@ -1,8 +1,10 @@
 package com.kaleyra.video_common_ui
 
+import android.app.Application
 import com.kaleyra.video.Collaboration
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_utils.ContextRetainer
+import io.mockk.MockKSettings.relaxed
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -31,7 +33,7 @@ class KaleyraVideoFacadeTest {
             }
         }
         mockkObject(ContextRetainer)
-        every { ContextRetainer.context } returns mockk()
+        every { ContextRetainer.context } returns mockk<Application>(relaxed = true)
         mockkObject(PhoneActivityClazzProvider)
         mockkObject(Collaboration)
         every { Collaboration.create(any()) } returns mockk(relaxed = true)

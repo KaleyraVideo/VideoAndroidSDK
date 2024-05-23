@@ -1,9 +1,11 @@
 package com.kaleyra.video_common_ui
 
+import android.app.Application
 import android.content.Context
 import android.telecom.TelecomManager
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
+import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
@@ -17,16 +19,19 @@ import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal object ConferenceUIExtensions {
 
     fun ConferenceUI.configureCallSounds(logger: PriorityLogger?, coroutineScope: CoroutineScope) {
@@ -44,6 +49,30 @@ internal object ConferenceUIExtensions {
             .launchIn(coroutineScope)
     }
 
+    fun ConferenceUI.configureScreenShareOverlayProducer(coroutineScope: CoroutineScope) {
+        var screenShareOverlayProducer: ScreenShareOverlayProducer? = null
+
+        call
+            .onEach {
+                screenShareOverlayProducer?.dispose()
+                screenShareOverlayProducer = ScreenShareOverlayProducer(ContextRetainer.context as Application, coroutineScope)
+                screenShareOverlayProducer!!.bind(it)
+            }
+            .onCompletion {
+                screenShareOverlayProducer?.dispose()
+                screenShareOverlayProducer = null
+            }
+            .launchIn(coroutineScope)
+
+        call
+            .flatMapLatest { it.state }
+            .takeWhile { it != Call.State.Disconnected.Ended }
+            .onCompletion {
+                screenShareOverlayProducer?.dispose()
+            }
+            .launchIn(coroutineScope)
+    }
+
     fun ConferenceUI.configureCallServiceStart(activityClazz: Class<*>, logger: PriorityLogger?, coroutineScope: CoroutineScope) {
         call
             .onEach { call ->
@@ -55,6 +84,7 @@ internal object ConferenceUIExtensions {
                         val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                         telecomManager.addCall(call = call, logger)
                     }
+
                     else -> showProvisionalCallNotification(call, activityClazz, coroutineScope)
                 }
             }
@@ -77,6 +107,7 @@ internal object ConferenceUIExtensions {
                 CallExtensions.isIncoming(state, participants) -> {
                     CallNotificationProducer.buildIncomingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
                 }
+
                 CallExtensions.isOutgoing(state, participants) -> {
                     CallNotificationProducer.buildOutgoingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
                 }
