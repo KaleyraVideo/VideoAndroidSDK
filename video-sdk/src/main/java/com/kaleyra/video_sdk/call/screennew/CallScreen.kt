@@ -17,13 +17,12 @@ import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -38,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
@@ -60,8 +60,11 @@ import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
+import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.launch
+
+
 
 @Composable
 internal fun CallScreen(
@@ -82,7 +85,6 @@ internal fun CallScreen(
     onBackPressed: () -> Unit
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
 
     val sheetState = rememberCallSheetState()
 
@@ -121,7 +123,7 @@ internal fun CallScreen(
         )
     } else {
         VCallScreen(
-            isLargeScreen = isLargeScreen,
+            windowSizeClass = windowSizeClass,
             callActions = actions,
             inputMessage = inputMessage,
             sheetState = sheetState,
@@ -149,7 +151,7 @@ internal const val LargeScreenMaxActions = 8
 
 @Composable
 internal fun VCallScreen(
-    isLargeScreen: Boolean,
+    windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     callActions: ImmutableList<CallActionUI>,
     inputMessage: InputMessage?,
@@ -169,10 +171,34 @@ internal fun VCallScreen(
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    var button by remember { mutableStateOf(true) }
+    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+    val streams = ImmutableList(
+        listOf(
+            StreamUi(id = "1", username = "username1"),
+            StreamUi(id = "2", username = "username2"),
+            StreamUi(id = "3", username = "username3"),
+            StreamUi(id = "4", username = "username4"),
+            StreamUi(id = "5", username = "username5"),
+            StreamUi(id = "6", username = "username6"),
+            StreamUi(id = "7", username = "username7"),
+            StreamUi(id = "8", username = "username8"),
+            StreamUi(id = "9", username = "username9"),
+            StreamUi(id = "10", username = "username10"),
+            StreamUi(id = "11", username = "username11"),
+            StreamUi(id = "12", username = "username12"),
+            StreamUi(id = "13", username = "username13"),
+            StreamUi(id = "14", username = "username14"),
+            StreamUi(id = "15", username = "username15"),
+            StreamUi(id = "16", username = "username16"),
+            StreamUi(id = "17", username = "username17"),
+            StreamUi(id = "18", username = "username18"),
+        )
+    )
+    val streamContentState = rememberStreamContentState(windowSizeClass, streams)
+    var currentStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
-    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && button && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && currentStream == null && sheetDragActions.value.isNotEmpty() } }
     // TODO test reset on resize
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
@@ -242,7 +268,7 @@ internal fun VCallScreen(
         },
         sheetContent = {
             AnimatedContent(
-                targetState = button,
+                targetState = currentStream == null,
                 contentAlignment = Alignment.Center,
                 label = "sheet content"
             ) {
@@ -270,8 +296,7 @@ internal fun VCallScreen(
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 showAnswerAction = showAnswerAction,
                                 onActionsPlaced = { itemsPlaced ->
-                                    sheetDragActions =
-                                        ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                                    sheetDragActions = ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
                                 },
                                 onAnswerActionClick = onAnswerActionClick,
                                 onHangUpClick = onHangUpClick,
@@ -300,11 +325,19 @@ internal fun VCallScreen(
                     }
                 } else {
                     HStreamMenuContent(
-                        fullscreen = false,
-                        pin = false,
-                        onCancelClick = { button = true },
-                        onFullscreenClick = {},
-                        onPinClick = {}
+                        fullscreen = currentStream == streamContentState.fullscreenStream,
+                        pin = streamContentState.pinnedStreams.value.contains(currentStream),
+                        onCancelClick = { currentStream = null },
+                        onFullscreenClick = { isFullscreen ->
+                            if (isFullscreen) streamContentState.exitFullscreen()
+                            else streamContentState.enterFullscreen(currentStream!!)
+                            currentStream = null
+                        },
+                        onPinClick = { isPinned ->
+                            if (isPinned) streamContentState.unpinStream(currentStream!!)
+                            else streamContentState.pinStream(currentStream!!)
+                            currentStream = null
+                        }
                     )
                 }
             }
@@ -312,16 +345,28 @@ internal fun VCallScreen(
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
         sheetDragHandle = (@Composable { InputMessageHandle(inputMessage) }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
-        Box(
-            contentAlignment = Alignment.Center,
+        val layoutDirection = LocalLayoutDirection.current
+        val top = paddingValues.calculateTopPadding()
+        val left = paddingValues.calculateLeftPadding(layoutDirection)
+        val right = paddingValues.calculateRightPadding(layoutDirection)
+
+        StreamContent(
+            windowSizeClass = windowSizeClass,
+            streamContentState = streamContentState,
+            onStreamClick = {
+                currentStream = if (currentStream != null && currentStream != it) null else it
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Button(onClick = { button = !button }) {
-                Text(text = "KABOOM")
-            }
-        }
+                .navigationBarsPadding()
+                .padding(
+                    start = left,
+                    top = top,
+                    end = right,
+                    bottom = 116.dp
+                )
+                .padding(top = 14.dp)
+        )
     }
 }
 
@@ -436,21 +481,38 @@ internal fun HCallScreen(
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
         sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Button(onClick = { button = !button }, modifier = Modifier.align(Alignment.Center)) {
-                Text(text = "KABOOM")
-            }
-            InputMessageHost(
-                inputMessage = inputMessage,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .align(Alignment.BottomCenter)
+        val layoutDirection = LocalLayoutDirection.current
+        val top = paddingValues.calculateTopPadding()
+        val bottom = paddingValues.calculateBottomPadding()
+        val left = paddingValues.calculateLeftPadding(layoutDirection)
+
+        val streams = ImmutableList(
+            listOf(
+                StreamUi(id = "1", username = "username1"),
+                StreamUi(id = "2", username = "username2")
             )
-        }
+        )
+//        StreamContent(
+//            streams = streams,
+//            onStreamClick = {
+//
+//            },
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .navigationBarsPadding()
+//                .padding(
+//                    start = left,
+//                    top = top,
+//                    bottom = bottom
+//                )
+//        )
+
+//        InputMessageHost(
+//            inputMessage = inputMessage,
+//            modifier = Modifier
+//                .padding(vertical = 16.dp)
+//                .align(Alignment.BottomCenter)
+//        )
     }
 }
 
