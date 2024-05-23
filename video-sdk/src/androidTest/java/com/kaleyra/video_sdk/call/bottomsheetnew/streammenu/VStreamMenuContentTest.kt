@@ -112,38 +112,74 @@ class VStreamMenuContentTest {
     }
 
     @Test
-    fun testOnFullscreenClick() {
+    fun testOnFullscreenClickFalse() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
-        var clicked = false
+        var fullscreenClick: Boolean? = null
         composeTestRule.setContent {
             VStreamMenuContent(
                 fullscreen = false,
                 pin = false,
                 onCancelClick = {},
-                onFullscreenClick = { clicked = true },
+                onFullscreenClick = { fullscreenClick = it },
                 onPinClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(true, clicked)
+        Assert.assertEquals(false, fullscreenClick)
     }
 
     @Test
-    fun testOnPinClick() {
+    fun testOnFullscreenClickTrue() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_off)
+        var fullscreenClick: Boolean? = null
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                fullscreen = true,
+                pin = false,
+                onCancelClick = {},
+                onFullscreenClick = { fullscreenClick = it },
+                onPinClick = {}
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(text).performClick()
+        Assert.assertEquals(true, fullscreenClick)
+    }
+
+    @Test
+    fun testOnPinClickFalse() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_pin)
-        var clicked = false
+        var pinClick: Boolean? = null
         composeTestRule.setContent {
             VStreamMenuContent(
                 fullscreen = false,
                 pin = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = { clicked = true }
+                onPinClick = { pinClick = it }
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(true, clicked)
+        Assert.assertEquals(false, pinClick)
+    }
+
+    @Test
+    fun testOnPinClickTrue() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_unpin)
+        var pinClick: Boolean? = null
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                fullscreen = false,
+                pin = true,
+                onCancelClick = {},
+                onFullscreenClick = {},
+                onPinClick = { pinClick = it }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(text).performClick()
+        Assert.assertEquals(true, pinClick)
     }
 }

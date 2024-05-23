@@ -22,8 +22,8 @@ internal fun VStreamMenuContent(
     fullscreen: Boolean,
     pin: Boolean,
     onCancelClick: () -> Unit,
-    onFullscreenClick: () -> Unit,
-    onPinClick: () -> Unit,
+    onFullscreenClick: (Boolean) -> Unit,
+    onPinClick: (Boolean) -> Unit,
 ) {
     Column(Modifier.padding(14.dp)) {
         CancelAction(
@@ -34,13 +34,13 @@ internal fun VStreamMenuContent(
         FullscreenAction(
             label = true,
             fullscreen = fullscreen,
-            onClick = onFullscreenClick
+            onClick = { onFullscreenClick(fullscreen) }
         )
         Spacer(modifier = Modifier.height(SheetItemsSpacing))
         PinAction(
             label = true,
             pin = pin,
-            onClick = onPinClick
+            onClick = { onPinClick(pin) }
         )
     }
 }

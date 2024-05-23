@@ -21,8 +21,8 @@ internal fun HStreamMenuContent(
     fullscreen: Boolean,
     pin: Boolean,
     onCancelClick: () -> Unit,
-    onFullscreenClick: () -> Unit,
-    onPinClick: () -> Unit,
+    onFullscreenClick: (Boolean) -> Unit,
+    onPinClick: (Boolean) -> Unit,
 ) {
     Row(Modifier.padding(14.dp)) {
         CancelAction(
@@ -33,13 +33,13 @@ internal fun HStreamMenuContent(
         FullscreenAction(
             label = true,
             fullscreen = fullscreen,
-            onClick = onFullscreenClick
+            onClick = { onFullscreenClick(fullscreen) }
         )
         Spacer(modifier = Modifier.width(SheetItemsSpacing))
         PinAction(
             label = true,
             pin = pin,
-            onClick = onPinClick
+            onClick = { onPinClick(pin) }
         )
     }
 }
