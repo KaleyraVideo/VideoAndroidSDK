@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -105,8 +106,10 @@ internal class ScreenShareOverlayProducer(
                     }
                 }
             }.onCompletion {
-                deviceScreenShareOverlay?.hide()
-                deviceScreenShareOverlay = null
+                MainScope().launch {
+                    deviceScreenShareOverlay?.hide()
+                    deviceScreenShareOverlay = null
+                }
             }.launchIn(coroutineScope)
 
         jobs += flowOf(call)
@@ -122,9 +125,10 @@ internal class ScreenShareOverlayProducer(
                     }
                 }
             }.onCompletion {
-                appScreenShareOverlay?.hide()
-                appScreenShareOverlay = null
+                MainScope().launch {
+                    appScreenShareOverlay?.hide()
+                    appScreenShareOverlay = null
+                }
             }.launchIn(coroutineScope)
     }
-
 }
