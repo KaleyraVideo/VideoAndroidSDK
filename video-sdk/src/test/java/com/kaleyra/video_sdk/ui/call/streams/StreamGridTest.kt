@@ -8,6 +8,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
+import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
@@ -211,6 +213,206 @@ class StreamGridTest {
             item.assertTopPositionInRootIsEqualTo(itemStartY, testToleranceDp)
             item.assertBottomPositionInRootIsEqualTo(itemStartY + thumbnailSize, testToleranceDp)
         }
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementStartAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Start,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX, testToleranceDp)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth, testToleranceDp)
+            item.assertTopPositionInRootIsEqualTo(itemStartY, testToleranceDp)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight, testToleranceDp)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementEndAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.End,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX, testToleranceDp)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth, testToleranceDp)
+            item.assertTopPositionInRootIsEqualTo(itemStartY, testToleranceDp)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight, testToleranceDp)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementTopAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Top,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX, testToleranceDp)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth, testToleranceDp)
+            item.assertTopPositionInRootIsEqualTo(itemStartY, testToleranceDp)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight, testToleranceDp)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementBottomAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Bottom,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX, testToleranceDp)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth, testToleranceDp)
+            item.assertTopPositionInRootIsEqualTo(itemStartY, testToleranceDp)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight, testToleranceDp)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
     }
 
     @Test

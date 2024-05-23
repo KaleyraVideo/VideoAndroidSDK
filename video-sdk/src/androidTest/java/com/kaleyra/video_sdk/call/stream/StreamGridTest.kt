@@ -440,6 +440,206 @@ class StreamGridTest {
     }
 
     @Test
+    fun testPinnedBoundsWithThumbnailsArrangementStartAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Start,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth)
+            item.assertTopPositionInRootIsEqualTo(itemStartY)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementEndAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.End,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth)
+            item.assertTopPositionInRootIsEqualTo(itemStartY)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementTopAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Top,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth)
+            item.assertTopPositionInRootIsEqualTo(itemStartY)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
+    fun testPinnedBoundsWithThumbnailsArrangementBottomAndNoThumbnails() {
+        mockkObject(StreamGridHelper)
+        val pinnedTag = "pinnedTag"
+        val rows = 3
+        val columns = 2
+        val pinnedCount = 5
+        every { StreamGridHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+            Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
+        }
+        composeTestRule.setContent {
+            StreamGrid(
+                thumbnailsArrangement = ThumbnailsArrangement.Bottom,
+                content = {
+                    repeat(pinnedCount) {
+                        Box(Modifier.fillMaxSize().pin(true).testTag(pinnedTag))
+                    }
+                }
+            )
+        }
+        val containerWidth = composeTestRule.onRoot().getBoundsInRoot().width
+        val containerHeight = composeTestRule.onRoot().getBoundsInRoot().height
+        val pinned = composeTestRule.onAllNodesWithTag(pinnedTag)
+
+        val itemWidth = containerWidth / columns
+        val itemHeight = containerHeight / rows
+
+        val lastRowItemsCount = pinnedCount - (columns * (rows - 1))
+        val lastRowPadding = (containerWidth - itemWidth * lastRowItemsCount) / 2
+        var row = 0
+        var column = 0
+
+        repeat(pinnedCount) { index ->
+            val item = pinned[index]
+            val itemStartX = if (row == rows - 1) {
+                lastRowPadding + itemWidth * column
+            } else itemWidth * column
+            val itemStartY = itemHeight * row
+
+            item.assertLeftPositionInRootIsEqualTo(itemStartX)
+            item.assertRightPositionInRootIsEqualTo(itemStartX + itemWidth)
+            item.assertTopPositionInRootIsEqualTo(itemStartY)
+            item.assertBottomPositionInRootIsEqualTo(itemStartY + itemHeight)
+
+            row = if (index % columns == columns - 1) row + 1 else row
+            column = if (index % columns == columns - 1) 0 else column + 1
+        }
+        unmockkObject(StreamGridHelper)
+    }
+
+    @Test
     fun testMultipleFeaturedItems() {
         mockkObject(StreamGridHelper)
         val rows = 3

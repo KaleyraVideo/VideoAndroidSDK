@@ -17,8 +17,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
 
-internal const val DefaultThumbnailCount = 3
-internal val DefaultThumbnailSize = 128.dp
+internal object StreamGridDefaults {
+
+    val thumbnailArrangement = ThumbnailsArrangement.Bottom
+
+    val thumbnailSize = 96.dp
+
+    const val thumbnailCount = 3
+}
 
 @Immutable
 internal enum class ThumbnailsArrangement {
@@ -48,9 +54,9 @@ internal class StreamParentData(
 @Composable
 internal fun StreamGrid(
     modifier: Modifier = Modifier,
-    thumbnailsArrangement: ThumbnailsArrangement = ThumbnailsArrangement.Bottom,
-    thumbnailSize: Dp = DefaultThumbnailSize,
-    thumbnailsCount: Int = DefaultThumbnailCount,
+    thumbnailsArrangement: ThumbnailsArrangement = StreamGridDefaults.thumbnailArrangement,
+    thumbnailSize: Dp = StreamGridDefaults.thumbnailSize,
+    thumbnailsCount: Int = StreamGridDefaults.thumbnailCount,
     content: @Composable StreamGridScope.() -> Unit
 ) {
     val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }
@@ -67,8 +73,17 @@ internal fun StreamGrid(
         val featuredCount = pinnedCount.takeIf { it != 0 } ?: measurables.size
         val layoutThumbnailsArrangement = thumbnailsArrangement.takeIf { pinnedCount > 0 }
 
-        val featuredContainerWidth = constraints.maxWidth - if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
-        val featuredContainerHeight = constraints.maxHeight - if (layoutThumbnailsArrangement?.isVertical() == true) thumbnailSizePx else 0
+        val featuredContainerWidth = if (pinnedCount != measurables.size) {
+            constraints.maxWidth - if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
+        }
+        // else if all streams are pinned
+        else constraints.maxWidth
+
+        val featuredContainerHeight = if (pinnedCount != measurables.size) {
+            constraints.maxHeight - if (layoutThumbnailsArrangement?.isVertical() == true) thumbnailSizePx else 0
+        }
+        // else if all streams are pinned
+        else constraints.maxHeight
 
         val (rows, columns, featuredSize) = calculateGridAndFeaturedSize(constraints, featuredContainerWidth, featuredContainerHeight, featuredCount)
 
@@ -77,7 +92,13 @@ internal fun StreamGrid(
 
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
 
-        val thumbnailsPadding = if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
+        val areThumbnailsEmpty = thumbnailPlaceables.isEmpty()
+        val thumbnailsPadding = when {
+            areThumbnailsEmpty -> 0
+            layoutThumbnailsArrangement?.isHorizontal() == true -> thumbnailSizePx
+            else -> 0
+        }
+
         val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
         val featuredItemsPadding = (constraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
 
@@ -89,7 +110,8 @@ internal fun StreamGrid(
                 featuredConstraints = featuredConstraints,
                 featuredPadding = featuredItemsPadding,
                 thumbnailConstraints = thumbnailConstraints,
-                thumbnailsArrangement = layoutThumbnailsArrangement
+                thumbnailsArrangement = layoutThumbnailsArrangement,
+                areThumbnailsEmpty = areThumbnailsEmpty
             )
 
             if (layoutThumbnailsArrangement != null && thumbnailPlaceables.isNotEmpty()) {
@@ -148,12 +170,11 @@ private fun Placeable.PlacementScope.placeFeatured(
     featuredConstraints: Constraints,
     featuredPadding: Int,
     thumbnailConstraints: Constraints,
-    thumbnailsArrangement: ThumbnailsArrangement?
+    thumbnailsArrangement: ThumbnailsArrangement?,
+    areThumbnailsEmpty: Boolean
 ) {
-    val startX = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Start }
-        ?.let { thumbnailConstraints.maxWidth } ?: 0
-    val startY = thumbnailsArrangement?.takeIf { it == ThumbnailsArrangement.Top }
-        ?.let { thumbnailConstraints.maxHeight } ?: 0
+    val startX = if (!areThumbnailsEmpty && thumbnailsArrangement == ThumbnailsArrangement.Start) thumbnailConstraints.maxWidth else 0
+    val startY = if (!areThumbnailsEmpty && thumbnailsArrangement == ThumbnailsArrangement.Top) thumbnailConstraints.maxHeight else 0
 
     var x = startX
     var y = startY
