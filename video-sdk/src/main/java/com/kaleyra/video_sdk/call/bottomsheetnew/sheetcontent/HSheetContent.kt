@@ -53,7 +53,10 @@ internal fun HSheetContent(
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {
-                MoreAction(badgeText = "$moreNotificationCount", onClick = onMoreActionClick)
+                MoreAction(
+                    badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
+                    onClick = onMoreActionClick
+                )
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
         }

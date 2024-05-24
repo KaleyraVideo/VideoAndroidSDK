@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
@@ -71,6 +72,39 @@ class HSheetContentTest {
             )
         }
         composeTestRule.onNodeWithText("5").assertIsDisplayed()
+    }
+
+    @Test
+    fun zeroNotificationCount_moreActionNotificationCountDoesNotExists() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.height(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 0),
+                        WhiteboardAction(notificationCount = 0),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { },
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
     }
 
     @Test

@@ -72,6 +72,38 @@ class VSheetContentTest {
     }
 
     @Test
+    fun zeroNotificationCount_moreActionNotificationCountDoesNotExists() {
+        composeTestRule.setContent {
+            VSheetContent(
+                modifier = Modifier.height(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 0),
+                        WhiteboardAction(notificationCount = 0),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                onActionsPlaced = { },
+                onAnswerActionClick = { },
+                onHangUpClick = { },
+                onMicToggled = { },
+                onCameraToggled = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreActionClick = { }
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
     fun showAnswerActionTrue_answerActionIsDisplayed() {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)

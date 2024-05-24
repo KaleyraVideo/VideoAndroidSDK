@@ -57,7 +57,10 @@ internal fun VSheetContent(
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
             showMoreAction -> {
-                MoreAction(badgeText = "$moreNotificationCount", onClick = onMoreActionClick)
+                MoreAction(
+                    badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
+                    onClick = onMoreActionClick
+                )
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
         }
