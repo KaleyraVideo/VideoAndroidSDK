@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -50,11 +51,9 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
             ) {
                 Avatar(
-                    text = username[0].toString(),
+                    text = username[0].uppercase(),
                     uri = avatar,
-                    contentDescription = stringResource(id = R.string.kaleyra_avatar),
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    size = 34.dp
+                    modifier = Modifier.size(34.dp)
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(

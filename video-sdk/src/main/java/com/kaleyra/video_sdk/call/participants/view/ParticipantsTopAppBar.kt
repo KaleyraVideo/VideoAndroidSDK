@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,11 +41,8 @@ internal fun ParticipantsTopAppBar(
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             Avatar(
-                uri = (if (isSystemInDarkTheme) companyLogo.dark else companyLogo.light)?.let {
-                    ImmutableUri(it)
-                },
-                contentDescription = stringResource(id = R.string.kaleyra_company_logo),
-                backgroundColor = MaterialTheme.colorScheme.primary,
+                uri = (if (isSystemInDarkTheme) companyLogo.dark else companyLogo.light)?.let { ImmutableUri(it) },
+                text = "",
                 modifier = Modifier.padding(12.dp)
             )
         },

@@ -21,7 +21,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class AdminBottomSheetContentTest {
 
     @get:Rule
@@ -77,15 +76,9 @@ class AdminBottomSheetContentTest {
     }
 
     @Test
-    fun testUserAvatarIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun avatarFailsToLoad_letterIsDisplayed() {
         username = "custom"
-        composeTestRule.onNodeWithText("c").assertIsDisplayed()
+        composeTestRule.onNodeWithText("C").assertIsDisplayed()
     }
 
     @Test

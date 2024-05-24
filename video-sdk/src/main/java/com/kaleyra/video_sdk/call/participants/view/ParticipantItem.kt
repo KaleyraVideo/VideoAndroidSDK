@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,11 +47,9 @@ internal fun ParticipantItem(
         modifier = modifier
     ) {
         Avatar(
-            text = stream.username[0].toString(),
+            text = stream.username[0].uppercase(),
             uri = stream.avatar,
-            contentDescription = stringResource(id = R.string.kaleyra_avatar),
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            size = ParticipantItemAvatarSize
+            modifier = Modifier.size(ParticipantItemAvatarSize)
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {

@@ -49,12 +49,6 @@ class ParticipantsTopAppBarTest {
     }
 
     @Test
-    fun testCompanyLogoIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun testParticipantCountIsDisplayed() {
         val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, participantsCount, participantsCount)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()

@@ -15,7 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class AvatarTest {
 
     @get:Rule
@@ -29,8 +28,7 @@ class AvatarTest {
             Avatar(
                 text = "us",
                 uri = ImmutableUri(uri),
-                contentDescription = "",
-                backgroundColor = Color.Black,
+                color = Color.Black,
                 onSuccess = { success.value = true }
             )
         }
@@ -46,8 +44,7 @@ class AvatarTest {
             Avatar(
                 text = "us",
                 uri = null,
-                contentDescription = "",
-                backgroundColor = Color.Black
+                color = Color.Black
             )
         }
         composeTestRule.onNodeWithText("us").assertIsDisplayed()

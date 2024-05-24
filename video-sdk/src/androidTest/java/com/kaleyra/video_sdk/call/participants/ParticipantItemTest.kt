@@ -23,7 +23,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class ParticipantItemTest {
 
     @get:Rule
@@ -84,15 +83,9 @@ class ParticipantItemTest {
     }
 
     @Test
-    fun testUserAvatarIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun avatarFailsToLoad_letterIsDisplayed() {
         stream = streamUiMock.copy(username = "username", avatar = null)
-        composeTestRule.onNodeWithText("u").assertIsDisplayed()
+        composeTestRule.onNodeWithText("U").assertIsDisplayed()
     }
 
     @Test

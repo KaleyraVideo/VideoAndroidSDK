@@ -85,15 +85,9 @@ class ParticipantItemTest {
     }
 
     @Test
-    fun testUserAvatarIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun avatarFailsToLoad_letterIsDisplayed() {
         stream = streamUiMock.copy(username = "username", avatar = null)
-        composeTestRule.onNodeWithText("u").assertIsDisplayed()
+        composeTestRule.onNodeWithText("U").assertIsDisplayed()
     }
 
     @Test

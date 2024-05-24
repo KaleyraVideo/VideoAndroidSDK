@@ -20,7 +20,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RunWith(AndroidJUnit4::class)
 class ParticipantsTopAppBarTest {
 
     @get:Rule
@@ -44,12 +43,6 @@ class ParticipantsTopAppBarTest {
     @After
     fun tearDown() {
         isCloseClicked = false
-    }
-
-    @Test
-    fun testCompanyLogoIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
