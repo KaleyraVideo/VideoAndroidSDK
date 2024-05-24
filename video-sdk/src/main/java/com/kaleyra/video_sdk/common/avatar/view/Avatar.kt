@@ -113,12 +113,11 @@ internal fun Avatar(
             }
         )
         if (!isImageLoaded) {
-            val minConstraint = min(constraints.maxWidth, constraints.maxHeight) / 2
-            val fontSize2 = with(LocalDensity.current) { minConstraint.toSp() }
+            val fontSize = with(LocalDensity.current) { (constraints.maxWidth / 2).toSp() }
             Text(
                 text = text,
                 color = contentColor,
-                fontSize = fontSize2
+                fontSize = fontSize
             )
         }
     }
