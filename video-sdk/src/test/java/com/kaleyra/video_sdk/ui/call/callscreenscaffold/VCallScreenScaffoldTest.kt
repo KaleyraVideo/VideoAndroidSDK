@@ -25,12 +25,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
-import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.callscreenscaffold.CallScreenScaffoldDefaults
-import com.kaleyra.video_sdk.call.callscreenscaffold.SheetPanelContentPadding
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
+import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffoldDefaults
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -105,7 +104,7 @@ class VCallScreenScaffoldTest {
 
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - SheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -119,7 +118,7 @@ class VCallScreenScaffoldTest {
 
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - SheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -132,7 +131,7 @@ class VCallScreenScaffoldTest {
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val contentTop = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(contentTop - SheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(contentTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
