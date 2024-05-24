@@ -46,6 +46,10 @@
     <item name="ic_kaleyra_participants_new" type="drawable">@drawable/kaleyra_f_avatars</item>
     <item name="ic_kaleyra_recording_dot_new" type="drawable">@drawable/kaleyra_f_rec</item>
 
+    <!-- stream -->
+    <item name="ic_kaleyra_stream_fullscreen_off" type="drawable">@drawable/kaleyra_f_fullscreen_off</item>
+    <item name="ic_kaleyra_stream_pin" type="drawable">@drawable/kaleyra_f_pin</item>
+
     <!-- participants component -->
     <item name="ic_kaleyra_participants_component_mic_off" type="drawable">@drawable/kaleyra_f_mic_off</item>
     <item name="ic_kaleyra_participants_component_mic_on" type="drawable">@drawable/kaleyra_f_mic_on</item>

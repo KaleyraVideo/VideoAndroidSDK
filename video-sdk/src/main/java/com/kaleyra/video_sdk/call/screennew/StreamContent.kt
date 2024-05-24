@@ -1,15 +1,16 @@
 package com.kaleyra.video_sdk.call.screennew
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -21,24 +22,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import com.kaleyra.video_sdk.call.screen.view.StreamGrid
 import com.kaleyra.video_sdk.call.screen.view.StreamGridDefaults
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.stream.view.StreamItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-import kotlin.random.Random
 
 // TODO remember saveable
 @Composable
@@ -110,23 +113,33 @@ internal fun StreamContent(
     modifier: Modifier = Modifier
 ) {
     val maxStreams = if (windowSizeClass.isCompactHeight() || windowSizeClass.isCompactWidth()) CompactScreenMaxStreams else LargeScreenMaxStreams
-    val streams by remember(streamContentState) {
+    val unpinnedStreams by remember(streamContentState) {
         derivedStateOf {
-            val new = streamContentState.fullscreenStream?.let { listOf(it) }
-                ?: (streamContentState.pinnedStreams.value + streamContentState.streams.value.minus(
-                    streamContentState.pinnedStreams.value.toSet()
-                ))
-            new.take(maxStreams)
+            streamContentState.streams.value - streamContentState.pinnedStreams.value.toSet()
         }
     }
-    val lastStreamId by remember(streamContentState) {
+    val streams: List<StreamUi> by remember(streamContentState) {
+        derivedStateOf {
+            val fullscreenStream = streamContentState.fullscreenStream
+            if (fullscreenStream != null) listOf(fullscreenStream)
+            else (streamContentState.pinnedStreams.value + unpinnedStreams).take(maxStreams)
+        }
+    }
+    val otherStreamCount: Int by remember(streamContentState) {
+        derivedStateOf {
+            val pinnedStreams = streamContentState.pinnedStreams.value
+            if (pinnedStreams.isEmpty()) streamContentState.streams.count() - maxStreams
+            else streamContentState.streams.count() - (pinnedStreams.size + StreamGridDefaults.thumbnailCount)
+        }
+    }
+    val lastStreamId: String? by remember(streamContentState) {
         derivedStateOf {
             when {
                 streams.isEmpty() || streamContentState.streams.value.count() <= maxStreams -> null
                 streamContentState.pinnedStreams.value.isEmpty() -> streams.last().id
                 else -> {
                     val nonPinnedStreams = streamContentState.streams.value - streamContentState.pinnedStreams.value.toSet()
-                    nonPinnedStreams[2].id
+                    nonPinnedStreams[StreamGridDefaults.thumbnailCount -1].id
                 }
             }
         }
@@ -143,12 +156,12 @@ internal fun StreamContent(
         ) {
             streams.fastForEachIndexed { index, stream ->
                 key(stream.id) {
-                    val isPinned by remember {
-                        derivedStateOf {
-                            streamContentState.pinnedStreams.value.contains(stream)
-                        }
+                    val isPinned by remember(streamContentState) {
+                        derivedStateOf { streamContentState.pinnedStreams.value.contains(stream) }
                     }
-                    val color = rememberSaveable { Color.random().toArgb() }
+                    val isFullscreen by remember(streamContentState) {
+                        derivedStateOf { streamContentState.fullscreenStream == stream }
+                    }
 
                     Box(
                         modifier = Modifier
@@ -161,20 +174,34 @@ internal fun StreamContent(
                                     constraints.maxHeight
                                 )
                             )
-                            .border(BorderStroke(3.dp, Color.Red))
                             .pin(isPinned)
-                            .clickable { onStreamClick(stream) },
-                        contentAlignment = Alignment.Center
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClickLabel = "label",
+                                role = Role.Button,
+                                onClick = { onStreamClick(stream) }
+                            )
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .background(Color(color))
-                        ) {
-                            if (stream.id == lastStreamId) {
-                                Text(text = "last stream")
+                        StreamItem(
+                            stream = stream,
+                            fullscreen = isFullscreen,
+                            pin = isPinned
+                        )
+                        if (!isFullscreen && stream.id == lastStreamId) {
+                            Surface(
+                                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = .1f),
+                                contentColor = MaterialTheme.colorScheme.inverseSurface,
+                                shape = RoundedCornerShape(4.dp),
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(
+                                    text = "$otherStreamCount others",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelMedium.copy(lineHeight = 24.sp),
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
                             }
                         }
                     }
@@ -204,11 +231,4 @@ internal fun WindowSizeClass.isCompactWidth(): Boolean {
 
 internal fun WindowSizeClass.isExpandedWidth(): Boolean {
     return widthSizeClass == WindowWidthSizeClass.Expanded
-}
-
-fun Color.Companion.random(): Color {
-    val red = Random.nextInt(256)
-    val green = Random.nextInt(256)
-    val blue = Random.nextInt(256)
-    return Color(red, green, blue)
 }
