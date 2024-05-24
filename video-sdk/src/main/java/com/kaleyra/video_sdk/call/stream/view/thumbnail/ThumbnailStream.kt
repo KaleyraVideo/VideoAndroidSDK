@@ -62,8 +62,7 @@ internal fun ThumbnailStream(
         ) {
             PointerStreamWrapper(
                 streamView = stream.video?.view,
-                pointerList = stream.video?.pointers,
-                isTesting = isTesting
+                pointerList = stream.video?.pointers
             ) { hasPointers ->
                 val shouldFit = stream.video?.isScreenShare == true || hasPointers
                 Stream(

@@ -23,36 +23,39 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
 import com.kaleyra.video_sdk.call.pointer.view.MovablePointerTag
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class PointerStreamWrapperTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val pointerList = ImmutableList<PointerUi>(listOf(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true)))
+    private val pointerList = ImmutableList(
+        listOf(
+            PointerUi("username1", 10f, 10f),
+            PointerUi("username2", 20f, 20f),
+            PointerUi("username3", 30f, 30f),
+        )
+    )
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            PointerStreamWrapper(streamView = null , pointerList = pointerList, isTesting = true) {
+            PointerStreamWrapper(streamView = null , pointerList = pointerList) {
                 Spacer(modifier = Modifier.testTag("ChildTag"))
             }
         }
     }
 
     @Test
-    fun streamComposableDoesExists() {
+    fun streamComposableDoesExists() = runTest {
         composeTestRule.onNodeWithTag("ChildTag").assertExists()
     }
 

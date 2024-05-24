@@ -78,8 +78,7 @@ internal fun FeaturedStream(
             StreamContainer {
                 PointerStreamWrapper(
                     streamView = stream.video?.view,
-                    pointerList = stream.video?.pointers,
-                    isTesting = isTesting
+                    pointerList = stream.video?.pointers
                 ) {
                     val shouldFit = stream.video?.isScreenShare == true
                     Stream(
