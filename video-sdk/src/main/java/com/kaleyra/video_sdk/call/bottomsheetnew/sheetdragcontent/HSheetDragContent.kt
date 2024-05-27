@@ -21,8 +21,6 @@ private const val MaxHSheetDragItems = 5
 
 @Composable
 internal fun HSheetDragContent(
-    modifier: Modifier = Modifier,
-    itemsPerRow: Int = MaxHSheetDragItems,
     callActions: ImmutableList<CallActionUI>,
     onHangUpClick: () -> Unit,
     onMicToggled: (Boolean) -> Unit,
@@ -33,7 +31,10 @@ internal fun HSheetDragContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
+    onVirtualBackgroundClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    itemsPerRow: Int = MaxHSheetDragItems,
+    labels: Boolean = true
 ) {
     val actionsCount = callActions.count()
     val hasOneRow = actionsCount < itemsPerRow
@@ -54,7 +55,7 @@ internal fun HSheetDragContent(
                 CallSheetItem(
                     callAction = callAction,
                     modifier = callActionModifier,
-                    label = true,
+                    label = labels,
                     extended = false,
                     onHangUpClick = onHangUpClick,
                     onMicToggled = onMicToggled,

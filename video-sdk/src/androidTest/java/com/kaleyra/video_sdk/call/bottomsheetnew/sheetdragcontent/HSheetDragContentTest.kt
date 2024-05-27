@@ -51,6 +51,7 @@ class HSheetDragContentTest {
                         ChatAction()
                     )
                 ),
+                labels = false,
                 itemsPerRow = itemsPerRow,
                 onHangUpClick = { },
                 onMicToggled = { },

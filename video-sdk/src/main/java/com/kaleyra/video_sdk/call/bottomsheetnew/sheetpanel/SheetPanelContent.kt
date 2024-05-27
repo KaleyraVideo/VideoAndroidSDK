@@ -25,9 +25,9 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun SheetPanelContent(
-    modifier: Modifier = Modifier,
     items: ImmutableList<CallActionUI>,
-    onItemClick: (CallActionUI) -> Unit
+    onItemClick: (CallActionUI) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         contentPadding = PaddingValues(vertical = 12.dp),

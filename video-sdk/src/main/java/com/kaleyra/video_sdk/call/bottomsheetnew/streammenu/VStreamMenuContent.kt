@@ -24,8 +24,9 @@ internal fun VStreamMenuContent(
     onCancelClick: () -> Unit,
     onFullscreenClick: (Boolean) -> Unit,
     onPinClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column(Modifier.padding(14.dp)) {
+    Column(modifier.padding(14.dp)) {
         CancelAction(
             label = true,
             onClick = onCancelClick

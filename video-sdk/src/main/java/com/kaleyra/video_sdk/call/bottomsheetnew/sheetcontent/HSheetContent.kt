@@ -24,8 +24,6 @@ private const val MaxHSheetItems = 5
 
 @Composable
 internal fun HSheetContent(
-    modifier: Modifier = Modifier,
-    maxActions: Int = MaxHSheetItems,
     callActions: ImmutableList<CallActionUI>,
     showAnswerAction: Boolean,
     isLargeScreen: Boolean,
@@ -41,7 +39,9 @@ internal fun HSheetContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
-    onMoreActionClick: () -> Unit
+    onMoreActionClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    maxActions: Int = MaxHSheetItems
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
     val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }

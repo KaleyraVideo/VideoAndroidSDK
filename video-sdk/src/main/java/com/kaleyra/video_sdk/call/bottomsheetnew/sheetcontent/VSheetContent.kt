@@ -26,9 +26,7 @@ private const val MaxVSheetItems = 5
 
 @Composable
 internal fun VSheetContent(
-    modifier: Modifier = Modifier,
     callActions: ImmutableList<CallActionUI>,
-    maxActions: Int = MaxVSheetItems,
     showAnswerAction: Boolean,
     onActionsPlaced: (actionsPlaced: Int) -> Unit,
     onAnswerActionClick: () -> Unit,
@@ -42,7 +40,9 @@ internal fun VSheetContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
-    onMoreActionClick: () -> Unit
+    onMoreActionClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    maxActions: Int = MaxVSheetItems
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
     val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }

@@ -9,7 +9,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.StreamItem
 import org.junit.After
@@ -39,7 +38,6 @@ class StreamItemTest {
     fun tearDown() {
         stream = streamUiMock
     }
-
 
     @Test
     fun testUsernameIsDisplayed() {

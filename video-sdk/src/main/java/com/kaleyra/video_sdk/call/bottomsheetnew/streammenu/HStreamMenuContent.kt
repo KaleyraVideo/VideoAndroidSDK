@@ -23,8 +23,9 @@ internal fun HStreamMenuContent(
     onCancelClick: () -> Unit,
     onFullscreenClick: (Boolean) -> Unit,
     onPinClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(Modifier.padding(14.dp)) {
+    Row(modifier.padding(14.dp)) {
         CancelAction(
             label = true,
             onClick = onCancelClick

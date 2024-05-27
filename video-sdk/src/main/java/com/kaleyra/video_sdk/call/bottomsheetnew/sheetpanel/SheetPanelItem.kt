@@ -30,8 +30,8 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun SheetPanelItem(
-    modifier: Modifier = Modifier,
     callAction: CallActionUI,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,

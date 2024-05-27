@@ -22,8 +22,6 @@ private const val MaxVSheetDragItems = 5
 
 @Composable
 internal fun VSheetDragContent(
-    modifier: Modifier = Modifier,
-    itemsPerColumn : Int = MaxVSheetDragItems,
     callActions: ImmutableList<CallActionUI>,
     onHangUpClick: () -> Unit,
     onMicToggled: (Boolean) -> Unit,
@@ -34,7 +32,9 @@ internal fun VSheetDragContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
+    onVirtualBackgroundClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    itemsPerColumn : Int = MaxVSheetDragItems
 ) {
     val actions = remember(callActions, itemsPerColumn) {
         callActions.value.chunked(itemsPerColumn, transform = { it.reversed() }).flatten()
