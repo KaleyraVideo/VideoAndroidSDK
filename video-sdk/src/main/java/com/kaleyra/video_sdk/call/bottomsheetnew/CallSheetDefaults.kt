@@ -33,6 +33,7 @@ internal object AnchoredDraggableCallSheetDefaults {
     val PositionalThreshold: (distance: Float) -> Float = { it * 0.5f }
 }
 
+@Stable
 object CallBottomSheetDefaults {
 
     val Shape: RoundedCornerShape = RoundedCornerShape(22.dp)

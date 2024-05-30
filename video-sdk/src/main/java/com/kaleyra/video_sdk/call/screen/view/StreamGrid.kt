@@ -17,13 +17,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
 
+@Stable
 internal object StreamGridDefaults {
 
-    val thumbnailArrangement = ThumbnailsArrangement.Bottom
+    val ThumbnailArrangement = ThumbnailsArrangement.Bottom
 
-    val thumbnailSize = 96.dp
+    val ThumbnailSize = 96.dp
 
-    const val thumbnailCount = 3
+    const val ThumbnailCount = 3
 }
 
 @Immutable
@@ -54,9 +55,9 @@ internal class StreamParentData(
 @Composable
 internal fun StreamGrid(
     modifier: Modifier = Modifier,
-    thumbnailsArrangement: ThumbnailsArrangement = StreamGridDefaults.thumbnailArrangement,
-    thumbnailSize: Dp = StreamGridDefaults.thumbnailSize,
-    thumbnailsCount: Int = StreamGridDefaults.thumbnailCount,
+    thumbnailsArrangement: ThumbnailsArrangement = StreamGridDefaults.ThumbnailArrangement,
+    thumbnailSize: Dp = StreamGridDefaults.ThumbnailSize,
+    thumbnailsCount: Int = StreamGridDefaults.ThumbnailCount,
     content: @Composable StreamGridScope.() -> Unit
 ) {
     val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }

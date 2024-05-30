@@ -104,7 +104,7 @@ class VCallScreenScaffoldTest {
 
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -118,7 +118,7 @@ class VCallScreenScaffoldTest {
 
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -131,7 +131,7 @@ class VCallScreenScaffoldTest {
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
         val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
         val contentTop = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(contentTop - VCallScreenScaffoldDefaults.sheetPanelContentPadding, "sheet panel bottom")
+        panelBottom.assertIsEqualTo(contentTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
     }
 
     @Test
@@ -309,7 +309,7 @@ class VCallScreenScaffoldTest {
                     .testTag(sheetHandleTag)
             )
         },
-        paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
+        paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
         setContent {

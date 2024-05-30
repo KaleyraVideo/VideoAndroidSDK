@@ -18,8 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +45,10 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@Stable
 internal object HCallScreenScaffoldDefaults {
 
-    val sheetElevation = 2.dp
+    val SheetElevation = 2.dp
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -63,7 +64,7 @@ internal fun HCallScreenScaffold(
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
+    paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val dragOrientation = Orientation.Horizontal
@@ -123,7 +124,7 @@ internal fun HCallScreenScaffold(
                 sheetContent = {
                     Surface(
                         color = MaterialTheme.colorScheme.surface,
-                        tonalElevation = HCallScreenScaffoldDefaults.sheetElevation,
+                        tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                         modifier = Modifier.anchoredDraggable(
                             state = sheetState.anchoredDraggableState,
                             orientation = dragOrientation,
@@ -136,7 +137,7 @@ internal fun HCallScreenScaffold(
                     {
                         Surface(
                             color = MaterialTheme.colorScheme.surface,
-                            tonalElevation = HCallScreenScaffoldDefaults.sheetElevation,
+                            tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier
                                 .dragHorizontalOffset(sheetState)
                                 .anchoredDraggable(

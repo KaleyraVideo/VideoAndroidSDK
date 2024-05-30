@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,9 +24,10 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@Stable
 internal object CallScreenScaffoldDefaults {
 
-    val paddingValues = PaddingValues(12.dp)
+    val PaddingValues = PaddingValues(12.dp)
 }
 
 @Composable

@@ -267,7 +267,7 @@ class VCallScreenScaffoldTest {
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
-        paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
+        paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
         setContent {

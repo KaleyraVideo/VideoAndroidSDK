@@ -1,64 +1,52 @@
 package com.kaleyra.video_sdk.call.stream.view
 
 import android.content.res.Configuration
-import android.provider.MediaStore.Video
 import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+@Stable
 internal object StreamItemDefaults {
 
-    val shape = RoundedCornerShape(4.dp)
+    val Shape = RoundedCornerShape(4.dp)
 
-    val elevation = 1.dp
+    val Elevation = 1.dp
 }
 
 @Composable
 internal fun StreamItem(
-    modifier: Modifier = Modifier,
     stream: StreamUi,
     fullscreen: Boolean,
-    pin: Boolean
+    pin: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = StreamItemDefaults.shape,
-        tonalElevation = StreamItemDefaults.elevation,
+        shape = StreamItemDefaults.Shape,
+        tonalElevation = StreamItemDefaults.Elevation,
         modifier = modifier
     ) {
         Box(
@@ -124,7 +112,7 @@ private fun UserLabel(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal =  8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             if (pin) {
                 Icon(

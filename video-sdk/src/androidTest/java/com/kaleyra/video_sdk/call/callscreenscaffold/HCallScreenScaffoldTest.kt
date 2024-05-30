@@ -240,7 +240,7 @@ class HCallScreenScaffoldTest {
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
-        paddingValues: PaddingValues = CallScreenScaffoldDefaults.paddingValues,
+        paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
         setContent {
