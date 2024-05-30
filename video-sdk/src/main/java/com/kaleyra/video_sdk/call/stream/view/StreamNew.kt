@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
@@ -49,7 +50,8 @@ internal fun Stream(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            val size = (maxWidth / 2).coerceIn(48.dp, 96.dp)
+            val min = min(maxWidth, maxHeight)
+            val size = (min / 2).coerceIn(48.dp, 96.dp)
             Avatar(
                 uri = avatar,
                 text = username[0].uppercase(),
