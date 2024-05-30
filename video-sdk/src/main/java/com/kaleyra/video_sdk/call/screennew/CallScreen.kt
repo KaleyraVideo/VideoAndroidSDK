@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -27,11 +28,13 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +64,9 @@ import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -100,9 +105,57 @@ internal fun CallScreen(
         }
     }
 
+    var streams by remember {
+        mutableStateOf(
+            ImmutableList(
+                listOf(
+                    StreamUi(id = "1", username = "username1"),
+                    StreamUi(id = "2", username = "username2"),
+                    StreamUi(id = "3", username = "username3"),
+                    StreamUi(id = "4", username = "username4"),
+                    StreamUi(id = "5", username = "username5"),
+                    StreamUi(id = "6", username = "username6"),
+                    StreamUi(id = "7", username = "username7"),
+                    StreamUi(id = "8", username = "username8"),
+                    StreamUi(id = "9", username = "username9", mine = false, video = VideoUi(id = "2", isScreenShare = true)),
+//                    StreamUi(id = "10", username = "username10"),
+//                    StreamUi(id = "11", username = "username11"),
+//                    StreamUi(id = "12", username = "username12"),
+//                    StreamUi(id = "13", username = "username13"),
+//                    StreamUi(id = "14", username = "username14"),
+//                    StreamUi(id = "15", username = "username15"),
+//                    StreamUi(id = "16", username = "username16"),
+//                    StreamUi(id = "17", username = "username17"),
+//                    StreamUi(id = "18", username = "username18", mine = true, video = VideoUi(id = "1", isScreenShare = true)),
+                )
+            )
+        )
+    }
+    val streamContentState = rememberStreamContentState(streams, windowSizeClass)
+
+
+    LaunchedEffect(Unit) {
+        delay(5000)
+        streams = ImmutableList(
+            listOf(
+                StreamUi(id = "1", username = "username1"),
+                StreamUi(id = "2", username = "username2"),
+                StreamUi(id = "3", username = "username3"),
+                StreamUi(id = "4", username = "username4"),
+                StreamUi(id = "5", username = "username5"),
+                StreamUi(id = "6", username = "username6"),
+                StreamUi(id = "9", username = "username9", mine = false, video = VideoUi(id = "2", isScreenShare = true)),
+                StreamUi(id = "10", username = "username10", mine = false, video = VideoUi(id = "3", isScreenShare = true)),
+//                StreamUi(id = "18", username = "username18", mine = true, video = VideoUi(id = "1", isScreenShare = true)),
+            )
+        )
+    }
+
     if (isCompactHeight) {
         HCallScreen(
+            windowSizeClass = windowSizeClass,
             callActions = actions,
+            streamContentState = streamContentState,
             inputMessage = inputMessage,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
@@ -126,6 +179,7 @@ internal fun CallScreen(
             windowSizeClass = windowSizeClass,
             callActions = actions,
             inputMessage = inputMessage,
+            streamContentState = streamContentState,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
@@ -154,6 +208,7 @@ internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     callActions: ImmutableList<CallActionUI>,
+    streamContentState: StreamContentState,
     inputMessage: InputMessage?,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
@@ -172,29 +227,7 @@ internal fun VCallScreen(
     onBackPressed: () -> Unit
 ) {
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
-    val streams = ImmutableList(
-        listOf(
-            StreamUi(id = "1", username = "username1"),
-            StreamUi(id = "2", username = "username2"),
-            StreamUi(id = "3", username = "username3"),
-            StreamUi(id = "4", username = "username4"),
-            StreamUi(id = "5", username = "username5"),
-            StreamUi(id = "6", username = "username6"),
-            StreamUi(id = "7", username = "username7"),
-            StreamUi(id = "8", username = "username8"),
-            StreamUi(id = "9", username = "username9"),
-            StreamUi(id = "10", username = "username10"),
-            StreamUi(id = "11", username = "username11"),
-            StreamUi(id = "12", username = "username12"),
-            StreamUi(id = "13", username = "username13"),
-            StreamUi(id = "14", username = "username14"),
-            StreamUi(id = "15", username = "username15"),
-            StreamUi(id = "16", username = "username16"),
-            StreamUi(id = "17", username = "username17"),
-            StreamUi(id = "18", username = "username18"),
-        )
-    )
-    val streamContentState = rememberStreamContentState(windowSizeClass, streams)
+
     var currentStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
@@ -326,16 +359,16 @@ internal fun VCallScreen(
                 } else {
                     HStreamMenuContent(
                         fullscreen = currentStream == streamContentState.fullscreenStream,
-                        pin = streamContentState.pinnedStreams.value.contains(currentStream),
+                        pin = streamContentState.pinnedStreams.containsKey(currentStream?.id),
                         onCancelClick = { currentStream = null },
                         onFullscreenClick = { isFullscreen ->
-                            if (isFullscreen) streamContentState.exitFullscreen()
-                            else streamContentState.enterFullscreen(currentStream!!)
+                            if (isFullscreen) streamContentState.cleanFullscreen()
+                            else currentStream?.apply { streamContentState.setFullscreen(this) }
                             currentStream = null
                         },
                         onPinClick = { isPinned ->
-                            if (isPinned) streamContentState.unpinStream(currentStream!!)
-                            else streamContentState.pinStream(currentStream!!)
+                            if (isPinned) streamContentState.unpin(currentStream!!)
+                            else currentStream?.apply { streamContentState.pin(this) }
                             currentStream = null
                         }
                     )
@@ -351,8 +384,8 @@ internal fun VCallScreen(
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
         StreamContent(
-            windowSizeClass = windowSizeClass,
-            streamContentState = streamContentState,
+//            windowSizeClass = windowSizeClass,
+            state = streamContentState,
             onStreamClick = {
                 currentStream = if (currentStream != null && currentStream != it) null else it
             },
@@ -372,7 +405,9 @@ internal fun VCallScreen(
 
 @Composable
 internal fun HCallScreen(
+    windowSizeClass: WindowSizeClass,
     callActions: ImmutableList<CallActionUI>,
+    streamContentState: StreamContentState,
     inputMessage: InputMessage?,
     sheetState: CallSheetState,
     showAnswerAction: Boolean,
@@ -391,9 +426,9 @@ internal fun HCallScreen(
     onVirtualBackgroundClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    var button by remember { mutableStateOf(true) }
+    var currentStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember { derivedStateOf {  button && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember { derivedStateOf { currentStream == null && sheetDragActions.value.isNotEmpty() } }
 
     HCallScreenScaffold(
         sheetState = sheetState,
@@ -433,7 +468,7 @@ internal fun HCallScreen(
         },
         sheetContent = {
             AnimatedContent(
-                targetState = button,
+                targetState = currentStream == null,
                 contentAlignment = Alignment.Center,
                 label = "sheet content"
             ) {
@@ -468,11 +503,19 @@ internal fun HCallScreen(
                     }
                 } else {
                     VStreamMenuContent(
-                        fullscreen = false,
-                        pin = false,
-                        onCancelClick = { button = true },
-                        onFullscreenClick = {},
-                        onPinClick = {}
+                        fullscreen = currentStream == streamContentState.fullscreenStream,
+                        pin = streamContentState.pinnedStreams.containsKey(currentStream?.id),
+                        onCancelClick = { currentStream = null },
+                        onFullscreenClick = { isFullscreen ->
+                            if (isFullscreen) streamContentState.cleanFullscreen()
+                            else currentStream?.apply { streamContentState.setFullscreen(this) }
+                            currentStream = null
+                        },
+                        onPinClick = { isPinned ->
+                            if (isPinned) streamContentState.unpin(currentStream!!)
+                            else currentStream?.apply { streamContentState.pin(this) }
+                            currentStream = null
+                        }
                     )
                 }
             }
@@ -486,26 +529,22 @@ internal fun HCallScreen(
         val bottom = paddingValues.calculateBottomPadding()
         val left = paddingValues.calculateLeftPadding(layoutDirection)
 
-        val streams = ImmutableList(
-            listOf(
-                StreamUi(id = "1", username = "username1"),
-                StreamUi(id = "2", username = "username2")
-            )
+        StreamContent(
+//            windowSizeClass = windowSizeClass,
+            state = streamContentState,
+            onStreamClick = {
+                currentStream = if (currentStream != null && currentStream != it) null else it
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(
+                    start = left,
+                    top = top,
+                    bottom = bottom,
+                    end = 116.dp
+                )
         )
-//        StreamContent(
-//            streams = streams,
-//            onStreamClick = {
-//
-//            },
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .navigationBarsPadding()
-//                .padding(
-//                    start = left,
-//                    top = top,
-//                    bottom = bottom
-//                )
-//        )
 
 //        InputMessageHost(
 //            inputMessage = inputMessage,
