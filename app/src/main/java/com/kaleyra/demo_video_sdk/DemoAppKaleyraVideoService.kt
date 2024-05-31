@@ -52,7 +52,7 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
                         defaultStyle = CompanyUI.Theme.DefaultStyle.System,
                         day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors(secondary = Color(0xFF0087E2))),
-                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors(secondary = Color.Yellow))
+                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors(secondary = Color(0xFF0087E2)))
                     )
                 KaleyraVideo.conference.call.onEach {
                     val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
