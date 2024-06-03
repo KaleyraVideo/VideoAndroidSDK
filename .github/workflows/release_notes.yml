@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          ref: ${{ github.event.inputs.tag }}
+          ref: ${{ inputs.tag }}
       - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -53,7 +53,7 @@ jobs:
       - name: Get commit summary
         id: get_commit_summary
         run: |
-            new_tag=${{ github.event.inputs.tag }}
+            new_tag=${{ inputs.tag }}
             previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
             commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
             echo "commit_summary<<EOF"$'\n'"$commit_summary"$'\n'EOF >> $GITHUB_OUTPUT
@@ -62,7 +62,7 @@ jobs:
         with:
           draft: true
           make_latest: 'true'
-          tag_name: ${{ github.event.inputs.tag }}
+          tag_name: ${{ inputs.tag }}
           files: |
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk

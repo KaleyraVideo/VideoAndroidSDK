@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew dokkaHtmlMultiModule
       - name: Update sdk version
         id: output_tag
-        run: ./gradlew updateSdkVersion -PnewVersion=${{ github.event.inputs.specific_release_version || github.event.inputs.release_version }}
+        run: ./gradlew updateSdkVersion -PnewVersion=${{ inputs.specific_release_version || inputs.release_version }}
       - name: Release new common ui version
         run: ./gradlew :video-common-ui:publishUpload -PdryRun=false
       - name: Release new glasses sdk version
@@ -64,7 +64,7 @@ jobs:
       - name: Update app version
         run: ./gradlew autoIncrementVersionCode
       - name: Update app sdk dependency
-        run: sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ github.event.inputs.specific_release_version || github.event.inputs.release_version }}'"/g' ./app/build.gradle
+        run: sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ inputs.specific_release_version || inputs.release_version }}'"/g' ./app/build.gradle
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: Update sdk version"
@@ -74,8 +74,8 @@ jobs:
     needs: update_sdk_version
     uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
     with:
-      release_version: ${{ github.event.inputs.release_version }}
-      specific_release_version: ${{ github.event.inputs.specific_release_version }}
+      release_version: ${{ inputs.release_version }}
+      specific_release_version: ${{ inputs.specific_release_version }}
     secrets: inherit
 
   release_apps:
