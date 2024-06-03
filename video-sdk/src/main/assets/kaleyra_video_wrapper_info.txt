@@ -1,1 +1,1 @@
-VideoAndroidSDK/4.0.0-rc11
+VideoAndroidSDK/4.0.0-rc12
