@@ -35,7 +35,7 @@ dependencyResolutionManagement {
         maven { url 'https://maven.bandyer.com/releases' }
     }
 
-    def catalogVersion = "2024.05.02"
+    def catalogVersion = "2024.06.00"
 
     versionCatalogs {
         create("kaleyraCatalog") {
