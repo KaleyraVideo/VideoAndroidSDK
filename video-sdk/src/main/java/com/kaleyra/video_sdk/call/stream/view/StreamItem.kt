@@ -37,6 +37,7 @@ internal object StreamItemDefaults {
     val Elevation = 1.dp
 }
 
+// TODO test this
 @Composable
 internal fun StreamItem(
     stream: StreamUi,
@@ -91,7 +92,7 @@ private fun FullscreenIcon(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_off),
+            painter = painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_on),
             contentDescription = null,
             modifier = Modifier.padding(3.dp)
         )
