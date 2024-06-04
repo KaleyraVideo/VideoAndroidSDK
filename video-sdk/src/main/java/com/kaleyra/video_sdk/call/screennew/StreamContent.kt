@@ -233,7 +233,7 @@ private fun calculateStreamsToShow(
         val revisedPinnedStreams = buildList {
             localScreenShareStream?.let { add(it) } // Add screen share if available
             // Add other pinned streams, adjusting the count if screen share is present
-            addAll(pinnedStreams.value.take(maxPinnedCount).drop(if (screenShareStream != null) 1 else 0))
+            addAll(pinnedStreams.value.take(maxPinnedCount).drop(if (localScreenShareStream != null) 1 else 0))
         }
 
         // Determine the final list of streams to display
