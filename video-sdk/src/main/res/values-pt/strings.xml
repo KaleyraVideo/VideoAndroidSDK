@@ -17,6 +17,8 @@
 <resources>
 
     <!-- Etiquetas de rota de áudio -->
+    <string name="kaleyra_stream_screenshare_message">Os participantes da reunião estão a ver o seu ecrã</string>
+    <string name="kaleyra_stream_screenshare_action">Parar partilha de ecrã</string>
     <string name="kaleyra_audio_route_title">Selecionar uma saída de áudio</string>
     <string name="kaleyra_call_action_audio_route_bluetooth">Bluetooth</string>
     <string name="kaleyra_call_action_audio_route_wired_headset">Fones de ouvido com fio</string>

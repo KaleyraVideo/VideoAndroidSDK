@@ -41,6 +41,8 @@
     <string name="kaleyra_call_sheet_description_disable_camera">Desactivar cámara</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Dejar de compartir pantalla</string>
 
+    <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
+    <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
     <string name="kaleyra_participants_component_users_in_call">Usuarios en llamada</string>
     <string name="kaleyra_participants_component_users_invited">También Invitados</string>
