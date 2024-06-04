@@ -50,58 +50,58 @@ import kotlin.math.roundToInt
 
 internal object CallActionDefaults {
 
-    val buttonShape = RoundedCornerShape(18.dp)
+    val ButtonShape = RoundedCornerShape(18.dp)
 
-    val minButtonSize = 48.dp
+    val MinButtonSize = 48.dp
 
-    val buttonContentPadding = PaddingValues(12.dp)
+    val ButtonContentPadding = PaddingValues(12.dp)
 
-    val badgeShape = CircleShape
+    val BadgeShape = CircleShape
 
-    val badgeSize = 20.dp
+    val BadgeSize = 20.dp
 
-    val badgeOffset = 5.dp
+    val BadgeOffset = 5.dp
 
-    val labelWidth = minButtonSize + SheetItemsSpacing
+    val LabelWidth = MinButtonSize + SheetItemsSpacing
 
-    val containerColor: Color
+    val ContainerColor: Color
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface.copy(.1f)
 
-    val contentColor: Color
+    val ContentColor: Color
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface
 
-    val checkedContainerColor: Color
+    val CheckedContainerColor: Color
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isSystemInDarkTheme()) 1f else .66f)
 
-    val checkedContentColor: Color
+    val CheckedContentColor: Color
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.surface
 
-    val badgeContainerColor: Color
+    val BadgeContainerColor: Color
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.primary
 
     @Composable
     fun iconButtonColors(
-        containerColor: Color = CallActionDefaults.containerColor,
-        contentColor : Color = CallActionDefaults.contentColor
+        containerColor: Color = CallActionDefaults.ContainerColor,
+        contentColor : Color = CallActionDefaults.ContentColor
     ): IconButtonColors =
         IconButtonDefaults.filledIconButtonColors(containerColor, contentColor)
 
     @Composable
     fun iconToggleButtonColors(
-        containerColor: Color = CallActionDefaults.containerColor,
-        contentColor: Color = CallActionDefaults.contentColor,
-        checkedContainerColor: Color = CallActionDefaults.checkedContainerColor,
-        checkedContentColor: Color = CallActionDefaults.checkedContentColor,
+        containerColor: Color = CallActionDefaults.ContainerColor,
+        contentColor: Color = CallActionDefaults.ContentColor,
+        checkedContainerColor: Color = CallActionDefaults.CheckedContainerColor,
+        checkedContentColor: Color = CallActionDefaults.CheckedContentColor,
     ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
@@ -110,8 +110,8 @@ internal object CallActionDefaults {
     )
 
     @Composable
-    fun badgeColors(containerColor: Color = badgeContainerColor, contentColor: Color = contentColorFor(
-        badgeContainerColor
+    fun badgeColors(containerColor: Color = BadgeContainerColor, contentColor: Color = contentColorFor(
+        BadgeContainerColor
     )) =
         CardDefaults.cardColors(containerColor, contentColor)
 
@@ -126,7 +126,7 @@ internal fun CallToggleAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     buttonText: String? = null,
-    buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
+    buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
@@ -146,11 +146,11 @@ internal fun CallToggleAction(
                 enabled = enabled,
                 modifier = Modifier
                     .defaultMinSize(
-                        minWidth = CallActionDefaults.minButtonSize,
-                        minHeight = CallActionDefaults.minButtonSize
+                        minWidth = CallActionDefaults.MinButtonSize,
+                        minHeight = CallActionDefaults.MinButtonSize
                     )
                     .fillMaxWidth(),
-                shape = CallActionDefaults.buttonShape,
+                shape = CallActionDefaults.ButtonShape,
                 colors = CallActionDefaults.iconToggleButtonColors()
             ) {
                 ButtonLayout(
@@ -175,7 +175,7 @@ internal fun CallAction(
     buttonText: String? = null,
     buttonColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
     buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
-    buttonContentPadding: PaddingValues = CallActionDefaults.buttonContentPadding,
+    buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
@@ -192,12 +192,12 @@ internal fun CallAction(
             FilledIconButton(
                 modifier = Modifier
                     .defaultMinSize(
-                        minWidth = CallActionDefaults.minButtonSize,
-                        minHeight = CallActionDefaults.minButtonSize
+                        minWidth = CallActionDefaults.MinButtonSize,
+                        minHeight = CallActionDefaults.MinButtonSize
                     )
                     .fillMaxWidth(),
                 enabled = enabled,
-                shape = CallActionDefaults.buttonShape,
+                shape = CallActionDefaults.ButtonShape,
                 colors = CallActionDefaults.iconButtonColors(containerColor = buttonColor, contentColor = buttonContentColor),
                 onClick = onClick
             ) {
@@ -233,7 +233,7 @@ private fun CallActionLayout(
                 Text(
                     modifier = Modifier
                         .layout { measurable, constraints ->
-                            val minWidth = CallActionDefaults.labelWidth.toPx().roundToInt()
+                            val minWidth = CallActionDefaults.LabelWidth.toPx().roundToInt()
                             val maxWidth = constraints.maxWidth.takeIf { it > minWidth } ?: minWidth
                             val placeable = measurable.measure(constraints.copy(minWidth = minWidth, maxWidth = maxWidth))
                             layout(constraints.minWidth, placeable.height) {
@@ -255,7 +255,7 @@ private fun CallActionLayout(
                     .align(Alignment.TopEnd)
                     .offset {
                         with(density) {
-                            val offset = CallActionDefaults.badgeOffset
+                            val offset = CallActionDefaults.BadgeOffset
                                 .toPx()
                                 .roundToInt()
                             IntOffset(offset, -offset)
@@ -312,11 +312,11 @@ internal fun CallActionBadge(
     Card(
         modifier = modifier,
         colors = CallActionDefaults.badgeColors(containerColor, contentColor),
-        shape = CallActionDefaults.badgeShape
+        shape = CallActionDefaults.BadgeShape
     ) {
         Box(
             modifier = Modifier
-                .size(CallActionDefaults.badgeSize)
+                .size(CallActionDefaults.BadgeSize)
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(

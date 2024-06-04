@@ -52,7 +52,7 @@ internal fun VSheetContent(
             showAnswerAction -> {
                 AnswerAction(
                     onClick = onAnswerActionClick,
-                    modifier = Modifier.size(CallActionDefaults.minButtonSize)
+                    modifier = Modifier.size(CallActionDefaults.MinButtonSize)
                 )
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
