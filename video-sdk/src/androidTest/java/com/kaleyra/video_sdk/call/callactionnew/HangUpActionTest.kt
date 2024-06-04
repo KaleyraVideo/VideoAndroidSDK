@@ -31,7 +31,7 @@ class HangUpActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.minButtonSize * 2 + SheetItemsSpacing
+        val width =  CallActionDefaults.MinButtonSize * 2 + SheetItemsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 

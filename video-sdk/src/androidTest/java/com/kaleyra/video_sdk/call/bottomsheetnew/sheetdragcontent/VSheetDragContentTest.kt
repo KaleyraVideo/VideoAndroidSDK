@@ -35,7 +35,7 @@ class VSheetDragContentTest {
     @Test
     fun testItemsPlacement() {
         val itemsPerColumn = 2
-        val height = CallActionDefaults.minButtonSize * itemsPerColumn + SheetItemsSpacing
+        val height = CallActionDefaults.MinButtonSize * itemsPerColumn + SheetItemsSpacing
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)

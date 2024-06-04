@@ -36,7 +36,7 @@ class HSheetDragContentTest {
     @Test
     fun testItemsPlacement() {
         val itemsPerRow = 2
-        val width = CallActionDefaults.minButtonSize * itemsPerRow + SheetItemsSpacing
+        val width = CallActionDefaults.MinButtonSize * itemsPerRow + SheetItemsSpacing
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         val fileshare = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
