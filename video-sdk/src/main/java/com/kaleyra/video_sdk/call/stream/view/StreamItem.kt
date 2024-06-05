@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,7 +75,7 @@ internal fun StreamItem(
                 )
             }
             UserLabel(
-                username = stream.username,
+                username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
                 pin = pin,
                 modifier = Modifier
                     .height(24.dp)
@@ -93,7 +94,7 @@ private fun FullscreenIcon(modifier: Modifier = Modifier) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_on),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.kaleyra_stream_fullscreen),
             modifier = Modifier.padding(3.dp)
         )
     }
@@ -118,7 +119,7 @@ private fun UserLabel(
             if (pin) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_kaleyra_stream_pin),
-                    contentDescription = null,
+                    contentDescription = stringResource(id = R.string.kaleyra_stream_pin),
                     modifier = Modifier
                         .padding(5.dp)
                         .offset(x = (-4).dp)

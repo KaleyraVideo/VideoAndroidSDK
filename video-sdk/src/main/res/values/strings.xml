@@ -44,6 +44,10 @@
     <string name="kaleyra_stream_screenshare_message">Meeting attendees are seeing your screen</string>
     <string name="kaleyra_stream_screenshare_action">Stop Screen Sharing</string>
 
+    <string name="kaleyra_stream_pin">Stream pinned</string>
+    <string name="kaleyra_stream_fullscreen">Fullscreen stream</string>
+    <string name="kaleyra_stream_you">You</string>
+
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>
     <string name="kaleyra_participants_component_users_invited">Also invited</string>
