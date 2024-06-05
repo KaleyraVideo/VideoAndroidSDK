@@ -22,8 +22,8 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -69,7 +69,7 @@ internal fun WhiteboardContent(
                     .fillMaxWidth()
                     .height(2.dp)
                     .testTag(LinearProgressIndicatorTag),
-                color = MaterialTheme.colors.secondary
+                color = MaterialTheme.colorScheme.primary
             )
         }
         if (upload != null) {

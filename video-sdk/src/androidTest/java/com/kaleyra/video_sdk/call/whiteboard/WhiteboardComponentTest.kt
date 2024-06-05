@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.call.whiteboard
 
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,11 +42,10 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.LinearProgressIndicatorTag
-import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorState
-import com.kaleyra.video_sdk.call.whiteboard.view.TextEditorValue
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardViewTag
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -49,7 +53,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @RunWith(AndroidJUnit4::class)
 class WhiteboardComponentTest {
 
@@ -60,9 +64,7 @@ class WhiteboardComponentTest {
 
     private var uiState by mutableStateOf(WhiteboardUiState())
 
-    private var sheetState by mutableStateOf(ModalBottomSheetState(ModalBottomSheetValue.Hidden))
-
-    private var textEditorState by mutableStateOf(TextEditorState(TextEditorValue.Empty))
+    private lateinit var sheetState: SheetState
 
     private var userMessage by mutableStateOf<UserMessage?>(null)
 
@@ -77,15 +79,13 @@ class WhiteboardComponentTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
+            sheetState = rememberModalBottomSheetState()
             if (showWhiteboardComponent) {
                 WhiteboardComponent(
                     uiState = uiState,
-                    editorSheetState = sheetState,
-                    textEditorState = textEditorState,
+                    sheetState = sheetState,
                     userMessage = userMessage,
                     onReloadClick = { isReloadClicked = true },
-                    onTextConfirmed = { confirmedText = it },
-                    onTextDismissed = { isTextDismissed = true },
                     onWhiteboardClosed = { isWhiteboardClosed = true }
                 )
             }
@@ -96,8 +96,6 @@ class WhiteboardComponentTest {
     fun tearDown() {
         showWhiteboardComponent = true
         uiState = WhiteboardUiState()
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden)
-        textEditorState = TextEditorState(TextEditorValue.Empty)
         confirmedText = null
         userMessage = null
         isTextDismissed = false
@@ -118,21 +116,21 @@ class WhiteboardComponentTest {
     }
 
     @Test
-    fun textNull_whiteboardIsDisplayed() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
+    fun textNull_whiteboardIsDisplayed() = runTest {
+        sheetState.expand()
         uiState = WhiteboardUiState(whiteboardView = View(composeTestRule.activity), text = null)
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(WhiteboardViewTag).assertIsDisplayed()
     }
 
     @Test
-    fun textNull_sheetStateIsHidden() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
+    fun textNull_sheetStateIsHidden() = runTest {
+        sheetState.expand()
         uiState = WhiteboardUiState(text = null)
         composeTestRule.waitForIdle()
         runBlocking {
             val currentValue = snapshotFlow { sheetState.currentValue }.first()
-            assertEquals(ModalBottomSheetValue.Hidden, currentValue)
+            assertEquals(SheetValue.Expanded, currentValue)
         }
     }
 
@@ -155,13 +153,13 @@ class WhiteboardComponentTest {
     }
 
     @Test
-    fun textNotNull_sheetStateIsExpanded() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    fun textNotNull_sheetStateIsExpanded() = runTest {
+        sheetState.hide()
         uiState = WhiteboardUiState(text = "")
         composeTestRule.waitForIdle()
         runBlocking {
             val currentValue = snapshotFlow { sheetState.currentValue }.first()
-            assertEquals(ModalBottomSheetValue.Expanded, currentValue)
+            assertEquals(SheetValue.Hidden, currentValue)
         }
     }
 
@@ -255,48 +253,6 @@ class WhiteboardComponentTest {
         composeTestRule
             .onNodeWithTag(LinearProgressIndicatorTag)
             .assertDoesNotExist()
-    }
-
-    @Test
-    fun textEditorInEditingState_userPerformsBack_textEditorInDiscardState() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
-        textEditorState = TextEditorState(TextEditorValue.Editing(TextFieldValue()))
-        uiState = WhiteboardUiState(text = "text")
-        composeTestRule.waitForIdle()
-        Espresso.pressBack()
-        assertEquals(TextEditorValue.Discard, textEditorState.currentValue)
-    }
-
-    @Test
-    fun textEditorInDiscardState_userPerformsBack_textEditorInEditingState() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
-        textEditorState = TextEditorState(TextEditorValue.Discard)
-        uiState = WhiteboardUiState(text = "")
-        composeTestRule.waitForIdle()
-        Espresso.pressBack()
-        assertEquals(TextEditorValue.Editing(TextFieldValue("")), textEditorState.currentValue)
-    }
-
-    @Test
-    fun textEditorInEmptyState_userPerformsBack_onTextDismissedInvoked() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
-        textEditorState = TextEditorState(TextEditorValue.Empty)
-        uiState = WhiteboardUiState(text = "")
-        composeTestRule.waitForIdle()
-        Espresso.pressBack()
-        assert(isTextDismissed)
-    }
-
-    @Test
-    fun textEditorDisplayed_userSwipeDownBottomSheet_textEditorIsStillDisplayed() {
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)
-        uiState = WhiteboardUiState(text = "")
-        composeTestRule.onNode(hasSetTextAction()).performTouchInput { swipeDown(startY = 0f, endY = 3000f) }
-        composeTestRule.waitForIdle()
-        runBlocking {
-            val currentValue = snapshotFlow { sheetState.currentValue }.first()
-            assertEquals(ModalBottomSheetValue.Expanded, currentValue)
-        }
     }
 
     @Test

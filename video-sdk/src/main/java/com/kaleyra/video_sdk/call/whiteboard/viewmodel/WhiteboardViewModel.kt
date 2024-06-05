@@ -100,14 +100,7 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
         val whiteboard = whiteboard.getValue()
         whiteboard?.load()
     }
-
-    fun onTextDismissed() = resetTextState()
-
-    fun onTextConfirmed(text: String) {
-        onTextConfirmed.value?.invoke(text)
-        _uiState.update { it.copy(text = null) }
-    }
-
+    
     fun onWhiteboardClosed() {
         _uiState.update { it.copy(isLoading = false) }
     }
@@ -122,11 +115,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
         whiteboard.view.value = whiteboardView
         whiteboard.load()
         _uiState.update { it.copy(whiteboardView = whiteboardView) }
-    }
-
-    private fun resetTextState() {
-        onTextConfirmed.value = null
-        _uiState.update { it.copy(text = null) }
     }
 
     private fun observeAndUpdateUploadState(sharedFile: SharedFile) {
