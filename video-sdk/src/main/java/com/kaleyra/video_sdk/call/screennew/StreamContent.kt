@@ -11,12 +11,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,117 +37,202 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEachIndexed
 import com.kaleyra.video_sdk.call.screen.view.StreamGrid
-import com.kaleyra.video_sdk.call.screen.view.StreamGridScope.pin
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
+import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
+import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
+import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.view.ScreenShareItem
 import com.kaleyra.video_sdk.call.stream.view.StreamItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-const val CompactScreenMaxPin = 2
+internal const val MaxDisplayedStreamsCompact = 8
+internal const val MaxDisplayedStreamsExpanded = 15
 
-const val LargeScreenMaxPin = 6
+internal const val MaxThumbnailCount = 3
+internal val MaxThumbnailSize = 180.dp
 
-const val CompactScreenMaxFeatured = 8
-
-const val LargeScreenMaxFeatured = 15
-
-const val MaxThumbnailCount = 3
-
-val MaxThumbnailSize = 180.dp
-
-internal fun WindowSizeClass.isCompactHeight(): Boolean {
-    return heightSizeClass == WindowHeightSizeClass.Compact
+@Composable
+internal fun rememberStreamContentController(
+    streams: State<ImmutableList<StreamUi>>,
+    windowSizeClass: State<WindowSizeClass>,
+    scope: CoroutineScope = rememberCoroutineScope(),
+) = remember(streams, windowSizeClass) {
+    StreamContentController(
+        streams,
+        windowSizeClass,
+        scope
+    )
 }
 
-internal fun WindowSizeClass.isCompactWidth(): Boolean {
-    return widthSizeClass == WindowWidthSizeClass.Compact
+@Stable
+internal class StreamContentController(
+    streamsState: State<ImmutableList<StreamUi>>,
+    windowSizeClassState: State<WindowSizeClass>,
+    scope: CoroutineScope,
+) {
+
+    val streams by streamsState
+
+    val windowSizeClass by windowSizeClassState
+
+    var fullscreenStream: StreamUi? by mutableStateOf(null)
+        private set
+
+    private val mutablePinnedStreams = mutableStateListOf<StreamUi>()
+    val pinnedStreams: List<StreamUi> = mutablePinnedStreams
+
+    private val maxPinnedStreams = derivedStateOf {
+        if (windowSizeClass.isCompactInAnyDimension()) MAX_PINNED_STREAMS_COMPACT
+        else MAX_PINNED_STREAMS_EXPANDED
+    }
+
+    init {
+        snapshotFlow { streamsState.value }
+            .onEach { streams ->
+                val newStreams = streams.value
+                // Update pinnedStreams and fullscreenStream based on new streams
+                mutablePinnedStreams.retainAll(newStreams)
+                fullscreenStream = newStreams.find { it.id == fullscreenStream?.id }
+
+                // Find local screen share and pin it if available
+                val localScreenShare = newStreams.find { it.video?.isScreenShare == true && it.mine }
+                localScreenShare?.let {
+                    // Pin to the beginning of the list
+                    mutablePinnedStreams.add(0, it)
+                    // Ensure the number of pinned streams does not exceed the maximum
+                    if (mutablePinnedStreams.size > maxPinnedStreams.value) {
+                        mutablePinnedStreams.removeLast()
+                    }
+                }
+            }
+            .launchIn(scope)
+    }
+
+    fun fullscreen(stream: StreamUi?) {
+        fullscreenStream = stream
+    }
+
+    fun pinStream(stream: StreamUi): Boolean {
+        if (pinnedStreams.size >= maxPinnedStreams.value) return false
+        mutablePinnedStreams.add(stream)
+        return true
+    }
+
+    fun unpinStream(stream: StreamUi) {
+        mutablePinnedStreams.remove(stream)
+    }
+
+    companion object {
+        private const val MAX_PINNED_STREAMS_COMPACT = 2
+        private const val MAX_PINNED_STREAMS_EXPANDED = 6
+    }
 }
 
-internal fun WindowSizeClass.isExpandedWidth(): Boolean {
-    return widthSizeClass == WindowWidthSizeClass.Expanded
-}
-
-// TODO 
-//  test enter/exit fullscreen 
-//  test pin/unpin 
-//  test stream on click 
-//  test max stream grid 
-//  test lastStreamId
+private data class StreamItemState(
+    val isHighlighted: Boolean,
+    val isLocalScreenShare: Boolean,
+    val isFullscreen: Boolean,
+    val isPinned: Boolean,
+)
 
 @Composable
 internal fun StreamContent(
-    windowSizeClass: WindowSizeClass,
-    streams: ImmutableList<StreamUi>,
+    streamContentController: StreamContentController,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
     modifier: Modifier = Modifier,
-    fullscreenStream: StreamUi? = null,
-    pinnedStreams: ImmutableList<StreamUi> = ImmutableList(),
     highlightedStream: StreamUi? = null,
-    maxPinnedCount: Int = Int.MAX_VALUE,
-    maxFeaturedCount: Int = Int.MAX_VALUE,
-    maxThumbnailCount: Int = MaxThumbnailCount,
 ) {
-    val (localScreenShareStream: StreamUi?, streamFeed: List<StreamUi>) = calculateStreamsToShow(
-        streams,
-        fullscreenStream,
-        pinnedStreams,
-        maxPinnedCount,
-        maxFeaturedCount,
-        maxThumbnailCount
-    )
+    val maxVisibleStreams by remember(streamContentController) {
+        derivedStateOf {
+            if (streamContentController.windowSizeClass.isCompactInAnyDimension()) MaxDisplayedStreamsCompact
+            else MaxDisplayedStreamsExpanded
+        }
+    }
+
+    val visibleStreams by remember(streamContentController) {
+        derivedStateOf {
+            val streams = streamContentController.streams
+            val pinnedStreams = streamContentController.pinnedStreams
+            val fullscreenStream = streamContentController.fullscreenStream
+            when {
+                fullscreenStream != null -> listOf(fullscreenStream)
+                pinnedStreams.isNotEmpty() -> {
+                    val thumbnailStreams = streams.value
+                        .filterNot { pinnedStreams.contains(it) }
+                        .take(MaxThumbnailCount)
+                    pinnedStreams + thumbnailStreams
+                }
+
+                else -> streams.value.take(maxVisibleStreams)
+            }
+        }
+    }
 
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
+        // Calculate thumbnail size based on available space
+        val thumbnailSize = calculateThumbnailsSize(
+            maxWidth = maxWidth,
+            maxHeight = maxHeight
+        )
+
+        val itemPadding = 4.dp
         val itemModifier = Modifier
             .fillMaxSize()
-            .padding(4.dp)
+            .padding(itemPadding)
             .animateConstraints()
             .animatePlacement(IntOffset(constraints.maxWidth, constraints.maxHeight))
 
         StreamGrid(
-            thumbnailsArrangement = thumbnailsArrangementFor(windowSizeClass),
-            thumbnailSize = calculateThumbnailsSize(
-                maxWidth = maxWidth,
-                maxHeight = maxHeight,
-                maxThumbnailCount = maxThumbnailCount
-            ),
-            thumbnailsCount = maxThumbnailCount
+            thumbnailsArrangement = thumbnailsArrangementFor(streamContentController.windowSizeClass),
+            thumbnailSize = thumbnailSize,
+            thumbnailsCount = MaxThumbnailCount
         ) {
-            if (localScreenShareStream != null && fullscreenStream == null) {
-                key(localScreenShareStream.id) {
-                    ScreenShareItem(
-                        onStopClick = onStopScreenShareClick,
-                        modifier = itemModifier.pin(true)
-                    )
-                }
-            }
-
-            streamFeed.fastForEachIndexed { index, stream ->
+            visibleStreams.fastForEachIndexed { index, stream ->
                 key(stream.id) {
-                    val (isFullscreen, isPinned) = remember(fullscreenStream, pinnedStreams) {
-                        val isFullscreen = fullscreenStream?.id == stream.id
-                        val isPinned = pinnedStreams.value.fastAny { it.id == stream.id }
-                        isFullscreen to isPinned
-                    }
-
-                    StreamItemWithBorder(
-                        stream = stream,
-                        isFullscreen = isFullscreen,
-                        isPinned = isPinned,
-                        isHighlighted = highlightedStream?.id == stream.id,
-                        onStreamClick = onStreamClick
+                    val streamState by streamItemStateFor(
+                        stream, highlightedStream, streamContentController
                     )
+                    val borderColor = if (streamState.isHighlighted) MaterialTheme.colorScheme.primary else Color.Transparent
 
-                    if (!isFullscreen && index == streamFeed.size - 1) {
-                        val moreStreamsCount = remember(streams) { streams.value.size - streamFeed.size }
-                        if (moreStreamsCount != 0) {
-                            MoreStreamsIndicator(moreStreamsCount)
+                    Box(
+                        modifier = itemModifier
+                            .pin(streamState.isPinned)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                // TODO remove hardcoded string
+                                onClickLabel = "show stream sub menu",
+                                role = Role.Button,
+                                enabled = !streamState.isLocalScreenShare,
+                                onClick = { onStreamClick(stream) }
+                            )
+                            .border(
+                                color = borderColor,
+                                width = 2.dp,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    ) {
+                        StreamGridItem(
+                            stream = stream,
+                            streamState = streamState,
+                            onStopScreenShareClick = onStopScreenShareClick
+                        )
+
+                        if (!streamState.isFullscreen && index == visibleStreams.size - 1) {
+                            val moreStreamsCount = remember(streamContentController.streams) { streamContentController.streams.value.size - visibleStreams.size }
+                            if (moreStreamsCount != 0) {
+                                MoreStreamsIndicator(moreStreamsCount)
+                            }
                         }
                     }
                 }
@@ -150,34 +242,17 @@ internal fun StreamContent(
 }
 
 @Composable
-private fun StreamItemWithBorder(
+private fun StreamGridItem(
     stream: StreamUi,
-    isFullscreen: Boolean,
-    isPinned: Boolean,
-    isHighlighted: Boolean,
-    onStreamClick: (StreamUi) -> Unit,
-    modifier: Modifier = Modifier
+    streamState: StreamItemState,
+    onStopScreenShareClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .pin(isPinned)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClickLabel = "show stream sub menu",
-                role = Role.Button,
-                onClick = { onStreamClick(stream) }
-            )
-            .border(
-                color = if (isHighlighted) MaterialTheme.colorScheme.primary else Color.Transparent,
-                width = 2.dp,
-                shape = RoundedCornerShape(4.dp)
-            )
-    ) {
+    if (streamState.isLocalScreenShare) ScreenShareItem(onStopScreenShareClick)
+    else {
         StreamItem(
             stream = stream,
-            fullscreen = isFullscreen,
-            pin = isPinned
+            fullscreen = streamState.isFullscreen,
+            pin = streamState.isPinned
         )
     }
 }
@@ -201,64 +276,32 @@ private fun MoreStreamsIndicator(count: Int) {
 }
 
 @Composable
-private fun calculateStreamsToShow(
-    streams: ImmutableList<StreamUi>,
-    fullscreenStream: StreamUi?,
-    pinnedStreams: ImmutableList<StreamUi>,
-    maxPinnedCount: Int,
-    maxFeaturedCount: Int,
-    maxThumbnailCount: Int
-): Pair<StreamUi?, List<StreamUi>> {
-    return remember(
-        streams,
-        fullscreenStream,
-        pinnedStreams,
-        maxPinnedCount,
-        maxFeaturedCount,
-        maxThumbnailCount
-    ) {
-        // Find the local screen share stream (if any)
-        val localScreenShareStream = streams.value.find { it.video?.isScreenShare == true && it.mine }
-
-        // Create a list of streams excluding the local screen share
-        val nonLocalScreenShareStreams = streams.value.subtract(setOfNotNull(localScreenShareStream))
-
-        // Calculate the lists of featured and thumbnail streams
-        val featuredStreams = nonLocalScreenShareStreams.take(maxFeaturedCount)
-        val thumbnailStreams = nonLocalScreenShareStreams
-            .filterNot { pinnedStreams.value.contains(it) }
-            .take(maxThumbnailCount)
-
-        // Build the list of revised pinned streams, prioritizing the local screen share stream
-        val revisedPinnedStreams = buildList {
-            localScreenShareStream?.let { add(it) } // Add screen share if available
-            // Add other pinned streams, adjusting the count if screen share is present
-            addAll(pinnedStreams.value.take(maxPinnedCount).drop(if (localScreenShareStream != null) 1 else 0))
-        }
-
-        // Determine the final list of streams to display
-        val streamFeed = when {
-            fullscreenStream != null -> listOfNotNull(fullscreenStream)
-            revisedPinnedStreams.isNotEmpty() -> revisedPinnedStreams + thumbnailStreams
-            else -> featuredStreams
-        }
-
-        localScreenShareStream to streamFeed
-    }
-}
-
-@Composable
 private fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
     return remember(windowSizeClass) {
         when {
-            windowSizeClass.isCompactHeight() -> ThumbnailsArrangement.End
-            windowSizeClass.isExpandedWidth() -> ThumbnailsArrangement.Start
+            windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
+            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
             else -> ThumbnailsArrangement.Bottom
         }
     }
 }
 
-private fun calculateThumbnailsSize(maxWidth: Dp, maxHeight: Dp, maxThumbnailCount: Int): Dp {
-    val availableSpace = min(maxHeight, maxWidth) * .9f
-    return min(availableSpace / maxThumbnailCount, MaxThumbnailSize)
+@Composable
+private fun streamItemStateFor(stream: StreamUi, highlightedStream: StreamUi?, streamContentController: StreamContentController): State<StreamItemState> {
+    return remember(stream, highlightedStream) {
+        derivedStateOf {
+            StreamItemState(
+                isHighlighted = stream.id == highlightedStream?.id,
+                isLocalScreenShare = stream.video?.isScreenShare == true && stream.mine,
+                isFullscreen =  streamContentController.fullscreenStream?.id == stream.id,
+                isPinned = streamContentController.pinnedStreams.fastAny { it.id == stream.id }
+            )
+        }
+    }
+}
+
+private fun calculateThumbnailsSize(maxWidth: Dp, maxHeight: Dp): Dp {
+    val maxAvailableSize = min(maxHeight, maxWidth) * 0.9f
+    return if (maxAvailableSize < MaxThumbnailSize) maxAvailableSize
+    else min(maxAvailableSize / MaxThumbnailCount, MaxThumbnailSize)
 }

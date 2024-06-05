@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -109,7 +110,7 @@ internal fun CallScreen(
         }
     }
 
-    var streams by remember {
+    var streams = remember {
         mutableStateOf(
             ImmutableList(
                 listOf(
@@ -167,61 +168,61 @@ internal fun CallScreen(
 
 
 
-    LaunchedEffect(Unit) {
-        delay(10000)
-        streams = ImmutableList(
-            listOf(
-                StreamUi(id = "1", username = "username1"),
-                StreamUi(id = "2", username = "username2"),
-                StreamUi(id = "3", username = "username3"),
-                StreamUi(id = "4", username = "username4"),
-                StreamUi(id = "5", username = "username5"),
-                StreamUi(id = "6", username = "username6"),
-                StreamUi(id = "7", username = "username7"),
-                StreamUi(id = "8", username = "username8"),
-                StreamUi(
-                    id = "9",
-                    username = "username9",
-                    mine = true,
-                    video = VideoUi(id = "2", isScreenShare = true)
-                ),
-                StreamUi(
-                    id = "10",
-                    username = "username10",
-                    mine = false,
-                    video = VideoUi(id = "3", isScreenShare = true)
-                ),
-                StreamUi(
-                    id = "11",
-                    username = "username11",
-                    mine = false,
-                    video = VideoUi(id = "4", isScreenShare = true)
-                ),
-                StreamUi(
-                    id = "12",
-                    username = "username12",
-                    mine = false,
-                    video = VideoUi(id = "5", isScreenShare = true)
-                ),
-                StreamUi(
-                    id = "13",
-                    username = "username13",
-                    mine = false,
-                    video = VideoUi(id = "6", isScreenShare = true)
-                ),
-                StreamUi(
-                    id = "14",
-                    username = "username14",
-                    mine = false,
-                    video = VideoUi(id = "7", isScreenShare = true)
-                ),
+//    LaunchedEffect(Unit) {
+//        delay(5000)
+//        streams.value = ImmutableList(
+//            listOf(
+//                StreamUi(id = "1", username = "username1"),
+//                StreamUi(id = "2", username = "username2"),
+//                StreamUi(id = "3", username = "username3"),
+//                StreamUi(id = "4", username = "username4"),
+//                StreamUi(id = "5", username = "username5"),
+//                StreamUi(id = "6", username = "username6"),
+//                StreamUi(id = "7", username = "username7"),
+//                StreamUi(id = "8", username = "username8"),
+//                StreamUi(
+//                    id = "9",
+//                    username = "username9",
+//                    mine = true,
+//                    video = VideoUi(id = "2", isScreenShare = true)
+//                ),
+//                StreamUi(
+//                    id = "10",
+//                    username = "username10",
+//                    mine = false,
+//                    video = VideoUi(id = "3", isScreenShare = true)
+//                ),
+//                StreamUi(
+//                    id = "11",
+//                    username = "username11",
+//                    mine = false,
+//                    video = VideoUi(id = "4", isScreenShare = true)
+//                ),
+//                StreamUi(
+//                    id = "12",
+//                    username = "username12",
+//                    mine = false,
+//                    video = VideoUi(id = "5", isScreenShare = true)
+//                ),
+//                StreamUi(
+//                    id = "13",
+//                    username = "username13",
+//                    mine = false,
+//                    video = VideoUi(id = "6", isScreenShare = true)
+//                ),
+//                StreamUi(
+//                    id = "14",
+//                    username = "username14",
+//                    mine = false,
+//                    video = VideoUi(id = "7", isScreenShare = true)
+//                ),
 //                StreamUi(id = "18", username = "username18", mine = true, video = VideoUi(id = "1", isScreenShare = true)),
-            )
-        )
-    }
+//            )
+//        )
+//    }
 
-    var fullscreenStream: StreamUi? by remember { mutableStateOf(null) }
-    var pinnedStreams: ImmutableList<StreamUi> by remember { mutableStateOf(ImmutableList()) }
+    val windowSizeClass2 = rememberUpdatedState(newValue = windowSizeClass)
+    val streamContentController = rememberStreamContentController(streams = streams, windowSizeClass = windowSizeClass2)
 
     if (isCompactHeight) {
 //        HCallScreen(
@@ -251,9 +252,7 @@ internal fun CallScreen(
             windowSizeClass = windowSizeClass,
             callActions = actions,
             inputMessage = inputMessage,
-            streams = streams,
-            pinnedStreams = pinnedStreams,
-            fullscreenStream = fullscreenStream,
+            streamContentController = streamContentController,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
@@ -271,21 +270,11 @@ internal fun CallScreen(
             onVirtualBackgroundClick = onVirtualBackgroundClick,
             onBackPressed = onBackPressed,
             onFullscreenClick = { stream, isFullscreen ->
-                fullscreenStream = if (isFullscreen) null else stream
+                streamContentController.fullscreen(if (isFullscreen) null else stream)
             },
             onPinClick = { stream, isPinned ->
-                pinnedStreams = if (isPinned) ImmutableList(pinnedStreams.value - stream)
-                else ImmutableList(pinnedStreams.value + stream)
-            },
-            maxPinnedStreamCount = remember(windowSizeClass) {
-                if (windowSizeClass.isCompactHeight() || windowSizeClass.isCompactWidth()) {
-                    CompactScreenMaxPin
-                } else LargeScreenMaxPin
-            },
-            maxFeaturedStreamsCount = remember(windowSizeClass) {
-                if (windowSizeClass.isCompactHeight() || windowSizeClass.isCompactWidth()) {
-                    CompactScreenMaxFeatured
-                } else LargeScreenMaxFeatured
+                if (isPinned) streamContentController.unpinStream(stream)
+                else streamContentController.pinStream(stream)
             }
         )
     }
@@ -299,8 +288,7 @@ internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     callActions: ImmutableList<CallActionUI>,
-    streams: ImmutableList<StreamUi>,
-    pinnedStreams: ImmutableList<StreamUi>,
+    streamContentController: StreamContentController,
     inputMessage: InputMessage?,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
@@ -319,9 +307,6 @@ internal fun VCallScreen(
     onBackPressed: () -> Unit,
     onFullscreenClick: (StreamUi, Boolean) -> Unit,
     onPinClick: (StreamUi, Boolean) -> Unit,
-    fullscreenStream: StreamUi? = null,
-    maxPinnedStreamCount: Int = Int.MAX_VALUE,
-    maxFeaturedStreamsCount: Int = Int.MAX_VALUE
 ) {
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
         WindowWidthSizeClass.Medium,
@@ -465,8 +450,8 @@ internal fun VCallScreen(
                     }
                 } else {
                     HStreamMenuContent(
-                        fullscreen = fullscreenStream?.id == current.id,
-                        pin = pinnedStreams.value.fastAny { stream -> stream.id == current.id },
+                        fullscreen = streamContentController.fullscreenStream?.id == current.id,
+                        pin = streamContentController.pinnedStreams.fastAny { stream -> stream.id == current.id },
                         onCancelClick = { currentStream = null },
                         onFullscreenClick = { isFullscreen ->
                             onFullscreenClick(current, isFullscreen)
@@ -489,13 +474,8 @@ internal fun VCallScreen(
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
         StreamContent(
-            windowSizeClass = windowSizeClass,
-            streams = streams,
-            fullscreenStream = fullscreenStream,
-            pinnedStreams = pinnedStreams,
+            streamContentController = streamContentController,
             highlightedStream = currentStream,
-            maxPinnedCount = maxPinnedStreamCount,
-            maxFeaturedCount = maxFeaturedStreamsCount,
             onStreamClick = { stream -> currentStream = stream },
             onStopScreenShareClick = {},
             modifier = Modifier
