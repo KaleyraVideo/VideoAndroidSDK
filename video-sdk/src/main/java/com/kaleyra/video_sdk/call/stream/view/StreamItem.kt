@@ -74,6 +74,7 @@ internal fun StreamItem(
                         .align(Alignment.BottomEnd)
                 )
             }
+            // TODO add mic icon
             UserLabel(
                 username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
                 pin = pin,
