@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEachIndexed
-import com.kaleyra.video_sdk.call.screen.view.StreamGrid
+import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
@@ -143,7 +143,7 @@ private data class StreamItemState(
 )
 
 @Composable
-internal fun StreamContent(
+internal fun StreamContainer(
     streamContentController: StreamContentController,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
@@ -169,7 +169,7 @@ internal fun StreamContent(
             .animateConstraints()
             .animatePlacement(IntOffset(constraints.maxWidth, constraints.maxHeight))
 
-        StreamGrid(
+        AdaptiveStreamLayout(
             thumbnailsArrangement = thumbnailsArrangementFor(streamContentController.windowSizeClass),
             thumbnailSize = thumbnailSize,
             thumbnailsCount = MaxThumbnailCount
@@ -200,7 +200,7 @@ internal fun StreamContent(
                                 shape = RoundedCornerShape(4.dp)
                             )
                     ) {
-                        StreamGridItem(
+                        StreamLayoutItem(
                             stream = stream,
                             streamState = streamItemState,
                             onStopScreenShareClick = onStopScreenShareClick
@@ -221,18 +221,23 @@ internal fun StreamContent(
 }
 
 @Composable
-private fun StreamGridItem(
+private fun StreamLayoutItem(
     stream: StreamUi,
     streamState: StreamItemState,
     onStopScreenShareClick: () -> Unit,
 ) {
-    if (streamState.isLocalScreenShare) ScreenShareItem(onStopScreenShareClick)
-    else {
-        StreamItem(
-            stream = stream,
-            fullscreen = streamState.isFullscreen,
-            pin = streamState.isPinned
-        )
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        tonalElevation = 1.dp
+    ) {
+        if (streamState.isLocalScreenShare) ScreenShareItem(onStopScreenShareClick)
+        else {
+            StreamItem(
+                stream = stream,
+                fullscreen = streamState.isFullscreen,
+                pin = streamState.isPinned
+            )
+        }
     }
 }
 

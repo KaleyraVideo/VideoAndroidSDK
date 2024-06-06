@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -33,14 +32,6 @@ import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-@Stable
-internal object StreamItemDefaults {
-
-    val Shape = RoundedCornerShape(4.dp)
-
-    val Elevation = 1.dp
-}
-
 @Composable
 internal fun StreamItem(
     stream: StreamUi,
@@ -48,39 +39,36 @@ internal fun StreamItem(
     pin: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        shape = StreamItemDefaults.Shape,
-        tonalElevation = StreamItemDefaults.Elevation,
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = modifier.padding(8.dp)
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            PointerStreamWrapper(
+        PointerStreamWrapper(
+            streamView = stream.video?.view,
+            pointerList = stream.video?.pointers
+        ) { hasPointers ->
+            // TODO set up the stream view fill/fit logic
+            Stream(
                 streamView = stream.video?.view,
-                pointerList = stream.video?.pointers
-            ) { hasPointers ->
-                // TODO set up the stream view fill/fit logic
-                Stream(
-                    streamView = stream.video?.view,
-                    avatar = stream.avatar,
-                    username = stream.username,
-                    showStreamView = stream.video?.view != null && stream.video.isEnabled
-                )
-            }
-
-            StreamStatusIndicators(
-                streamAudioUi = stream.audio,
-                fullscreen = fullscreen,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
-
-            UserLabel(
-                username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
-                pin = pin,
-                modifier = Modifier
-                    .height(24.dp)
-                    .align(Alignment.BottomStart)
+                avatar = stream.avatar,
+                username = stream.username,
+                showStreamView = stream.video?.view != null && stream.video.isEnabled
             )
         }
+
+        StreamStatusIndicators(
+            streamAudioUi = stream.audio,
+            fullscreen = fullscreen,
+            modifier = Modifier.align(Alignment.BottomEnd)
+        )
+
+        UserLabel(
+            username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
+            pin = pin,
+            modifier = Modifier
+                .height(24.dp)
+                .align(Alignment.BottomStart)
+        )
     }
 }
 

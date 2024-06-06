@@ -27,7 +27,6 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,10 +62,10 @@ import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
+import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // TODO
@@ -121,12 +120,11 @@ internal fun CallScreen(
                     StreamUi(id = "5", username = "username5"),
                     StreamUi(id = "6", username = "username6"),
                     StreamUi(id = "7", username = "username7"),
-                    StreamUi(id = "8", username = "username8"),
+                    StreamUi(id = "8", username = "username8", audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true)),
                     StreamUi(
                         id = "10",
                         username = "username10",
-                        mine = false,
-                        video = VideoUi(id = "3", isScreenShare = true)
+                        mine = true
                     ),
                     StreamUi(
                         id = "11",
@@ -473,7 +471,7 @@ internal fun VCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
-        StreamContent(
+        StreamContainer(
             streamContentController = streamContentController,
             highlightedStream = currentStream,
             onStreamClick = { stream -> currentStream = stream },
