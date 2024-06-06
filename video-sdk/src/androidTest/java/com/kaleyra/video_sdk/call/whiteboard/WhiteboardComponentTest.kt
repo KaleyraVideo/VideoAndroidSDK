@@ -20,8 +20,6 @@ package com.kaleyra.video_sdk.call.whiteboard
 
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -33,8 +31,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
@@ -113,82 +109,6 @@ class WhiteboardComponentTest {
     fun whiteboardViewNotNull_whiteboardViewIsDisplayed() {
         uiState = WhiteboardUiState(whiteboardView = View(composeTestRule.activity))
         composeTestRule.onNodeWithTag(WhiteboardViewTag).assertIsDisplayed()
-    }
-
-    @Test
-    fun textNull_whiteboardIsDisplayed() = runTest {
-        sheetState.expand()
-        uiState = WhiteboardUiState(whiteboardView = View(composeTestRule.activity), text = null)
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag(WhiteboardViewTag).assertIsDisplayed()
-    }
-
-    @Test
-    fun textNull_sheetStateIsHidden() = runTest {
-        sheetState.expand()
-        uiState = WhiteboardUiState(text = null)
-        composeTestRule.waitForIdle()
-        runBlocking {
-            val currentValue = snapshotFlow { sheetState.currentValue }.first()
-            assertEquals(SheetValue.Expanded, currentValue)
-        }
-    }
-
-    @Test
-    fun textNull_textEditorCleaned() {
-        // Check text editor before
-        uiState = WhiteboardUiState(text = "text")
-        composeTestRule.onNodeWithText("text").assertIsDisplayed()
-        // Check after setting text to null
-        uiState = WhiteboardUiState(text = null)
-        val hint = composeTestRule.activity.getString(R.string.kaleyra_edit_text_input_placeholder)
-        composeTestRule.onNodeWithText(hint).assertExists()
-        composeTestRule.onNode(hasSetTextAction()).assert(hasText(""))
-    }
-
-    @Test
-    fun textNotNull_textEditorIsDisplayed() {
-        uiState = WhiteboardUiState(text = "text")
-        composeTestRule.onNodeWithText("text").assertIsDisplayed()
-    }
-
-    @Test
-    fun textNotNull_sheetStateIsExpanded() = runTest {
-        sheetState.hide()
-        uiState = WhiteboardUiState(text = "")
-        composeTestRule.waitForIdle()
-        runBlocking {
-            val currentValue = snapshotFlow { sheetState.currentValue }.first()
-            assertEquals(SheetValue.Hidden, currentValue)
-        }
-    }
-
-    @Test
-    fun userConfirmsEditorText_onTextConfirmedInvoked() {
-        uiState = WhiteboardUiState(text = "text")
-        val confirm = composeTestRule.activity.getString(R.string.kaleyra_action_confirm)
-        composeTestRule.onNodeWithContentDescription(confirm).performClick()
-        assertEquals("text", confirmedText)
-    }
-
-    @Test
-    fun userDismissesEditorText_onTextDismissInvoked() {
-        uiState = WhiteboardUiState(text = "")
-        val dismiss = composeTestRule.activity.getString(R.string.kaleyra_action_dismiss)
-        composeTestRule.onNodeWithContentDescription(dismiss).performClick()
-        assert(isTextDismissed)
-    }
-
-    @Test
-    fun userDismissEditorText_onTextDismissInvoked() {
-        uiState = WhiteboardUiState(text = "text")
-        composeTestRule.onNodeWithText("text").assertIsDisplayed()
-    }
-
-    @Test
-    fun textEditorIsDisplayed_userClicksDismissButton_onTextDismissInvoked() {
-        uiState = WhiteboardUiState(text = "text")
-        composeTestRule.onNodeWithText("text").assertIsDisplayed()
     }
 
     @Test

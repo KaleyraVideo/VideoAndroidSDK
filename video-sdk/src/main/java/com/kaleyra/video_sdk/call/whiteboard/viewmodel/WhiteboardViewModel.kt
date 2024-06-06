@@ -24,11 +24,9 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -50,8 +48,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
     private val whiteboard = call
         .map { it.whiteboard }
         .shareInEagerly(viewModelScope)
-
-    private val onTextConfirmed = MutableStateFlow<((String) -> Unit)?>(null)
 
     private var resetWhiteboardUploadState = AtomicBoolean(false)
 
@@ -77,17 +73,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
             .isWhiteboardLoading()
             .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
             .launchIn(viewModelScope)
-
-        call
-            .getWhiteboardTextEvents()
-            .onEach { event ->
-                val (onCompletion, text) = when (event) {
-                    is Whiteboard.Event.Text.Edit -> Pair(event.completion, event.oldText)
-                    is Whiteboard.Event.Text.Add -> Pair(event.completion, "")
-                }
-                onTextConfirmed.value = onCompletion
-                _uiState.update { it.copy(text = text) }
-            }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
