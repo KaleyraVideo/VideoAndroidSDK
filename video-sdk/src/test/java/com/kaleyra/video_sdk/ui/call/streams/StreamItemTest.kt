@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream
+package com.kaleyra.video_sdk.ui.call.streams
 
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -17,7 +17,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class StreamItemTest {
 
     @get:Rule

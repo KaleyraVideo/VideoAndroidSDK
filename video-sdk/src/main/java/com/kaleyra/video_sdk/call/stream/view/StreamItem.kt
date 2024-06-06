@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.stream.view
 
 import android.content.res.Configuration
 import android.view.View
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
+import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
@@ -38,7 +41,6 @@ internal object StreamItemDefaults {
     val Elevation = 1.dp
 }
 
-// TODO test this
 @Composable
 internal fun StreamItem(
     stream: StreamUi,
@@ -49,12 +51,9 @@ internal fun StreamItem(
     Surface(
         shape = StreamItemDefaults.Shape,
         tonalElevation = StreamItemDefaults.Elevation,
-        modifier = modifier
+        modifier = modifier.padding(8.dp)
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Box(contentAlignment = Alignment.Center) {
             PointerStreamWrapper(
                 streamView = stream.video?.view,
                 pointerList = stream.video?.pointers
@@ -67,14 +66,13 @@ internal fun StreamItem(
                     showStreamView = stream.video?.view != null && stream.video.isEnabled
                 )
             }
-            if (fullscreen) {
-                FullscreenIcon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.BottomEnd)
-                )
-            }
-            // TODO add mic icon
+
+            StreamStatusIndicators(
+                streamAudioUi = stream.audio,
+                fullscreen = fullscreen,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
+
             UserLabel(
                 username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
                 pin = pin,
@@ -87,17 +85,21 @@ internal fun StreamItem(
 }
 
 @Composable
-private fun FullscreenIcon(modifier: Modifier = Modifier) {
-    Surface(
-        color = MaterialTheme.colorScheme.inverseSurface,
-        shape = RoundedCornerShape(4.dp),
+private fun StreamStatusIndicators(
+    streamAudioUi: AudioUi?,
+    fullscreen: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_on),
-            contentDescription = stringResource(id = R.string.kaleyra_stream_fullscreen),
-            modifier = Modifier.padding(3.dp)
-        )
+        when {
+            streamAudioUi == null || !streamAudioUi.isEnabled -> MicDisabledIcon()
+            streamAudioUi.isMutedForYou -> AudioMutedForYouIcon()
+        }
+        if (fullscreen) FullscreenIcon()
     }
 }
 
@@ -136,6 +138,52 @@ private fun UserLabel(
     }
 }
 
+@Composable
+private fun AudioMutedForYouIcon(modifier: Modifier = Modifier) {
+    StreamStatusIcon(
+        painter = painterResource(id = R.drawable.ic_kaleyra_stream_audio_muted_for_you),
+        contentDescription = stringResource(id = R.string.kaleyra_stream_muted_for_you),
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun MicDisabledIcon(modifier: Modifier = Modifier) {
+    StreamStatusIcon(
+        painter = painterResource(id = R.drawable.ic_kaleyra_stream_audio_disabled),
+        contentDescription = stringResource(id = R.string.kaleyra_stream_mic_disabled),
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun FullscreenIcon(modifier: Modifier = Modifier) {
+    StreamStatusIcon(
+        painter = painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_on),
+        contentDescription = stringResource(id = R.string.kaleyra_stream_fullscreen),
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun StreamStatusIcon(
+    painter: Painter,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.inverseSurface,
+        shape = RoundedCornerShape(4.dp),
+        modifier = modifier.size(24.dp)
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = Modifier.padding(3.dp)
+        )
+    }
+}
+
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
@@ -147,47 +195,10 @@ internal fun StreamItemPreview() {
                     id = "id",
                     username = "Viola J. Allen",
                     video = VideoUi(id = "id", view = ImmutableView(View(LocalContext.current))),
-                ),
-                fullscreen = false,
-                pin = false
-            )
-        }
-    }
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun StreamItemPinnedPreview() {
-    KaleyraM3Theme {
-        Surface {
-            StreamItem(
-                stream = StreamUi(
-                    id = "id",
-                    username = "Viola J. Allen",
-                    video = VideoUi(id = "id", view = ImmutableView(View(LocalContext.current))),
-                ),
-                fullscreen = false,
-                pin = true
-            )
-        }
-    }
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun StreamItemFullscreenPreview() {
-    KaleyraM3Theme {
-        Surface {
-            StreamItem(
-                stream = StreamUi(
-                    id = "id",
-                    username = "Viola J. Allen",
-                    video = VideoUi(id = "id", view = ImmutableView(View(LocalContext.current))),
+                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true),
                 ),
                 fullscreen = true,
-                pin = false
+                pin = true
             )
         }
     }
