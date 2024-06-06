@@ -74,16 +74,14 @@ internal fun AdaptiveStreamLayout(
         val featuredCount = pinnedCount.takeIf { it != 0 } ?: measurables.size
         val layoutThumbnailsArrangement = thumbnailsArrangement.takeIf { pinnedCount > 0 }
 
-        val areThumbnailsHorizontal = layoutThumbnailsArrangement?.isHorizontal() == true
-
         val featuredContainerWidth = if (pinnedCount != measurables.size) {
-            constraints.maxWidth - if (areThumbnailsHorizontal) thumbnailSizePx else 0
+            constraints.maxWidth - if (layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
         }
         // else if all streams are pinned
         else constraints.maxWidth
 
         val featuredContainerHeight = if (pinnedCount != measurables.size) {
-            constraints.maxHeight - if (areThumbnailsHorizontal) thumbnailSizePx else 0
+            constraints.maxHeight - if (layoutThumbnailsArrangement?.isVertical() == true) thumbnailSizePx else 0
         }
         // else if all streams are pinned
         else constraints.maxHeight
@@ -96,7 +94,7 @@ internal fun AdaptiveStreamLayout(
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
 
         val areThumbnailsEmpty = thumbnailPlaceables.isEmpty()
-        val thumbnailsPadding = if (!areThumbnailsEmpty && areThumbnailsHorizontal) thumbnailSizePx else 0
+        val thumbnailsPadding = if (!areThumbnailsEmpty && layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
 
         val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
         val featuredItemsPadding = (constraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
