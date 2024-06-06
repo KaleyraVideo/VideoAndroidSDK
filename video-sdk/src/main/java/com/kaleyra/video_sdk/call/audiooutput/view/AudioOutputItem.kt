@@ -18,7 +18,11 @@ package com.kaleyra.video_sdk.call.audiooutput.view
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +38,8 @@ import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.call.audiooutput.model.isConnectedOrPlaying
 import com.kaleyra.video_sdk.call.audiooutput.model.isConnecting
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun AudioOutputItem(
@@ -50,7 +54,7 @@ internal fun AudioOutputItem(
         Icon(
             painter = painterFor(audioDevice),
             contentDescription = null,
-            tint = if (selected) MaterialTheme.colors.secondary else LocalContentColor.current
+            tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.Center) {
@@ -59,15 +63,14 @@ internal fun AudioOutputItem(
                 fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = if (selected) MaterialTheme.colors.secondary else LocalContentColor.current,
+                color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
             )
             val subtitle = subtitleFor(audioDevice)
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    fontSize = 12.sp,
-                    color = LocalContentColor.current.copy(alpha = .5f)
+                    fontSize = 12.sp
                 )
             }
         }
@@ -180,7 +183,7 @@ internal fun AudioOutputSelectedItemPreview() {
 
 @Composable
 private fun AudioOutputItemPreview(audioDevice: AudioDeviceUi, selected: Boolean = false) {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             AudioOutputItem(
                 audioDevice = audioDevice,
