@@ -1,11 +1,11 @@
 package com.kaleyra.video_sdk.ui.call.streams
 
 import androidx.compose.ui.unit.IntSize
-import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper.calculateGridAndFeaturedSize
+import com.kaleyra.video_sdk.call.stream.utils.AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class StreamGridHelperTest {
+class AdaptiveStreamLayoutHelperTest {
 
     @Test
     fun testRatioInsideRatioRange() {

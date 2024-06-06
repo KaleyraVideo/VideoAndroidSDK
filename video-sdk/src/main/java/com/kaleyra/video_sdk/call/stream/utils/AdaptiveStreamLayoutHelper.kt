@@ -5,7 +5,7 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
 
-internal object StreamGridHelper {
+internal object AdaptiveStreamLayoutHelper {
 
     const val MAX_STREAM_RATIO = 1.77f // 16:9 ratio
 
