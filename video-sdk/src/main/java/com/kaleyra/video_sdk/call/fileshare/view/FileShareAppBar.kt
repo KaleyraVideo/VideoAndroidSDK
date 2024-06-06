@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun FileShareAppBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
@@ -40,7 +40,7 @@ internal fun FileShareAppBar(onBackPressed: () -> Unit, modifier: Modifier = Mod
 @Preview
 @Composable
 internal fun FileShareAppBarTest() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         FileShareAppBar(onBackPressed = { })
     }
 }

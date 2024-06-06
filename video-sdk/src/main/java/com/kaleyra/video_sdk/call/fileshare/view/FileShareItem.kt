@@ -23,10 +23,22 @@ import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,22 +56,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
-import com.kaleyra.video_sdk.common.text.Ellipsize
-import com.kaleyra.video_sdk.common.text.EllipsizeText
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.fileshare.ProgressIndicatorTag
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockDownloadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.text.Ellipsize
+import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isArchiveMimeType
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isImageMimeType
-import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlin.math.roundToInt
 
 private const val FileMediaType = "MediaType"
 private const val FileArchiveType = "ArchiveType"
 private val LinearProgressIndicatorWidth = 3000.dp
+private val LinearProgressIndicatorHeight = 4.dp
 
 @Composable
 internal fun FileShareItem(
@@ -137,7 +150,6 @@ private fun FileTypeAndSize(
                 // The file size is NA when is Download && state != InProgress && state != Success
                 stringResource(id = R.string.kaleyra_fileshare_na)
             },
-            color = LocalContentColor.current.copy(alpha = .5f),
             fontSize = 12.sp
         )
     }
@@ -157,20 +169,20 @@ private fun SharedFileInfoAndProgress(
 
         EllipsizeText(
             text = sharedFile.name,
-            color = MaterialTheme.colors.onSurface,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             ellipsize = Ellipsize.Middle
         )
 
         LinearProgressIndicator(
-            progress = progress,
+            progress = { progress },
             modifier = Modifier
                 .padding(vertical = 2.dp)
-                .size(LinearProgressIndicatorWidth, ProgressIndicatorDefaults.StrokeWidth)
+                .size(LinearProgressIndicatorWidth, LinearProgressIndicatorHeight)
                 .clip(RoundedCornerShape(percent = 50))
                 .testTag(ProgressIndicatorTag),
-            color = MaterialTheme.colors.secondaryVariant,
+            color = MaterialTheme.colorScheme.primary,
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -179,14 +191,12 @@ private fun SharedFileInfoAndProgress(
                     id = if (sharedFile.isMine) R.drawable.ic_kaleyra_upload else R.drawable.ic_kaleyra_download
                 ),
                 contentDescription = stringResource(id = if (sharedFile.isMine) R.string.kaleyra_fileshare_upload else R.string.kaleyra_fileshare_download),
-                tint = LocalContentColor.current.copy(alpha = .8f),
                 modifier = Modifier.size(12.dp)
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 text = if (sharedFile.isMine) stringResource(id = R.string.kaleyra_fileshare_you) else sharedFile.sender,
                 maxLines = 1,
-                color = LocalContentColor.current.copy(alpha = .5f),
                 fontSize = 12.sp,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -197,9 +207,9 @@ private fun SharedFileInfoAndProgress(
                         id = R.string.kaleyra_fileshare_progress,
                         (sharedFile.state.progress * 100).roundToInt()
                     )
+
                     else -> TimestampUtils.parseTime(sharedFile.time)
                 },
-                color = LocalContentColor.current.copy(alpha = .5f),
                 fontSize = 12.sp
             )
         }
@@ -234,24 +244,31 @@ private fun ActionButton(
                 }
             ),
             tint = when (sharedFileState) {
-                is SharedFileUi.State.Success, is SharedFileUi.State.Error -> MaterialTheme.colors.surface
-                else -> LocalContentColor.current.copy(alpha = .3f)
+                is SharedFileUi.State.Error -> MaterialTheme.colorScheme.onError
+                is SharedFileUi.State.Success -> MaterialTheme.colorScheme.onPrimary
+                is SharedFileUi.State.Available,
+                is SharedFileUi.State.Cancelled,
+                is SharedFileUi.State.InProgress,
+                is SharedFileUi.State.Pending -> MaterialTheme.colorScheme.onSurface
             },
             modifier = Modifier
                 .size(32.dp)
                 .border(
                     width = 2.dp,
                     color = when (sharedFileState) {
-                        is SharedFileUi.State.Success -> MaterialTheme.colors.secondaryVariant
-                        is SharedFileUi.State.Error -> MaterialTheme.colors.error
-                        else -> LocalContentColor.current.copy(alpha = .3f)
+                        is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primary
+                        is SharedFileUi.State.Available,
+                        is SharedFileUi.State.Cancelled,
+                        is SharedFileUi.State.InProgress,
+                        is SharedFileUi.State.Pending -> MaterialTheme.colorScheme.onSurface
                     },
                     shape = CircleShape
                 )
                 .background(
                     color = when (sharedFileState) {
-                        is SharedFileUi.State.Success -> MaterialTheme.colors.secondaryVariant
-                        is SharedFileUi.State.Error -> MaterialTheme.colors.error
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primary
+                        is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
                         else -> Color.Transparent
                     },
                     shape = CircleShape
@@ -264,7 +281,7 @@ private fun ActionButton(
 private fun getFileType(context: Context, uri: Uri): String? {
     val mimeType = uri.getMimeType(context) ?: ""
     return when {
-        mimeType.isImageMimeType()-> FileMediaType
+        mimeType.isImageMimeType() -> FileMediaType
         mimeType.isArchiveMimeType() -> FileArchiveType
         else -> null
     }
@@ -276,7 +293,7 @@ private fun ErrorMessage(isMyMessage: Boolean) {
         text = stringResource(
             id = if (isMyMessage) R.string.kaleyra_fileshare_upload_error else R.string.kaleyra_fileshare_download_error
         ),
-        color = MaterialTheme.colors.error,
+        color = MaterialTheme.colorScheme.error,
         fontSize = 12.sp
     )
 }
@@ -325,7 +342,7 @@ internal fun FileShareItemSuccessPreview() {
 
 @Composable
 private fun FileShareItemPreview(sharedFile: SharedFileUi) {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             FileShareItem(
                 sharedFile = sharedFile,

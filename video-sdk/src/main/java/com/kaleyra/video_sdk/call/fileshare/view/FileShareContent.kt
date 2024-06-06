@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.Surface
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -36,8 +36,8 @@ import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockDownloadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 /**
  * File Share Item Tag
@@ -76,8 +76,8 @@ internal fun FileShareContent(
                 onActionClick = { onItemActionClick(item) }
             )
             if (index != 0) {
-                Divider(
-                    color = LocalContentColor.current.copy(.2f),
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     modifier = Modifier.testTag(FileShareItemDividerTag)
                 )
             }
@@ -89,7 +89,7 @@ internal fun FileShareContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareContentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             FileShareContent(
                 items = ImmutableList(listOf(mockDownloadSharedFile, mockUploadSharedFile)),

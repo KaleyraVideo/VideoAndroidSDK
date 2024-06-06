@@ -17,44 +17,32 @@
 package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun MaxFileSizeDialog(onDismiss: () -> Unit) {
     AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss,
+            ) {
+                Text(stringResource(id = R.string.kaleyra_button_ok))
+            }
+        },
         title = {
             Text(text = stringResource(id = R.string.kaleyra_max_bytes_dialog_title))
         },
         text = {
             Text(text = stringResource(id = R.string.kaleyra_max_bytes_dialog_descr))
         },
-        buttons = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onSurface)
-                ) {
-                    Text(stringResource(id = R.string.kaleyra_button_ok))
-                }
-            }
-        },
-        onDismissRequest = onDismiss
     )
 }
 
@@ -62,7 +50,7 @@ internal fun MaxFileSizeDialog(onDismiss: () -> Unit) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareComponentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         MaxFileSizeDialog { }
     }
 }

@@ -19,7 +19,10 @@ package com.kaleyra.video_sdk.call.fileshare.view
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 private val FabSize = 56.dp
 private val FabIconPadding = 16.dp
@@ -43,8 +47,7 @@ internal fun FileShareFab(
 ) {
     FloatingActionButton(
         modifier = modifier.sizeIn(minWidth = FabSize, minHeight = FabSize),
-        onClick = onClick,
-        contentColor = MaterialTheme.colors.surface
+        onClick = onClick
     ) {
         val padding = if (collapsed) 0.dp else FabPadding
         Row(
@@ -72,7 +75,7 @@ internal fun FileShareFab(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareFabPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         FileShareFab(
             collapsed = false,
             onClick = { }
@@ -84,7 +87,7 @@ internal fun FileShareFabPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareFabCollapsedPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         FileShareFab(
             collapsed = true,
             onClick = { }

@@ -25,9 +25,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -53,14 +53,14 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareFab
 import com.kaleyra.video_sdk.call.fileshare.view.MaxFileSizeDialog
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 /**
  * Progress Indicator Tag
@@ -96,9 +96,9 @@ internal fun FileShareComponent(
     }
 
     LaunchedEffect(Unit) {
-         viewModel.setOnFileSelected {
-             activity.moveToFront()
-         }
+        viewModel.setOnFileSelected {
+            activity.moveToFront()
+        }
     }
 
     FileShareComponent(
@@ -188,7 +188,7 @@ internal fun FileShareComponent(
                     items = uiState.sharedFiles,
                     onItemClick = onItemClick,
                     onItemActionClick = {
-                        when(it.state) {
+                        when (it.state) {
                             SharedFileUi.State.Available -> onDownload(it.id)
                             SharedFileUi.State.Pending, is SharedFileUi.State.InProgress -> onShareCancel(it.id)
                             is SharedFileUi.State.Success -> onItemClick(it)
@@ -225,11 +225,12 @@ internal fun FileShareComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareComponentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             FileShareComponent(
                 uiState = FileShareUiState(),
                 onUpload = {},
+                userMessage = RecordingMessage.Started,
                 onDownload = {},
                 onShareCancel = {}
             )
