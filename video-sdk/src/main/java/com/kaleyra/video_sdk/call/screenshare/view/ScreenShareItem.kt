@@ -20,9 +20,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun ScreenShareItem(
@@ -90,7 +90,7 @@ internal fun ScreenShareAppItemPreview() {
 
 @Composable
 private fun ScreenShareItemPreview(screenShareTarget: ScreenShareTargetUi) {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             ScreenShareItem(screenShareTarget = screenShareTarget)
         }
