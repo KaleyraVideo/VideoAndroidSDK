@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -58,7 +58,7 @@ internal fun TextPointer(
         Pointer()
         Text(
             text = username,
-            color = MaterialTheme.colors.secondary,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .onGloballyPositioned { onTextWidth(it.size.width) }
                 .graphicsLayer { alpha = textAlpha },
@@ -73,7 +73,7 @@ internal fun Pointer(modifier: Modifier = Modifier) {
         modifier
             .size(PointerSize)
             .background(
-                color = MaterialTheme.colors.secondary,
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             )
     )
