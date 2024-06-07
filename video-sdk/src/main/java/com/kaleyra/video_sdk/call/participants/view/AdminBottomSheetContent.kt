@@ -51,7 +51,7 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
             ) {
                 Avatar(
-                    text = username[0].uppercase(),
+                    username = username,
                     uri = avatar,
                     modifier = Modifier.size(34.dp)
                 )

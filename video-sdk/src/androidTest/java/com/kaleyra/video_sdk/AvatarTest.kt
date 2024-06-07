@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+// TODO add this as robolectric test
 class AvatarTest {
 
     @get:Rule
@@ -26,7 +27,7 @@ class AvatarTest {
         val success = MutableStateFlow(false)
         composeTestRule.setContent {
             Avatar(
-                text = "us",
+                username = "us",
                 uri = ImmutableUri(uri),
                 color = Color.Black,
                 onSuccess = { success.value = true }
@@ -34,7 +35,7 @@ class AvatarTest {
         }
         runBlocking {
             success.first { it }
-            composeTestRule.onNodeWithText("us").assertDoesNotExist()
+            composeTestRule.onNodeWithText("U").assertDoesNotExist()
         }
     }
 
@@ -42,12 +43,23 @@ class AvatarTest {
     fun imageNotLoaded_textIsDisplayed() {
         composeTestRule.setContent {
             Avatar(
-                text = "us",
+                username = "us",
                 uri = null,
                 color = Color.Black
             )
         }
-        composeTestRule.onNodeWithText("us").assertIsDisplayed()
+        composeTestRule.onNodeWithText("U").assertIsDisplayed()
+    }
+
+    @Test
+    fun blankUsername_doesNotThrowAnyException() {
+        composeTestRule.setContent {
+            Avatar(
+                username = "",
+                uri = null,
+                color = Color.Black
+            )
+        }
     }
 
 }

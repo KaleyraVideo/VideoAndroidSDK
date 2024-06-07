@@ -54,7 +54,7 @@ internal fun Stream(
             val size = (min / 2).coerceIn(48.dp, 96.dp)
             Avatar(
                 uri = avatar,
-                text = username[0].uppercase(),
+                username = username,
                 modifier = Modifier.size(size)
             )
         }

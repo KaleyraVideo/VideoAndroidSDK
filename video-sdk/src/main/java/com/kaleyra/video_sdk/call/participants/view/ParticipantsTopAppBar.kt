@@ -42,7 +42,7 @@ internal fun ParticipantsTopAppBar(
         navigationIcon = {
             Avatar(
                 uri = (if (isSystemInDarkTheme) companyLogo.dark else companyLogo.light)?.let { ImmutableUri(it) },
-                text = "",
+                username = "",
                 modifier = Modifier.padding(12.dp)
             )
         },

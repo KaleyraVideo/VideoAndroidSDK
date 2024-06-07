@@ -47,7 +47,7 @@ internal fun ParticipantItem(
         modifier = modifier
     ) {
         Avatar(
-            text = stream.username[0].uppercase(),
+            username = stream.username,
             uri = stream.avatar,
             modifier = Modifier.size(ParticipantItemAvatarSize)
         )
