@@ -42,3 +42,5 @@ data class ImmutableList<out T>(val value: List<T> = listOf()) {
      */
     fun count() = value.count()
 }
+
+internal fun <T> List<T>.toImmutableList() = ImmutableList(this)
