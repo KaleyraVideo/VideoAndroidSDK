@@ -22,11 +22,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 /**
  * Feedback Sent Tag
@@ -50,10 +51,10 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(24.dp)
             .testTag(FeedbackSentTag)
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.kaleyra_feedback_thank_you),
@@ -66,15 +67,15 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
         Text(
             text = stringResource(id = R.string.kaleyra_feedback_see_you_soon),
             fontSize = 16.sp,
-            color = MaterialTheme.colors.onSurface.copy(alpha = .8f),
             modifier = Modifier.padding(horizontal = 4.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onDismiss,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+            shape = RoundedCornerShape(4.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -90,7 +91,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun FeedbackSentPreview() = KaleyraTheme {
+internal fun FeedbackSentPreview() = KaleyraM3Theme {
     Surface {
         FeedbackSent {}
     }

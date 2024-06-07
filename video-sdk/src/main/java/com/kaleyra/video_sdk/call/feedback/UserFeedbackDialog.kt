@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,7 +36,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackSent
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.delay
 
 private const val AutoDismissMs = 3000L
@@ -78,6 +78,6 @@ internal fun UserFeedbackDialog(onUserFeedback: (Float, String) -> Unit, onDismi
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun UserFeedbackDialogPreview() = KaleyraTheme {
+internal fun UserFeedbackDialogPreview() = KaleyraM3Theme {
     UserFeedbackDialog(onUserFeedback = { _, _ -> }, onDismiss = {})
 }

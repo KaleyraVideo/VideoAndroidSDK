@@ -91,7 +91,6 @@
     <item name="ic_kaleyra_mic_on" type="drawable">@drawable/kaleyra_z_mic_on</item>
     <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_z_users</item>
     <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
-    <item name="ic_kaleyra_empty_star" type="drawable">@drawable/kaleyra_z_star_empty</item>
     <item name="ic_kaleyra_more" type="drawable">@drawable/kaleyra_z_more</item>
 
     <!-- WHITEBOARD -->
