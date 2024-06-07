@@ -37,7 +37,7 @@ import com.kaleyra.video_sdk.call.participants.view.AdminBottomSheetContent
 import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch

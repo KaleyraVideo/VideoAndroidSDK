@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.stream.model
+package com.kaleyra.video_sdk.call.streamnew.model
 
 import android.view.View
 import androidx.compose.runtime.Immutable

@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.view
+package com.kaleyra.video_sdk.call.streamnew.view.items
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement

@@ -17,9 +17,9 @@
 package com.kaleyra.video_sdk
 
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll

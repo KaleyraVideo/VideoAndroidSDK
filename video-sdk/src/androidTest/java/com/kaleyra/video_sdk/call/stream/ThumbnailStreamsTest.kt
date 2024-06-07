@@ -31,7 +31,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailStreams
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailStreamsTag
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.performDoubleClick
 import org.junit.After

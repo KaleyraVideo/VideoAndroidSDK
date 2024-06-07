@@ -28,7 +28,6 @@ import com.kaleyra.video_sdk.call.screen.CallScreenState
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
-import com.kaleyra.video_sdk.call.*
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
@@ -56,7 +55,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.ScreenShareComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.VirtualBackgroundComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.WhiteboardComponentTag
 import com.kaleyra.video_sdk.call.screen.rememberCallScreenState
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.ui.ComposeViewModelsMockTest
 import com.kaleyra.video_sdk.ui.findBackButton

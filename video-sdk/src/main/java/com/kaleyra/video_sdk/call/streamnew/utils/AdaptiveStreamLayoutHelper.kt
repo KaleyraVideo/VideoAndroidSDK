@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.utils
+package com.kaleyra.video_sdk.call.streamnew.utils
 
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.abs

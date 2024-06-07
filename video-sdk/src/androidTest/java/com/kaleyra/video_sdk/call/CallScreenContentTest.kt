@@ -24,7 +24,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.kaleyra.video_sdk.call.*
 import com.kaleyra.video_sdk.call.dialing.DialingContentTag
 import com.kaleyra.video_sdk.call.ringing.RingingContentTag
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -33,7 +32,7 @@ import com.kaleyra.video_sdk.call.screen.view.CallComponentTag
 import com.kaleyra.video_sdk.call.screen.view.CallScreenContent
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findBackButton
 import io.mockk.every

@@ -62,9 +62,9 @@ import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.launch
 

@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.call.ringing.model
 
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo

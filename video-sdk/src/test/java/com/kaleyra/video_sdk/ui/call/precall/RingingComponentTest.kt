@@ -29,12 +29,12 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.ringing.RingingComponent
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.core.StreamOverlayTestTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage

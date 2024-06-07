@@ -39,13 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video_sdk.common.button.IconButton
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamContainer
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPadding

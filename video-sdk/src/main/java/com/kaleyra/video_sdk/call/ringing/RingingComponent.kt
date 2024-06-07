@@ -57,7 +57,7 @@ import com.kaleyra.video_sdk.theme.kaleyra_hang_up_dark_color
 import com.kaleyra.video_sdk.theme.kaleyra_hang_up_light_color
 import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.call.countdowntimer.rememberCountdownTimerState
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R

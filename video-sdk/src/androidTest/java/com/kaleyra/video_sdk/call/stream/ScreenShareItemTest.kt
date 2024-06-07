@@ -7,7 +7,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.view.ScreenShareItem
+import com.kaleyra.video_sdk.call.streamnew.view.items.ScreenShareItem
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before

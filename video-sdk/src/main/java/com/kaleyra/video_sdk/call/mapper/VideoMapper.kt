@@ -18,9 +18,9 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow

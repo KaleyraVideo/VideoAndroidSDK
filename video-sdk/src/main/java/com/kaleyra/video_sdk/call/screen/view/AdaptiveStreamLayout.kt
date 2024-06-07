@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.stream.utils.AdaptiveStreamLayoutHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveStreamLayoutHelper
 
 @Stable
 internal object AdaptiveStreamLayoutDefaults {

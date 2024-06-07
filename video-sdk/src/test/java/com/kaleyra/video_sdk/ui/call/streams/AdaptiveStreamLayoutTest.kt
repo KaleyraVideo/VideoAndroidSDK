@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.stream.utils.AdaptiveStreamLayoutHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveStreamLayoutHelper
 import com.kaleyra.video_sdk.ui.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.ui.assertLeftPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.ui.assertRightPositionInRootIsEqualTo

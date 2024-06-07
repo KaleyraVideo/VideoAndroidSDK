@@ -26,6 +26,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -33,16 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEachIndexed
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.isCompactInAnyDimension
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.call.stream.view.MoreParticipantsItem
-import com.kaleyra.video_sdk.call.stream.view.NonDisplayedParticipantData
-import com.kaleyra.video_sdk.call.stream.view.ScreenShareItem
-import com.kaleyra.video_sdk.call.stream.view.StreamItem
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.view.items.MoreParticipantsItem
+import com.kaleyra.video_sdk.call.streamnew.view.items.NonDisplayedParticipantData
+import com.kaleyra.video_sdk.call.streamnew.view.items.ScreenShareItem
+import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
@@ -154,7 +156,9 @@ internal fun StreamComponent(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
+        // TODO test displayedItems
         val streamsToDisplay by streamsToDisplayFor(streamContentController)
+        // TODO the non displayed participant data
         val nonDisplayedParticipantsData by remember(streamContentController) {
             derivedStateOf {
                 val nonDisplayedStreams = streamContentController.streams.value - streamsToDisplay.toSet()
@@ -176,16 +180,20 @@ internal fun StreamComponent(
             .animateConstraints()
             .animatePlacement(IntOffset(constraints.maxWidth, constraints.maxHeight))
 
+        // TODO test thumbnails arrangement
         AdaptiveStreamLayout(
             thumbnailsArrangement = thumbnailsArrangementFor(streamContentController.windowSizeClass),
             thumbnailSize = thumbnailSize,
             thumbnailsCount = MaxThumbnailCount
         ) {
+            // TODO test displayed items
             streamsToDisplay.fastForEachIndexed { index, stream ->
                 key(stream.id) {
+                    // TODO test fullscreen, pinned, highlight and local screen share
                     val streamItemState: StreamItemState by streamItemStateFor(
                         stream, highlightedStream, streamContentController
                     )
+                    // TODO test when fullscreen and when there are no participant data
                     val displayAsMoreParticipantsItem = !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
 
                     Surface(
@@ -194,20 +202,26 @@ internal fun StreamComponent(
                         modifier = itemModifier
                             .pin(streamItemState.isPinned)
                             .streamHighlight(streamItemState.isHighlighted)
+                            // TODO test onclick
                             .streamClickable(
+                                // TODO test on local screen share and more participant items is disabled
                                 enabled = !displayAsMoreParticipantsItem && !streamItemState.isLocalScreenShare,
                                 onClick = { onStreamClick(stream) }
                             )
                     ) {
                         Box {
+                            // TODO test the right item is displayed
                             when {
                                 displayAsMoreParticipantsItem -> MoreParticipantsItem(nonDisplayedParticipantsData)
+                                // TODO test onStopScreenShare click
                                 streamItemState.isLocalScreenShare -> ScreenShareItem(onStopScreenShareClick)
                                 else -> {
+                                    // TODO test status icon alignment on thumbnail and featured
                                     val statusIconsAlignment = if (streamContentController.fullscreenStream == stream || streamContentController.pinnedStreams.isEmpty() || streamItemState.isPinned) {
                                         Alignment.BottomEnd
                                     } else Alignment.TopEnd
 
+                                    // TODO test fullscreen, pin and audio muted
                                     StreamItem(
                                         stream = stream,
                                         fullscreen = streamItemState.isFullscreen,
@@ -294,8 +308,7 @@ private fun Modifier.streamClickable(
     this.clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
-        // TODO remove hardcoded string
-        onClickLabel = "show stream sub menu",
+        onClickLabel = stringResource(id = R.string.kaleyra_stream_show_actions),
         role = Role.Button,
         enabled = enabled,
         onClick = onClick

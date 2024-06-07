@@ -8,8 +8,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.view.MoreParticipantsItem
-import com.kaleyra.video_sdk.call.stream.view.NonDisplayedParticipantData
+import com.kaleyra.video_sdk.call.streamnew.view.items.MoreParticipantsItem
+import com.kaleyra.video_sdk.call.streamnew.view.items.NonDisplayedParticipantData
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.After
 import org.junit.Before

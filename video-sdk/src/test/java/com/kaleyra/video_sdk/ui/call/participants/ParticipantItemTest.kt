@@ -10,12 +10,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before

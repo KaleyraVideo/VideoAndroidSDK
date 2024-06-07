@@ -17,7 +17,7 @@
 package com.kaleyra.video_sdk.call.screen.model
 
 import androidx.compose.runtime.Immutable
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.call.recording.model.RecordingUi
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo

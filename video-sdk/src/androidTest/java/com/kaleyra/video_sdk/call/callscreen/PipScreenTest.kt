@@ -30,10 +30,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
 import com.kaleyra.video_sdk.call.screen.PipScreen
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.call.recording.view.RecordingDotTestTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import org.junit.After

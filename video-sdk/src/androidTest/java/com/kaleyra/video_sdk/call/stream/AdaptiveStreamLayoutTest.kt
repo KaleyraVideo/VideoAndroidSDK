@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.stream.utils.AdaptiveStreamLayoutHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveStreamLayoutHelper
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject

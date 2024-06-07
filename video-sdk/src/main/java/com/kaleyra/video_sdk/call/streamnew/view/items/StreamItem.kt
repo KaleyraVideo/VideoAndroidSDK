@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.view
+package com.kaleyra.video_sdk.call.streamnew.view.items
 
 import android.content.res.Configuration
 import android.view.View
@@ -26,10 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.view.core.Stream
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal val StreamItemPadding = 8.dp

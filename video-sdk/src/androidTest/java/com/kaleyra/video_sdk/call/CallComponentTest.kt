@@ -45,9 +45,9 @@ import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
 import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStreamTag
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList

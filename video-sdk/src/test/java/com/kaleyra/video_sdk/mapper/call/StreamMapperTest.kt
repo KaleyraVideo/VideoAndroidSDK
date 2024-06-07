@@ -28,9 +28,9 @@ import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.mapToStreamsUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toMyStreamsUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import io.mockk.every
 import io.mockk.mockk
