@@ -32,16 +32,19 @@ import com.kaleyra.video_sdk.call.stream.model.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.VideoUi
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+internal val StreamItemPadding = 8.dp
+
 @Composable
 internal fun StreamItem(
     stream: StreamUi,
     fullscreen: Boolean,
     pin: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    statusIconsAlignment: Alignment = Alignment.BottomEnd
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.padding(8.dp)
+        modifier = modifier.padding(StreamItemPadding)
     ) {
         PointerStreamWrapper(
             streamView = stream.video?.view,
@@ -56,10 +59,10 @@ internal fun StreamItem(
             )
         }
 
-        StreamStatusIndicators(
+        StatusIcons(
             streamAudioUi = stream.audio,
             fullscreen = fullscreen,
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier.align(statusIconsAlignment)
         )
 
         UserLabel(
@@ -73,7 +76,7 @@ internal fun StreamItem(
 }
 
 @Composable
-private fun StreamStatusIndicators(
+private fun StatusIcons(
     streamAudioUi: AudioUi?,
     fullscreen: Boolean,
     modifier: Modifier = Modifier

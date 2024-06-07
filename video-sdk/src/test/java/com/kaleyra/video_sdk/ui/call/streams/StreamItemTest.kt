@@ -5,14 +5,22 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
+import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onParent
 import com.kaleyra.video_sdk.call.stream.model.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.StreamItem
+import com.kaleyra.video_sdk.call.stream.view.StreamItemPadding
+import com.kaleyra.video_sdk.ui.assertBottomPositionInRootIsEqualTo
+import com.kaleyra.video_sdk.ui.assertRightPositionInRootIsEqualTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,13 +40,16 @@ class StreamItemTest {
 
     private var fullscreen by mutableStateOf(false)
 
+    private var statusIconsAlignment by mutableStateOf(Alignment.BottomEnd)
+
     @Before
     fun setUp() {
         composeTestRule.setContent {
             StreamItem(
                 stream = stream,
                 fullscreen = fullscreen,
-                pin = pin
+                pin = pin,
+                statusIconsAlignment = statusIconsAlignment
             )
         }
     }
@@ -155,5 +166,61 @@ class StreamItemTest {
         stream = stream.copy(mine = false)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_you)
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun testBottomEndStatusIconsAlignment() {
+        statusIconsAlignment = Alignment.BottomEnd
+        stream = stream.copy(audio = null)
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
+        val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
+        val parentBottom = fullscreenNode.onParent().getBoundsInRoot().bottom - StreamItemPadding
+        val parentRight = fullscreenNode.onParent().getBoundsInRoot().right - StreamItemPadding
+        fullscreenNode
+            .assertIsDisplayed()
+            .assertBottomPositionInRootIsEqualTo(parentBottom)
+            .assertRightPositionInRootIsEqualTo(parentRight)
+    }
+
+    @Test
+    fun testTopEndStatusIconsAlignment() {
+        statusIconsAlignment = Alignment.TopEnd
+        stream = stream.copy(audio = null)
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
+        val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
+        val parentTop = fullscreenNode.onParent().getBoundsInRoot().top + StreamItemPadding
+        val parentRight = fullscreenNode.onParent().getBoundsInRoot().right - StreamItemPadding
+        fullscreenNode
+            .assertIsDisplayed()
+            .assertTopPositionInRootIsEqualTo(parentTop)
+            .assertRightPositionInRootIsEqualTo(parentRight)
+    }
+
+    @Test
+    fun testTopStartStatusIconsAlignment() {
+        statusIconsAlignment = Alignment.TopStart
+        stream = stream.copy(audio = null)
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
+        val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
+        val parentTop = fullscreenNode.onParent().getBoundsInRoot().top + StreamItemPadding
+        val parentLeft = fullscreenNode.onParent().getBoundsInRoot().left + StreamItemPadding
+        fullscreenNode
+            .assertIsDisplayed()
+            .assertTopPositionInRootIsEqualTo(parentTop)
+            .assertLeftPositionInRootIsEqualTo(parentLeft)
+    }
+
+    @Test
+    fun testBottomStartStatusIconsAlignment() {
+        statusIconsAlignment = Alignment.BottomStart
+        stream = stream.copy(audio = null)
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
+        val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
+        val parentBottom = fullscreenNode.onParent().getBoundsInRoot().bottom - StreamItemPadding
+        val parentLeft = fullscreenNode.onParent().getBoundsInRoot().left + StreamItemPadding
+        fullscreenNode
+            .assertIsDisplayed()
+            .assertBottomPositionInRootIsEqualTo(parentBottom)
+            .assertLeftPositionInRootIsEqualTo(parentLeft)
     }
 }
