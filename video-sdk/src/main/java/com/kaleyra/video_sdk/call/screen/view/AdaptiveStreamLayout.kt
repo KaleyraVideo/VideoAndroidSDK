@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveStreamLayoutHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveGridCalculator
 
 @Stable
 internal object AdaptiveStreamLayoutDefaults {
@@ -133,7 +133,7 @@ private fun calculateGridAndFeaturedSize(
     // in order to have the same stream layout behaviour up to 3 items on both Android and iOS sdks
     return when {
         itemsCount == 0 -> Triple(1, 1, IntSize(0, 0))
-        itemsCount > 3 -> AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(containerWidth, containerHeight, itemsCount)
+        itemsCount > 3 -> AdaptiveGridCalculator.calculateGridAndFeaturedSize(containerWidth, containerHeight, itemsCount)
         layoutConstraints.maxWidth >= layoutConstraints.maxHeight -> Triple(1, itemsCount, IntSize(containerWidth / itemsCount, containerHeight))
         else -> Triple(itemsCount, 1, IntSize(containerWidth,containerHeight / itemsCount))
     }

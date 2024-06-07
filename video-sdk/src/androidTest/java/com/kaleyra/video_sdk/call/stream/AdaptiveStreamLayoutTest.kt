@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveStreamLayoutHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveGridCalculator
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
@@ -441,12 +441,12 @@ class AdaptiveStreamLayoutTest {
 
     @Test
     fun testPinnedBoundsWithThumbnailsArrangementStartAndNoThumbnails() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val pinnedTag = "pinnedTag"
         val rows = 3
         val columns = 2
         val pinnedCount = 5
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         composeTestRule.setContent {
@@ -486,17 +486,17 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testPinnedBoundsWithThumbnailsArrangementEndAndNoThumbnails() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val pinnedTag = "pinnedTag"
         val rows = 3
         val columns = 2
         val pinnedCount = 5
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         composeTestRule.setContent {
@@ -536,17 +536,17 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testPinnedBoundsWithThumbnailsArrangementTopAndNoThumbnails() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val pinnedTag = "pinnedTag"
         val rows = 3
         val columns = 2
         val pinnedCount = 5
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         composeTestRule.setContent {
@@ -586,17 +586,17 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testPinnedBoundsWithThumbnailsArrangementBottomAndNoThumbnails() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val pinnedTag = "pinnedTag"
         val rows = 3
         val columns = 2
         val pinnedCount = 5
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         composeTestRule.setContent {
@@ -636,15 +636,15 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testMultipleFeaturedItems() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val rows = 3
         val columns = 3
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         val itemCount = 8
@@ -685,15 +685,15 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testMultiplePinnedItemsThumbnailArrangementBottom() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val rows = 3
         val columns = 3
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         val pinnedCount = 8
@@ -737,15 +737,15 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testMultiplePinnedItemsThumbnailArrangementLeft() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val rows = 3
         val columns = 3
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         val pinnedCount = 8
@@ -789,15 +789,15 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testMultiplePinnedItemsThumbnailArrangementTop() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val rows = 3
         val columns = 3
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         val pinnedCount = 8
@@ -841,15 +841,15 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 
     @Test
     fun testMultiplePinnedItemsThumbnailArrangementEnd() {
-        mockkObject(AdaptiveStreamLayoutHelper)
+        mockkObject(AdaptiveGridCalculator)
         val rows = 3
         val columns = 3
-        every { AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
+        every { AdaptiveGridCalculator.calculateGridAndFeaturedSize(any(), any(), any()) } answers {
             Triple(rows, columns, IntSize(firstArg<Int>() / columns, secondArg<Int>() / rows))
         }
         val pinnedCount = 8
@@ -893,6 +893,6 @@ class AdaptiveStreamLayoutTest {
             row = if (index % columns == columns - 1) row + 1 else row
             column = if (index % columns == columns - 1) 0 else column + 1
         }
-        unmockkObject(AdaptiveStreamLayoutHelper)
+        unmockkObject(AdaptiveGridCalculator)
     }
 }
