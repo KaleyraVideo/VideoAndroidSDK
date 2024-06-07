@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -26,14 +25,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.composed
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEachIndexed
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
@@ -42,9 +39,12 @@ import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.stream.view.MoreParticipantsItem
+import com.kaleyra.video_sdk.call.stream.view.NonDisplayedParticipantData
 import com.kaleyra.video_sdk.call.stream.view.ScreenShareItem
 import com.kaleyra.video_sdk.call.stream.view.StreamItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import kotlinx.coroutines.CoroutineScope
@@ -143,7 +143,7 @@ private data class StreamItemState(
 )
 
 @Composable
-internal fun StreamContainer(
+internal fun StreamComponent(
     streamContentController: StreamContentController,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
@@ -154,13 +154,20 @@ internal fun StreamContainer(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        val streams by streamsFor(streamContentController)
+        val streamsToDisplay by streamsToDisplayFor(streamContentController)
+        val nonDisplayedParticipantsData by remember(streamContentController) {
+            derivedStateOf {
+                val nonDisplayedStreams = streamContentController.streams.value - streamsToDisplay.toSet()
+                nonDisplayedStreams.map { NonDisplayedParticipantData(it.id, it.username, it.avatar) }.toImmutableList()
+            }
+        }
 
         // Calculate thumbnail size based on available space
         val thumbnailSize = calculateThumbnailsSize(
             maxWidth = maxWidth,
             maxHeight = maxHeight
         )
+        val isNonDisplayedParticipantsDataEmpty = nonDisplayedParticipantsData.value.isEmpty()
 
         val itemPadding = 4.dp
         val itemModifier = Modifier
@@ -174,43 +181,40 @@ internal fun StreamContainer(
             thumbnailSize = thumbnailSize,
             thumbnailsCount = MaxThumbnailCount
         ) {
-            streams.fastForEachIndexed { index, stream ->
+            streamsToDisplay.fastForEachIndexed { index, stream ->
                 key(stream.id) {
-                    val streamItemState by streamItemStateFor(
+                    val streamItemState: StreamItemState by streamItemStateFor(
                         stream, highlightedStream, streamContentController
                     )
-                    val borderColor =
-                        if (streamItemState.isHighlighted) MaterialTheme.colorScheme.primary else Color.Transparent
+                    val displayAsMoreParticipantsItem = !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
 
-                    Box(
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        tonalElevation = 1.dp,
                         modifier = itemModifier
                             .pin(streamItemState.isPinned)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                // TODO remove hardcoded string
-                                onClickLabel = "show stream sub menu",
-                                role = Role.Button,
-                                enabled = !streamItemState.isLocalScreenShare,
+                            .streamHighlight(streamItemState.isHighlighted)
+                            .streamClickable(
+                                enabled = !displayAsMoreParticipantsItem && !streamItemState.isLocalScreenShare,
                                 onClick = { onStreamClick(stream) }
                             )
-                            .border(
-                                color = borderColor,
-                                width = 2.dp,
-                                shape = RoundedCornerShape(4.dp)
-                            )
                     ) {
-                        StreamLayoutItem(
-                            stream = stream,
-                            streamState = streamItemState,
-                            onStopScreenShareClick = onStopScreenShareClick
-                        )
+                        Box {
+                            when {
+                                displayAsMoreParticipantsItem -> MoreParticipantsItem(nonDisplayedParticipantsData)
+                                streamItemState.isLocalScreenShare -> ScreenShareItem(onStopScreenShareClick)
+                                else -> {
+                                    val statusIconsAlignment = if (streamContentController.fullscreenStream == stream || streamContentController.pinnedStreams.isEmpty() || streamItemState.isPinned) {
+                                        Alignment.BottomEnd
+                                    } else Alignment.TopEnd
 
-                        if (!streamItemState.isFullscreen && index == streams.size - 1) {
-                            val moreStreamsCount =
-                                remember(streamContentController.streams) { streamContentController.streams.value.size - streams.size }
-                            if (moreStreamsCount != 0) {
-                                MoreStreamsIndicator(moreStreamsCount)
+                                    StreamItem(
+                                        stream = stream,
+                                        fullscreen = streamItemState.isFullscreen,
+                                        pin = streamItemState.isPinned,
+                                        statusIconsAlignment = statusIconsAlignment
+                                    )
+                                }
                             }
                         }
                     }
@@ -221,46 +225,7 @@ internal fun StreamContainer(
 }
 
 @Composable
-private fun StreamLayoutItem(
-    stream: StreamUi,
-    streamState: StreamItemState,
-    onStopScreenShareClick: () -> Unit,
-) {
-    Surface(
-        shape = RoundedCornerShape(4.dp),
-        tonalElevation = 1.dp
-    ) {
-        if (streamState.isLocalScreenShare) ScreenShareItem(onStopScreenShareClick)
-        else {
-            StreamItem(
-                stream = stream,
-                fullscreen = streamState.isFullscreen,
-                pin = streamState.isPinned
-            )
-        }
-    }
-}
-
-@Composable
-private fun MoreStreamsIndicator(count: Int) {
-    Surface(
-        color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = .1f),
-        contentColor = MaterialTheme.colorScheme.inverseSurface,
-        shape = RoundedCornerShape(4.dp),
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Text(
-            text = "$count others",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelMedium.copy(lineHeight = 24.sp),
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-    }
-}
-
-@Composable
-private fun streamsFor(streamContentController: StreamContentController) =
+private fun streamsToDisplayFor(streamContentController: StreamContentController) =
     remember(streamContentController) {
         derivedStateOf {
             val streams = streamContentController.streams
@@ -320,4 +285,29 @@ private fun calculateThumbnailsSize(maxWidth: Dp, maxHeight: Dp): Dp {
     val maxAvailableSize = min(maxHeight, maxWidth) * 0.9f
     return if (maxAvailableSize < MaxThumbnailSize) maxAvailableSize
     else min(maxAvailableSize / MaxThumbnailCount, MaxThumbnailSize)
+}
+
+private fun Modifier.streamClickable(
+    enabled: Boolean,
+    onClick: () -> Unit
+): Modifier = composed {
+    this.clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        // TODO remove hardcoded string
+        onClickLabel = "show stream sub menu",
+        role = Role.Button,
+        enabled = enabled,
+        onClick = onClick
+    )
+}
+
+private fun Modifier.streamHighlight(enabled: Boolean): Modifier = composed {
+    if (enabled) {
+        this.border(
+            color = MaterialTheme.colorScheme.primary,
+            width = 2.dp,
+            shape = RoundedCornerShape(4.dp)
+        )
+    } else this
 }

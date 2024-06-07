@@ -114,7 +114,7 @@ internal fun CallScreen(
             ImmutableList(
                 listOf(
                     StreamUi(id = "1", username = "username1"),
-                    StreamUi(id = "2", username = "username2"),
+                    StreamUi(id = "2", username = "Stefano Brusadelli"),
                     StreamUi(id = "3", username = "username3"),
                     StreamUi(id = "4", username = "username4"),
                     StreamUi(id = "5", username = "username5"),
@@ -150,6 +150,17 @@ internal fun CallScreen(
                         mine = false,
                         video = VideoUi(id = "7", isScreenShare = true)
                     ),
+                    StreamUi(id = "15", username = "username15"),
+                    StreamUi(id = "16", username = "username15"),
+                    StreamUi(id = "17", username = "username17"),
+                    StreamUi(id = "18", username = "username17"),
+                    StreamUi(id = "19", username = "username17"),
+                    StreamUi(id = "20", username = "username17"),
+                    StreamUi(id = "21", username = "username17"),
+                    StreamUi(id = "22", username = "username17"),
+                    StreamUi(id = "23", username = "username17"),
+                    StreamUi(id = "24", username = "username17"),
+
 //                    StreamUi(id = "10", username = "username10"),
 //                    StreamUi(id = "11", username = "username11"),
 //                    StreamUi(id = "12", username = "username12"),
@@ -471,7 +482,7 @@ internal fun VCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
-        StreamContainer(
+        StreamComponent(
             streamContentController = streamContentController,
             highlightedStream = currentStream,
             onStreamClick = { stream -> currentStream = stream },
