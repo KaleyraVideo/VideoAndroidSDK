@@ -72,6 +72,10 @@ class WhiteboardComponentTest {
 
     private var isWhiteboardClosed = false
 
+    private var isBackPressed = false
+
+    private var isUploadClicked = false
+
     @Before
     fun setUp() {
         composeTestRule.setContent {
@@ -79,10 +83,11 @@ class WhiteboardComponentTest {
             if (showWhiteboardComponent) {
                 WhiteboardComponent(
                     uiState = uiState,
-                    sheetState = sheetState,
                     userMessage = userMessage,
                     onReloadClick = { isReloadClicked = true },
-                    onWhiteboardClosed = { isWhiteboardClosed = true }
+                    onWhiteboardClosed = { isWhiteboardClosed = true },
+                    onBackPressed = { isBackPressed = true },
+                    onUploadClick = { isUploadClicked = true }
                 )
             }
         }
@@ -97,6 +102,8 @@ class WhiteboardComponentTest {
         isTextDismissed = false
         isReloadClicked = false
         isWhiteboardClosed = false
+        isBackPressed = false
+        isUploadClicked = false
     }
 
     @Test
@@ -131,6 +138,45 @@ class WhiteboardComponentTest {
         val reload = composeTestRule.activity.getString(R.string.kaleyra_error_button_reload)
         composeTestRule.onNodeWithContentDescription(reload).performClick()
         assert(isReloadClicked)
+    }
+
+    @Test
+    fun userClicksBack_onBackPressedInvoked() {
+        uiState = WhiteboardUiState(isOffline = false)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(close).performClick()
+        assert(isBackPressed)
+    }
+
+    @Test
+    fun userClicksUpload_onUploadInvoked() {
+        uiState = WhiteboardUiState(isOffline = false, isFileSharingSupported = true)
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(upload).performClick()
+        assert(isUploadClicked)
+    }
+
+    @Test
+    fun userClicksUpload_fileSharingNotSupported_uploadNotShown() {
+        uiState = WhiteboardUiState(isOffline = false, isFileSharingSupported = false)
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertDoesNotExist()
+    }
+
+    @Test
+    fun userClicksUpload_whiteboardIsOffline_uploadNotShown() {
+        uiState = WhiteboardUiState(isOffline = true, isFileSharingSupported = true)
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertDoesNotExist()
+    }
+
+    @Test
+    fun userClicksUpload_whiteboardIsLoading_uploadNotShown() {
+        uiState = WhiteboardUiState(isLoading = true, isFileSharingSupported = true)
+        val upload = composeTestRule.activity.getString(R.string.kaleyra_upload_file)
+        composeTestRule.onNodeWithContentDescription(upload).assertDoesNotExist()
     }
 
     @Test

@@ -20,6 +20,10 @@ package com.kaleyra.video_sdk.call.whiteboard
 
 import android.content.res.Configuration
 import android.view.View
+import android.view.ViewGroup
+import android.webkit.WebView
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +47,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
+import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardAppBar
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardContent
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardOfflineContent
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
@@ -58,33 +63,34 @@ internal fun WhiteboardComponent(
     viewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
+    onBackPressed: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
 
-    LaunchedEffect("expandWhiteboard") {
-        sheetState.expand()
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) viewModel.uploadMediaFile(uri)
     }
 
     WhiteboardComponent(
         modifier = modifier,
         uiState = uiState,
-        sheetState = sheetState,
         onWhiteboardClosed = viewModel::onWhiteboardClosed,
         onReloadClick = viewModel::onReloadClick,
+        onBackPressed = onBackPressed,
+        onUploadClick = { launcher.launch("image/*") },
         userMessage = userMessage,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WhiteboardComponent(
     modifier: Modifier = Modifier,
     uiState: WhiteboardUiState,
-    sheetState: SheetState,
     onWhiteboardClosed: () -> Unit,
     onReloadClick: () -> Unit,
+    onBackPressed: () -> Unit,
+    onUploadClick: () -> Unit,
     userMessage: UserMessage?,
 ) {
     DisposableEffect(Unit) {
@@ -93,6 +99,14 @@ internal fun WhiteboardComponent(
 
     Box {
         Column {
+
+            WhiteboardAppBar(
+                isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
+                onBackPressed = onBackPressed,
+                onUploadClick = { onUploadClick() },
+                modifier = modifier
+            )
+
             val contentModifier = Modifier
                 .weight(1f)
                 .background(color = colorResource(id = R.color.kaleyra_color_loading_whiteboard_background))

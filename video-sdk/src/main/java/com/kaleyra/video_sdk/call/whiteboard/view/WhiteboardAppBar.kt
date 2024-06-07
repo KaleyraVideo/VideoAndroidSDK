@@ -52,7 +52,7 @@ internal fun WhiteboardAppBar(
     }
 
     WhiteboardAppBar(
-        isFileSharingSupported = uiState.isFileSharingSupported,
+        isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isLoading && !uiState.isOffline,
         onBackPressed = onBackPressed,
         onUploadClick = { launcher.launch("image/*") },
         modifier = modifier
