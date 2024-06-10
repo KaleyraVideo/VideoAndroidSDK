@@ -107,6 +107,18 @@ class WhiteboardComponentTest {
     }
 
     @Test
+    fun whiteboardTopAppBarShown() {
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
+    }
+
+    @Test
+    fun whiteBoardAppBarCloseButtonShown() {
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+    }
+
+    @Test
     fun whiteboardViewNull_whiteboardViewDoesNotExist() {
         uiState = WhiteboardUiState(whiteboardView = null)
         composeTestRule.onNodeWithTag(WhiteboardViewTag).assertDoesNotExist()

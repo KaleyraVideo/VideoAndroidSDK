@@ -16,31 +16,43 @@
 
 package com.kaleyra.video_sdk.call.fileshare.view
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
-internal fun FileShareAppBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
+internal fun FileShareAppBar(
+    modifier: Modifier = Modifier,
+    onBackPressed: () -> Unit,
+    lazyGridState: LazyGridState,
+    ) {
     ComponentAppBar(
         onBackPressed = onBackPressed,
         title = stringResource(id = R.string.kaleyra_fileshare),
         actions = { Spacer(Modifier.width(56.dp)) },
+        scrollableState = lazyGridState,
         modifier = modifier
     )
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareAppBarTest() {
     KaleyraM3Theme {
-        FileShareAppBar(onBackPressed = { })
+        FileShareAppBar(
+            onBackPressed = { },
+            lazyGridState = rememberLazyGridState()
+        )
     }
 }

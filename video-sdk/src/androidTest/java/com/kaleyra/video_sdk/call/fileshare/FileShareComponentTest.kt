@@ -111,6 +111,18 @@ class FileShareComponentTest {
     }
 
     @Test
+    fun fileShareTopAppBarShown() {
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareAppBarCloseButtonShown() {
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+    }
+
+    @Test
     fun emptyItems_noItemsUIDisplayed() {
         val title = composeTestRule.activity.getString(R.string.kaleyra_no_file_shared)
         val subtitle = composeTestRule.activity.getString(R.string.kaleyra_click_to_share_file)

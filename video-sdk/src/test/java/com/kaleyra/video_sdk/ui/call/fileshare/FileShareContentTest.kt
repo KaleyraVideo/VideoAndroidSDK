@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.ui.call.fileshare
 
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -54,7 +55,8 @@ class FileShareContentTest {
             FileShareContent(
                 items = items,
                 onItemClick = { actualSharedFile = it },
-                onItemActionClick = { actualSharedFile = it }
+                onItemActionClick = { actualSharedFile = it },
+                lazyGridState = rememberLazyGridState()
             )
         }
     }
