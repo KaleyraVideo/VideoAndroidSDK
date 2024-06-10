@@ -39,6 +39,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
+import com.kaleyra.video_sdk.call.feedback.view.FeedbackFormCancelTag
 import com.kaleyra.video_sdk.call.feedback.view.StarSliderTag
 import junit.framework.TestCase.assertEquals
 import org.junit.After
@@ -86,16 +87,14 @@ class FeedbackFormTest {
     }
 
     @Test
-    fun closeButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    fun cancelButtonIsDisplayed() {
+        composeTestRule.onNodeWithTag(FeedbackFormCancelTag).assertIsDisplayed()
     }
 
     @Test
-    fun userClicksClose_onDismissInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(text).performClick()
+    fun userClicksCancel_onDismissInvoked() {
+        composeTestRule.onNodeWithTag(FeedbackFormCancelTag).assertHasClickAction()
+        composeTestRule.onNodeWithTag(FeedbackFormCancelTag).performClick()
         assertEquals(true, isDismissed)
     }
 
