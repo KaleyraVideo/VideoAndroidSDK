@@ -95,8 +95,8 @@ class UserFeedbackDialogTest {
 
     @Test
     fun userDismissesDialog_onDismissInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).performClick()
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        composeTestRule.onNodeWithText(cancel).performClick()
         TestCase.assertEquals(true, isDismissed)
     }
 }
