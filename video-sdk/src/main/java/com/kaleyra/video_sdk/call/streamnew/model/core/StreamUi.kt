@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.streamnew.model
+package com.kaleyra.video_sdk.call.streamnew.model.core
 
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri

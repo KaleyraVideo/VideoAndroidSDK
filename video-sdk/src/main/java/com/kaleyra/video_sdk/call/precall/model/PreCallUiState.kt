@@ -17,7 +17,7 @@
 package com.kaleyra.video_sdk.call.precall.model
 
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList

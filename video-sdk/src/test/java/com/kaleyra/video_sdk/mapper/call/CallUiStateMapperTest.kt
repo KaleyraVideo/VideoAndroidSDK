@@ -20,9 +20,9 @@ import android.util.Rational
 import android.util.Size
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.mapper.CallUiStateMapper.toPipAspectRatio
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every

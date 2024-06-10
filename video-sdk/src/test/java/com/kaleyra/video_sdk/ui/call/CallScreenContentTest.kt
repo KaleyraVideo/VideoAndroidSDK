@@ -31,7 +31,7 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.dialing.DialingContentTag
 import com.kaleyra.video_sdk.call.ringing.RingingContentTag
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
-import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.ui.ComposeViewModelsMockTest
 import com.kaleyra.video_sdk.ui.findBackButton

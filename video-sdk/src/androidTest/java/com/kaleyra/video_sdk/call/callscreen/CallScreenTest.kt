@@ -57,7 +57,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.ScreenShareComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.VirtualBackgroundComponentTag
 import com.kaleyra.video_sdk.call.bottomsheet.WhiteboardComponentTag
 import com.kaleyra.video_sdk.call.screen.rememberCallScreenState
-import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findBackButton
 import com.kaleyra.video_sdk.performDoubleClick

@@ -53,7 +53,7 @@ import com.kaleyra.video_sdk.call.countdowntimer.rememberCountdownTimerState
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
-import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.core.DefaultStreamAvatarSize
 import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStream
 import com.kaleyra.video_sdk.call.stream.view.featured.HeaderAutoHideMs

@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +41,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastAny
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
@@ -57,14 +57,15 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.StreamComponent
+import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.launch
 
@@ -228,8 +229,6 @@ internal fun CallScreen(
 //        )
 //    }
 
-    val windowSizeClass2 = rememberUpdatedState(newValue = windowSizeClass)
-    val streamContentController = rememberStreamContentController(streams = streams, windowSizeClass = windowSizeClass2)
 
     if (isCompactHeight) {
 //        HCallScreen(
@@ -259,7 +258,6 @@ internal fun CallScreen(
             windowSizeClass = windowSizeClass,
             callActions = actions,
             inputMessage = inputMessage,
-            streamContentController = streamContentController,
             sheetState = sheetState,
             showAnswerAction = showAnswerAction,
             onChangeSheetState = onChangeSheetState,
@@ -276,13 +274,13 @@ internal fun CallScreen(
             onWhiteboardClick = onWhiteboardClick,
             onVirtualBackgroundClick = onVirtualBackgroundClick,
             onBackPressed = onBackPressed,
-            onFullscreenClick = { stream, isFullscreen ->
-                streamContentController.fullscreen(if (isFullscreen) null else stream)
-            },
-            onPinClick = { stream, isPinned ->
-                if (isPinned) streamContentController.unpinStream(stream)
-                else streamContentController.pinStream(stream)
-            }
+//            onFullscreenClick = { stream, isFullscreen ->
+//                streamContentController.fullscreen(if (isFullscreen) null else stream)
+//            },
+//            onPinClick = { stream, isPinned ->
+//                if (isPinned) streamContentController.unpinStream(stream)
+//                else streamContentController.pinStream(stream)
+//            }
         )
     }
 }
@@ -295,7 +293,6 @@ internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     callActions: ImmutableList<CallActionUI>,
-    streamContentController: StreamContentController,
     inputMessage: InputMessage?,
     showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
@@ -312,8 +309,6 @@ internal fun VCallScreen(
     onVirtualBackgroundClick: () -> Unit,
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit,
-    onFullscreenClick: (StreamUi, Boolean) -> Unit,
-    onPinClick: (StreamUi, Boolean) -> Unit,
 ) {
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
         WindowWidthSizeClass.Medium,
@@ -326,6 +321,10 @@ internal fun VCallScreen(
     val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && currentStream == null && sheetDragActions.value.isNotEmpty() } }
     // TODO test reset on resize
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
+
+    val streamViewModel = viewModel<StreamViewModel>(
+        factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+    )
 
     VCallScreenScaffold(
         modifier = Modifier
@@ -456,19 +455,19 @@ internal fun VCallScreen(
                         }
                     }
                 } else {
-                    HStreamMenuContent(
-                        fullscreen = streamContentController.fullscreenStream?.id == current.id,
-                        pin = streamContentController.pinnedStreams.fastAny { stream -> stream.id == current.id },
-                        onCancelClick = { currentStream = null },
-                        onFullscreenClick = { isFullscreen ->
-                            onFullscreenClick(current, isFullscreen)
-                            currentStream = null
-                        },
-                        onPinClick = { isPinned ->
-                            onPinClick(current, isPinned)
-                            currentStream = null
-                        }
-                    )
+//                    HStreamMenuContent(
+//                        fullscreen = streamContentController.fullscreenStream?.id == current.id,
+//                        pin = streamContentController.pinnedStreams.fastAny { stream -> stream.id == current.id },
+//                        onCancelClick = { currentStream = null },
+//                        onFullscreenClick = { isFullscreen ->
+//                            onFullscreenClick(current, isFullscreen)
+//                            currentStream = null
+//                        },
+//                        onPinClick = { isPinned ->
+//                            onPinClick(current, isPinned)
+//                            currentStream = null
+//                        }
+//                    )
                 }
             }
         },
@@ -481,7 +480,8 @@ internal fun VCallScreen(
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
         StreamComponent(
-            streamContentController = streamContentController,
+            viewModel = streamViewModel,
+            windowSizeClass = windowSizeClass,
             highlightedStream = currentStream,
             onStreamClick = { stream -> currentStream = stream },
             onStopScreenShareClick = {},

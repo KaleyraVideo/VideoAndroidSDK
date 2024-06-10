@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk
 
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.pipSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.thumbnailSettings

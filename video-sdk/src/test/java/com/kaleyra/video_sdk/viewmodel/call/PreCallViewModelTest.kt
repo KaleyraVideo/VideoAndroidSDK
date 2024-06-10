@@ -31,8 +31,8 @@ import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
 import com.kaleyra.video_sdk.call.precall.viewmodel.PreCallViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo

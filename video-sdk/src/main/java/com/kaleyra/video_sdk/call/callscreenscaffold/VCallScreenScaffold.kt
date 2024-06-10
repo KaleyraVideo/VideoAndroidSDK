@@ -55,7 +55,32 @@ internal object VCallScreenScaffoldDefaults {
     val SheetElevation = 2.dp
 }
 
+// Parameters
+// modifier: Modifier for customizing the scaffold's appearance.
+// topAppBar: Composable function to display the top app bar.
+// sheetContent: Composable function to display content within the bottom sheet.
+// sheetPanelContent: Optional composable function to display content in a panel above the bottom sheet.
+// sheetDragContent: Composable function to display content in the draggable area of the bottom sheet.
+// sheetState: State of the bottom sheet (collapsed, expanded, etc.).
+// sheetScrimColor: Color of the scrim (overlay) when the sheet is expanded.
+// sheetDragHandle: Optional composable function to display a drag handle for the bottom sheet.
+// sheetCornerShape: Shape of the bottom sheet's corners.
+// containerColor: Background color of the scaffold.
+// contentColor: Color of the content within the scaffold.
+// paddingValues: Padding values for the scaffold's content.
+// content: Composable function to display the main content of the screen.
 
+// Structure
+// Surface: The scaffold is wrapped in a Surface composable, providing a background and content color.
+// Box: A Box is used to position elements within the scaffold.
+// Content Area: The main content is displayed within a Box with padding.
+// Top App Bar: Another Box is used to display the top app bar, and its height is used to adjust padding.
+// Scrim: A Scrim is displayed when the bottom sheet is expanded, allowing the user to dismiss it by tapping.
+// Bottom Sheet: A Column is used to position the bottom sheet elements.
+//  Sheet Panel Content: If provided, sheetPanelContent is displayed above the draggable sheet.
+//  CallBottomSheetLayout: This composable handles the layout of the bottom sheet.
+//  Sheet Content: The main content of the bottom sheet.
+//  Sheet Drag Content: If sheetDragHandle is provided, a draggable area with the handle and sheetDragContent is displayed. This area uses anchoredDraggable to enable dragging and nestedScroll to handle scrolling within the sheet.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun VCallScreenScaffold(

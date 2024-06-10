@@ -32,7 +32,7 @@ import com.kaleyra.video_sdk.call.screen.view.CallComponentTag
 import com.kaleyra.video_sdk.call.screen.view.CallScreenContent
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidgetTag
-import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.findBackButton
 import io.mockk.every

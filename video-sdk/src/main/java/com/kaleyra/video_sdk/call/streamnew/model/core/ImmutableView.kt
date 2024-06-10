@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.streamnew.model
+package com.kaleyra.video_sdk.call.streamnew.model.core
 
-import android.net.Uri
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import android.view.View
+import androidx.compose.runtime.Immutable
 
 /**
- * Stream Ui Mock representation
+ * Immutable View representation
+ * @property value View the immutable view
+ * @constructor
  */
-val streamUiMock = StreamUi("streamId", "username", mine = false, AudioUi("1", false, false), VideoUi("1",null, false, false, ImmutableList(emptyList())), ImmutableUri(Uri.EMPTY))
+@Immutable
+data class ImmutableView(val value: View)

@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.utils.VideoStreamViewExtensions.getScale
 import com.kaleyra.video_sdk.call.utils.VideoStreamViewExtensions.getSize
 import com.kaleyra.video_sdk.call.utils.VideoStreamViewExtensions.getTranslation

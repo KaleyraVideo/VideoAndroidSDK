@@ -26,10 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
-import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.view.core.Stream
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 

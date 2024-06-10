@@ -22,7 +22,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailStream
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailTag
-import com.kaleyra.video_sdk.call.streamnew.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.ui.performDoubleClick
 import org.junit.After
 import org.junit.Before

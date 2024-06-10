@@ -34,7 +34,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCameraP
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfowidget.CallInfoWidget
 import com.kaleyra.video_sdk.call.precall.model.PreCallUiState
-import com.kaleyra.video_sdk.call.streamnew.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamContainer
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings

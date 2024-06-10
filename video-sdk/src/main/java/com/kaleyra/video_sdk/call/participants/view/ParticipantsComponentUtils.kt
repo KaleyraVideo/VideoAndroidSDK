@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.streamnew.model.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 
 @Composable
 internal fun pinnedPainterFor(pinned: Boolean): Painter =
