@@ -35,6 +35,7 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.StarSliderTag
 import junit.framework.TestCase.assertEquals
@@ -53,7 +54,7 @@ class FeedbackFormTest {
 
     private var isDismissed = false
 
-    private var rating = -1f
+    private var rating: FeedbackUiRating = FeedbackUiRating.Awful
 
     private var comment = ""
 
@@ -62,8 +63,8 @@ class FeedbackFormTest {
         composeTestRule.setContent {
             FeedbackForm(
                 onUserFeedback = { rating, comment ->
-                    this@FeedbackFormTest.rating = rating
                     this@FeedbackFormTest.comment = comment
+                    this@FeedbackFormTest.rating = rating
                 },
                 onDismiss = { isDismissed = true }
             )
@@ -73,7 +74,7 @@ class FeedbackFormTest {
     @After
     fun tearDown() {
         isDismissed = false
-        rating = -1f
+        rating = FeedbackUiRating.Awful
         comment = ""
     }
 
@@ -183,7 +184,7 @@ class FeedbackFormTest {
         textField.performTextInput("text")
         button.assertHasClickAction()
         button.performClick()
-        assertEquals(5f, rating)
+        assertEquals(FeedbackUiRating.Excellent, rating)
         assertEquals("text", comment)
     }
 }

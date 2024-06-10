@@ -56,9 +56,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-private const val DefaultRating = 5f
+private val DefaultRating = FeedbackUiRating.Excellent
 private const val SliderLevels = 5
 
 /**
@@ -67,10 +69,13 @@ private const val SliderLevels = 5
 const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable
-internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: () -> Unit) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+internal fun FeedbackForm(
+    feedbackUiState: FeedbackUiState? = FeedbackUiState(comment = null, rating = DefaultRating),
+    onUserFeedback: (FeedbackUiRating, String) -> Unit,
+    onDismiss: () -> Unit) {
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState!!.comment ?: "")) }
     var isEditTextFocused by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(DefaultRating) }
+    var sliderValue by remember { mutableStateOf(feedbackUiState!!.rating) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,15 +100,15 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = ratingTextFor(sliderValue),
+            text = ratingTextFor(sliderValue!!),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(10.dp))
         StarSlider(
-            value = sliderValue,
-            onValueChange = { sliderValue = it },
+            value = sliderValueFor(sliderValue!!),
+            onValueChange = { sliderValue = feedbackUiValueFor(it) },
             levels = SliderLevels,
         )
 
@@ -154,7 +159,7 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
                 },
             )
             Button(
-                onClick = { onUserFeedback(sliderValue, textFieldValue.text) },
+                onClick = { onUserFeedback(sliderValue!!, textFieldValue.text) },
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             ) {
@@ -169,19 +174,44 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
 }
 
 @Composable
-private fun ratingTextFor(sliderValue: Float): String {
-    val stringId by remember(sliderValue) {
+private fun ratingTextFor(feedbackUiRating: FeedbackUiRating): String {
+    val stringId by remember(feedbackUiRating) {
         derivedStateOf {
-            when {
-                sliderValue < 2f -> R.string.kaleyra_feedback_bad
-                sliderValue < 3f -> R.string.kaleyra_feedback_poor
-                sliderValue < 4f -> R.string.kaleyra_feedback_neutral
-                sliderValue < 5f -> R.string.kaleyra_feedback_good
-                else -> R.string.kaleyra_feedback_excellent
+            when (feedbackUiRating) {
+                FeedbackUiRating.Awful -> R.string.kaleyra_feedback_bad
+                FeedbackUiRating.Poor -> R.string.kaleyra_feedback_poor
+                FeedbackUiRating.Neutral -> R.string.kaleyra_feedback_neutral
+                FeedbackUiRating.Good -> R.string.kaleyra_feedback_good
+                FeedbackUiRating.Excellent -> R.string.kaleyra_feedback_excellent
             }
         }
     }
     return stringResource(id = stringId)
+}
+
+@Composable
+private fun sliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
+    val sliderValueFloat by remember(feedbackUiRating) {
+        derivedStateOf {
+            when (feedbackUiRating) {
+                FeedbackUiRating.Awful -> 1f
+                FeedbackUiRating.Poor -> 2f
+                FeedbackUiRating.Neutral -> 3f
+                FeedbackUiRating.Good -> 4f
+                FeedbackUiRating.Excellent -> 5f
+            }
+        }
+    }
+    return sliderValueFloat
+}
+
+
+private fun feedbackUiValueFor(float: Float): FeedbackUiRating = when (float) {
+    1f -> FeedbackUiRating.Awful
+    2f -> FeedbackUiRating.Poor
+    3f -> FeedbackUiRating.Neutral
+    4f -> FeedbackUiRating.Good
+    else -> FeedbackUiRating.Excellent
 }
 
 @Preview(name = "Light Mode")
@@ -189,6 +219,21 @@ private fun ratingTextFor(sliderValue: Float): String {
 @Composable
 internal fun FeedbackFormPreview() = KaleyraM3Theme {
     Surface {
-        FeedbackForm({ _, _ -> }, {})
+        FeedbackForm(
+            FeedbackUiState(comment = "comment this call", rating = FeedbackUiRating.Good),
+            { _, _ -> }, {}
+        )
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FeedbackFormDefaultRatingPreview() = KaleyraM3Theme {
+    Surface {
+        FeedbackForm(
+            FeedbackUiState(),
+            { _, _ -> }, {}
+        )
     }
 }
