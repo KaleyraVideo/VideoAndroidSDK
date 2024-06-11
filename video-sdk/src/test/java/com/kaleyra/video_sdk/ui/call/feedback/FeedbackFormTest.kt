@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.ui.call.feedback
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
@@ -39,10 +38,8 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.StarSliderTag
-import com.kaleyra.video_sdk.call.feedback.view.sliderValueFor
 import junit.framework.TestCase.assertEquals
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -189,30 +186,5 @@ class FeedbackFormTest {
         button.performClick()
         assertEquals(FeedbackUiRating.Excellent, rating)
         assertEquals("text", comment)
-    }
-
-    @Test
-    fun feedbackUiRatingExcellent_sliderValueFor_5() {
-        Assert.assertEquals(5f, sliderValueFor(feedbackUiRating = FeedbackUiRating.Excellent))
-    }
-
-    @Test
-    fun feedbackUiRatingExcellent_sliderValueFor_4() {
-        Assert.assertEquals(4f, sliderValueFor(feedbackUiRating = FeedbackUiRating.Good))
-    }
-
-    @Test
-    fun feedbackUiRatingExcellent_sliderValueFor_3() {
-        Assert.assertEquals(3f, sliderValueFor(feedbackUiRating = FeedbackUiRating.Neutral))
-    }
-
-    @Test
-    fun feedbackUiRatingExcellent_sliderValueFor_2() {
-        Assert.assertEquals(2f, sliderValueFor(feedbackUiRating = FeedbackUiRating.Poor))
-    }
-
-    @Test
-    fun feedbackUiRatingExcellent_sliderValueFor_1() {
-        Assert.assertEquals(1f, sliderValueFor(feedbackUiRating = FeedbackUiRating.Awful))
     }
 }

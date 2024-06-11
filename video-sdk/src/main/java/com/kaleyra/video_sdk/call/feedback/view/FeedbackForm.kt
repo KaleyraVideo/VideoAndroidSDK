@@ -56,6 +56,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.feedbackUiValueFor
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toRatingStringRes
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toSliderValue
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
@@ -174,45 +177,20 @@ internal fun FeedbackForm(
 internal fun composableRatingTextFor(feedbackUiRating: FeedbackUiRating): String {
     val stringId by remember(feedbackUiRating) {
         derivedStateOf {
-            ratingTextFor(feedbackUiRating)
+            feedbackUiRating.toRatingStringRes()
         }
     }
     return stringResource(id = stringId)
-}
-
-internal fun ratingTextFor(feedbackUiRating: FeedbackUiRating): Int = when (feedbackUiRating) {
-    FeedbackUiRating.Awful -> R.string.kaleyra_feedback_bad
-    FeedbackUiRating.Poor -> R.string.kaleyra_feedback_poor
-    FeedbackUiRating.Neutral -> R.string.kaleyra_feedback_neutral
-    FeedbackUiRating.Good -> R.string.kaleyra_feedback_good
-    FeedbackUiRating.Excellent -> R.string.kaleyra_feedback_excellent
 }
 
 @Composable
 internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
     val sliderValueFloat by remember(feedbackUiRating) {
         derivedStateOf {
-           sliderValueFor(feedbackUiRating)
+           feedbackUiRating.toSliderValue()
         }
     }
     return sliderValueFloat
-}
-
-internal fun sliderValueFor(feedbackUiRating: FeedbackUiRating): Float = when (feedbackUiRating) {
-    FeedbackUiRating.Awful -> 1f
-    FeedbackUiRating.Poor -> 2f
-    FeedbackUiRating.Neutral -> 3f
-    FeedbackUiRating.Good -> 4f
-    FeedbackUiRating.Excellent -> 5f
-}
-
-
-internal fun feedbackUiValueFor(float: Float): FeedbackUiRating = when (float) {
-    1f -> FeedbackUiRating.Awful
-    2f -> FeedbackUiRating.Poor
-    3f -> FeedbackUiRating.Neutral
-    4f -> FeedbackUiRating.Good
-    else -> FeedbackUiRating.Excellent
 }
 
 @Preview(name = "Light Mode")
