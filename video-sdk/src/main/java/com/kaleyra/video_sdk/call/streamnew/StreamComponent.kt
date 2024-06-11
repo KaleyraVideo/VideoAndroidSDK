@@ -48,8 +48,6 @@ import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import com.kaleyra.video_sdk.common.preview.AllConfigurationsPreview
-import com.kaleyra.video_sdk.common.preview.AllSupportedConfigPreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
