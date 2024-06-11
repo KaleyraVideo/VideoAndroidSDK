@@ -32,11 +32,11 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.isCompactInAnyDimension
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.view.items.MoreParticipantsItem
 import com.kaleyra.video_sdk.call.streamnew.view.items.NonDisplayedParticipantData

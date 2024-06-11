@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+// TODO test this class
 internal class StreamViewModel(configure: suspend () -> Configuration) : BaseViewModel<StreamUiState>(configure) {
 
     override fun initialState() = StreamUiState()
@@ -39,7 +40,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                     else -> streams
                 }
 
-                // Early exit: Avoid unnecessary updates if streams haven't changed
+                // Avoid unnecessary updates if streams haven't changed
                 if (updatedStreams == uiState.value.streams.value) return@onEach
 
                 _uiState.update {
