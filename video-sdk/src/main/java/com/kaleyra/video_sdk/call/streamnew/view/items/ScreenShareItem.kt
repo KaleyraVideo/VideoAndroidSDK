@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.view
+package com.kaleyra.video_sdk.call.streamnew.view.items
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -31,38 +31,32 @@ fun ScreenShareItem(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        shape = StreamItemDefaults.Shape,
-        tonalElevation = StreamItemDefaults.Elevation,
-        modifier = modifier
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxSize()
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxSize()
+        Text(
+            text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            shape = RoundedCornerShape(4.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            onClick = onStopClick
         ) {
-            Text(
-                text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
+            Icon(
+                painter = painterResource(id = R.drawable.ic_kaleyra_screen_share),
+                contentDescription = null
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                shape = RoundedCornerShape(4.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                onClick = onStopClick
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_screen_share),
-                    contentDescription = null
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -70,7 +64,7 @@ fun ScreenShareItem(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ScreenShareStreamPreview() {
+internal fun ScreenShareItemPreview() {
     KaleyraM3Theme {
         Surface {
             ScreenShareItem(

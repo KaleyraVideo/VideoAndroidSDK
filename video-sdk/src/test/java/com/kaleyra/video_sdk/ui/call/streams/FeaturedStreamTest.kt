@@ -23,7 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.streamUiMock
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.featured.FeaturedStream
 import com.kaleyra.video_sdk.ui.findBackButton
 import org.junit.After

@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import kotlin.math.min
 
 internal object AvatarDefaults {
 
@@ -87,9 +86,9 @@ internal fun Avatar(
 
 @Composable
 internal fun Avatar(
-    modifier: Modifier = Modifier,
     uri: ImmutableUri?,
-    text: String,
+    username: String,
+    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(color),
     onSuccess: (() -> Unit)? = null
@@ -115,7 +114,7 @@ internal fun Avatar(
         if (!isImageLoaded) {
             val fontSize = with(LocalDensity.current) { (constraints.maxWidth / 2).toSp() }
             Text(
-                text = text,
+                text = username.firstOrNull()?.uppercase() ?: "",
                 color = contentColor,
                 fontSize = fontSize
             )
@@ -128,7 +127,7 @@ internal fun Avatar(
 internal fun AvatarPreview() {
     KaleyraM3Theme {
         Avatar(
-            text = "J",
+            username = "J",
             uri = null
         )
     }

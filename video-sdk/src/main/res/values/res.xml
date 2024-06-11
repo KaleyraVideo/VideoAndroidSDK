@@ -50,6 +50,8 @@
     <item name="ic_kaleyra_stream_fullscreen_on" type="drawable">@drawable/kaleyra_f_fullscreen_on</item>
     <item name="ic_kaleyra_stream_pin" type="drawable">@drawable/kaleyra_f_pin</item>
     <item name="ic_kaleyra_stream_screenshare" type="drawable">@drawable/kaleyra_f_screen_share</item>
+    <item name="ic_kaleyra_stream_audio_disabled" type="drawable">@drawable/kaleyra_f_mic_off</item>
+    <item name="ic_kaleyra_stream_audio_muted_for_you" type="drawable">@drawable/kaleyra_f_speaker_off</item>
 
     <!-- participants component -->
     <item name="ic_kaleyra_participants_component_mic_off" type="drawable">@drawable/kaleyra_f_mic_off</item>

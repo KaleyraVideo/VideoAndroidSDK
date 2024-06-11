@@ -55,7 +55,7 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGL
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
 import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler.Companion.STREAMS_HANDLER_UPDATE_DEBOUNCE
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider

@@ -17,7 +17,7 @@
 package com.kaleyra.video_sdk.call.stream.arrangement
 
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

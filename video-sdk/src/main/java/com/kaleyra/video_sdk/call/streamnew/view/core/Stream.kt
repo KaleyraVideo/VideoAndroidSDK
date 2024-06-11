@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.view
+package com.kaleyra.video_sdk.call.streamnew.view.core
 
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.viewinterop.AndroidView
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -54,7 +54,7 @@ internal fun Stream(
             val size = (min / 2).coerceIn(48.dp, 96.dp)
             Avatar(
                 uri = avatar,
-                text = username[0].uppercase(),
+                username = username,
                 modifier = Modifier.size(size)
             )
         }

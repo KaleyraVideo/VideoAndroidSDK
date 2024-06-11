@@ -43,6 +43,15 @@
 
     <string name="kaleyra_stream_screenshare_message">Gli altri partecipanti stanno vedendo il tuo schermo</string>
     <string name="kaleyra_stream_screenshare_action">Interrompi condivisione</string>
+
+    <string name="kaleyra_stream_pin">Lo stream è fissato</string>
+    <string name="kaleyra_stream_fullscreen">Lo stream è a schermo intero</string>
+    <string name="kaleyra_stream_mic_disabled">Il microfono è disabilitato</string>
+    <string name="kaleyra_stream_muted_for_you">Lo stream è mutato per te</string>
+    <string name="kaleyra_stream_you">Tu</string>
+    <string name="kaleyra_stream_other_participants">%d altri</string>
+    <string name="kaleyra_stream_show_actions">Mostra le azioni dello stream</string>
+
     <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>
     <string name="kaleyra_participants_component_users_invited">Altri Invitati</string>

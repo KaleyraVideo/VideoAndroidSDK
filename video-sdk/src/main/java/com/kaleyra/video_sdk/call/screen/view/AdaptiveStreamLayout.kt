@@ -15,10 +15,10 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.stream.utils.StreamGridHelper
+import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveGridCalculator
 
 @Stable
-internal object StreamGridDefaults {
+internal object AdaptiveStreamLayoutDefaults {
 
     val ThumbnailArrangement = ThumbnailsArrangement.Bottom
 
@@ -38,7 +38,7 @@ internal enum class ThumbnailsArrangement {
 
 @LayoutScopeMarker
 @Immutable
-internal object StreamGridScope {
+internal object AdaptiveStreamLayoutScope {
 
     @Stable
     fun Modifier.pin(value: Boolean): Modifier {
@@ -53,17 +53,17 @@ internal class StreamParentData(
 }
 
 @Composable
-internal fun StreamGrid(
+internal fun AdaptiveStreamLayout(
     modifier: Modifier = Modifier,
-    thumbnailsArrangement: ThumbnailsArrangement = StreamGridDefaults.ThumbnailArrangement,
-    thumbnailSize: Dp = StreamGridDefaults.ThumbnailSize,
-    thumbnailsCount: Int = StreamGridDefaults.ThumbnailCount,
-    content: @Composable StreamGridScope.() -> Unit
+    thumbnailsArrangement: ThumbnailsArrangement = AdaptiveStreamLayoutDefaults.ThumbnailArrangement,
+    thumbnailSize: Dp = AdaptiveStreamLayoutDefaults.ThumbnailSize,
+    thumbnailsCount: Int = AdaptiveStreamLayoutDefaults.ThumbnailCount,
+    content: @Composable AdaptiveStreamLayoutScope.() -> Unit
 ) {
     val thumbnailSizePx = with(LocalDensity.current) { thumbnailSize.roundToPx() }
 
     Layout(
-        content = { StreamGridScope.content() } ,
+        content = { AdaptiveStreamLayoutScope.content() } ,
         modifier = modifier
     ) { measurables, constraints ->
         check(constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
@@ -94,11 +94,7 @@ internal fun StreamGrid(
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)
 
         val areThumbnailsEmpty = thumbnailPlaceables.isEmpty()
-        val thumbnailsPadding = when {
-            areThumbnailsEmpty -> 0
-            layoutThumbnailsArrangement?.isHorizontal() == true -> thumbnailSizePx
-            else -> 0
-        }
+        val thumbnailsPadding = if (!areThumbnailsEmpty && layoutThumbnailsArrangement?.isHorizontal() == true) thumbnailSizePx else 0
 
         val lastRowFeaturedItemsCount = featuredCount - (columns * (rows - 1))
         val featuredItemsPadding = (constraints.maxWidth - thumbnailsPadding - (lastRowFeaturedItemsCount * featuredConstraints.maxWidth)) / 2
@@ -115,7 +111,7 @@ internal fun StreamGrid(
                 areThumbnailsEmpty = areThumbnailsEmpty
             )
 
-            if (layoutThumbnailsArrangement != null && thumbnailPlaceables.isNotEmpty()) {
+            if (layoutThumbnailsArrangement != null && !areThumbnailsEmpty) {
                 placeThumbnails(
                     placeables = thumbnailPlaceables.take(thumbnailsCount),
                     thumbnailSize = thumbnailSizePx,
@@ -133,11 +129,11 @@ private fun calculateGridAndFeaturedSize(
     containerHeight: Int,
     itemsCount: Int
 ): Triple<Int, Int, IntSize> {
-    // Apply the StreamGridHelper.calculateGridAndFeaturedSize logic only for more than 3 items
+    // Apply the AdaptiveStreamLayoutHelper.calculateGridAndFeaturedSize logic only for more than 3 items
     // in order to have the same stream layout behaviour up to 3 items on both Android and iOS sdks
     return when {
         itemsCount == 0 -> Triple(1, 1, IntSize(0, 0))
-        itemsCount > 3 -> StreamGridHelper.calculateGridAndFeaturedSize(containerWidth, containerHeight, itemsCount)
+        itemsCount > 3 -> AdaptiveGridCalculator.calculateGridAndFeaturedSize(containerWidth, containerHeight, itemsCount)
         layoutConstraints.maxWidth >= layoutConstraints.maxHeight -> Triple(1, itemsCount, IntSize(containerWidth / itemsCount, containerHeight))
         else -> Triple(itemsCount, 1, IntSize(containerWidth,containerHeight / itemsCount))
     }

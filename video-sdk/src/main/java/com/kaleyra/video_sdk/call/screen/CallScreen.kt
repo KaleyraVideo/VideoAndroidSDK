@@ -93,8 +93,8 @@ import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBar
 import com.kaleyra.video_sdk.call.screen.view.CallScreenContent
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
-import com.kaleyra.video_sdk.call.stream.model.ImmutableView
-import com.kaleyra.video_sdk.call.stream.model.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamContainer
 import com.kaleyra.video_sdk.call.stream.view.thumbnail.ThumbnailStreams

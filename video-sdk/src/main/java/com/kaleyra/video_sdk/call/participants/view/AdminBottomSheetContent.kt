@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
@@ -51,7 +51,7 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
             ) {
                 Avatar(
-                    text = username[0].uppercase(),
+                    username = username,
                     uri = avatar,
                     modifier = Modifier.size(34.dp)
                 )

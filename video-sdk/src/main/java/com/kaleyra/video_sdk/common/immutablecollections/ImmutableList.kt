@@ -41,4 +41,18 @@ data class ImmutableList<out T>(val value: List<T> = listOf()) {
      * @return Int
      */
     fun count() = value.count()
+
+    /**
+     * Returns true if the list is empty, false otherwise
+     * @return Boolean
+     */
+    fun isEmpty() = value.isEmpty()
+
+    /**
+     * Returns true if the list is not empty, false otherwise
+     * @return Boolean
+     */
+    fun isNotEmpty() = value.isNotEmpty()
 }
+
+internal fun <T> List<T>.toImmutableList() = ImmutableList(this)

@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.model
+package com.kaleyra.video_sdk.call.streamnew.model.core
 
 import androidx.compose.runtime.Immutable
 
