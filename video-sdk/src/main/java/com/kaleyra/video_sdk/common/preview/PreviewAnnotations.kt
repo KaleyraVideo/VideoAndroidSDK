@@ -7,19 +7,19 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview(name = "Day Mode")
 internal annotation class DayModePreview
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Night Mode")
+@Preview(name = "Night Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 internal annotation class NightModePreview
 
-@Preview(device = Devices.TABLET, name = "Day Mode Tablet")
+@Preview(name = "Day Mode Tablet", device = Devices.TABLET)
 internal annotation class DayModeTabletPreview
 
-@Preview(device = Devices.TABLET, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Night Mode Tablet")
+@Preview( name = "Night Mode Tablet", device = Devices.TABLET, uiMode = Configuration.UI_MODE_NIGHT_YES)
 internal annotation class NightModeTabletPreview
 
 @Preview(name = "Day Mode Landscape", device = "spec:parent=pixel_5,orientation=landscape")
 internal annotation class DayModeLandscapePreview
 
-@Preview(name = "Night Mode Landscape", device = "spec:parent=pixel_5,orientation=landscape")
+@Preview(name = "Night Mode Landscape", device = "spec:parent=pixel_5,orientation=landscape", uiMode = Configuration.UI_MODE_NIGHT_YES)
 internal annotation class NightModeLandscapePreview
 
 @DayModePreview
