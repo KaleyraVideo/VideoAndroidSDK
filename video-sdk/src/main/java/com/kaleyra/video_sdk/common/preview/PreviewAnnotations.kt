@@ -21,3 +21,11 @@ internal annotation class DayModeLandscapePreview
 
 @Preview(name = "Night Mode Landscape", device = "spec:parent=pixel_5,orientation=landscape")
 internal annotation class NightModeLandscapePreview
+
+@DayModePreview
+@NightModePreview
+@DayModeLandscapePreview
+@NightModeLandscapePreview
+@DayModeTabletPreview
+@NightModeTabletPreview
+internal annotation class MultiConfigPreview

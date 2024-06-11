@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,9 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -32,19 +35,25 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasCompactHeight
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.screennew.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.streamnew.view.items.MoreParticipantsItem
 import com.kaleyra.video_sdk.call.streamnew.view.items.NonDisplayedParticipantData
 import com.kaleyra.video_sdk.call.streamnew.view.items.ScreenShareItem
 import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.preview.AllConfigurationsPreview
+import com.kaleyra.video_sdk.common.preview.AllSupportedConfigPreview
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal const val MaxVisibleStreamsCompact = 8
 internal const val MaxVisibleStreamsExpanded = 15
@@ -87,7 +96,7 @@ internal fun StreamComponent(
         windowSizeClass = windowSizeClass,
         highlightedStream = highlightedStream,
         onStreamClick = onStreamClick,
-        onStopScreenShareClick =onStopScreenShareClick,
+        onStopScreenShareClick = onStopScreenShareClick,
         modifier = modifier
     )
 }
@@ -138,8 +147,15 @@ internal fun StreamComponent(
         val itemModifier = Modifier
             .fillMaxSize()
             .padding(itemPadding)
-            .animateConstraints()
-            .animatePlacement(IntOffset(constraints.maxWidth, constraints.maxHeight))
+            .let { modifier ->
+                // Disable animation for preview
+                if (!LocalInspectionMode.current) {
+                    modifier
+                        .animateConstraints()
+                        .animatePlacement(IntOffset(constraints.maxWidth, constraints.maxHeight))
+                } else modifier
+            }
+
 
         AdaptiveStreamLayout(
             thumbnailsArrangement = rememberThumbnailsArrangementFor(windowSizeClass),
@@ -192,7 +208,10 @@ internal fun StreamComponent(
     }
 }
 
-private fun streamsToDisplayFor(streamUiState: StreamUiState, windowSizeClass: WindowSizeClass): List<StreamUi> {
+private fun streamsToDisplayFor(
+    streamUiState: StreamUiState,
+    windowSizeClass: WindowSizeClass,
+): List<StreamUi> {
     val streams = streamUiState.streams.value
     val pinnedStreams = streamUiState.pinnedStreams.value
     val fullscreenStream = streamUiState.fullscreenStream
@@ -268,3 +287,56 @@ private fun Modifier.streamHighlight(enabled: Boolean): Modifier = composed {
         )
     } else this
 }
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@MultiConfigPreview
+@Composable
+internal fun StreamComponentPreview() {
+    KaleyraM3Theme {
+        Surface {
+            BoxWithConstraints {
+                StreamComponent(
+                    streamUiState = StreamUiState(streams = previewStreams),
+                    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
+                    highlightedStream = null,
+                    onStreamClick = {},
+                    onStopScreenShareClick = {},
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@MultiConfigPreview
+@Composable
+internal fun StreamComponentPinPreview() {
+    KaleyraM3Theme {
+        Surface {
+            BoxWithConstraints {
+                StreamComponent(
+                    streamUiState = StreamUiState(
+                        streams = previewStreams,
+                        pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
+                    ),
+                    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
+                    highlightedStream = null,
+                    onStreamClick = {},
+                    onStopScreenShareClick = {},
+                )
+            }
+        }
+    }
+}
+
+private val previewStreams = ImmutableList(
+    listOf(
+        streamUiMock.copy(id = "id1"),
+        streamUiMock.copy(id = "id2"),
+        streamUiMock.copy(id = "id3"),
+        streamUiMock.copy(id = "id4"),
+        streamUiMock.copy(id = "id5"),
+        streamUiMock.copy(id = "id6"),
+        streamUiMock.copy(id = "id7")
+    )
+)
