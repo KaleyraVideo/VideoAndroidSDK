@@ -3,6 +3,9 @@ package com.kaleyra.video_sdk.call.feedback.model
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.uistate.UiState
 
+/**
+ * FeedbackUiRating enum class representing the rating value
+ */
 @Immutable
 enum class FeedbackUiRating {
     Excellent,

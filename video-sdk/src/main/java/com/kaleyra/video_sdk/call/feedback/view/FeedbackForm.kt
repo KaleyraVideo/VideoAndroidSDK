@@ -60,9 +60,6 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-private val DefaultRating = FeedbackUiRating.Excellent
-private const val SliderLevels = 5
-
 /**
  * Feedback Form Tag
  */
@@ -70,7 +67,7 @@ const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable
 internal fun FeedbackForm(
-    feedbackUiState: FeedbackUiState? = FeedbackUiState(comment = null, rating = DefaultRating),
+    feedbackUiState: FeedbackUiState? = FeedbackUiState(),
     onUserFeedback: (FeedbackUiRating, String) -> Unit,
     onDismiss: () -> Unit) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState!!.comment ?: "")) }
@@ -100,16 +97,16 @@ internal fun FeedbackForm(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = ratingTextFor(sliderValue!!),
+            text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(10.dp))
         StarSlider(
-            value = sliderValueFor(sliderValue!!),
+            value = composableSliderValueFor(sliderValue!!),
             onValueChange = { sliderValue = feedbackUiValueFor(it) },
-            levels = SliderLevels,
+            levels = FeedbackUiRating.entries.count(),
         )
 
         OutlinedTextField(
@@ -174,39 +171,43 @@ internal fun FeedbackForm(
 }
 
 @Composable
-private fun ratingTextFor(feedbackUiRating: FeedbackUiRating): String {
+internal fun composableRatingTextFor(feedbackUiRating: FeedbackUiRating): String {
     val stringId by remember(feedbackUiRating) {
         derivedStateOf {
-            when (feedbackUiRating) {
-                FeedbackUiRating.Awful -> R.string.kaleyra_feedback_bad
-                FeedbackUiRating.Poor -> R.string.kaleyra_feedback_poor
-                FeedbackUiRating.Neutral -> R.string.kaleyra_feedback_neutral
-                FeedbackUiRating.Good -> R.string.kaleyra_feedback_good
-                FeedbackUiRating.Excellent -> R.string.kaleyra_feedback_excellent
-            }
+            ratingTextFor(feedbackUiRating)
         }
     }
     return stringResource(id = stringId)
 }
 
+internal fun ratingTextFor(feedbackUiRating: FeedbackUiRating): Int = when (feedbackUiRating) {
+    FeedbackUiRating.Awful -> R.string.kaleyra_feedback_bad
+    FeedbackUiRating.Poor -> R.string.kaleyra_feedback_poor
+    FeedbackUiRating.Neutral -> R.string.kaleyra_feedback_neutral
+    FeedbackUiRating.Good -> R.string.kaleyra_feedback_good
+    FeedbackUiRating.Excellent -> R.string.kaleyra_feedback_excellent
+}
+
 @Composable
-private fun sliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
+internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
     val sliderValueFloat by remember(feedbackUiRating) {
         derivedStateOf {
-            when (feedbackUiRating) {
-                FeedbackUiRating.Awful -> 1f
-                FeedbackUiRating.Poor -> 2f
-                FeedbackUiRating.Neutral -> 3f
-                FeedbackUiRating.Good -> 4f
-                FeedbackUiRating.Excellent -> 5f
-            }
+           sliderValueFor(feedbackUiRating)
         }
     }
     return sliderValueFloat
 }
 
+internal fun sliderValueFor(feedbackUiRating: FeedbackUiRating): Float = when (feedbackUiRating) {
+    FeedbackUiRating.Awful -> 1f
+    FeedbackUiRating.Poor -> 2f
+    FeedbackUiRating.Neutral -> 3f
+    FeedbackUiRating.Good -> 4f
+    FeedbackUiRating.Excellent -> 5f
+}
 
-private fun feedbackUiValueFor(float: Float): FeedbackUiRating = when (float) {
+
+internal fun feedbackUiValueFor(float: Float): FeedbackUiRating = when (float) {
     1f -> FeedbackUiRating.Awful
     2f -> FeedbackUiRating.Poor
     3f -> FeedbackUiRating.Neutral

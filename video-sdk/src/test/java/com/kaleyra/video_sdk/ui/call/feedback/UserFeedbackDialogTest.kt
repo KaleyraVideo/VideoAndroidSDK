@@ -91,7 +91,7 @@ class UserFeedbackDialogTest {
         val textField = composeTestRule.onNode(hasSetTextAction())
         textField.performTextInput("text")
         button.performClick()
-        TestCase.assertEquals(5f, rating)
+        TestCase.assertEquals(FeedbackUiRating.Excellent, rating)
         TestCase.assertEquals("text", comment)
     }
 
