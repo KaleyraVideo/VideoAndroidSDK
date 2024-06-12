@@ -485,6 +485,7 @@ internal fun VCallScreen(
             highlightedStream = currentStream,
             onStreamClick = { stream -> currentStream = stream },
             onStopScreenShareClick = {},
+            onMoreParticipantClick = {},
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
