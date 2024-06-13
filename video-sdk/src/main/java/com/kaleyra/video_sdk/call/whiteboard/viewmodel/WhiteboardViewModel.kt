@@ -35,6 +35,7 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure),
@@ -52,27 +53,30 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
     private var resetWhiteboardUploadState = AtomicBoolean(false)
 
     init {
-        whiteboard
-            .take(1)
-            .onEach { setUpWhiteboard(it, whiteboardView) }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
+            
+            whiteboard
+                .take(1)
+                .onEach { setUpWhiteboard(it, whiteboardView) }
+                .launchIn(viewModelScope)
 
-        call
-            .flatMapLatest { it.state }
-            .onEach {
-                if (it !is Call.State.Disconnected.Ended) return@onEach
-                whiteboard.getValue()?.unload()
-            }.launchIn(viewModelScope)
+            call.state
+                .onEach {
+                    if (it !is Call.State.Disconnected.Ended) return@onEach
+                    whiteboard.getValue()?.unload()
+                }.launchIn(viewModelScope)
 
-        call
-            .isFileSharingSupported()
-            .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
-            .launchIn(viewModelScope)
+            call
+                .isFileSharingSupported()
+                .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
+                .launchIn(viewModelScope)
 
-        call
-            .isWhiteboardLoading()
-            .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
-            .launchIn(viewModelScope)
+            call
+                .isWhiteboardLoading()
+                .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
+                .launchIn(viewModelScope)
+        }
     }
 
     override fun onCleared() {
