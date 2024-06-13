@@ -43,7 +43,7 @@ internal class AwaitingParticipantsTextToSpeechNotifier(
     override fun start(scope: CoroutineScope) {
         dispose()
 
-        currentJob = flowOf(call)
+        currentJob = call
             .amIWaitingOthers()
             .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
             .onEach { amIAwaiting ->

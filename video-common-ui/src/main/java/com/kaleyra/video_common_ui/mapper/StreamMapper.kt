@@ -39,8 +39,8 @@ object StreamMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting true whenever any of my participants streams are currently published and visible/audible to other call participants
      */
-    fun Flow<Call>.doAnyOfMyStreamsIsLive(): Flow<Boolean> =
-        this.flatMapLatest { it.participants }
+    fun Call.doAnyOfMyStreamsIsLive(): Flow<Boolean> =
+        this.participants
             .map { it.me }
             .flatMapLatest { it?.streams ?: flowOf(listOf()) }
             .flatMapLatest { streams ->
@@ -66,8 +66,8 @@ object StreamMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting true whenever any of the other participants have published streams
      */
-    fun Flow<Call>.doOthersHaveStreams(): Flow<Boolean> =
-        this.flatMapLatest { it.participants }
+    fun Call.doOthersHaveStreams(): Flow<Boolean> =
+        this.participants
             .map { it.others }
             .flatMapLatest { participants ->
                 val map = mutableMapOf<String, Boolean>()
@@ -92,7 +92,7 @@ object StreamMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting true whenever the logged SDK user is alone in the call
      */
-    fun Flow<Call>.amIAlone(): Flow<Boolean> =
+    fun Call.amIAlone(): Flow<Boolean> =
         combine(
             doOthersHaveStreams(),
             doAnyOfMyStreamsIsLive()
@@ -109,9 +109,9 @@ object StreamMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting true whenever my participant is waiting for other participants to publish their audio or video streams
      */
-    fun Flow<Call>.amIWaitingOthers(): Flow<Boolean> =
+    fun Call.amIWaitingOthers(): Flow<Boolean> =
         combine(
-            flatMapLatest { it.state },
+            state,
             amIAlone(),
             toInCallParticipants()
         ) { callState, amIAlone, inCallParticipants ->

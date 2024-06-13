@@ -37,8 +37,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting my participant whenever is available
      */
-    fun Flow<Call>.toMe(): Flow<CallParticipant.Me> =
-        this.flatMapLatest { it.participants }
+    fun Call.toMe(): Flow<CallParticipant.Me> =
+        this.participants
             .mapNotNull { it.me }
             .distinctUntilChanged()
 
@@ -47,8 +47,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.Me> flow emitting all the participants that are in-call
      */
-    fun Flow<Call>.toInCallParticipants(): Flow<List<CallParticipant>> =
-        this.flatMapLatest { it.participants }
+    fun Call.toInCallParticipants(): Flow<List<CallParticipant>> =
+        this.participants
             .mapNotNull { participants -> participants.me?.let { Pair(it, participants.others) }}
             .flatMapLatest { (me, others) ->
                 val inCallMap = mutableMapOf<String, CallParticipant>(me.userId to me)

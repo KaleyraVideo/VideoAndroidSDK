@@ -38,7 +38,7 @@ internal class CallParticipantMutedTextToSpeechNotifier(
     override fun start(scope: CoroutineScope) {
         dispose()
 
-        currentJob = flowOf(call)
+        currentJob = call
             .toMuteEvents()
             .onEach {
                 if (!shouldNotify) return@onEach

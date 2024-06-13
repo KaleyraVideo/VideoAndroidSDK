@@ -179,7 +179,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
         notificationJob?.cancel()
-        notificationJob = flowOf(call)
+        notificationJob = call
             .hasScreenSharingInput()
             .onEach { hasScreenSharingPermission ->
                 runCatching {

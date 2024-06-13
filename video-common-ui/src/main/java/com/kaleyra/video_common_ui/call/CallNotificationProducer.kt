@@ -100,7 +100,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
             call.state,
             call.participants,
             call.recording,
-            flowOf(call).isAnyScreenInputActive()
+            call.isAnyScreenInputActive()
         ) { callState, participants, recording, isAnyScreenInputActive ->
             ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
 
