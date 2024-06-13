@@ -79,7 +79,7 @@ class ParticipantMapperTest {
     @Test
     fun testToMe() = runTest {
         every { callParticipantsMock.me } returns participantMeMock
-        val actual = flowOf(callMock).toMe().first()
+        val actual = callMock.toMe().first()
         Assert.assertEquals(participantMeMock, actual)
     }
 
@@ -94,7 +94,7 @@ class ParticipantMapperTest {
         }
         every { meMock.state } returns MutableStateFlow(CallParticipant.State.NotInCall)
 
-        val result = flowOf(callMock).toInCallParticipants()
+        val result = callMock.toInCallParticipants()
         val actual = result.first()
         val expected = listOf(meMock)
         Assert.assertEquals(expected, actual)
@@ -115,7 +115,7 @@ class ParticipantMapperTest {
                 every { streams } returns MutableStateFlow(listOf())
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock)
             Assert.assertEquals(expected, actual)
@@ -135,7 +135,7 @@ class ParticipantMapperTest {
             every { streams } returns MutableStateFlow(listOf())
         }
 
-        val result = flowOf(callMock).toInCallParticipants()
+        val result = callMock.toInCallParticipants()
         val actual = result.first()
         val expected = listOf(meMock, participantMock1)
         Assert.assertEquals(expected, actual)
@@ -156,7 +156,7 @@ class ParticipantMapperTest {
                 every { streams } returns MutableStateFlow(listOf(mockk(relaxed = true)))
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock, participantMock1)
             Assert.assertEquals(expected, actual)
@@ -180,7 +180,7 @@ class ParticipantMapperTest {
             val participantsFlow = MutableStateFlow(callParticipantsMock)
             every { callMock.participants } returns participantsFlow
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock)
             Assert.assertEquals(expected, actual)
@@ -213,7 +213,7 @@ class ParticipantMapperTest {
             val participantsFlow = MutableStateFlow(callParticipantsMock)
             every { callMock.participants } returns participantsFlow
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock, participantMock1)
             Assert.assertEquals(expected, actual)
@@ -244,7 +244,7 @@ class ParticipantMapperTest {
                 every { streams } returns participantStreams
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock)
             Assert.assertEquals(expected, actual)
@@ -271,7 +271,7 @@ class ParticipantMapperTest {
                 every { streams } returns participantStreams
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock, participantMock1)
             Assert.assertEquals(expected, actual)
@@ -298,7 +298,7 @@ class ParticipantMapperTest {
                 every { streams } returns MutableStateFlow(listOf())
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock)
             Assert.assertEquals(expected, actual)
@@ -325,7 +325,7 @@ class ParticipantMapperTest {
                 every { streams } returns MutableStateFlow(listOf())
             }
 
-            val result = flowOf(callMock).toInCallParticipants()
+            val result = callMock.toInCallParticipants()
             val actual = result.first()
             val expected = listOf(meMock, participantMock1)
             Assert.assertEquals(expected, actual)

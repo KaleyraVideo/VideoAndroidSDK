@@ -58,15 +58,12 @@ class CameraStreamManagerTest {
     private val meMock = mockk<CallParticipant.Me>(relaxed = true)
 
     private val myStream = mockk<Stream.Mutable>(relaxed = true)
-
-    private val callFlow = flowOf(callMock)
-
+    
     @Before
     fun setUp() {
         mockkObject(DeviceUtils, InputMapper)
         mockkStatic("kotlinx.coroutines.flow.FlowKt")
         every { DeviceUtils.isSmartGlass } returns false
-        every { flowOf<Call>(any()) } returns callFlow
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)
             every { preferredType } returns MutableStateFlow(PreferredType.audioVideo())
@@ -156,8 +153,8 @@ class CameraStreamManagerTest {
     fun handleCameraStreamAudio_streamUpdatedOnAudioInput() = runTest(UnconfinedTestDispatcher()) {
         val audio = mockk<Input.Audio>(relaxed = true)
         val audioFlow = MutableStateFlow(audio)
-        every { callFlow.toAudioInput() } returns audioFlow
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toAudioInput() } returns audioFlow
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamAudio(callMock)
@@ -176,8 +173,8 @@ class CameraStreamManagerTest {
     fun handleCameraStreamAudio_streamUpdatedOnMyCameraStreamUpdated() = runTest(UnconfinedTestDispatcher()) {
         val audio = mockk<Input.Audio>(relaxed = true)
         val streamFlow = MutableStateFlow(myStream)
-        every { callFlow.toAudioInput() } returns MutableStateFlow(audio)
-        every { callFlow.toMyCameraStream() } returns streamFlow
+        every { callMock.toAudioInput() } returns MutableStateFlow(audio)
+        every { callMock.toMyCameraStream() } returns streamFlow
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamAudio(callMock)
@@ -200,8 +197,8 @@ class CameraStreamManagerTest {
             every { currentQuality } returns MutableStateFlow(mockk(relaxed = true))
         }
         val cameraFlow = MutableStateFlow(videoMock)
-        every { callFlow.toCameraVideoInput() } returns cameraFlow
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns cameraFlow
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)
@@ -224,8 +221,8 @@ class CameraStreamManagerTest {
             every { currentQuality } returns MutableStateFlow(mockk(relaxed = true))
         }
         val streamFlow = MutableStateFlow(myStream)
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns streamFlow
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns streamFlow
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)
@@ -248,8 +245,8 @@ class CameraStreamManagerTest {
             every { currentQuality } returns MutableStateFlow(mockk(relaxed = true))
         }
         val preferredType = MutableStateFlow(PreferredType.audioOnly())
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
         every { callMock.preferredType } returns preferredType
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
@@ -270,8 +267,8 @@ class CameraStreamManagerTest {
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.SD, 30))
         }
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)
@@ -285,8 +282,8 @@ class CameraStreamManagerTest {
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.HD, 30))
         }
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)
@@ -301,8 +298,8 @@ class CameraStreamManagerTest {
             every { currentQuality } returns MutableStateFlow(Input.Video.Quality(Input.Video.Quality.Definition.SD, 30))
             every { state } returns videoState
         }
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)
@@ -322,8 +319,8 @@ class CameraStreamManagerTest {
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { currentQuality } returns MutableStateFlow(mockk(relaxed = true))
         }
-        every { callFlow.toCameraVideoInput() } returns MutableStateFlow(videoMock)
-        every { callFlow.toMyCameraStream() } returns MutableStateFlow(myStream)
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoMock)
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
 
         val cameraStreamManager = CameraStreamManager(backgroundScope)
         cameraStreamManager.handleCameraStreamVideo(callMock)

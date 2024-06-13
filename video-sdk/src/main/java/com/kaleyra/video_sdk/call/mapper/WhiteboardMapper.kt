@@ -28,9 +28,8 @@ import kotlinx.coroutines.flow.map
 
 internal object WhiteboardMapper {
 
-    fun Flow<CallUI>.isWhiteboardLoading(): Flow<Boolean> =
-        this.map { it.whiteboard }
-            .flatMapLatest { it.state }
+    fun CallUI.isWhiteboardLoading(): Flow<Boolean> =
+        this.whiteboard.state
             .map { it is Whiteboard.State.Loading }
             .distinctUntilChanged()
 

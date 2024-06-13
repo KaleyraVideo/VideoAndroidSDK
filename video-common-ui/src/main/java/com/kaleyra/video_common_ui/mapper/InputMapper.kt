@@ -42,8 +42,8 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever a phone call input is active
      */
-    inline fun <reified T:Input> Flow<Call>.isInputActive(): Flow<Boolean> =
-        flatMapLatest { it.inputs.availableInputs }
+    inline fun <reified T:Input> Call.isInputActive(): Flow<Boolean> =
+        this.inputs.availableInputs
             .map { inputs -> inputs.firstOrNull { it is T } }
             .flatMapLatest { it?.state ?: flowOf(null) }
             .map { it is Input.State.Active }
@@ -54,21 +54,21 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever the screen input is active
      */
-    fun Flow<Call>.isDeviceScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Screen.My>()
+    fun Call.isDeviceScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Screen.My>()
 
     /**
      * Utility function to detect whenever the app screen input is active
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever the app screen input is active
      */
-    fun Flow<Call>.isAppScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Application>()
+    fun Call.isAppScreenInputActive(): Flow<Boolean> = isInputActive<Input.Video.Application>()
 
     /**
      * Utility function to detect whenever an input is active
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever a phone call input is active
      */
-    fun Flow<Call>.isAnyScreenInputActive(): Flow<Boolean> =
+    fun Call.isAnyScreenInputActive(): Flow<Boolean> =
         combine(isDeviceScreenInputActive(), isAppScreenInputActive()) { isDeviceScreenInputActive, isAppScreenInputActive ->
             isDeviceScreenInputActive || isAppScreenInputActive
     }
@@ -78,7 +78,7 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Input.Audio.Event.Request.Mute> flow emitting whenever an audio mute event has been sent
      */
-    fun Flow<Call>.toMuteEvents(): Flow<Input.Audio.Event.Request.Mute> =
+    fun Call.toMuteEvents(): Flow<Input.Audio.Event.Request.Mute> =
         this.toCameraStreamAudio()
             .filterNotNull()
             .flatMapLatest { it.events }
@@ -89,7 +89,7 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Input.Audio?> flow emitting whenever an audio is available on a publishing local stream
      */
-    fun Flow<Call>.toCameraStreamAudio(): Flow<Input.Audio?> =
+    fun Call.toCameraStreamAudio(): Flow<Input.Audio?> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
@@ -100,21 +100,21 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever a screen sharing input is currently available
      */
-    fun Flow<Call>.hasScreenSharingInput(): Flow<Boolean> =
-        this.flatMapLatest { it.inputs.availableInputs }
+    fun Call.hasScreenSharingInput(): Flow<Boolean> =
+        this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
 
-    fun Flow<Call>.toAudioInput(): Flow<Input.Audio> =
-        this.flatMapLatest { it.inputs.availableInputs }
+    fun Call.toAudioInput(): Flow<Input.Audio> =
+        this.inputs.availableInputs
             .mapNotNull { it.filterIsInstance<Input.Audio>().firstOrNull() }
 
-    fun Flow<Call>.toCameraVideoInput(): Flow<Input.Video.My> =
-        this.flatMapLatest { it.inputs.availableInputs }
+    fun Call.toCameraVideoInput(): Flow<Input.Video.My> =
+        this.inputs.availableInputs
             .mapNotNull { inputs -> inputs.lastOrNull { it is Input.Video.Camera } }
             .filterIsInstance<Input.Video.My>()
 
-    fun Flow<Call>.toMyCameraStream(): Flow<Stream.Mutable> =
-        this.flatMapLatest { it.participants }
+    fun Call.toMyCameraStream(): Flow<Stream.Mutable> =
+        this.participants
             .flatMapLatestNotNull { it.me?.streams }
             .mapNotNull { streams -> streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
 }

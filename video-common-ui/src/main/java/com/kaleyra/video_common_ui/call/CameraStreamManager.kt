@@ -75,18 +75,16 @@ internal class CameraStreamManager(
     }
 
     fun handleCameraStreamAudio(call: Call) {
-        val flow = flowOf(call)
-        jobs += combine(flow.toAudioInput(), flow.toMyCameraStream()) { audio, cameraStream ->
+        jobs += combine(call.toAudioInput(), call.toMyCameraStream()) { audio, cameraStream ->
             cameraStream.audio.value = audio
         }.launchIn(coroutineScope)
     }
 
     fun handleCameraStreamVideo(call: Call) {
-        val flow = flowOf(call)
         jobs += combine(
-            flow.toCameraVideoInput(),
+            call.toCameraVideoInput(),
             call.preferredType,
-            flow.toMyCameraStream()
+            call.toMyCameraStream()
         ) { video, preferredType, cameraStream ->
             val hasVideo = preferredType.hasVideo()
             if (!hasVideo) return@combine

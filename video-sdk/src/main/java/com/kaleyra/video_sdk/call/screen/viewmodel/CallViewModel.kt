@@ -97,82 +97,83 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     val shouldAskConnectionServicePermissions: Boolean
         get() = ConnectionServiceUtils.isConnectionServiceSupported && conference.getValue()?.connectionServiceOption != ConnectionServiceOption.Disabled
 
-    private val callState = call
-        .toCallStateUi()
-        .shareInEagerly(viewModelScope)
-
-    private val streams: Flow<List<StreamUi>> =
-        combine(call.toInCallParticipants(), call.toStreamsUi(), call.flatMapLatest { it.state }) { participants, streams, callState -> Triple(participants, streams, callState) }
-            .debounce { (participants: List<CallParticipant>, streams: List<StreamUi>, callState: Call.State) ->
-                if (participants.size != 1 && streams.size == 1 && callState == Call.State.Connected) SINGLE_STREAM_DEBOUNCE_MILLIS
-                else 0L
-            }
-            .map { (_: List<CallParticipant>, streams: List<StreamUi>, _: Call.State) -> streams }
-            .shareInEagerly(viewModelScope)
-
-    private val maxNumberOfFeaturedStreams = MutableStateFlow(DEFAULT_FEATURED_STREAMS_COUNT)
-
-    private val streamsHandler = StreamsHandler(
-        streams = streams.map { streams -> streams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID } },
-        nOfMaxFeatured = maxNumberOfFeaturedStreams,
-        coroutineScope = viewModelScope
-    )
-
-    private var fullscreenStreamId = MutableStateFlow<String?>(null)
-
-    private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
-
-    private var onPipAspectRatio: MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
-
-    private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
-
-    private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
-
-    private var onUsbCameraConnected: MutableSharedFlow<(Boolean) -> Unit> = MutableSharedFlow(replay = 1)
+//    private val callState = call
+//        .toCallStateUi()
+//        .shareInEagerly(viewModelScope)
+//
+//    private val streams: Flow<List<StreamUi>> =
+//        combine(call.toInCallParticipants(), call.toStreamsUi(), call.flatMapLatest { it.state }) { participants, streams, callState -> Triple(participants, streams, callState) }
+//            .debounce { (participants: List<CallParticipant>, streams: List<StreamUi>, callState: Call.State) ->
+//                if (participants.size != 1 && streams.size == 1 && callState == Call.State.Connected) SINGLE_STREAM_DEBOUNCE_MILLIS
+//                else 0L
+//            }
+//            .map { (_: List<CallParticipant>, streams: List<StreamUi>, _: Call.State) -> streams }
+//            .shareInEagerly(viewModelScope)
+//
+//    private val maxNumberOfFeaturedStreams = MutableStateFlow(DEFAULT_FEATURED_STREAMS_COUNT)
+//
+//    private val streamsHandler = StreamsHandler(
+//        streams = streams.map { streams -> streams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID } },
+//        nOfMaxFeatured = maxNumberOfFeaturedStreams,
+//        coroutineScope = viewModelScope
+//    )
+//
+//    private var fullscreenStreamId = MutableStateFlow<String?>(null)
+//
+//    private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
+//
+//    private var onPipAspectRatio: MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
+//
+//    private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
+//
+//    private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
+//
+//    private var onUsbCameraConnected: MutableSharedFlow<(Boolean) -> Unit> = MutableSharedFlow(replay = 1)
 
     init {
         viewModelScope.launch {
             if (!KaleyraVideo.isConfigured) requestConfiguration()
             if (KaleyraVideo.conversation.state.value is State.Disconnected) requestConnect()
+
+            CallUserMessagesProvider.start(call.first())
         }
 
-        viewModelScope.launch {
-            val result = withTimeoutOrNull(NULL_CALL_TIMEOUT) {
-                call.firstOrNull()
-            }
-            result ?: onCallEnded.first().invoke(false, false, false)
-        }
+//        viewModelScope.launch {
+//            val result = withTimeoutOrNull(NULL_CALL_TIMEOUT) {
+//                call.firstOrNull()
+//            }
+//            result ?: onCallEnded.first().invoke(false, false, false)
+//        }
 
-        var hasCallBeenConnected = false
-        viewModelScope.launch {
-            val connected = callState.firstOrNull { it is CallStateUi.Connected }
-            hasCallBeenConnected = connected != null
-        }
+//        var hasCallBeenConnected = false
+//        viewModelScope.launch {
+//            val connected = callState.firstOrNull { it is CallStateUi.Connected }
+//            hasCallBeenConnected = connected != null
+//        }
 
-        CallUserMessagesProvider.start(call)
 
-        streamsHandler.streamsArrangement
-            .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
-                if (state is CallStateUi.Disconnected.Ended) {
-                    _uiState.update {
-                        it.copy(featuredStreams = ImmutableList(listOf()), thumbnailStreams = ImmutableList(listOf()))
-                    }
-                } else {
-                    val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
-                    _uiState.update {
-                        it.copy(
-                            featuredStreams = ImmutableList(featuredStreams),
-                            thumbnailStreams = ImmutableList(thumbnails)
-                        )
-                    }
-                }
-            }
-            .launchIn(viewModelScope)
+//        streamsHandler.streamsArrangement
+//            .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
+//                if (state is CallStateUi.Disconnected.Ended) {
+//                    _uiState.update {
+//                        it.copy(featuredStreams = ImmutableList(listOf()), thumbnailStreams = ImmutableList(listOf()))
+//                    }
+//                } else {
+//                    val thumbnails = thumbnailsStreams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID }
+//                    _uiState.update {
+//                        it.copy(
+//                            featuredStreams = ImmutableList(featuredStreams),
+//                            thumbnailStreams = ImmutableList(thumbnails)
+//                        )
+//                    }
+//                }
+//            }
+//            .launchIn(viewModelScope)
 
-        combine(streams, fullscreenStreamId) { streams, fullscreenStreamId ->
-            val stream = streams.find { it.id == fullscreenStreamId }
-            _uiState.update { it.copy(fullscreenStream = stream) }
-        }.launchIn(viewModelScope)
+//        combine(streams, fullscreenStreamId) { streams, fullscreenStreamId ->
+//            val stream = streams.find { it.id == fullscreenStreamId }
+//            _uiState.update { it.copy(fullscreenStream = stream) }
+//        }.launchIn(viewModelScope)
 
         company
             .flatMapLatest { it.combinedTheme }
@@ -180,120 +181,120 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
             .onEach { watermarkInfo -> _uiState.update { it.copy(watermarkInfo = watermarkInfo) } }
             .launchIn(viewModelScope)
 
-        call
-            .toCallActions(company.flatMapLatest { it.id })
-            .shareInEagerly(viewModelScope)
-            .onEach { _uiState.update { it.copy(areCallActionsReady = true) } }
-            .launchIn(viewModelScope)
+//        call
+//            .toCallActions(company.flatMapLatest { it.id })
+//            .shareInEagerly(viewModelScope)
+//            .onEach { _uiState.update { it.copy(areCallActionsReady = true) } }
+//            .launchIn(viewModelScope)
 
-        call
-            .isAudioOnly()
-            .onEach { isAudioOnly -> _uiState.update { it.copy(isAudioOnly = isAudioOnly) } }
-            .launchIn(viewModelScope)
+//        call
+//            .isAudioOnly()
+//            .onEach { isAudioOnly -> _uiState.update { it.copy(isAudioOnly = isAudioOnly) } }
+//            .launchIn(viewModelScope)
+//
+//        callState
+//            .filter { it is CallStateUi.Disconnecting || it is CallStateUi.Disconnected.Ended }
+//            .combine(onCallEnded) { callState, onCallEnded ->
+//                val withFeedback = call.getValue()?.withFeedback ?: false
+//                onCallEnded.invoke(
+//                    hasCallBeenConnected && withFeedback,
+//                    callState is CallStateUi.Disconnected.Ended.Error,
+//                    callState is CallStateUi.Disconnected.Ended.Kicked
+//                )
+//            }
+//            .launchIn(viewModelScope)
+//
+//        callState
+//            .filter { it is CallStateUi.Reconnecting }
+//            .onEach { fullscreenStream(null) }
+//            .launchIn(viewModelScope)
+//
+//        callState
+//            .onEach { callState -> _uiState.update { it.copy(callState = callState) } }
+//            .launchIn(viewModelScope)
 
-        callState
-            .filter { it is CallStateUi.Disconnecting || it is CallStateUi.Disconnected.Ended }
-            .combine(onCallEnded) { callState, onCallEnded ->
-                val withFeedback = call.getValue()?.withFeedback ?: false
-                onCallEnded.invoke(
-                    hasCallBeenConnected && withFeedback,
-                    callState is CallStateUi.Disconnected.Ended.Error,
-                    callState is CallStateUi.Disconnected.Ended.Kicked
-                )
-            }
-            .launchIn(viewModelScope)
+//        combine(
+//            callState,
+//            call.isAudioVideo(),
+//            streams.hasAtLeastAVideoEnabled()
+//        ) { callState, isAudioVideo, hasAtLeastAVideoEnabled ->
+//            val enable = callState == CallStateUi.Connected && (isAudioVideo || hasAtLeastAVideoEnabled)
+//            _uiState.update { it.copy(shouldAutoHideSheet = enable) }
+//            enable
+//        }.takeWhile { !it }.launchIn(viewModelScope)
 
-        callState
-            .filter { it is CallStateUi.Reconnecting }
-            .onEach { fullscreenStream(null) }
-            .launchIn(viewModelScope)
+//        call
+//            .isGroupCall(company.flatMapLatest { it.id })
+//            .onEach { isGroupCall -> _uiState.update { it.copy(isGroupCall = isGroupCall) } }
+//            .launchIn(viewModelScope)
+//
+//        val doOthersHaveStreams = callState
+//            .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
+//            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Connecting }
+//            .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
+//
+//        doOthersHaveStreams
+//            .debounce { if (!it) WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
+//            .onEach { value -> _uiState.update { it.copy(amIWaitingOthers = !value) } }
+//            .takeWhile { !it }
+//            .onCompletion { _uiState.update { it.copy(amIWaitingOthers = false) } }
+//            .launchIn(viewModelScope)
+//
+//        doOthersHaveStreams
+//            .dropWhile { !it }
+//            .debounce { if (!it) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
+//            .onEach { value -> _uiState.update { it.copy(amILeftAlone = !value) } }
+//            .launchIn(viewModelScope)
+//
+//        call
+//            .toRecordingUi()
+//            .onEach { rec -> _uiState.update { it.copy(recording = rec) } }
+//            .launchIn(viewModelScope)
 
-        callState
-            .onEach { callState -> _uiState.update { it.copy(callState = callState) } }
-            .launchIn(viewModelScope)
+//        combine(
+//            call.flatMapLatest { it.displayModeEvent },
+//            onDisplayMode
+//        ) { event, onDisplayMode ->
+//                if (lastDisplayModeEvent?.id == event.id) return@combine
+//                lastDisplayModeEvent = event
+//                onDisplayMode.invoke(event.displayMode)
+//            }
+//            .combine(callState) { _, callState -> callState}
+//            .takeWhile { it !is CallStateUi.Disconnected.Ended }
+//            .launchIn(viewModelScope)
 
-        combine(
-            callState,
-            call.isAudioVideo(),
-            streams.hasAtLeastAVideoEnabled()
-        ) { callState, isAudioVideo, hasAtLeastAVideoEnabled ->
-            val enable = callState == CallStateUi.Connected && (isAudioVideo || hasAtLeastAVideoEnabled)
-            _uiState.update { it.copy(shouldAutoHideSheet = enable) }
-            enable
-        }.takeWhile { !it }.launchIn(viewModelScope)
-
-        call
-            .isGroupCall(company.flatMapLatest { it.id })
-            .onEach { isGroupCall -> _uiState.update { it.copy(isGroupCall = isGroupCall) } }
-            .launchIn(viewModelScope)
-
-        val doOthersHaveStreams = callState
-            .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
-            .dropWhile { it is CallStateUi.Dialing || it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Connecting }
-            .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
-
-        doOthersHaveStreams
-            .debounce { if (!it) WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
-            .onEach { value -> _uiState.update { it.copy(amIWaitingOthers = !value) } }
-            .takeWhile { !it }
-            .onCompletion { _uiState.update { it.copy(amIWaitingOthers = false) } }
-            .launchIn(viewModelScope)
-
-        doOthersHaveStreams
-            .dropWhile { !it }
-            .debounce { if (!it) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
-            .onEach { value -> _uiState.update { it.copy(amILeftAlone = !value) } }
-            .launchIn(viewModelScope)
-
-        call
-            .toRecordingUi()
-            .onEach { rec -> _uiState.update { it.copy(recording = rec) } }
-            .launchIn(viewModelScope)
-
-        combine(
-            call.flatMapLatest { it.displayModeEvent },
-            onDisplayMode
-        ) { event, onDisplayMode ->
-                if (lastDisplayModeEvent?.id == event.id) return@combine
-                lastDisplayModeEvent = event
-                onDisplayMode.invoke(event.displayMode)
-            }
-            .combine(callState) { _, callState -> callState}
-            .takeWhile { it !is CallStateUi.Disconnected.Ended }
-            .launchIn(viewModelScope)
-
-        callState
-            .dropWhile { it !is CallStateUi.Connected }
-            .onEach { callState ->
-                if (callState !is CallStateUi.Disconnected.Ended.HungUp && callState !is CallStateUi.Disconnected.Ended.Error) return@onEach
-                val showFeedback = call.getValue()?.withFeedback ?: false
-                _uiState.update { it.copy(showFeedback = showFeedback) }
-            }
-            .launchIn(viewModelScope)
-
-        combine(
-            uiState.toPipAspectRatio(),
-            onPipAspectRatio
-        ) { aspectRatio, onPipAspectRatio ->
-            onPipAspectRatio.invoke(aspectRatio)
-        }.launchIn(viewModelScope)
-
-        combine(
-            call.flatMapLatest { it.preferredType },
-            onAudioOrVideoChanged
-        ) { preferredType, onAudioOrVideoChanged ->
-            onAudioOrVideoChanged.invoke(
-                preferredType.isAudioEnabled(),
-                preferredType.isVideoEnabled()
-            )
-        }.launchIn(viewModelScope)
-
-        combine(
-            call.isUsbCameraWaitingPermission(),
-            onUsbCameraConnected
-        ) { isUsbConnecting, onUsbCameraConnected ->
-            onUsbCameraConnected.invoke(isUsbConnecting)
-        }.launchIn(viewModelScope)
+//        callState
+//            .dropWhile { it !is CallStateUi.Connected }
+//            .onEach { callState ->
+//                if (callState !is CallStateUi.Disconnected.Ended.HungUp && callState !is CallStateUi.Disconnected.Ended.Error) return@onEach
+//                val showFeedback = call.getValue()?.withFeedback ?: false
+//                _uiState.update { it.copy(showFeedback = showFeedback) }
+//            }
+//            .launchIn(viewModelScope)
+//
+//        combine(
+//            uiState.toPipAspectRatio(),
+//            onPipAspectRatio
+//        ) { aspectRatio, onPipAspectRatio ->
+//            onPipAspectRatio.invoke(aspectRatio)
+//        }.launchIn(viewModelScope)
+//
+//        combine(
+//            call.flatMapLatest { it.preferredType },
+//            onAudioOrVideoChanged
+//        ) { preferredType, onAudioOrVideoChanged ->
+//            onAudioOrVideoChanged.invoke(
+//                preferredType.isAudioEnabled(),
+//                preferredType.isVideoEnabled()
+//            )
+//        }.launchIn(viewModelScope)
+//
+//        combine(
+//            call.isUsbCameraWaitingPermission(),
+//            onUsbCameraConnected
+//        ) { isUsbConnecting, onUsbCameraConnected ->
+//            onUsbCameraConnected.invoke(isUsbConnecting)
+//        }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -324,17 +325,19 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     }
 
     fun updateStreamsArrangement(isMediumSizeDevice: Boolean) {
-        val count = when {
-            !isMediumSizeDevice -> 2
-            else                -> 4
-        }
-        maxNumberOfFeaturedStreams.value = count
+//        val count = when {
+//            !isMediumSizeDevice -> 2
+//            else                -> 4
+//        }
+//        maxNumberOfFeaturedStreams.value = count
     }
 
-    fun swapThumbnail(streamId: String) = streamsHandler.swapThumbnail(streamId)
+    fun swapThumbnail(streamId: String) {
+//        streamsHandler.swapThumbnail(streamId)
+    }
 
     fun fullscreenStream(streamId: String?) {
-        fullscreenStreamId.value = streamId
+//        fullscreenStreamId.value = streamId
     }
 
     fun sendUserFeedback(rating: Float, comment: String) {
@@ -360,33 +363,33 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     }
 
     fun setOnCallEnded(block: suspend (hasFeedback: Boolean, hasErrorOccurred: Boolean, hasBeenKicked: Boolean) -> Unit) {
-        viewModelScope.launch {
-            onCallEnded.emit(block)
-        }
+//        viewModelScope.launch {
+//            onCallEnded.emit(block)
+//        }
     }
 
     fun setOnPipAspectRatio(block: (Rational) -> Unit) {
-        viewModelScope.launch {
-            onPipAspectRatio.emit(block)
-        }
+//        viewModelScope.launch {
+//            onPipAspectRatio.emit(block)
+//        }
     }
 
     fun setOnDisplayMode(block: (CallUI.DisplayMode) -> Unit) {
-        viewModelScope.launch {
-            onDisplayMode.emit(block)
-        }
+//        viewModelScope.launch {
+//            onDisplayMode.emit(block)
+//        }
     }
 
     fun setOnAudioOrVideoChanged(block: (isAudioEnabled: Boolean, isVideoEnabled: Boolean) -> Unit) {
-        viewModelScope.launch {
-            onAudioOrVideoChanged.emit(block)
-        }
+//        viewModelScope.launch {
+//            onAudioOrVideoChanged.emit(block)
+//        }
     }
 
     fun setOnUsbCameraConnected(block: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            onUsbCameraConnected.emit(block)
-        }
+//        viewModelScope.launch {
+//            onUsbCameraConnected.emit(block)
+//        }
     }
 
     companion object {

@@ -59,7 +59,7 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
         every { ContextRetainer.context } returns contextMock
         every { contextMock.getString(any()) } returns ""
         every { notifier.shouldNotify } returns true
-        every { any<Flow<Call>>().amIWaitingOthers() } returns MutableStateFlow(true)
+        every { callMock.amIWaitingOthers() } returns MutableStateFlow(true)
     }
 
     @Test
@@ -79,7 +79,7 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
 
     @Test
     fun `test i am waiting others utterance not played`() = runTest {
-        every { any<Flow<Call>>().amIWaitingOthers() } returns MutableStateFlow(false)
+        every { callMock.amIWaitingOthers() } returns MutableStateFlow(false)
         every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
 
         notifier.start(backgroundScope)

@@ -56,7 +56,7 @@ object CallUserMessagesProvider {
      * @param call Flow<CallUI> the call flow
      * @param scope CoroutineScope optional coroutine scope in which to execute the observing
      */
-    fun start(call: Flow<CallUI>, scope: CoroutineScope = MainScope() + CoroutineName("CallUserMessagesProvider")) {
+    fun start(call: CallUI, scope: CoroutineScope = MainScope() + CoroutineName("CallUserMessagesProvider")) {
         if (coroutineScope != null) dispose()
         coroutineScope = scope
         userMessageChannel.sendRecordingEvents(call, scope)
@@ -83,19 +83,19 @@ object CallUserMessagesProvider {
         coroutineScope = null
     }
 
-    private fun Channel<UserMessage>.sendRecordingEvents(call: Flow<CallUI>, scope: CoroutineScope) {
+    private fun Channel<UserMessage>.sendRecordingEvents(call: CallUI, scope: CoroutineScope) {
         call.toRecordingMessage().dropWhile { it is RecordingMessage.Stopped }.onEach { send(it) }.launchIn(scope)
     }
 
-    private fun Channel<UserMessage>.sendMutedEvents(call: Flow<CallUI>, scope: CoroutineScope) {
+    private fun Channel<UserMessage>.sendMutedEvents(call: CallUI, scope: CoroutineScope) {
         call.toMutedMessage().onEach { send(it) }.launchIn(scope)
     }
 
-    private fun Channel<UserMessage>.sendUsbCameraEvents(call: Flow<CallUI>, scope: CoroutineScope) {
+    private fun Channel<UserMessage>.sendUsbCameraEvents(call: CallUI, scope: CoroutineScope) {
         call.toUsbCameraMessage().dropWhile { it is UsbCameraMessage.Disconnected }.onEach { send(it) }.launchIn(scope)
     }
 
-    private fun Channel<UserMessage>.sendFailedAudioOutputEvents(call: Flow<CallUI>, scope: CoroutineScope) {
+    private fun Channel<UserMessage>.sendFailedAudioOutputEvents(call: CallUI, scope: CoroutineScope) {
         call.toAudioConnectionFailureMessage().onEach { send(it) }.launchIn(scope)
     }
 }

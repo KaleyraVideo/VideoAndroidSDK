@@ -35,11 +35,11 @@ import kotlinx.coroutines.flow.transform
 
 internal object FileShareMapper {
 
-    fun Flow<CallUI>.toSharedFilesUi(): Flow<Set<SharedFileUi>> {
+    fun CallUI.toSharedFilesUi(): Flow<Set<SharedFileUi>> {
         val sharedFiles = hashMapOf<String, SharedFileUi>()
         val cancelledUploads = hashMapOf<String, SharedFileUi>()
 
-        return combine(this.toFiles(), this.toMe()) { f, m -> Pair(f, m) }
+        return combine(sharedFolder.files, this.toMe()) { f, m -> Pair(f, m) }
             .flatMapLatest { (files, me) ->
                 if (files.isEmpty()) flowOf(setOf())
                 else files
@@ -64,13 +64,8 @@ internal object FileShareMapper {
     private fun SharedFileUi.isCancelledUpload(): Boolean =
         isMine && state == SharedFileUi.State.Cancelled
 
-    private fun Flow<Call>.toFiles(): Flow<Set<SharedFile>> =
-        this.map { it.sharedFolder }
-            .flatMapLatest { it.files }
-            .distinctUntilChanged()
-
-    private fun Flow<Call>.toMe(): Flow<CallParticipant.Me> =
-        this.flatMapLatest { it.participants }
+    private fun Call.toMe(): Flow<CallParticipant.Me> =
+        this.participants
             .mapNotNull { it.me }
             .distinctUntilChanged()
 

@@ -27,6 +27,7 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
 import com.kaleyra.video_sdk.call.precall.viewmodel.PreCallViewModel
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -40,27 +41,31 @@ internal class RingingViewModel(configure: suspend () -> Configuration): PreCall
     override fun initialState() = RingingUiState()
 
     init {
-        call
-            .toRecordingTypeUi()
-            .onEach { rec -> _uiState.update { it.copy(recording = rec) } }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
 
-        call
-            .amIWaitingOthers()
-            .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
-            .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
-            .takeWhile { !it }
-            .launchIn(viewModelScope)
+            call
+                .toRecordingTypeUi()
+                .onEach { rec -> _uiState.update { it.copy(recording = rec) } }
+                .launchIn(viewModelScope)
 
-        call
-            .flatMapLatest { it.state }
-            .map { state ->
-                val isConnecting = state is Call.State.Connecting
-                _uiState.update { it.clone(isConnecting = isConnecting) }
-                isConnecting
-            }
-            .takeWhile { !it }
-            .launchIn(viewModelScope)
+            call
+                .amIWaitingOthers()
+                .debounce(AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
+                .onEach { amIWaitingOthers -> _uiState.update { it.copy(amIWaitingOthers = amIWaitingOthers) } }
+                .takeWhile { !it }
+                .launchIn(viewModelScope)
+
+            call
+                .state
+                .map { state ->
+                    val isConnecting = state is Call.State.Connecting
+                    _uiState.update { it.clone(isConnecting = isConnecting) }
+                    isConnecting
+                }
+                .takeWhile { !it }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun accept() {

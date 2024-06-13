@@ -20,9 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
@@ -51,16 +55,35 @@ import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-internal const val MaxVisibleStreamsCompact = 8
-internal const val MaxVisibleStreamsExpanded = 15
+internal const val MaxFeaturedStreamsCompact = 8
+internal const val MaxFeaturedStreamsExpanded = 15
 
 internal const val MaxPinnedStreamsCompact = 2
 internal const val MaxPinnedStreamsExpanded = 6
 
-internal const val MaxThumbnailCount = 3
-internal val MaxThumbnailSize = 180.dp
+internal object StreamComponentDefaults {
+
+    const val MaxThumbnailStreams = 3
+
+    val MaxThumbnailSize = 180.dp
+
+    fun maxFeaturedStreams(windowSizeClass: WindowSizeClass): Int {
+        return if (windowSizeClass.isCompactInAnyDimension()) {
+            MaxFeaturedStreamsCompact
+        } else MaxFeaturedStreamsExpanded
+    }
+
+    fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
+        return when {
+            windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
+            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
+            else -> ThumbnailsArrangement.Bottom
+        }
+    }
+}
 
 private data class StreamItemState(
     val isHighlighted: Boolean,
@@ -78,6 +101,7 @@ internal fun StreamComponent(
     windowSizeClass: WindowSizeClass,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
+    onMoreParticipantClick: () -> Unit,
     highlightedStream: StreamUi? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -95,23 +119,11 @@ internal fun StreamComponent(
         highlightedStream = highlightedStream,
         onStreamClick = onStreamClick,
         onStopScreenShareClick = onStopScreenShareClick,
+        onMoreParticipantClick = onMoreParticipantClick,
         modifier = modifier
     )
 }
 
-// TODO
-//  test displayedItems
-//  the non displayed participant data
-//  test thumbnails arrangement
-//  test displayed items
-//  test fullscreen, pinned, highlight and local screen share
-//  test when fullscreen and when there are no participant data
-//  test onclick
-//  test on local screen share and more participant items is disabled
-//  test the right item is displayed
-//  test onStopScreenShare click
-//  test status icon alignment on thumbnail and featured
-//  test fullscreen, pin and audio muted
 @Composable
 internal fun StreamComponent(
     streamUiState: StreamUiState,
@@ -119,14 +131,19 @@ internal fun StreamComponent(
     highlightedStream: StreamUi?,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
+    onMoreParticipantClick: () -> Unit,
     modifier: Modifier = Modifier,
+    maxFeaturedStreams: Int = remember(windowSizeClass) { StreamComponentDefaults.maxFeaturedStreams(windowSizeClass) },
+    maxThumbnailStreams: Int = StreamComponentDefaults.MaxThumbnailStreams,
+    thumbnailsArrangement: ThumbnailsArrangement = remember(windowSizeClass) { StreamComponentDefaults.thumbnailsArrangementFor(windowSizeClass) },
+    maxThumbnailSize: Dp = StreamComponentDefaults.MaxThumbnailSize,
 ) {
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        val streamsToDisplay = remember(streamUiState, windowSizeClass) {
-            streamsToDisplayFor(streamUiState, windowSizeClass)
+        val streamsToDisplay = remember(streamUiState, maxFeaturedStreams, maxThumbnailStreams) {
+            streamsToDisplayFor(streamUiState, maxFeaturedStreams, maxThumbnailStreams)
         }
 
         val nonDisplayedParticipantsData = remember(streamUiState, streamsToDisplay) {
@@ -135,10 +152,15 @@ internal fun StreamComponent(
         }
 
         // Calculate thumbnail size based on available space
-        val thumbnailSize = calculateThumbnailsSize(
-            maxWidth = maxWidth,
-            maxHeight = maxHeight
-        )
+        val thumbnailSize = remember(maxWidth, maxHeight, maxThumbnailStreams, maxThumbnailSize) {
+            calculateThumbnailsSize(
+                maxWidth = maxWidth,
+                maxHeight = maxHeight,
+                maxThumbnailsStreams = maxThumbnailStreams,
+                maxThumbnailSize = maxThumbnailSize
+            )
+        }
+
         val isNonDisplayedParticipantsDataEmpty = nonDisplayedParticipantsData.isEmpty()
 
         val itemPadding = 4.dp
@@ -156,9 +178,9 @@ internal fun StreamComponent(
 
 
         AdaptiveStreamLayout(
-            thumbnailsArrangement = rememberThumbnailsArrangementFor(windowSizeClass),
+            thumbnailsArrangement = thumbnailsArrangement,
             thumbnailSize = thumbnailSize,
-            thumbnailsCount = MaxThumbnailCount
+            thumbnailsCount = maxThumbnailStreams
         ) {
             streamsToDisplay.fastForEachIndexed { index, stream ->
                 key(stream.id) {
@@ -175,13 +197,21 @@ internal fun StreamComponent(
                             .pin(streamItemState.isPinned)
                             .streamHighlight(streamItemState.isHighlighted)
                             .streamClickable(
-                                enabled = !displayAsMoreParticipantsItem && !streamItemState.isLocalScreenShare,
-                                onClick = { onStreamClick(stream) }
+                                enabled = !streamItemState.isLocalScreenShare,
+                                onClick = {
+                                    if (displayAsMoreParticipantsItem) onMoreParticipantClick()
+                                    else onStreamClick(stream)
+                                }
                             )
+                            .testTag(stream.id)
                     ) {
                         Box {
                             when {
-                                displayAsMoreParticipantsItem -> MoreParticipantsItem(nonDisplayedParticipantsData)
+                                displayAsMoreParticipantsItem -> {
+                                    // Add this participant to the list of non displayed participants
+                                    val participants = listOf(NonDisplayedParticipantData(stream.id, stream.username, stream.avatar)) + nonDisplayedParticipantsData.value
+                                    MoreParticipantsItem(participants.toImmutableList())
+                                }
                                 streamItemState.isLocalScreenShare -> ScreenShareItem(onStopScreenShareClick)
 
                                 else -> {
@@ -208,7 +238,8 @@ internal fun StreamComponent(
 
 private fun streamsToDisplayFor(
     streamUiState: StreamUiState,
-    windowSizeClass: WindowSizeClass,
+    maxFeaturedStreams: Int,
+    maxThumbnailsStreams: Int
 ): List<StreamUi> {
     val streams = streamUiState.streams.value
     val pinnedStreams = streamUiState.pinnedStreams.value
@@ -219,26 +250,12 @@ private fun streamsToDisplayFor(
         pinnedStreams.isNotEmpty() -> {
             val thumbnailStreams = streams
                 .filterNot { pinnedStreams.contains(it) }
-                .take(MaxThumbnailCount)
+                .take(maxThumbnailsStreams)
             pinnedStreams + thumbnailStreams
         }
 
         else -> {
-            val maxStreams = if (windowSizeClass.isCompactInAnyDimension()) {
-                MaxVisibleStreamsCompact
-            } else MaxVisibleStreamsExpanded
-            streams.take(maxStreams)
-        }
-    }
-}
-
-@Composable
-private fun rememberThumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
-    return remember(windowSizeClass) {
-        when {
-            windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
-            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
-            else -> ThumbnailsArrangement.Bottom
+            streams.take(maxFeaturedStreams)
         }
     }
 }
@@ -256,10 +273,15 @@ private fun streamItemStateFor(
     )
 }
 
-private fun calculateThumbnailsSize(maxWidth: Dp, maxHeight: Dp): Dp {
+private fun calculateThumbnailsSize(
+    maxWidth: Dp,
+    maxHeight: Dp,
+    maxThumbnailsStreams: Int,
+    maxThumbnailSize: Dp
+): Dp {
     val maxAvailableSize = min(maxHeight, maxWidth) * 0.9f
-    return if (maxAvailableSize < MaxThumbnailSize) maxAvailableSize
-    else min(maxAvailableSize / MaxThumbnailCount, MaxThumbnailSize)
+    return if (maxAvailableSize < maxThumbnailSize) maxAvailableSize
+    else min(maxAvailableSize / maxThumbnailsStreams, maxThumbnailSize)
 }
 
 private fun Modifier.streamClickable(
@@ -278,51 +300,55 @@ private fun Modifier.streamClickable(
 
 private fun Modifier.streamHighlight(enabled: Boolean): Modifier = composed {
     if (enabled) {
-        this.border(
-            color = MaterialTheme.colorScheme.primary,
-            width = 2.dp,
-            shape = RoundedCornerShape(4.dp)
-        )
+        val description = stringResource(id = R.string.kaleyra_stream_selected)
+        this
+            .border(
+                color = MaterialTheme.colorScheme.primary,
+                width = 2.dp,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .semantics {
+                contentDescription = description
+            }
+
     } else this
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+
+
 @MultiConfigPreview
 @Composable
 internal fun StreamComponentPreview() {
     KaleyraM3Theme {
         Surface {
-            BoxWithConstraints {
-                StreamComponent(
-                    streamUiState = StreamUiState(streams = previewStreams),
-                    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                    highlightedStream = null,
-                    onStreamClick = {},
-                    onStopScreenShareClick = {},
-                )
-            }
+            StreamComponent(
+                streamUiState = StreamUiState(streams = previewStreams),
+                windowSizeClass = currentWindowAdaptiveInfo(),
+                highlightedStream = null,
+                onStreamClick = {},
+                onStopScreenShareClick = {},
+                onMoreParticipantClick = {}
+            )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @MultiConfigPreview
 @Composable
 internal fun StreamComponentPinPreview() {
     KaleyraM3Theme {
         Surface {
-            BoxWithConstraints {
-                StreamComponent(
-                    streamUiState = StreamUiState(
-                        streams = previewStreams,
-                        pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
-                    ),
-                    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                    highlightedStream = null,
-                    onStreamClick = {},
-                    onStopScreenShareClick = {},
-                )
-            }
+            StreamComponent(
+                streamUiState = StreamUiState(
+                    streams = previewStreams,
+                    pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
+                ),
+                windowSizeClass = currentWindowAdaptiveInfo(),
+                highlightedStream = null,
+                onStreamClick = {},
+                onStopScreenShareClick = {},
+                onMoreParticipantClick = {}
+            )
         }
     }
 }

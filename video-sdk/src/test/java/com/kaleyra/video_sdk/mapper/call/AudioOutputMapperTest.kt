@@ -53,8 +53,7 @@ class AudioOutputMapperTest {
     fun emptyAudioOutputList_toAvailableAudioDevicesUi_emptyAudioDeviceUiList() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().audioOutputDevicesList } returns MutableStateFlow(listOf())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toAvailableAudioDevicesUi()
+        val result = mockk<CallUI>().toAvailableAudioDevicesUi()
         val actual = result.first()
         Assert.assertEquals(listOf<AudioDeviceUi>(), actual)
         unmockkObject(CollaborationAudioExtensions)
@@ -65,8 +64,7 @@ class AudioOutputMapperTest {
         mockkObject(CollaborationAudioExtensions)
         val devices = listOf(AudioOutputDevice.Loudspeaker(), AudioOutputDevice.Earpiece(), AudioOutputDevice.None())
         every { any<Call>().audioOutputDevicesList } returns MutableStateFlow(devices)
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toAvailableAudioDevicesUi()
+        val result = mockk<CallUI>().toAvailableAudioDevicesUi()
         val actual = result.first()
         val expected = listOf<AudioDeviceUi>(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.EarPiece, AudioDeviceUi.Muted)
         Assert.assertEquals(expected, actual)
@@ -77,8 +75,7 @@ class AudioOutputMapperTest {
     fun loudSpeakerAudioOutputDevice_toCurrentAudioDeviceUi_loudspeakerAudioDeviceUi() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().currentAudioOutputDevice } returns MutableStateFlow(AudioOutputDevice.Loudspeaker())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toCurrentAudioDeviceUi()
+        val result = mockk<CallUI>().toCurrentAudioDeviceUi()
         val actual = result.first()
         val expected = AudioDeviceUi.LoudSpeaker
         Assert.assertEquals(expected, actual)
@@ -89,8 +86,7 @@ class AudioOutputMapperTest {
     fun earPieceAudioOutputDevice_toCurrentAudioDeviceUi_earPieceAudioDeviceUi() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().currentAudioOutputDevice } returns MutableStateFlow(AudioOutputDevice.Earpiece())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toCurrentAudioDeviceUi()
+        val result = mockk<CallUI>().toCurrentAudioDeviceUi()
         val actual = result.first()
         val expected = AudioDeviceUi.EarPiece
         Assert.assertEquals(expected, actual)
@@ -101,8 +97,7 @@ class AudioOutputMapperTest {
     fun wiredHeadsetAudioOutputDevice_toCurrentAudioDeviceUi_wiredHeadsetAudioDeviceUi() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().currentAudioOutputDevice } returns MutableStateFlow(AudioOutputDevice.WiredHeadset())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toCurrentAudioDeviceUi()
+        val result = mockk<CallUI>().toCurrentAudioDeviceUi()
         val actual = result.first()
         val expected = AudioDeviceUi.WiredHeadset
         Assert.assertEquals(expected, actual)
@@ -113,8 +108,7 @@ class AudioOutputMapperTest {
     fun mutedAudioOutputDevice_toCurrentAudioDeviceUi_mutedAudioDeviceUi() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().currentAudioOutputDevice } returns MutableStateFlow(AudioOutputDevice.None())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toCurrentAudioDeviceUi()
+        val result = mockk<CallUI>().toCurrentAudioDeviceUi()
         val actual = result.first()
         val expected = AudioDeviceUi.Muted
         Assert.assertEquals(expected, actual)
@@ -125,8 +119,7 @@ class AudioOutputMapperTest {
     fun bluetoothAudioOutputDevice_toCurrentAudioDeviceUi_bluetoothAudioDeviceUi() = runTest {
         mockkObject(CollaborationAudioExtensions)
         every { any<Call>().currentAudioOutputDevice } returns MutableStateFlow(AudioOutputDevice.Bluetooth())
-        val call = MutableStateFlow(mockk<CallUI>())
-        val result = call.toCurrentAudioDeviceUi()
+        val result = mockk<CallUI>().toCurrentAudioDeviceUi()
         val actual = result.first()?.javaClass
         val expected = AudioDeviceUi.Bluetooth::class.java
         Assert.assertEquals(expected, actual)

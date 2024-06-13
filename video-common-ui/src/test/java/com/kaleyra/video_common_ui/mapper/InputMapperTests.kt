@@ -34,11 +34,8 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.registerInstanceFactory
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert
@@ -67,9 +64,7 @@ class InputMapperTests {
     }
 
     private val callMock = mockk<Call>()
-
-    private val callFlow: Flow<Call> = flowOf(callMock)
-
+    
     private val audioMock = mockk<Input.Audio>()
 
     private val streamMock = mockk<Stream.Mutable>()
@@ -90,67 +85,67 @@ class InputMapperTests {
     @Test
     fun noInput_isInputActive_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
-        Assert.assertEquals(false, callFlow.isInputActive<Input.Video.Camera>().first())
+        Assert.assertEquals(false, callMock.isInputActive<Input.Video.Camera>().first())
     }
 
     @Test
     fun wrongInput_isInputActive_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeMicrophoneInputMock))
-        Assert.assertEquals(false, callFlow.isInputActive<Input.Video.Camera>().first())
+        Assert.assertEquals(false, callMock.isInputActive<Input.Video.Camera>().first())
     }
 
     @Test
     fun expectedInput_isInputActive_true() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeMicrophoneInputMock))
-        Assert.assertEquals(true, callFlow.isInputActive<Input.Audio>().first())
+        Assert.assertEquals(true, callMock.isInputActive<Input.Audio>().first())
     }
 
     @Test
     fun expectedInputNotActive_isInputActive_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(inactiveMicrophoneInputMock))
-        Assert.assertEquals(false, callFlow.isInputActive<Input.Audio>().first())
+        Assert.assertEquals(false, callMock.isInputActive<Input.Audio>().first())
     }
 
     @Test
     fun deviceScreenActive_isDeviceScreenInputActive_true() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeScreenInputMock))
-        Assert.assertEquals(true, callFlow.isDeviceScreenInputActive().first())
+        Assert.assertEquals(true, callMock.isDeviceScreenInputActive().first())
     }
 
     @Test
     fun deviceScreenNotActive_isDeviceScreenInputActive_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(inactiveScreenInputMock))
-        Assert.assertEquals(false, callFlow.isDeviceScreenInputActive().first())
+        Assert.assertEquals(false, callMock.isDeviceScreenInputActive().first())
     }
 
     @Test
     fun applicationScreenActive_isDeviceApplicationInputActive_true() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeApplicationInputMock))
-        Assert.assertEquals(true, callFlow.isAppScreenInputActive().first())
+        Assert.assertEquals(true, callMock.isAppScreenInputActive().first())
     }
 
     @Test
     fun applicationScreenNotActive_isDeviceApplicationInputActive_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(inactiveApplicationInputMock))
-        Assert.assertEquals(false, callFlow.isAppScreenInputActive().first())
+        Assert.assertEquals(false, callMock.isAppScreenInputActive().first())
     }
 
     @Test
     fun deviceScreenActive_isAnyScreenInputActive_true()  = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeScreenInputMock))
-        Assert.assertEquals(true, callFlow.isAnyScreenInputActive().first())
+        Assert.assertEquals(true, callMock.isAnyScreenInputActive().first())
     }
 
     @Test
     fun allDeviceActive_isAnyScreenInputActive_true()  = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(activeScreenInputMock, activeApplicationInputMock))
-        Assert.assertEquals(true, callFlow.isAnyScreenInputActive().first())
+        Assert.assertEquals(true, callMock.isAnyScreenInputActive().first())
     }
 
     @Test
     fun allDeviceNotActive_isAnyScreenInputActive_false()  = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(inactiveScreenInputMock, inactiveApplicationInputMock))
-        Assert.assertEquals(false, callFlow.isAnyScreenInputActive().first())
+        Assert.assertEquals(false, callMock.isAnyScreenInputActive().first())
     }
 
     @Test
@@ -159,8 +154,7 @@ class InputMapperTests {
             every { id } returns CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(audioMock)
         }
-        val call = MutableStateFlow(callMock)
-        val result = call.toCameraStreamAudio()
+        val result = callMock.toCameraStreamAudio()
         val actual = result.first()
         Assert.assertEquals(audioMock, actual)
     }
@@ -171,8 +165,7 @@ class InputMapperTests {
             every { id } returns CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
-        val call = MutableStateFlow(callMock)
-        val result = call.toCameraStreamAudio()
+        val result = callMock.toCameraStreamAudio()
         val actual = result.first()
         Assert.assertEquals(null, actual)
     }
@@ -180,8 +173,7 @@ class InputMapperTests {
     @Test
     fun cameraStreamNotFound_toCameraStreamAudio_null() = runTest {
         every { streamMock.id } returns "randomId"
-        val call = MutableStateFlow(callMock)
-        val result = call.toCameraStreamAudio()
+        val result = callMock.toCameraStreamAudio()
         val actual = result.first()
         Assert.assertEquals(null, actual)
     }
@@ -191,8 +183,7 @@ class InputMapperTests {
         val event = mockk<Input.Audio.Event.Request.Mute>()
         every { streamMock.id } returns CAMERA_STREAM_ID
         every { audioMock.events } returns MutableStateFlow(event)
-        val call = MutableStateFlow(callMock)
-        val result = call.toMuteEvents()
+        val result = callMock.toMuteEvents()
         val actual = result.first()
         Assert.assertEquals(event, actual)
     }
@@ -200,7 +191,7 @@ class InputMapperTests {
     @Test
     fun screenShareInAvailableInputs_hasScreenSharingInput_true() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Screen.My>()))
-        val result = flowOf(callMock).hasScreenSharingInput()
+        val result = callMock.hasScreenSharingInput()
         val actual = result.first()
         Assert.assertEquals(true, actual)
     }
@@ -208,7 +199,7 @@ class InputMapperTests {
     @Test
     fun screenShareNotInAvailableInputs_hasScreenSharingInput_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Application>()))
-        val result = flowOf(callMock).hasScreenSharingInput()
+        val result = callMock.hasScreenSharingInput()
         val actual = result.first()
         Assert.assertEquals(false, actual)
     }
@@ -217,7 +208,7 @@ class InputMapperTests {
     fun audioAvailable_toAudioInput_audioInput() = runTest {
         val audio = mockk<Input.Audio>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(audio))
-        val result = flowOf(callMock).toAudioInput()
+        val result = callMock.toAudioInput()
         val actual = result.first()
         Assert.assertEquals(audio, actual)
     }
@@ -226,7 +217,7 @@ class InputMapperTests {
     fun internalCameraAvailable_toCameraVideoInput_videoInput() = runTest {
         val video = mockk<Input.Video.Camera.Internal>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video))
-        val result = flowOf(callMock).toCameraVideoInput()
+        val result = callMock.toCameraVideoInput()
         val actual = result.first()
         Assert.assertEquals(video, actual)
     }
@@ -235,7 +226,7 @@ class InputMapperTests {
     fun usbCameraAvailable_toCameraVideoInput_videoInput() = runTest {
         val video = mockk<Input.Video.Camera.Usb>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video))
-        val result = flowOf(callMock).toCameraVideoInput()
+        val result = callMock.toCameraVideoInput()
         val actual = result.first()
         Assert.assertEquals(video, actual)
     }
@@ -244,7 +235,7 @@ class InputMapperTests {
     fun applicationVideoAvailable_toCameraVideoInput_nothing() = runTest {
         val video = mockk<Input.Video.Application>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video))
-        val result = flowOf(callMock).toCameraVideoInput()
+        val result = callMock.toCameraVideoInput()
         val actual = withTimeoutOrNull(100) { result.first() }
         Assert.assertEquals(null, actual)
     }
@@ -253,7 +244,7 @@ class InputMapperTests {
     fun screenVideoAvailable_toCameraVideoInput_nothing() = runTest {
         val video = mockk<Input.Video.Screen>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video))
-        val result = flowOf(callMock).toCameraVideoInput()
+        val result = callMock.toCameraVideoInput()
         val actual = withTimeoutOrNull(100) { result.first() }
         Assert.assertEquals(null, actual)
     }
@@ -262,7 +253,7 @@ class InputMapperTests {
     fun customVideoAvailable_toCameraVideoInput_nothing() = runTest {
         val video = mockk<Input.Video.Custom>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video))
-        val result = flowOf(callMock).toCameraVideoInput()
+        val result = callMock.toCameraVideoInput()
         val actual = withTimeoutOrNull(100) { result.first() }
         Assert.assertEquals(null, actual)
     }
@@ -272,7 +263,7 @@ class InputMapperTests {
         val stream = mockk<Stream.Mutable>()
         every { stream.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { participantMeMock.streams } returns MutableStateFlow(listOf(stream))
-        val result = flowOf(callMock).toMyCameraStream()
+        val result = callMock.toMyCameraStream()
         val actual = result.first()
         Assert.assertEquals(stream, actual)
     }

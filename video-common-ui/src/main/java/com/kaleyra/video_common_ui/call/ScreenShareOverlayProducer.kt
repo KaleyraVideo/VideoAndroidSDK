@@ -90,7 +90,7 @@ internal class ScreenShareOverlayProducer(
         var appScreenShareOverlay: AppViewOverlay? = null
 
         jobs.forEach { it.cancel() }
-        jobs += flowOf(call)
+        jobs += call
             .isDeviceScreenInputActive()
             .onEach {
                 withContext(Dispatchers.Main) {
@@ -108,7 +108,7 @@ internal class ScreenShareOverlayProducer(
                 deviceScreenShareOverlay = null
             }.launchIn(coroutineScope)
 
-        jobs += flowOf(call)
+        jobs += call
             .isAppScreenInputActive()
             .onEach {
                 withContext(Dispatchers.Main) {

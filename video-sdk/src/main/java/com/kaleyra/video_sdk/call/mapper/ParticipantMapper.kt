@@ -41,8 +41,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow returning true when the logged user is initialized, false otherwise
      */
-    fun Flow<Call>.isMeParticipantInitialized(): Flow<Boolean> =
-        flatMapLatest { it.participants }.map { it.me != null }
+    fun Call.isMeParticipantInitialized(): Flow<Boolean> =
+        this.participants.map { it.me != null }
 
     /**
      * Utility function to be used to receive a flag representing if the current call is a group call
@@ -50,8 +50,8 @@ object ParticipantMapper {
      * @param companyId Flow<String> company identifier
      * @return Flow<Boolean> flow representing if if the current call is a group call, true if it is a group call, false otherwise
      */
-    fun Flow<Call>.isGroupCall(companyId: Flow<String>): Flow<Boolean> =
-        combine(this.flatMapLatest { it.participants }, companyId) { participants, companyId ->
+    fun Call.isGroupCall(companyId: Flow<String>): Flow<Boolean> =
+        combine(participants, companyId) { participants, companyId ->
             participants.others.filter { it.userId != companyId }.size > 1
         }.distinctUntilChanged()
 
@@ -60,8 +60,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<List<String>> flow representing the other participants display names as list
      */
-    fun Flow<Call>.toOtherDisplayNames(): Flow<List<String>> =
-        this.flatMapLatest { it.participants }
+    fun Call.toOtherDisplayNames(): Flow<List<String>> =
+        this.participants
             .flatMapLatest { participants ->
                 val others = participants.others
                 val map = mutableMapOf<String, String?>()
@@ -89,8 +89,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<List<Uri>> flow representing the other participants display images as list
      */
-    fun Flow<Call>.toOtherDisplayImages(): Flow<List<Uri>> =
-        this.flatMapLatest { it.participants }
+    fun Call.toOtherDisplayImages(): Flow<List<Uri>> =
+        this.participants
             .flatMapLatest { participants ->
                 val others = participants.others
                 val map = mutableMapOf<String, Uri?>()
@@ -118,8 +118,8 @@ object ParticipantMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<CallParticipant.State> flow representing the current logged participant's state
      */
-    fun Flow<Call>.toMyParticipantState(): Flow<CallParticipant.State> =
-        this.flatMapLatest { it.participants }
+    fun Call.toMyParticipantState(): Flow<CallParticipant.State> =
+        this.participants
             .flatMapLatestNotNull { it.me?.state }
             .distinctUntilChanged()
 }

@@ -184,8 +184,7 @@ class StreamMapperTest {
     fun emptyParticipantsList_toStreamsUi_emptyStreamUiList() = runTest {
         every { callParticipantsMock.list } returns listOf()
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf<StreamUi>()
         Assert.assertEquals(expected, actual)
@@ -193,8 +192,7 @@ class StreamMapperTest {
 
     @Test
     fun filledParticipantsList_toStreamsUi_mappedStreamUiList() = runTest {
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
             streamUi1.copy(username = "displayName1"),
@@ -209,8 +207,7 @@ class StreamMapperTest {
         every { participantMock1.streams } returns MutableStateFlow(listOf())
         every { participantMock2.streams } returns MutableStateFlow(listOf())
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf<StreamUi>()
         Assert.assertEquals(expected, actual)
@@ -222,8 +219,7 @@ class StreamMapperTest {
         every { callMock.participants } returns participants
         every { callParticipantsMock.list } returns listOf(participantMock1)
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
             streamUi1.copy(username = "displayName1"),
@@ -250,8 +246,7 @@ class StreamMapperTest {
         val participants = MutableStateFlow(callParticipantsMock)
         every { callMock.participants } returns participants
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
             streamUi1.copy(username = "displayName1"),
@@ -278,8 +273,7 @@ class StreamMapperTest {
         val displayNameParticipant1 = MutableStateFlow("displayName1")
         every { participantMock1.combinedDisplayName } returns displayNameParticipant1
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
             streamUi1.copy(username = "displayName1"),
@@ -304,8 +298,7 @@ class StreamMapperTest {
         val displayImageParticipant1 = MutableStateFlow(uriMock)
         every { participantMock1.combinedDisplayImage } returns displayImageParticipant1
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toStreamsUi()
+        val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
             streamUi1.copy(username = "displayName1"),
@@ -330,8 +323,7 @@ class StreamMapperTest {
     fun emptyStreamList_toMyStreamsUi_emptyList() = runTest {
         every { participantMeMock.streams } returns MutableStateFlow(listOf())
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toMyStreamsUi()
+        val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf<StreamUi>()
         Assert.assertEquals(expected, actual)
@@ -339,8 +331,7 @@ class StreamMapperTest {
 
     @Test
     fun filledStreamList_toMyStreamsUi() = runTest {
-        val call = MutableStateFlow(callMock)
-        val result = call.toMyStreamsUi()
+        val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
             myStreamUi1.copy(username = "myDisplayName"),
@@ -354,8 +345,7 @@ class StreamMapperTest {
         val myDisplayName = MutableStateFlow("displayName1")
         every { participantMeMock.combinedDisplayName } returns myDisplayName
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toMyStreamsUi()
+        val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
             myStreamUi1.copy(username = "displayName1"),
@@ -378,8 +368,7 @@ class StreamMapperTest {
         val myDisplayImage = MutableStateFlow(uriMock)
         every { participantMeMock.combinedDisplayImage } returns myDisplayImage
 
-        val call = MutableStateFlow(callMock)
-        val result = call.toMyStreamsUi()
+        val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
             myStreamUi1.copy(username = "myDisplayName"),
@@ -582,12 +571,11 @@ class StreamMapperTest {
     @Test
     fun meHasOneStream_doIHaveStreams_true() = runTest {
         mockkObject(ParticipantMapper)
-        val flow = flowOf(callMock)
         with(ParticipantMapper) {
-            every { flow.toMe() } returns flowOf(participantMeMock)
+            every { callMock.toMe() } returns flowOf(participantMeMock)
         }
         every { participantMeMock.streams } returns MutableStateFlow(listOf(mockk()))
-        val result = flow.doIHaveStreams()
+        val result = callMock.doIHaveStreams()
         val actual = result.first()
         Assert.assertEquals(true, actual)
     }
@@ -595,12 +583,11 @@ class StreamMapperTest {
     @Test
     fun meHasNoStreams_doIHaveStreams_false() = runTest {
         mockkObject(ParticipantMapper)
-        val flow = flowOf(callMock)
         with(ParticipantMapper) {
-            every { flow.toMe() } returns flowOf(participantMeMock)
+            every { callMock.toMe() } returns flowOf(participantMeMock)
         }
         every { participantMeMock.streams } returns MutableStateFlow(listOf())
-        val result = flow.doIHaveStreams()
+        val result = callMock.doIHaveStreams()
         val actual = result.first()
         Assert.assertEquals(false, actual)
     }

@@ -54,44 +54,45 @@ class WhiteboardMapperTest {
     @Test
     fun whiteboardStateUnloaded_isLoading_false() = runTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Unloaded)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isWhiteboardLoading().first()
+        
+        val actual = callMock.isWhiteboardLoading().first()
         assertEquals(false, actual)
     }
 
     @Test
     fun whiteboardStateLoaded_isLoading_false() = runTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Loaded)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isWhiteboardLoading().first()
+        
+        val actual = callMock.isWhiteboardLoading().first()
         assertEquals(false, actual)
     }
 
     @Test
     fun whiteboardStateLoading_isLoading_true() = runTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Loading)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isWhiteboardLoading().first()
+        
+        val actual = callMock.isWhiteboardLoading().first()
         assertEquals(true, actual)
     }
 
     @Test
     fun whiteboardStateCacheError_isLoading_false() = runTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Unloaded.Error.Cache)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isWhiteboardLoading().first()
+        
+        val actual = callMock.isWhiteboardLoading().first()
         assertEquals(false, actual)
     }
 
     @Test
     fun whiteboardStateUnknownError_isLoading_false() = runTest {
         every { whiteboardMock.state } returns MutableStateFlow(Whiteboard.State.Unloaded.Error.Unknown(""))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isWhiteboardLoading().first()
+        
+        val actual = callMock.isWhiteboardLoading().first()
         assertEquals(false, actual)
     }
 
     @Test
+
     fun sharedFileStateAvailable_toWhiteboardUploadUi_whiteboardUploadUiUploading() = runTest {
         every { sharedFileMock.state } returns MutableStateFlow(SharedFile.State.Available)
         val actual = sharedFileMock.toWhiteboardUploadUi().first()

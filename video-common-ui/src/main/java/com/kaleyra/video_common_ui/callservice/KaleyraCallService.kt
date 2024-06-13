@@ -139,7 +139,7 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
         // the isInForeground flag is still true. This happens because the onStop of the application lifecycle is
         // dispatched 700ms after the last activity's onStop
         notificationJob?.cancel()
-        notificationJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
+        notificationJob = combine(AppLifecycle.isInForeground, call.hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
             if (!isInForeground) return@combine
             kotlin.runCatching {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))

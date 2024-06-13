@@ -29,9 +29,11 @@ import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceU
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class AudioOutputViewModel(configure: suspend () -> Configuration) : BaseViewModel<AudioOutputUiState>(configure) {
 
@@ -41,16 +43,19 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration) : Ba
         get() = ConnectionServiceUtils.isConnectionServiceEnabled
 
     init {
-        call
-            .toAvailableAudioDevicesUi()
-            .onEach { audioDevices -> _uiState.update { it.copy(audioDeviceList = ImmutableList(audioDevices)) } }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
+            call
+                .toAvailableAudioDevicesUi()
+                .onEach { audioDevices -> _uiState.update { it.copy(audioDeviceList = ImmutableList(audioDevices)) } }
+                .launchIn(viewModelScope)
 
-        call
-            .toCurrentAudioDeviceUi()
-            .filterNotNull()
-            .onEach { currentOutputDevice -> _uiState.update { it.copy(playingDeviceId = currentOutputDevice.id) } }
-            .launchIn(viewModelScope)
+            call
+                .toCurrentAudioDeviceUi()
+                .filterNotNull()
+                .onEach { currentOutputDevice -> _uiState.update { it.copy(playingDeviceId = currentOutputDevice.id) } }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun setDevice(device: AudioDeviceUi) {

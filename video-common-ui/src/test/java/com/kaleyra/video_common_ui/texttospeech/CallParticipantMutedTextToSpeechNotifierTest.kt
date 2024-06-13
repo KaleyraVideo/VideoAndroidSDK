@@ -59,7 +59,7 @@ class CallParticipantMutedTextToSpeechNotifierTest {
         every { ContextRetainer.context } returns contextMock
         every { contextMock.getString(any()) } returns ""
         every { notifier.shouldNotify } returns true
-        every { any<Flow<Call>>().toMuteEvents() } returns MutableStateFlow(mockk())
+        every { callMock.toMuteEvents() } returns MutableStateFlow(mockk())
     }
 
     @Test

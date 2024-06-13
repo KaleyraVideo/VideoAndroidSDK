@@ -82,24 +82,24 @@ class ParticipantMapperTest {
     @Test
     fun meParticipantNull_isMeParticipantInitialized_false() = runTest {
         every { callParticipantsMock.me } returns null
-        val call = flowOf(callMock)
-        val result = call.isMeParticipantInitialized()
+        
+        val result = callMock.isMeParticipantInitialized()
         Assert.assertEquals(false, result.first())
     }
 
     @Test
     fun meParticipantNotNull_isMeParticipantInitialized_true() = runTest {
         every { callParticipantsMock.me } returns mockk()
-        val call = flowOf(callMock)
-        val result = call.isMeParticipantInitialized()
+        
+        val result = callMock.isMeParticipantInitialized()
         Assert.assertEquals(true, result.first())
     }
 
     @Test
     fun emptyOtherParticipants_toOtherDisplayNames_emptyList() = runTest {
         every { callParticipantsMock.others } returns listOf()
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayNames()
+      
+        val result = callMock.toOtherDisplayNames()
         val actual = result.first()
         val expected = listOf<String>()
         Assert.assertEquals(expected, actual)
@@ -108,8 +108,8 @@ class ParticipantMapperTest {
     @Test
     fun filledOtherParticipants_toOtherDisplayNames_displayNamesList() = runTest {
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayNames()
+      
+        val result = callMock.toOtherDisplayNames()
         val actual = result.first()
         val expected = listOf("displayName1", "displayName2")
         Assert.assertEquals(expected, actual)
@@ -120,8 +120,8 @@ class ParticipantMapperTest {
         val participants = MutableStateFlow(callParticipantsMock)
         every { callMock.participants } returns participants
         every { callParticipantsMock.others } returns listOf(participantMock1)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayNames()
+      
+        val result = callMock.toOtherDisplayNames()
         val actual = result.first()
         val expected = listOf("displayName1")
         Assert.assertEquals(expected, actual)
@@ -140,8 +140,8 @@ class ParticipantMapperTest {
         val participants = MutableStateFlow(callParticipantsMock)
         every { callMock.participants } returns participants
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayNames()
+      
+        val result = callMock.toOtherDisplayNames()
         val actual = result.first()
         val expected = listOf("displayName1", "displayName2")
         Assert.assertEquals(expected, actual)
@@ -164,8 +164,8 @@ class ParticipantMapperTest {
         }
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock3)
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayNames()
+      
+        val result = callMock.toOtherDisplayNames()
         val actual = result.first()
         val expected = listOf("displayName1", "displayName2")
         Assert.assertEquals(expected, actual)
@@ -179,16 +179,16 @@ class ParticipantMapperTest {
     @Test
     fun singleOtherParticipants_isGroupCall_false() = runTest {
         every { callParticipantsMock.others } returns listOf(participantMock1)
-        val call = MutableStateFlow(callMock)
-        val result = call.isGroupCall(MutableStateFlow("companyId"))
+      
+        val result = callMock.isGroupCall(MutableStateFlow("companyId"))
         Assert.assertEquals(false, result.first())
     }
 
     @Test
     fun multipleOtherParticipants_isGroupCall_true() = runTest {
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.isGroupCall(MutableStateFlow("companyId"))
+      
+        val result = callMock.isGroupCall(MutableStateFlow("companyId"))
         Assert.assertEquals(true, result.first())
     }
 
@@ -196,16 +196,16 @@ class ParticipantMapperTest {
     fun `when a participant userId is the companyId, they are not counted as group member`() = runTest {
         every { participantMock1.userId } returns "companyId"
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.isGroupCall(MutableStateFlow("companyId"))
+      
+        val result = callMock.isGroupCall(MutableStateFlow("companyId"))
         Assert.assertEquals(false, result.first())
     }
 
     @Test
     fun emptyOtherParticipants_toOtherDisplayImages_emptyList() = runTest {
         every { callParticipantsMock.others } returns listOf()
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayImages()
+      
+        val result = callMock.toOtherDisplayImages()
         val actual = result.first()
         val expected = listOf<Uri>()
         Assert.assertEquals(expected, actual)
@@ -214,8 +214,8 @@ class ParticipantMapperTest {
     @Test
     fun filledOtherParticipants_toOtherDisplayImages_displayImagesList() = runTest {
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayImages()
+      
+        val result = callMock.toOtherDisplayImages()
         val actual = result.first()
         val expected = listOf(uriMock1, uriMock2)
         Assert.assertEquals(expected, actual)
@@ -226,8 +226,8 @@ class ParticipantMapperTest {
         val participants = MutableStateFlow(callParticipantsMock)
         every { callMock.participants } returns participants
         every { callParticipantsMock.others } returns listOf(participantMock1)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayImages()
+      
+        val result = callMock.toOtherDisplayImages()
         val actual = result.first()
         val expected = listOf(uriMock1)
         Assert.assertEquals(expected, actual)
@@ -246,8 +246,8 @@ class ParticipantMapperTest {
         val participants = MutableStateFlow(callParticipantsMock)
         every { callMock.participants } returns participants
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayImages()
+      
+        val result = callMock.toOtherDisplayImages()
         val actual = result.first()
         val expected = listOf(uriMock1, uriMock2)
         Assert.assertEquals(expected, actual)
@@ -271,8 +271,8 @@ class ParticipantMapperTest {
         }
         every { callParticipantsMock.others } returns listOf(participantMock1, participantMock3)
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
-        val call = MutableStateFlow(callMock)
-        val result = call.toOtherDisplayImages()
+      
+        val result = callMock.toOtherDisplayImages()
         val actual = result.first()
         val expected = listOf(uriMock1, uriMock2)
         Assert.assertEquals(expected, actual)
@@ -287,7 +287,7 @@ class ParticipantMapperTest {
     fun testToMyState() = runTest {
         every { callParticipantsMock.me } returns participantMeMock
         every { participantMeMock.state } returns MutableStateFlow(CallParticipant.State.InCall)
-        val actual = flowOf(callMock).toMyParticipantState().first()
+        val actual = callMock.toMyParticipantState().first()
         assertEquals(CallParticipant.State.InCall, actual)
     }
 

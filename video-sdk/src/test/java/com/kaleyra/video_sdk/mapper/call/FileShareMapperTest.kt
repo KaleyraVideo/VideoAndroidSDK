@@ -141,7 +141,7 @@ class FileShareMapperTest {
     @Test
     fun emptySet_toSharedFilesUi_emptyMappedSet() = runTest {
         every { sharedFolderMock.files } returns MutableStateFlow(setOf())
-        val result = flowOf(callMock).toSharedFilesUi()
+        val result = callMock.toSharedFilesUi()
         val actual = result.first()
         assertEquals(setOf<SharedFileUi>(), actual)
     }
@@ -149,7 +149,7 @@ class FileShareMapperTest {
     @Test
     fun notEmptySet_toSharedFilesUi_mappedSet() = runTest {
         every { sharedFolderMock.files } returns MutableStateFlow(setOf(sharedFileMock1, sharedFileMock2))
-        val result = flowOf(callMock).toSharedFilesUi()
+        val result = callMock.toSharedFilesUi()
         val actual = result.first()
         val expected = setOf(sharedFileUi1, sharedFileUi2)
         assertEquals(expected, actual)
@@ -162,7 +162,7 @@ class FileShareMapperTest {
         every { sharedFileMock2.sender } returns meMock
         every { sharedFolderMock.files } returns MutableStateFlow(setOf(sharedFileMock1, sharedFileMock2))
 
-        val flow = flowOf(callMock).toSharedFilesUi()
+        val flow = callMock.toSharedFilesUi()
         val actual = flow.first()
         val expected = setOf(sharedFileUi1, sharedFileUi2.copy(sender = "myDisplayName", isMine = true))
         assertEquals(expected, actual)
@@ -179,7 +179,7 @@ class FileShareMapperTest {
         every { senderMock2.combinedDisplayName } returns displayName
         every { sharedFolderMock.files } returns MutableStateFlow(setOf(sharedFileMock1, sharedFileMock2))
 
-        val flow = flowOf(callMock).toSharedFilesUi()
+        val flow = callMock.toSharedFilesUi()
         val actual = flow.first()
         val expected = setOf(sharedFileUi1, sharedFileUi2.copy(sender = "oldDisplayName"))
         assertEquals(expected, actual)
@@ -196,7 +196,7 @@ class FileShareMapperTest {
         every { sharedFileMock2.state } returns state
         every { sharedFolderMock.files } returns MutableStateFlow(setOf(sharedFileMock1, sharedFileMock2))
 
-        val flow = flowOf(callMock).toSharedFilesUi()
+        val flow = callMock.toSharedFilesUi()
         val actual = flow.first()
         val expected = setOf(sharedFileUi1, sharedFileUi2.copy(state = SharedFileUi.State.Pending))
         assertEquals(expected, actual)

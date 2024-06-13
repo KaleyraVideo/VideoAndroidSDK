@@ -30,13 +30,13 @@ import kotlinx.coroutines.flow.map
 
 internal object CallActionsMapper {
 
-    fun Flow<CallUI>.isFileSharingSupported(): Flow<Boolean> {
-        return this.flatMapLatest { it.actions }.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
+    fun CallUI.isFileSharingSupported(): Flow<Boolean> {
+        return this.actions.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
     }
 
-    fun Flow<CallUI>.toCallActions(companyId: Flow<String>): Flow<List<CallAction>> =
+    fun CallUI.toCallActions(companyId: Flow<String>): Flow<List<CallAction>> =
         combine(
-            flatMapLatest { it.actions },
+            actions,
             hasVirtualBackground(),
             isAudioOnly(),
             hasAudio(),

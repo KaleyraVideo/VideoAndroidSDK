@@ -93,8 +93,7 @@ class InputMapperTest {
     fun cameraStreamVideoEnabled_isMyCameraEnabled_true() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { videoMock.enabled } returns MutableStateFlow(true)
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyCameraEnabled()
+        val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -103,8 +102,7 @@ class InputMapperTest {
     fun cameraStreamVideoDisabled_isMyCameraEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { videoMock.enabled } returns MutableStateFlow(false)
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyCameraEnabled()
+        val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -115,8 +113,7 @@ class InputMapperTest {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(null)
         }
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyCameraEnabled()
+        val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -125,8 +122,7 @@ class InputMapperTest {
     fun cameraStreamNotExists_isMyCameraEnabled_false() = runTest {
         every { streamMock.id } returns "streamId"
         every { videoMock.enabled } returns MutableStateFlow(false)
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyCameraEnabled()
+        val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -135,8 +131,7 @@ class InputMapperTest {
     fun cameraStreamAudioEnabled_isMyMicEnabled_true() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.enabled } returns MutableStateFlow(true)
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyMicEnabled()
+        val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -144,8 +139,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamNotExists_isMyMicEnabled_false() = runTest {
         every { streamMock.id } returns "streamId"
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyMicEnabled()
+        val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -156,18 +150,16 @@ class InputMapperTest {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyMicEnabled()
+        val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
-    
+
     @Test
     fun cameraStreamAudioDisable_isMyMicEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.enabled } returns MutableStateFlow(false)
-        val call = MutableStateFlow(callMock)
-        val result = call.isMyMicEnabled()
+        val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -175,8 +167,7 @@ class InputMapperTest {
     @Test
     fun sharingStreamInStreamList_isSharingScreen_true() = runTest {
         every { streamMock.id } returns ScreenShareViewModel.SCREEN_SHARE_STREAM_ID
-        val call = MutableStateFlow(callMock)
-        val result = call.isSharingScreen()
+        val result = callMock.isSharingScreen()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -184,8 +175,7 @@ class InputMapperTest {
     @Test
     fun sharingStreamNotInStreamList_isSharingScreen_false() = runTest {
         every { streamMock.id } returns "id"
-        val call = MutableStateFlow(callMock)
-        val result = call.isSharingScreen()
+        val result = callMock.isSharingScreen()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -193,8 +183,7 @@ class InputMapperTest {
     @Test
     fun preferredTypeHasVideoNull_isAudioOnly_true() = runTest {
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioOnly()
+        val result = callMock.isAudioOnly()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -203,8 +192,7 @@ class InputMapperTest {
     fun preferredTypeChanged_isAudioOnly_changes() = runTest {
         val preferredTypeFlow =  MutableStateFlow(Call.PreferredType.audioOnly())
         every { callMock.preferredType } returns preferredTypeFlow
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioOnly()
+        val result = callMock.isAudioOnly()
         val actual = result.first()
         assertEquals(true, actual)
         preferredTypeFlow.value = Call.PreferredType.audioVideo()
@@ -215,8 +203,7 @@ class InputMapperTest {
     @Test
     fun preferredTypeHasVideo_isAudioOnly_false() = runTest {
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioOnly()
+        val result = callMock.isAudioOnly()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -224,8 +211,7 @@ class InputMapperTest {
     @Test
     fun preferredTypeHasVideoEnabled_isAudioVideo_true() = runTest {
         every { callMock.preferredType } returns  MutableStateFlow(Call.PreferredType.audioVideo())
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioVideo()
+        val result = callMock.isAudioVideo()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -234,8 +220,7 @@ class InputMapperTest {
     fun preferredTypeChanged_isAudioVideo_changes() = runTest {
         val preferredTypeFlow =  MutableStateFlow(Call.PreferredType.audioOnly())
         every { callMock.preferredType } returns preferredTypeFlow
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioVideo()
+        val result = callMock.isAudioVideo()
         val actual = result.first()
         assertEquals(false, actual)
         preferredTypeFlow.value = Call.PreferredType.audioVideo()
@@ -246,8 +231,7 @@ class InputMapperTest {
     @Test
     fun preferredTypeHasVideoDisabled_isAudioVideo_false() = runTest {
         every { callMock.preferredType } returns  MutableStateFlow(Call.PreferredType.audioUpgradable())
-        val call = MutableStateFlow(callMock)
-        val result = call.isAudioVideo()
+        val result = callMock.isAudioVideo()
         val actual = result.first()
         assertEquals(false, actual)
     }
@@ -255,8 +239,7 @@ class InputMapperTest {
     @Test
     fun preferredTypeHasAudio_hasAudio_true() = runTest {
         every { callMock.preferredType } returns  MutableStateFlow(Call.PreferredType.audioVideo())
-        val call = MutableStateFlow(callMock)
-        val result = call.hasAudio()
+        val result = callMock.hasAudio()
         val actual = result.first()
         assertEquals(true, actual)
     }
@@ -272,8 +255,7 @@ class InputMapperTest {
         every { event.producer } returns producer
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.events } returns MutableStateFlow(event)
-        val call = MutableStateFlow(callMock)
-        val result = call.toMutedMessage()
+        val result = callMock.toMutedMessage()
         val actual = result.first()
         assertEquals("username", actual.admin)
     }
@@ -281,24 +263,21 @@ class InputMapperTest {
     @Test
     fun usbCameraNotInAvailableInputs_hasUsbCamera_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Internal>()))
-        val call = MutableStateFlow(callMock)
-        val actual = call.hasUsbCamera().first()
+        val actual = callMock.hasUsbCamera().first()
         assertEquals(false, actual)
     }
 
     @Test
     fun usbCameraInAvailableInputs_hasUsbCamera_true() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Usb>()))
-        val call = MutableStateFlow(callMock)
-        val actual = call.hasUsbCamera().first()
+        val actual = callMock.hasUsbCamera().first()
         assertEquals(true, actual)
     }
 
     @Test
     fun usbCameraNotInAvailableInputs_toUsbCameraMessage_usbCameraDisconnectedMessage() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
-        val call = MutableStateFlow(callMock)
-        val actual = call.toUsbCameraMessage().first()
+        val actual = callMock.toUsbCameraMessage().first()
         assert(actual is UsbCameraMessage.Disconnected)
     }
 
@@ -307,8 +286,7 @@ class InputMapperTest {
         mockkObject(UsbCameraUtils)
         every { UsbCameraUtils.isSupported() } returns true
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Usb>(relaxed = true)))
-        val call = MutableStateFlow(callMock)
-        val actual = call.toUsbCameraMessage().first()
+        val actual = callMock.toUsbCameraMessage().first()
         assert(actual is UsbCameraMessage.Connected)
     }
 
@@ -317,8 +295,7 @@ class InputMapperTest {
         mockkObject(UsbCameraUtils)
         every { UsbCameraUtils.isSupported() } returns false
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Usb>(relaxed = true)))
-        val call = MutableStateFlow(callMock)
-        val actual = call.toUsbCameraMessage().first()
+        val actual = callMock.toUsbCameraMessage().first()
         assert(actual is UsbCameraMessage.NotSupported)
     }
 
@@ -328,8 +305,7 @@ class InputMapperTest {
         with(CollaborationAudioExtensions) {
             every { callMock.failedAudioOutputDevice } returns MutableStateFlow(AudioOutputConnectionError(AudioOutputDevice.Loudspeaker(), isInSystemCall = false))
         }
-        val call = MutableStateFlow(callMock)
-        val actual = call.toAudioConnectionFailureMessage().first()
+        val actual = callMock.toAudioConnectionFailureMessage().first()
         assert(actual is AudioConnectionFailureMessage.Generic)
     }
 
@@ -339,8 +315,7 @@ class InputMapperTest {
         with(CollaborationAudioExtensions) {
             every { callMock.failedAudioOutputDevice } returns MutableStateFlow(AudioOutputConnectionError(AudioOutputDevice.Loudspeaker(), isInSystemCall = true))
         }
-        val call = MutableStateFlow(callMock)
-        val actual = call.toAudioConnectionFailureMessage().first()
+        val actual = callMock.toAudioConnectionFailureMessage().first()
         assert(actual is AudioConnectionFailureMessage.InSystemCall)
     }
 
@@ -349,8 +324,7 @@ class InputMapperTest {
         val video = mockk<Input.Video>()
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(video))
         every { video.state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(false, actual)
     }
 
@@ -358,8 +332,7 @@ class InputMapperTest {
     fun inputStateIdle_isUsbCameraWaitingPermission_false() = runTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Idle)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(false, actual)
     }
 
@@ -367,8 +340,7 @@ class InputMapperTest {
     fun inputStateAwaitingPermission_isUsbCameraWaitingPermission_true() = runTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(true, actual)
     }
 
@@ -376,8 +348,7 @@ class InputMapperTest {
     fun inputStateActive_isUsbCameraWaitingPermission_false() = runTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Active)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(false, actual)
     }
 
@@ -385,8 +356,7 @@ class InputMapperTest {
     fun inputStateClosed_isUsbCameraWaitingPermission_false() = runTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Closed)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(false, actual)
     }
 
@@ -394,8 +364,7 @@ class InputMapperTest {
     fun inputStateClosedError_isUsbCameraWaitingPermission_false() = runTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Closed.Error)
-        val flow = flowOf(callMock)
-        val actual = flow.isUsbCameraWaitingPermission().first()
+        val actual = callMock.isUsbCameraWaitingPermission().first()
         assertEquals(false, actual)
     }
 }
