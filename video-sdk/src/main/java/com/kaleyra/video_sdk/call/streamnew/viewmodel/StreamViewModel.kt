@@ -12,13 +12,16 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-// TODO test this class
 internal class StreamViewModel(configure: suspend () -> Configuration) : BaseViewModel<StreamUiState>(configure) {
 
     override fun initialState() = StreamUiState()
@@ -26,32 +29,36 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     private var maxPinnedStreams = 0
 
     init {
-        combine(
-            call.toInCallParticipants(),
-            call.toStreamsUi(),
-            call.toCallStateUi()
-        ) { p, s, c -> Triple(p, s, c) }
-            .debounce { (participants, streams, callState: CallStateUi) ->
-                determineDebounceDelay(participants, streams, callState)
-            }
-            .onEach { (_, streams, callState) ->
-                val updatedStreams = when (callState) {
-                    CallStateUi.Disconnected.Ended -> emptyList()
-                    else -> streams
-                }
+        viewModelScope.launch {
+            val call = call.first()
 
-                // Avoid unnecessary updates if streams haven't changed
-                if (updatedStreams == uiState.value.streams.value) return@onEach
-
-                _uiState.update {
-                    it.copy(
-                        streams = updatedStreams.toImmutableList(),
-                        fullscreenStream = findCurrentFullscreenStream(streams, callState),
-                        pinnedStreams = updatePinnedStreams(streams).toImmutableList()
-                    )
+            combine(
+                call.toInCallParticipants(),
+                call.toStreamsUi(),
+                call.toCallStateUi()
+            ) { p, s, c -> Triple(p, s, c) }
+                .debounce { (participants, streams, callState: CallStateUi) ->
+                    determineDebounceDelay(participants, streams, callState)
                 }
-            }
-            .launchIn(viewModelScope)
+                .onEach { (_, streams, callState) ->
+                    val updatedStreams = when (callState) {
+                        CallStateUi.Disconnected.Ended -> emptyList()
+                        else -> streams
+                    }
+
+                    // Avoid unnecessary updates if streams haven't changed
+//                if (updatedStreams == uiState.value.streams.value) return@onEach
+
+                    _uiState.update {
+                        it.copy(
+                            streams = updatedStreams.toImmutableList(),
+//                        fullscreenStream = findCurrentFullscreenStream(streams, callState),
+//                        pinnedStreams = updatePinnedStreams(streams).toImmutableList()
+                        )
+                    }
+                }
+                .launchIn(this)
+        }
     }
 
     fun fullscreen(stream: StreamUi?) {
