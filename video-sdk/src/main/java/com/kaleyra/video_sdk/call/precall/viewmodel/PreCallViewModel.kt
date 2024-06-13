@@ -57,31 +57,35 @@ internal abstract class PreCallViewModel<T : PreCallUiState<T>>(configure: suspe
             _uiState.update { it.clone(isLink = call.first().isLink) }
         }
 
-        call
-            .toMyStreamsUi()
-            .onEach { streams -> _uiState.update { it.clone(video = streams.firstOrNull()?.video) } }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
 
-        call
-            .toOtherDisplayNames()
-            .onEach { names ->
-                if (uiState.value.participants.value == names) return@onEach
-                _uiState.update { it.clone(participants = ImmutableList(names)) }
-            }
-            .launchIn(viewModelScope)
+            call
+                .toMyStreamsUi()
+                .onEach { streams -> _uiState.update { it.clone(video = streams.firstOrNull()?.video) } }
+                .launchIn(viewModelScope)
 
-        call
-            .toOtherDisplayImages()
-            .onEach { images ->
-                val avatar = images.firstOrNull()
-                if (avatar == null || uiState.value.avatar?.value == avatar) return@onEach
-                _uiState.update { it.clone(avatar = ImmutableUri(avatar)) }
-            }
-            .launchIn(viewModelScope)
+            call
+                .toOtherDisplayNames()
+                .onEach { names ->
+                    if (uiState.value.participants.value == names) return@onEach
+                    _uiState.update { it.clone(participants = ImmutableList(names)) }
+                }
+                .launchIn(viewModelScope)
 
-        call
-            .isAudioVideo()
-            .onEach { isAudioVideo -> _uiState.update { it.clone(isAudioVideo = isAudioVideo) } }
-            .launchIn(viewModelScope)
+            call
+                .toOtherDisplayImages()
+                .onEach { images ->
+                    val avatar = images.firstOrNull()
+                    if (avatar == null || uiState.value.avatar?.value == avatar) return@onEach
+                    _uiState.update { it.clone(avatar = ImmutableUri(avatar)) }
+                }
+                .launchIn(viewModelScope)
+
+            call
+                .isAudioVideo()
+                .onEach { isAudioVideo -> _uiState.update { it.clone(isAudioVideo = isAudioVideo) } }
+                .launchIn(viewModelScope)
+        }
     }
 }

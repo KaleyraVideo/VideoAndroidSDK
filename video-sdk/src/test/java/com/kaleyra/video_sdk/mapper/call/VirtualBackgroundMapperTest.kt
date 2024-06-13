@@ -74,24 +74,24 @@ class VirtualBackgroundMapperTest {
     @Test
     fun backgroundBlurEffect_toCurrentVirtualBackground_blurBackgroundUi() = runTest {
         every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur(id = "blurId", factor = 1f))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.toCurrentVirtualBackgroundUi().first()
+        
+        val actual = callMock.toCurrentVirtualBackgroundUi().first()
         Assert.assertEquals(VirtualBackgroundUi.Blur("blurId"), actual)
     }
 
     @Test
     fun backgroundImageEffect_toCurrentVirtualBackground_imageBackgroundUi() = runTest {
         every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = mockk()))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.toCurrentVirtualBackgroundUi().first()
+        
+        val actual = callMock.toCurrentVirtualBackgroundUi().first()
         Assert.assertEquals(VirtualBackgroundUi.Image("imageId"), actual)
     }
 
     @Test
     fun backgroundNoneEffect_toCurrentVirtualBackground_noneBackgroundUi() = runTest {
         every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.None)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.toCurrentVirtualBackgroundUi().first()
+        
+        val actual = callMock.toCurrentVirtualBackgroundUi().first()
         Assert.assertEquals(VirtualBackgroundUi.None, actual)
     }
 
@@ -99,8 +99,8 @@ class VirtualBackgroundMapperTest {
     fun emptyAvailableVideoEffect_toVirtualBackgroundsUi_listHasOnlyNoneBackground() = runTest {
         every { effectsMock.available } returns MutableStateFlow(setOf())
         every { effectsMock.preselected } returns MutableStateFlow(Effect.Video.None)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.toVirtualBackgroundsUi().first()
+        
+        val actual = callMock.toVirtualBackgroundsUi().first()
         Assert.assertEquals(listOf<VirtualBackgroundUi>(VirtualBackgroundUi.None), actual)
     }
 
@@ -108,8 +108,8 @@ class VirtualBackgroundMapperTest {
     fun availableVideoEffectList_toVirtualBackgroundsUi_mappedVirtualBackgroundUiList() = runTest {
         every { effectsMock.available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(id = "blurId", factor = 1f), Effect.Video.Background.Image(id = "imageId", image = mockk()), Effect.Video.Background.Image(id = "imageId2", image = mockk())))
         every { effectsMock.preselected } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = mockk()))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.toVirtualBackgroundsUi().first()
+        
+        val actual = callMock.toVirtualBackgroundsUi().first()
         Assert.assertEquals(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Blur(id = "blurId"), VirtualBackgroundUi.Image(id = "imageId")), actual)
     }
 
@@ -117,8 +117,8 @@ class VirtualBackgroundMapperTest {
     fun emptyAvailableEffectsAndPreselectedEffectNone_hasVirtualBackground_false() = runTest {
         every { effectsMock.available } returns MutableStateFlow(setOf())
         every { effectsMock.preselected } returns MutableStateFlow(Effect.Video.None)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.hasVirtualBackground().first()
+        
+        val actual = callMock.hasVirtualBackground().first()
         Assert.assertEquals(false, actual)
     }
 
@@ -126,24 +126,24 @@ class VirtualBackgroundMapperTest {
     fun availableEffectsNotNullAndPreselectedEffectNotNone_hasVirtualBackground_true() = runTest {
         every { effectsMock.available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(factor = 1f)))
         every { effectsMock.preselected } returns MutableStateFlow(Effect.Video.Background.Image(image = mockk()))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.hasVirtualBackground().first()
+        
+        val actual = callMock.hasVirtualBackground().first()
         Assert.assertEquals(true, actual)
     }
 
     @Test
     fun cameraEffectIsNone_isVirtualBackgroundEnabled_false() = runTest {
         every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.None)
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isVirtualBackgroundEnabled().first()
+        
+        val actual = callMock.isVirtualBackgroundEnabled().first()
         Assert.assertEquals(false, actual)
     }
 
     @Test
     fun cameraHasABackgroundEffect_isVirtualBackgroundEnabled_true() = runTest {
         every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur(factor = 1f))
-        val flow = MutableStateFlow(callMock)
-        val actual = flow.isVirtualBackgroundEnabled().first()
+        
+        val actual = callMock.isVirtualBackgroundEnabled().first()
         Assert.assertEquals(true, actual)
     }
 }

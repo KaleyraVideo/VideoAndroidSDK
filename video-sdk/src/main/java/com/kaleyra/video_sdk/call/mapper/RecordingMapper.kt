@@ -29,24 +29,24 @@ import kotlinx.coroutines.flow.map
 
 internal object RecordingMapper {
 
-    fun Flow<Call>.toRecordingTypeUi(): Flow<RecordingTypeUi> =
-        this.flatMapLatest { it.recording }
+    fun Call.toRecordingTypeUi(): Flow<RecordingTypeUi> =
+        this.recording
             .map { it.type.mapToRecordingTypeUi() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.toRecordingStateUi(): Flow<RecordingStateUi> =
-        this.flatMapLatest { it.recording }
+    fun Call.toRecordingStateUi(): Flow<RecordingStateUi> =
+        this.recording
             .flatMapLatest { it.state }
             .map { it.mapToRecordingStateUi() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.toRecordingMessage(): Flow<RecordingMessage> =
-        this.flatMapLatest { it.recording }
+    fun Call.toRecordingMessage(): Flow<RecordingMessage> =
+        this.recording
             .flatMapLatest { it.state }
             .map { it.mapToRecordingMessage() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.toRecordingUi(): Flow<RecordingUi> =
+    fun Call.toRecordingUi(): Flow<RecordingUi> =
         combine(toRecordingTypeUi(), toRecordingStateUi()) { type, state ->
             RecordingUi(type, state)
         }.distinctUntilChanged()

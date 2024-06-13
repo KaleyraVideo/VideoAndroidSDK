@@ -37,6 +37,7 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure),
@@ -68,26 +69,31 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
                 whiteboard.getValue()?.unload()
             }.launchIn(viewModelScope)
 
-        call
-            .isFileSharingSupported()
-            .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
 
-        call
-            .isWhiteboardLoading()
-            .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
-            .launchIn(viewModelScope)
+            call
+                .isFileSharingSupported()
+                .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
+                .launchIn(viewModelScope)
 
-        call
-            .getWhiteboardTextEvents()
-            .onEach { event ->
-                val (onCompletion, text) = when (event) {
-                    is Whiteboard.Event.Text.Edit -> Pair(event.completion, event.oldText)
-                    is Whiteboard.Event.Text.Add -> Pair(event.completion, "")
-                }
-                onTextConfirmed.value = onCompletion
-                _uiState.update { it.copy(text = text) }
-            }.launchIn(viewModelScope)
+            call
+                .isWhiteboardLoading()
+                .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
+                .launchIn(viewModelScope)
+
+            call
+                .getWhiteboardTextEvents()
+                .onEach { event ->
+                    val (onCompletion, text) = when (event) {
+                        is Whiteboard.Event.Text.Edit -> Pair(event.completion, event.oldText)
+                        is Whiteboard.Event.Text.Add -> Pair(event.completion, "")
+                    }
+                    onTextConfirmed.value = onCompletion
+                    _uiState.update { it.copy(text = text) }
+                }.launchIn(viewModelScope)
+        }
+
     }
 
     override fun onCleared() {

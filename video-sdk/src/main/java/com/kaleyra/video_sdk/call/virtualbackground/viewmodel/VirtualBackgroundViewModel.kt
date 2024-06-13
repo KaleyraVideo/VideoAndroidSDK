@@ -27,26 +27,32 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgr
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration) : BaseViewModel<VirtualBackgroundUiState>(configure) {
 
     override fun initialState() = VirtualBackgroundUiState()
 
     init {
-        call
-            .toCurrentVirtualBackgroundUi()
-            .onEach { background -> _uiState.update { it.copy(currentBackground = background) } }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
 
-        call
-            .toVirtualBackgroundsUi()
-            .onEach { backgrounds ->
-                _uiState.update { it.copy(backgroundList = ImmutableList(backgrounds)) }
-            }
-            .launchIn(viewModelScope)
+            call
+                .toCurrentVirtualBackgroundUi()
+                .onEach { background -> _uiState.update { it.copy(currentBackground = background) } }
+                .launchIn(viewModelScope)
+
+            call
+                .toVirtualBackgroundsUi()
+                .onEach { backgrounds ->
+                    _uiState.update { it.copy(backgroundList = ImmutableList(backgrounds)) }
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun setEffect(background: VirtualBackgroundUi) {

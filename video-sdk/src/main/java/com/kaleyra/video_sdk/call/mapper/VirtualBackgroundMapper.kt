@@ -30,38 +30,33 @@ import kotlinx.coroutines.flow.mapNotNull
 
 internal object VirtualBackgroundMapper {
 
-    fun Flow<CallUI>.toCurrentVirtualBackgroundUi(): Flow<VirtualBackgroundUi> =
+    fun CallUI.toCurrentVirtualBackgroundUi(): Flow<VirtualBackgroundUi> =
         this.toCurrentCameraVideoEffect()
             .map { it.mapToVirtualBackgroundUi() }
             .filterNotNull()
             .distinctUntilChanged()
 
-    fun Flow<CallUI>.toVirtualBackgroundsUi(): Flow<List<VirtualBackgroundUi>> {
-        val effectsFlow = this.map { it.effects }
-        val availableFlow = effectsFlow.flatMapLatest { it.available }
-        val preselectedFlow = effectsFlow.flatMapLatest { it.preselected }
-        return combine(availableFlow, preselectedFlow) { available, preselected ->
+    fun CallUI.toVirtualBackgroundsUi(): Flow<List<VirtualBackgroundUi>> {
+        return combine(effects.available, effects.preselected) { available, preselected ->
             val blur = available.firstOrNull { it is Effect.Video.Background.Blur }?.mapToVirtualBackgroundUi()
             val image = preselected.takeIf { it is Effect.Video.Background.Image }?.mapToVirtualBackgroundUi()
             listOfNotNull(VirtualBackgroundUi.None, blur, image)
         }.distinctUntilChanged()
     }
 
-    fun Flow<CallUI>.hasVirtualBackground(): Flow<Boolean> {
-        val preselectedFlow= this.flatMapLatest { it.effects.preselected }
-        val availableFlow = this.flatMapLatest { it.effects.available }
-        return combine(preselectedFlow, availableFlow) { preselectedEffect, availableEffect ->
+    fun CallUI.hasVirtualBackground(): Flow<Boolean> {
+        return combine(effects.preselected, effects.available) { preselectedEffect, availableEffect ->
             preselectedEffect != Effect.Video.None && availableEffect.isNotEmpty()
         }.distinctUntilChanged()
     }
 
-    fun Flow<CallUI>.isVirtualBackgroundEnabled(): Flow<Boolean> =
+    fun CallUI.isVirtualBackgroundEnabled(): Flow<Boolean> =
         this.toCurrentCameraVideoEffect()
             .map { it != Effect.Video.None }
             .distinctUntilChanged()
 
-    private fun Flow<CallUI>.toCurrentCameraVideoEffect(): Flow<Effect> =
-        this.flatMapLatest { it.participants }
+    private fun CallUI.toCurrentCameraVideoEffect(): Flow<Effect> =
+        this.participants
             .mapNotNull { it.me }
             .flatMapLatest { it.streams }
             .map { streams ->

@@ -43,14 +43,14 @@ internal object AudioOutputMapper {
         }
     }
 
-    fun Flow<CallUI>.toCurrentAudioDeviceUi(): Flow<AudioDeviceUi?> {
-        return this.flatMapLatest { it.currentAudioOutputDevice }
+    fun CallUI.toCurrentAudioDeviceUi(): Flow<AudioDeviceUi?> {
+        return this.currentAudioOutputDevice
                 .map { it?.mapToAudioDeviceUi() }
                 .distinctUntilChanged()
     }
 
-    fun Flow<CallUI>.toAvailableAudioDevicesUi(): Flow<List<AudioDeviceUi>> =
-        this.flatMapLatest { it.audioOutputDevicesList }
+    fun CallUI.toAvailableAudioDevicesUi(): Flow<List<AudioDeviceUi>> =
+        this.audioOutputDevicesList
             .map { list -> list.map { it.mapToAudioDeviceUi() } }
             .distinctUntilChanged()
 

@@ -28,16 +28,13 @@ import kotlinx.coroutines.flow.map
 
 internal object WhiteboardMapper {
 
-    fun Flow<CallUI>.isWhiteboardLoading(): Flow<Boolean> =
-        this.map { it.whiteboard }
-            .flatMapLatest { it.state }
+    fun CallUI.isWhiteboardLoading(): Flow<Boolean> =
+        this.whiteboard.state
             .map { it is Whiteboard.State.Loading }
             .distinctUntilChanged()
 
-    fun Flow<CallUI>.getWhiteboardTextEvents(): Flow<Whiteboard.Event.Text> =
-        this.map { it.whiteboard }
-            .flatMapLatest { it.events }
-            .filterIsInstance()
+    fun CallUI.getWhiteboardTextEvents(): Flow<Whiteboard.Event.Text> =
+        this.whiteboard.events.filterIsInstance()
 
     fun SharedFile.toWhiteboardUploadUi(): Flow<WhiteboardUploadUi?> {
         return state.map { state ->

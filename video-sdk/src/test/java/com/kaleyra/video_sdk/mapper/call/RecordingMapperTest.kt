@@ -64,63 +64,63 @@ class RecordingMapperTest {
     @Test
     fun recordingTypeNever_toRecordingTypeUi_never() = runTest {
         every { recordingMock.type } returns Call.Recording.Type.Never
-        val result = MutableStateFlow(callMock).toRecordingTypeUi()
+        val result = callMock.toRecordingTypeUi()
         Assert.assertEquals(RecordingTypeUi.Never, result.first())
     }
 
     @Test
     fun recordingTypeOnConnect_toRecordingTypeUi_onConnect() = runTest {
         every { recordingMock.type } returns Call.Recording.Type.OnConnect
-        val result = MutableStateFlow(callMock).toRecordingTypeUi()
+        val result = callMock.toRecordingTypeUi()
         Assert.assertEquals(RecordingTypeUi.OnConnect, result.first())
     }
 
     @Test
     fun recordingTypeOnDemand_toRecordingTypeUi_onDemand() = runTest {
         every { recordingMock.type } returns Call.Recording.Type.OnDemand
-        val result = MutableStateFlow(callMock).toRecordingTypeUi()
+        val result = callMock.toRecordingTypeUi()
         Assert.assertEquals(RecordingTypeUi.OnDemand, result.first())
     }
 
     @Test
     fun recordingStateStarted_toRecordingStateUi_recordingStateUiStarted() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
-        val result = MutableStateFlow(callMock).toRecordingStateUi()
+        val result = callMock.toRecordingStateUi()
         Assert.assertEquals(RecordingStateUi.Started, result.first())
     }
 
     @Test
     fun recordingStateStopped_toRecordingStateUi_recordingStateUiStopped() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Stopped)
-        val result = MutableStateFlow(callMock).toRecordingStateUi()
+        val result = callMock.toRecordingStateUi()
         Assert.assertEquals(RecordingStateUi.Stopped, result.first())
     }
 
     @Test
     fun recordingStateError_toRecordingStateUi_recordingStateUiError() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Stopped.Error)
-        val result = MutableStateFlow(callMock).toRecordingStateUi()
+        val result = callMock.toRecordingStateUi()
         Assert.assertEquals(RecordingStateUi.Error, result.first())
     }
 
     @Test
     fun recordingStateStarted_toRecordingMessage_recordingMessageStarted() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
-        val result = MutableStateFlow(callMock).toRecordingMessage()
+        val result = callMock.toRecordingMessage()
         assert(result.first() is RecordingMessage.Started)
     }
 
     @Test
     fun recordingStateStopped_toRecordingMessage_recordingMessageStopped() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Stopped)
-        val result = MutableStateFlow(callMock).toRecordingMessage()
+        val result = callMock.toRecordingMessage()
         assert(result.first() is RecordingMessage.Stopped)
     }
 
     @Test
     fun recordingStateError_toRecordingMessage_recordingMessageError() = runTest {
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Stopped.Error)
-        val result = MutableStateFlow(callMock).toRecordingMessage()
+        val result = callMock.toRecordingMessage()
         assert(result.first() is RecordingMessage.Failed)
     }
 
@@ -128,7 +128,7 @@ class RecordingMapperTest {
     fun callRecording_toRecordingUi_mappedRecordingUi() = runTest {
         every { recordingMock.type } returns Call.Recording.Type.OnConnect
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
-        val actual = MutableStateFlow(callMock).toRecordingUi()
+        val actual = callMock.toRecordingUi()
         val expected = RecordingUi(RecordingTypeUi.OnConnect, RecordingStateUi.Started)
         Assert.assertEquals(expected, actual.first())
     }

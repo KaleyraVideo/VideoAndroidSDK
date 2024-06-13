@@ -36,8 +36,8 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 
 internal object StreamMapper {
-    fun Flow<Call>.toStreamsUi(): Flow<List<StreamUi>> =
-        this.flatMapLatest { it.participants }.flatMapLatest { participants ->
+    fun Call.toStreamsUi(): Flow<List<StreamUi>> =
+        this.participants.flatMapLatest { participants ->
             val map = mutableMapOf<String, List<StreamUi>>()
             val participantsList = participants.list
 
@@ -65,8 +65,8 @@ internal object StreamMapper {
                 }
         }.distinctUntilChanged()
 
-    fun Flow<Call>.toMyStreamsUi(): Flow<List<StreamUi>> =
-        this.flatMapLatest { it.participants }
+    fun Call.toMyStreamsUi(): Flow<List<StreamUi>> =
+        this.participants
             .mapNotNull { it.me }
             .flatMapLatest { me ->
                 me.streams.mapToStreamsUi(me.combinedDisplayName, me.combinedDisplayImage)
@@ -109,7 +109,7 @@ internal object StreamMapper {
                 }
         }.distinctUntilChanged()
 
-    fun Flow<Call>.doIHaveStreams(): Flow<Boolean> =
+    fun Call.doIHaveStreams(): Flow<Boolean> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { it.isNotEmpty() }

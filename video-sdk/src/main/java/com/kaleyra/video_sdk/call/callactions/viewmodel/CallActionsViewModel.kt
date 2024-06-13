@@ -51,9 +51,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -61,85 +63,85 @@ import kotlinx.coroutines.launch
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
     override fun initialState() = CallActionsUiState()
 
-    private val callActions = call
-        .toCallActions(company.flatMapLatest { it.id })
-        .shareInEagerly(viewModelScope)
-
-    private val isCallConnected = call
-        .flatMapLatest { it.state }
-        .map { it is Call.State.Connected }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val isCallEnded = call
-        .flatMapLatest { it.state }
-        .map { it is Call.State.Disconnecting || it is Call.State.Disconnected.Ended }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val isMyCameraEnabled = call
-        .isMyCameraEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    private val isMyMicEnabled = call
-        .isMyMicEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    private val isSharingScreen = call
-        .isSharingScreen()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val hasUsbCamera = call
-        .hasUsbCamera()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val currentAudioDevice = call.toCurrentAudioDeviceUi()
-        .filterNotNull()
-        .debounce(300)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
-
-    private val isVirtualBackgroundEnabled = call
-        .isVirtualBackgroundEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val isMeParticipantsInitialed = call
-        .isMeParticipantInitialized()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
 
     private var wasCameraRestrictionMessageSent = false
 
+    private val isMyMicEnabled = call.flatMapLatest { it.isMyMicEnabled() }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     init {
         // TODO check that only the modified call action will be updated ui side
 
-        combine(
-            callActions,
-            isCallConnected,
-            isMyCameraEnabled,
-            isMyMicEnabled,
-            isSharingScreen,
-            currentAudioDevice,
-            isVirtualBackgroundEnabled,
-            hasUsbCamera,
-            isMeParticipantsInitialed
-        ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioDevice, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
-            val actions = callActions
-                .updateActionIfExists(CallAction.Microphone(isToggled = !isMyMicEnabled, isEnabled = isMeParticipantsInitialed))
-                .updateActionIfExists(CallAction.Camera(isToggled = !isMyCameraEnabled, isEnabled = isMeParticipantsInitialed))
-                .updateActionIfExists(CallAction.Audio(device = currentAudioDevice))
-                .updateActionIfExists(CallAction.FileShare(isEnabled = isCallConnected))
-                .updateActionIfExists(CallAction.ScreenShare(isToggled = isSharingScreen, isEnabled = isCallConnected))
-                .updateActionIfExists(CallAction.VirtualBackground(isToggled = isVirtualBackgroundEnabled))
-                .updateActionIfExists(CallAction.Whiteboard(isEnabled = isCallConnected))
-                .updateActionIfExists(CallAction.SwitchCamera(isEnabled = !hasUsbCamera && isMyCameraEnabled))
-            ImmutableList(actions)
-        }
-            .distinctUntilChanged()
-            .combine(isCallEnded) { actions, isCallEnded ->
-                if (!isCallEnded) _uiState.update { it.copy(actionList = actions) }
-                isCallEnded
+        viewModelScope.launch {
+            val call = call.first()
+
+            val callActions = call
+                .toCallActions(company.flatMapLatest { it.id })
+                .shareInEagerly(viewModelScope)
+
+            val isCallConnected = call.state
+                .map { it is Call.State.Connected }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            val isCallEnded = call.state
+                .map { it is Call.State.Disconnecting || it is Call.State.Disconnected.Ended }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            val isMyCameraEnabled = call
+                .isMyCameraEnabled()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+            val isSharingScreen = call
+                .isSharingScreen()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            val hasUsbCamera = call
+                .hasUsbCamera()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            val currentAudioDevice = call.toCurrentAudioDeviceUi()
+                .filterNotNull()
+                .debounce(300)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
+
+            val isVirtualBackgroundEnabled = call
+                .isVirtualBackgroundEnabled()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            val isMeParticipantsInitialed = call
+                .isMeParticipantInitialized()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+            combine(
+                callActions,
+                isCallConnected,
+                isMyCameraEnabled,
+                isMyMicEnabled,
+                isSharingScreen,
+                currentAudioDevice,
+                isVirtualBackgroundEnabled,
+                hasUsbCamera,
+                isMeParticipantsInitialed
+            ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioDevice, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
+                val actions = callActions
+                    .updateActionIfExists(CallAction.Microphone(isToggled = !isMyMicEnabled, isEnabled = isMeParticipantsInitialed))
+                    .updateActionIfExists(CallAction.Camera(isToggled = !isMyCameraEnabled, isEnabled = isMeParticipantsInitialed))
+                    .updateActionIfExists(CallAction.Audio(device = currentAudioDevice))
+                    .updateActionIfExists(CallAction.FileShare(isEnabled = isCallConnected))
+                    .updateActionIfExists(CallAction.ScreenShare(isToggled = isSharingScreen, isEnabled = isCallConnected))
+                    .updateActionIfExists(CallAction.VirtualBackground(isToggled = isVirtualBackgroundEnabled))
+                    .updateActionIfExists(CallAction.Whiteboard(isEnabled = isCallConnected))
+                    .updateActionIfExists(CallAction.SwitchCamera(isEnabled = !hasUsbCamera && isMyCameraEnabled))
+                ImmutableList(actions)
             }
-            .launchIn(viewModelScope)
+                .distinctUntilChanged()
+                .combine(isCallEnded) { actions, isCallEnded ->
+                    if (!isCallEnded) _uiState.update { it.copy(actionList = actions) }
+                    isCallEnded
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun toggleMic(activity: Activity?) {

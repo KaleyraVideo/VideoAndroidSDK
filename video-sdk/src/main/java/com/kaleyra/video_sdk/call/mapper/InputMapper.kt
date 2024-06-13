@@ -39,35 +39,35 @@ import kotlinx.coroutines.flow.map
 
 internal object InputMapper {
 
-    fun Flow<Call>.toAudioConnectionFailureMessage(): Flow<AudioConnectionFailureMessage> =
-        this.flatMapLatest { it.failedAudioOutputDevice }
+    fun Call.toAudioConnectionFailureMessage(): Flow<AudioConnectionFailureMessage> =
+        this.failedAudioOutputDevice
             .filterNotNull()
             .map {
                 if (it.isInSystemCall) AudioConnectionFailureMessage.InSystemCall
                 else AudioConnectionFailureMessage.Generic
             }
 
-    fun Flow<Call>.toMutedMessage(): Flow<MutedMessage> =
+    fun Call.toMutedMessage(): Flow<MutedMessage> =
         this.toMuteEvents()
             .map { event -> event.producer.combinedDisplayName.first() }
             .map { MutedMessage(it) }
 
-    fun Flow<Call>.isAudioOnly(): Flow<Boolean> =
-        this.flatMapLatest { it.preferredType }
+    fun Call.isAudioOnly(): Flow<Boolean> =
+        this.preferredType
             .map { !it.hasVideo() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.isAudioVideo(): Flow<Boolean> =
-        this.flatMapLatest { it.preferredType }
+    fun Call.isAudioVideo(): Flow<Boolean> =
+        this.preferredType
             .map { it.isVideoEnabled() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.hasAudio(): Flow<Boolean> =
-        this.flatMapLatest { it.preferredType }
+    fun Call.hasAudio(): Flow<Boolean> =
+        this.preferredType
             .map { it.hasAudio() }
             .distinctUntilChanged()
 
-    fun Flow<Call>.isMyCameraEnabled(): Flow<Boolean> =
+    fun Call.isMyCameraEnabled(): Flow<Boolean> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CAMERA_STREAM_ID } }
@@ -75,24 +75,24 @@ internal object InputMapper {
             .flatMapLatest { it?.enabled ?: flowOf(false) }
             .distinctUntilChanged()
 
-    fun Flow<Call>.isMyMicEnabled(): Flow<Boolean> =
+    fun Call.isMyMicEnabled(): Flow<Boolean> =
         this.toCameraStreamAudio()
             .flatMapLatest { it?.enabled ?: flowOf(false) }
             .distinctUntilChanged()
 
-    fun Flow<Call>.isSharingScreen(): Flow<Boolean> =
+    fun Call.isSharingScreen(): Flow<Boolean> =
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.any { stream -> stream.id == SCREEN_SHARE_STREAM_ID } }
             .distinctUntilChanged()
 
-    fun Flow<Call>.hasUsbCamera(): Flow<Boolean> =
-        this.flatMapLatest { it.inputs.availableInputs }
+    fun Call.hasUsbCamera(): Flow<Boolean> =
+        this.inputs.availableInputs
             .map { inputs -> inputs.firstOrNull { it is Input.Video.Camera.Usb } != null }
             .distinctUntilChanged()
 
-    fun Flow<Call>.toUsbCameraMessage(): Flow<UsbCameraMessage> =
-        this.flatMapLatest { it.inputs.availableInputs }
+    fun Call.toUsbCameraMessage(): Flow<UsbCameraMessage> =
+        this.inputs.availableInputs
             .map { inputs ->
                 val usbCamera = inputs.firstOrNull { it is Input.Video.Camera.Usb }
                 when {
@@ -102,9 +102,8 @@ internal object InputMapper {
                 }
             }
 
-    fun Flow<Call>.isUsbCameraWaitingPermission(): Flow<Boolean> =
-        this.map { it.inputs }
-            .flatMapLatest { it.availableInputs }
+    fun Call.isUsbCameraWaitingPermission(): Flow<Boolean> =
+        this.inputs.availableInputs
             .map { inputs -> inputs.firstOrNull { it is Input.Video.Camera.Usb } }
             .flatMapLatest { it?.state ?: flowOf(null) }
             .map { it is Input.State.Closed.AwaitingPermission }

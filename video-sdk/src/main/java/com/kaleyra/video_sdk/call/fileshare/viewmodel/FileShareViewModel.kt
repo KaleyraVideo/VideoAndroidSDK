@@ -31,6 +31,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 internal class FileShareViewModel(configure: suspend () -> Configuration, filePickProvider: FilePickProvider) : BaseViewModel<FileShareUiState>(configure),
     UserMessageViewModel {
@@ -57,12 +58,16 @@ internal class FileShareViewModel(configure: suspend () -> Configuration, filePi
             }
             .launchIn(viewModelScope)
 
-        call
-            .toSharedFilesUi()
-            .onEach { files ->
-                val list = ImmutableList(files.sortedByDescending { it.time })
-                _uiState.update { it.copy(sharedFiles = list) }
-            }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            val call = call.first()
+
+            call
+                .toSharedFilesUi()
+                .onEach { files ->
+                    val list = ImmutableList(files.sortedByDescending { it.time })
+                    _uiState.update { it.copy(sharedFiles = list) }
+                }.launchIn(viewModelScope)
+        }
     }
 
     override fun onCleared() {
