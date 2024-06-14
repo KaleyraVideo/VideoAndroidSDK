@@ -150,6 +150,7 @@
     </plurals>
     <string name="kaleyra_call_status_ringing">Ringing &#8230;</string>
     <string name="kaleyra_call_status_ended">Call ended</string>
+    <string name="kaleyra_call_status_ended_line_busy">Line busy</string>
     <plurals name="kaleyra_call_status_declined">
         <item quantity="one">The user has declined.</item>
         <item quantity="other">All users have declined.</item>

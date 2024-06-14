@@ -320,5 +320,6 @@
 
     <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
     <string name="kaleyra_show_participants_descr">Mostra partecipanti</string>
+    <string name="kaleyra_call_status_ended_line_busy">Linea occupata</string>
 
 </resources>

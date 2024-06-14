@@ -259,4 +259,5 @@
         <item quantity="other">Ningún usuario ha respondido.</item>
     </plurals>
     <string name="kaleyra_show_participants_descr">Mostrar participantes</string>
+    <string name="kaleyra_call_status_ended_line_busy">Linea ocupada</string>
 </resources>
