@@ -38,7 +38,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -175,20 +174,16 @@ internal fun FeedbackForm(
 
 @Composable
 internal fun composableRatingTextFor(feedbackUiRating: FeedbackUiRating): String {
-    val stringId by remember(feedbackUiRating) {
-        derivedStateOf {
-            feedbackUiRating.toRatingStringRes()
-        }
+    val stringId = remember(feedbackUiRating) {
+        feedbackUiRating.toRatingStringRes()
     }
     return stringResource(id = stringId)
 }
 
 @Composable
 internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
-    val sliderValueFloat by remember(feedbackUiRating) {
-        derivedStateOf {
-           feedbackUiRating.toSliderValue()
-        }
+    val sliderValueFloat = remember(feedbackUiRating) {
+        feedbackUiRating.toSliderValue()
     }
     return sliderValueFloat
 }
