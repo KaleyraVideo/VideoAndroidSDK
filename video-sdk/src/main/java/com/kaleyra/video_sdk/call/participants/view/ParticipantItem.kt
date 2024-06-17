@@ -54,7 +54,7 @@ internal fun ParticipantItem(
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
-                text = if (stream.mine) {
+                text = if (stream.isMine) {
                     stringResource(id = R.string.kaleyra_participants_component_you, stream.username)
                 } else stream.username,
                 maxLines = 1,
@@ -75,7 +75,7 @@ internal fun ParticipantItem(
             )
         }
 
-        if (amIAdmin || stream.mine) {
+        if (amIAdmin || stream.isMine) {
             val interactionSource = remember { MutableInteractionSource() }
             IconButton(
                 interactionSource = interactionSource,
@@ -93,7 +93,7 @@ internal fun ParticipantItem(
             )
         }
 
-        if (!amIAdmin || stream.mine) {
+        if (!amIAdmin || stream.isMine) {
             val interactionSource = remember { MutableInteractionSource() }
             IconButton(
                 interactionSource = interactionSource,

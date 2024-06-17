@@ -125,30 +125,30 @@ internal fun CallScreen(
                     StreamUi(
                         id = "10",
                         username = "username10",
-                        mine = true
+                        isMine = true
                     ),
                     StreamUi(
                         id = "11",
                         username = "username11",
-                        mine = false,
+                        isMine = false,
                         video = VideoUi(id = "4", isScreenShare = true)
                     ),
                     StreamUi(
                         id = "12",
                         username = "username12",
-                        mine = false,
+                        isMine = false,
                         video = VideoUi(id = "5", isScreenShare = true)
                     ),
                     StreamUi(
                         id = "13",
                         username = "username13",
-                        mine = false,
+                        isMine = false,
                         video = VideoUi(id = "6", isScreenShare = true)
                     ),
                     StreamUi(
                         id = "14",
                         username = "username14",
-                        mine = false,
+                        isMine = false,
                         video = VideoUi(id = "7", isScreenShare = true)
                     ),
                     StreamUi(id = "15", username = "username15"),

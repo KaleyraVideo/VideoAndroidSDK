@@ -21,8 +21,14 @@ import android.content.Context
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assertIsEqualTo
+import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipe
 import androidx.compose.ui.unit.Dp
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 
