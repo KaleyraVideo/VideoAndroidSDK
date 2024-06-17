@@ -11,6 +11,7 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -39,14 +40,15 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                     determineDebounceDelay(participants, streams, callState)
                 }
                 .onEach { (_, streams, callState) ->
-                    val updatedStreams = when (callState) {
-                        CallStateUi.Disconnected.Ended -> emptyList()
-                        else -> streams
+                    val updatedStreams = when {
+                        callState == CallStateUi.Disconnected.Ended -> ImmutableList(listOf())
+                        streams == uiState.value.streams.value -> uiState.value.streams
+                        else -> streams.toImmutableList()
                     }
 
                     _uiState.update {
                         it.copy(
-                            streams = updatedStreams.toImmutableList(),
+                            streams = updatedStreams,
                             fullscreenStream = findCurrentFullscreenStream(streams, callState),
                             pinnedStreams = updatePinnedStreams(streams).toImmutableList()
                         )
