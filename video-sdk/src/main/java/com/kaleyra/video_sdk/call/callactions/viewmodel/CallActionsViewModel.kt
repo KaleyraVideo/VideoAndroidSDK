@@ -46,9 +46,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
@@ -69,67 +67,47 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
 
-    private lateinit var availableCallActionsFlow: SharedFlow<List<CallAction>>
-
-    private lateinit var isCallActiveFlow: StateFlow<Boolean>
-
-    private lateinit var isCallEndedFlow: StateFlow<Boolean>
-
-    private lateinit var isMyMicEnabledFlow: StateFlow<Boolean>
-
-    private lateinit var isMyCameraEnabledFlow: StateFlow<Boolean>
-
-    private lateinit var hasUsbCameraFlow: StateFlow<Boolean>
-
-    private lateinit var isSharingScreenFlow: StateFlow<Boolean>
-
-    private lateinit var isVirtualBackgroundEnabledFlow: StateFlow<Boolean>
-
-    private lateinit var isLocalParticipantInitializedFlow: StateFlow<Boolean>
-
-    private lateinit var audioDeviceFlow: StateFlow<AudioDeviceUi>
-
     init {
         viewModelScope.launch {
             val call = call.first()
 
-            availableCallActionsFlow = call
+            val availableCallActionsFlow = call
                 .toCallActions(company.flatMapLatest { it.id })
                 .shareInEagerly(this)
 
-            isCallActiveFlow = call.state
+            val isCallActiveFlow = call.state
                 .map { it is Call.State.Connected }
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            isCallEndedFlow = call.state
+            val isCallEndedFlow = call.state
                 .map { it is Call.State.Disconnecting || it is Call.State.Disconnected.Ended }
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            isMyMicEnabledFlow = call
+            val isMyMicEnabledFlow = call
                 .isMyMicEnabled()
                 .stateIn(this, SharingStarted.Eagerly, true)
 
-            isMyCameraEnabledFlow = call
+            val isMyCameraEnabledFlow = call
                 .isMyCameraEnabled()
                 .stateIn(this, SharingStarted.Eagerly, true)
 
-            hasUsbCameraFlow = call
+            val hasUsbCameraFlow = call
                 .hasUsbCamera()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            isSharingScreenFlow = call
+            val isSharingScreenFlow = call
                 .isSharingScreen()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            isVirtualBackgroundEnabledFlow = call
+            val isVirtualBackgroundEnabledFlow = call
                 .isVirtualBackgroundEnabled()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            isLocalParticipantInitializedFlow = call
+            val isLocalParticipantInitializedFlow = call
                 .isMeParticipantInitialized()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            audioDeviceFlow = call.toCurrentAudioDeviceUi()
+            val audioDeviceFlow = call.toCurrentAudioDeviceUi()
                 .filterNotNull()
                 .debounce(300)
                 .stateIn(this, SharingStarted.Eagerly, AudioDeviceUi.Muted)
@@ -144,7 +122,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 isLocalParticipantInitializedFlow,
                 isVirtualBackgroundEnabledFlow,
                 audioDeviceFlow
-            ) { actions, isCallConnected, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice ->
+            ) { actions, isCallActive, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice ->
                 val updatedActions = actions.map { action ->
                     when (action) {
                         is CallAction.Microphone -> action.copy(
@@ -158,14 +136,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                         )
 
                         is CallAction.Audio -> action.copy(device = audioDevice)
-                        is CallAction.FileShare -> action.copy(isEnabled = isCallConnected)
+                        is CallAction.FileShare -> action.copy(isEnabled = isCallActive)
                         is CallAction.ScreenShare -> action.copy(
                             isToggled = isSharingScreen,
-                            isEnabled = isCallConnected
+                            isEnabled = isCallActive
                         )
 
                         is CallAction.VirtualBackground -> action.copy(isToggled = isVirtualBackgroundEnabled)
-                        is CallAction.Whiteboard -> action.copy(isEnabled = isCallConnected)
+                        is CallAction.Whiteboard -> action.copy(isEnabled = isCallActive)
                         is CallAction.SwitchCamera -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled)
                         else -> action
                     }
