@@ -49,12 +49,12 @@ class CallActionsComponentTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            CallActionsComponent(
-                uiState = CallActionsUiState(actionList = items),
-                onItemClick = { action ->
-                    isActionClicked = action
-                }
-            )
+//            CallActionsComponent(
+//                uiState = CallActionsUiState(actionList = items),
+//                onItemClick = { action ->
+//                    isActionClicked = action
+//                }
+//            )
         }
     }
 

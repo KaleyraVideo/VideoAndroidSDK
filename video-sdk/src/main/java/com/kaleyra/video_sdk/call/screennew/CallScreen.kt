@@ -58,9 +58,11 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragCont
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
@@ -310,6 +312,9 @@ internal fun VCallScreen(
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
+    val callActionsViewModel = viewModel<CallActionsViewModel>(
+        factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+    )
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
         WindowWidthSizeClass.Medium,
         WindowWidthSizeClass.Expanded

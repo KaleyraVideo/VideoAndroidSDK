@@ -40,6 +40,14 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -125,26 +133,26 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             ) { actions, isCallActive, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice ->
                 val updatedActions = actions.map { action ->
                     when (action) {
-                        is CallAction.Microphone -> action.copy(
+                        is MicAction -> action.copy(
                             isToggled = !isMyMicEnabled,
                             isEnabled = isMeParticipantsInitialed
                         )
 
-                        is CallAction.Camera -> action.copy(
+                        is CameraAction -> action.copy(
                             isToggled = !isMyCameraEnabled,
                             isEnabled = isMeParticipantsInitialed
                         )
 
-                        is CallAction.Audio -> action.copy(device = audioDevice)
-                        is CallAction.FileShare -> action.copy(isEnabled = isCallActive)
-                        is CallAction.ScreenShare -> action.copy(
+                        is AudioAction -> action.copy(audioDevice = audioDevice)
+                        is FileShareAction -> action.copy(isEnabled = isCallActive)
+                        is ScreenShareAction -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive
                         )
 
-                        is CallAction.VirtualBackground -> action.copy(isToggled = isVirtualBackgroundEnabled)
-                        is CallAction.Whiteboard -> action.copy(isEnabled = isCallActive)
-                        is CallAction.SwitchCamera -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled)
+                        is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled)
+                        is WhiteboardAction -> action.copy(isEnabled = isCallActive)
+                        is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled)
                         else -> action
                     }
                 }

@@ -79,12 +79,12 @@ internal fun CallActionsComponent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        CallActionsContent(
-            items = uiState.actionList,
-            itemsPerRow = uiState.actionList.count().coerceIn(1, 4),
-            isDarkTheme = isDarkTheme,
-            onItemClick = onItemClick
-        )
+//        CallActionsContent(
+//            items = uiState.actionList,
+//            itemsPerRow = uiState.actionList.count().coerceIn(1, 4),
+//            isDarkTheme = isDarkTheme,
+//            onItemClick = onItemClick
+//        )
         NavigationBarsSpacer()
     }
 }
@@ -95,10 +95,10 @@ internal fun CallActionsComponent(
 internal fun CallActionsComponentPreview() {
     KaleyraTheme {
         Surface {
-            CallActionsComponent(
-                uiState = CallActionsUiState(actionList = mockCallActions),
-                onItemClick = { }
-            )
+//            CallActionsComponent(
+//                uiState = CallActionsUiState(actionList = mockCallActions),
+//                onItemClick = { }
+//            )
         }
     }
 }

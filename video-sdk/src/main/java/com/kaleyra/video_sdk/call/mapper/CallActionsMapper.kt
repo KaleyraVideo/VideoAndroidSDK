@@ -17,15 +17,24 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 internal object CallActionsMapper {
@@ -34,7 +43,7 @@ internal object CallActionsMapper {
         return this.actions.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
     }
 
-    fun CallUI.toCallActions(companyId: Flow<String>): Flow<List<CallAction>> =
+    fun CallUI.toCallActions(companyId: Flow<String>): Flow<List<CallActionUI>> =
         combine(
             actions,
             hasVirtualBackground(),
@@ -42,7 +51,7 @@ internal object CallActionsMapper {
             hasAudio(),
             isGroupCall(companyId)
         ) { actions, hasVirtualBackground, isAudioOnly, hasAudio, isGroupCall ->
-            val result = mutableListOf<CallAction>()
+            val result = mutableListOf<CallActionUI>()
 
             val hasMicrophone = actions.any { action -> action is CallUI.Action.ToggleMicrophone && hasAudio }
             val hasCamera = actions.any { action -> action is CallUI.Action.ToggleCamera && !isAudioOnly }
@@ -54,19 +63,19 @@ internal object CallActionsMapper {
             val screenShare = actions.any { action -> action is CallUI.Action.ScreenShare }
             val whiteboard = actions.any { action -> action is CallUI.Action.OpenWhiteboard.Full }
 
-            if (hasMicrophone) result += CallAction.Microphone()
-            if (hasCamera) result += CallAction.Camera()
-            if (switchCamera) result += CallAction.SwitchCamera()
-            if (chat) result += CallAction.Chat()
-            if (whiteboard) result += CallAction.Whiteboard()
-            if (audio) result += CallAction.Audio()
-            if (fileShare) result += CallAction.FileShare()
-            if (screenShare) result += CallAction.ScreenShare()
-            if (hasVirtualBackground) result += CallAction.VirtualBackground()
+            if (hasMicrophone) result += MicAction()
+            if (hasCamera) result += CameraAction()
+            if (switchCamera) result += FlipCameraAction()
+            if (chat) result += ChatAction()
+            if (whiteboard) result += WhiteboardAction()
+            if (audio) result += AudioAction()
+            if (fileShare) result += FileShareAction()
+            if (screenShare) result += ScreenShareAction()
+            if (hasVirtualBackground) result += VirtualBackgroundAction()
 
             if (hangUp) {
-                if (result.size >= 4) result.add(3, CallAction.HangUp())
-                else result.add(CallAction.HangUp())
+                if (result.size >= 4) result.add(3, HangUpAction())
+                else result.add(HangUpAction())
             }
 
             result

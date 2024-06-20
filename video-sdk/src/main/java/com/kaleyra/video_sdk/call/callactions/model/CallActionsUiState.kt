@@ -17,10 +17,11 @@
 package com.kaleyra.video_sdk.call.callactions.model
 
 import androidx.compose.runtime.Immutable
+import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 @Immutable
 internal data class CallActionsUiState(
-    val actionList: ImmutableList<CallAction> = ImmutableList(emptyList())
+    val actionList: ImmutableList<CallActionUI> = ImmutableList(emptyList())
 ) : UiState
