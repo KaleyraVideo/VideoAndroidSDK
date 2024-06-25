@@ -34,12 +34,14 @@ import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
@@ -63,6 +65,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
@@ -162,7 +165,22 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .takeWhile { !it }
                 .onCompletion { _uiState.update { it.copy(actionList = ImmutableList()) } }
                 .launchIn(this)
+
+            call
+                .toCallStateUi()
+                .onEach { state -> _uiState.update { it.copy(isRinging = state == CallStateUi.Ringing) } }
+                .launchIn(viewModelScope)
         }
+    }
+
+    fun accept() {
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        else call.getValue()?.connect()
+    }
+
+    fun decline() {
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.reject() }
+        else call.getValue()?.end()
     }
 
     fun toggleMic(activity: Activity?) {

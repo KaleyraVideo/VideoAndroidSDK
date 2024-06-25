@@ -40,6 +40,8 @@ import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
@@ -49,6 +51,7 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.call.screennew.CameraAction
@@ -104,6 +107,7 @@ class CallActionsViewModelTest {
         mockkObject(VirtualBackgroundMapper)
         mockkObject(ParticipantMapper)
         mockkObject(AudioOutputMapper)
+        mockkObject(CallStateMapper)
 
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
@@ -114,6 +118,7 @@ class CallActionsViewModelTest {
         every { callMock.isMeParticipantInitialized() } returns MutableStateFlow(true)
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.Muted)
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
@@ -121,6 +126,98 @@ class CallActionsViewModelTest {
     @After
     fun teardown() {
         unmockkAll()
+    }
+
+    @Test
+    fun testCallAnswer() = runTest {
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            viewModel = spyk(CallActionsViewModel{
+                mockkSuccessfulConfiguration(conference = conferenceMock)
+            })
+
+            advanceUntilIdle()
+            viewModel.accept()
+            verify(exactly = 1) { callMock.connect() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceAnswer() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel = spyk(CallActionsViewModel{
+                mockkSuccessfulConfiguration(conference = conferenceMock)
+            })
+
+            advanceUntilIdle()
+            viewModel.accept()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+        }
+    }
+
+    @Test
+    fun testCallDecline() = runTest {
+        mockkObject(ConnectionServiceUtils) {
+            every { isConnectionServiceEnabled } returns false
+            viewModel = spyk(CallActionsViewModel{
+                mockkSuccessfulConfiguration(conference = conferenceMock)
+            })
+
+            advanceUntilIdle()
+            viewModel.decline()
+            verify(exactly = 1) { callMock.end() }
+        }
+    }
+
+    @Test
+    fun testConnectionServiceDecline() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            viewModel = spyk(CallActionsViewModel{
+                mockkSuccessfulConfiguration(conference = conferenceMock)
+            })
+
+            advanceUntilIdle()
+            viewModel.decline()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
+        }
+    }
+
+    @Test
+    fun callStateRinging_isRingingIsTrue() = runTest {
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+
+        val current = viewModel.uiState.first().isRinging
+        assertEquals(false, current)
+
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().isRinging
+        assertEquals(true, new)
+    }
+
+    @Test
+    fun callStateNotRinging_isRingingIsFalse() = runTest {
+        every { callMock.toCallStateUi() } returns MutableStateFlow(mockk<CallStateUi>())
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+
+        val current = viewModel.uiState.first().isRinging
+        assertEquals(false, current)
+
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().isRinging
+        assertEquals(false, new)
     }
 
     @Test
