@@ -63,6 +63,7 @@ internal object CallActionsMapper {
             val screenShare = actions.any { action -> action is CallUI.Action.ScreenShare }
             val whiteboard = actions.any { action -> action is CallUI.Action.OpenWhiteboard.Full }
 
+            if (hangUp) result += HangUpAction()
             if (hasMicrophone) result += MicAction()
             if (hasCamera) result += CameraAction()
             if (switchCamera) result += FlipCameraAction()
@@ -72,11 +73,6 @@ internal object CallActionsMapper {
             if (fileShare) result += FileShareAction()
             if (screenShare) result += ScreenShareAction()
             if (hasVirtualBackground) result += VirtualBackgroundAction()
-
-            if (hangUp) {
-                if (result.size >= 4) result.add(3, HangUpAction())
-                else result.add(HangUpAction())
-            }
 
             result
         }.distinctUntilChanged()

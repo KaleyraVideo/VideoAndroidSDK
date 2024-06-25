@@ -117,10 +117,10 @@ class CallActionsMapperTest {
         val result = callMock.toCallActions(flowOf("companyId"))
         val actual = result.first()
         val expected = listOf(
+            HangUpAction(),
             MicAction(),
             CameraAction(),
             FlipCameraAction(),
-            HangUpAction(),
             ChatAction(),
             WhiteboardAction(),
             AudioAction(),
@@ -213,33 +213,5 @@ class CallActionsMapperTest {
         val result = callMock.toCallActions(flowOf("companyId"))
         val actual = result.first()
         assertEquals(listOf<CallActionUI>(), actual)
-    }
-
-    @Test
-    fun moreThan3Actions_toCallActions_hangUpIsIn4thPosition() = runTest {
-        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleMicrophone, CallUI.Action.SwitchCamera, CallUI.Action.ToggleCamera, CallUI.Action.HangUp, CallUI.Action.ScreenShare))
-        val result = callMock.toCallActions(flowOf("companyId"))
-        val actual = result.first()
-        val expected = listOf(
-            MicAction(),
-            CameraAction(),
-            FlipCameraAction(),
-            HangUpAction(),
-            ScreenShareAction()
-        )
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun lessOf4Actions_toCallActions_hangUpIsLastPosition() = runTest {
-        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleMicrophone, CallUI.Action.SwitchCamera, CallUI.Action.HangUp))
-        val result = callMock.toCallActions(flowOf("companyId"))
-        val actual = result.first()
-        val expected = listOf(
-            MicAction(),
-            FlipCameraAction(),
-            HangUpAction()
-        )
-        assertEquals(expected, actual)
     }
 }
