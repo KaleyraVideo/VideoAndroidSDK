@@ -26,11 +26,10 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
@@ -178,11 +177,6 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         else call.getValue()?.connect()
     }
 
-    fun decline() {
-        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.reject() }
-        else call.getValue()?.end()
-    }
-
     fun toggleMic(activity: Activity?) {
         if (activity !is FragmentActivity) return
         viewModelScope.launch {
@@ -240,8 +234,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
-        else call.getValue()?.end()
+        when {
+            !ConnectionServiceUtils.isConnectionServiceEnabled -> call.getValue()?.end()
+            uiState.value.isRinging -> viewModelScope.launch { KaleyraCallConnectionService.reject() }
+            else -> viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+        }
     }
 
     fun showChat(context: Context) {

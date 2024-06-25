@@ -158,29 +158,34 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun testCallDecline() = runTest {
+    fun testHangUpWhenConnectionServiceIsDisabled() = runTest {
         mockkObject(ConnectionServiceUtils) {
             every { isConnectionServiceEnabled } returns false
+            every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+
             viewModel = spyk(CallActionsViewModel{
                 mockkSuccessfulConfiguration(conference = conferenceMock)
             })
 
             advanceUntilIdle()
-            viewModel.decline()
+            viewModel.hangUp()
+
             verify(exactly = 1) { callMock.end() }
         }
     }
 
     @Test
-    fun testConnectionServiceDecline() = runTest {
+    fun testHangUpWhenConnectionServiceIsEnabledAndCallIsRinging() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
+            every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+
             viewModel = spyk(CallActionsViewModel{
                 mockkSuccessfulConfiguration(conference = conferenceMock)
             })
 
             advanceUntilIdle()
-            viewModel.decline()
+            viewModel.hangUp()
             advanceUntilIdle()
             coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
         }
@@ -1026,22 +1031,7 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun testHangUp() = runTest {
-        mockkObject(ConnectionServiceUtils) {
-            every { isConnectionServiceEnabled } returns false
-
-            viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
-            })
-            advanceUntilIdle()
-
-            viewModel.hangUp()
-            verify(exactly = 1) { callMock.end() }
-        }
-    }
-
-    @Test
-    fun testConnectionServiceHangUp() = runTest {
+    fun testHangUpWhenConnectionServiceIsEnabledAndCallIsNotRinging() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
 
