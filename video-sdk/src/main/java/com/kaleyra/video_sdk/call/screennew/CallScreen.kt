@@ -95,16 +95,6 @@ internal fun CallScreen(
 
     val sheetState = rememberCallSheetState()
 
-    val scope = rememberCoroutineScope()
-    val onChangeSheetState: () -> Unit = remember {
-        {
-            scope.launch {
-                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
-                else sheetState.expand()
-            }
-        }
-    }
-
     KaleyraM3Theme {
         if (isCompactHeight) {
 //        HCallScreen(
@@ -119,7 +109,6 @@ internal fun CallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = sheetState,
                 inputMessage = inputMessage,
-                onChangeSheetState = onChangeSheetState,
                 onBackPressed = onBackPressed
             )
         }

@@ -45,6 +45,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.CameraMessageText
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageHost
@@ -83,7 +84,6 @@ internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     inputMessage: InputMessage?,
-    onChangeSheetState: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,6 +92,16 @@ internal fun VCallScreen(
         WindowWidthSizeClass.Expanded
     )
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val scope = rememberCoroutineScope()
+    val onChangeSheetState: () -> Unit = remember {
+        {
+            scope.launch {
+                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
+                else sheetState.expand()
+            }
+        }
+    }
 
     var modalBottomSheet: CallScreenModalBottomSheet? by remember { mutableStateOf(null) }
 
@@ -292,9 +302,7 @@ internal fun VCallScreen(
                     )
                     CallScreenModalBottomSheet.FileShare -> FileShareComponent()
                     CallScreenModalBottomSheet.Whiteboard -> WhiteboardComponent(
-                        onBackPressed = {
-                            modalBottomSheet = null
-                        }
+                        onBackPressed = { modalBottomSheet = null }
                     )
                     CallScreenModalBottomSheet.VirtualBackground -> VirtualBackgroundComponent(
                         onItemClick = { modalBottomSheet = null },
