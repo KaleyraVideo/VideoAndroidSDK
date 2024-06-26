@@ -34,7 +34,8 @@
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_hang_up">Hang up</string>
-    <string name="kaleyra_call_sheet_more_actions">Show more actions</string>
+    <string name="kaleyra_call_sheet_description_more_actions">Show more actions</string>
+    <string name="kaleyra_call_sheet_description_hide_actions">Hide actions</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
     <string name="kaleyra_call_sheet_description_disable_microphone">Disable microphone</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Enable camera</string>

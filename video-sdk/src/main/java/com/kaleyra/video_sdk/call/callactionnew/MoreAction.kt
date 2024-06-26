@@ -12,16 +12,18 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun MoreAction(
-    onClick: () -> Unit,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     badgeText: String? = null
 ) {
-    CallAction(
+    CallToggleAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_more),
-        contentDescription = stringResource(id = R.string.kaleyra_call_sheet_more_actions),
+        contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_hide_actions else R.string.kaleyra_call_sheet_description_more_actions),
         badgeText = badgeText,
-        onClick = onClick
+        checked = checked,
+        onCheckedChange = onCheckedChange,
     )
 }
 
@@ -31,7 +33,7 @@ internal fun MoreAction(
 internal fun MoreActionPreview() {
     KaleyraM3Theme {
         Surface {
-            MoreAction({})
+            MoreAction(checked = false, {})
         }
     }
 }
