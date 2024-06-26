@@ -24,6 +24,7 @@ import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
 import com.kaleyra.video_sdk.call.dialing.viewmodel.DialingViewModel
 import com.kaleyra.video_sdk.call.ringing.model.RingingUiState
 import com.kaleyra.video_sdk.call.ringing.viewmodel.RingingViewModel
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
@@ -81,7 +82,7 @@ class MockCallViewModelsStatesRule : TestWatcher() {
         }
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create<CallActionsViewModel>(any(), any()) } returns mockk(relaxed = true) {
-               every { uiState } returns MutableStateFlow(CallActionsUiState(actionList = com.kaleyra.video_sdk.call.callactions.model.mockCallActions))
+               every { uiState } returns MutableStateFlow(CallActionsUiState())
             }
         }
         every { WhiteboardViewModel.provideFactory(any(), any()) } returns mockk {

@@ -28,10 +28,10 @@ internal fun HSheetContent(
     showAnswerAction: Boolean,
     isLargeScreen: Boolean,
     onActionsPlaced: (actionsPlaced: Int) -> Unit,
-    onAnswerActionClick: () -> Unit,
+    onAnswerClick: () -> Unit,
     onHangUpClick: () -> Unit,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
+    onMicToggle: (Boolean) -> Unit,
+    onCameraToggle: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
@@ -49,7 +49,7 @@ internal fun HSheetContent(
     ReversibleRow(modifier, reverseLayout = true) {
         when {
             showAnswerAction -> {
-                AnswerAction(extended = isLargeScreen, onClick = onAnswerActionClick)
+                AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
             showMoreAction -> {
@@ -75,8 +75,8 @@ internal fun HSheetContent(
                             label = false,
                             extended = isLargeScreen,
                             onHangUpClick = onHangUpClick,
-                            onMicToggled = onMicToggled,
-                            onCameraToggled = onCameraToggled,
+                            onMicToggle = onMicToggle,
+                            onCameraToggle = onCameraToggle,
                             onScreenShareToggle = onScreenShareToggle,
                             onFlipCameraClick = onFlipCameraClick,
                             onAudioClick = onAudioClick,

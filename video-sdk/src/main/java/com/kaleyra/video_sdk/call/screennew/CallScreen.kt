@@ -23,6 +23,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -36,11 +40,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAny
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
@@ -57,18 +65,19 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
 
 // TODO
@@ -81,26 +90,12 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
-    actions: ImmutableList<CallActionUI>,
     inputMessage: InputMessage?,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onHangUpClick: () -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit,
-    onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     val sheetState = rememberCallSheetState()
-
-    var showAnswerAction by remember { mutableStateOf(true) }
 
     val scope = rememberCoroutineScope()
     val onChangeSheetState: () -> Unit = remember {
@@ -112,178 +107,24 @@ internal fun CallScreen(
         }
     }
 
-    var streams = remember {
-        mutableStateOf(
-            ImmutableList(
-                listOf(
-                    StreamUi(id = "1", username = "username1"),
-                    StreamUi(id = "2", username = "Stefano Brusadelli"),
-                    StreamUi(id = "3", username = "username3"),
-                    StreamUi(id = "4", username = "username4"),
-                    StreamUi(id = "5", username = "username5"),
-                    StreamUi(id = "6", username = "username6"),
-                    StreamUi(id = "7", username = "username7"),
-                    StreamUi(id = "8", username = "username8", audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true)),
-                    StreamUi(
-                        id = "10",
-                        username = "username10",
-                        isMine = true
-                    ),
-                    StreamUi(
-                        id = "11",
-                        username = "username11",
-                        isMine = false,
-                        video = VideoUi(id = "4", isScreenShare = true)
-                    ),
-                    StreamUi(
-                        id = "12",
-                        username = "username12",
-                        isMine = false,
-                        video = VideoUi(id = "5", isScreenShare = true)
-                    ),
-                    StreamUi(
-                        id = "13",
-                        username = "username13",
-                        isMine = false,
-                        video = VideoUi(id = "6", isScreenShare = true)
-                    ),
-                    StreamUi(
-                        id = "14",
-                        username = "username14",
-                        isMine = false,
-                        video = VideoUi(id = "7", isScreenShare = true)
-                    ),
-                    StreamUi(id = "15", username = "username15"),
-                    StreamUi(id = "16", username = "username15"),
-                    StreamUi(id = "17", username = "username17"),
-                    StreamUi(id = "18", username = "username17"),
-                    StreamUi(id = "19", username = "username17"),
-                    StreamUi(id = "20", username = "username17"),
-                    StreamUi(id = "21", username = "username17"),
-                    StreamUi(id = "22", username = "username17"),
-                    StreamUi(id = "23", username = "username17"),
-                    StreamUi(id = "24", username = "username17"),
-
-//                    StreamUi(id = "10", username = "username10"),
-//                    StreamUi(id = "11", username = "username11"),
-//                    StreamUi(id = "12", username = "username12"),
-//                    StreamUi(id = "13", username = "username13"),
-//                    StreamUi(id = "14", username = "username14"),
-//                    StreamUi(id = "15", username = "username15"),
-//                    StreamUi(id = "16", username = "username16"),
-//                    StreamUi(id = "17", username = "username17"),
-//                    StreamUi(id = "18", username = "username18", mine = true, video = VideoUi(id = "1", isScreenShare = true)),
-                )
-            )
-        )
-    }
-
-//    LaunchedEffect(Unit) {
-//        delay(5000)
-//        streams.value = ImmutableList(
-//            listOf(
-//                StreamUi(id = "1", username = "username1"),
-//                StreamUi(id = "2", username = "username2"),
-//                StreamUi(id = "3", username = "username3"),
-//                StreamUi(id = "4", username = "username4"),
-//                StreamUi(id = "5", username = "username5"),
-//                StreamUi(id = "6", username = "username6"),
-//                StreamUi(id = "7", username = "username7"),
-//                StreamUi(id = "8", username = "username8"),
-//                StreamUi(
-//                    id = "9",
-//                    username = "username9",
-//                    mine = true,
-//                    video = VideoUi(id = "2", isScreenShare = true)
-//                ),
-//                StreamUi(
-//                    id = "10",
-//                    username = "username10",
-//                    mine = false,
-//                    video = VideoUi(id = "3", isScreenShare = true)
-//                ),
-//                StreamUi(
-//                    id = "11",
-//                    username = "username11",
-//                    mine = false,
-//                    video = VideoUi(id = "4", isScreenShare = true)
-//                ),
-//                StreamUi(
-//                    id = "12",
-//                    username = "username12",
-//                    mine = false,
-//                    video = VideoUi(id = "5", isScreenShare = true)
-//                ),
-//                StreamUi(
-//                    id = "13",
-//                    username = "username13",
-//                    mine = false,
-//                    video = VideoUi(id = "6", isScreenShare = true)
-//                ),
-//                StreamUi(
-//                    id = "14",
-//                    username = "username14",
-//                    mine = false,
-//                    video = VideoUi(id = "7", isScreenShare = true)
-//                ),
-//                StreamUi(id = "18", username = "username18", mine = true, video = VideoUi(id = "1", isScreenShare = true)),
-//            )
-//        )
-//    }
-
-
-    if (isCompactHeight) {
+    KaleyraM3Theme {
+        if (isCompactHeight) {
 //        HCallScreen(
 //            windowSizeClass = windowSizeClass,
-//            callActions = actions,
-//            streamContentState = streamContentState,
 //            inputMessage = inputMessage,
 //            sheetState = sheetState,
-//            showAnswerAction = showAnswerAction,
 //            onChangeSheetState = onChangeSheetState,
-//            onParticipantClick = onParticipantClick,
-//            onAnswerActionClick = { showAnswerAction = false },
-//            onHangUpClick = onHangUpClick,
-//            onMicToggled = onMicToggled,
-//            onCameraToggled = onCameraToggled,
-//            onScreenShareToggle = onScreenShareToggle,
-//            onFlipCameraClick = onFlipCameraClick,
-//            onAudioClick = onAudioClick,
-//            onChatClick = onChatClick,
-//            onFileShareClick = onFileShareClick,
-//            onWhiteboardClick = onWhiteboardClick,
-//            onVirtualBackgroundClick = onVirtualBackgroundClick,
 //            onBackPressed = onBackPressed
 //        )
-    } else {
-        VCallScreen(
-            windowSizeClass = windowSizeClass,
-            callActions = actions,
-            inputMessage = inputMessage,
-            sheetState = sheetState,
-            showAnswerAction = showAnswerAction,
-            onChangeSheetState = onChangeSheetState,
-            onParticipantClick = onParticipantClick,
-            onAnswerActionClick = { showAnswerAction = false },
-            onHangUpClick = onHangUpClick,
-            onMicToggled = onMicToggled,
-            onCameraToggled = onCameraToggled,
-            onScreenShareToggle = onScreenShareToggle,
-            onFlipCameraClick = onFlipCameraClick,
-            onAudioClick = onAudioClick,
-            onChatClick = onChatClick,
-            onFileShareClick = onFileShareClick,
-            onWhiteboardClick = onWhiteboardClick,
-            onVirtualBackgroundClick = onVirtualBackgroundClick,
-            onBackPressed = onBackPressed,
-//            onFullscreenClick = { stream, isFullscreen ->
-//                streamContentController.fullscreen(if (isFullscreen) null else stream)
-//            },
-//            onPinClick = { stream, isPinned ->
-//                if (isPinned) streamContentController.unpinStream(stream)
-//                else streamContentController.pinStream(stream)
-//            }
-        )
+        } else {
+            VCallScreen(
+                windowSizeClass = windowSizeClass,
+                sheetState = sheetState,
+                inputMessage = inputMessage,
+                onChangeSheetState = onChangeSheetState,
+                onBackPressed = onBackPressed
+            )
+        }
     }
 }
 
@@ -291,52 +132,89 @@ internal const val CompactScreenMaxActions = 5
 internal const val LargeScreenMaxActions = 8
 
 @Composable
+internal fun rememberOnMicClick(callActionsViewModel: CallActionsViewModel): (Boolean) -> Unit {
+    val activity = LocalContext.current.findActivity()
+    return remember(callActionsViewModel) { { _: Boolean -> callActionsViewModel.toggleMic(activity) } }
+}
+
+@Composable
+internal fun rememberOnCameraClick(callActionsViewModel: CallActionsViewModel): (Boolean) -> Unit {
+    val activity = LocalContext.current.findActivity()
+    return remember(callActionsViewModel) { { _: Boolean -> callActionsViewModel.toggleCamera(activity) } }
+}
+
+@Composable
+internal fun rememberOnScreenShareClick(callActionsViewModel: CallActionsViewModel, onStartScreenShareClick: () -> Unit): (Boolean) -> Unit {
+    return remember(callActionsViewModel) {
+        { _: Boolean ->
+            if (!callActionsViewModel.tryStopScreenShare()) onStartScreenShareClick()
+        }
+    }
+}
+
+@Composable
+internal fun rememberOnChatClick(callActionsViewModel: CallActionsViewModel): () -> Unit {
+    val activity = LocalContext.current.findActivity()
+    return remember(callActionsViewModel) { { callActionsViewModel.showChat(activity) } }
+}
+
+@Composable
+internal fun rememberOnHangUpClick(callActionsViewModel: CallActionsViewModel): () -> Unit {
+    return remember(callActionsViewModel) { { callActionsViewModel.hangUp() } }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
-    callActions: ImmutableList<CallActionUI>,
     inputMessage: InputMessage?,
-    showAnswerAction: Boolean,
     onChangeSheetState: () -> Unit,
-    onAnswerActionClick: () -> Unit,
-    onHangUpClick: () -> Unit,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit,
-    onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val callActionsViewModel = viewModel<CallActionsViewModel>(
-        factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
-    )
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
         WindowWidthSizeClass.Medium,
         WindowWidthSizeClass.Expanded
     )
+    val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
-    var currentStream by remember { mutableStateOf<StreamUi?>(null) }
+    var openBottomSheet by remember { mutableStateOf(false) }
+
+    val callActionsViewModel = viewModel<CallActionsViewModel>(
+        factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+    )
+    val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
+
+    val onMicClick = rememberOnMicClick(callActionsViewModel)
+    val onCameraToggle = rememberOnCameraClick(callActionsViewModel)
+    val onChatClick = rememberOnChatClick(callActionsViewModel)
+    val onHangUpClick = rememberOnHangUpClick(callActionsViewModel)
+    val onAudioClick = remember { {
+        scope.launch {
+            openBottomSheet = true
+        }; Unit
+    } }
+    val onFileShareClick = remember { { } }
+    val onWhiteboardClick = remember { { } }
+    val onVirtualBackgroundClick = remember { { } }
+    val onScreenShareClick = remember { { } }
+    val onScreenShareToggle = rememberOnScreenShareClick(callActionsViewModel, onScreenShareClick)
+
+    var selectedStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     // TODO do a resize test when writing test
-    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && currentStream == null && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && selectedStream == null && sheetDragActions.value.isNotEmpty() } }
     // TODO test reset on resize
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
-    val streamViewModel = viewModel<StreamViewModel>(
-        factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
-    )
-
     VCallScreenScaffold(
-        modifier = Modifier
+        modifier = modifier
             .pointerInput(Unit) {
                 detectTapGestures {
                     showSheetPanelContent = false
-                    currentStream = null
+                    selectedStream = null
                 }
             }
             .clearAndSetSemantics {},
@@ -348,12 +226,13 @@ internal fun VCallScreen(
                 logo = Logo(),
                 recording = false,
                 participantCount = 3,
-                onParticipantClick = onParticipantClick,
+                onParticipantClick = {  },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
         sheetPanelContent = {
+            // TODO test when this is displayed
             if (isLargeScreen) {
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
@@ -364,8 +243,9 @@ internal fun VCallScreen(
                         SheetPanelContent(
                             items = sheetDragActions,
                             onItemClick = { callAction ->
+                                // TODO test all the following onClick
                                 when (callAction) {
-                                    is FlipCameraAction -> onFlipCameraClick()
+                                    is FlipCameraAction -> callActionsViewModel.switchCamera()
                                     is AudioAction -> onAudioClick()
                                     is ChatAction -> onChatClick()
                                     is FileShareAction -> onFileShareClick()
@@ -380,16 +260,16 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow =
-                    callActions.count() - sheetDragActions.count() + if (showAnswerAction) AnswerActionMultiplier else 1
+                val itemsPerRow = callActionsUiState.actionList.count() - sheetDragActions.count() + if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
+                    // TODO test all the following onClick
                     onHangUpClick = onHangUpClick,
-                    onMicToggled = onMicToggled,
-                    onCameraToggled = onCameraToggled,
+                    onMicToggled = onMicClick,
+                    onCameraToggled = onCameraToggle,
                     onScreenShareToggle = onScreenShareToggle,
-                    onFlipCameraClick = onFlipCameraClick,
+                    onFlipCameraClick = callActionsViewModel::switchCamera,
                     onAudioClick = onAudioClick,
                     onChatClick = onChatClick,
                     onFileShareClick = onFileShareClick,
@@ -403,11 +283,11 @@ internal fun VCallScreen(
         },
         sheetContent = {
             AnimatedContent(
-                targetState = currentStream,
+                targetState = selectedStream,
                 contentAlignment = Alignment.Center,
                 label = "sheet content"
-            ) { current ->
-                if (current == null) {
+            ) { currentlySelectedStream ->
+                if (currentlySelectedStream == null) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (isLargeScreen) {
                             Box(
@@ -417,6 +297,7 @@ internal fun VCallScreen(
                                     .padding(top = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
+                                // TODO test this
                                 InputMessageHost(
                                     inputMessage = inputMessage,
                                     micMessage = { enabled -> MicMessageText(enabled) },
@@ -426,25 +307,32 @@ internal fun VCallScreen(
                         }
                         Box(Modifier.animateContentSize()) {
                             HSheetContent(
-                                isLargeScreen = isLargeScreen,
-                                callActions = callActions,
+                                callActions = callActionsUiState.actionList,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
-                                showAnswerAction = showAnswerAction,
+                                showAnswerAction = callActionsUiState.isRinging,
+                                isLargeScreen = isLargeScreen,
                                 onActionsPlaced = { itemsPlaced ->
-                                    sheetDragActions =
-                                        ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
+                                    val actions = callActionsUiState.actionList.value
+                                    val dragActions = actions.takeLast(actions.count() - itemsPlaced)
+                                    sheetDragActions = dragActions.toImmutableList()
                                 },
-                                onAnswerActionClick = onAnswerActionClick,
+                                onAnswerClick = callActionsViewModel::accept,
                                 onHangUpClick = onHangUpClick,
-                                onMicToggled = onMicToggled,
-                                onCameraToggled = onCameraToggled,
+                                onMicToggle = onMicClick,
+                                onCameraToggle = onCameraToggle,
+                                // TODO test this
                                 onScreenShareToggle = onScreenShareToggle,
-                                onFlipCameraClick = onFlipCameraClick,
+                                onFlipCameraClick = callActionsViewModel::switchCamera,
+                                // TODO test this
                                 onAudioClick = onAudioClick,
                                 onChatClick = onChatClick,
+                                // TODO test this
                                 onFileShareClick = onFileShareClick,
+                                // TODO test this
                                 onWhiteboardClick = onWhiteboardClick,
+                                // TODO test this
                                 onVirtualBackgroundClick = onVirtualBackgroundClick,
+                                // TODO test this
                                 onMoreActionClick = {
                                     if (hasSheetDragContent) onChangeSheetState()
                                     else showSheetPanelContent = !showSheetPanelContent
@@ -460,23 +348,36 @@ internal fun VCallScreen(
                         }
                     }
                 } else {
-//                    HStreamMenuContent(
-//                        fullscreen = streamContentController.fullscreenStream?.id == current.id,
-//                        pin = streamContentController.pinnedStreams.fastAny { stream -> stream.id == current.id },
-//                        onCancelClick = { currentStream = null },
-//                        onFullscreenClick = { isFullscreen ->
-//                            onFullscreenClick(current, isFullscreen)
-//                            currentStream = null
-//                        },
-//                        onPinClick = { isPinned ->
-//                            onPinClick(current, isPinned)
-//                            currentStream = null
-//                        }
-//                    )
+                    val streamViewModel = viewModel<StreamViewModel>(
+                        factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+                    )
+                    val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
+
+                    HStreamMenuContent(
+                        // TODO test this
+                        fullscreen = streamUiState.fullscreenStream?.id == currentlySelectedStream.id,
+                        // TODO test this
+                        pin = streamUiState.pinnedStreams.value.fastAny { stream -> stream.id == currentlySelectedStream.id },
+                        // TODO test this
+                        onCancelClick = { selectedStream = null },
+                        // TODO test this
+                        onFullscreenClick = { isFullscreen ->
+                            if (isFullscreen)  streamViewModel.fullscreen(null)
+                            else streamViewModel.fullscreen(currentlySelectedStream)
+                            selectedStream = null
+                        },
+                        // TODO test this
+                        onPinClick = { isPinned ->
+                            if (isPinned) streamViewModel.unpin(currentlySelectedStream)
+                            else streamViewModel.pin(currentlySelectedStream)
+                            selectedStream = null
+                        }
+                    )
                 }
             }
         },
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
+        // TODO test this
         sheetDragHandle = (@Composable { InputMessageHandle(inputMessage) }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         val layoutDirection = LocalLayoutDirection.current
@@ -484,12 +385,25 @@ internal fun VCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
+        if (openBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { openBottomSheet = false },
+                sheetState = modalSheetState,
+                shape = RectangleShape,
+                dragHandle = null
+            ) {
+                Text(modifier = Modifier.fillMaxSize(), text = "ciao bello")
+            }
+        }
+
         StreamComponent(
-            viewModel = streamViewModel,
             windowSizeClass = windowSizeClass,
-            highlightedStream = currentStream,
-            onStreamClick = { stream -> currentStream = stream },
-            onStopScreenShareClick = {},
+            highlightedStream = selectedStream,
+            // TODO test this
+            onStreamClick = { stream -> selectedStream = stream },
+            // TODO test this
+            onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
+            // TODO test this
             onMoreParticipantClick = {},
             modifier = Modifier
                 .fillMaxSize()
