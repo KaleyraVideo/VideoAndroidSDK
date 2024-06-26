@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastAny
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -73,7 +72,6 @@ import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
@@ -348,30 +346,9 @@ internal fun VCallScreen(
                         }
                     }
                 } else {
-                    val streamViewModel = viewModel<StreamViewModel>(
-                        factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
-                    )
-                    val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
-
                     HStreamMenuContent(
-                        // TODO test this
-                        fullscreen = streamUiState.fullscreenStream?.id == currentlySelectedStream.id,
-                        // TODO test this
-                        pin = streamUiState.pinnedStreams.value.fastAny { stream -> stream.id == currentlySelectedStream.id },
-                        // TODO test this
-                        onCancelClick = { selectedStream = null },
-                        // TODO test this
-                        onFullscreenClick = { isFullscreen ->
-                            if (isFullscreen)  streamViewModel.fullscreen(null)
-                            else streamViewModel.fullscreen(currentlySelectedStream)
-                            selectedStream = null
-                        },
-                        // TODO test this
-                        onPinClick = { isPinned ->
-                            if (isPinned) streamViewModel.unpin(currentlySelectedStream)
-                            else streamViewModel.pin(currentlySelectedStream)
-                            selectedStream = null
-                        }
+                        selectedStream = currentlySelectedStream,
+                        onDismiss = { selectedStream = null }
                     )
                 }
             }

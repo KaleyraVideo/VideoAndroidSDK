@@ -9,7 +9,20 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callactionnew.CancelAction
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,6 +30,136 @@ class VStreamMenuContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    private val streamUiState = MutableStateFlow(StreamUiState())
+
+    private val streamViewModel = mockk<StreamViewModel>(relaxed = true) {
+        every { uiState } returns streamUiState
+    }
+
+    @Before
+    fun setUp() {
+        mockkObject(StreamViewModel)
+        every { StreamViewModel.provideFactory(any()) } returns mockk {
+            every { create<StreamViewModel>(any(), any()) } returns streamViewModel
+        }
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
+    @Test
+    fun testExitFullscreen() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(fullscreenStream = stream)
+
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStream = stream,
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_off)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { streamViewModel.fullscreen(null) }
+        assertEquals(true, dismissed)
+    }
+
+    @Test
+    fun testEnterFullscreen() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(fullscreenStream = null)
+
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStream = stream,
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { streamViewModel.fullscreen(stream) }
+        assertEquals(true, dismissed)
+    }
+
+    @Test
+    fun testUnPin() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStream = stream,
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_unpin)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { streamViewModel.unpin(stream) }
+        assertEquals(true, dismissed)
+    }
+
+    @Test
+    fun testPin() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState()
+
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStream = stream,
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_pin)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { streamViewModel.pin(stream) }
+        assertEquals(true, dismissed)
+    }
+
+    @Test
+    fun testCancel() {
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStream = StreamUi("streamId", username = "username"),
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(true, dismissed)
+    }
 
     @Test
     fun testCancelActionIsDisplayed() {
