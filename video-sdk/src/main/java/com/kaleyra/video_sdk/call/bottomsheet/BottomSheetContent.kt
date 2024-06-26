@@ -182,7 +182,8 @@ internal fun BottomSheetContent(
                             modifier = Modifier
                                 .padding(top = 12.dp)
                                 .testTag(FileShareComponentTag),
-                            isTesting = isTesting
+                            isTesting = isTesting,
+                            onBackPressed = {}
                         )
                     }
                     BottomSheetComponent.Whiteboard -> {

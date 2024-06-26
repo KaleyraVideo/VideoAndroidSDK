@@ -74,10 +74,11 @@ const val ProgressIndicatorTag = "ProgressIndicatorTag"
 
 @Composable
 internal fun FileShareComponent(
+    modifier: Modifier = Modifier,
     viewModel: FileShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
-    modifier: Modifier = Modifier,
+    onBackPressed: (() -> Unit),
     isTesting: Boolean = false
 ) {
     val context = LocalContext.current
@@ -123,7 +124,8 @@ internal fun FileShareComponent(
         onDownload = viewModel::download,
         onShareCancel = viewModel::cancel,
         modifier = modifier,
-        userMessage = userMessage
+        userMessage = userMessage,
+        onBackPressed = onBackPressed
     )
 }
 
