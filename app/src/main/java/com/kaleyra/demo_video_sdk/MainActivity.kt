@@ -338,7 +338,10 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         itemAdapter!!.itemFilter.filterPredicate = { userSelectionItem: UserSelectionItem, constraint: CharSequence? -> userSelectionItem.name.lowercase(Locale.getDefault()).contains(constraint.toString().lowercase(Locale.getDefault())) }
         itemAdapter!!.itemFilter.itemFilterListener = object : ItemFilterListener<UserSelectionItem> {
             override fun itemsFiltered(constraint: CharSequence?, results: List<UserSelectionItem>?) {
-                binding!!.noResults.post { if (results!!.isNotEmpty()) binding!!.noResults.visibility = View.GONE else binding!!.noResults.visibility = View.VISIBLE }
+                binding!!.noResults.post {
+                    results ?: return@post
+                    if (results.isNotEmpty()) binding!!.noResults.visibility = View.GONE else binding!!.noResults.visibility = View.VISIBLE
+                }
             }
 
             override fun onReset() {

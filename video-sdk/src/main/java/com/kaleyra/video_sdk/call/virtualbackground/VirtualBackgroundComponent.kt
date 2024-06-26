@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.virtualbackground
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,15 +25,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
 import com.kaleyra.video_sdk.call.virtualbackground.view.VirtualBackgroundContent
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
@@ -40,21 +42,20 @@ internal fun VirtualBackgroundComponent(
     viewModel: VirtualBackgroundViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = VirtualBackgroundViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onItemClick: (VirtualBackgroundUi) -> Unit,
-    onCloseClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onClick = remember {
         { background: VirtualBackgroundUi ->
             viewModel.setEffect(background)
-            onItemClick(background)
+            onDismiss()
         }
     }
     VirtualBackgroundComponent(
         uiState = uiState,
         onItemClick = onClick,
-        onCloseClick = onCloseClick,
+        onCloseClick = onDismiss,
         modifier = modifier
     )
 }
@@ -69,7 +70,7 @@ internal fun VirtualBackgroundComponent(
     SubFeatureLayout(
         title = stringResource(id = R.string.kaleyra_virtual_background_picker_title),
         onCloseClick = onCloseClick,
-        modifier = modifier
+        modifier = Modifier.padding(top = 16.dp).then(modifier)
     ) {
         VirtualBackgroundContent(
             items = uiState.backgroundList,

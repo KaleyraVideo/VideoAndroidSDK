@@ -293,20 +293,19 @@ internal fun VCallScreen(
             ) {
                 when(modalBottomSheet) {
                     CallScreenModalBottomSheet.Audio -> AudioOutputComponent(
-                        onDeviceConnected = { modalBottomSheet = null },
-                        onCloseClick = { modalBottomSheet = null }
+                        onDismiss = { modalBottomSheet = null }
                     )
                     CallScreenModalBottomSheet.ScreenShare -> ScreenShareComponent(
-                        onItemClick = { modalBottomSheet = null },
-                        onCloseClick = { modalBottomSheet = null }
+                        onDismiss = { modalBottomSheet = null }
                     )
-                    CallScreenModalBottomSheet.FileShare -> FileShareComponent()
+                    CallScreenModalBottomSheet.FileShare -> FileShareComponent(
+                        onDismiss = { modalBottomSheet = null }
+                    )
                     CallScreenModalBottomSheet.Whiteboard -> WhiteboardComponent(
                         onBackPressed = { modalBottomSheet = null }
                     )
                     CallScreenModalBottomSheet.VirtualBackground -> VirtualBackgroundComponent(
-                        onItemClick = { modalBottomSheet = null },
-                        onCloseClick = { modalBottomSheet = null }
+                        onDismiss = { modalBottomSheet = null }
                     )
                     null -> Unit
                 }

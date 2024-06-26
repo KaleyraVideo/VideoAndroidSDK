@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.call.audiooutput
 
 import android.content.res.Configuration
 import android.os.Build
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -41,7 +43,6 @@ import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -49,8 +50,7 @@ internal fun AudioOutputComponent(
     viewModel: AudioOutputViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = AudioOutputViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onDeviceConnected: () -> Unit,
-    onCloseClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isTesting: Boolean = false
 ) {
@@ -73,16 +73,16 @@ internal fun AudioOutputComponent(
 
     AudioOutputComponent(
         uiState = uiState,
-        onItemClick = remember(viewModel, onDeviceConnected) {
+        onItemClick = remember(viewModel, onDismiss) {
             {
                 if (it is AudioDeviceUi.Bluetooth && !isConnectionServiceEnabled && !isTesting) {
                     permissionsState?.launchMultiplePermissionRequest()
                 }
                 viewModel.setDevice(it)
-                onDeviceConnected()
+                onDismiss()
             }
         },
-        onCloseClick = onCloseClick,
+        onCloseClick = onDismiss,
         modifier = modifier
     )
 }
@@ -97,7 +97,7 @@ internal fun AudioOutputComponent(
     SubFeatureLayout(
         title = stringResource(id = R.string.kaleyra_audio_route_title),
         onCloseClick = onCloseClick,
-        modifier = modifier
+        modifier = Modifier.padding(top = 16.dp).then(modifier)
     ) {
         AudioOutputContent(
             items = uiState.audioDeviceList,
