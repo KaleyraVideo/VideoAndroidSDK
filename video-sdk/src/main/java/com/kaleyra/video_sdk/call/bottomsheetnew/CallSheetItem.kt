@@ -35,8 +35,8 @@ internal fun CallSheetItem(
     label: Boolean,
     extended: Boolean,
     onHangUpClick: () -> Unit,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
+    onMicToggle: (Boolean) -> Unit,
+    onCameraToggle: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
@@ -60,7 +60,7 @@ internal fun CallSheetItem(
                 enabled = ca.isEnabled,
                 warning = ca.state == InputCallAction.State.Warning,
                 error = ca.state == InputCallAction.State.Error,
-                onCheckedChange = onMicToggled,
+                onCheckedChange = onMicToggle,
                 modifier = modifier
             )
         }
@@ -70,7 +70,7 @@ internal fun CallSheetItem(
                 enabled = ca.isEnabled,
                 warning = ca.state == InputCallAction.State.Warning,
                 error = ca.state == InputCallAction.State.Error,
-                onCheckedChange = onCameraToggled,
+                onCheckedChange = onCameraToggle,
                 modifier = modifier
             )
         }

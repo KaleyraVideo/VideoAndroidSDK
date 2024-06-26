@@ -67,7 +67,7 @@ internal fun StreamItem(
         )
 
         UserLabel(
-            username = if (stream.mine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
+            username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
             pin = pin,
             modifier = Modifier
                 .height(24.dp)

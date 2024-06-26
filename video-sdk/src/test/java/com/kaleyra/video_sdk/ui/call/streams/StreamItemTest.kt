@@ -156,14 +156,14 @@ class StreamItemTest {
 
     @Test
     fun localStream_youAsUsernameIsDisplayed() {
-        stream = stream.copy(mine = true)
+        stream = stream.copy(isMine = true)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_you)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun remoteStream_youAsUsernameDoesNotExits() {
-        stream = stream.copy(mine = false)
+        stream = stream.copy(isMine = false)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_you)
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }

@@ -23,4 +23,4 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 /**
  * Stream Ui Mock representation
  */
-val streamUiMock = StreamUi("streamId", "username", mine = false, AudioUi("1", false, false), VideoUi("1",null, false, false, ImmutableList(emptyList())), ImmutableUri(Uri.EMPTY))
+val streamUiMock = StreamUi("streamId", "username", isMine = false, AudioUi("1", false, false), VideoUi("1",null, false, false, ImmutableList(emptyList())), ImmutableUri(Uri.EMPTY))

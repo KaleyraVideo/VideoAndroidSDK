@@ -29,62 +29,11 @@ class NewCallScreenActivity : ComponentActivity() {
             window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
         setContent {
-            val micAction = MicAction()
-            val cameraAction = CameraAction(isEnabled = false)
-            val screenShareAction = ScreenShareAction()
-            var callActionsUI by remember {
-                mutableStateOf(
-                    ImmutableList(
-                        listOf(
-                            HangUpAction(),
-                            micAction,
-                            cameraAction,
-                            FlipCameraAction(),
-                            AudioAction(),
-                            FileShareAction(),
-                            screenShareAction,
-                            WhiteboardAction(),
-                            VirtualBackgroundAction(),
-                            ChatAction(),
-                        )
-                    )
-                )
-            }
-
             var inputMessage by remember { mutableStateOf<InputMessage?>(null) }
             KaleyraM3Theme {
                 CallScreen(
                     windowSizeClass = calculateWindowSizeClass(this),
-                    actions = callActionsUI,
                     inputMessage = inputMessage,
-                    onMicToggled = { toggled ->
-                        val index = callActionsUI.value.indexOfFirst { it is MicAction }
-                        val list = callActionsUI.value.toMutableList()
-                        list[index] = micAction.copy(isToggled = toggled)
-                        callActionsUI = ImmutableList(list)
-                        inputMessage = if (toggled) MicMessage.Disabled else MicMessage.Enabled
-                    },
-                    onCameraToggled = { toggled ->
-                        val index = callActionsUI.value.indexOfFirst { it is CameraAction }
-                        val list = callActionsUI.value.toMutableList()
-                        list[index] = cameraAction.copy(isToggled = toggled)
-                        callActionsUI = ImmutableList(list)
-                        inputMessage = if (toggled) CameraMessage.Disabled else CameraMessage.Enabled
-                    },
-                    onScreenShareToggle = { toggled ->
-                        val index = callActionsUI.value.indexOfFirst { it is ScreenShareAction }
-                        val list = callActionsUI.value.toMutableList()
-                        list[index] = screenShareAction.copy(isToggled = toggled)
-                        callActionsUI = ImmutableList(list)
-                    },
-                    onHangUpClick = { /*TODO*/ },
-                    onFlipCameraClick = { /*TODO*/ },
-                    onAudioClick = { /*TODO*/ },
-                    onChatClick = { /*TODO*/ },
-                    onFileShareClick = { /*TODO*/ },
-                    onWhiteboardClick = { /*TODO*/ },
-                    onVirtualBackgroundClick = { /*TODO*/ },
-                    onParticipantClick = { },
                     onBackPressed = { }
                 )
             }

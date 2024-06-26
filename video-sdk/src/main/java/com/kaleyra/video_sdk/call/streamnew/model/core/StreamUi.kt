@@ -23,7 +23,7 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
  * Stream Ui representation of a Stream on the Ui
  * @property id String stream ui identifier
  * @property username String participant's identifier
- * @property mine Boolean true if it's local user's stream, false otherwise
+ * @property isMine Boolean true if it's local user's stream, false otherwise
  * @property audio AudioUi? optional audio component
  * @property video VideoUi? optional video component
  * @property avatar ImmutableUri? optional participant's avatar uri
@@ -33,7 +33,7 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 data class StreamUi(
     val id: String,
     val username: String,
-    val mine: Boolean = false,
+    val isMine: Boolean = false,
     val audio: AudioUi? = null,
     val video: VideoUi? = null,
     val avatar: ImmutableUri? = null

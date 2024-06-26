@@ -26,163 +26,203 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.utils.FlowUtils.combine
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
+  
     override fun initialState() = CallActionsUiState()
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
 
-    private var wasCameraRestrictionMessageSent = false
-
-    private val isMyMicEnabled = call.flatMapLatest { it.isMyMicEnabled() }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
     init {
-        // TODO check that only the modified call action will be updated ui side
-
         viewModelScope.launch {
             val call = call.first()
 
-            val callActions = call
+            val availableCallActionsFlow = call
                 .toCallActions(company.flatMapLatest { it.id })
-                .shareInEagerly(viewModelScope)
+                .shareInEagerly(this)
 
-            val isCallConnected = call.state
+            val isCallActiveFlow = call.state
                 .map { it is Call.State.Connected }
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+                .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isCallEnded = call.state
+            val isCallEndedFlow = call.state
                 .map { it is Call.State.Disconnecting || it is Call.State.Disconnected.Ended }
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+                .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isMyCameraEnabled = call
+            val isMyMicEnabledFlow = call
+                .isMyMicEnabled()
+                .stateIn(this, SharingStarted.Eagerly, true)
+
+            val isMyCameraEnabledFlow = call
                 .isMyCameraEnabled()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+                .stateIn(this, SharingStarted.Eagerly, true)
 
-            val isSharingScreen = call
-                .isSharingScreen()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-            val hasUsbCamera = call
+            val hasUsbCameraFlow = call
                 .hasUsbCamera()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+                .stateIn(this, SharingStarted.Eagerly, false)
 
-            val currentAudioDevice = call.toCurrentAudioDeviceUi()
+            val isSharingScreenFlow = call
+                .isSharingScreen()
+                .stateIn(this, SharingStarted.Eagerly, false)
+
+            val isVirtualBackgroundEnabledFlow = call
+                .isVirtualBackgroundEnabled()
+                .stateIn(this, SharingStarted.Eagerly, false)
+
+            val isLocalParticipantInitializedFlow = call
+                .isMeParticipantInitialized()
+                .stateIn(this, SharingStarted.Eagerly, false)
+
+            val audioDeviceFlow = call.toCurrentAudioDeviceUi()
                 .filterNotNull()
                 .debounce(300)
-                .stateIn(viewModelScope, SharingStarted.Eagerly, AudioDeviceUi.Muted)
+                .stateIn(this, SharingStarted.Eagerly, AudioDeviceUi.Muted)
 
-            val isVirtualBackgroundEnabled = call
-                .isVirtualBackgroundEnabled()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+            FlowUtils.combine(
+                availableCallActionsFlow,
+                isCallActiveFlow,
+                isMyMicEnabledFlow,
+                isMyCameraEnabledFlow,
+                hasUsbCameraFlow,
+                isSharingScreenFlow,
+                isLocalParticipantInitializedFlow,
+                isVirtualBackgroundEnabledFlow,
+                audioDeviceFlow
+            ) { actions, isCallActive, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice ->
+                val updatedActions = actions.map { action ->
+                    when (action) {
+                        is MicAction -> action.copy(
+                            isToggled = !isMyMicEnabled,
+                            isEnabled = isMeParticipantsInitialed
+                        )
 
-            val isMeParticipantsInitialed = call
-                .isMeParticipantInitialized()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+                        is CameraAction -> action.copy(
+                            isToggled = !isMyCameraEnabled,
+                            isEnabled = isMeParticipantsInitialed
+                        )
 
-            combine(
-                callActions,
-                isCallConnected,
-                isMyCameraEnabled,
-                isMyMicEnabled,
-                isSharingScreen,
-                currentAudioDevice,
-                isVirtualBackgroundEnabled,
-                hasUsbCamera,
-                isMeParticipantsInitialed
-            ) { callActions, isCallConnected, isMyCameraEnabled, isMyMicEnabled, isSharingScreen, currentAudioDevice, isVirtualBackgroundEnabled, hasUsbCamera, isMeParticipantsInitialed ->
-                val actions = callActions
-                    .updateActionIfExists(CallAction.Microphone(isToggled = !isMyMicEnabled, isEnabled = isMeParticipantsInitialed))
-                    .updateActionIfExists(CallAction.Camera(isToggled = !isMyCameraEnabled, isEnabled = isMeParticipantsInitialed))
-                    .updateActionIfExists(CallAction.Audio(device = currentAudioDevice))
-                    .updateActionIfExists(CallAction.FileShare(isEnabled = isCallConnected))
-                    .updateActionIfExists(CallAction.ScreenShare(isToggled = isSharingScreen, isEnabled = isCallConnected))
-                    .updateActionIfExists(CallAction.VirtualBackground(isToggled = isVirtualBackgroundEnabled))
-                    .updateActionIfExists(CallAction.Whiteboard(isEnabled = isCallConnected))
-                    .updateActionIfExists(CallAction.SwitchCamera(isEnabled = !hasUsbCamera && isMyCameraEnabled))
-                ImmutableList(actions)
-            }
-                .distinctUntilChanged()
-                .combine(isCallEnded) { actions, isCallEnded ->
-                    if (!isCallEnded) _uiState.update { it.copy(actionList = actions) }
-                    isCallEnded
+                        is AudioAction -> action.copy(audioDevice = audioDevice)
+                        is FileShareAction -> action.copy(isEnabled = isCallActive)
+                        is ScreenShareAction -> action.copy(
+                            isToggled = isSharingScreen,
+                            isEnabled = isCallActive
+                        )
+
+                        is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled)
+                        is WhiteboardAction -> action.copy(isEnabled = isCallActive)
+                        is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled)
+                        else -> action
+                    }
                 }
+                _uiState.update { it.copy(actionList = updatedActions.toImmutableList()) }
+            }
+                .combine(isCallEndedFlow) { _, isCallEnded -> isCallEnded }
+                .takeWhile { !it }
+                .onCompletion { _uiState.update { it.copy(actionList = ImmutableList()) } }
+                .launchIn(this)
+
+            call
+                .toCallStateUi()
+                .onEach { state -> _uiState.update { it.copy(isRinging = state == CallStateUi.Ringing) } }
                 .launchIn(viewModelScope)
         }
+    }
+
+    fun accept() {
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        else call.getValue()?.connect()
     }
 
     fun toggleMic(activity: Activity?) {
         if (activity !is FragmentActivity) return
         viewModelScope.launch {
-            call.getValue()?.inputs?.request(activity, Inputs.Type.Microphone)
-            val input = availableInputs?.lastOrNull { it is Input.Audio }
-            if (!isMyMicEnabled.value) input?.tryEnable() else input?.tryDisable()
+            val inputs = call.getValue()?.inputs
+            val input = inputs?.request(activity, Inputs.Type.Microphone)?.getOrNull<Input.Audio>() ?: return@launch
+            if (!input.enabled.value) input.tryEnable() else input.tryDisable()
         }
     }
 
     fun toggleCamera(activity: Activity?) {
         if (activity !is FragmentActivity) return
-        val call = call.getValue() ?: return
-        val me = call.participants.value.me ?: return
+
+        val currentCall = call.getValue() ?: return
+        val me = currentCall.participants.value.me ?: return
         val canUseCamera = !me.restrictions.camera.value.usage
+
+        // Early exit if camera usage is restricted, with cooldown for messages
         if (!canUseCamera) {
-            // Avoid sending a burst of camera restriction message event
-            if (wasCameraRestrictionMessageSent) return
-            viewModelScope.launch {
-                wasCameraRestrictionMessageSent = true
-                CallUserMessagesProvider.sendUserMessage(CameraRestrictionMessage())
-                delay(1500L)
-                wasCameraRestrictionMessageSent = false
-            }
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastCameraRestrictionMessageTime < RESTRICTED_VIDEO_COOLDOWN_MESSAGE_TIME) return
+            lastCameraRestrictionMessageTime = currentTime
+            CallUserMessagesProvider.sendUserMessage(CameraRestrictionMessage())
             return
         }
 
-        val video = me.streams.value.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }?.video?.value
-        if (video != null && call.inputs.availableInputs.value.contains<Input>(video as Input)) {
-            if (video.enabled.value) video.tryDisable() else video.tryEnable()
-        } else {
-            viewModelScope.launch {
-                val input = call.inputs.request(activity, Inputs.Type.Camera.External).getOrNull<Input.Video>() ?: return@launch
-                input.tryEnable()
-            }
+        val existingCameraVideo =
+            me.streams.value.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }?.video?.value
 
-            viewModelScope.launch {
-                val input = call.inputs.request(activity, Inputs.Type.Camera.Internal).getOrNull<Input.Video>() ?: return@launch
-                input.tryEnable()
-            }
+        when {
+            existingCameraVideo == null || !currentCall.inputs.availableInputs.value.contains(existingCameraVideo) -> requestVideoInputs(currentCall, activity)
+            existingCameraVideo.enabled.value -> existingCameraVideo.tryDisable()
+            else -> existingCameraVideo.tryEnable()
+        }
+    }
+
+    private fun requestVideoInputs(call: Call, activity: FragmentActivity) {
+        viewModelScope.launch {
+            val input = call.inputs.request(activity, Inputs.Type.Camera.External)
+                .getOrNull<Input.Video>() ?: return@launch
+            input.tryEnable()
+        }
+
+        viewModelScope.launch {
+            val input = call.inputs.request(activity, Inputs.Type.Camera.Internal)
+                .getOrNull<Input.Video>() ?: return@launch
+            input.tryEnable()
         }
     }
 
@@ -194,8 +234,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun hangUp() {
-        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
-        else call.getValue()?.end()
+        when {
+            !ConnectionServiceUtils.isConnectionServiceEnabled -> call.getValue()?.end()
+            uiState.value.isRinging -> viewModelScope.launch { KaleyraCallConnectionService.reject() }
+            else -> viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+        }
     }
 
     fun showChat(context: Context) {
@@ -214,26 +257,26 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         val call = call.getValue()
         return if (input == null || call == null) false
         else {
-            val me = call.participants.value.me ?: return false
-            val streams = me.streams.value
-            val stream = streams.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
+            val me = call.participants.value.me
+            val streams = me?.streams?.value
+            val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
             input.tryDisable() && stream != null
         }
     }
 
-    private fun List<CallAction>.updateActionIfExists(action: CallAction): List<CallAction> {
-        val index = indexOfFirst { it.javaClass == action.javaClass }.takeIf { it != -1 } ?: return this
-        return if (this[index] == action) this else toMutableList().apply { this[index] = action }
-    }
-
     companion object {
 
-        fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CallActionsViewModel(configure) as T
+        private var lastCameraRestrictionMessageTime = 0L
+
+        private const val RESTRICTED_VIDEO_COOLDOWN_MESSAGE_TIME = 1500L
+
+        fun provideFactory(configure: suspend () -> Configuration) =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return CallActionsViewModel(configure) as T
+                }
             }
-        }
     }
 }

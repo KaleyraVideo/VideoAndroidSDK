@@ -11,12 +11,11 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -26,7 +25,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     override fun initialState() = StreamUiState()
 
-    private var maxPinnedStreams = 0
+    private var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
 
     init {
         viewModelScope.launch {
@@ -41,19 +40,17 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                     determineDebounceDelay(participants, streams, callState)
                 }
                 .onEach { (_, streams, callState) ->
-                    val updatedStreams = when (callState) {
-                        CallStateUi.Disconnected.Ended -> emptyList()
-                        else -> streams
+                    val updatedStreams = when {
+                        callState == CallStateUi.Disconnected.Ended -> ImmutableList(listOf())
+                        streams == uiState.value.streams.value -> uiState.value.streams
+                        else -> streams.toImmutableList()
                     }
-
-                    // Avoid unnecessary updates if streams haven't changed
-//                if (updatedStreams == uiState.value.streams.value) return@onEach
 
                     _uiState.update {
                         it.copy(
-                            streams = updatedStreams.toImmutableList(),
-//                        fullscreenStream = findCurrentFullscreenStream(streams, callState),
-//                        pinnedStreams = updatePinnedStreams(streams).toImmutableList()
+                            streams = updatedStreams,
+                            fullscreenStream = findCurrentFullscreenStream(streams, callState),
+                            pinnedStreams = updatePinnedStreams(streams).toImmutableList()
                         )
                     }
                 }
@@ -62,6 +59,8 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     }
 
     fun fullscreen(stream: StreamUi?) {
+        val streams = uiState.value.streams.value
+        if (streams.find { it.id == stream?.id } == null) return
         _uiState.update { it.copy(fullscreenStream = stream) }
     }
 
@@ -70,7 +69,8 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     }
 
     fun pin(stream: StreamUi): Boolean {
-        if (uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
+        val streams = uiState.value.streams.value
+        if (streams.find { it.id == stream.id } == null || uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
         _uiState.update {
             val new = (it.pinnedStreams.value + stream).toImmutableList()
             it.copy(pinnedStreams = new)
@@ -86,14 +86,14 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     }
 
     private fun updatePinnedStreams(streams: List<StreamUi>): List<StreamUi> {
-        val localScreenShare = streams.find { it.video?.isScreenShare == true && it.mine }
+        val localScreenShare = streams.find { it.video?.isScreenShare == true && it.isMine }
         // Clear the removed pinned streams
         val updatedPinnedStreams = uiState.value.pinnedStreams.value.intersect(streams.toSet()).toMutableList()
         // Pin the local screen share as first stream
         localScreenShare?.let {
             updatedPinnedStreams.add(0, it)
             if (updatedPinnedStreams.size > maxPinnedStreams) {
-                updatedPinnedStreams.removeLast()
+                updatedPinnedStreams.removeAt(1)
             }
         }
         return updatedPinnedStreams
@@ -118,6 +118,8 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         const val SINGLE_STREAM_DEBOUNCE_MILLIS = 5000L
 
         const val DEFAULT_DEBOUNCE_MILLIS = 100L
+
+        const val DEFAULT_MAX_PINNED_STREAMS = 2
 
         fun provideFactory(configure: suspend () -> Configuration) =
             object : ViewModelProvider.Factory {

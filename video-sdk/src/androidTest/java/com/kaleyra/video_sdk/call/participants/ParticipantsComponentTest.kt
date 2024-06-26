@@ -162,7 +162,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testYouIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true)))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true)))
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_you, streamUiMock.username)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -205,7 +205,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun streamIsMineAndAudioIsDisabled_enableMicButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true, audio = AudioUi(id = "id", isEnabled = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -213,7 +213,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun streamIsMineAndAudioIsEnabled_disableMicButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true, audio = AudioUi(id = "id", isEnabled = true))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -221,7 +221,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun iAmAdminAndAudioIsDisabled_enableMicButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true, audio = AudioUi(id = "id", isEnabled = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -229,7 +229,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun iAmAdminAndAudioIsEnabled_disableMicButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true, audio = AudioUi(id = "id", isEnabled = true))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -238,7 +238,7 @@ class ParticipantsComponentTest {
     @Test
     fun iAmNotAdminAndStreamIsNotMineAndAudioIsNotMuted_muteAudioForMeButtonIsDisplayed() {
         amIAdmin = false
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = false, audio = AudioUi("id", isMutedForYou = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = false, audio = AudioUi("id", isMutedForYou = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -247,7 +247,7 @@ class ParticipantsComponentTest {
     @Test
     fun iAmNotAdminAndStreamIsNotMineAndAudioIsMuted_unmuteAudioForMeButtonIsDisplayed() {
         amIAdmin = false
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = false, audio = AudioUi("id", isMutedForYou = true))))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = false, audio = AudioUi("id", isMutedForYou = true))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -255,7 +255,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun streamIsMineAndIsPinned_unpinButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true)))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true)))
         pinnedStreamsIds = ImmutableList(listOf(streamUiMock.id))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -264,7 +264,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun streamIsMineAndIsNotPinned_pinButtonIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = true)))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = true)))
         pinnedStreamsIds = ImmutableList(listOf())
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -294,7 +294,7 @@ class ParticipantsComponentTest {
     @Test
     fun iAmAdminAndStreamIsNotMine_showMoreActionsButtonIsDisplayed() {
         amIAdmin = true
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = false)))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = false)))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_show_more_actions)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -303,7 +303,7 @@ class ParticipantsComponentTest {
     @Test
     fun participantItemMoreClick_adminBottomSheetIsDisplayed() {
         amIAdmin = true
-        streams = ImmutableList(listOf(streamUiMock.copy(mine = false)))
+        streams = ImmutableList(listOf(streamUiMock.copy(isMine = false)))
         composeTestRule.performClickOnMoreButton()
         composeTestRule.onNodeWithTag(AdminBottomSheetTag).assertIsDisplayed()
     }
@@ -415,7 +415,7 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantItemOnMuteStreamClick() {
         amIAdmin = false
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = false, audio = AudioUi("id", isMutedForYou = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
@@ -425,7 +425,7 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantItemOnUnMuteStreamClick() {
         amIAdmin = false
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = false, audio = AudioUi("id", isMutedForYou = true))))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = true))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
@@ -434,7 +434,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testParticipantItemOnDisableMicClick() {
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = true, audio = AudioUi(id = "id", isEnabled = true))))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
@@ -443,7 +443,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testParticipantItemOnEnableMicClick() {
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = true, audio = AudioUi(id = "id", isEnabled = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
@@ -452,7 +452,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testParticipantItemOnUnpinStreamClick() {
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = true)))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true)))
         pinnedStreamsIds = ImmutableList(listOf("customStreamId"))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
         composeTestRule.onNodeWithContentDescription(description).performClick()
@@ -462,7 +462,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testParticipantItemOnPinStreamClick() {
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", mine = true)))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true)))
         pinnedStreamsIds = ImmutableList(listOf())
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
         composeTestRule.onNodeWithContentDescription(description).performClick()

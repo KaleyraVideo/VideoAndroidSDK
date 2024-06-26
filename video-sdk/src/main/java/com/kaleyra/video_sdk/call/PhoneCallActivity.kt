@@ -34,6 +34,8 @@ import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHO
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,6 +91,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     override val disableProximity: Boolean
         get() = !isInForeground || isInPipMode.value || isWhiteboardDisplayed || isFileShareDisplayed
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntentAction(intent)
@@ -101,19 +104,24 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
             window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
         setContent {
-            CallScreen(
-                shouldShowFileShareComponent = shouldShowFileShare.collectAsStateWithLifecycle().value,
-                isInPipMode = isInPipMode.collectAsStateWithLifecycle().value,
-                enterPip = ::enterPipModeIfSupported,
-                onFileShareVisibility = ::onFileShareVisibility,
-                onWhiteboardVisibility = { isWhiteboardDisplayed = it },
-                onDisplayMode = ::onDisplayMode,
-                onPipAspectRatio = ::onAspectRatio,
-                onUsbCameraConnected = ::onUsbConnecting,
-                onActivityFinishing = { isActivityFinishing = true },
-                onAskInputPermissions = { isAskingInputPermissions = it },
-                onConnectionServicePermissionsResult = ::onConnectionServicePermissions
+            com.kaleyra.video_sdk.call.screennew.CallScreen(
+                windowSizeClass = calculateWindowSizeClass(this),
+                inputMessage = null,
+                onBackPressed = { }
             )
+//            CallScreen(
+//                shouldShowFileShareComponent = shouldShowFileShare.collectAsStateWithLifecycle().value,
+//                isInPipMode = isInPipMode.collectAsStateWithLifecycle().value,
+//                enterPip = ::enterPipModeIfSupported,
+//                onFileShareVisibility = ::onFileShareVisibility,
+//                onWhiteboardVisibility = { isWhiteboardDisplayed = it },
+//                onDisplayMode = ::onDisplayMode,
+//                onPipAspectRatio = ::onAspectRatio,
+//                onUsbCameraConnected = ::onUsbConnecting,
+//                onActivityFinishing = { isActivityFinishing = true },
+//                onAskInputPermissions = { isAskingInputPermissions = it },
+//                onConnectionServicePermissionsResult = ::onConnectionServicePermissions
+//            )
         }
         turnScreenOn()
 
