@@ -16,15 +16,10 @@
 
 package com.kaleyra.video_sdk.common.usermessages.model
 
-import java.util.UUID
-
 /**
  * Camera Restriction Message
- * @property id String camera restriction message identifier
  */
-class CameraRestrictionMessage: UserMessage {
-
-    override val id: String = UUID.randomUUID().toString()
+class CameraRestrictionMessage: UserMessage() {
 
     /**
      * @suppress

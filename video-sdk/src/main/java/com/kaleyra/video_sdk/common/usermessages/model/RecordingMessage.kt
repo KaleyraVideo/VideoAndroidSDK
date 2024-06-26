@@ -16,27 +16,24 @@
 
 package com.kaleyra.video_sdk.common.usermessages.model
 
-import java.util.UUID
-
 /**
  * Recording message
- * @property id String recording message identifier
  * @constructor
  */
-sealed class RecordingMessage(override val id: String) : UserMessage {
+sealed class RecordingMessage : UserMessage() {
 
     /**
      * Recording Started
      */
-    data object Started : RecordingMessage(UUID.randomUUID().toString())
+    data object Started : RecordingMessage()
 
     /**
      * Recording Stopped
      */
-    data object Stopped : RecordingMessage(UUID.randomUUID().toString())
+    data object Stopped : RecordingMessage()
 
     /**
      * Recording Failed
      */
-    data object Failed : RecordingMessage(UUID.randomUUID().toString())
+    data object Failed : RecordingMessage()
 }
