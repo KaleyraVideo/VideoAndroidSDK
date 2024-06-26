@@ -43,7 +43,6 @@ import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -51,8 +50,7 @@ internal fun AudioOutputComponent(
     viewModel: AudioOutputViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = AudioOutputViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onDeviceConnected: () -> Unit,
-    onCloseClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isTesting: Boolean = false
 ) {
@@ -75,16 +73,16 @@ internal fun AudioOutputComponent(
 
     AudioOutputComponent(
         uiState = uiState,
-        onItemClick = remember(viewModel, onDeviceConnected) {
+        onItemClick = remember(viewModel, onDismiss) {
             {
                 if (it is AudioDeviceUi.Bluetooth && !isConnectionServiceEnabled && !isTesting) {
                     permissionsState?.launchMultiplePermissionRequest()
                 }
                 viewModel.setDevice(it)
-                onDeviceConnected()
+                onDismiss()
             }
         },
-        onCloseClick = onCloseClick,
+        onCloseClick = onDismiss,
         modifier = modifier
     )
 }

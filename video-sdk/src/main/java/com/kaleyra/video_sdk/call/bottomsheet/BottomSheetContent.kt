@@ -164,17 +164,15 @@ internal fun BottomSheetContent(
                     }
                     BottomSheetComponent.AudioOutput -> {
                         AudioOutputComponent(
-                            onDeviceConnected = onAudioDeviceClick,
-                            onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
                             modifier = Modifier.testTag(AudioOutputComponentTag),
+                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
                             isTesting = isTesting
                         )
                     }
                     BottomSheetComponent.ScreenShare -> {
                         ScreenShareComponent(
-                            onItemClick = { onScreenShareTargetClick() },
-                            onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                            modifier = Modifier.testTag(ScreenShareComponentTag)
+                            modifier = Modifier.testTag(ScreenShareComponentTag),
+                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
                         )
                     }
                     BottomSheetComponent.FileShare -> {
@@ -182,8 +180,8 @@ internal fun BottomSheetContent(
                             modifier = Modifier
                                 .padding(top = 12.dp)
                                 .testTag(FileShareComponentTag),
+                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
                             isTesting = isTesting,
-                            onBackPressed = {}
                         )
                     }
                     BottomSheetComponent.Whiteboard -> {
@@ -196,10 +194,8 @@ internal fun BottomSheetContent(
                     }
                     BottomSheetComponent.VirtualBackground -> {
                         VirtualBackgroundComponent(
-                            onItemClick = { onVirtualBackgroundClick() },
-                            onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                            modifier = Modifier
-                                .testTag(VirtualBackgroundComponentTag)
+                            modifier = Modifier.testTag(VirtualBackgroundComponentTag),
+                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
                         )
                     }
                 }
