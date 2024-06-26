@@ -22,6 +22,7 @@ import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -50,7 +51,11 @@ internal object StreamMapper {
 //                    else listOf()
 //                }
                     participant.streams
-                        .mapToStreamsUi(participant.combinedDisplayName, participant.combinedDisplayImage)
+                        .mapToStreamsUi(
+                            isLocalParticipant = participant.userId == participants.me?.userId,
+                            displayName = participant.combinedDisplayName,
+                            displayImage = participant.combinedDisplayImage
+                        )
                         .map {
                             Pair(participant.userId, it)
                         }
@@ -69,11 +74,12 @@ internal object StreamMapper {
         this.participants
             .mapNotNull { it.me }
             .flatMapLatest { me ->
-                me.streams.mapToStreamsUi(me.combinedDisplayName, me.combinedDisplayImage)
+                me.streams.mapToStreamsUi(isLocalParticipant = true, me.combinedDisplayName, me.combinedDisplayImage)
             }
             .distinctUntilChanged()
 
     fun Flow<List<Stream>>.mapToStreamsUi(
+        isLocalParticipant: Boolean,
         displayName: Flow<String?>,
         displayImage: Flow<Uri?>
     ): Flow<List<StreamUi>> =
@@ -85,17 +91,21 @@ internal object StreamMapper {
                 .map { stream ->
                     val id = stream.id
                     val video = stream.video.mapToVideoUi()
+                    val audio = stream.audio.mapToAudioUi()
 
                     combine(
                         video,
+                        audio,
                         displayName,
                         displayImage
-                    ) { video, name, image ->
+                    ) { video, audio, name, image ->
                         StreamUi(
                             id = id,
                             video = video,
+                            audio = audio,
                             username = name ?: "",
-                            avatar = image?.let { ImmutableUri(it) }
+                            avatar = image?.let { ImmutableUri(it) },
+                            isMine = isLocalParticipant
                         )
                     }
                 }
