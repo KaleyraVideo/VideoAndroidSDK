@@ -20,7 +20,6 @@ import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
@@ -30,7 +29,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -94,34 +92,7 @@ class WhiteboardMapperTest {
     }
 
     @Test
-    fun whiteboardAddTextEvent_getWhiteboardTextEvents_eventReceived() = runTest {
-        val event = Whiteboard.Event.Text.Add(mockk())
-        every { whiteboardMock.events } returns MutableStateFlow(event)
-        
-        val actual = callMock.getWhiteboardTextEvents().first()
-        assertEquals(event, actual)
-    }
 
-    @Test
-    fun whiteboardEditTextEvent_getWhiteboardTextEvents_eventReceived() = runTest {
-        val event = Whiteboard.Event.Text.Edit(oldText = "text", mockk())
-        every { whiteboardMock.events } returns MutableStateFlow(event)
-        
-        val actual = callMock.getWhiteboardTextEvents().first()
-        assertEquals(event, actual)
-    }
-
-    @Test
-    fun whiteboardShowRequestEvent_getWhiteboardTextEvents_eventNotReceived() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show)
-        
-        val actual = withTimeoutOrNull(50) {
-            callMock.getWhiteboardTextEvents().first()
-        }
-        assertEquals(null, actual)
-    }
-
-    @Test
     fun sharedFileStateAvailable_toWhiteboardUploadUi_whiteboardUploadUiUploading() = runTest {
         every { sharedFileMock.state } returns MutableStateFlow(SharedFile.State.Available)
         val actual = sharedFileMock.toWhiteboardUploadUi().first()

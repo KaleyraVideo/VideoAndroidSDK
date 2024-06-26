@@ -19,7 +19,11 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlin.math.roundToInt
 
 @Composable
@@ -52,7 +56,7 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_close),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.error,
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(64.dp)
                     )
                 } else {
@@ -60,9 +64,9 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                     val progress by animateFloatAsState(targetValue = progressValue)
                     CircularProgressIndicator(
                         progress = progress,
-                        color = MaterialTheme.colors.secondaryVariant,
+                        color = MaterialTheme.colorScheme.primary,
                         size = 56.dp,
-                        strokeWidth = ProgressIndicatorDefaults.StrokeWidth
+                        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
                     )
                     Text(
                         text = stringResource(id = R.string.kaleyra_file_upload_percentage, (progressValue * 100).roundToInt()), fontSize = 12.sp
@@ -77,7 +81,6 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                 )
                 Text(
                     text = stringResource(id = if (error) R.string.kaleyra_whiteboard_error_subtitle else R.string.kaleyra_whiteboard_compressing),
-                    color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
                     fontSize = 12.sp
                 )
             }
@@ -89,19 +92,23 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun UploadCardUploadingPreview() {
-    UploadCardPreview(WhiteboardUploadUi.Uploading(.7f))
+    KaleyraM3Theme {
+        UploadCardPreview(WhiteboardUploadUi.Uploading(.7f))
+    }
 }
 
-@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun UploadCardErrorPreview() {
-    UploadCardPreview(WhiteboardUploadUi.Error)
+    KaleyraM3Theme {
+        UploadCardPreview(WhiteboardUploadUi.Error)
+    }
 }
 
 @Composable
 private fun UploadCardPreview(upload: WhiteboardUploadUi) {
-    KaleyraTheme {
+    KaleyraM3Theme {
         WhiteboardUploadCard(upload = upload)
     }
 }

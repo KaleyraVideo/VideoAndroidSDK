@@ -16,15 +16,13 @@
 
 package com.kaleyra.video_sdk.call.feedback.view
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -35,14 +33,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 // Default slider thumb radius in the material library
 private val ThumbRadius = 10.dp
-private val StarSize = 28.dp
-// Adjust the padding for the layout placement
-private val LayoutModifier = Modifier.padding(horizontal = ThumbRadius / 2)
+private val StarSize = 36.dp
+private val StarSpacing = 36.dp
+private val SliderWidth = 220.dp
 
 /**
  * Star Slider Tag
@@ -59,32 +57,30 @@ internal fun StarSlider(
     val density = LocalDensity.current
     val thumbSize = remember { with(density) { ThumbRadius.toPx().toInt() } }
     Layout(
-        modifier = modifier.then(LayoutModifier),
         content = {
             Slider(
-                value = value,
                 onValueChange = onValueChange,
+                value = value,
                 steps = levels - 2,
                 valueRange = 1f.rangeTo(levels.toFloat()),
-                modifier = Modifier.alpha(0f).testTag(StarSliderTag)
+                modifier = Modifier
+                    .alpha(0f)
+                    .width(SliderWidth)
+                    .testTag(StarSliderTag)
             )
             repeat(levels) { index ->
-                val scale by animateFloatAsState(targetValue = if (index <= value - 1) 1f else .75f)
                 Box(modifier = Modifier.size(StarSize)) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_empty_star),
+                        painter = painterResource(id = R.drawable.ic_kaleyra_full_star),
                         contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier
                             .matchParentSize()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_full_star),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .matchParentSize()
                             .graphicsLayer {
@@ -100,16 +96,15 @@ internal fun StarSlider(
             .drop(1)
             .take(levels)
             .map { it.measure(constraints) }
-        val starWidth = starPlaceables[0].width
         val startHeight = starPlaceables[0].height
         val offsetY = sliderPlaceable.height / 2 - startHeight / 2
 
         layout(sliderPlaceable.width, sliderPlaceable.height) {
             sliderPlaceable.placeRelative(0, 0)
 
-            val offsetX = (sliderPlaceable.width - starWidth / 2 - thumbSize / 2) / (levels - 1)
+            val offsetX = StarSpacing.toPx().toInt()
             starPlaceables.forEachIndexed { index, placeable ->
-                placeable.placeRelative(x = -thumbSize / 2 + offsetX * index, y = offsetY)
+                placeable.placeRelative(x = (thumbSize * index) + (offsetX * index), y = offsetY)
             }
         }
     }
@@ -117,11 +112,10 @@ internal fun StarSlider(
 
 @Preview(showBackground = true)
 @Composable
-internal fun StarSliderPreview() = KaleyraTheme {
+internal fun StarSliderPreview() = KaleyraM3Theme {
     StarSlider(
         value = 3f,
         onValueChange = {},
         levels = 5,
-        modifier = Modifier.padding(10.dp)
     )
 }

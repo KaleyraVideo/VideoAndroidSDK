@@ -16,17 +16,13 @@
 
 package com.kaleyra.video_sdk.common.usermessages.model
 
-import java.util.UUID
 
 /**
  * Muted message
  * @property admin String? admin user identifier that triggered the mute
- * @property id String muted message identifier
  * @constructor
  */
-class MutedMessage(val admin: String?) : UserMessage {
-
-    override val id: String = UUID.randomUUID().toString()
+class MutedMessage(val admin: String?) : UserMessage() {
 
     /**
      * @suppress

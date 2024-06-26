@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.ui.call.fileshare
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -42,7 +43,7 @@ class FileShareAppBarTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            FileShareAppBar(onBackPressed = { isBackPressed = true })
+            FileShareAppBar(onBackPressed = { isBackPressed = true }, lazyGridState = rememberLazyGridState())
         }
     }
 

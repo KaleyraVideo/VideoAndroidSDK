@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.call.feedback.view
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,9 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,12 +54,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.R
-
-private const val DefaultRating = 5f
-private const val SliderLevels = 5
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.feedbackUiValueFor
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toRatingStringRes
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toSliderValue
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 /**
  * Feedback Form Tag
@@ -64,51 +68,47 @@ private const val SliderLevels = 5
 const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable
-internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: () -> Unit) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+internal fun FeedbackForm(
+    feedbackUiState: FeedbackUiState? = FeedbackUiState(),
+    onUserFeedback: (FeedbackUiRating, String) -> Unit,
+    onDismiss: () -> Unit) {
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState!!.comment ?: "")) }
     var isEditTextFocused by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(DefaultRating) }
+    var sliderValue by remember { mutableStateOf(feedbackUiState!!.rating) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(24.dp)
             .testTag(FeedbackFormTag),
     ) {
-        IconButton(
-            icon = painterResource(id = R.drawable.ic_kaleyra_close),
-            iconDescription = stringResource(id = R.string.kaleyra_close),
-            onClick = onDismiss,
-            modifier = Modifier.align(Alignment.End)
-        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         AnimatedVisibility(visible = !isEditTextFocused) {
             Text(
                 text = stringResource(id = R.string.kaleyra_feedback_evaluate_call),
-                color = MaterialTheme.colors.onSurface.copy(alpha = .8f),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 lineHeight = 22.sp,
                 fontSize = 16.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 28.dp)
             )
         }
-
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         Spacer(modifier = Modifier.height(10.dp))
         StarSlider(
-            value = sliderValue,
-            onValueChange = { sliderValue = it },
-            levels = SliderLevels,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Text(
-            text = ratingTextFor(sliderValue),
-            fontSize = 16.sp,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 28.dp)
+            value = composableSliderValueFor(sliderValue!!),
+            onValueChange = { sliderValue = feedbackUiValueFor(it) },
+            levels = FeedbackUiRating.entries.count(),
         )
 
         OutlinedTextField(
@@ -119,12 +119,11 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
                     Text(
                         text = stringResource(id = R.string.kaleyra_feedback_leave_a_comment),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colors.onSurface.copy(.5f)
                     )
                 }
             },
             modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+                .padding(top = 24.dp, bottom = 8.dp)
                 .fillMaxWidth()
                 .onFocusChanged {
                     isEditTextFocused = it.hasFocus
@@ -135,57 +134,80 @@ internal fun FeedbackForm(onUserFeedback: (Float, String) -> Unit, onDismiss: ()
             textStyle = TextStyle(
                 fontSize = 14.sp
             ),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = if (isEditTextFocused) MaterialTheme.colors.onSurface.copy(
-                    .12f
-                ) else Color.Transparent,
-                cursorColor = MaterialTheme.colors.secondary,
-                unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(.3f),
-                focusedBorderColor = Color.Transparent
-            )
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            onClick = { onUserFeedback(sliderValue, textFieldValue.text) },
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.kaleyra_feedback_vote),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End) {
+            TextButton(
+                onClick = { onDismiss() },
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 16.dp),
+                content = {
+                    Text(
+                        text = stringResource(id = R.string.kaleyra_action_cancel),
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                },
             )
+            Button(
+                onClick = { onUserFeedback(sliderValue!!, textFieldValue.text) },
+                shape = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            ) {
+                Text(
+                    text = stringResource(id = R.string.kaleyra_feedback_vote),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
 @Composable
-private fun ratingTextFor(sliderValue: Float): String {
-    val stringId by remember(sliderValue) {
-        derivedStateOf {
-            when {
-                sliderValue < 2f -> R.string.kaleyra_feedback_bad
-                sliderValue < 3f -> R.string.kaleyra_feedback_poor
-                sliderValue < 4f -> R.string.kaleyra_feedback_neutral
-                sliderValue < 5f -> R.string.kaleyra_feedback_good
-                else -> R.string.kaleyra_feedback_excellent
-            }
-        }
+internal fun composableRatingTextFor(feedbackUiRating: FeedbackUiRating): String {
+    val stringId = remember(feedbackUiRating) {
+        feedbackUiRating.toRatingStringRes()
     }
     return stringResource(id = stringId)
+}
+
+@Composable
+internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
+    val sliderValueFloat = remember(feedbackUiRating) {
+        feedbackUiRating.toSliderValue()
+    }
+    return sliderValueFloat
 }
 
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun FeedbackFormPreview() = KaleyraTheme {
+internal fun FeedbackFormPreview() = KaleyraM3Theme {
     Surface {
-        FeedbackForm({ _, _ -> }, {})
+        FeedbackForm(
+            FeedbackUiState(comment = "comment this call", rating = FeedbackUiRating.Good),
+            { _, _ -> }, {}
+        )
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FeedbackFormDefaultRatingPreview() = KaleyraM3Theme {
+    Surface {
+        FeedbackForm(
+            FeedbackUiState(),
+            { _, _ -> }, {}
+        )
     }
 }

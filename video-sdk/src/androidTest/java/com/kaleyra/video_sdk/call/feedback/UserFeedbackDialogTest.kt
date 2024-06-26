@@ -29,6 +29,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackFormTag
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackSentTag
 import junit.framework.TestCase
@@ -46,7 +48,7 @@ class UserFeedbackDialogTest {
 
     private var isDismissed = false
 
-    private var rating = -1f
+    private var rating: FeedbackUiRating = FeedbackUiRating.Awful
 
     private var comment = ""
 
@@ -54,6 +56,7 @@ class UserFeedbackDialogTest {
     fun setUp() {
         composeTestRule.setContent {
             UserFeedbackDialog(
+                FeedbackUiState(),
                 onUserFeedback = { rating, comment ->
                     this@UserFeedbackDialogTest.rating = rating
                     this@UserFeedbackDialogTest.comment = comment
@@ -66,7 +69,7 @@ class UserFeedbackDialogTest {
     @After
     fun tearDown() {
         isDismissed = false
-        rating = -1f
+        rating = FeedbackUiRating.Awful
         comment = ""
     }
 
@@ -95,8 +98,8 @@ class UserFeedbackDialogTest {
 
     @Test
     fun userDismissesDialog_onDismissInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).performClick()
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        composeTestRule.onNodeWithText(cancel).performClick()
         TestCase.assertEquals(true, isDismissed)
     }
 }

@@ -26,7 +26,6 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.height
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.StarSliderTag
 import junit.framework.TestCase.assertEquals
@@ -55,7 +55,7 @@ class FeedbackFormTest {
 
     private var isDismissed = false
 
-    private var rating = -1f
+    private var rating: FeedbackUiRating = FeedbackUiRating.Awful
 
     private var comment = ""
 
@@ -75,7 +75,7 @@ class FeedbackFormTest {
     @After
     fun tearDown() {
         isDismissed = false
-        rating = -1f
+        rating = FeedbackUiRating.Awful
         comment = ""
     }
 
@@ -86,16 +86,16 @@ class FeedbackFormTest {
     }
 
     @Test
-    fun closeButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    fun cancelButtonIsDisplayed() {
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        composeTestRule.onNodeWithText(cancel).assertIsDisplayed()
     }
 
     @Test
-    fun userClicksClose_onDismissInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
-        composeTestRule.onNodeWithContentDescription(text).performClick()
+    fun userClicksCancel_onDismissInvoked() {
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        composeTestRule.onNodeWithText(cancel).assertHasClickAction()
+        composeTestRule.onNodeWithText(cancel).performClick()
         assertEquals(true, isDismissed)
     }
 
@@ -185,7 +185,7 @@ class FeedbackFormTest {
         textField.performTextInput("text")
         button.assertHasClickAction()
         button.performClick()
-        assertEquals(5f, rating)
+        assertEquals(FeedbackUiRating.Excellent, rating)
         assertEquals("text", comment)
     }
 }

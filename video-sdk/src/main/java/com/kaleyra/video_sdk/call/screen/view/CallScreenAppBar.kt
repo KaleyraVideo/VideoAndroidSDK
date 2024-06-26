@@ -19,6 +19,8 @@ package com.kaleyra.video_sdk.call.screen.view
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -52,7 +54,7 @@ internal fun CallScreenAppBar(
             StatusBarsSpacer(Modifier.background(MaterialTheme.colors.primary))
             Box(modifier = Modifier.statusBarsPadding()) {
                 when (currentSheetComponent) {
-                    BottomSheetComponent.FileShare -> FileShareAppBar(onBackPressed = onBackPressed)
+                    BottomSheetComponent.FileShare -> FileShareAppBar(onBackPressed = onBackPressed, lazyGridState = rememberLazyGridState())
                     BottomSheetComponent.Whiteboard -> WhiteboardAppBar(onBackPressed = onBackPressed)
                     else -> Unit
                 }

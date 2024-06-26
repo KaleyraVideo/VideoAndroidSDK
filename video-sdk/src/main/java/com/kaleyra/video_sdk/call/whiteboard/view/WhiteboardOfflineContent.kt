@@ -19,10 +19,10 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.content.res.Configuration
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,6 +50,7 @@ internal fun WhiteboardOfflineContent(
     ) {
         val infiniteTransition = rememberInfiniteTransition()
         val rotation by infiniteTransition.animateFloat(
+            label = "WhiteboardOfflineContent",
             initialValue = 0f, targetValue = 360f, animationSpec = infiniteRepeatable(
                 animation = tween(500, easing = LinearEasing)
             )
@@ -60,6 +61,7 @@ internal fun WhiteboardOfflineContent(
                 tint = Color.Black,
                 modifier = Modifier
                     .size(96.dp)
+                    .padding(2.dp)
                     .graphicsLayer {
                         rotationZ = if (loading) rotation else 0f
                     })

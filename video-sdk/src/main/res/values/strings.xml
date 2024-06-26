@@ -43,6 +43,7 @@
 
     <string name="kaleyra_stream_screenshare_message">Meeting attendees are seeing your screen</string>
     <string name="kaleyra_stream_screenshare_action">Stop Screen Sharing</string>
+    <string name="kaleyra_stream_screenshare_received">%s is sharing its screen</string>
 
     <string name="kaleyra_stream_pin">The stream is pinned</string>
     <string name="kaleyra_stream_fullscreen">The stream is fullscreen</string>
@@ -150,6 +151,7 @@
     </plurals>
     <string name="kaleyra_call_status_ringing">Ringing &#8230;</string>
     <string name="kaleyra_call_status_ended">Call ended</string>
+    <string name="kaleyra_call_status_ended_line_busy">Line busy</string>
     <plurals name="kaleyra_call_status_declined">
         <item quantity="one">The user has declined.</item>
         <item quantity="other">All users have declined.</item>

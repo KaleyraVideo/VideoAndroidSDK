@@ -16,29 +16,27 @@
 
 package com.kaleyra.video_sdk.common.usermessages.model
 
-import java.util.UUID
 
 /**
  * Usb Camera Message
- * @property id String usb camera message identifier
  * @constructor
  */
-sealed class UsbCameraMessage(override val id: String) : UserMessage {
+sealed class UsbCameraMessage() : UserMessage() {
 
     /**
      * Connected Usb Camera Message
      * @property name String connected usb camera's name
      * @constructor
      */
-    data class Connected(val name: String) : UsbCameraMessage(UUID.randomUUID().toString())
+    data class Connected(val name: String) : UsbCameraMessage()
 
     /**
      * Disconnected Usb Camera Message
      */
-    data object Disconnected : UsbCameraMessage(UUID.randomUUID().toString())
+    data object Disconnected : UsbCameraMessage()
 
     /**
      * Not Supported Usb Camera Message
      */
-    data object NotSupported : UsbCameraMessage(UUID.randomUUID().toString())
+    data object NotSupported : UsbCameraMessage()
 }

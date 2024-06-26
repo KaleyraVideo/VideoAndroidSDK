@@ -17,7 +17,7 @@
 package com.kaleyra.video_sdk.call.virtualbackground
 
 import android.content.res.Configuration
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,10 +30,10 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
 import com.kaleyra.video_sdk.call.virtualbackground.view.VirtualBackgroundContent
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun VirtualBackgroundComponent(
@@ -83,7 +83,7 @@ internal fun VirtualBackgroundComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun VirtualBackgroundComponentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             VirtualBackgroundComponent(
                 uiState = VirtualBackgroundUiState(backgroundList = mockVirtualBackgrounds),

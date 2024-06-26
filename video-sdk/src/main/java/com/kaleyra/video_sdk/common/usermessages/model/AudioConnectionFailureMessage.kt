@@ -16,22 +16,20 @@
 
 package com.kaleyra.video_sdk.common.usermessages.model
 
-import java.util.UUID
 
 /**
  * Audio Connection Failure Message
- * @property id String audio connection failure message identifier
  * @constructor
  */
-sealed class AudioConnectionFailureMessage(override val id: String) : UserMessage {
+sealed class AudioConnectionFailureMessage : UserMessage() {
 
     /**
      * Generic Failure Message
      */
-    data object Generic : AudioConnectionFailureMessage(UUID.randomUUID().toString())
+    data object Generic : AudioConnectionFailureMessage()
 
     /**
      * In System Call Failure Message
      */
-    data object InSystemCall : AudioConnectionFailureMessage(UUID.randomUUID().toString())
+    data object InSystemCall : AudioConnectionFailureMessage()
 }

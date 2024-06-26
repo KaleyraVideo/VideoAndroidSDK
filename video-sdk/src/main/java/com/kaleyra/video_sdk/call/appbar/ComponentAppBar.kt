@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.kaleyra.video_sdk.call.appbar
 
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,25 +34,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.common.button.IconButton
-import com.kaleyra.video_sdk.common.topappbar.TopAppBar
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.common.topappbar.TopAppBar
 
 @Composable
 internal fun ComponentAppBar(
+    modifier: Modifier = Modifier,
     title: String,
     onBackPressed: () -> Unit,
     actions: @Composable (RowScope.() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    scrollableState: ScrollableState? = null,
 ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(
-                icon = painterResource(id = R.drawable.ic_kaleyra_back_down),
-                iconDescription = stringResource(id = R.string.kaleyra_close),
+            androidx.compose.material3.IconButton(
+                modifier = Modifier.padding(4.dp),
                 onClick = onBackPressed,
-                modifier = Modifier.padding(4.dp)
-            )
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_kaleyra_back_down),
+                    contentDescription = stringResource(id = R.string.kaleyra_close)
+                )
+            }
         },
         content = {
             Text(
@@ -65,8 +70,7 @@ internal fun ComponentAppBar(
                 actions()
             }
         },
-        elevation = 0.dp,
-        contentPadding = WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+        containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else MaterialTheme.colorScheme.surface,
         modifier = modifier
     )
 }

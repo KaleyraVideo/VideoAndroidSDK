@@ -189,7 +189,8 @@ internal fun BottomSheetContent(
                         WhiteboardComponent(
                             modifier = Modifier
                                 .padding(top = 12.dp)
-                                .testTag(WhiteboardComponentTag)
+                                .testTag(WhiteboardComponentTag),
+                            onBackPressed = {}
                         )
                     }
                     BottomSheetComponent.VirtualBackground -> {

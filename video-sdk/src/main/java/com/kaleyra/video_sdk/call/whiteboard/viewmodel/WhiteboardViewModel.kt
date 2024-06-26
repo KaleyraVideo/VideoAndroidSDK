@@ -24,11 +24,9 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardTextEvents
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -52,25 +50,22 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
         .map { it.whiteboard }
         .shareInEagerly(viewModelScope)
 
-    private val onTextConfirmed = MutableStateFlow<((String) -> Unit)?>(null)
-
     private var resetWhiteboardUploadState = AtomicBoolean(false)
 
     init {
-        whiteboard
-            .take(1)
-            .onEach { setUpWhiteboard(it, whiteboardView) }
-            .launchIn(viewModelScope)
-
-        call
-            .flatMapLatest { it.state }
-            .onEach {
-                if (it !is Call.State.Disconnected.Ended) return@onEach
-                whiteboard.getValue()?.unload()
-            }.launchIn(viewModelScope)
-
         viewModelScope.launch {
             val call = call.first()
+            
+            whiteboard
+                .take(1)
+                .onEach { setUpWhiteboard(it, whiteboardView) }
+                .launchIn(viewModelScope)
+
+            call.state
+                .onEach {
+                    if (it !is Call.State.Disconnected.Ended) return@onEach
+                    whiteboard.getValue()?.unload()
+                }.launchIn(viewModelScope)
 
             call
                 .isFileSharingSupported()
@@ -81,19 +76,7 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
                 .isWhiteboardLoading()
                 .onEach { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } }
                 .launchIn(viewModelScope)
-
-            call
-                .getWhiteboardTextEvents()
-                .onEach { event ->
-                    val (onCompletion, text) = when (event) {
-                        is Whiteboard.Event.Text.Edit -> Pair(event.completion, event.oldText)
-                        is Whiteboard.Event.Text.Add -> Pair(event.completion, "")
-                    }
-                    onTextConfirmed.value = onCompletion
-                    _uiState.update { it.copy(text = text) }
-                }.launchIn(viewModelScope)
         }
-
     }
 
     override fun onCleared() {
@@ -106,14 +89,7 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
         val whiteboard = whiteboard.getValue()
         whiteboard?.load()
     }
-
-    fun onTextDismissed() = resetTextState()
-
-    fun onTextConfirmed(text: String) {
-        onTextConfirmed.value?.invoke(text)
-        _uiState.update { it.copy(text = null) }
-    }
-
+    
     fun onWhiteboardClosed() {
         _uiState.update { it.copy(isLoading = false) }
     }
@@ -128,11 +104,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
         whiteboard.view.value = whiteboardView
         whiteboard.load()
         _uiState.update { it.copy(whiteboardView = whiteboardView) }
-    }
-
-    private fun resetTextState() {
-        onTextConfirmed.value = null
-        _uiState.update { it.copy(text = null) }
     }
 
     private fun observeAndUpdateUploadState(sharedFile: SharedFile) {

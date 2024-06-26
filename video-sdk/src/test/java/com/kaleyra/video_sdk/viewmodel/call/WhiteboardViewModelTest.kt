@@ -111,46 +111,11 @@ class WhiteboardViewModelTest {
     }
 
     @Test
-    fun testWhiteboardUiState_textUpdatedOnTextEditEvent() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Text.Edit(oldText = "text", mockk()))
-        advanceUntilIdle()
-        assertEquals("text", viewModel.uiState.first().text)
-    }
-
-    @Test
-    fun testWhiteboardUiState_textUpdatedOnTextAddEvent() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Text.Add(mockk()))
-        advanceUntilIdle()
-        assertEquals("", viewModel.uiState.first().text)
-    }
-
-    @Test
     fun testOnReloadClick() = runTest {
         advanceUntilIdle()
         verify(exactly = 1) { whiteboardMock.load() }
         viewModel.onReloadClick()
         verify(exactly = 2) { whiteboardMock.load() }
-    }
-
-    @Test
-    fun testOnTextDismissed() = runTest {
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Text.Edit(oldText = "text", mockk()))
-        advanceUntilIdle()
-        assertEquals("text", viewModel.uiState.first().text)
-        viewModel.onTextDismissed()
-        assertEquals(null, viewModel.uiState.first().text)
-    }
-
-    @Test
-    fun testOnTextConfirmed() = runTest {
-        var onCompletionInvoked = false
-        every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Text.Edit(oldText = "oldText") {
-            onCompletionInvoked = true
-        })
-        advanceUntilIdle()
-        viewModel.onTextConfirmed("newText")
-        assertEquals(null, viewModel.uiState.first().text)
-        assertEquals(true, onCompletionInvoked)
     }
 
     @Test

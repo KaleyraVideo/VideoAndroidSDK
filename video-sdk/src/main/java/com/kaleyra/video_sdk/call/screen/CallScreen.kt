@@ -700,7 +700,7 @@ internal fun DefaultCallScreen(
         if (callUiState.showFeedback) {
             val activity = LocalContext.current.findActivity() as ComponentActivity
             if (activity.isAtLeastResumed()) {
-                UserFeedbackDialog(onUserFeedback = onUserFeedback, onDismiss = onCallEndedBack)
+                UserFeedbackDialog(onDismiss = onCallEndedBack)
             }
         }
 

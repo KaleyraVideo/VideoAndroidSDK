@@ -27,7 +27,6 @@ import com.kaleyra.video_sdk.common.uistate.UiState
  * @property isOffline Boolean flag indicating if the whiteboard id offline, true if offline, false otherwise
  * @property isFileSharingSupported Boolean flag indicating if the file sharing is supported
  * @property upload WhiteboardUploadUi? optional whiteboard upload ui
- * @property text String? optional whiteboard text
  * @constructor
  */
 @Immutable
@@ -37,6 +36,5 @@ internal data class WhiteboardUiState(
     val isOffline: Boolean = false,
     val isFileSharingSupported: Boolean = false,
     val upload: WhiteboardUploadUi? = null,
-    val text: String? = null
 ) : UiState
 

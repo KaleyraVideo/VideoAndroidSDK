@@ -33,9 +33,6 @@ internal object WhiteboardMapper {
             .map { it is Whiteboard.State.Loading }
             .distinctUntilChanged()
 
-    fun CallUI.getWhiteboardTextEvents(): Flow<Whiteboard.Event.Text> =
-        this.whiteboard.events.filterIsInstance()
-
     fun SharedFile.toWhiteboardUploadUi(): Flow<WhiteboardUploadUi?> {
         return state.map { state ->
             val progress = when (state) {

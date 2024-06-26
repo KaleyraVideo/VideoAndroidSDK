@@ -20,11 +20,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun VirtualBackgroundItem(
@@ -57,14 +57,14 @@ internal fun VirtualBackgroundItem(
                 }
             ),
             contentDescription = null,
-            tint = if (selected) MaterialTheme.colors.secondary else LocalContentColor.current
+            tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = textFor(background),
             fontSize = 14.sp,
             maxLines = 1,
-            color = if (selected) MaterialTheme.colors.secondary else LocalContentColor.current,
+            color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         )
     }
@@ -106,7 +106,7 @@ internal fun ImageBackgroundItemPreview() {
 
 @Composable
 private fun BackgroundItemPreview(background: VirtualBackgroundUi) {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             VirtualBackgroundItem(background = background, false)
         }
@@ -117,7 +117,7 @@ private fun BackgroundItemPreview(background: VirtualBackgroundUi) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun SelectedBackgroundItemPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             VirtualBackgroundItem(background = VirtualBackgroundUi.Blur("id"), true)
         }

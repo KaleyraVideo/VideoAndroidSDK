@@ -19,7 +19,7 @@ package com.kaleyra.video_sdk.ui.call.fileshare
 import android.content.Context
 import android.net.Uri
 import androidx.activity.ComponentActivity
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -108,6 +108,18 @@ class FileShareComponentTest {
         cancelId = null
         userMessage = null
         unmockkAll()
+    }
+
+    @Test
+    fun fileShareTopAppBarShown() {
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareAppBarCloseButtonShown() {
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
     }
 
     @Test

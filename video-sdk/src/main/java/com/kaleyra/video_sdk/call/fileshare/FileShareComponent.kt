@@ -25,9 +25,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -53,14 +54,18 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareFab
 import com.kaleyra.video_sdk.call.fileshare.view.MaxFileSizeDialog
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
+import com.kaleyra.video_sdk.call.fileshare.view.FileShareAppBar
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import java.util.UUID
 
 /**
  * Progress Indicator Tag
@@ -96,9 +101,9 @@ internal fun FileShareComponent(
     }
 
     LaunchedEffect(Unit) {
-         viewModel.setOnFileSelected {
-             activity.moveToFront()
-         }
+        viewModel.setOnFileSelected {
+            activity.moveToFront()
+        }
     }
 
     FileShareComponent(
@@ -130,6 +135,7 @@ internal fun FileShareComponent(
     onFileOpenFailure: ((doesFileExists: Boolean) -> Unit)? = null,
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
+    onBackPressed: (() -> Unit)? = null,
     userMessage: UserMessage? = null,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
@@ -171,11 +177,14 @@ internal fun FileShareComponent(
         MaxFileSizeDialog(onDismiss = { onAlertDialogDismiss?.invoke() })
     }
 
+    val lazyGridState = rememberLazyGridState()
+
     Column(
         modifier = modifier
             .statusBarsPadding()
             .fillMaxSize()
     ) {
+        FileShareAppBar(onBackPressed = { onBackPressed?.invoke() }, lazyGridState = lazyGridState)
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -185,10 +194,11 @@ internal fun FileShareComponent(
                 FileShareEmptyContent(modifier = Modifier.matchParentSize())
             } else {
                 FileShareContent(
+                    modifier = Modifier.matchParentSize(),
                     items = uiState.sharedFiles,
                     onItemClick = onItemClick,
                     onItemActionClick = {
-                        when(it.state) {
+                        when (it.state) {
                             SharedFileUi.State.Available -> onDownload(it.id)
                             SharedFileUi.State.Pending, is SharedFileUi.State.InProgress -> onShareCancel(it.id)
                             is SharedFileUi.State.Success -> onItemClick(it)
@@ -196,7 +206,7 @@ internal fun FileShareComponent(
                             else -> Unit
                         }
                     },
-                    modifier = Modifier.matchParentSize()
+                    lazyGridState = lazyGridState
                 )
             }
 
@@ -225,11 +235,31 @@ internal fun FileShareComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareComponentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
+        Surface {
+            FileShareComponent(
+                uiState = FileShareUiState(
+                    sharedFiles = ImmutableList((0..20).map { mockUploadSharedFile.copy(id = UUID.randomUUID().toString()) })
+                ),
+                onUpload = {},
+                userMessage = RecordingMessage.Started,
+                onDownload = {},
+                onShareCancel = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FileShareComponentEmptyPreview() {
+    KaleyraM3Theme {
         Surface {
             FileShareComponent(
                 uiState = FileShareUiState(),
                 onUpload = {},
+                userMessage = RecordingMessage.Started,
                 onDownload = {},
                 onShareCancel = {}
             )

@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.call.audiooutput
 
 import android.content.res.Configuration
 import android.os.Build
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -40,6 +40,7 @@ import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -110,7 +111,7 @@ internal fun AudioOutputComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun AudioOutputComponentPreview() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         Surface {
             AudioOutputComponent(
                 uiState = AudioOutputUiState(

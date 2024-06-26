@@ -18,18 +18,27 @@ package com.kaleyra.video_sdk.call.fileshare
 
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockDownloadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareContent
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareItemDividerTag
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareItemTag
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -54,7 +63,8 @@ class FileShareContentTest {
             FileShareContent(
                 items = items,
                 onItemClick = { actualSharedFile = it },
-                onItemActionClick = { actualSharedFile = it }
+                onItemActionClick = { actualSharedFile = it },
+                lazyGridState = rememberLazyGridState()
             )
         }
     }

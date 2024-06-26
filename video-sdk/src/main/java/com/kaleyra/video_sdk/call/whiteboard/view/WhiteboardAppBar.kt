@@ -16,11 +16,13 @@
 
 package com.kaleyra.video_sdk.call.whiteboard.view
 
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -35,8 +37,8 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.common.button.IconButton
 import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun WhiteboardAppBar(
@@ -52,7 +54,7 @@ internal fun WhiteboardAppBar(
     }
 
     WhiteboardAppBar(
-        isFileSharingSupported = uiState.isFileSharingSupported,
+        isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isLoading && !uiState.isOffline,
         onBackPressed = onBackPressed,
         onUploadClick = { launcher.launch("image/*") },
         modifier = modifier
@@ -67,28 +69,31 @@ internal fun WhiteboardAppBar(
     modifier: Modifier = Modifier
 ) {
     ComponentAppBar(
+        modifier = modifier,
         onBackPressed = onBackPressed,
         title = stringResource(id = R.string.kaleyra_whiteboard),
         actions = {
             if (isFileSharingSupported) {
-                IconButton(
-                    icon = painterResource(id = R.drawable.ic_kaleyra_image),
-                    iconDescription = stringResource(id = R.string.kaleyra_upload_file),
+                androidx.compose.material3.IconButton(
+                    modifier = Modifier.padding(4.dp),
                     onClick = onUploadClick,
-                    modifier = Modifier.padding(4.dp)
-                )
+                    ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_image),
+                        contentDescription = stringResource(id = R.string.kaleyra_upload_file))
+                }
             } else {
                 Spacer(Modifier.width(56.dp))
             }
         },
-        modifier = modifier
     )
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun WhiteboardAppBarTest() {
-    KaleyraTheme {
+    KaleyraM3Theme {
         WhiteboardAppBar(
             isFileSharingSupported = true,
             onBackPressed = {},

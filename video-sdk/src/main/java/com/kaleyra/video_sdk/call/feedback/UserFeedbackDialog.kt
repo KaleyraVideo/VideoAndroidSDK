@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,15 +34,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackSent
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.delay
 
 private const val AutoDismissMs = 3000L
 
 @Composable
-internal fun UserFeedbackDialog(onUserFeedback: (Float, String) -> Unit, onDismiss: () -> Unit) {
+internal fun UserFeedbackDialog(
+    onDismiss: () -> Unit,
+    viewModel: FeedbackViewModel = viewModel(factory = FeedbackViewModel.provideFactory(::requestCollaborationViewModelConfiguration))) {
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    UserFeedbackDialog(
+        uiState,
+        onUserFeedback = { rating, comment ->
+            viewModel.sendUserFeedback(comment, rating)
+        }, onDismiss = onDismiss)
+}
+
+@Composable
+internal fun UserFeedbackDialog(
+    feedbackUiState: FeedbackUiState,
+    onUserFeedback: (FeedbackUiRating, String) -> Unit,
+    onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         var isFeedbackSent by remember { mutableStateOf(false) }
 
@@ -62,8 +85,9 @@ internal fun UserFeedbackDialog(onUserFeedback: (Float, String) -> Unit, onDismi
             ) {
                 if (!isFeedbackSent) {
                     FeedbackForm(
-                        onUserFeedback = { value: Float, text: String ->
-                            onUserFeedback(value, text)
+                        feedbackUiState = feedbackUiState,
+                        onUserFeedback = { rating: FeedbackUiRating, text: String ->
+                            onUserFeedback(rating, text)
                             isFeedbackSent = true
                         },
                         onDismiss = onDismiss
@@ -78,6 +102,30 @@ internal fun UserFeedbackDialog(onUserFeedback: (Float, String) -> Unit, onDismi
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun UserFeedbackDialogPreview() = KaleyraTheme {
-    UserFeedbackDialog(onUserFeedback = { _, _ -> }, onDismiss = {})
+internal fun UserFeedbackDialog() = KaleyraM3Theme {
+    UserFeedbackDialog(
+        onDismiss = {}
+    )
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun UserFeedbackDialogPreview() = KaleyraM3Theme {
+    UserFeedbackDialog(
+        FeedbackUiState(comment = "test comment", rating = FeedbackUiRating.Good),
+        onUserFeedback = { _, _ -> },
+        onDismiss = {}
+    )
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun UserFeedbackDialogDefaultFeedbackPreview() = KaleyraM3Theme {
+    UserFeedbackDialog(
+        FeedbackUiState(),
+        onUserFeedback = { _, _ -> },
+        onDismiss = {}
+    )
 }
