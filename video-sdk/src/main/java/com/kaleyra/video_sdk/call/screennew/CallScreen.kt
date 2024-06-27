@@ -1,82 +1,47 @@
 package com.kaleyra.video_sdk.call.screennew
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.CameraMessageText
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageHost
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.MicMessageText
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.VSheetContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.VSheetDragContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
-import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import kotlinx.coroutines.launch
 
 // TODO
 //  in the viewmodel write the logic:
@@ -224,14 +189,15 @@ internal fun HCallScreen(
                             callActions = callActions,
                             maxActions = CompactScreenMaxActions,
                             showAnswerAction = showAnswerAction,
+                            isMoreToggled = false,
                             onActionsPlaced = { itemsPlaced ->
                                 sheetDragActions =
                                     ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
                             },
-                            onAnswerActionClick = onAnswerActionClick,
+                            onAnswerClick = onAnswerActionClick,
                             onHangUpClick = onHangUpClick,
-                            onMicToggled = onMicToggled,
-                            onCameraToggled = onCameraToggled,
+                            onMicToggle = onMicToggled,
+                            onCameraToggle = onCameraToggled,
                             onScreenShareToggle = onScreenShareToggle,
                             onFlipCameraClick = onFlipCameraClick,
                             onAudioClick = onAudioClick,
@@ -239,7 +205,9 @@ internal fun HCallScreen(
                             onFileShareClick = onFileShareClick,
                             onWhiteboardClick = onWhiteboardClick,
                             onVirtualBackgroundClick = onVirtualBackgroundClick,
-                            onMoreActionClick = onChangeSheetState,
+                            onMoreToggle = {
+                                onChangeSheetState()
+                            },
                             modifier = Modifier.padding(
                                 start = 5.dp,
                                 top = 14.dp,

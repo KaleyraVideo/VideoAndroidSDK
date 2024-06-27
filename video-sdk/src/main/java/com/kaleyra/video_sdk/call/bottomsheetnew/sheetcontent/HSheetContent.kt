@@ -27,6 +27,7 @@ internal fun HSheetContent(
     callActions: ImmutableList<CallActionUI>,
     showAnswerAction: Boolean,
     isLargeScreen: Boolean,
+    isMoreToggled: Boolean,
     onActionsPlaced: (actionsPlaced: Int) -> Unit,
     onAnswerClick: () -> Unit,
     onHangUpClick: () -> Unit,
@@ -39,7 +40,7 @@ internal fun HSheetContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
-    onMoreActionClick: () -> Unit,
+    onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems
 ) {
@@ -55,7 +56,8 @@ internal fun HSheetContent(
             showMoreAction -> {
                 MoreAction(
                     badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
-                    onClick = onMoreActionClick
+                    checked = isMoreToggled,
+                    onCheckedChange = onMoreToggle,
                 )
                 Spacer(Modifier.width(SheetItemsSpacing))
             }

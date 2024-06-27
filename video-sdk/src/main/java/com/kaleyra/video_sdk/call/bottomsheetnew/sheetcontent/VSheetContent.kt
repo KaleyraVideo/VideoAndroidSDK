@@ -28,11 +28,12 @@ private const val MaxVSheetItems = 5
 internal fun VSheetContent(
     callActions: ImmutableList<CallActionUI>,
     showAnswerAction: Boolean,
+    isMoreToggled: Boolean,
     onActionsPlaced: (actionsPlaced: Int) -> Unit,
-    onAnswerActionClick: () -> Unit,
+    onAnswerClick: () -> Unit,
     onHangUpClick: () -> Unit,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
+    onMicToggle: (Boolean) -> Unit,
+    onCameraToggle: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
@@ -40,7 +41,7 @@ internal fun VSheetContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
-    onMoreActionClick: () -> Unit,
+    onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxVSheetItems
 ) {
@@ -51,7 +52,7 @@ internal fun VSheetContent(
         when {
             showAnswerAction -> {
                 AnswerAction(
-                    onClick = onAnswerActionClick,
+                    onClick = onAnswerClick,
                     modifier = Modifier.size(CallActionDefaults.MinButtonSize)
                 )
                 Spacer(Modifier.height(SheetItemsSpacing))
@@ -59,7 +60,8 @@ internal fun VSheetContent(
             showMoreAction -> {
                 MoreAction(
                     badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
-                    onClick = onMoreActionClick
+                    checked = isMoreToggled,
+                    onCheckedChange = onMoreToggle,
                 )
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
@@ -79,8 +81,8 @@ internal fun VSheetContent(
                             label = false,
                             extended = false,
                             onHangUpClick = onHangUpClick,
-                            onMicToggle = onMicToggled,
-                            onCameraToggle = onCameraToggled,
+                            onMicToggle = onMicToggle,
+                            onCameraToggle = onCameraToggle,
                             onScreenShareToggle = onScreenShareToggle,
                             onFlipCameraClick = onFlipCameraClick,
                             onAudioClick = onAudioClick,

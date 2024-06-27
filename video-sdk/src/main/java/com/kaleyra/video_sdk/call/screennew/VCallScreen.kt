@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -34,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -60,7 +57,6 @@ import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
@@ -94,11 +90,11 @@ internal fun VCallScreen(
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val scope = rememberCoroutineScope()
-    val onChangeSheetState: () -> Unit = remember {
-        {
+    val onChangeSheetState: (Boolean) -> Unit = remember {
+        { isSheetCollapsed: Boolean ->
             scope.launch {
-                if (sheetState.currentValue == CallSheetValue.Expanded) sheetState.collapse()
-                else sheetState.expand()
+                if (isSheetCollapsed) sheetState.expand()
+                else sheetState.collapse()
             }
         }
     }
@@ -226,10 +222,16 @@ internal fun VCallScreen(
                             }
                         }
                         Box(Modifier.animateContentSize()) {
+                            val isSheetExpanded by remember(sheetState) {
+                                derivedStateOf {
+                                    sheetState.targetValue == CallSheetValue.Expanded
+                                }
+                            }
                             HSheetContent(
                                 callActions = callActionsUiState.actionList,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 showAnswerAction = callActionsUiState.isRinging,
+                                isMoreToggled = isSheetExpanded,
                                 isLargeScreen = isLargeScreen,
                                 onActionsPlaced = { itemsPlaced ->
                                     val actions = callActionsUiState.actionList.value
@@ -253,8 +255,8 @@ internal fun VCallScreen(
                                 // TODO test this
                                 onVirtualBackgroundClick = onVirtualBackgroundClick,
                                 // TODO test this
-                                onMoreActionClick = {
-                                    if (hasSheetDragContent) onChangeSheetState()
+                                onMoreToggle = { isSheetCollapsed ->
+                                    if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
                                 },
                                 modifier = Modifier
