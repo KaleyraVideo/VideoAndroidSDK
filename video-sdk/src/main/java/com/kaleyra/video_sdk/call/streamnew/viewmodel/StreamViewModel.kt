@@ -60,7 +60,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     fun fullscreen(stream: StreamUi?) {
         val streams = uiState.value.streams.value
-        if (streams.find { it.id == stream?.id } == null) return
+        if (stream != null && streams.find { it.id == stream.id } == null) return
         _uiState.update { it.copy(fullscreenStream = stream) }
     }
 

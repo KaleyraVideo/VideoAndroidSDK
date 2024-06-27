@@ -184,6 +184,22 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun setFullscreenStreamNull_succeeds() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow(mockk(relaxed = true))
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.fullscreen(streamMock1)
+        assertEquals(streamMock1, viewModel.uiState.value.fullscreenStream)
+
+        viewModel.fullscreen(null)
+        assertEquals(null, viewModel.uiState.value.fullscreenStream)
+    }
+
+    @Test
     fun fullscreenStreamRemovedFromStreams_fullscreenStreamIsNull() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2))
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
