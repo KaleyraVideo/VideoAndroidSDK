@@ -47,10 +47,12 @@ internal fun WhiteboardContent(
         val runningInPreview = LocalInspectionMode.current
         if (!runningInPreview) {
             AndroidView(
+                modifier = Modifier.testTag(WhiteboardViewTag),
                 factory = {
                     val parentView = whiteboardView.parent as? ViewGroup
                     parentView?.removeView(whiteboardView)
                     whiteboardView.apply {
+                        visibility = if (loading) View.GONE else View.VISIBLE
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT
@@ -59,7 +61,9 @@ internal fun WhiteboardContent(
                         isFocusableInTouchMode = true
                     }
                 },
-                modifier = Modifier.testTag(WhiteboardViewTag)
+                update = { whiteboardView ->
+                    whiteboardView.visibility = if (loading) View.GONE else View.VISIBLE
+                }
             )
         }
 
