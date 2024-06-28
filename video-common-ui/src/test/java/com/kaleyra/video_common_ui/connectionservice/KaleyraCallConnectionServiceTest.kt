@@ -14,6 +14,7 @@ import com.bandyer.android_audiosession.sounds.CallSound
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -45,6 +46,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertNotEquals
@@ -191,7 +193,99 @@ class KaleyraCallConnectionServiceTest {
         )
         assertNotEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
         assertEquals(
-            service!!.getForegroundServiceType(false),
+            service!!.getForegroundServiceType(false, false, false),
+            service!!.foregroundServiceType
+        )
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testForegroundServiceTypeUpdatedOnScreenShareInput() = runTest {
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        val availableInputs = MutableStateFlow(setOf<Input>())
+        every { callMock.inputs.availableInputs } returns availableInputs
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(
+            service!!.getForegroundServiceType(false, false, false),
+            service!!.foregroundServiceType
+        )
+
+        availableInputs.value = setOf(mockk<Input.Video.Screen.My>())
+        advanceUntilIdle()
+        assertEquals(
+            service!!.getForegroundServiceType(false, false, true),
+            service!!.foregroundServiceType
+        )
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testForegroundServiceTypeUpdatedOnInternalCameraInput() = runTest {
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        val availableInputs = MutableStateFlow(setOf<Input>())
+        every { callMock.inputs.availableInputs } returns availableInputs
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(
+            service!!.getForegroundServiceType(false, false, false),
+            service!!.foregroundServiceType
+        )
+
+        availableInputs.value = setOf(mockk<Input.Video.Camera.Internal>())
+        advanceUntilIdle()
+        assertEquals(
+            service!!.getForegroundServiceType(true, false, false),
+            service!!.foregroundServiceType
+        )
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testForegroundServiceTypeUpdatedOnAudioInput() = runTest {
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        val availableInputs = MutableStateFlow(setOf<Input>())
+        every { callMock.inputs.availableInputs } returns availableInputs
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(
+            service!!.getForegroundServiceType(false, false, false),
+            service!!.foregroundServiceType
+        )
+
+        availableInputs.value = setOf(mockk<Input.Audio>())
+        advanceUntilIdle()
+        assertEquals(
+            service!!.getForegroundServiceType(false, true, false),
+            service!!.foregroundServiceType
+        )
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testForegroundServiceTypeUpdatedOnAllInputPermissions() = runTest {
+        val notification = notificationBuilder!!.build()
+        val callMock = mockk<Call>(relaxed = true)
+        val availableInputs = MutableStateFlow(setOf<Input>())
+        every { callMock.inputs.availableInputs } returns availableInputs
+
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(
+            service!!.getForegroundServiceType(false, false, false),
+            service!!.foregroundServiceType
+        )
+
+        availableInputs.value = setOf(
+            mockk<Input.Audio>(),
+            mockk<Input.Video.Camera.Internal>(),
+            mockk<Input.Video.Screen.My>()
+        )
+        advanceUntilIdle()
+        assertEquals(
+            service!!.getForegroundServiceType(true, true, true),
             service!!.foregroundServiceType
         )
     }

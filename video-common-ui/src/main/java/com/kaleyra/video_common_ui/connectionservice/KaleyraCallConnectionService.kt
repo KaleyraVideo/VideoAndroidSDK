@@ -18,7 +18,9 @@ import com.kaleyra.video_common_ui.callservice.CallForegroundService
 import com.kaleyra.video_common_ui.callservice.CallForegroundServiceWorker
 import com.kaleyra.video_common_ui.connectionservice.ContactsController.createOrUpdateConnectionServiceContact
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasInternalCameraInput
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
 import com.kaleyra.video_utils.logging.PriorityLogger
@@ -27,11 +29,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -179,11 +180,14 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
         notificationJob?.cancel()
-        notificationJob = call
-            .hasScreenSharingInput()
-            .onEach { hasScreenSharingPermission ->
+        notificationJob =
+            combine(
+                call.hasInternalCameraInput(),
+                call.hasAudioInput(),
+                call.hasScreenSharingInput()
+            ){ hasCameraPermission, hasMicPermission, hasScreenSharingPermission ->
                 runCatching {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasCameraPermission, hasMicPermission, hasScreenSharingPermission))
                     else startForeground(id, notification)
                 }
             }
