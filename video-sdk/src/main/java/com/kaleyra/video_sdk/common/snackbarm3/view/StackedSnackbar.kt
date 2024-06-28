@@ -21,6 +21,8 @@ import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -65,6 +67,8 @@ internal fun StackedSnackbar(
                         AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                         AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                         AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
+                        is WhiteboardHideRequestMessage -> TODO()
+                        is WhiteboardShowRequestMessage -> TODO()
                     }
                 }
             )

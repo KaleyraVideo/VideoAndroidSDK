@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.whiteboard.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope

@@ -49,7 +49,7 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                 KaleyraVideo.configure(configuration)
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
-                KaleyraVideo.pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
+                KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
                 KaleyraVideo.theme =
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
@@ -58,8 +58,6 @@ class DemoAppKaleyraVideoService : KaleyraVideoService() {
                         night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = android.graphics.Color.YELLOW))
                     )
             }
-
-
 
             KaleyraVideo.conference.call.onEach {
                 val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()

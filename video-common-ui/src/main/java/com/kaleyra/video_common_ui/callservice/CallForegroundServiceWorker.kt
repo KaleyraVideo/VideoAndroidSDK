@@ -30,8 +30,6 @@ internal class CallForegroundServiceWorker(
 
     private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(coroutineScope) }
 
-    private val screenShareOverlayProducer by lazy { ScreenShareOverlayProducer(application, coroutineScope) }
-
     private val cameraStreamManager by lazy { CameraStreamManager(coroutineScope) }
 
     private val streamsManager by lazy { StreamsManager(coroutineScope) }
@@ -60,7 +58,6 @@ internal class CallForegroundServiceWorker(
         if (!DeviceUtils.isSmartGlass) {
             ProximityService.start()
             fileShareNotificationProducer.bind(call)
-            screenShareOverlayProducer.bind(call)
         }
     }
 
@@ -76,6 +73,5 @@ internal class CallForegroundServiceWorker(
         if (DeviceUtils.isSmartGlass) return
         ProximityService.stop()
         fileShareNotificationProducer.stop()
-        screenShareOverlayProducer.stop()
     }
 }

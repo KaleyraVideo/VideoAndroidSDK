@@ -17,7 +17,9 @@
 package com.kaleyra.video_common_ui.texttospeech
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.VoicePrompts
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +29,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
@@ -35,7 +36,8 @@ import kotlinx.coroutines.flow.takeWhile
 internal class CallRecordingTextToSpeechNotifier(
     override val call: CallUI,
     override val proximitySensor: ProximitySensor,
-    override val callTextToSpeech: CallTextToSpeech = CallTextToSpeech()
+    override val callTextToSpeech: CallTextToSpeech = CallTextToSpeech(),
+    override val voicePromptsEnabled: Boolean = KaleyraVideo.voicePrompts == VoicePrompts.Enabled
 ) : TextToSpeechNotifier {
 
     companion object {
@@ -53,12 +55,9 @@ internal class CallRecordingTextToSpeechNotifier(
             // add a debounce to avoid the text to be reproduced when the call is ended and the app is in background
             .debounce(CALL_RECORDING_DEBOUNCE_MILLIS)
             .onEach { (recording, _)  ->
-                if (!shouldNotify) return@onEach
+                if (!shouldNotify || !voicePromptsEnabled) return@onEach
+                println("over")
                 when (recording.type) {
-                    Call.Recording.Type.OnDemand -> {
-                        val text = context.getString(R.string.kaleyra_utterance_recording_call_may_be_recorded)
-                        callTextToSpeech.speak(text)
-                    }
                     Call.Recording.Type.OnConnect -> {
                         val text = context.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded)
                         callTextToSpeech.speak(text)
@@ -69,7 +68,7 @@ internal class CallRecordingTextToSpeechNotifier(
             .flatMapLatest { (recording, _) ->  recording.state }
             .dropWhile { it is Call.Recording.State.Stopped }
             .onEach { recordingState ->
-                if (!shouldNotify) return@onEach
+                if (!shouldNotify || !voicePromptsEnabled) return@onEach
                 val text = when (recordingState) {
                     is Call.Recording.State.Started -> context.getString(R.string.kaleyra_utterance_recording_started)
                     is Call.Recording.State.Stopped.Error -> context.getString(R.string.kaleyra_utterance_recording_failed)

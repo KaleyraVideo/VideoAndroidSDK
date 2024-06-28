@@ -27,7 +27,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import com.kaleyra.video_common_ui.ChatActivity
+import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_sdk.call.utils.Android12ChatActivityTasksFixService
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
@@ -44,7 +47,7 @@ internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            ChatScreen(onBackPressed = this::finishAndRemoveTask, viewModel = viewModel)
+            ChatScreen(onBackPressed = this::onBackPressed, viewModel = viewModel)
         }
 
         // fixes the resuming of a task on android 12
@@ -60,6 +63,15 @@ internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
         super.onDestroy()
         if (isAndroid12) runCatching { unbindService(this) }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        goToPreviousOrMainActivity(
+            this@PhoneChatActivity::class.simpleName!!,
+            NavBackComponent.CHAT
+        )
+    }
+
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) = Unit
 
     override fun onServiceDisconnected(name: ComponentName?) = Unit

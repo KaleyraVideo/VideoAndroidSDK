@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,8 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.callinfowidget.kaleyraCollaborationSuiteUIPrefs
+import java.io.File
 
 private val MaxWatermarkHeight = 80.dp
 private val MaxWatermarkWidth = 300.dp
@@ -46,18 +49,24 @@ private val MaxWatermarkWidth = 300.dp
  * Watermark tag
  */
 internal const val WatermarkTag = "WatermarkTag"
+internal const val DESIGN_PREFS = "KaleyraCollaborationSuiteUIPrefs"
 
 @Composable
 internal fun Watermark(watermarkInfo: WatermarkInfo, modifier: Modifier = Modifier) {
+    val isDarkTheme = isSystemInDarkTheme()
+
+    val customWatermarkUri: Uri? = LocalContext.current.kaleyraCollaborationSuiteUIPrefs().getString("call_watermark_image_uri", null)?.takeIf { it.isNotBlank() }?.let {
+        if (it.startsWith("content") || it.startsWith("android.resource") || it.startsWith("file") || it.startsWith("http")) Uri.parse(it) else Uri.fromFile(File(it))
+    }
+
     Row(
         modifier = modifier.testTag(WatermarkTag),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val isDarkTheme = isSystemInDarkTheme()
         when {
-            watermarkInfo.logo != null && (isDarkTheme && watermarkInfo.logo.dark != Uri.EMPTY || !isDarkTheme && watermarkInfo.logo.light != Uri.EMPTY) -> {
+            customWatermarkUri != null || (watermarkInfo.logo != null && (isDarkTheme && watermarkInfo.logo.dark != Uri.EMPTY || !isDarkTheme && watermarkInfo.logo.light != Uri.EMPTY)) -> {
                 AsyncImage(
-                    model = watermarkInfo.logo.let { if (!isDarkTheme) it.light else it.dark },
+                    model = customWatermarkUri ?: watermarkInfo.logo.let { if (!isDarkTheme) it?.light else it?.dark },
                     contentDescription = stringResource(id = R.string.kaleyra_company_logo),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

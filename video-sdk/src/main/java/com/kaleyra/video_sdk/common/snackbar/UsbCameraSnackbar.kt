@@ -19,29 +19,27 @@ package com.kaleyra.video_sdk.common.snackbar
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun UsbConnectedSnackbar(name: String) {
-    val resources = LocalContext.current.resources
     UserMessageInfoSnackbar(
-        title = if (name.isBlank()) resources.getString(R.string.kaleyra_generic_external_camera_connected) else
-            resources.getString(R.string.kaleyra_external_camera_connected, name)
+        title = if (name.isBlank()) stringResource(R.string.kaleyra_generic_external_camera_connected) else
+            stringResource(R.string.kaleyra_external_camera_connected, name)
     )
 }
 
 @Composable
 internal fun UsbDisconnectedSnackbar() {
-    val resources = LocalContext.current.resources
-    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_external_camera_disconnected))
+    UserMessageInfoSnackbar(title = stringResource(R.string.kaleyra_external_camera_disconnected))
 }
 
 @Composable
 internal fun UsbNotSupportedSnackbar() {
-    val resources = LocalContext.current.resources
-    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_external_camera_unsupported))
+    UserMessageInfoSnackbar(title = stringResource(R.string.kaleyra_external_camera_unsupported))
 }
 
 @Preview(name = "Light Mode")

@@ -141,3 +141,9 @@ internal fun Context.loadResourceUri(resourceId: Int): Uri = with(resources) {
         .appendPath(getResourceEntryName(resourceId))
         .build()
 }
+
+internal inline fun <reified A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.pressBack() {
+    activityRule.scenario.onActivity { activity ->
+        activity.onBackPressedDispatcher.onBackPressed()
+    }
+}

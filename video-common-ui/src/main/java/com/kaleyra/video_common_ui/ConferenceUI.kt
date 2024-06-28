@@ -21,6 +21,7 @@ import com.kaleyra.video.conference.Conference
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,13 +60,14 @@ class ConferenceUI(
     var callActions: Set<CallUI.Action> = CallUI.Action.default
 
     /**
-     * The connection service option
+     * The connection service option enabled by default
      */
     var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
 
     init {
         configureCallServiceStart(callActivityClazz, logger, callScope)
         configureCallSounds(logger, callScope)
+        configureScreenShareOverlayProducer(callScope)
         configureCallActivityShow(callScope)
     }
 

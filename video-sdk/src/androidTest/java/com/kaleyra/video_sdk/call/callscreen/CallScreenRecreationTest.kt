@@ -58,6 +58,7 @@ class CallScreenRecreationTest {
                         initialLineState = LineState.Expanded
                     )
                 ),
+                whiteboardRequest = null,
                 onThumbnailStreamClick = { },
                 onThumbnailStreamDoubleClick = { },
                 onFullscreenStreamClick = { },

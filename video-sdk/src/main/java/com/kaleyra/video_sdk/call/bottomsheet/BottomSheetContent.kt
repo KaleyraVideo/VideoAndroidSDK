@@ -16,18 +16,26 @@
 
 package com.kaleyra.video_sdk.call.bottomsheet
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.callactions.CallActionsComponent
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
@@ -35,7 +43,6 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
-import com.kaleyra.video_sdk.R
 
 /**
  * Call Actions Component tag
@@ -67,22 +74,32 @@ const val WhiteboardComponentTag = "WhiteboardComponentTag"
  */
 const val VirtualBackgroundComponentTag = "VirtualBackgroundComponentTag"
 
+@Immutable
 internal enum class BottomSheetComponent {
     CallActions, AudioOutput, ScreenShare, FileShare, Whiteboard, VirtualBackground
 }
 
-internal class BottomSheetContentState(
-    initialComponent: BottomSheetComponent,
-    initialLineState: LineState
+@Immutable
+internal data class BottomSheetContentState(
+    val initialComponent: BottomSheetComponent,
+    val initialLineState: LineState
 ) {
 
     var currentComponent: BottomSheetComponent by mutableStateOf(initialComponent)
+        private set
+
+    var targetComponent: BottomSheetComponent by mutableStateOf(initialComponent)
         private set
 
     var currentLineState: LineState by mutableStateOf(initialLineState)
         private set
 
     fun navigateToComponent(component: BottomSheetComponent) {
+        targetComponent = component
+    }
+
+    fun updateCurrentComponent(component: BottomSheetComponent) {
+        if (targetComponent != component) return
         currentComponent = component
     }
 
@@ -110,16 +127,15 @@ internal fun rememberBottomSheetContentState(
     BottomSheetContentState(initialSheetComponent, initialLineState)
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun BottomSheetContent(
     contentState: BottomSheetContentState,
     modifier: Modifier = Modifier,
-    onLineClick: () -> Unit = { },
-    onCallActionClick: (CallAction) -> Unit = { },
-    onAudioDeviceClick: () -> Unit = { },
-    onScreenShareTargetClick: () -> Unit = { },
-    onVirtualBackgroundClick: () -> Unit = {},
+    onLineClick: () -> Unit,
+    onCallActionClick: (CallAction) -> Unit,
+    onAudioDeviceClick: () -> Unit,
+    onScreenShareTargetClick: () -> Unit,
+    onVirtualBackgroundClick: () -> Unit,
     contentVisible: Boolean = true,
     isDarkTheme: Boolean = false,
     isTesting: Boolean = false
@@ -130,77 +146,82 @@ internal fun BottomSheetContent(
             onClickLabel = stringResource(id = R.string.kaleyra_call_show_buttons),
             onClick = onLineClick
         )
+
         AnimatedVisibility(
             visible = contentVisible,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            AnimatedContent(
-                targetState = contentState.currentComponent,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(220, delayMillis = 90)) with fadeOut(animationSpec = tween(90))
-                },
-                label = "bottomSheetContent"
-            ) { target ->
-                when (target) {
-                    BottomSheetComponent.CallActions -> {
-                        CallActionsComponent(
-                            onItemClick = { action ->
-                                contentState.navigateToComponent(
-                                    component = when (action) {
-                                        is CallAction.Audio -> BottomSheetComponent.AudioOutput
-                                        is CallAction.ScreenShare -> BottomSheetComponent.ScreenShare
-                                        is CallAction.FileShare -> BottomSheetComponent.FileShare
-                                        is CallAction.Whiteboard -> BottomSheetComponent.Whiteboard
-                                        is CallAction.VirtualBackground -> BottomSheetComponent.VirtualBackground
-                                        else -> BottomSheetComponent.CallActions
-                                    }
-                                )
-                                onCallActionClick(action)
-                            },
-                            isDarkTheme = isDarkTheme,
-                            modifier = Modifier.testTag(CallActionsComponentTag)
-                        )
-                    }
-                    BottomSheetComponent.AudioOutput -> {
-                        AudioOutputComponent(
-                            modifier = Modifier.testTag(AudioOutputComponentTag),
-                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                            isTesting = isTesting
-                        )
-                    }
-                    BottomSheetComponent.ScreenShare -> {
-                        ScreenShareComponent(
-                            modifier = Modifier.testTag(ScreenShareComponentTag),
-                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                        )
-                    }
-                    BottomSheetComponent.FileShare -> {
-                        FileShareComponent(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .testTag(FileShareComponentTag),
-                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                            isTesting = isTesting,
-                        )
-                    }
-                    BottomSheetComponent.Whiteboard -> {
-                        WhiteboardComponent(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .testTag(WhiteboardComponentTag),
-                            onBackPressed = {}
-                        )
-                    }
-                    BottomSheetComponent.VirtualBackground -> {
-                        VirtualBackgroundComponent(
-                            modifier = Modifier.testTag(VirtualBackgroundComponentTag),
-                            onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                        )
-                    }
+            when (contentState.targetComponent) {
+                BottomSheetComponent.CallActions -> {
+                    CallActionsComponent(
+                        onItemClick = { action ->
+                            contentState.navigateToComponent(
+                                component = when (action) {
+                                    is CallAction.Audio -> BottomSheetComponent.AudioOutput
+                                    is CallAction.ScreenShare -> BottomSheetComponent.ScreenShare
+                                    is CallAction.FileShare -> BottomSheetComponent.FileShare
+                                    is CallAction.Whiteboard -> BottomSheetComponent.Whiteboard
+                                    is CallAction.VirtualBackground -> BottomSheetComponent.VirtualBackground
+                                    else -> BottomSheetComponent.CallActions
+                                }
+                            )
+                            onCallActionClick(action)
+                        },
+                        isDarkTheme = isDarkTheme,
+                        modifier = Modifier.testTag(CallActionsComponentTag)
+                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.CallActions)
+                }
+
+                BottomSheetComponent.AudioOutput -> {
+//                    AudioOutputComponent(
+//                        onDeviceConnected = onAudioDeviceClick,
+//                        onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
+//                        modifier = Modifier.testTag(AudioOutputComponentTag),
+//                        isTesting = isTesting
+//                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.AudioOutput)
+                }
+
+                BottomSheetComponent.ScreenShare -> {
+//                    ScreenShareComponent(
+//                        onItemClick = { onScreenShareTargetClick() },
+//                        onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
+//                        modifier = Modifier.testTag(ScreenShareComponentTag)
+//                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.ScreenShare)
+                }
+
+                BottomSheetComponent.FileShare -> {
+//                    FileShareComponent(
+//                        modifier = Modifier
+//                            .padding(top = 12.dp)
+//                            .testTag(FileShareComponentTag),
+//                        isTesting = isTesting
+//                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.FileShare)
+                }
+
+                BottomSheetComponent.Whiteboard -> {
+//                    WhiteboardComponent(
+//                        modifier = Modifier
+//                            .padding(top = 12.dp)
+//                            .testTag(WhiteboardComponentTag)
+//                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.Whiteboard)
+                }
+
+                BottomSheetComponent.VirtualBackground -> {
+//                    VirtualBackgroundComponent(
+//                        onItemClick = { onVirtualBackgroundClick() },
+//                        onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
+//                        modifier = Modifier
+//                            .testTag(VirtualBackgroundComponentTag)
+//                    )
+                    contentState.updateCurrentComponent(BottomSheetComponent.VirtualBackground)
                 }
             }
         }
     }
 }
-

@@ -125,3 +125,9 @@ internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<
     val avatar = activity.getString(R.string.kaleyra_avatar)
     return onNodeWithContentDescription(avatar)
 }
+
+internal inline fun <reified A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.pressBack() {
+    activityRule.scenario.onActivity { activity ->
+        activity.onBackPressedDispatcher.onBackPressed()
+    }
+}

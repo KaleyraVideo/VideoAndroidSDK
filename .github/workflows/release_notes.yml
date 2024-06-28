@@ -19,7 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || '' }}
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ inputs.tag }}
       - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -49,16 +51,19 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       - name: Get commit summary
-        uses: kristiyan-petrov/commit-summary@v2
         id: get_commit_summary
-        with:
-          ref: ${{ github.event.inputs.tag || '' }}
+        run: |
+            new_tag=${{ inputs.tag }}
+            previous_tag=$(git tag --sort=-creatordate | sed -n 2p)
+            commit_summary="$(git log --oneline --pretty=tformat:"%h %s" $previous_tag..$new_tag)"
+            echo "commit_summary<<EOF"$'\n'"$commit_summary"$'\n'EOF >> $GITHUB_OUTPUT
       - name: Release notes
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
+          make_latest: 'true'
+          tag_name: ${{ inputs.tag }}
           files: |
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true
-          append_body: ${{ steps.get_commit_summary.outputs.summary }}
