@@ -176,7 +176,9 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow = callActionsUiState.actionList.count() - sheetDragActions.count() + if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val sheetActionsCount = callActionsUiState.actionList.count()
+                val answerActionSlots = if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val itemsPerRow = max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
@@ -291,7 +293,7 @@ internal fun VCallScreen(
                 onDismissRequest = { modalBottomSheet = null },
                 sheetState = modalSheetState,
                 dragHandle = null,
-                windowInsets = WindowInsets.statusBars
+                windowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0)
             ) {
                 when(modalBottomSheet) {
                     CallScreenModalBottomSheet.Audio -> AudioOutputComponent(
