@@ -27,6 +27,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 internal enum class CallScreenModalBottomSheet {

@@ -222,7 +222,6 @@ class VCallScreenTest {
                 windowSizeClass = WindowSizeClassUtil.currentWindowAdaptiveInfo(configuration),
                 sheetState = sheetState,
                 inputMessage = inputMessage,
-                onChangeSheetState = onChangeSheetState,
                 onBackPressed = onBackPressed,
             )
         }

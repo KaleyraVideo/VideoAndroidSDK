@@ -11,9 +11,9 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
-import com.kaleyra.video_sdk.common.usermessages.viewmodel.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import io.mockk.every
 import io.mockk.mockk
