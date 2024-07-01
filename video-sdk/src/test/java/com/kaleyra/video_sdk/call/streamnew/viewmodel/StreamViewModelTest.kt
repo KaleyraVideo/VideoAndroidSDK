@@ -383,4 +383,26 @@ class StreamViewModelTest {
 
         assertEquals(listOf(streamMock2), viewModel.uiState.value.pinnedStreams.value)
     }
+
+    @Test
+    fun `previous pinned stream is updated on stream update`() = runTest {
+        val streams = MutableStateFlow(listOf(streamMock1, streamMock2))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+
+        advanceUntilIdle()
+        viewModel.pin(streamMock1)
+        viewModel.pin(streamMock2)
+
+        assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
+
+        val updatedStreamMock1 = streamMock1.copy(isMine = true)
+        streams.value = listOf(updatedStreamMock1, streamMock2)
+        advanceUntilIdle()
+
+        assertEquals(listOf(updatedStreamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
+    }
 }

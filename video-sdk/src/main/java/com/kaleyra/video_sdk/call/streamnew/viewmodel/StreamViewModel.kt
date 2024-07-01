@@ -88,7 +88,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     private fun updatePinnedStreams(streams: List<StreamUi>): List<StreamUi> {
         val localScreenShare = streams.find { it.video?.isScreenShare == true && it.isMine }
         // Clear the removed pinned streams
-        val updatedPinnedStreams = uiState.value.pinnedStreams.value.intersect(streams.toSet()).toMutableList()
+        val updatedPinnedStreams = uiState.value.pinnedStreams.value.mapNotNull { stream ->
+            streams.find { it.id == stream.id }
+        }.toMutableList()
         // Pin the local screen share as first stream
         localScreenShare?.let {
             updatedPinnedStreams.add(0, it)
