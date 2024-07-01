@@ -80,7 +80,7 @@ internal fun UserMessageSnackbarM3(
             Snackbar(
                 shape = CircleShape,
                 containerColor = backgroundColor,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 dismissAction = {
                     if (actionConfig != null) Unit
                     else if (onDismissClick == null) Unit

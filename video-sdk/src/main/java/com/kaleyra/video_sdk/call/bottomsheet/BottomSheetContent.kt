@@ -181,6 +181,7 @@ internal fun BottomSheetContent(
                                 .padding(top = 12.dp)
                                 .testTag(FileShareComponentTag),
                             onDismiss = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
+                            onUserMessageActionClick = {},
                             isTesting = isTesting,
                         )
                     }
@@ -189,7 +190,8 @@ internal fun BottomSheetContent(
                             modifier = Modifier
                                 .padding(top = 12.dp)
                                 .testTag(WhiteboardComponentTag),
-                            onBackPressed = {}
+                            onBackPressed = {},
+                            onUserMessageActionClick = {}
                         )
                     }
                     BottomSheetComponent.VirtualBackground -> {

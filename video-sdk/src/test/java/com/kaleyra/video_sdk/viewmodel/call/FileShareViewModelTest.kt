@@ -207,12 +207,4 @@ class FileShareViewModelTest {
         viewModel.dismissUploadLimit()
         assertEquals(false,  viewModel.uiState.first().showFileSizeLimit)
     }
-
-    @Test
-    fun testUserMessage() = runTest {
-        every { CallUserMessagesProvider.userMessage } returns flowOf(MutedMessage("admin"))
-        advanceUntilIdle()
-        val actual = viewModel.userMessage.first()
-        assert(actual is MutedMessage && actual.admin == "admin")
-    }
 }

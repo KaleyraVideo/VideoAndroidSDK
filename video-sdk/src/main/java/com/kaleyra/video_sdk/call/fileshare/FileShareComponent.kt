@@ -59,10 +59,8 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareFab
 import com.kaleyra.video_sdk.call.fileshare.view.MaxFileSizeDialog
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
-import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import java.util.UUID
@@ -79,6 +77,7 @@ internal fun FileShareComponent(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     onDismiss: () -> Unit,
+    onUserMessageActionClick: (UserMessage.Action) -> Unit,
     isTesting: Boolean = false
 ) {
     val context = LocalContext.current
@@ -86,7 +85,6 @@ internal fun FileShareComponent(
     val (showUnableToOpenFileSnackBar, setShowUnableToOpenSnackBar) = remember { mutableStateOf(false) }
     val (showCancelledFileSnackBar, setShowCancelledFileSnackBar) = remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
 
     if (!isTesting) {
         DisposableEffect(context) {
@@ -124,7 +122,7 @@ internal fun FileShareComponent(
         onDownload = viewModel::download,
         onShareCancel = viewModel::cancel,
         modifier = modifier,
-        userMessage = userMessage,
+        onUserMessageActionClick = onUserMessageActionClick,
         onBackPressed = onDismiss
     )
 }
@@ -138,7 +136,7 @@ internal fun FileShareComponent(
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
     onBackPressed: (() -> Unit)? = null,
-    userMessage: UserMessage? = null,
+    onUserMessageActionClick: (UserMessage.Action) -> Unit,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
@@ -212,7 +210,9 @@ internal fun FileShareComponent(
                 )
             }
 
-            UserMessageSnackbarHandler(userMessage = userMessage)
+            StackedUserMessageComponent(
+                onActionCLick = onUserMessageActionClick
+            )
 
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -229,7 +229,6 @@ internal fun FileShareComponent(
                     .padding(bottom = 16.dp)
             )
         }
-        NavigationBarsSpacer()
     }
 }
 
@@ -244,7 +243,7 @@ internal fun FileShareComponentPreview() {
                     sharedFiles = ImmutableList((0..20).map { mockUploadSharedFile.copy(id = UUID.randomUUID().toString()) })
                 ),
                 onUpload = {},
-                userMessage = RecordingMessage.Started,
+                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )
@@ -261,7 +260,7 @@ internal fun FileShareComponentEmptyPreview() {
             FileShareComponent(
                 uiState = FileShareUiState(),
                 onUpload = {},
-                userMessage = RecordingMessage.Started,
+                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )

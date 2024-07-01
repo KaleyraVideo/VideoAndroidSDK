@@ -38,13 +38,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure),
-    UserMessageViewModel {
+internal class WhiteboardViewModel(configure: suspend () -> Configuration, whiteboardView: WhiteboardView) : BaseViewModel<WhiteboardUiState>(configure) {
 
     override fun initialState() = WhiteboardUiState()
-
-    override val userMessage: Flow<UserMessage>
-        get() = CallUserMessagesProvider.userMessage
 
     private val whiteboard = call
         .map { it.whiteboard }

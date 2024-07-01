@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,24 +34,20 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardAppBar
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardContent
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardOfflineContent
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
-import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WhiteboardComponent(
     modifier: Modifier = Modifier,
@@ -58,9 +55,9 @@ internal fun WhiteboardComponent(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onBackPressed: () -> Unit,
+    onUserMessageActionClick: (UserMessage.Action) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) viewModel.uploadMediaFile(uri)
@@ -73,7 +70,7 @@ internal fun WhiteboardComponent(
         onReloadClick = viewModel::onReloadClick,
         onBackPressed = onBackPressed,
         onUploadClick = { launcher.launch("image/*") },
-        userMessage = userMessage,
+        onUserMessageActionClick = onUserMessageActionClick
     )
 }
 
@@ -85,25 +82,25 @@ internal fun WhiteboardComponent(
     onReloadClick: () -> Unit,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    userMessage: UserMessage?,
+    onUserMessageActionClick: (UserMessage.Action) -> Unit
 ) {
     DisposableEffect(Unit) {
         onDispose(onWhiteboardClosed)
     }
 
-    Box {
-        Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
+    Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
 
-            WhiteboardAppBar(
-                isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
-                onBackPressed = onBackPressed,
-                onUploadClick = { onUploadClick() },
-                modifier = modifier
-            )
+        WhiteboardAppBar(
+            isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
+            onBackPressed = onBackPressed,
+            onUploadClick = { onUploadClick() },
+            modifier = modifier
+        )
 
+        Box {
             val contentModifier = Modifier
-                .weight(1f)
-                .background(color = colorResource(id = R.color.kaleyra_color_loading_whiteboard_background))
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.surface)
             when {
                 uiState.isOffline -> {
                     WhiteboardOfflineContent(
@@ -123,10 +120,8 @@ internal fun WhiteboardComponent(
                 }
             }
 
-            NavigationBarsSpacer()
+            StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
         }
-
-        UserMessageSnackbarHandler(userMessage = userMessage)
     }
 }
 

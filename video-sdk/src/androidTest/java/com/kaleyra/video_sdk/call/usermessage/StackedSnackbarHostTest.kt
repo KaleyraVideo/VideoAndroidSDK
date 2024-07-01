@@ -1,21 +1,26 @@
 package com.kaleyra.video_sdk.call.usermessage
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.model.StackedSnackbarHostState
-import com.kaleyra.video_sdk.common.snackbarm3.view.StackedSnackbarHost
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
-import kotlinx.coroutines.test.advanceTimeBy
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.common.usermessages.viewmodel.StackedSnackbarUiState
+import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,18 +31,23 @@ class StackedSnackbarHostTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    lateinit var stackedSnackbarHostState: StackedSnackbarHostState
+    val userMessageFlow = MutableStateFlow<ImmutableList<UserMessage>>(ImmutableList())
+    val mutableUiState = MutableStateFlow<StackedSnackbarUiState>(StackedSnackbarUiState())
+    val viewModelMock = mockk<UserMessagesViewModel> {
+        every { userMessage } returns userMessageFlow
+        every { uiState } returns mutableUiState
+    }
+
+    @Before
+    fun setup() {
+        composeTestRule.setContent {
+            StackedUserMessageComponent(viewModel = viewModelMock) {}
+        }
+    }
 
     @Test
     fun testMultipleUserMessagePosted() = runTest {
-        composeTestRule.setContent {
-            stackedSnackbarHostState = StackedSnackbarHostState(LocalAccessibilityManager.current!!, this)
-            LocalAccessibilityManager.current
-            StackedSnackbarHost(stackedSnackbarHostState, onActionClick = {})
-        }
-
-        stackedSnackbarHostState.addUserMessage(RecordingMessage.Started, false)
-        stackedSnackbarHostState.addUserMessage(AudioConnectionFailureMessage.Generic, false)
+        userMessageFlow.emit(ImmutableList(listOf(RecordingMessage.Started, AudioConnectionFailureMessage.Generic)))
 
         advanceUntilIdle()
         composeTestRule.waitForIdle()
@@ -49,17 +59,10 @@ class StackedSnackbarHostTest {
 
     @Test
     fun testRemoveMessage() = runTest {
-        composeTestRule.setContent {
-            stackedSnackbarHostState = StackedSnackbarHostState(LocalAccessibilityManager.current!!, this)
-            LocalAccessibilityManager.current
-            StackedSnackbarHost(stackedSnackbarHostState, onActionClick = {})
-        }
-
-        stackedSnackbarHostState.addUserMessage(RecordingMessage.Started, false)
-        stackedSnackbarHostState.addUserMessage(AudioConnectionFailureMessage.Generic, false)
+        userMessageFlow.emit(ImmutableList(listOf(RecordingMessage.Started,AudioConnectionFailureMessage.Generic)))
         advanceUntilIdle()
         composeTestRule.waitForIdle()
-        stackedSnackbarHostState.removeUserMessage(RecordingMessage.Started)
+        userMessageFlow.emit(ImmutableList(listOf(AudioConnectionFailureMessage.Generic)))
 
         advanceUntilIdle()
         composeTestRule.waitForIdle()
@@ -69,13 +72,7 @@ class StackedSnackbarHostTest {
 
     @Test
     fun testMultipleAlertMessagePosted() = runTest {
-        composeTestRule.setContent {
-            stackedSnackbarHostState = StackedSnackbarHostState(LocalAccessibilityManager.current!!, this)
-            LocalAccessibilityManager.current
-            StackedSnackbarHost(stackedSnackbarHostState, onActionClick = {})
-        }
-
-        stackedSnackbarHostState.addAlertMessages(listOf(AlertMessage.AutomaticRecordingMessage, AlertMessage.WaitingForOtherParticipantsMessage))
+        mutableUiState.emit(StackedSnackbarUiState(alertMessages = ImmutableList(listOf(AlertMessage.AutomaticRecordingMessage, AlertMessage.WaitingForOtherParticipantsMessage))))
 
         advanceUntilIdle()
         composeTestRule.waitForIdle()
@@ -83,22 +80,5 @@ class StackedSnackbarHostTest {
         val waitingForOtherParticipants = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
         composeTestRule.onNodeWithText(automaticRecording).assertIsDisplayed()
         composeTestRule.onNodeWithText(waitingForOtherParticipants).assertIsDisplayed()
-    }
-
-    @Test
-    fun testAutoDismissUserMessage() = runTest {
-        composeTestRule.setContent {
-            stackedSnackbarHostState = StackedSnackbarHostState(LocalAccessibilityManager.current!!, this)
-            LocalAccessibilityManager.current
-            StackedSnackbarHost(stackedSnackbarHostState, onActionClick = {})
-        }
-
-        stackedSnackbarHostState.addUserMessage(RecordingMessage.Started, true)
-
-        advanceUntilIdle()
-        composeTestRule.waitForIdle()
-        advanceTimeBy(15000L)
-        val recordingStarted = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
-        composeTestRule.onNodeWithText(recordingStarted).assertIsNotDisplayed()
     }
 }

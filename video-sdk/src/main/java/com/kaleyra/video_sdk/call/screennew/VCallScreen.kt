@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -29,12 +27,10 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -59,14 +55,12 @@ import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import kotlinx.coroutines.launch
 import kotlin.math.max
 
 internal enum class CallScreenModalBottomSheet {
@@ -289,10 +283,12 @@ internal fun VCallScreen(
                         onDismiss = { modalBottomSheet = null }
                     )
                     CallScreenModalBottomSheet.FileShare -> FileShareComponent(
-                        onDismiss = { modalBottomSheet = null }
+                        onDismiss = { modalBottomSheet = null },
+                        onUserMessageActionClick = {},
                     )
                     CallScreenModalBottomSheet.Whiteboard -> WhiteboardComponent(
-                        onBackPressed = { modalBottomSheet = null }
+                        onBackPressed = { modalBottomSheet = null },
+                        onUserMessageActionClick = {}
                     )
                     CallScreenModalBottomSheet.VirtualBackground -> VirtualBackgroundComponent(
                         onDismiss = { modalBottomSheet = null }

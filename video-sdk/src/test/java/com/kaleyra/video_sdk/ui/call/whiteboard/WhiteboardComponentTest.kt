@@ -20,15 +20,18 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
@@ -37,10 +40,6 @@ import com.kaleyra.video_sdk.call.whiteboard.view.LinearProgressIndicatorTag
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardViewTag
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -82,11 +81,11 @@ class WhiteboardComponentTest {
             if (showWhiteboardComponent) {
                 WhiteboardComponent(
                     uiState = uiState,
-                    userMessage = userMessage,
                     onReloadClick = { isReloadClicked = true },
                     onWhiteboardClosed = { isWhiteboardClosed = true },
                     onBackPressed = { isBackPressed = true },
-                    onUploadClick = { isUploadClicked = true }
+                    onUploadClick = { isUploadClicked = true },
+                    onUserMessageActionClick = {}
                 )
             }
         }

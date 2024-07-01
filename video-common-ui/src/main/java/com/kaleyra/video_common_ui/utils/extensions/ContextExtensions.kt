@@ -21,6 +21,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -361,4 +362,14 @@ object ContextExtensions {
     private fun Context.hasPermission(permission: String): Boolean {
         return PermissionChecker.checkSelfPermission(applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
     }
+
+
+    /**
+     * Checks whether fullscreen intents are available by system settings
+     * @receiver Context
+     * @return Boolean true if fullscreen intents are enabled, false otherwise
+     */
+    fun Context.canUseFullScreenIntent() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()
+    } else true
 }
