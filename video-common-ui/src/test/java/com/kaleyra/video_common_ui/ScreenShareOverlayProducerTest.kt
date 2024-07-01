@@ -93,7 +93,7 @@ internal class ScreenShareOverlayProducerTest {
         // check the two input jobs are active before stopping
         assertEquals(2, backgroundJob.children.count())
         assert(backgroundJob.children.all { it.isActive })
-        screenShareOverlayProducer.stop()
+        screenShareOverlayProducer.dispose()
         verify(exactly = 1) { applicationMock.unregisterActivityLifecycleCallbacks(screenShareOverlayProducer) }
         // check the two input jobs are cancelled
         assert(backgroundJob.children.all { it.isCancelled })

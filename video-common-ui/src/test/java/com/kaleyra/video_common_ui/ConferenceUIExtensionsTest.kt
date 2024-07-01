@@ -1,5 +1,6 @@
 package com.kaleyra.video_common_ui
 
+import android.app.Application
 import android.app.Notification
 import android.content.Context
 import android.telecom.TelecomManager
@@ -8,7 +9,9 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
+import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
@@ -29,16 +32,22 @@ import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.job
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,9 +60,13 @@ class ConferenceUIExtensionsTest {
 
     private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
-    private val callMock = mockk<CallUI>(relaxed = true)
+    private val callMockState: MutableStateFlow<Call.State> = MutableStateFlow(Call.State.Connected)
 
-    private val contextMock = mockk<Context>(relaxed = true)
+    private val callMock = mockk<CallUI>(relaxed = true) {
+        every { state } returns callMockState
+    }
+
+    private val contextMock = mockk<Application>(relaxed = true)
 
     private val telecomManagerMock = mockk<TelecomManager>(relaxed = true)
 
@@ -98,7 +111,6 @@ class ConferenceUIExtensionsTest {
         every { contextMock.getSystemService(Context.TELECOM_SERVICE) } returns telecomManagerMock
         every { telecomManagerMock.addCall(call = any(), any()) } returns Unit
         every { callMock.participants } returns MutableStateFlow(participantsMock)
-        every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
         coEvery { CallNotificationProducer.buildIncomingCallNotification(any(), any(), any()) } returns incomingNotificationMock
         coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any()) } returns outgoingNotificationMock
         every { NotificationManager.notify(any(), any()) } returns Unit
@@ -276,4 +288,51 @@ class ConferenceUIExtensionsTest {
         verify(exactly = 1) { callMock.showOnAppResumed(backgroundScope) }
     }
 
+    @Test
+    fun callCreated_configureScreenShareOverlayProducer_screenShareOverlayProducerBound() = runTest {
+        var hasBoundScreenShareOverlayProducer = false
+        mockkConstructor(ScreenShareOverlayProducer::class)
+        every { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) } answers {
+            hasBoundScreenShareOverlayProducer = true
+            mockk()
+        }
+
+        conferenceMock.configureScreenShareOverlayProducer(backgroundScope)
+        runCurrent()
+
+        Assert.assertEquals(true, hasBoundScreenShareOverlayProducer)
+    }
+
+    @Test
+    fun callEnded_configureScreenShareOverlayProducer_screenShareOverlayProducerDisposed() = runTest {
+        var hasDisposedScreenShareOverlayProducer = false
+        mockkConstructor(ScreenShareOverlayProducer::class)
+        every { anyConstructed<ScreenShareOverlayProducer>().dispose() } answers {
+            hasDisposedScreenShareOverlayProducer = true
+            Unit
+        }
+
+        conferenceMock.configureScreenShareOverlayProducer(backgroundScope)
+        callMockState.tryEmit(Call.State.Disconnected.Ended)
+        runCurrent()
+
+        Assert.assertEquals(true, hasDisposedScreenShareOverlayProducer)
+    }
+
+    @Test
+    fun coroutineCanceled_configureScreenShareOverlayProducer_screenShareOverlayProducerDisposed() = runTest {
+        var hasDisposedScreenShareOverlayProducer = false
+        mockkConstructor(ScreenShareOverlayProducer::class)
+        every { anyConstructed<ScreenShareOverlayProducer>().dispose() } answers {
+            hasDisposedScreenShareOverlayProducer = true
+            Unit
+        }
+
+        conferenceMock.configureScreenShareOverlayProducer(backgroundScope)
+        runCurrent()
+        backgroundScope.cancel()
+        runCurrent()
+
+        Assert.assertEquals(true, hasDisposedScreenShareOverlayProducer)
+    }
 }

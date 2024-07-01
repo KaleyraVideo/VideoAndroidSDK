@@ -40,6 +40,7 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA
@@ -49,6 +50,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFro
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getScreenAspectRatio
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_sdk.call.screen.CallScreen
 import com.kaleyra.video_sdk.call.utils.Android12CallActivityTasksFixService
 import com.kaleyra.video_sdk.extensions.RationalExtensions.coerceRationalForPip
@@ -83,7 +85,13 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     private var isAskingInputPermissions: Boolean = false
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() = enterPipModeIfSupported()
+        override fun handleOnBackPressed() {
+            enterPipModeIfSupported()
+            this@PhoneCallActivity.goToPreviousOrMainActivity(
+                this@PhoneCallActivity::class.simpleName!!,
+                NavBackComponent.CALL
+            )
+        }
     }
 
     private val isAndroid12 = Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S.inc()
@@ -170,10 +178,15 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     }
 
     private fun enterPipModeIfSupported() {
-        if (!isPipSupported || isActivityFinishing) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            updatePipParams()?.let { params ->
-                enterPictureInPictureMode(params)
+        when {
+            isActivityFinishing -> return
+            !isPipSupported -> moveTaskToBack(false)
+            else -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    updatePipParams()?.let { params ->
+                        enterPictureInPictureMode(params)
+                    }
+                }
             }
         }
     }
@@ -216,7 +229,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
         }
     }
 
-    private fun <T: BroadcastReceiver> forwardIntentToReceiver(intent: Intent, receiver: Class<T>) {
+    private fun <T : BroadcastReceiver> forwardIntentToReceiver(intent: Intent, receiver: Class<T>) {
         sendBroadcast(Intent(this, receiver).apply {
             putExtras(intent)
         })
@@ -238,24 +251,24 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     }
 
     private fun onDisplayMode(displayMode: CallUI.DisplayMode) {
-            when (displayMode) {
-                is CallUI.DisplayMode.PictureInPicture -> {
-                    when {
-                        isInPipMode.value -> return
-                        isInForeground -> enterPipModeIfSupported()
-                        else -> tryEnterPipFromBackground()
-                    }
+        when (displayMode) {
+            is CallUI.DisplayMode.PictureInPicture -> {
+                when {
+                    isInPipMode.value -> return
+                    isInForeground -> enterPipModeIfSupported()
+                    else -> tryEnterPipFromBackground()
                 }
-
-                is CallUI.DisplayMode.Foreground -> {
-                    if (isInForeground) return
-                    moveToFront()
-                }
-
-                is CallUI.DisplayMode.Background -> moveTaskToBack(true)
-
-                else -> Unit
             }
+
+            is CallUI.DisplayMode.Foreground -> {
+                if (isInForeground) return
+                moveToFront()
+            }
+
+            is CallUI.DisplayMode.Background -> moveTaskToBack(true)
+
+            else -> Unit
+        }
     }
 
     private fun tryEnterPipFromBackground() {
@@ -267,6 +280,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
                 enterPipModeIfSupported()
                 application.unregisterActivityLifecycleCallbacks(this)
             }
+
             override fun onActivityPaused(activity: Activity) = Unit
             override fun onActivityStopped(activity: Activity) = Unit
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit

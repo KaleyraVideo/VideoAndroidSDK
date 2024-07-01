@@ -21,8 +21,8 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.KeyguardManager
-import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Configuration
@@ -44,8 +44,10 @@ import androidx.annotation.StyleableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.FragmentActivity
+import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
+import com.kaleyra.video_utils.ContextRetainer
 
 /**
  * Context extensions
@@ -72,9 +74,9 @@ object ContextExtensions {
     fun <T : Activity> Context.getActivity(): T? {
         return when (this) {
             is FragmentActivity -> this as T?
-            is Activity         -> this as T?
-            is ContextWrapper   -> this.baseContext.getActivity() as T?
-            else                -> null
+            is Activity -> this as T?
+            is ContextWrapper -> this.baseContext.getActivity() as T?
+            else -> null
         }
     }
 
@@ -228,7 +230,7 @@ object ContextExtensions {
      * @param operation String
      * @param callback Function2<String, String, Unit> the callback to be called.
      */
-    fun Context.startAppOpsWatch(operation: String, callback: ((String, String) -> Unit)){
+    fun Context.startAppOpsWatch(operation: String, callback: ((String, String) -> Unit)) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
         val pckName = applicationContext.packageName
         val appOpsManager = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -327,7 +329,7 @@ object ContextExtensions {
      * @param activityClazz Class<*> The activity class to check
      * @return Boolean True if the activity is running, false otherwise
      */
-    fun Context.isActivityRunning(activityClazz: Class<*>) : Boolean {
+    fun Context.isActivityRunning(activityClazz: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             manager.appTasks.any { it.taskInfo.topActivity?.className == activityClazz.name }
@@ -363,13 +365,31 @@ object ContextExtensions {
         return PermissionChecker.checkSelfPermission(applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
     }
 
-
     /**
-     * Checks whether fullscreen intents are available by system settings
-     * @receiver Context
-     * @return Boolean true if fullscreen intents are enabled, false otherwise
+     * Go back to launcher activity if this function's caller is the solely task for the app
      */
-    fun Context.canUseFullScreenIntent() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()
-    } else true
+    fun Context.goToPreviousOrMainActivity(
+        currentActivityName: String,
+        navBackComponent: NavBackComponent? = null,
+    ) {
+        if (hasOtherTasks(currentActivityName)) return
+
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        intent!!.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        val componentName = intent.component
+        navBackComponent?.let { intent.addBackButtonFlag(it) }
+        startActivity(Intent.makeRestartActivityTask(componentName))
+    }
+
+    internal fun Context.hasOtherTasks(currentActivityName: String): Boolean {
+        val activityManager = getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            !activityManager.appTasks
+                .filter { it.taskInfo.topActivity != null }
+                .all { it.taskInfo.topActivity!!.className.contains(currentActivityName) }
+        else !activityManager.getRunningTasks(Int.MAX_VALUE)
+            .filter { it.topActivity != null }
+            .filter { it.topActivity!!.packageName == ContextRetainer.context.packageName }
+            .all { it.topActivity!!.className.contains(currentActivityName) }
+    }
 }

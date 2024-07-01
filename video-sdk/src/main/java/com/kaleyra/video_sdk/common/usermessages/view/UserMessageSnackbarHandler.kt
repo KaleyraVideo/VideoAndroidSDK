@@ -39,18 +39,24 @@ import com.kaleyra.video_sdk.common.snackbar.RecordingStartedSnackbar
 import com.kaleyra.video_sdk.common.snackbar.UsbConnectedSnackbar
 import com.kaleyra.video_sdk.common.snackbar.UsbDisconnectedSnackbar
 import com.kaleyra.video_sdk.common.snackbar.UsbNotSupportedSnackbar
+import com.kaleyra.video_sdk.common.snackbar.WhiteboardHideRequestSnackbar
+import com.kaleyra.video_sdk.common.snackbar.WhiteboardShowRequestSnackbar
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filterNotNull
 
 internal const val RecordingStarted = "RecordingStarted"
 internal const val RecordingStopped = "RecordingStopped"
 internal const val RecordingError = "RecordingError"
+internal const val WhiteboardShowRequest = "WhiteboardShowRequest"
+internal const val WhiteboardHideRequest = "WhiteboardHideRequest"
 internal const val UsbConnected = "UsbConnected"
 internal const val UsbDisconnected = "UsbDisconnected"
 internal const val UsbNotSupported = "UsbNotSupported"
@@ -75,6 +81,8 @@ internal fun UserMessageSnackbarHandler(
                     message = when (it) {
                         is MutedMessage -> it.admin ?: ""
                         is UsbCameraMessage.Connected -> it.name
+                        is WhiteboardShowRequestMessage -> it.username ?: ""
+                        is WhiteboardHideRequestMessage -> it.username ?: ""
                         else -> ""
                     },
                     actionLabel = when (it) {
@@ -88,6 +96,8 @@ internal fun UserMessageSnackbarHandler(
                         is AudioConnectionFailureMessage.Generic -> AudioOutputGenericFailure
                         is AudioConnectionFailureMessage.InSystemCall -> AudioOutputInSystemCallFailure
                         is MutedMessage -> MutedByAdmin
+                        is WhiteboardShowRequestMessage -> WhiteboardShowRequest
+                        is WhiteboardHideRequestMessage -> WhiteboardHideRequest
                         else -> null
                     }
                 )
@@ -109,6 +119,8 @@ internal fun UserMessageSnackbarHandler(
                 AudioOutputGenericFailure -> AudioOutputGenericFailureSnackbar()
                 AudioOutputInSystemCallFailure -> AudioOutputInSystemCallFailureSnackbar()
                 MutedByAdmin -> MutedSnackbar(it.message)
+                WhiteboardShowRequest -> WhiteboardShowRequestSnackbar(it.message.takeIf { it.isNotBlank() })
+                WhiteboardHideRequest -> WhiteboardHideRequestSnackbar(it.message.takeIf { it.isNotBlank() })
             }
         }
     )

@@ -22,7 +22,9 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasInternalCameraInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.isAnyScreenInputActive
 import com.kaleyra.video_common_ui.mapper.InputMapper.isAppScreenInputActive
 import com.kaleyra.video_common_ui.mapper.InputMapper.isDeviceScreenInputActive
@@ -200,6 +202,54 @@ class InputMapperTests {
     fun screenShareNotInAvailableInputs_hasScreenSharingInput_false() = runTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Application>()))
         val result = callMock.hasScreenSharingInput()
+        val actual = result.first()
+        Assert.assertEquals(false, actual)
+    }
+
+    @Test
+    fun internalCameraInAvailableInputs_hasInternalCameraInput_true() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Internal>()))
+        val result = callMock.hasInternalCameraInput()
+        val actual = result.first()
+        Assert.assertEquals(true, actual)
+    }
+
+    @Test
+    fun usbCameraInAvailableInputs_hasInternalCameraInput_false() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera.Usb>()))
+        val result = callMock.hasInternalCameraInput()
+        val actual = result.first()
+        Assert.assertEquals(false, actual)
+    }
+
+    @Test
+    fun genericCameraInAvailableInputs_hasInternalCameraInput_false() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Video.Camera>()))
+        val result = callMock.hasInternalCameraInput()
+        val actual = result.first()
+        Assert.assertEquals(false, actual)
+    }
+
+    @Test
+    fun internalCameraNotInAvailableInputs_hasInternalCameraInput_false() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input>()))
+        val result = callMock.hasInternalCameraInput()
+        val actual = result.first()
+        Assert.assertEquals(false, actual)
+    }
+
+    @Test
+    fun audioInAvailableInputs_hasAudioInput_true() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input.Audio>()))
+        val result = callMock.hasAudioInput()
+        val actual = result.first()
+        Assert.assertEquals(true, actual)
+    }
+
+    @Test
+    fun audioNotInAvailableInputs_hasAudioInput_false() = runTest {
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(mockk<Input>()))
+        val result = callMock.hasAudioInput()
         val actual = result.first()
         Assert.assertEquals(false, actual)
     }

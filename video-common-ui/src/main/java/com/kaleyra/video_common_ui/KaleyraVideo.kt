@@ -84,9 +84,8 @@ object KaleyraVideo {
     private var termsAndConditionsRequester: TermsAndConditionsRequester? = null
 
     private var logger: PriorityLogger? = null
-    private var _conference: ConferenceUI? by cached { ConferenceUI(collaboration!!.conference, callActivityClazz, logger) }
-    private var _conversation: ConversationUI? by cached { ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz) }
-
+    private var _conference: ConferenceUI? = null
+    private var _conversation: ConversationUI? = null
 
     @get:Synchronized
         /**
@@ -135,14 +134,21 @@ object KaleyraVideo {
     @get:Synchronized
     @set:Synchronized
         /**
-         * Push Notification Interceptor Option to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
+         * Push Notification Handling Strategy to let KaleyraVideoSDK automatically process push notification payloads or manually process push notification payloads
          * from integrating app
          */
-    var pushNotificationInterceptorOption = PushNotificationHandlingStrategy.Automatic
+    var pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
         set(value) {
             KaleyraVideoSharedPrefs.putPushNotificationHandlingStrategy(value)
             field = value
         }
+
+    @get:Synchronized
+    @set:Synchronized
+    /**
+     * The call recording utterance option enabled by default
+     */
+    var voicePrompts: VoicePrompts = VoicePrompts.Enabled
 
     /**
      * Configure
@@ -172,6 +178,8 @@ object KaleyraVideo {
         Collaboration.create(configuration).apply {
             collaboration = this
         }
+        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger)
+        _conversation = ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz)
 
         termsAndConditionsActivityClazz?.also {
             termsAndConditionsRequester = TermsAndConditionsRequester(it)

@@ -41,6 +41,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.CallAppBar
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.CameraMessageText
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageHost
@@ -77,7 +78,6 @@ internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
     inputMessage: InputMessage?,
-    onChangeSheetState: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -86,6 +86,16 @@ internal fun VCallScreen(
         WindowWidthSizeClass.Expanded
     )
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val scope = rememberCoroutineScope()
+    val onChangeSheetState: (Boolean) -> Unit = remember {
+        { isSheetCollapsed: Boolean ->
+            scope.launch {
+                if (isSheetCollapsed) sheetState.expand()
+                else sheetState.collapse()
+            }
+        }
+    }
 
     var modalBottomSheet: CallScreenModalBottomSheet? by remember { mutableStateOf(null) }
 
@@ -164,7 +174,9 @@ internal fun VCallScreen(
         },
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val itemsPerRow = callActionsUiState.actionList.count() - sheetDragActions.count() + if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val sheetActionsCount = callActionsUiState.actionList.count()
+                val answerActionSlots = if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val itemsPerRow = max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
@@ -210,10 +222,16 @@ internal fun VCallScreen(
                             }
                         }
                         Box(Modifier.animateContentSize()) {
+                            val isSheetExpanded by remember(sheetState) {
+                                derivedStateOf {
+                                    sheetState.targetValue == CallSheetValue.Expanded
+                                }
+                            }
                             HSheetContent(
                                 callActions = callActionsUiState.actionList,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 showAnswerAction = callActionsUiState.isRinging,
+                                isMoreToggled = isSheetExpanded,
                                 isLargeScreen = isLargeScreen,
                                 onActionsPlaced = { itemsPlaced ->
                                     val actions = callActionsUiState.actionList.value
@@ -237,8 +255,8 @@ internal fun VCallScreen(
                                 // TODO test this
                                 onVirtualBackgroundClick = onVirtualBackgroundClick,
                                 // TODO test this
-                                onMoreActionClick = {
-                                    if (hasSheetDragContent) onChangeSheetState()
+                                onMoreToggle = { isSheetCollapsed ->
+                                    if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
                                 },
                                 modifier = Modifier
@@ -273,7 +291,7 @@ internal fun VCallScreen(
                 onDismissRequest = { modalBottomSheet = null },
                 sheetState = modalSheetState,
                 dragHandle = null,
-                windowInsets = WindowInsets.statusBars
+                windowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0)
             ) {
                 when(modalBottomSheet) {
                     CallScreenModalBottomSheet.Audio -> AudioOutputComponent(

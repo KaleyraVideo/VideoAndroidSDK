@@ -22,27 +22,45 @@ class MoreActionTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
+    fun testOnCheckedChangeTrue() {
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        var checked = false
+        composeTestRule.setContent {
+            MoreAction(
+                onCheckedChange = { checked = it },
+                checked = false
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(descr).performClick()
+        Assert.assertEquals(true, checked)
+    }
+
+    @Test
+    fun testOnCheckedChangeFalse() {
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
+        var checked = true
+        composeTestRule.setContent {
+            MoreAction(
+                onCheckedChange = { checked = it },
+                checked = true
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(descr).performClick()
+        Assert.assertEquals(false, checked)
+    }
+
+    @Test
     fun testBadgeIsDisplayed() {
         val badgeText = "badgeText"
         composeTestRule.setContent {
             MoreAction(
-                onClick = {},
+                onCheckedChange = {},
+                checked = false,
                 badgeText = badgeText,
             )
         }
         composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
     }
-
-    @Test
-    fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
-        var clicked = false
-        composeTestRule.setContent {
-            MoreAction(onClick = { clicked = true })
-        }
-        composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
-        composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(true, clicked)
-    }
-
 }

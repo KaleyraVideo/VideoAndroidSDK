@@ -1,77 +1,81 @@
-/*
- * Copyright 2023 Kaleyra @ https://www.kaleyra.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.kaleyra.video_sdk.viewmodel.call
-
-import android.content.Context
-import android.net.Uri
-import android.telecom.TelecomManager
-import android.util.Rational
-import android.util.Size
-import androidx.fragment.app.FragmentActivity
-import com.kaleyra.video.Company
-import com.kaleyra.video.conference.*
-import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.CompanyUI.Theme
-import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.DisplayModeEvent
-import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.ConnectionServiceOption
-import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideoService
-import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
-import com.kaleyra.video_common_ui.callservice.KaleyraCallService
-import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
-import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
-import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
-import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
-import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
-import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
-import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_common_ui.theme.CompanyThemeManager
-import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
-import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
-import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
-import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler.Companion.STREAMS_HANDLER_UPDATE_DEBOUNCE
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import io.mockk.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
-import org.junit.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
-
+///*
+// * Copyright 2023 Kaleyra @ https://www.kaleyra.com
+// *
+// * Licensed under the Apache License, Version 2.0 (the "License");
+// * you may not use this file except in compliance with the License.
+// * You may obtain a copy of the License at
+// *
+// *     http://www.apache.org/licenses/LICENSE-2.0
+// *
+// * Unless required by applicable law or agreed to in writing, software
+// * distributed under the License is distributed on an "AS IS" BASIS,
+// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// * See the License for the specific language governing permissions and
+// * limitations under the License.
+// */
+//
+//package com.kaleyra.video_sdk.viewmodel.call
+//
+//import android.content.Context
+//import android.net.Uri
+//import android.telecom.TelecomManager
+//import android.util.Rational
+//import android.util.Size
+//import androidx.fragment.app.FragmentActivity
+//import com.kaleyra.video.Company
+//import com.kaleyra.video.conference.*
+//import com.kaleyra.video.conference.Call
+//import com.kaleyra.video.whiteboard.Whiteboard
+//import com.kaleyra.video_common_ui.CallUI
+//import com.kaleyra.video_common_ui.CompanyUI.Theme
+//import com.kaleyra.video_common_ui.ConferenceUI
+//import com.kaleyra.video_common_ui.DisplayModeEvent
+//import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
+//import com.kaleyra.video_common_ui.ConnectionServiceOption
+//import com.kaleyra.video_common_ui.KaleyraVideo
+//import com.kaleyra.video_common_ui.KaleyraVideoService
+//import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+//import com.kaleyra.video_common_ui.callservice.KaleyraCallService
+//import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
+//import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
+//import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
+//import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
+//import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+//import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
+//import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+//import com.kaleyra.video_common_ui.theme.CompanyThemeManager
+//import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+//import com.kaleyra.video_sdk.MainDispatcherRule
+//import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+//import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
+//import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
+//import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+//import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
+//import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+//import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
+//import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
+//import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+//import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
+//import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler.Companion.STREAMS_HANDLER_UPDATE_DEBOUNCE
+//import com.kaleyra.video_sdk.call.stream.model.StreamUi
+//import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+//import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+//import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
+//import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+//import io.mockk.*
+//import kotlinx.coroutines.ExperimentalCoroutinesApi
+//import kotlinx.coroutines.flow.MutableSharedFlow
+//import kotlinx.coroutines.flow.MutableStateFlow
+//import kotlinx.coroutines.flow.first
+//import kotlinx.coroutines.flow.flowOf
+//import kotlinx.coroutines.test.advanceTimeBy
+//import kotlinx.coroutines.test.advanceUntilIdle
+//import kotlinx.coroutines.test.runCurrent
+//import kotlinx.coroutines.test.runTest
+//import org.junit.*
+//import org.junit.Assert.assertEquals
+//import org.junit.Assert.assertNotEquals
+//
 //@OptIn(ExperimentalCoroutinesApi::class)
 //class CallViewModelTest {
 //
@@ -1015,5 +1019,21 @@ import org.junit.Assert.assertNotEquals
 //        advanceUntilIdle()
 //        val actual = viewModel.userMessage.first()
 //        assert(actual is MutedMessage && actual.admin == "admin")
+//    }
+//
+//    @Test
+//    fun testShowWhiteboardRequestReceived() = runTest {
+//        every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Show("userId1"))
+//        val actual = viewModel.whiteboardRequest.first()
+//        assertEquals(true, actual is WhiteboardRequest.Show)
+//        assertEquals("displayName1", actual.username)
+//    }
+//
+//    @Test
+//    fun testHideWhiteboardRequestReceived() = runTest {
+//        every { callMock.whiteboard.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide("userId1"))
+//        val actual = viewModel.whiteboardRequest.first()
+//        assertEquals(true, actual is WhiteboardRequest.Hide)
+//        assertEquals("displayName1", actual.username)
 //    }
 //}

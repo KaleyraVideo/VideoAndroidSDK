@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
@@ -42,6 +41,78 @@ class HSheetContentTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
+    fun testMoreActionNotToggled() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.width(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun testMoreActionToggled() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.width(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = true,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
     fun testMoreActionNotificationCountIsDisplayed() {
         composeTestRule.setContent {
             HSheetContent(
@@ -55,6 +126,7 @@ class HSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 isLargeScreen = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
@@ -68,7 +140,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText("5").assertIsDisplayed()
@@ -78,7 +150,7 @@ class HSheetContentTest {
     fun zeroNotificationCount_moreActionNotificationCountDoesNotExists() {
         composeTestRule.setContent {
             HSheetContent(
-                modifier = Modifier.height(150.dp),
+                modifier = Modifier.width(150.dp),
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 0),
@@ -88,6 +160,7 @@ class HSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 isLargeScreen = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
@@ -101,7 +174,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { },
+                onMoreToggle = { },
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -116,6 +189,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -128,7 +202,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -143,6 +217,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -155,7 +230,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertDoesNotExist()
@@ -170,6 +245,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { isHangUpClicked = true },
@@ -182,7 +258,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(hangUpDescription).assertHasClickAction()
@@ -199,6 +275,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(MicAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -211,7 +288,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(micDescription).assertHasClickAction()
@@ -228,6 +305,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(CameraAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -240,7 +318,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(cameraDescription).assertHasClickAction()
@@ -257,6 +335,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -269,7 +348,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(screenShareDescription).assertHasClickAction()
@@ -286,6 +365,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -298,7 +378,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(flipDescription).assertHasClickAction()
@@ -315,6 +395,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(AudioAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -327,7 +408,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(audioDescription).assertHasClickAction()
@@ -344,6 +425,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(ChatAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -356,7 +438,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(chatDescription).assertHasClickAction()
@@ -373,6 +455,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(FileShareAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -385,7 +468,7 @@ class HSheetContentTest {
                 onFileShareClick = { isFileShareClicked = true },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(fileShareDescription).assertHasClickAction()
@@ -402,6 +485,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -414,7 +498,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { isWhiteboardClicked = true },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(whiteboardDescription).assertHasClickAction()
@@ -431,6 +515,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -443,7 +528,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { isVirtualClicked = true },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(virtualDescription).assertHasClickAction()
@@ -461,6 +546,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { isAnswerClicked = true },
                 onHangUpClick = { },
@@ -473,7 +559,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertHasClickAction()
@@ -482,10 +568,10 @@ class HSheetContentTest {
     }
 
     @Test
-    fun testOnMoreActionClick() {
+    fun testonMoreToggle() {
         var isMoreClicked = false
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             HSheetContent(
                 modifier = Modifier.width(100.dp),
@@ -498,6 +584,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -510,7 +597,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { isMoreClicked = true }
+                onMoreToggle = { isMoreClicked = true }
             )
         }
         composeTestRule.waitForIdle()
@@ -522,7 +609,7 @@ class HSheetContentTest {
     @Test
     fun onlySomeActionsCanBeDisplayed_moreActionIsDisplayed() {
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             HSheetContent(
                 modifier = Modifier.width(150.dp),
@@ -536,6 +623,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -548,7 +636,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
@@ -557,7 +645,7 @@ class HSheetContentTest {
     @Test
     fun allActionsCanBeDisplayed_moreActionDoesNotExists() {
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             HSheetContent(
                 modifier = Modifier.width(150.dp),
@@ -569,6 +657,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -581,7 +670,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
@@ -592,7 +681,7 @@ class HSheetContentTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             HSheetContent(
                 modifier = Modifier.width(200.dp),
@@ -606,6 +695,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -618,7 +708,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -627,7 +717,7 @@ class HSheetContentTest {
 
     @Test
     fun testSheetContentActionsPlacing() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
@@ -643,6 +733,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -655,7 +746,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         val childBounds1 = composeTestRule.onNodeWithContentDescription(flip).getBoundsInRoot()
@@ -681,6 +772,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -693,7 +785,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -702,7 +794,7 @@ class HSheetContentTest {
 
     @Test
     fun testMaxActionsLessThanActualActions() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
@@ -722,6 +814,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = false,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -734,7 +827,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -748,7 +841,7 @@ class HSheetContentTest {
 
     @Test
     fun testMaxActionsEqualToActualActions() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
@@ -767,6 +860,7 @@ class HSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 isLargeScreen = false,
                 onActionsPlaced = { itemsCount = it },
                 onAnswerClick = { },
@@ -780,7 +874,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -812,6 +906,7 @@ class HSheetContentTest {
                 ),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
                 onAnswerClick = {  },
                 onHangUpClick = { },
@@ -824,7 +919,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -844,6 +939,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -856,7 +952,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -872,6 +968,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(),
                 showAnswerAction = true,
                 isLargeScreen = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -884,7 +981,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -899,6 +996,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -911,7 +1009,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -926,6 +1024,7 @@ class HSheetContentTest {
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
                 isLargeScreen = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
                 onAnswerClick = { },
                 onHangUpClick = { },
@@ -938,7 +1037,7 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()

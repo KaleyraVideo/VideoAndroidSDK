@@ -67,7 +67,6 @@
     <string name="kaleyra_user_data_consent_agreement_notification_message">You need to accept terms and conditions to proceed</string>
 
     <!-- RECORDING UTTERANCE -->
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">This call may be recorded</string>
     <string name="kaleyra_utterance_recording_call_will_be_recorded">This call will be recorded</string>
     <string name="kaleyra_utterance_recording_failed">Recording failed. Hang up and retry</string>
     <string name="kaleyra_utterance_recording_started">Recording starting now</string>

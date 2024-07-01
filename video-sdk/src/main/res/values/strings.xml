@@ -34,7 +34,8 @@
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_hang_up">Hang up</string>
-    <string name="kaleyra_call_sheet_more_actions">Show more actions</string>
+    <string name="kaleyra_call_sheet_description_more_actions">Show more actions</string>
+    <string name="kaleyra_call_sheet_description_hide_actions">Hide actions</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
     <string name="kaleyra_call_sheet_description_disable_microphone">Disable microphone</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Enable camera</string>
@@ -220,6 +221,10 @@
     <string name="kaleyra_whiteboard_error_title">Error</string>
     <string name="kaleyra_whiteboard_error_subtitle">Something went wrong</string>
 
+    <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s has requested to show the whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">A request to show the whiteboard has been received</string>
+    <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s has requested to close the whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_user_message">A request to close the whiteboard has been received.</string>
 
     <!-- TEMPLATES -->
     <string name="kaleyra_bluetooth_info">%1$s%2$s%3$s</string>
@@ -297,7 +302,6 @@
     <string name="kaleyra_manual_recording_disclaimer">The call may be recorded</string>
 
     <string name="kaleyra_utterance_recording_call_will_be_recorded">This call will be recorded</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">This call may be recorded</string>
     <string name="kaleyra_utterance_recording_started">Recording starting now</string>
     <string name="kaleyra_utterance_recording_stopped">Recording stopped</string>
     <string name="kaleyra_utterance_recording_failed">Recording failed. Hang up and retry</string>

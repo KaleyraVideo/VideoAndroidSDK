@@ -36,6 +36,75 @@ class VSheetContentTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
+    fun testMoreActionNotToggled() {
+        composeTestRule.setContent {
+            VSheetContent(
+                modifier = Modifier.height(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun testMoreActionToggled() {
+        composeTestRule.setContent {
+            VSheetContent(
+                modifier = Modifier.height(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction(),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = true,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
     fun testMoreActionNotificationCountIsDisplayed() {
         composeTestRule.setContent {
             VSheetContent(
@@ -49,11 +118,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -61,7 +131,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText("5").assertIsDisplayed()
@@ -81,11 +151,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -93,7 +164,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -107,11 +178,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -119,7 +191,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertIsDisplayed()
@@ -133,11 +205,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -145,7 +218,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertDoesNotExist()
@@ -159,11 +232,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { isHangUpClicked = true },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -171,7 +245,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(hangUpDescription).assertHasClickAction()
@@ -187,11 +261,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { isMicClicked = it },
-                onCameraToggled = { },
+                onMicToggle = { isMicClicked = it },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -199,7 +274,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(micDescription).assertHasClickAction()
@@ -215,11 +290,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { isCameraClicked = it },
+                onMicToggle = { },
+                onCameraToggle = { isCameraClicked = it },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -227,7 +303,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(cameraDescription).assertHasClickAction()
@@ -243,11 +319,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { isScreenShareClicked = true },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -255,7 +332,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(screenShareDescription).assertHasClickAction()
@@ -271,11 +348,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { isFlipCameraClicked = true },
                 onAudioClick = { },
@@ -283,7 +361,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(flipDescription).assertHasClickAction()
@@ -299,11 +377,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { isAudioClicked = true },
@@ -311,7 +390,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(audioDescription).assertHasClickAction()
@@ -327,11 +406,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -339,7 +419,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(chatDescription).assertHasClickAction()
@@ -355,11 +435,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -367,7 +448,7 @@ class VSheetContentTest {
                 onFileShareClick = { isFileShareClicked = true },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(fileShareDescription).assertHasClickAction()
@@ -383,11 +464,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -395,7 +477,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { isWhiteboardClicked = true },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(whiteboardDescription).assertHasClickAction()
@@ -411,11 +493,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -423,7 +506,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { isVirtualClicked = true },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(virtualDescription).assertHasClickAction()
@@ -440,11 +523,12 @@ class VSheetContentTest {
             VSheetContent(
                 callActions = ImmutableList(),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { isAnswerClicked = true },
+                onAnswerClick = { isAnswerClicked = true },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -452,7 +536,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertHasClickAction()
@@ -461,10 +545,10 @@ class VSheetContentTest {
     }
 
     @Test
-    fun testOnMoreActionClick() {
+    fun testonMoreToggle() {
         var isMoreClicked = false
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             VSheetContent(
                 modifier = Modifier.height(100.dp),
@@ -476,11 +560,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -488,7 +573,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { isMoreClicked = true }
+                onMoreToggle = { isMoreClicked = true }
             )
         }
         composeTestRule.waitForIdle()
@@ -500,7 +585,7 @@ class VSheetContentTest {
     @Test
     fun onlySomeActionsCanBeDisplayed_moreActionIsDisplayed() {
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             VSheetContent(
                 modifier = Modifier.height(150.dp),
@@ -513,11 +598,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -525,7 +611,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
@@ -534,7 +620,7 @@ class VSheetContentTest {
     @Test
     fun allActionsCanBeDisplayed_moreActionDoesNotExists() {
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             VSheetContent(
                 modifier = Modifier.height(150.dp),
@@ -545,11 +631,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -557,7 +644,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
@@ -568,7 +655,7 @@ class VSheetContentTest {
         val answerDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         val moreDescription =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.setContent {
             VSheetContent(
                 modifier = Modifier.height(200.dp),
@@ -581,11 +668,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -593,7 +681,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertIsDisplayed()
@@ -602,7 +690,7 @@ class VSheetContentTest {
 
     @Test
     fun testSheetContentActionsPlacing() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         composeTestRule.setContent {
@@ -617,11 +705,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -629,7 +718,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         val childBounds1 = composeTestRule.onNodeWithContentDescription(flip).getBoundsInRoot()
@@ -654,11 +743,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -666,7 +756,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -675,7 +765,7 @@ class VSheetContentTest {
 
     @Test
     fun testMaxActionsLessThanActualActions() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
@@ -694,11 +784,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -706,7 +797,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -720,7 +811,7 @@ class VSheetContentTest {
 
     @Test
     fun testMaxActionsEqualToActualActions() {
-        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_more_actions)
+        val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
@@ -739,11 +830,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = false,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
-                onAnswerActionClick = { },
+                onAnswerClick = { },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -751,7 +843,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -782,11 +874,12 @@ class VSheetContentTest {
                     )
                 ),
                 showAnswerAction = true,
+                isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
-                onAnswerActionClick = {  },
+                onAnswerClick = {  },
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -794,7 +887,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundClick = { },
-                onMoreActionClick = { }
+                onMoreToggle = { }
             )
         }
         composeTestRule.waitForIdle()

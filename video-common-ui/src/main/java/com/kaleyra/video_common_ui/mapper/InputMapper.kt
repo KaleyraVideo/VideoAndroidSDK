@@ -104,6 +104,24 @@ object InputMapper {
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
 
+    /**
+     * Utility function to detect whenever an internal video input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever an internal video input is currently available
+     */
+    fun Call.hasInternalCameraInput(): Flow<Boolean> =
+        this.inputs.availableInputs
+            .map { inputs -> inputs.any { it is Input.Video.Camera.Internal } }
+
+    /**
+     * Utility function to detect whenever an audio input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever an audio input is currently available
+     */
+    fun Call.hasAudioInput(): Flow<Boolean> =
+        this.inputs.availableInputs
+            .map { inputs -> inputs.any { it is Input.Audio } }
+
     fun Call.toAudioInput(): Flow<Input.Audio> =
         this.inputs.availableInputs
             .mapNotNull { it.filterIsInstance<Input.Audio>().firstOrNull() }

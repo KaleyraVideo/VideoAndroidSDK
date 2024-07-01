@@ -24,7 +24,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.State
-import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
@@ -35,50 +34,30 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
-import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
-import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
-import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
-import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.CallUiStateMapper.toPipAspectRatio
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermission
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
-import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
-import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
-import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.WatermarkMapper.toWatermarkInfo
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.arrangement.StreamsHandler
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -90,6 +69,9 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     override val userMessage: Flow<UserMessage>
         get() = CallUserMessagesProvider.userMessage
 
+    private val _whiteboardRequest: Channel<WhiteboardRequest> = Channel(Channel.CONFLATED)
+    val whiteboardRequest: Flow<WhiteboardRequest> = _whiteboardRequest.receiveAsFlow()
+
     val theme = company
         .flatMapLatest { it.combinedTheme }
         .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
@@ -100,7 +82,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //    private val callState = call
 //        .toCallStateUi()
 //        .shareInEagerly(viewModelScope)
-//
+
 //    private val streams: Flow<List<StreamUi>> =
 //        combine(call.toInCallParticipants(), call.toStreamsUi(), call.flatMapLatest { it.state }) { participants, streams, callState -> Triple(participants, streams, callState) }
 //            .debounce { (participants: List<CallParticipant>, streams: List<StreamUi>, callState: Call.State) ->
@@ -109,48 +91,47 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            }
 //            .map { (_: List<CallParticipant>, streams: List<StreamUi>, _: Call.State) -> streams }
 //            .shareInEagerly(viewModelScope)
-//
-//    private val maxNumberOfFeaturedStreams = MutableStateFlow(DEFAULT_FEATURED_STREAMS_COUNT)
-//
+
+    private val maxNumberOfFeaturedStreams = MutableStateFlow(DEFAULT_FEATURED_STREAMS_COUNT)
+
 //    private val streamsHandler = StreamsHandler(
 //        streams = streams.map { streams -> streams.filterNot { it.id == ScreenShareViewModel.SCREEN_SHARE_STREAM_ID } },
 //        nOfMaxFeatured = maxNumberOfFeaturedStreams,
 //        coroutineScope = viewModelScope
 //    )
-//
-//    private var fullscreenStreamId = MutableStateFlow<String?>(null)
-//
-//    private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
-//
-//    private var onPipAspectRatio: MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
-//
-//    private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
-//
-//    private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
-//
-//    private var onUsbCameraConnected: MutableSharedFlow<(Boolean) -> Unit> = MutableSharedFlow(replay = 1)
+
+    private var fullscreenStreamId = MutableStateFlow<String?>(null)
+
+    private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
+
+    private var onPipAspectRatio: MutableSharedFlow<(Rational) -> Unit> = MutableSharedFlow(replay = 1)
+
+    private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
+
+    private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
+
+    private var onUsbCameraConnected: MutableSharedFlow<(Boolean) -> Unit> = MutableSharedFlow(replay = 1)
 
     init {
         viewModelScope.launch {
             if (!KaleyraVideo.isConfigured) requestConfiguration()
             if (KaleyraVideo.conversation.state.value is State.Disconnected) requestConnect()
-
-            CallUserMessagesProvider.start(call.first())
         }
 
-//        viewModelScope.launch {
-//            val result = withTimeoutOrNull(NULL_CALL_TIMEOUT) {
-//                call.firstOrNull()
-//            }
-//            result ?: onCallEnded.first().invoke(false, false, false)
-//        }
+        viewModelScope.launch {
+            val result = withTimeoutOrNull(NULL_CALL_TIMEOUT) {
+                call.firstOrNull()
+            }
+            result ?: onCallEnded.first().invoke(false, false, false)
+        }
 
-//        var hasCallBeenConnected = false
+        var hasCallBeenConnected = false
 //        viewModelScope.launch {
 //            val connected = callState.firstOrNull { it is CallStateUi.Connected }
 //            hasCallBeenConnected = connected != null
 //        }
 
+//        CallUserMessagesProvider.start(call)
 
 //        streamsHandler.streamsArrangement
 //            .combine(callState) { (featuredStreams, thumbnailsStreams), state ->
@@ -169,7 +150,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //                }
 //            }
 //            .launchIn(viewModelScope)
-
+//
 //        combine(streams, fullscreenStreamId) { streams, fullscreenStreamId ->
 //            val stream = streams.find { it.id == fullscreenStreamId }
 //            _uiState.update { it.copy(fullscreenStream = stream) }
@@ -186,7 +167,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            .shareInEagerly(viewModelScope)
 //            .onEach { _uiState.update { it.copy(areCallActionsReady = true) } }
 //            .launchIn(viewModelScope)
-
+//
 //        call
 //            .isAudioOnly()
 //            .onEach { isAudioOnly -> _uiState.update { it.copy(isAudioOnly = isAudioOnly) } }
@@ -212,7 +193,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //        callState
 //            .onEach { callState -> _uiState.update { it.copy(callState = callState) } }
 //            .launchIn(viewModelScope)
-
+//
 //        combine(
 //            callState,
 //            call.isAudioVideo(),
@@ -222,7 +203,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            _uiState.update { it.copy(shouldAutoHideSheet = enable) }
 //            enable
 //        }.takeWhile { !it }.launchIn(viewModelScope)
-
+//
 //        call
 //            .isGroupCall(company.flatMapLatest { it.id })
 //            .onEach { isGroupCall -> _uiState.update { it.copy(isGroupCall = isGroupCall) } }
@@ -250,7 +231,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            .toRecordingUi()
 //            .onEach { rec -> _uiState.update { it.copy(recording = rec) } }
 //            .launchIn(viewModelScope)
-
+//
 //        combine(
 //            call.flatMapLatest { it.displayModeEvent },
 //            onDisplayMode
@@ -262,7 +243,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            .combine(callState) { _, callState -> callState}
 //            .takeWhile { it !is CallStateUi.Disconnected.Ended }
 //            .launchIn(viewModelScope)
-
+//
 //        callState
 //            .dropWhile { it !is CallStateUi.Connected }
 //            .onEach { callState ->
@@ -295,6 +276,11 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //        ) { isUsbConnecting, onUsbCameraConnected ->
 //            onUsbCameraConnected.invoke(isUsbConnecting)
 //        }.launchIn(viewModelScope)
+
+        call
+            .getWhiteboardRequestEvents()
+            .onEach { event -> _whiteboardRequest.send(event) }
+            .launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -325,11 +311,11 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     }
 
     fun updateStreamsArrangement(isMediumSizeDevice: Boolean) {
-//        val count = when {
-//            !isMediumSizeDevice -> 2
-//            else                -> 4
-//        }
-//        maxNumberOfFeaturedStreams.value = count
+        val count = when {
+            !isMediumSizeDevice -> 2
+            else                -> 4
+        }
+        maxNumberOfFeaturedStreams.value = count
     }
 
     fun swapThumbnail(streamId: String) {
@@ -337,7 +323,7 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     }
 
     fun fullscreenStream(streamId: String?) {
-//        fullscreenStreamId.value = streamId
+        fullscreenStreamId.value = streamId
     }
 
     fun sendUserFeedback(rating: Float, comment: String) {
@@ -363,33 +349,33 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
     }
 
     fun setOnCallEnded(block: suspend (hasFeedback: Boolean, hasErrorOccurred: Boolean, hasBeenKicked: Boolean) -> Unit) {
-//        viewModelScope.launch {
-//            onCallEnded.emit(block)
-//        }
+        viewModelScope.launch {
+            onCallEnded.emit(block)
+        }
     }
 
     fun setOnPipAspectRatio(block: (Rational) -> Unit) {
-//        viewModelScope.launch {
-//            onPipAspectRatio.emit(block)
-//        }
+        viewModelScope.launch {
+            onPipAspectRatio.emit(block)
+        }
     }
 
     fun setOnDisplayMode(block: (CallUI.DisplayMode) -> Unit) {
-//        viewModelScope.launch {
-//            onDisplayMode.emit(block)
-//        }
+        viewModelScope.launch {
+            onDisplayMode.emit(block)
+        }
     }
 
     fun setOnAudioOrVideoChanged(block: (isAudioEnabled: Boolean, isVideoEnabled: Boolean) -> Unit) {
-//        viewModelScope.launch {
-//            onAudioOrVideoChanged.emit(block)
-//        }
+        viewModelScope.launch {
+            onAudioOrVideoChanged.emit(block)
+        }
     }
 
     fun setOnUsbCameraConnected(block: (Boolean) -> Unit) {
-//        viewModelScope.launch {
-//            onUsbCameraConnected.emit(block)
-//        }
+        viewModelScope.launch {
+            onUsbCameraConnected.emit(block)
+        }
     }
 
     companion object {

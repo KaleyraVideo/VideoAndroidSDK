@@ -18,17 +18,21 @@ package com.kaleyra.video_sdk.call.whiteboard.model
 
 import android.view.View
 import androidx.compose.runtime.Immutable
+import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_sdk.common.uistate.UiState
 
 /**
  * Whiteboard Ui State representation of the Whiteboard State on the Ui
  * @property whiteboardView View? optional whiteboard rendering view
+ * @property showingRequest Whiteboard.Event.Request? optional show or hide request
+ * @property isLoading Boolean flag indicating if the whiteboard is loading, true if loading, false otherwise
  * @property isLoading Boolean flag indicating if the whiteboard is loading, true if loading, false otherwise
  * @property isOffline Boolean flag indicating if the whiteboard id offline, true if offline, false otherwise
  * @property isFileSharingSupported Boolean flag indicating if the file sharing is supported
  * @property upload WhiteboardUploadUi? optional whiteboard upload ui
  * @constructor
  */
+
 @Immutable
 internal data class WhiteboardUiState(
     val whiteboardView: View? = null,

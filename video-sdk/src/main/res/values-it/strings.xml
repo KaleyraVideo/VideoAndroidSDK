@@ -34,7 +34,7 @@
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_hang_up">Aggancia</string>
-    <string name="kaleyra_call_sheet_more_actions">Mostra più azioni</string>
+    <string name="kaleyra_call_sheet_description_more_actions">Mostra più azioni</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
     <string name="kaleyra_call_sheet_description_disable_microphone">Disable microphone</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Abilita camera</string>
@@ -295,7 +295,6 @@
     <string name="kaleyra_manual_recording_disclaimer">Questa chiamata potrebbe essere registrata</string>
 
     <string name="kaleyra_utterance_recording_call_will_be_recorded">Questa chiamata verrà registrata</string>
-    <string name="kaleyra_utterance_recording_call_may_be_recorded">Questa chiamata potrebbe essere registrata</string>
     <string name="kaleyra_utterance_recording_started">Registrazione avviata</string>
     <string name="kaleyra_utterance_recording_stopped">Registrazione interrotta</string>
     <string name="kaleyra_utterance_recording_failed">Registrazione fallita. Chiudi la chiamata e riprova</string>
@@ -319,7 +318,14 @@
     <string name="kaleyra_already_in_system_call_audio_routing_error">Non è possibile cambiare il dispositivo di uscita audio mentre una chiamata di sistema è in corso.</string>
 
     <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
+
     <string name="kaleyra_show_participants_descr">Mostra partecipanti</string>
     <string name="kaleyra_call_status_ended_line_busy">Linea occupata</string>
+    <string name="kaleyra_call_sheet_description_hide_actions">Nascondi azioni</string>
+
+    <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s ha richiesto di aprire la whiteboard</string>
+    <string name="kaleyra_whiteboard_show_request_user_message">È stato richiesto di aprire la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s ha richiesto di chiudere la whiteboard</string>
+    <string name="kaleyra_whiteboard_hide_request_user_message">È stato richeisto di chiudere la whiteboard</string>
 
 </resources>
