@@ -26,12 +26,12 @@ import androidx.compose.ui.text.TextStyle
 internal object TextStyleExtensions {
 
     @Composable
-    fun TextStyle.shadow() =
+    fun TextStyle.shadow(color: Color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f)) =
         copy(
             shadow = Shadow(
-                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f),
-                offset = Offset(x = 2f, y = 2f),
-                blurRadius = 2f
+                color = color,
+                offset = Offset(x = 1f, y = 1f),
+                blurRadius = 1f
             )
         )
 }

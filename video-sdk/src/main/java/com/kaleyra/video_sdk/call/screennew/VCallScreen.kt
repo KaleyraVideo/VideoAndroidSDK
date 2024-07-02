@@ -10,18 +10,13 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -57,7 +52,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.callinfo.view.CallInfo
+import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
@@ -316,8 +311,6 @@ internal fun VCallScreen(
         }
 
         Box {
-            CallInfo(Modifier.padding(start = 8.dp, top = top + 16.dp, end = 8.dp))
-
             StreamComponent(
                 windowSizeClass = windowSizeClass,
                 highlightedStream = selectedStream,
@@ -337,6 +330,12 @@ internal fun VCallScreen(
                         bottom = 116.dp
                     )
                     .padding(top = 14.dp)
+            )
+
+            CallInfoComponent(
+                modifier = Modifier
+                    .padding(top = top)
+                    .padding(horizontal = 8.dp, vertical = 48.dp)
             )
         }
     }

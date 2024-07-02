@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -50,20 +49,20 @@ const val CallInfoTitleTestTag = "CallInfoTitleTestTag"
 const val CallInfoSubtitleTestTag = "CallInfoSubtitleTestTag"
 
 @Composable
-fun CallInfo(
+fun CallInfoComponent(
     modifier: Modifier = Modifier,
     viewModel: CallInfoViewModel = viewModel(factory = CallInfoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    CallInfo(
+    CallInfoComponent(
         modifier = modifier,
         callInfoUiState = uiState
     )
 }
 
 @Composable
-fun CallInfo(
+fun CallInfoComponent(
     modifier: Modifier = Modifier,
     callInfoUiState: CallInfoUiState
 ) {
@@ -76,7 +75,9 @@ fun CallInfo(
     ) {
         val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
         val callee = callInfoUiState.displayNames.joinToString(", ")
-        val textStyle = LocalTextStyle.current.shadow()
+        val textStyle = LocalTextStyle.current.shadow(
+            color = MaterialTheme.colorScheme.onSurface
+        )
         var displayTitle: String? = null
         var displaySubtitle: String? = null
 
@@ -125,7 +126,7 @@ fun CallInfo(
                 modifier = Modifier.testTag(CallInfoTitleTestTag),
                 text = it,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 32.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 ellipsize = Ellipsize.Marquee,
                 shadow = textStyle.shadow
@@ -138,7 +139,7 @@ fun CallInfo(
                 text = it,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Thin,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 style = textStyle
             )
         }
@@ -150,7 +151,7 @@ fun CallInfo(
 internal fun CallInfoConnectingWithDisplayNames() {
     KaleyraM3Theme {
         Surface {
-            CallInfo(
+            CallInfoComponent(
                 modifier = Modifier,
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
@@ -166,7 +167,7 @@ internal fun CallInfoConnectingWithDisplayNames() {
 internal fun CallInfoConnectingWithNoDisplayNames() {
     KaleyraM3Theme {
         Surface {
-            CallInfo(
+            CallInfoComponent(
                 modifier = Modifier,
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,

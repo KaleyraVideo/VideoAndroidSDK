@@ -14,7 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
-import com.kaleyra.video_sdk.call.callinfo.view.CallInfo
+import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoSubtitleTestTag
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoTitleTestTag
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class CallInfoTest {
+class CallInfoComponentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -36,7 +36,7 @@ class CallInfoTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            CallInfo(callInfoUiState = callInfoUiState)
+            CallInfoComponent(callInfoUiState = callInfoUiState)
         }
     }
 
