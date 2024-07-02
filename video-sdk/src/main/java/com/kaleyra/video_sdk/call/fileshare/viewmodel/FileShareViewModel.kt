@@ -33,13 +33,9 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-internal class FileShareViewModel(configure: suspend () -> Configuration, filePickProvider: FilePickProvider) : BaseViewModel<FileShareUiState>(configure),
-    UserMessageViewModel {
+internal class FileShareViewModel(configure: suspend () -> Configuration, filePickProvider: FilePickProvider) : BaseViewModel<FileShareUiState>(configure) {
 
     override fun initialState() = FileShareUiState()
-
-    override val userMessage: Flow<UserMessage>
-        get() = CallUserMessagesProvider.userMessage
 
     private val sharedFolder: SharedFolder?
         get() = call.getValue()?.sharedFolder

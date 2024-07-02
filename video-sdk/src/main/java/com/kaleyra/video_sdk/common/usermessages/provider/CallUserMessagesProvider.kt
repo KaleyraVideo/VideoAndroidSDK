@@ -106,7 +106,12 @@ object CallUserMessagesProvider {
     }
 
     private fun Channel<UserMessage>.sendRecordingEvents(call: CallUI, scope: CoroutineScope) {
-        call.toRecordingMessage().dropWhile { it is RecordingMessage.Stopped }.onEach { send(it) }.launchIn(scope)
+        call.toRecordingMessage()
+            .dropWhile {
+                it is RecordingMessage.Stopped
+            }.onEach {
+                send(it)
+            }.launchIn(scope)
     }
 
     private fun Channel<UserMessage>.sendMutedEvents(call: CallUI, scope: CoroutineScope) {

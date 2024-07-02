@@ -23,7 +23,7 @@ import java.util.concurrent.Executors
 private val StackedSnackBarAutoDismissDefaultDuration = SnackbarDuration.Short
 
 @Stable
-class StackedSnackbarHostState(val accessibilityManager: AccessibilityManager? = null, val scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())) : UiState {
+class StackedSnackbarHostMessagesHandler(val accessibilityManager: AccessibilityManager? = null, val scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())) : UiState {
 
     private var _alertMessages: MutableList<AlertMessage>? = null
     private val _userMessages = mutableListOf<UserMessage>()

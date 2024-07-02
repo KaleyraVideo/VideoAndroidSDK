@@ -300,10 +300,12 @@ internal fun VCallScreen(
                         onDismiss = { modalBottomSheet = null }
                     )
                     CallScreenModalBottomSheet.FileShare -> FileShareComponent(
-                        onDismiss = { modalBottomSheet = null }
+                        onDismiss = { modalBottomSheet = null },
+                        onUserMessageActionClick = {},
                     )
                     CallScreenModalBottomSheet.Whiteboard -> WhiteboardComponent(
-                        onBackPressed = { modalBottomSheet = null }
+                        onBackPressed = { modalBottomSheet = null },
+                        onUserMessageActionClick = {}
                     )
                     CallScreenModalBottomSheet.VirtualBackground -> VirtualBackgroundComponent(
                         onDismiss = { modalBottomSheet = null }

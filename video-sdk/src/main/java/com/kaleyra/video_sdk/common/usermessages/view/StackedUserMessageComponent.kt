@@ -9,73 +9,44 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.common.snackbarm3.view.AudioOutputGenericFailureSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.AudioOutputInSystemCallFailureSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.CameraRestrictionSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.MutedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.PinScreenshareSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingEndedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingErrorSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingStartedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.StackedSnackbarHost
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbConnectedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbDisconnectedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbNotSupportedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.rememberStackedSnackbarHostState
+import com.kaleyra.video_sdk.common.snackbarm3.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
-import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider.userMessage
+import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlin.concurrent.timer
 import kotlin.random.Random
 
 @Composable
-internal fun StackedUserMessageSnackbarHandler(
+internal fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
-    userMessage: Flow<UserMessage> = CallUserMessagesProvider.userMessage,
-    alertMessages: Flow<List<AlertMessage>> = CallUserMessagesProvider.alertMessages,
+    viewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
     onActionCLick: (UserMessage.Action) -> Unit
 ) {
-    val snackbarHostState = rememberStackedSnackbarHostState(LocalAccessibilityManager.current!!)
-    val userMessages by userMessage.collectAsStateWithLifecycle(initialValue = null)
-    val alertMessages by alertMessages.collectAsStateWithLifecycle(initialValue = null)
+    val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(ImmutableList())
+    val alertMessages by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(snackbarHostState) {
-        snapshotFlow { userMessages }
-            .filterNotNull()
-            .buffer()
-            .collect { userMessage -> snackbarHostState.addUserMessage(userMessage, true) }
-    }
-
-    LaunchedEffect(snackbarHostState) {
-        snapshotFlow { alertMessages }
-            .filterNotNull()
-            .buffer()
-            .collect { alertMessages -> snackbarHostState.addAlertMessages(alertMessages) }
-    }
-
-    StackedSnackbarHost(
+    StackedUserMessageComponent(
         modifier = modifier,
-        hostState = snackbarHostState,
-        onActionClick = onActionCLick
+        userMessages = userMessage,
+        alertMessages = alertMessages.alertMessages,
+        onActionClick = onActionCLick,
+        onDismissClick = { viewModel.dismiss(it) }
     )
 }
 
@@ -129,9 +100,7 @@ fun StackedUserMessageSnackbarHandlerPreview() = KaleyraM3Theme {
         .fillMaxWidth()
         .fillMaxHeight()
         .background(MaterialTheme.colorScheme.surface)) {
-        StackedUserMessageSnackbarHandler(
-            userMessage = postMessage,
-            alertMessages = postAlerts,
+        StackedUserMessageComponent(
             onActionCLick = {})
     }
 }

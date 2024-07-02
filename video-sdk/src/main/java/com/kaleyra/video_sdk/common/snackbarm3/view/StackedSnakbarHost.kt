@@ -1,26 +1,23 @@
 package com.kaleyra.video_sdk.common.snackbarm3.view
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.snackbarm3.model.StackedSnackbarHostState
+import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 
 @Composable
-fun StackedSnackbarHost(
-    hostState: StackedSnackbarHostState,
+fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
-    onActionClick: (UserMessage.Action) -> Unit
+    userMessages: ImmutableList<UserMessage> = ImmutableList(),
+    alertMessages: ImmutableList<AlertMessage> = ImmutableList(),
+    onActionClick: (UserMessage.Action) -> Unit,
+    onDismissClick: (UserMessage) -> Unit,
 ) {
-    val userMessages by hostState.userMessages.collectAsStateWithLifecycle(listOf())
-    val alertMessage by hostState.alertMessages.collectAsStateWithLifecycle(listOf())
-
     StackedSnackbar(
         modifier = modifier,
-        snackbarData = ImmutableList(alertMessage.plus(userMessages.toList())),
-        onDismissClick = { hostState.removeUserMessage(it) },
+        snackbarData = ImmutableList(alertMessages.value.plus(userMessages.value)),
+        onDismissClick = onDismissClick,
         onActionClick = onActionClick
     )
 }

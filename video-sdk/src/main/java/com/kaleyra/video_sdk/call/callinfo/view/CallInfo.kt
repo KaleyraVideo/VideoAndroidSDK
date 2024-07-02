@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -70,13 +71,14 @@ fun CallInfo(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier),
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
         val callee = callInfoUiState.displayNames.joinToString(", ")
         val textStyle = LocalTextStyle.current.shadow()
-        var displayTitle = ""
-        var displaySubtitle = ""
+        var displayTitle: String? = null
+        var displaySubtitle: String? = null
 
         when (callInfoUiState.callStateUi) {
             CallStateUi.Connecting,
@@ -118,24 +120,28 @@ fun CallInfo(
             else -> Unit
         }
 
-        EllipsizeText(
-            modifier = Modifier.testTag(CallInfoTitleTestTag),
-            text = displayTitle,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            ellipsize = Ellipsize.Marquee,
-            shadow = textStyle.shadow
-        )
+        displayTitle?.let {
+            EllipsizeText(
+                modifier = Modifier.testTag(CallInfoTitleTestTag),
+                text = it,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                ellipsize = Ellipsize.Marquee,
+                shadow = textStyle.shadow
+            )
+        }
 
-        Text(
-            modifier = Modifier.testTag(CallInfoSubtitleTestTag),
-            text = displaySubtitle,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Thin,
-            fontSize = 14.sp,
-            style = textStyle
-        )
+        displaySubtitle?.let {
+            Text(
+                modifier = Modifier.testTag(CallInfoSubtitleTestTag),
+                text = it,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Thin,
+                fontSize = 18.sp,
+                style = textStyle
+            )
+        }
     }
 }
 

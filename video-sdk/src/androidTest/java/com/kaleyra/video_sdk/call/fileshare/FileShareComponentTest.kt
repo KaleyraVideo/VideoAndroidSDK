@@ -43,6 +43,7 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareItemTag
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider.userMessage
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -65,8 +66,6 @@ class FileShareComponentTest {
 
     private var showFileSizeLimitAlertDialog by mutableStateOf(false)
 
-    private var userMessage by mutableStateOf<UserMessage?>(null)
-
     private var openFailure: Boolean = false
 
     private var alertDialogDismissed: Boolean = false
@@ -86,7 +85,7 @@ class FileShareComponentTest {
                 showCancelledFileSnackBar = showCancelledFileSnackBar,
                 onFileOpenFailure = { openFailure = true },
                 onAlertDialogDismiss = { alertDialogDismissed = true },
-                userMessage = userMessage,
+                onUserMessageActionClick = {},
                 onUpload = { uploadUri = it },
                 onDownload = { downloadId = it },
                 onShareCancel = { cancelId = it },
@@ -106,7 +105,6 @@ class FileShareComponentTest {
         uploadUri = null
         downloadId = null
         cancelId = null
-        userMessage = null
         unmockkAll()
     }
 
@@ -271,12 +269,4 @@ class FileShareComponentTest {
         composeTestRule.onNodeWithText(ok).performClick()
         assertEquals(true, alertDialogDismissed)
     }
-
-    @Test
-    fun userMessage_userMessageSnackbarIsDisplayed() {
-        userMessage = RecordingMessage.Started
-        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
-    }
-
 }

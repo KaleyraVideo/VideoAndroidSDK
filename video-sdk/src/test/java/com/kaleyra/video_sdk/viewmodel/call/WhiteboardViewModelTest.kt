@@ -26,7 +26,6 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
-import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +35,6 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -188,13 +186,5 @@ class WhiteboardViewModelTest {
         advanceTimeBy(300L)
         val newActual = viewModel.uiState.first().upload
         assertEquals(null, newActual)
-    }
-
-    @Test
-    fun testUserMessage() = runTest {
-        every { CallUserMessagesProvider.userMessage } returns flowOf(MutedMessage("admin"))
-        advanceUntilIdle()
-        val actual = viewModel.userMessage.first()
-        assert(actual is MutedMessage && actual.admin == "admin")
     }
 }
