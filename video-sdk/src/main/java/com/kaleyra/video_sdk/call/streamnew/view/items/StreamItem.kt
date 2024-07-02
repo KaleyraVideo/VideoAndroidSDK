@@ -31,6 +31,7 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.view.core.Stream
+import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal val StreamItemPadding = 8.dp
@@ -45,15 +46,14 @@ internal fun StreamItem(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.padding(StreamItemPadding)
+        modifier = modifier
     ) {
         PointerStreamWrapper(
             streamView = stream.video?.view,
             pointerList = stream.video?.pointers
-        ) { hasPointers ->
-            // TODO set up the stream view fill/fit logic
+        ) { _ ->
             Stream(
-                streamView = stream.video?.view,
+                streamView = stream.video?.view?.defaultStreamViewSettings(),
                 avatar = stream.avatar,
                 username = stream.username,
                 showStreamView = stream.video?.view != null && stream.video.isEnabled
@@ -63,13 +63,16 @@ internal fun StreamItem(
         StatusIcons(
             streamAudioUi = stream.audio,
             fullscreen = fullscreen,
-            modifier = Modifier.align(statusIconsAlignment)
+            modifier = Modifier
+                .align(statusIconsAlignment)
+                .padding(StreamItemPadding)
         )
 
         UserLabel(
             username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
             pin = pin,
             modifier = Modifier
+                .padding(StreamItemPadding)
                 .height(24.dp)
                 .align(Alignment.BottomStart)
         )

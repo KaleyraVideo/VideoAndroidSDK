@@ -44,6 +44,17 @@ internal object StreamViewSettings {
         return this
     }
 
+    internal  fun ImmutableView.defaultStreamViewSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill(.2f)): ImmutableView {
+        val view = value
+        if (view is VideoStreamView) {
+            view.zoomGesturesEnabled.value = true
+            if (view.scaleType.value != scaleType) {
+                view.scaleType.value = scaleType
+            }
+        }
+        return this
+    }
+
     internal fun ImmutableView.pipSettings(): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
