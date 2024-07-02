@@ -43,13 +43,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
-// TODO
-//  in the viewmodel write the logic:
-//  max stream pin
-//  first screen share added as pin
-//  when stream is no longer in the list clean the fullscreen stream/pinned streams
-//
-
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,

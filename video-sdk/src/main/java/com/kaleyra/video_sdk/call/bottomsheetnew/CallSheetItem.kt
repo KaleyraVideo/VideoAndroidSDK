@@ -24,9 +24,6 @@ import com.kaleyra.video_sdk.call.screennew.MicAction
 import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
-import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-
-internal val SheetCallActionModifier = Modifier.animatePlacement()
 
 @Composable
 internal fun CallSheetItem(

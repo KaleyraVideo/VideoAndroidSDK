@@ -182,8 +182,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -206,8 +206,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -230,8 +230,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -254,8 +254,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -278,8 +278,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -302,8 +302,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 
@@ -326,8 +326,8 @@ class HSheetDragContentTest {
                 onVirtualBackgroundClick = { isClicked = true }
             )
         }
-        composeTestRule.onNodeWithText(description).assertHasClickAction()
-        composeTestRule.onNodeWithText(description).performClick()
+        composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals(true, isClicked)
     }
 }
