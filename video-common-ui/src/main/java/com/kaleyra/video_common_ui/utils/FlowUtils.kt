@@ -51,7 +51,7 @@ object FlowUtils {
      * @param transform SuspendFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> transformation for the combine process
      * @return Flow<R> the resulting combined flow
      */
-    inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
+    inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> combine(
         flow: Flow<T1>,
         flow2: Flow<T2>,
         flow3: Flow<T3>,
@@ -61,7 +61,8 @@ object FlowUtils {
         flow7: Flow<T7>,
         flow8: Flow<T8>,
         flow9: Flow<T9>,
-        crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9) -> R
+        flow10: Flow<T10>,
+        crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> R
     ): Flow<R> {
         return kotlinx.coroutines.flow.combine(
             flow,
@@ -72,7 +73,8 @@ object FlowUtils {
             flow6,
             flow7,
             flow8,
-            flow9
+            flow9,
+            flow10
         ) { args: Array<*> ->
             @Suppress("UNCHECKED_CAST")
             transform(
@@ -84,7 +86,8 @@ object FlowUtils {
                 args[5] as T6,
                 args[6] as T7,
                 args[7] as T8,
-                args[8] as T9
+                args[8] as T9,
+                args[9] as T10
             )
         }
     }

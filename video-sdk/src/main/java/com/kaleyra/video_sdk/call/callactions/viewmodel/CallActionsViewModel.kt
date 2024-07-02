@@ -43,8 +43,10 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgr
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
 import com.kaleyra.video_sdk.call.screennew.MicAction
 import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
@@ -131,44 +133,44 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 isSharingScreenFlow,
                 isLocalParticipantInitializedFlow,
                 isVirtualBackgroundEnabledFlow,
-                audioDeviceFlow
-            ) { actions, isCallActive, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice ->
+                audioDeviceFlow,
+                isCallEndedFlow
+            ) { actions, isCallActive, isMyMicEnabled, isMyCameraEnabled, hasUsbCamera, isSharingScreen, isMeParticipantsInitialed, isVirtualBackgroundEnabled, audioDevice, isCallEnded ->
                 val updatedActions = actions.map { action ->
                     when (action) {
                         is MicAction -> action.copy(
                             isToggled = !isMyMicEnabled,
-                            isEnabled = isMeParticipantsInitialed
+                            isEnabled = isMeParticipantsInitialed && !isCallEnded
                         )
 
                         is CameraAction -> action.copy(
                             isToggled = !isMyCameraEnabled,
-                            isEnabled = isMeParticipantsInitialed
+                            isEnabled = isMeParticipantsInitialed && !isCallEnded
                         )
 
-                        is AudioAction -> action.copy(audioDevice = audioDevice)
-                        is FileShareAction -> action.copy(isEnabled = isCallActive)
+                        is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
+                        is FileShareAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is ScreenShareAction -> action.copy(
                             isToggled = isSharingScreen,
-                            isEnabled = isCallActive
+                            isEnabled = isCallActive && !isCallEnded
                         )
 
-                        is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled)
-                        is WhiteboardAction -> action.copy(isEnabled = isCallActive)
-                        is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled)
+                        is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
+                        is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
+                        is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
+                        is HangUpAction -> action.copy(isEnabled = !isCallEnded)
+                        is ChatAction -> action.copy(isEnabled = !isCallEnded)
                         else -> action
                     }
                 }
                 _uiState.update { it.copy(actionList = updatedActions.toImmutableList()) }
             }
-                .combine(isCallEndedFlow) { _, isCallEnded -> isCallEnded }
-                .takeWhile { !it }
-                .onCompletion { _uiState.update { it.copy(actionList = ImmutableList()) } }
                 .launchIn(this)
 
             call
                 .toCallStateUi()
                 .onEach { state -> _uiState.update { it.copy(isRinging = state == CallStateUi.Ringing) } }
-                .launchIn(viewModelScope)
+                .launchIn(this)
         }
     }
 

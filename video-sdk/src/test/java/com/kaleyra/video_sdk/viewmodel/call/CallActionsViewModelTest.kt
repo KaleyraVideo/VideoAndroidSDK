@@ -55,6 +55,7 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
 import com.kaleyra.video_sdk.call.screennew.HangUpAction
@@ -565,9 +566,21 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun callStateEnded_actionsSetToEmpty() = runTest {
+    fun callStateEnded_allActionsDisabled() = runTest {
         val callState = MutableStateFlow<Call.State>(Call.State.Connected)
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(VirtualBackgroundAction(), HangUpAction()))
+        val actions = listOf(
+            HangUpAction(),
+            FlipCameraAction(),
+            AudioAction(),
+            ChatAction(),
+            FileShareAction(),
+            WhiteboardAction(),
+            VirtualBackgroundAction(),
+            MicAction(),
+            CameraAction(),
+            ScreenShareAction()
+        )
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
@@ -576,19 +589,43 @@ class CallActionsViewModelTest {
 
         advanceUntilIdle()
         val current = viewModel.uiState.first().actionList.value
-        assertEquals(listOf(VirtualBackgroundAction(), HangUpAction()), current)
+        assertEquals(actions, current)
 
         callState.value = Call.State.Disconnected.Ended
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        assertEquals(listOf<CallActionUI>(), actual)
+        val expected = listOf(
+            HangUpAction(isEnabled = false),
+            FlipCameraAction(isEnabled = false),
+            AudioAction(isEnabled = false),
+            ChatAction(isEnabled = false),
+            FileShareAction(isEnabled = false),
+            WhiteboardAction(isEnabled = false),
+            VirtualBackgroundAction(isEnabled = false),
+            MicAction(isEnabled = false),
+            CameraAction(isEnabled = false),
+            ScreenShareAction(isEnabled = false)
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
     fun callStateDisconnecting_actionsSetToEmpty() = runTest {
         val callState = MutableStateFlow<Call.State>(Call.State.Connected)
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(VirtualBackgroundAction(), HangUpAction()))
+        val actions = listOf(
+            HangUpAction(),
+            FlipCameraAction(),
+            AudioAction(),
+            ChatAction(),
+            FileShareAction(),
+            WhiteboardAction(),
+            VirtualBackgroundAction(),
+            MicAction(),
+            CameraAction(),
+            ScreenShareAction()
+        )
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
@@ -597,13 +634,25 @@ class CallActionsViewModelTest {
 
         advanceUntilIdle()
         val current = viewModel.uiState.first().actionList.value
-        assertEquals(listOf(VirtualBackgroundAction(), HangUpAction()), current)
+        assertEquals(actions, current)
 
         callState.value = Call.State.Disconnecting
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        assertEquals(listOf<CallActionUI>(), actual)
+        val expected = listOf(
+            HangUpAction(isEnabled = false),
+            FlipCameraAction(isEnabled = false),
+            AudioAction(isEnabled = false),
+            ChatAction(isEnabled = false),
+            FileShareAction(isEnabled = false),
+            WhiteboardAction(isEnabled = false),
+            VirtualBackgroundAction(isEnabled = false),
+            MicAction(isEnabled = false),
+            CameraAction(isEnabled = false),
+            ScreenShareAction(isEnabled = false)
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
