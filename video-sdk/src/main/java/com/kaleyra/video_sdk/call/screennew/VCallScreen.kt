@@ -10,7 +10,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -34,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,6 +57,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
+import com.kaleyra.video_sdk.call.callinfo.view.CallInfo
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
@@ -73,6 +78,8 @@ internal enum class CallScreenModalBottomSheet {
     Whiteboard,
     VirtualBackground
 }
+
+internal val PanelTestTag = "PanelTestTag"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,29 +155,26 @@ internal fun VCallScreen(
             )
         },
         sheetPanelContent = {
-            // TODO test when this is displayed
             if (isLargeScreen) {
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
                     enter = fadeIn(tween()),
                     exit = fadeOut(tween())
                 ) {
-                    Card(Modifier.width(320.dp)) {
-                        SheetPanelContent(
-                            items = sheetDragActions,
-                            onItemClick = { callAction ->
-                                // TODO test all the following onClick
-                                when (callAction) {
-                                    is FlipCameraAction -> callActionsViewModel.switchCamera()
-                                    is AudioAction -> onAudioClick()
-                                    is ChatAction -> onChatClick()
-                                    is FileShareAction -> onFileShareClick()
-                                    is WhiteboardAction -> onWhiteboardClick()
-                                    is VirtualBackgroundAction -> onVirtualBackgroundClick()
-                                }
+                    SheetPanelContent(
+                        items = sheetDragActions,
+                        modifier = Modifier.testTag(PanelTestTag),
+                        onItemClick = { callAction ->
+                            when (callAction) {
+                                is FlipCameraAction -> callActionsViewModel.switchCamera()
+                                is AudioAction -> onAudioClick()
+                                is ChatAction -> onChatClick()
+                                is FileShareAction -> onFileShareClick()
+                                is WhiteboardAction -> onWhiteboardClick()
+                                is VirtualBackgroundAction -> onVirtualBackgroundClick()
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         },
@@ -182,7 +186,6 @@ internal fun VCallScreen(
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
-                    // TODO test all the following onClick
                     onHangUpClick = onHangUpClick,
                     onMicToggled = onMicClick,
                     onCameraToggled = onCameraToggle,
@@ -244,19 +247,13 @@ internal fun VCallScreen(
                                 onHangUpClick = onHangUpClick,
                                 onMicToggle = onMicClick,
                                 onCameraToggle = onCameraToggle,
-                                // TODO test this
                                 onScreenShareToggle = onScreenShareToggle,
                                 onFlipCameraClick = callActionsViewModel::switchCamera,
-                                // TODO test this
                                 onAudioClick = onAudioClick,
                                 onChatClick = onChatClick,
-                                // TODO test this
                                 onFileShareClick = onFileShareClick,
-                                // TODO test this
                                 onWhiteboardClick = onWhiteboardClick,
-                                // TODO test this
                                 onVirtualBackgroundClick = onVirtualBackgroundClick,
-                                // TODO test this
                                 onMoreToggle = { isSheetCollapsed ->
                                     if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
@@ -316,25 +313,29 @@ internal fun VCallScreen(
             }
         }
 
-        StreamComponent(
-            windowSizeClass = windowSizeClass,
-            highlightedStream = selectedStream,
-            // TODO test this
-            onStreamClick = { stream -> selectedStream = stream },
-            // TODO test this
-            onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
-            // TODO test this
-            onMoreParticipantClick = {},
-            modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding()
-                .padding(
-                    start = left,
-                    top = top,
-                    end = right,
-                    bottom = 116.dp
-                )
-                .padding(top = 14.dp)
-        )
+        Box {
+            CallInfo(Modifier.padding(start = 8.dp, top = top + 16.dp, end = 8.dp))
+
+            StreamComponent(
+                windowSizeClass = windowSizeClass,
+                highlightedStream = selectedStream,
+                // TODO test this
+                onStreamClick = { stream -> selectedStream = stream },
+                // TODO test this
+                onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
+                // TODO test this
+                onMoreParticipantClick = {},
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
+                    .padding(
+                        start = left,
+                        top = top,
+                        end = right,
+                        bottom = 116.dp
+                    )
+                    .padding(top = 14.dp)
+            )
+        }
     }
 }

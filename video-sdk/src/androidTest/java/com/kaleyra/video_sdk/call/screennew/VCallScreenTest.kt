@@ -5,17 +5,31 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
+import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
+import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
+import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
+import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil
 import io.mockk.every
@@ -23,7 +37,10 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +50,16 @@ class VCallScreenTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    private val compactScreenConfiguration = Configuration().apply {
+        screenWidthDp = 480
+        screenHeightDp = 600
+    }
+
+    private val largeScreenConfiguration = Configuration().apply {
+        screenWidthDp = 600
+        screenHeightDp = 900
+    }
 
     private val callActionsUiState = MutableStateFlow(CallActionsUiState())
 
@@ -46,16 +73,57 @@ class VCallScreenTest {
         every { uiState } returns streamUiState
     }
 
+    private val audioOutputViewModel = mockk<AudioOutputViewModel>(relaxed = true) {
+        every { uiState } returns MutableStateFlow(AudioOutputUiState())
+    }
+
+    private val screenShareViewModel = mockk<ScreenShareViewModel>(relaxed = true) {
+        every { uiState } returns MutableStateFlow(ScreenShareUiState())
+    }
+
+    private val fileShareViewModel = mockk<FileShareViewModel>(relaxed = true) {
+        every { uiState } returns MutableStateFlow(FileShareUiState())
+    }
+
+    private val whiteboardViewModel = mockk<WhiteboardViewModel>(relaxed = true) {
+        every { uiState } returns MutableStateFlow(WhiteboardUiState())
+    }
+
+    private val virtualBackgroundViewModel = mockk<VirtualBackgroundViewModel>(relaxed = true) {
+        every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
+    }
+
     @Before
     fun setUp() {
         mockkObject(CallActionsViewModel)
         mockkObject(StreamViewModel)
+        mockkObject(AudioOutputViewModel)
+        mockkObject(ScreenShareViewModel)
+        mockkObject(FileShareViewModel)
+        mockkObject(WhiteboardViewModel)
+        mockkObject(VirtualBackgroundViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create<CallActionsViewModel>(any(), any()) } returns callViewModel
         }
         every { StreamViewModel.provideFactory(any()) } returns mockk {
             every { create<StreamViewModel>(any(), any()) } returns streamViewModel
+        }
+
+        every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
+            every { create<AudioOutputViewModel>(any(), any()) } returns audioOutputViewModel
+        }
+        every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
+            every { create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
+        }
+        every { FileShareViewModel.provideFactory(any(), any()) } returns mockk {
+            every { create<FileShareViewModel>(any(), any()) } returns fileShareViewModel
+        }
+        every { WhiteboardViewModel.provideFactory(any(), any()) } returns mockk {
+            every { create<WhiteboardViewModel>(any(), any()) } returns whiteboardViewModel
+        }
+        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
+            every { create<VirtualBackgroundViewModel>(any(), any()) } returns virtualBackgroundViewModel
         }
     }
 
@@ -207,14 +275,646 @@ class VCallScreenTest {
         verify(exactly = 1) { callViewModel.tryStopScreenShare() }
     }
 
+    @Test
+    fun testSheetActions_screenShareToggleOn() {
+        composeTestRule.setUpVCallScreen()
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActions_audioComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen()
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(AudioAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActions_fileShareComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen()
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActions_whiteboardComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen()
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(WhiteboardAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActions_virtualBackgroundComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen()
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(VirtualBackgroundAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActions_expandMore() {
+        val sheetState = CallSheetState()
+        composeTestRule.setUpVCallScreen(
+            configuration = compactScreenConfiguration,
+            sheetState = sheetState
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + ChatAction()).toImmutableList()
+        )
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+    }
+
+    @Test
+    fun testSheetActions_collapseMore() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        composeTestRule.setUpVCallScreen(
+            configuration = compactScreenConfiguration,
+            sheetState = sheetState
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + ChatAction()).toImmutableList()
+        )
+
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+//    @Test
+//    fun testSheetActionsWithLargeScreen_moreShowPanel() {
+//        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+//        callActionsUiState.value = CallActionsUiState(
+//            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), AudioAction())).toImmutableList()
+//        )
+//
+//        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+//        composeTestRule
+//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+//            .assertIsDisplayed()
+//            .performClick()
+//
+//        composeTestRule.waitForIdle()
+//
+//        runBlocking { delay(5000) }
+//
+//        composeTestRule.onNodeWithTag(PanelTestTag).assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testSheetActionsWithLargeScreen_moreHidePanel() {
+//        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+//        callActionsUiState.value = CallActionsUiState(
+//            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), AudioAction())).toImmutableList()
+//        )
+//
+//        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
+//        composeTestRule
+//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+//            .assertIsDisplayed()
+//            .performClick()
+//
+//        composeTestRule.waitForIdle()
+//
+//        composeTestRule.onNodeWithText(PanelTestTag).assertDoesNotExist()
+//    }
+
+    @Test
+    fun testSheetDragActions_hangUp() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { MicAction() } + HangUpAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val hangUpText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(hangUpText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.hangUp() }
+    }
+
+    @Test
+    fun testSheetDragActions_micToggleOn() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + MicAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val micText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(micText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.toggleMic(any()) }
+    }
+
+    @Test
+    fun testSheetDragActions_micToggleOff() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + MicAction(isToggled = true)).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val micText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(micText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.toggleMic(any()) }
+    }
+
+    @Test
+    fun testSheetDragActions_cameraToggleOn() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + CameraAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val cameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(cameraText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.toggleCamera(any()) }
+    }
+
+    @Test
+    fun testSheetDragActions_cameraToggleOff() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + CameraAction(isToggled = true)).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val cameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(cameraText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.toggleCamera(any()) }
+    }
+
+    @Test
+    fun testSheetDragActions_flipCamera() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + FlipCameraAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val flipText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(flipText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.switchCamera() }
+    }
+
+    @Test
+    fun testSheetDragActions_chat() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + ChatAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(chatText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.showChat(any()) }
+    }
+
+    @Test
+    fun testSheetDragActions_screenShareToggleOff() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + ScreenShareAction(isToggled = true)).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(screenShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun testSheetDragActions_screenShareToggleOn() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + ScreenShareAction(isToggled = false)).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(screenShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetDragActions_audioComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + AudioAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val audioText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(audioText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetDragActions_fileShareComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + FileShareAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetDragActions_whiteboardComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + WhiteboardAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetDragActions_virtualBackgroundComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = compactScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (List(CompactScreenMaxActions) { HangUpAction() } + VirtualBackgroundAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val virtualBgText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(virtualBgText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetPanelActions_flipCamera() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), VirtualBackgroundAction()) + FlipCameraAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val flipText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        composeTestRule
+            .onAllNodesWithText(flipText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.switchCamera() }
+    }
+
+    @Test
+    fun testSheetPanelActions_audioComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), VirtualBackgroundAction()) + AudioAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val flipText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule
+            .onAllNodesWithText(flipText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetPanelActions_chat() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), VirtualBackgroundAction()) + ChatAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onAllNodesWithText(chatText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.showChat(any()) }
+    }
+
+    @Test
+    fun testSheetPanelActions_fileShareComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), AudioAction(), WhiteboardAction(), VirtualBackgroundAction()) + FileShareAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onAllNodesWithText(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetPanelActions_whiteboardComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), AudioAction(), VirtualBackgroundAction()) + WhiteboardAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onAllNodesWithText(whiteboardText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetPanelActions_virtualBackgroundComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), AudioAction()) + VirtualBackgroundAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val virtualBgText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule
+            .onAllNodesWithText(virtualBgText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
     private fun  AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
-        configuration: Configuration = Configuration().apply {
-            screenWidthDp = 480
-            screenHeightDp = 600
-        },
+        configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
         inputMessage: InputMessage? = null,
-        onChangeSheetState: () -> Unit = { },
         onBackPressed: () -> Unit = { },
     ) {
         setContent {
@@ -222,7 +922,6 @@ class VCallScreenTest {
                 windowSizeClass = WindowSizeClassUtil.currentWindowAdaptiveInfo(configuration),
                 sheetState = sheetState,
                 inputMessage = inputMessage,
-                onChangeSheetState = onChangeSheetState,
                 onBackPressed = onBackPressed,
             )
         }
