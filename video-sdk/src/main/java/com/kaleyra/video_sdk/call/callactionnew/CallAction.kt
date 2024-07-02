@@ -74,6 +74,16 @@ internal object CallActionDefaults {
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface
 
+    val DisabledContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(.12f)
+
+    val DisabledContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(.38f)
+
     val CheckedContainerColor: Color
         @Composable
         @ReadOnlyComposable
@@ -92,9 +102,16 @@ internal object CallActionDefaults {
     @Composable
     fun iconButtonColors(
         containerColor: Color = CallActionDefaults.ContainerColor,
-        contentColor : Color = CallActionDefaults.ContentColor
+        contentColor: Color = CallActionDefaults.ContentColor,
+        disabledContainerColor: Color = CallActionDefaults.DisabledContainerColor,
+        disabledContentColor: Color = CallActionDefaults.DisabledContentColor,
     ): IconButtonColors =
-        IconButtonDefaults.filledIconButtonColors(containerColor, contentColor)
+        IconButtonDefaults.filledIconButtonColors(
+            containerColor,
+            contentColor,
+            disabledContainerColor,
+            disabledContentColor
+        )
 
     @Composable
     fun iconToggleButtonColors(
@@ -110,9 +127,12 @@ internal object CallActionDefaults {
     )
 
     @Composable
-    fun badgeColors(containerColor: Color = BadgeContainerColor, contentColor: Color = contentColorFor(
-        BadgeContainerColor
-    )) =
+    fun badgeColors(
+        containerColor: Color = BadgeContainerColor,
+        contentColor: Color = contentColorFor(
+            BadgeContainerColor
+        ),
+    ) =
         CardDefaults.cardColors(containerColor, contentColor)
 
 }
@@ -130,7 +150,7 @@ internal fun CallToggleAction(
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
-    label: String? = null
+    label: String? = null,
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
@@ -173,13 +193,15 @@ internal fun CallAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     buttonText: String? = null,
-    buttonColor: Color = MaterialTheme.colorScheme.onSurface.copy(.1f),
-    buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
+    buttonColor: Color = CallActionDefaults.ContainerColor,
+    buttonContentColor: Color = CallActionDefaults.ContentColor,
+    disabledButtonColor: Color = CallActionDefaults.DisabledContainerColor,
+    disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
-    label: String? = null
+    label: String? = null,
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
@@ -198,7 +220,12 @@ internal fun CallAction(
                     .fillMaxWidth(),
                 enabled = enabled,
                 shape = CallActionDefaults.ButtonShape,
-                colors = CallActionDefaults.iconButtonColors(containerColor = buttonColor, contentColor = buttonContentColor),
+                colors = CallActionDefaults.iconButtonColors(
+                    containerColor = buttonColor,
+                    contentColor = buttonContentColor,
+                    disabledContainerColor = disabledButtonColor,
+                    disabledContentColor = disabledButtonContentColor
+                ),
                 onClick = onClick
             ) {
                 ButtonLayout(
@@ -220,7 +247,7 @@ private fun CallActionLayout(
     label: String? = null,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
-    badgeContentColor: Color = contentColorFor(badgeBackgroundColor)
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
 ) {
     Box(modifier.width(IntrinsicSize.Max)) {
         Column(
@@ -235,7 +262,12 @@ private fun CallActionLayout(
                         .layout { measurable, constraints ->
                             val minWidth = CallActionDefaults.LabelWidth.toPx().roundToInt()
                             val maxWidth = constraints.maxWidth.takeIf { it > minWidth } ?: minWidth
-                            val placeable = measurable.measure(constraints.copy(minWidth = minWidth, maxWidth = maxWidth))
+                            val placeable = measurable.measure(
+                                constraints.copy(
+                                    minWidth = minWidth,
+                                    maxWidth = maxWidth
+                                )
+                            )
                             layout(constraints.minWidth, placeable.height) {
                                 placeable.placeRelative(-placeable.width / 2, 0)
                             }
@@ -272,7 +304,7 @@ private fun ButtonLayout(
     text: String?,
     contentDescription: String,
     contentPadding: PaddingValues,
-    onButtonTextDisplay: (isDisplayed: Boolean) -> Unit
+    onButtonTextDisplay: (isDisplayed: Boolean) -> Unit,
 ) {
     var shouldDisplayButtonText by remember { mutableStateOf(true) }
     Row(
@@ -307,7 +339,7 @@ internal fun CallActionBadge(
     text: String,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = contentColorFor(containerColor)
+    contentColor: Color = contentColorFor(containerColor),
 ) {
     Card(
         modifier = modifier,
