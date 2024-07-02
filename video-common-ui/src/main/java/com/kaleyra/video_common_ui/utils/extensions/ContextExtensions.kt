@@ -21,6 +21,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.ContextWrapper
@@ -364,6 +365,10 @@ object ContextExtensions {
     private fun Context.hasPermission(permission: String): Boolean {
         return PermissionChecker.checkSelfPermission(applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
     }
+
+    fun Context.canUseFullScreenIntent() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()
+    } else true
 
     /**
      * Go back to launcher activity if this function's caller is the solely task for the app
