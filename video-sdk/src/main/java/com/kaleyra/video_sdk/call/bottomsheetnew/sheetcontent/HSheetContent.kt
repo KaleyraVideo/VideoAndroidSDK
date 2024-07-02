@@ -14,6 +14,8 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.HSheetItemsLayout
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.call.screennew.NotifiableCallAction
@@ -68,7 +70,11 @@ internal fun HSheetContent(
                 showMoreAction = callActions.count() > itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
-            maxItems = maxActions - if (showAnswerAction || showMoreAction) 1 else 0,
+            maxItems = maxActions - when {
+                showAnswerAction -> answerButtonSpan(isLargeScreen)
+                showMoreAction -> 1
+                else -> 0
+            },
             content = {
                 callActions.value.fastForEach { callAction ->
                     key(callAction.id) {
@@ -92,4 +98,8 @@ internal fun HSheetContent(
             }
         )
     }
+}
+
+private fun answerButtonSpan(isLargeScreen: Boolean): Int {
+    return if (isLargeScreen) AnswerActionExtendedMultiplier else AnswerActionMultiplier
 }

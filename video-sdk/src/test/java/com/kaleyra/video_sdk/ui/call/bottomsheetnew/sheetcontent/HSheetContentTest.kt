@@ -1,8 +1,10 @@
 package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
@@ -17,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionWidth
 import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedWidth
 import com.kaleyra.video_sdk.call.callactionnew.HangUpActionWidth
@@ -32,6 +36,8 @@ import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -891,13 +897,13 @@ class HSheetContentTest {
     }
 
     @Test
-    fun answerActionIsDisplayed_actionsAreOneLess() {
+    fun answerActionIsDisplayed_answerActionMultiplierAppliedToMaxActions() {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
         var itemsCount = -1
-        val maxActions = 2
+        val maxActions = 3
         composeTestRule.setContent {
             HSheetContent(
                 maxActions = maxActions,
@@ -931,7 +937,54 @@ class HSheetContentTest {
         composeTestRule.onNodeWithContentDescription(camera).assertIsNotDisplayed()
         composeTestRule.onNodeWithContentDescription(mic).assertIsNotDisplayed()
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
-        assertEquals(maxActions - 1, itemsCount)
+        assertEquals(maxActions - AnswerActionMultiplier, itemsCount)
+    }
+
+    @Test
+    fun largeScreenTrueAndAnswerActionIsDisplayed_answerActionMultiplierAppliedToMaxActions() {
+        val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        var itemsCount = -1
+        val maxActions = 4
+        composeTestRule.setContent {
+            HSheetContent(
+                maxActions = maxActions,
+                callActions = ImmutableList(
+                    listOf(
+                        FlipCameraAction(),
+                        CameraAction(),
+                        MicAction(),
+                        WhiteboardAction()
+                    )
+                ),
+                showAnswerAction = true,
+                isLargeScreen = true,
+                isMoreToggled = false,
+                onActionsPlaced = { itemsCount = it },
+                onAnswerClick = {  },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundClick = { },
+                onMoreToggle = { }
+            )
+        }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription(flip).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(camera).assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(mic).assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(whiteboard).assertIsNotDisplayed()
+        composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
+        assertEquals(maxActions - AnswerActionExtendedMultiplier, itemsCount)
     }
 
     @Test
