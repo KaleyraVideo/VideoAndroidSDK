@@ -30,8 +30,7 @@ internal object TextStyleExtensions {
         copy(
             shadow = Shadow(
                 color = color,
-                offset = Offset(x = 1f, y = 1f),
-                blurRadius = 1f
+                offset = Offset(x = 1f, y = 1f)
             )
         )
 }
