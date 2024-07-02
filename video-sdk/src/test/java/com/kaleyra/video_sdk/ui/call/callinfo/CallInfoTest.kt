@@ -47,13 +47,13 @@ class CallInfoTest {
     }
 
     @Test
-    fun callInfo_titleShown() {
-        composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertExists()
+    fun callInfo_titleNull_titleNotAdded() {
+        composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertDoesNotExist()
     }
 
     @Test
-    fun callInfo_subtitleShown() {
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertExists()
+    fun callInfo_subtitleNull_subtitleNotAdded() {
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertDoesNotExist()
     }
 
     @Test
