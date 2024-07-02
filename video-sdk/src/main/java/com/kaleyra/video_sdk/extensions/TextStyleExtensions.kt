@@ -16,6 +16,8 @@
 
 package com.kaleyra.video_sdk.extensions
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
@@ -23,14 +25,13 @@ import androidx.compose.ui.text.TextStyle
 
 internal object TextStyleExtensions {
 
-    private val ShadowColor = Color.Black.copy(alpha = .5f)
-
+    @Composable
     fun TextStyle.shadow() =
         copy(
             shadow = Shadow(
-                color = ShadowColor,
-                offset = Offset(x = -1.5f, y = 1.5f),
-                blurRadius = 0.8f
+                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f),
+                offset = Offset(x = 2f, y = 2f),
+                blurRadius = 2f
             )
         )
 }
