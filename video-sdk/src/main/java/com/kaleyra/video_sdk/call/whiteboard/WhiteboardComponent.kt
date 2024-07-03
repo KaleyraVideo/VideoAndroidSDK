@@ -56,7 +56,7 @@ internal fun WhiteboardComponent(
     viewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
-    onBackPressed: () -> Unit,
+    onDismiss: () -> Unit,
     onUserMessageActionClick: (UserMessage.Action) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,7 +70,7 @@ internal fun WhiteboardComponent(
         uiState = uiState,
         onWhiteboardClosed = viewModel::onWhiteboardClosed,
         onReloadClick = viewModel::onReloadClick,
-        onBackPressed = onBackPressed,
+        onBackPressed = onDismiss,
         onUploadClick = { launcher.launch("image/*") },
         onUserMessageActionClick = onUserMessageActionClick
     )
