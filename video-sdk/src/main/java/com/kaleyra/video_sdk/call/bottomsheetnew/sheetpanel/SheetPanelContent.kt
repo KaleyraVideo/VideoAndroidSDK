@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,7 +31,11 @@ internal fun SheetPanelContent(
     onItemClick: (CallActionUI) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(Modifier.width(320.dp)) {
+    Surface(
+        modifier = Modifier.width(320.dp),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 2.dp
+    ) {
         LazyColumn(
             contentPadding = PaddingValues(vertical = 12.dp),
             modifier = modifier
