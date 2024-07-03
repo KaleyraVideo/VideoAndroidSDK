@@ -59,6 +59,7 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareFab
 import com.kaleyra.video_sdk.call.fileshare.view.MaxFileSizeDialog
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
@@ -229,6 +230,8 @@ internal fun FileShareComponent(
                     .padding(bottom = 16.dp)
             )
         }
+
+        NavigationBarsSpacer()
     }
 }
 
