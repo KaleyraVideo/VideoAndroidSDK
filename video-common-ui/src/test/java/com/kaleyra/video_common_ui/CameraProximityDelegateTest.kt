@@ -19,7 +19,7 @@ package com.kaleyra.video_common_ui
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.proximity.CameraProximityDelegate
 import com.kaleyra.video_common_ui.proximity.CameraProximityDelegateImpl
-import com.kaleyra.video_common_ui.utils.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject

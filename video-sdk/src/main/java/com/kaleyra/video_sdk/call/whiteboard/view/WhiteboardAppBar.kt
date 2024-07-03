@@ -34,8 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.common.button.IconButton
-import com.kaleyra.video_sdk.call.appbar.ComponentAppBar
+import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme

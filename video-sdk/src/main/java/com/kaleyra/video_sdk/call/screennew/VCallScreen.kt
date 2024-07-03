@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.call.appbar.CallAppBar
+import com.kaleyra.video_sdk.call.appbar.view.CallAppBar
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
@@ -140,11 +140,7 @@ internal fun VCallScreen(
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
             CallAppBar(
-                title = "9:00",
-                logo = Logo(),
-                recording = false,
-                participantCount = 3,
-                onParticipantClick = {  },
+                onParticipantClick = { /*TODO*/ },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )

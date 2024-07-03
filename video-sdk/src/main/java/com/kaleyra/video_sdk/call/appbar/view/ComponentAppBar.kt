@@ -16,7 +16,7 @@
 
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.kaleyra.video_sdk.call.appbar
+package com.kaleyra.video_sdk.call.appbar.view
 
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.RowScope

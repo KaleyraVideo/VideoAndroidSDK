@@ -16,7 +16,7 @@ import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeech
 import com.kaleyra.video_common_ui.texttospeech.CallParticipantMutedTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.CallRecordingTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.TextToSpeechNotifier
-import com.kaleyra.video_common_ui.utils.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.combine
