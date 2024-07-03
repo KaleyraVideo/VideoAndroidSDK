@@ -63,6 +63,11 @@ internal fun WhiteboardContent(
                 },
                 update = { whiteboardView ->
                     whiteboardView.visibility = if (loading) View.GONE else View.VISIBLE
+                    whiteboardView.setOnTouchListener { v, _ ->
+                        v.parent.requestDisallowInterceptTouchEvent(true)
+                        v.performClick()
+                        false
+                    }
                 }
             )
         }
