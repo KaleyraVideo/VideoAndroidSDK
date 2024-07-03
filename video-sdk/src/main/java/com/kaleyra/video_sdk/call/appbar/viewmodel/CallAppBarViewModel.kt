@@ -31,7 +31,6 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
 
             ongoingCall.toInCallParticipants()
                 .onEach { inCallParticipants ->
-                    println(inCallParticipants)
                     _uiState.update { uiState ->
                         uiState.copy(participantCount = inCallParticipants.size)
                     }
