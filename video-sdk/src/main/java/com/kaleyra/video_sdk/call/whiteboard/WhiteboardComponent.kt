@@ -25,14 +25,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,9 +43,12 @@ import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardAppBar
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardContent
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardOfflineContent
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+
+private val WhiteboardBackgroundColor = Color(0xFFF5F5F5)
 
 @Composable
 internal fun WhiteboardComponent(
@@ -88,39 +90,41 @@ internal fun WhiteboardComponent(
         onDispose(onWhiteboardClosed)
     }
 
-    Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
+    Surface {
+        Column {
+            WhiteboardAppBar(
+                isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
+                onBackPressed = onBackPressed,
+                onUploadClick = { onUploadClick() },
+                modifier = modifier
+            )
 
-        WhiteboardAppBar(
-            isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
-            onBackPressed = onBackPressed,
-            onUploadClick = { onUploadClick() },
-            modifier = modifier
-        )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(color = WhiteboardBackgroundColor)
+            ) {
+                when {
+                    uiState.isOffline -> {
+                        WhiteboardOfflineContent(
+                            loading = uiState.isLoading,
+                            onReloadClick = onReloadClick
+                        )
+                    }
 
-        Box {
-            val contentModifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.surface)
-            when {
-                uiState.isOffline -> {
-                    WhiteboardOfflineContent(
-                        loading = uiState.isLoading,
-                        onReloadClick = onReloadClick,
-                        modifier = contentModifier
-                    )
+                    uiState.whiteboardView != null -> {
+                        WhiteboardContent(
+                            whiteboardView = uiState.whiteboardView,
+                            loading = uiState.isLoading,
+                            upload = uiState.upload
+                        )
+                    }
                 }
 
-                uiState.whiteboardView != null -> {
-                    WhiteboardContent(
-                        whiteboardView = uiState.whiteboardView,
-                        loading = uiState.isLoading,
-                        upload = uiState.upload,
-                        modifier = contentModifier
-                    )
-                }
+                StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
             }
 
-            StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
+            NavigationBarsSpacer()
         }
     }
 }
