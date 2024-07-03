@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.appbar.CallAppBar
+import com.kaleyra.video_sdk.call.appbar.view.CallAppBar
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage

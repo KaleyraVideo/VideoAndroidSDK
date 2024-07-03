@@ -18,9 +18,9 @@ import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
-import com.kaleyra.video_common_ui.utils.CallExtensions
-import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
-import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsActivity
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
@@ -41,9 +41,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.job
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After

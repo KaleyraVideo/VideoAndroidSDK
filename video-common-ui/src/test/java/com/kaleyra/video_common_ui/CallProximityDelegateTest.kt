@@ -21,7 +21,7 @@ import com.kaleyra.video_common_ui.proximity.AudioProximityDelegate
 import com.kaleyra.video_common_ui.proximity.CallProximityDelegate
 import com.kaleyra.video_common_ui.proximity.CameraProximityDelegate
 import com.kaleyra.video_common_ui.proximity.WakeLockProximityDelegate
-import com.kaleyra.video_common_ui.utils.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import io.mockk.every
 import io.mockk.mockk
@@ -30,7 +30,6 @@ import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 

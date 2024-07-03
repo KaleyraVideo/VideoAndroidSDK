@@ -17,7 +17,6 @@
 package com.kaleyra.video_common_ui.call
 
 import android.app.Notification
-import android.net.Uri
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.CallUI
@@ -26,9 +25,9 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.InputMapper.isAnyScreenInputActive
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.AppLifecycle
-import com.kaleyra.video_common_ui.utils.CallExtensions.isIncoming
-import com.kaleyra.video_common_ui.utils.CallExtensions.isOngoing
-import com.kaleyra.video_common_ui.utils.CallExtensions.isOutgoing
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isIncoming
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isOngoing
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isOutgoing
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +36,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.takeWhile

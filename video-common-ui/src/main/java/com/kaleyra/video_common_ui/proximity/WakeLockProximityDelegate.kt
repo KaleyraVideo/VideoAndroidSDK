@@ -19,11 +19,11 @@ package com.kaleyra.video_common_ui.proximity
 import android.app.Application
 import android.content.Context
 import android.os.PowerManager
-import com.kaleyra.video_common_ui.utils.CallExtensions.hasUsbInput
-import com.kaleyra.video_common_ui.utils.CallExtensions.hasUsersWithCameraEnabled
-import com.kaleyra.video_common_ui.utils.CallExtensions.isMyInternalCameraEnabled
-import com.kaleyra.video_common_ui.utils.CallExtensions.isMyScreenShareEnabled
-import com.kaleyra.video_common_ui.utils.CallExtensions.isNotConnected
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsbInput
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsersWithCameraEnabled
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyInternalCameraEnabled
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyScreenShareEnabled
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isNotConnected
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isOrientationLandscape
 import com.kaleyra.video_common_ui.CallUI
 

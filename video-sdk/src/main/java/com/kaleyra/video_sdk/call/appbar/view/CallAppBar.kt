@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.appbar
+package com.kaleyra.video_sdk.call.appbar.view
 
 import android.content.res.Configuration
 import android.net.Uri
@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,8 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
+import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
@@ -54,7 +60,26 @@ internal val RecordingDotTag = "RecordingDotTag"
 @Composable
 internal fun CallAppBar(
     modifier: Modifier = Modifier,
-    title: String,
+    viewModel: CallAppBarViewModel = viewModel(factory = CallAppBarViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    onParticipantClick: () -> Unit,
+    onBackPressed: () -> Unit) {
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    CallAppBar(
+        modifier = modifier,
+        title = uiState.title,
+        logo = uiState.logo,
+        recording = uiState.recording,
+        participantCount = uiState.participantCount,
+        onParticipantClick = onParticipantClick,
+        onBackPressed = onBackPressed)
+}
+
+@Composable
+internal fun CallAppBar(
+    modifier: Modifier = Modifier,
+    title: String?,
     logo: Logo,
     recording: Boolean,
     participantCount: Int,
@@ -73,7 +98,7 @@ internal fun CallAppBar(
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
-            content = { Title(recording = recording, title = title) }
+            content = { title?.let { Title(recording = recording, title = title) } }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.utils
+package com.kaleyra.video_common_ui.utils.extensions
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDND
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
@@ -82,8 +83,7 @@ internal object CallExtensions {
     }
 
     fun CallUI.showOnAppResumed(coroutineScope: CoroutineScope) {
-        AppLifecycle
-            .isInForeground
+        AppLifecycle.isInForeground
             .dropWhile { !it }
             .take(1)
             .onEach { show() }

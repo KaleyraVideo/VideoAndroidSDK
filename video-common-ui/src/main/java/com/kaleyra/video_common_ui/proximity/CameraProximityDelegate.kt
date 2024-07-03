@@ -17,9 +17,9 @@
 package com.kaleyra.video_common_ui.proximity
 
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.utils.CallExtensions.getMyInternalCamera
-import com.kaleyra.video_common_ui.utils.CallExtensions.isMyInternalCameraEnabled
-import com.kaleyra.video_common_ui.utils.CallExtensions.isMyInternalCameraUsingFrontLens
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.getMyInternalCamera
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyInternalCameraEnabled
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyInternalCameraUsingFrontLens
 
 
 internal interface CameraProximityDelegate {

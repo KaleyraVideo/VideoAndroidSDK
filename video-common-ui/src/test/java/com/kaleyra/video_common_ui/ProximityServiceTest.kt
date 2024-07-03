@@ -7,7 +7,6 @@ import android.content.Intent
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.test.core.app.ApplicationProvider
-import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.TestUtils.getPrivateField
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
@@ -16,12 +15,11 @@ import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.CallParticipantMutedTextToSpeechNotifier
 import com.kaleyra.video_common_ui.texttospeech.CallRecordingTextToSpeechNotifier
-import com.kaleyra.video_common_ui.utils.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import io.mockk.coInvoke
 import io.mockk.every
-import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject

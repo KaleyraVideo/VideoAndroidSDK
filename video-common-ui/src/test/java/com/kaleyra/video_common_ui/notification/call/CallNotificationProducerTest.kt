@@ -16,7 +16,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.AppLifecycle
-import com.kaleyra.video_common_ui.utils.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_utils.ContextRetainer
