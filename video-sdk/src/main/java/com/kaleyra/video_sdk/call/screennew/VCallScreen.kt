@@ -140,6 +140,7 @@ internal fun VCallScreen(
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
             CallAppBar(
+                // TODO test this
                 onParticipantClick = { /*TODO*/ },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)

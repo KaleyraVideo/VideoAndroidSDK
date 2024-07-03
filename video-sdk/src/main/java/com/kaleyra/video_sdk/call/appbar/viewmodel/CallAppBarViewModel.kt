@@ -64,7 +64,7 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return CallInfoViewModel(configure) as T
+                    return CallAppBarViewModel(configure) as T
                 }
             }
     }
