@@ -132,8 +132,8 @@ internal fun VCallScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
-        sheetPanelContent = {
-            if (isLargeScreen) {
+        sheetPanelContent = if (isLargeScreen) {
+            {
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
                     enter = fadeIn(tween()),
@@ -156,7 +156,7 @@ internal fun VCallScreen(
                     )
                 }
             }
-        },
+        } else null,
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val sheetActionsCount = callActionsUiState.actionList.count()
