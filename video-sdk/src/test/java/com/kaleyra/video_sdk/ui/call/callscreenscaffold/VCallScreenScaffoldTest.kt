@@ -297,6 +297,17 @@ class VCallScreenScaffoldTest {
         sheetHeight.assertIsEqualTo(sheetContentHeight + sheetDragContentHeight + sheetHandleHeight, "sheet height")
     }
 
+    @Test
+    fun testBottomSheetCollapsedWhenMovingToPanelVisualization() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        composeTestRule.setCallScreenScaffold(
+            sheetState = sheetState,
+            panelContent = { }
+        )
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},

@@ -108,7 +108,10 @@ class VCallScreenScaffoldTest {
         composeTestRule.setCallScreenScaffold(
             paddingValues = paddingValues,
             topAppBar = {
-                Text(topBarText, Modifier.fillMaxWidth().height(48.dp))
+                Text(topBarText,
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp))
             },
             content = {
                 Text(contentText, Modifier.fillMaxSize())
@@ -144,7 +147,10 @@ class VCallScreenScaffoldTest {
         var paddingValues: PaddingValues? = null
         composeTestRule.setCallScreenScaffold(
             topAppBar = {
-                Spacer(Modifier.fillMaxWidth().height(topBarHeight))
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(topBarHeight))
             },
             paddingValues = PaddingValues(0.dp),
             content = { paddingValues = it }
@@ -261,6 +267,17 @@ class VCallScreenScaffoldTest {
 
         val sheetHeight = sheetContentBounds.bottom - sheetHandleBounds.top
         sheetHeight.assertIsEqualTo(sheetContentHeight + sheetDragContentHeight + sheetHandleHeight, "sheet height")
+    }
+
+    @Test
+    fun testBottomSheetCollapsedWhenMovingToPanelVisualization() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        composeTestRule.setCallScreenScaffold(
+            sheetState = sheetState,
+            panelContent = { }
+        )
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
     private fun ComposeContentTestRule.setCallScreenScaffold(

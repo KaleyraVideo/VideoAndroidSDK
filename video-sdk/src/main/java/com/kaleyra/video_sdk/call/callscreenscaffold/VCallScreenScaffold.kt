@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -121,6 +122,13 @@ internal fun VCallScreenScaffold(
     val bottomPadding = paddingValues.calculateBottomPadding()
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
+
+    if (sheetPanelContent != null) {
+        LaunchedEffect(Unit) {
+            sheetState.collapse()
+        }
+    }
+
     Surface(
         modifier = modifier,
         color = containerColor,
