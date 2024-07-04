@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -502,43 +503,45 @@ class VCallScreenTest {
         assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
-//    @Test
-//    fun testSheetActionsWithLargeScreen_moreShowPanel() {
-//        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), AudioAction())).toImmutableList()
-//        )
-//
-//        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        runBlocking { delay(5000) }
-//
-//        composeTestRule.onNodeWithTag(PanelTestTag).assertIsDisplayed()
-//    }
-//
-//    @Test
-//    fun testSheetActionsWithLargeScreen_moreHidePanel() {
-//        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = (listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FileShareAction(), WhiteboardAction(), AudioAction())).toImmutableList()
-//        )
-//
-//        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        composeTestRule.onNodeWithText(PanelTestTag).assertDoesNotExist()
-//    }
+    @Test
+    fun testSheetActionsWithLargeScreen_moreShowPanel() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(PanelTestTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun testSheetActionsWithLargeScreen_moreHidePanel() {
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(PanelTestTag).assertIsDisplayed()
+
+        val hideText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(hideText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithText(PanelTestTag).assertDoesNotExist()
+    }
 
     @Test
     fun testSheetDragActions_hangUp() {
