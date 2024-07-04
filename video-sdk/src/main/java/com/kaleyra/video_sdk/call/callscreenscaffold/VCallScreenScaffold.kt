@@ -155,8 +155,7 @@ internal fun VCallScreenScaffold(
                     Column(
                         modifier = Modifier
                             .padding(start = startPadding, end = endPadding)
-                            .align(Alignment.End)
-                            .dragVerticalOffset(sheetState),
+                            .align(Alignment.End),
                         content = sheetPanelContent
                     )
                     Spacer(Modifier.height(VCallScreenScaffoldDefaults.SheetPanelContentPadding))
