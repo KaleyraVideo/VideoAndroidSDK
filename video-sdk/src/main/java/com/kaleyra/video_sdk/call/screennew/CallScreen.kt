@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
@@ -52,6 +55,8 @@ internal fun CallScreen(
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     val sheetState = rememberCallSheetState()
+    val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var modalSheetComponent: ModalSheetComponent? by remember { mutableStateOf(null) }
 
     KaleyraM3Theme {
         if (isCompactHeight) {
@@ -66,7 +71,10 @@ internal fun CallScreen(
             VCallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = sheetState,
+                modalSheetState = modalSheetState,
+                modalSheetComponent = modalSheetComponent,
                 inputMessage = inputMessage,
+                onModalSheetComponentChange = { modalSheetComponent = it },
                 onBackPressed = onBackPressed
             )
         }

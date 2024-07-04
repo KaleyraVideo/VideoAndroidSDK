@@ -10,14 +10,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -39,7 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBar
-import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
@@ -53,26 +50,13 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
-import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
-import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
-import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import kotlinx.coroutines.launch
 import kotlin.math.max
-
-internal enum class CallScreenModalBottomSheet {
-    Audio,
-    ScreenShare,
-    FileShare,
-    Whiteboard,
-    VirtualBackground
-}
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -81,18 +65,20 @@ internal val PanelTestTag = "PanelTestTag"
 internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
+    modalSheetComponent: ModalSheetComponent?,
+    modalSheetState: SheetState,
     inputMessage: InputMessage?,
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    onModalSheetComponentChange: (ModalSheetComponent?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
         WindowWidthSizeClass.Medium,
         WindowWidthSizeClass.Expanded
     )
-    val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val scope = rememberCoroutineScope()
-    val onChangeSheetState: (Boolean) -> Unit = remember {
+    val onChangeSheetState: (Boolean) -> Unit = remember(sheetState) {
         { isSheetCollapsed: Boolean ->
             scope.launch {
                 if (isSheetCollapsed) sheetState.expand()
@@ -101,18 +87,18 @@ internal fun VCallScreen(
         }
     }
 
-    var modalBottomSheet: CallScreenModalBottomSheet? by remember { mutableStateOf(null) }
-
-    val callActionsViewModel = viewModel<CallActionsViewModel>(
-        factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
-    )
+    val callActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
 
-    val onAudioClick = remember { { modalBottomSheet = CallScreenModalBottomSheet.Audio } }
-    val onFileShareClick = remember { { modalBottomSheet = CallScreenModalBottomSheet.FileShare } }
-    val onWhiteboardClick = remember { { modalBottomSheet = CallScreenModalBottomSheet.Whiteboard } }
-    val onVirtualBackgroundClick = remember { { modalBottomSheet = CallScreenModalBottomSheet.VirtualBackground } }
-    val onScreenShareClick = remember { { modalBottomSheet = CallScreenModalBottomSheet.ScreenShare } }
+    val onAudioClick = remember { { onModalSheetComponentChange(ModalSheetComponent.Audio) } }
+    val onFileShareClick =
+        remember { { onModalSheetComponentChange(ModalSheetComponent.FileShare) } }
+    val onWhiteboardClick =
+        remember { { onModalSheetComponentChange(ModalSheetComponent.Whiteboard) } }
+    val onVirtualBackgroundClick =
+        remember { { onModalSheetComponentChange(ModalSheetComponent.VirtualBackground) } }
+    val onScreenShareClick =
+        remember { { onModalSheetComponentChange(ModalSheetComponent.ScreenShare) } }
 
     val onMicClick = rememberOnMicClick(callActionsViewModel)
     val onCameraToggle = rememberOnCameraClick(callActionsViewModel)
@@ -173,8 +159,10 @@ internal fun VCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val sheetActionsCount = callActionsUiState.actionList.count()
-                val answerActionSlots = if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
-                val itemsPerRow = max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
+                val answerActionSlots =
+                    if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val itemsPerRow =
+                    max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
@@ -206,8 +194,7 @@ internal fun VCallScreen(
                             Box(
                                 modifier = Modifier
                                     .width(250.dp)
-                                    .animateContentSize()
-                                    .padding(top = 6.dp),
+                                    .animateContentSize(),
                                 contentAlignment = Alignment.Center
                             ) {
                                 // TODO test this
@@ -232,7 +219,8 @@ internal fun VCallScreen(
                                 isLargeScreen = isLargeScreen,
                                 onActionsPlaced = { itemsPlaced ->
                                     val actions = callActionsUiState.actionList.value
-                                    val dragActions = actions.takeLast(max(0, actions.count() - itemsPlaced))
+                                    val dragActions =
+                                        actions.takeLast(max(0, actions.count() - itemsPlaced))
                                     sheetDragActions = dragActions.toImmutableList()
                                 },
                                 onAnswerClick = callActionsViewModel::accept,
@@ -277,63 +265,39 @@ internal fun VCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
-        if (modalBottomSheet != null) {
-            ModalBottomSheet(
-                onDismissRequest = { modalBottomSheet = null },
-                sheetState = modalSheetState,
-                dragHandle = null,
-                windowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0)
-            ) {
-                when(modalBottomSheet) {
-                    CallScreenModalBottomSheet.Audio -> AudioOutputComponent(
-                        onDismiss = { modalBottomSheet = null }
-                    )
-                    CallScreenModalBottomSheet.ScreenShare -> ScreenShareComponent(
-                        onDismiss = { modalBottomSheet = null }
-                    )
-                    CallScreenModalBottomSheet.FileShare -> FileShareComponent(
-                        onDismiss = { modalBottomSheet = null },
-                        onUserMessageActionClick = {},
-                    )
-                    CallScreenModalBottomSheet.Whiteboard -> WhiteboardComponent(
-                        onBackPressed = { modalBottomSheet = null },
-                        onUserMessageActionClick = {}
-                    )
-                    CallScreenModalBottomSheet.VirtualBackground -> VirtualBackgroundComponent(
-                        onDismiss = { modalBottomSheet = null }
-                    )
-                    null -> Unit
-                }
-            }
-        }
+        StreamComponent(
+            windowSizeClass = windowSizeClass,
+            highlightedStream = selectedStream,
+            // TODO test this
+            onStreamClick = { stream -> selectedStream = stream },
+            // TODO test this
+            onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
+            // TODO test this
+            onMoreParticipantClick = {},
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(
+                    start = left,
+                    top = top,
+                    end = right,
+                    bottom = 116.dp
+                )
+                .padding(top = 14.dp)
+        )
 
-        Box {
-            StreamComponent(
-                windowSizeClass = windowSizeClass,
-                highlightedStream = selectedStream,
-                // TODO test this
-                onStreamClick = { stream -> selectedStream = stream },
-                // TODO test this
-                onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
-                // TODO test this
-                onMoreParticipantClick = {},
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding()
-                    .padding(
-                        start = left,
-                        top = top,
-                        end = right,
-                        bottom = 116.dp
-                    )
-                    .padding(top = 14.dp)
-            )
+        CallInfoComponent(
+            modifier = Modifier
+                .padding(top = top)
+                .padding(horizontal = 8.dp, vertical = 48.dp)
+        )
 
-            CallInfoComponent(
-                modifier = Modifier
-                    .padding(top = top)
-                    .padding(horizontal = 8.dp, vertical = 48.dp)
-            )
-        }
+        CallScreenModalSheet(
+            modalSheetComponent = modalSheetComponent,
+            sheetState = modalSheetState,
+            onRequestDismiss = { onModalSheetComponentChange(null) },
+            onUserMessageActionClick = {}
+        )
     }
 }
+
