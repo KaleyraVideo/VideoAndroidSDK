@@ -144,6 +144,7 @@ internal fun VCallScreen(
                         modifier = Modifier.testTag(PanelTestTag),
                         onItemClick = { callAction ->
                             when (callAction) {
+                                is ScreenShareAction -> onScreenShareToggle(callAction.isToggled)
                                 is FlipCameraAction -> callActionsViewModel.switchCamera()
                                 is AudioAction -> onAudioClick()
                                 is ChatAction -> onChatClick()

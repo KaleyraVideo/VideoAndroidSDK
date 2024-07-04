@@ -990,6 +990,64 @@ class VCallScreenTest {
     }
 
     @Test
+    fun testSheetPanelActions_screenShareToggleOff() {
+        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        composeTestRule.setUpVCallScreen(
+            configuration = largeScreenConfiguration,
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList(),
+        )
+
+        val moreText =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        composeTestRule
+            .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun testSheetPanelActions_screenShareToggleOn() {
+        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        var component: ModalSheetComponent? = null
+        composeTestRule.setUpVCallScreen(
+            configuration = largeScreenConfiguration,
+            onModalSheetComponentChange = { component = it }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (actions + ScreenShareAction()).toImmutableList(),
+        )
+
+        val moreText =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.ScreenShare, component)
+    }
+
+    @Test
     fun testSheetPanelActions_fileShareComponentIsDisplayed() {
         val actions = (allActions - FileShareAction()).take(LargeScreenMaxActions)
         var component: ModalSheetComponent? = null
