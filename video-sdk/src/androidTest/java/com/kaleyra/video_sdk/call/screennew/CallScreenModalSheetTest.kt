@@ -94,10 +94,10 @@ class CallScreenModalSheetTest {
     }
 
     @Test
-    fun audioSheetType_audioComponentIsDisplayed() {
+    fun audioSheetComponent_audioComponentIsDisplayed() {
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.Audio,
+                modalSheetComponent = ModalSheetComponent.Audio,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onUserMessageActionClick = {}
@@ -108,10 +108,10 @@ class CallScreenModalSheetTest {
     }
 
     @Test
-    fun screenShareSheetType_screenShareComponentIsDisplayed() {
+    fun screenShareSheetComponent_screenShareComponentIsDisplayed() {
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.ScreenShare,
+                modalSheetComponent = ModalSheetComponent.ScreenShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onUserMessageActionClick = {}
@@ -122,10 +122,10 @@ class CallScreenModalSheetTest {
     }
 
     @Test
-    fun fileShareSheetType_fileShareComponentIsDisplayed() {
+    fun fileShareSheetComponent_fileShareComponentIsDisplayed() {
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.FileShare,
+                modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onUserMessageActionClick = {}
@@ -136,10 +136,10 @@ class CallScreenModalSheetTest {
     }
 
     @Test
-    fun whiteboardSheetType_whiteboardComponentIsDisplayed() {
+    fun whiteboardSheetComponent_whiteboardComponentIsDisplayed() {
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.Whiteboard,
+                modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onUserMessageActionClick = {}
@@ -150,10 +150,10 @@ class CallScreenModalSheetTest {
     }
 
     @Test
-    fun virtualBackgroundSheetType_virtualBackgroundComponentIsDisplayed() {
+    fun virtualBackgroundSheetComponent_virtualBackgroundComponentIsDisplayed() {
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.VirtualBackground,
+                modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onUserMessageActionClick = {}
@@ -170,7 +170,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.Audio,
+                modalSheetComponent = ModalSheetComponent.Audio,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {}
@@ -195,7 +195,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.ScreenShare,
+                modalSheetComponent = ModalSheetComponent.ScreenShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {}
@@ -220,7 +220,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.FileShare,
+                modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {}
@@ -245,7 +245,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.Whiteboard,
+                modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {}
@@ -270,7 +270,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.VirtualBackground,
+                modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {}
@@ -298,7 +298,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = spyk(rememberModalBottomSheetState())
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.VirtualBackground,
+                modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {},
@@ -322,7 +322,7 @@ class CallScreenModalSheetTest {
         var clicked = false
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.Whiteboard,
+                modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onUserMessageActionClick = { clicked = true }
@@ -344,7 +344,7 @@ class CallScreenModalSheetTest {
         var clicked = false
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetType = CallScreenModalSheetType.FileShare,
+                modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onUserMessageActionClick = { clicked = true }

@@ -21,7 +21,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.launch
 
 @Immutable
-internal enum class CallScreenModalSheetType {
+internal enum class ModalSheetComponent {
     Audio,
     ScreenShare,
     FileShare,
@@ -32,7 +32,7 @@ internal enum class CallScreenModalSheetType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CallScreenModalSheet(
-    modalSheetType: CallScreenModalSheetType?,
+    modalSheetComponent: ModalSheetComponent?,
     sheetState: SheetState,
     onRequestDismiss: () -> Unit,
     onUserMessageActionClick: (UserMessage.Action) -> Unit,
@@ -52,7 +52,7 @@ internal fun CallScreenModalSheet(
         }
     }
 
-    if (modalSheetType != null) {
+    if (modalSheetComponent != null) {
         ModalBottomSheet(
             onDismissRequest = onRequestDismiss,
             sheetState = sheetState,
@@ -60,22 +60,22 @@ internal fun CallScreenModalSheet(
             windowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0),
             modifier = modifier
         ) {
-            when (modalSheetType) {
-                CallScreenModalSheetType.Audio -> AudioOutputComponent(onDismiss = onDismiss)
+            when (modalSheetComponent) {
+                ModalSheetComponent.Audio -> AudioOutputComponent(onDismiss = onDismiss)
 
-                CallScreenModalSheetType.ScreenShare -> ScreenShareComponent(onDismiss = onDismiss)
+                ModalSheetComponent.ScreenShare -> ScreenShareComponent(onDismiss = onDismiss)
 
-                CallScreenModalSheetType.FileShare -> FileShareComponent(
+                ModalSheetComponent.FileShare -> FileShareComponent(
                     onDismiss = onDismiss,
                     onUserMessageActionClick = onUserMessageActionClick,
                 )
 
-                CallScreenModalSheetType.Whiteboard -> WhiteboardComponent(
+                ModalSheetComponent.Whiteboard -> WhiteboardComponent(
                     onDismiss = onDismiss,
                     onUserMessageActionClick = onUserMessageActionClick
                 )
 
-                CallScreenModalSheetType.VirtualBackground -> VirtualBackgroundComponent(
+                ModalSheetComponent.VirtualBackground -> VirtualBackgroundComponent(
                     onDismiss = onDismiss
                 )
             }
