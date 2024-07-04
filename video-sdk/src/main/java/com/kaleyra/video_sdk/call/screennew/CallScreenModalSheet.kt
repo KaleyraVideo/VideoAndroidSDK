@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.screennew
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -57,7 +58,7 @@ internal fun CallScreenModalSheet(
             onDismissRequest = onRequestDismiss,
             sheetState = sheetState,
             dragHandle = null,
-            windowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0),
+            windowInsets = WindowInsets.navigationBars,
             modifier = modifier
         ) {
             when (modalSheetComponent) {
