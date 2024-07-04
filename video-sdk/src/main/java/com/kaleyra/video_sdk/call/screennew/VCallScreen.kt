@@ -19,6 +19,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -60,7 +63,7 @@ import kotlin.math.max
 
 internal val PanelTestTag = "PanelTestTag"
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
@@ -114,14 +117,7 @@ internal fun VCallScreen(
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
     VCallScreenScaffold(
-        modifier = modifier
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    showSheetPanelContent = false
-                    selectedStream = null
-                }
-            }
-            .clearAndSetSemantics {},
+        modifier = modifier,
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
@@ -135,6 +131,7 @@ internal fun VCallScreen(
         sheetPanelContent = if (isLargeScreen) {
             {
                 AnimatedVisibility(
+                    // TODO test this
                     visible = showSheetPanelContent,
                     enter = fadeIn(tween()),
                     exit = fadeOut(tween())
@@ -265,39 +262,58 @@ internal fun VCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val right = paddingValues.calculateRightPadding(layoutDirection)
 
-        StreamComponent(
-            windowSizeClass = windowSizeClass,
-            highlightedStream = selectedStream,
-            // TODO test this
-            onStreamClick = { stream -> selectedStream = stream },
-            // TODO test this
-            onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
-            // TODO test this
-            onMoreParticipantClick = {},
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding()
-                .padding(
-                    start = left,
-                    top = top,
-                    end = right,
-                    bottom = 116.dp
-                )
-                .padding(top = 14.dp)
-        )
+                .pointerInteropFilter {
+                    when {
+                        showSheetPanelContent -> {
+                            showSheetPanelContent = false
+                            true
+                        }
+                        selectedStream != null -> {
+                            selectedStream = null
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            .clearAndSetSemantics {}
+        ) {
+            StreamComponent(
+                windowSizeClass = windowSizeClass,
+                highlightedStream = selectedStream,
+                // TODO test this
+                onStreamClick = { stream -> selectedStream = stream },
+                // TODO test this
+                onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
+                // TODO test this
+                onMoreParticipantClick = {},
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
+                    .padding(
+                        start = left,
+                        top = top,
+                        end = right,
+                        bottom = 116.dp
+                    )
+                    .padding(top = 14.dp)
+            )
 
-        CallInfoComponent(
-            modifier = Modifier
-                .padding(top = top)
-                .padding(horizontal = 8.dp, vertical = 48.dp)
-        )
+            CallInfoComponent(
+                modifier = Modifier
+                    .padding(top = top)
+                    .padding(horizontal = 8.dp, vertical = 48.dp)
+            )
 
-        CallScreenModalSheet(
-            modalSheetComponent = modalSheetComponent,
-            sheetState = modalSheetState,
-            onRequestDismiss = { onModalSheetComponentChange(null) },
-            onUserMessageActionClick = { }
-        )
+            CallScreenModalSheet(
+                modalSheetComponent = modalSheetComponent,
+                sheetState = modalSheetState,
+                onRequestDismiss = { onModalSheetComponentChange(null) },
+                onUserMessageActionClick = { }
+            )
+        }
+
     }
 }
 
