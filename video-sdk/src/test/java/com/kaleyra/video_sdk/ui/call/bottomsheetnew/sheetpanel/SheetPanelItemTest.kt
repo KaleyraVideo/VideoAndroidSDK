@@ -15,6 +15,7 @@ import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
 import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import org.junit.After
@@ -83,6 +84,20 @@ class SheetPanelItemTest {
     fun virtualBackgroundAction_virtualBackgroundTextIsDisplayed() {
         callAction = VirtualBackgroundAction()
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun screenShareAction_screenShareTextIsDisplayed() {
+        callAction = ScreenShareAction()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun screenShareActionToggled_stopScreenShareTextIsDisplayed() {
+        callAction = ScreenShareAction(isToggled = true)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

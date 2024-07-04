@@ -219,8 +219,7 @@ internal fun VCallScreen(
                                 isLargeScreen = isLargeScreen,
                                 onActionsPlaced = { itemsPlaced ->
                                     val actions = callActionsUiState.actionList.value
-                                    val dragActions =
-                                        actions.takeLast(max(0, actions.count() - itemsPlaced))
+                                    val dragActions = actions.takeLast(max(0, actions.count() - itemsPlaced))
                                     sheetDragActions = dragActions.toImmutableList()
                                 },
                                 onAnswerClick = callActionsViewModel::accept,
