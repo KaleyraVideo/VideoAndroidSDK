@@ -1082,6 +1082,101 @@ class VCallScreenTest {
         assertEquals(ModalSheetComponent.VirtualBackground, component)
     }
 
+    @Test
+    fun audioModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.Audio
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModalSheetComponent.Audio,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun screenShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.ScreenShare
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModalSheetComponent.ScreenShare,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun fileShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.FileShare
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModalSheetComponent.FileShare,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun whiteboardModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.Whiteboard
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModalSheetComponent.Whiteboard,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun virtualBgModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.VirtualBackground
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModalSheetComponent.VirtualBackground,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),

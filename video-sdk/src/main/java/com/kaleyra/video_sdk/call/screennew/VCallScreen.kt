@@ -295,7 +295,7 @@ internal fun VCallScreen(
             modalSheetComponent = modalSheetComponent,
             sheetState = modalSheetState,
             onRequestDismiss = { onModalSheetComponentChange(null) },
-            onUserMessageActionClick = {}
+            onUserMessageActionClick = { }
         )
     }
 }
