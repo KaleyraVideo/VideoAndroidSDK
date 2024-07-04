@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.ui.call.screennew
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -173,7 +174,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.Audio,
                 sheetState = sheetState!!,
@@ -190,7 +191,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(true, dismissed)
-        coVerify(exactly = 1) { sheetState!!.hide() }
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 
     @Test
@@ -198,7 +199,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.ScreenShare,
                 sheetState = sheetState!!,
@@ -215,7 +216,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(true, dismissed)
-        coVerify(exactly = 1) { sheetState!!.hide() }
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 
     @Test
@@ -223,7 +224,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = sheetState!!,
@@ -240,7 +241,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(true, dismissed)
-        coVerify(exactly = 1) { sheetState!!.hide() }
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 
     @Test
@@ -248,7 +249,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = sheetState!!,
@@ -265,7 +266,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(true, dismissed)
-        coVerify(exactly = 1) { sheetState!!.hide() }
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 
     @Test
@@ -273,7 +274,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = sheetState!!,
@@ -290,7 +291,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(true, dismissed)
-        coVerify(exactly = 1) { sheetState!!.hide() }
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 
     @Test
@@ -301,7 +302,7 @@ class CallScreenModalSheetTest {
         var dismissed = false
         var sheetState: SheetState? = null
         composeTestRule.setContent {
-            sheetState = spyk(rememberModalBottomSheetState())
+            sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
                 modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = sheetState!!,
@@ -319,7 +320,7 @@ class CallScreenModalSheetTest {
             .performClick()
         composeTestRule.waitForIdle()
         assertEquals(false, dismissed)
-        coVerify(exactly = 0) { sheetState!!.hide() }
+        assertEquals(SheetValue.Expanded, sheetState!!.currentValue)
     }
 
     @Test
