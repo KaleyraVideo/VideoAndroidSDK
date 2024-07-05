@@ -58,7 +58,7 @@ fun ScreenShareItem(
             Text(
                 text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleSmall
             )
         }
     }
