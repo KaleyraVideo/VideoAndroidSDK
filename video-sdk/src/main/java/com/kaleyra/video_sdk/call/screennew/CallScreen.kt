@@ -49,7 +49,6 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
-    inputMessage: InputMessage?,
     onBackPressed: () -> Unit,
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
@@ -73,7 +72,6 @@ internal fun CallScreen(
                 sheetState = sheetState,
                 modalSheetState = modalSheetState,
                 modalSheetComponent = modalSheetComponent,
-                inputMessage = inputMessage,
                 onModalSheetComponentChange = { modalSheetComponent = it },
                 onBackPressed = onBackPressed
             )

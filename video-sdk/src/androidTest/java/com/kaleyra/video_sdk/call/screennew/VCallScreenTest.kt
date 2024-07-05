@@ -1378,7 +1378,6 @@ class VCallScreenTest {
                 sheetState = sheetState,
                 modalSheetComponent = modalSheetComponent,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                inputMessage = inputMessage,
                 onModalSheetComponentChange = onModalSheetComponentChange,
                 onBackPressed = onBackPressed,
             )

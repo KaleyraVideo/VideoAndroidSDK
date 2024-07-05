@@ -69,7 +69,6 @@ internal fun VCallScreen(
     sheetState: CallSheetState,
     modalSheetComponent: ModalSheetComponent?,
     modalSheetState: SheetState,
-    inputMessage: InputMessage?,
     onBackPressed: () -> Unit,
     onModalSheetComponentChange: (ModalSheetComponent?) -> Unit,
     modifier: Modifier = Modifier,
@@ -187,7 +186,7 @@ internal fun VCallScreen(
                             ) {
                                 // TODO test this
                                 InputMessageHost(
-                                    inputMessage = inputMessage,
+                                    inputMessage = null,
                                     micMessage = { enabled -> MicMessageText(enabled) },
                                     cameraMessage = { enabled -> CameraMessageText(enabled) }
                                 )
@@ -246,7 +245,7 @@ internal fun VCallScreen(
         },
         containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
         // TODO test this
-        sheetDragHandle = (@Composable { InputMessageHandle(inputMessage) }).takeIf { hasSheetDragContent }
+        sheetDragHandle = (@Composable { InputMessageHandle(null) }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         val layoutDirection = LocalLayoutDirection.current
         val top = paddingValues.calculateTopPadding()

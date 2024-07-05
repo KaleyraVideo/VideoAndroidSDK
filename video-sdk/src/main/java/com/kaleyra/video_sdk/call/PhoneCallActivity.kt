@@ -114,7 +114,6 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
         setContent {
             com.kaleyra.video_sdk.call.screennew.CallScreen(
                 windowSizeClass = calculateWindowSizeClass(this),
-                inputMessage = null,
                 onBackPressed = { }
             )
 //            CallScreen(
