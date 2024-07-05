@@ -27,11 +27,14 @@ import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil
 import io.mockk.every
@@ -1236,6 +1239,113 @@ class VCallScreenTest {
         composeTestRule.waitForIdle()
 
         assertEquals(null, component)
+    }
+
+    @Test
+    fun userClicksOnStream_streamMenuIsDisplayed() {
+        val streams = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(streams).toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen()
+
+        composeTestRule
+                .onNodeWithText("username", useUnmergedTree = true)
+                .assertIsDisplayed()
+                .performClick()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksOnStreamMenuCancel_streamMenuDoesNotExists() {
+        val streams = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(streams).toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen()
+
+        composeTestRule
+            .onNodeWithText("username", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
+
+        val cancelText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        composeTestRule
+            .onNodeWithContentDescription(cancelText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun userClicksOnStopScreenShareOnStreamItem_stopScreenShareInvoked() {
+        val streams = StreamUi(
+            id = "streamId",
+            username = "username",
+            video = VideoUi(id = "videoId", isScreenShare = true),
+            isMine = true
+        )
+        streamUiState.value = StreamUiState(
+            streams = listOf(streams).toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callViewModel.tryStopScreenShare()  }
+    }
+
+    @Test
+    fun streamMenuItemIsDisplayed_dragHandleIsNotDisplayed() {
+        val streams = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(streams).toImmutableList()
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen()
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithText("username", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun largeScreen_dragHandleIsNotDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen(
+            configuration = largeScreenConfiguration
+        )
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun emptySheetDragActions_dragHandleIsNotDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(MicAction()))
+        )
+        composeTestRule.setUpVCallScreen()
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(

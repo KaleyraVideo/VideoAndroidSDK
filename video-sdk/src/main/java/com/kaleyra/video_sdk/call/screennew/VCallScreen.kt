@@ -63,6 +63,8 @@ import kotlin.math.max
 
 internal val PanelTestTag = "PanelTestTag"
 
+internal val StreamMenuContentTestTag = "StreamMenuContentTestTag"
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun VCallScreen(
@@ -94,14 +96,10 @@ internal fun VCallScreen(
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
 
     val onAudioClick = remember { { onModalSheetComponentChange(ModalSheetComponent.Audio) } }
-    val onFileShareClick =
-        remember { { onModalSheetComponentChange(ModalSheetComponent.FileShare) } }
-    val onWhiteboardClick =
-        remember { { onModalSheetComponentChange(ModalSheetComponent.Whiteboard) } }
-    val onVirtualBackgroundClick =
-        remember { { onModalSheetComponentChange(ModalSheetComponent.VirtualBackground) } }
-    val onScreenShareClick =
-        remember { { onModalSheetComponentChange(ModalSheetComponent.ScreenShare) } }
+    val onFileShareClick = remember { { onModalSheetComponentChange(ModalSheetComponent.FileShare) } }
+    val onWhiteboardClick = remember { { onModalSheetComponentChange(ModalSheetComponent.Whiteboard) } }
+    val onVirtualBackgroundClick = remember { { onModalSheetComponentChange(ModalSheetComponent.VirtualBackground) } }
+    val onScreenShareClick = remember { { onModalSheetComponentChange(ModalSheetComponent.ScreenShare) } }
 
     val onMicClick = rememberOnMicClick(callActionsViewModel)
     val onCameraToggle = rememberOnCameraClick(callActionsViewModel)
@@ -111,9 +109,7 @@ internal fun VCallScreen(
 
     var selectedStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    // TODO do a resize test when writing test
     val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && selectedStream == null && sheetDragActions.value.isNotEmpty() } }
-    // TODO test reset on resize
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
     VCallScreenScaffold(
@@ -124,6 +120,7 @@ internal fun VCallScreen(
             CallAppBar(
                 // TODO test this
                 onParticipantClick = { /*TODO*/ },
+                // TODO test this
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -131,7 +128,6 @@ internal fun VCallScreen(
         sheetPanelContent = if (isLargeScreen) {
             {
                 AnimatedVisibility(
-                    // TODO test this
                     visible = showSheetPanelContent,
                     enter = fadeIn(tween()),
                     exit = fadeOut(tween())
@@ -157,10 +153,8 @@ internal fun VCallScreen(
         sheetDragContent = {
             if (hasSheetDragContent) {
                 val sheetActionsCount = callActionsUiState.actionList.count()
-                val answerActionSlots =
-                    if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
-                val itemsPerRow =
-                    max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
+                val answerActionSlots = if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
+                val itemsPerRow = max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     itemsPerRow = itemsPerRow,
@@ -248,7 +242,8 @@ internal fun VCallScreen(
                 } else {
                     HStreamMenuContent(
                         selectedStream = currentlySelectedStream,
-                        onDismiss = { selectedStream = null }
+                        onDismiss = { selectedStream = null },
+                        modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
             }
@@ -265,6 +260,7 @@ internal fun VCallScreen(
         Box(
             modifier = Modifier
                 .pointerInteropFilter {
+                    // TODO test this
                     when {
                         showSheetPanelContent -> {
                             showSheetPanelContent = false
@@ -282,9 +278,7 @@ internal fun VCallScreen(
             StreamComponent(
                 windowSizeClass = windowSizeClass,
                 highlightedStream = selectedStream,
-                // TODO test this
                 onStreamClick = { stream -> selectedStream = stream },
-                // TODO test this
                 onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
                 // TODO test this
                 onMoreParticipantClick = {},
@@ -310,10 +304,10 @@ internal fun VCallScreen(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentChange(null) },
+                // TODO test this
                 onUserMessageActionClick = { }
             )
         }
-
     }
 }
 

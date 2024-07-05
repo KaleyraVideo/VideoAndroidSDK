@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.streamnew.viewmodel
+package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video_common_ui.CallUI
@@ -13,6 +13,7 @@ import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.every
 import io.mockk.mockk
