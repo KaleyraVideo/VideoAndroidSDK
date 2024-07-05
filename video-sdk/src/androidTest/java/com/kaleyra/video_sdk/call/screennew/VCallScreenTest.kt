@@ -1348,6 +1348,22 @@ class VCallScreenTest {
         composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
+    @Test
+    fun userClicksAppBarBack_onBackPressedInvoked() {
+        var clicked = false
+        composeTestRule.setUpVCallScreen(
+            onBackPressed = { clicked = true }
+        )
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_back)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(true, clicked)
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
