@@ -59,13 +59,14 @@ internal fun CallScreen(
 
     KaleyraM3Theme {
         if (isCompactHeight) {
-//        HCallScreen(
-//            windowSizeClass = windowSizeClass,
-//            inputMessage = inputMessage,
-//            sheetState = sheetState,
-//            onChangeSheetState = onChangeSheetState,
-//            onBackPressed = onBackPressed
-//        )
+            HCallScreen(
+                windowSizeClass = windowSizeClass,
+                sheetState = sheetState,
+                modalSheetState = modalSheetState,
+                modalSheetComponent = modalSheetComponent,
+                onModalSheetComponentChange = { modalSheetComponent = it },
+                onBackPressed = onBackPressed
+            )
         } else {
             VCallScreen(
                 windowSizeClass = windowSizeClass,
@@ -91,11 +92,20 @@ internal fun rememberOnMicClick(callActionsViewModel: CallActionsViewModel): (Bo
 @Composable
 internal fun rememberOnCameraClick(callActionsViewModel: CallActionsViewModel): (Boolean) -> Unit {
     val activity = LocalContext.current.findActivity()
-    return remember(callActionsViewModel) { { _: Boolean -> callActionsViewModel.toggleCamera(activity) } }
+    return remember(callActionsViewModel) {
+        { _: Boolean ->
+            callActionsViewModel.toggleCamera(
+                activity
+            )
+        }
+    }
 }
 
 @Composable
-internal fun rememberOnScreenShareClick(callActionsViewModel: CallActionsViewModel, onStartScreenShareClick: () -> Unit): (Boolean) -> Unit {
+internal fun rememberOnScreenShareClick(
+    callActionsViewModel: CallActionsViewModel,
+    onStartScreenShareClick: () -> Unit,
+): (Boolean) -> Unit {
     return remember(callActionsViewModel) {
         { _: Boolean ->
             if (!callActionsViewModel.tryStopScreenShare()) onStartScreenShareClick()
@@ -112,161 +122,6 @@ internal fun rememberOnChatClick(callActionsViewModel: CallActionsViewModel): ()
 @Composable
 internal fun rememberOnHangUpClick(callActionsViewModel: CallActionsViewModel): () -> Unit {
     return remember(callActionsViewModel) { { callActionsViewModel.hangUp() } }
-}
-
-@Composable
-internal fun HCallScreen(
-    windowSizeClass: WindowSizeClass,
-    callActions: ImmutableList<CallActionUI>,
-    inputMessage: InputMessage?,
-    sheetState: CallSheetState,
-    showAnswerAction: Boolean,
-    onChangeSheetState: () -> Unit,
-    onParticipantClick: () -> Unit,
-    onAnswerActionClick: () -> Unit,
-    onHangUpClick: () -> Unit,
-    onMicToggled: (Boolean) -> Unit,
-    onCameraToggled: (Boolean) -> Unit,
-    onScreenShareToggle: (Boolean) -> Unit,
-    onFlipCameraClick: () -> Unit,
-    onAudioClick: () -> Unit,
-    onChatClick: () -> Unit,
-    onFileShareClick: () -> Unit,
-    onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit,
-    onBackPressed: () -> Unit,
-) {
-    var currentStream by remember { mutableStateOf<StreamUi?>(null) }
-    var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember { derivedStateOf { currentStream == null && sheetDragActions.value.isNotEmpty() } }
-
-    HCallScreenScaffold(
-        sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        topAppBar = {
-            CallAppBarComponent(
-                title = "title",
-                logo = Logo(),
-                recording = false,
-                participantCount = 3,
-                onParticipantClick = onParticipantClick,
-                onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-        },
-        sheetDragContent = {
-            if (hasSheetDragContent) {
-                val itemsPerColumn = callActions.count() - sheetDragActions.count() + 1
-                VSheetDragContent(
-                    callActions = sheetDragActions,
-                    itemsPerColumn = itemsPerColumn,
-                    onHangUpClick = onHangUpClick,
-                    onMicToggled = onMicToggled,
-                    onCameraToggled = onCameraToggled,
-                    onScreenShareToggle = onScreenShareToggle,
-                    onFlipCameraClick = onFlipCameraClick,
-                    onAudioClick = onAudioClick,
-                    onChatClick = onChatClick,
-                    onFileShareClick = onFileShareClick,
-                    onWhiteboardClick = onWhiteboardClick,
-                    onVirtualBackgroundClick = onVirtualBackgroundClick,
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(14.dp)
-                )
-            }
-        },
-        sheetContent = {
-            AnimatedContent(
-                targetState = currentStream == null,
-                contentAlignment = Alignment.Center,
-                label = "sheet content"
-            ) {
-                if (it) {
-                    Box(Modifier.animateContentSize()) {
-                        VSheetContent(
-                            callActions = callActions,
-                            maxActions = CompactScreenMaxActions,
-                            showAnswerAction = showAnswerAction,
-                            isMoreToggled = false,
-                            onActionsPlaced = { itemsPlaced ->
-                                sheetDragActions =
-                                    ImmutableList(callActions.value.takeLast(callActions.count() - itemsPlaced))
-                            },
-                            onAnswerClick = onAnswerActionClick,
-                            onHangUpClick = onHangUpClick,
-                            onMicToggle = onMicToggled,
-                            onCameraToggle = onCameraToggled,
-                            onScreenShareToggle = onScreenShareToggle,
-                            onFlipCameraClick = onFlipCameraClick,
-                            onAudioClick = onAudioClick,
-                            onChatClick = onChatClick,
-                            onFileShareClick = onFileShareClick,
-                            onWhiteboardClick = onWhiteboardClick,
-                            onVirtualBackgroundClick = onVirtualBackgroundClick,
-                            onMoreToggle = {
-                                onChangeSheetState()
-                            },
-                            modifier = Modifier.padding(
-                                start = 5.dp,
-                                top = 14.dp,
-                                end = 14.dp,
-                                bottom = 14.dp
-                            )
-                        )
-                    }
-                } else {
-//                    VStreamMenuContent(
-//                        fullscreen = currentStream == streamContentState.fullscreenStream,
-//                        pin = streamContentState.pinnedStreams.containsKey(currentStream?.id),
-//                        onCancelClick = { currentStream = null },
-//                        onFullscreenClick = { isFullscreen ->
-//                            if (isFullscreen) streamContentState.fullscreen(null)
-//                            else currentStream?.apply { streamContentState.fullscreen(this) }
-//                            currentStream = null
-//                        },
-//                        onPinClick = { isPinned ->
-//                            if (isPinned) streamContentState.unpin(currentStream!!)
-//                            else currentStream?.apply { streamContentState.pin(this) }
-//                            currentStream = null
-//                        }
-//                    )
-                }
-            }
-
-        },
-        containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
-        sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
-    ) { paddingValues ->
-        val layoutDirection = LocalLayoutDirection.current
-        val top = paddingValues.calculateTopPadding()
-        val bottom = paddingValues.calculateBottomPadding()
-        val left = paddingValues.calculateLeftPadding(layoutDirection)
-
-//        StreamContent(
-//            state = streamContentState,
-//            onStreamClick = {
-//                currentStream = if (currentStream != null && currentStream != it) null else it
-//            },
-//            onStopScreenShareClick = {},
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .navigationBarsPadding()
-//                .padding(
-//                    start = left,
-//                    top = top,
-//                    bottom = bottom,
-//                    end = 116.dp
-//                )
-//        )
-
-//        InputMessageHost(
-//            inputMessage = inputMessage,
-//            modifier = Modifier
-//                .padding(vertical = 16.dp)
-//                .align(Alignment.BottomCenter)
-//        )
-    }
 }
 
 @Composable

@@ -1368,7 +1368,6 @@ class VCallScreenTest {
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
         modalSheetComponent: ModalSheetComponent? = null,
-        inputMessage: InputMessage? = null,
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
         onBackPressed: () -> Unit = { },
     ) {
