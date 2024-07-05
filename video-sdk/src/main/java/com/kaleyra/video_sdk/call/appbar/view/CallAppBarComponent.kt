@@ -40,7 +40,6 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
@@ -58,7 +57,7 @@ internal object CallAppBarDefaults {
 internal val RecordingDotTag = "RecordingDotTag"
 
 @Composable
-internal fun CallAppBar(
+internal fun CallAppBarComponent(
     modifier: Modifier = Modifier,
     viewModel: CallAppBarViewModel = viewModel(factory = CallAppBarViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     onParticipantClick: () -> Unit,
@@ -66,7 +65,7 @@ internal fun CallAppBar(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    CallAppBar(
+    CallAppBarComponent(
         modifier = modifier,
         title = uiState.title,
         logo = uiState.logo,
@@ -77,7 +76,7 @@ internal fun CallAppBar(
 }
 
 @Composable
-internal fun CallAppBar(
+internal fun CallAppBarComponent(
     modifier: Modifier = Modifier,
     title: String?,
     logo: Logo,
@@ -189,8 +188,8 @@ private fun CallParticipantsButton(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun CallInfoBarPreview() = KaleyraM3Theme {
-    CallAppBar(
+internal fun CallAppBarComponentPreview() = KaleyraM3Theme {
+    CallAppBarComponent(
         logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
         title = "09:56",
         participantCount = 2,

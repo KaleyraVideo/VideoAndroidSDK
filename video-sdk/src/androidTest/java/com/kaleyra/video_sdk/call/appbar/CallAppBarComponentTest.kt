@@ -12,7 +12,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.appbar.view.CallAppBar
+import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.appbar.view.RecordingDotTag
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import org.junit.After
@@ -20,7 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class CallAppBarTest {
+class CallAppBarComponentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -40,7 +40,7 @@ class CallAppBarTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            CallAppBar(
+            CallAppBarComponent(
                 logo = logo,
                 recording = recording,
                 title = title,
