@@ -243,7 +243,6 @@ internal fun VCallScreen(
                 }
             }
         },
-        containerColor = if (!isSystemInDarkTheme()) Color(0xFFF9F9FF) else Color(0xFF000000),
         // TODO test this
         sheetDragHandle = (@Composable { InputMessageHandle(null) }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
