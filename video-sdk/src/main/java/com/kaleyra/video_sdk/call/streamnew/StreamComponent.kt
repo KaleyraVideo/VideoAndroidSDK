@@ -114,7 +114,7 @@ internal fun StreamComponent(
         windowSizeClass = windowSizeClass,
         highlightedStreamId = highlightedStreamId,
         onStreamClick = onStreamClick,
-        onStopScreenShareClick = onStopScreenShareClick,
+        onStopScreenShareClick = viewModel::tryStopScreenShare,
         onMoreParticipantClick = onMoreParticipantClick,
         modifier = modifier
     )
