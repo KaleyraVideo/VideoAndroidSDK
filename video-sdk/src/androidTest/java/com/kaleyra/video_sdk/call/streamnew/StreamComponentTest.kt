@@ -36,7 +36,7 @@ class StreamComponentTest {
 
     private var streamUiState by mutableStateOf(StreamUiState())
 
-    private var highlightedStream by mutableStateOf<StreamUi?>(null)
+    private var highlightedStreamId by mutableStateOf<String?>(null)
 
     private var maxFeaturedStreams by mutableStateOf(Int.MAX_VALUE)
 
@@ -52,7 +52,7 @@ class StreamComponentTest {
             StreamComponent(
                 streamUiState = streamUiState,
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStream = highlightedStream,
+                highlightedStreamId = highlightedStreamId,
                 onStreamClick = { streamClicked = it },
                 onStopScreenShareClick = { stopScreenShareClicked = true },
                 onMoreParticipantClick = { moreParticipantClicked = true },
@@ -64,7 +64,7 @@ class StreamComponentTest {
     @After
     fun tearDown() {
         streamUiState = StreamUiState()
-        highlightedStream = null
+        highlightedStreamId = null
         maxFeaturedStreams = Int.MAX_VALUE
         moreParticipantClicked = false
         stopScreenShareClicked = false
@@ -251,7 +251,7 @@ class StreamComponentTest {
     @Test
     fun highlightedStreamIsValid_highlightedStreamIsDisplayed() {
         val stream = defaultStreamUi()
-        highlightedStream = stream
+        highlightedStreamId = stream.id
         streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_selected)

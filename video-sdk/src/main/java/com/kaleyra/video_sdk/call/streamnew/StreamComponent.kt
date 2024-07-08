@@ -97,9 +97,8 @@ internal fun StreamComponent(
     ),
     windowSizeClass: WindowSizeClass,
     onStreamClick: (StreamUi) -> Unit,
-    onStopScreenShareClick: () -> Unit,
     onMoreParticipantClick: () -> Unit,
-    highlightedStream: StreamUi? = null,
+    highlightedStreamId: String? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -113,7 +112,7 @@ internal fun StreamComponent(
     StreamComponent(
         streamUiState = uiState,
         windowSizeClass = windowSizeClass,
-        highlightedStream = highlightedStream,
+        highlightedStreamId = highlightedStreamId,
         onStreamClick = onStreamClick,
         onStopScreenShareClick = onStopScreenShareClick,
         onMoreParticipantClick = onMoreParticipantClick,
@@ -125,7 +124,7 @@ internal fun StreamComponent(
 internal fun StreamComponent(
     streamUiState: StreamUiState,
     windowSizeClass: WindowSizeClass,
-    highlightedStream: StreamUi?,
+    highlightedStreamId: String?,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
     onMoreParticipantClick: () -> Unit,
@@ -181,8 +180,8 @@ internal fun StreamComponent(
         ) {
             streamsToDisplay.fastForEachIndexed { index, stream ->
                 key(stream.id) {
-                    val streamItemState: StreamItemState = remember(stream, highlightedStream, streamUiState) {
-                        streamItemStateFor(stream, highlightedStream, streamUiState)
+                    val streamItemState: StreamItemState = remember(stream, highlightedStreamId, streamUiState) {
+                        streamItemStateFor(stream, highlightedStreamId, streamUiState)
                     }
                     val displayAsMoreParticipantsItem =
                         !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
@@ -259,11 +258,11 @@ private fun streamsToDisplayFor(
 
 private fun streamItemStateFor(
     stream: StreamUi,
-    highlightedStream: StreamUi?,
+    highlightedStreamId: String?,
     state: StreamUiState,
 ): StreamItemState {
     return StreamItemState(
-        isHighlighted = stream.id == highlightedStream?.id,
+        isHighlighted = stream.id == highlightedStreamId,
         isLocalScreenShare = stream.video?.isScreenShare == true && stream.isMine,
         isFullscreen = state.fullscreenStream?.id == stream.id,
         isPinned = state.pinnedStreams.value.fastAny { it.id == stream.id }
@@ -321,7 +320,7 @@ internal fun StreamComponentPreview() {
             StreamComponent(
                 streamUiState = StreamUiState(streams = previewStreams),
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStream = null,
+                highlightedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
                 onMoreParticipantClick = {}
@@ -341,7 +340,7 @@ internal fun StreamComponentPinPreview() {
                     pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
                 ),
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStream = null,
+                highlightedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
                 onMoreParticipantClick = {}
