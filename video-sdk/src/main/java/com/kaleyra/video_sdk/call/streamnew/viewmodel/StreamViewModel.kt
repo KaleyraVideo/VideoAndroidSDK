@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
@@ -26,6 +28,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     override fun initialState() = StreamUiState()
 
     private var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
+
+    private val availableInputs: Set<Input>?
+        get() = call.getValue()?.inputs?.availableInputs?.value
 
     init {
         viewModelScope.launch {
@@ -58,9 +63,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         }
     }
 
-    fun fullscreen(stream: StreamUi?) {
+    fun fullscreen(streamId: String?) {
         val streams = uiState.value.streams.value
-        if (stream != null && streams.find { it.id == stream.id } == null) return
+        val stream = streams.find { it.id == streamId }
+        if (streamId != null && stream == null) return
         _uiState.update { it.copy(fullscreenStream = stream) }
     }
 
@@ -68,9 +74,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         maxPinnedStreams = count
     }
 
-    fun pin(stream: StreamUi): Boolean {
+    fun pin(streamId: String): Boolean {
         val streams = uiState.value.streams.value
-        if (streams.find { it.id == stream.id } == null || uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
+        val stream = streams.find { it.id == streamId }
+        if (stream == null || uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
         _uiState.update {
             val new = (it.pinnedStreams.value + stream).toImmutableList()
             it.copy(pinnedStreams = new)
@@ -78,10 +85,27 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         return true
     }
 
-    fun unpin(stream: StreamUi) {
+    fun unpin(streamId: String) {
+        val streams = uiState.value.streams.value
+        val stream = streams.find { it.id == streamId }
+        if (stream == null) return
         _uiState.update {
             val new = (it.pinnedStreams.value - stream).toImmutableList()
             it.copy(pinnedStreams = new)
+        }
+    }
+
+    // TODO remove code duplication in CallActionsViewModel
+    fun tryStopScreenShare(): Boolean {
+        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value }
+        val call = call.getValue()
+        return if (input == null || call == null) false
+        else {
+            val me = call.participants.value.me
+            val streams = me?.streams?.value
+            val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
+            if (stream != null) me.removeStream(stream)
+            input.tryDisable() && stream != null
         }
     }
 

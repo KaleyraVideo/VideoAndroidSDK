@@ -254,6 +254,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         conversation.chat(context = context, otherParticipants.first())
     }
 
+    // TODO remove code duplication in StreamViewModel
     fun tryStopScreenShare(): Boolean {
         val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value }
         val call = call.getValue()

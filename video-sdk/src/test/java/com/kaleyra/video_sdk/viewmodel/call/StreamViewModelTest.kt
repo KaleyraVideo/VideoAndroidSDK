@@ -1,16 +1,21 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -20,6 +25,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -165,7 +171,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        viewModel.fullscreen(streamMock1)
+        viewModel.fullscreen(streamMock1.id)
 
         assertEquals(streamMock1, viewModel.uiState.value.fullscreenStream)
     }
@@ -179,7 +185,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        viewModel.fullscreen(streamMock2)
+        viewModel.fullscreen(streamMock2.id)
 
         assertEquals(null, viewModel.uiState.value.fullscreenStream)
     }
@@ -193,7 +199,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.fullscreen(streamMock1)
+        viewModel.fullscreen(streamMock1.id)
         assertEquals(streamMock1, viewModel.uiState.value.fullscreenStream)
 
         viewModel.fullscreen(null)
@@ -210,7 +216,7 @@ class StreamViewModelTest {
         val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
 
         advanceUntilIdle()
-        viewModel.fullscreen(streamMock1)
+        viewModel.fullscreen(streamMock1.id)
 
         val actual = viewModel.uiState.first().fullscreenStream
         assertEquals(streamMock1, actual)
@@ -232,7 +238,7 @@ class StreamViewModelTest {
         val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
 
         advanceUntilIdle()
-        viewModel.fullscreen(streamMock1)
+        viewModel.fullscreen(streamMock1.id)
 
         val actual = viewModel.uiState.first().fullscreenStream
         assertEquals(streamMock1, actual)
@@ -252,7 +258,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        val isPinned = viewModel.pin(streamMock1)
+        val isPinned = viewModel.pin(streamMock1.id)
 
         assertEquals(false, isPinned)
         assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
@@ -267,7 +273,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        val isPinned = viewModel.pin(streamMock1)
+        val isPinned = viewModel.pin(streamMock1.id)
 
         assertEquals(true, isPinned)
         assertEquals(streamMock1, viewModel.uiState.value.pinnedStreams.value[0])
@@ -284,8 +290,8 @@ class StreamViewModelTest {
         viewModel.setMaxPinnedStreams(1)
 
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
-        val isPinned = viewModel.pin(streamMock2)
+        viewModel.pin(streamMock1.id)
+        val isPinned = viewModel.pin(streamMock2.id)
 
         assertEquals(false, isPinned)
         assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
@@ -300,9 +306,9 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
-        viewModel.pin(streamMock2)
-        val isPinned = viewModel.pin(streamMock3)
+        viewModel.pin(streamMock1.id)
+        viewModel.pin(streamMock2.id)
+        val isPinned = viewModel.pin(streamMock3.id)
 
         assertEquals(false, isPinned)
         assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
@@ -316,11 +322,11 @@ class StreamViewModelTest {
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
+        viewModel.pin(streamMock1.id)
 
         assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
 
-        viewModel.unpin(streamMock1)
+        viewModel.unpin(streamMock1.id)
 
         assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
     }
@@ -335,7 +341,7 @@ class StreamViewModelTest {
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
+        viewModel.pin(streamMock1.id)
 
         streams.value = listOf(streamMock1, screenShareMock)
         advanceUntilIdle()
@@ -354,8 +360,8 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
         viewModel.setMaxPinnedStreams(2)
-        viewModel.pin(streamMock1)
-        viewModel.pin(streamMock2)
+        viewModel.pin(streamMock1.id)
+        viewModel.pin(streamMock2.id)
 
         assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
         streams.value = listOf(streamMock1, streamMock2, screenShareMock)
@@ -374,8 +380,8 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
-        viewModel.pin(streamMock2)
+        viewModel.pin(streamMock1.id)
+        viewModel.pin(streamMock2.id)
 
         assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
 
@@ -395,8 +401,8 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
         advanceUntilIdle()
-        viewModel.pin(streamMock1)
-        viewModel.pin(streamMock2)
+        viewModel.pin(streamMock1.id)
+        viewModel.pin(streamMock2.id)
 
         assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
 
@@ -405,5 +411,120 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         assertEquals(listOf(updatedStreamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun noScreenShareInputAvailable_stopScreenShareFail() = runTest {
+        val cameraInput = mockk<Input.Video.Camera.Internal> {
+            every { enabled } returns MutableStateFlow(true)
+        }
+        val usbInput = mockk<Input.Video.Camera.Usb> {
+            every { enabled } returns MutableStateFlow(true)
+        }
+        val availableInputs = setOf(cameraInput, usbInput)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val isStopped = viewModel.tryStopScreenShare()
+        assertEquals(false, isStopped)
+    }
+
+    @Test
+    fun noScreenShareInputActive_stopScreenShareFail() = runTest {
+        val screenShareInput = mockk<Input.Video.Application> {
+            every { enabled } returns MutableStateFlow(false)
+            every { tryDisable() } returns true
+        }
+        val usbInput = mockk<Input.Video.Camera.Usb> {
+            every { enabled } returns MutableStateFlow(true)
+        }
+        val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns SCREEN_SHARE_STREAM_ID
+        }
+        val meMock = mockk<CallParticipant.Me>(relaxed = true) {
+            every { streams } returns MutableStateFlow(listOf(myStreamMock))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meMock
+        }
+        val availableInputs = setOf(screenShareInput, usbInput)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
+        every { callMock.participants } returns MutableStateFlow(participants)
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+
+        advanceUntilIdle()
+
+        val isStopped = viewModel.tryStopScreenShare()
+        verify(exactly = 0) { screenShareInput.tryDisable() }
+        assertEquals(false, isStopped)
+    }
+
+    @Test
+    fun noScreenShareStream_stopScreenShareFail() = runTest {
+        val screenShareInput = mockk<Input.Video.Application> {
+            every { enabled } returns MutableStateFlow(true)
+            every { tryDisable() } returns true
+        }
+        val usbInput = mockk<Input.Video.Camera.Usb> {
+            every { enabled } returns MutableStateFlow(true)
+        }
+        val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns "streamId"
+        }
+        val meMock = mockk<CallParticipant.Me>(relaxed = true) {
+            every { streams } returns MutableStateFlow(listOf(myStreamMock))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meMock
+        }
+        val availableInputs = setOf(screenShareInput, usbInput)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
+        every { callMock.participants } returns MutableStateFlow(participants)
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+
+        advanceUntilIdle()
+
+        val isStopped = viewModel.tryStopScreenShare()
+        assertEquals(false, isStopped)
+    }
+
+    @Test
+    fun deviceScreenShareActive_stopScreenShareSuccess() {
+        testTryStopScreenShare(mockk<Input.Video.Screen>())
+    }
+
+    @Test
+    fun appScreenShareActive_stopScreenShareSuccess() {
+        testTryStopScreenShare(mockk<Input.Video.Application>())
+    }
+
+    private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
+        every { screenShareVideoMock.enabled } returns MutableStateFlow(true)
+        every { screenShareVideoMock.tryDisable() } returns true
+        val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns SCREEN_SHARE_STREAM_ID
+        }
+        val meMock = mockk<CallParticipant.Me>(relaxed = true) {
+            every { streams } returns MutableStateFlow(listOf(myStreamMock))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meMock
+        }
+        val availableInputs = setOf(screenShareVideoMock, mockk<Input.Video.Screen>(), mockk<Input.Video.Application>(), mockk<Input.Video.Camera>())
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
+        every { callMock.participants } returns MutableStateFlow(participants)
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+
+        advanceUntilIdle()
+
+        val isStopped = viewModel.tryStopScreenShare()
+        verify(exactly = 1) { screenShareVideoMock.tryDisable() }
+        verify(exactly = 1) { meMock.removeStream(myStreamMock) }
+        assertEquals(true, isStopped)
     }
 }
