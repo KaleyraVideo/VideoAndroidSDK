@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.streamnew
+package com.kaleyra.video_sdk.ui.call.streamnew
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
@@ -7,6 +7,9 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.streamnew.MaxPinnedStreamsCompact
+import com.kaleyra.video_sdk.call.streamnew.MaxPinnedStreamsExpanded
+import com.kaleyra.video_sdk.call.streamnew.StreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
@@ -19,7 +22,10 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class StreamComponentViewModelTest {
 
     @get:Rule
