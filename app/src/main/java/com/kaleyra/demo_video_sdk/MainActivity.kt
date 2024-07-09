@@ -360,22 +360,19 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         selectedUsersItemAdapter.add(NoUserSelectedItem())
 
         lifecycleScope.launch {
-            restApi.listUsers()
-                .filter { it != LoginManager.getLoggedUser(this@MainActivity) }
-                .forEach {
-                    binding!!.loading.visibility = View.GONE
-                    // Add each user(except the logged one) to the recyclerView adapter to be displayed in the list.
-                    usersList.add(UserSelectionItem(it))
-                    itemAdapter!!.set(usersList)
-                    for (userSelected in calleeSelected) {
-                        selectUser(userSelected, usersList.indexOf(UserSelectionItem(userSelected)))
-                    }
-                    if (searchView != null) itemAdapter!!.filter(searchView!!.query)
-                    setRefreshing(false)
+            // Fetch the sample users you can use to login with.
+            // Add each user(except the logged one) to the recyclerView adapter to be displayed in the list.
+            restApi.listUsers().filter { it != LoginManager.getLoggedUser(this@MainActivity) }.apply {
+                usersList.addAll(map { UserSelectionItem(it) })
+                itemAdapter!!.setNewList(usersList)
+                for (userSelected in calleeSelected) {
+                    selectUser(userSelected, usersList.indexOf(UserSelectionItem(userSelected)))
                 }
+                searchView?.query?.let { itemAdapter!!.filter(searchView!!.query) }
+                binding!!.loading.visibility = View.GONE
+                setRefreshing(false)
+            }
         }
-        // Fetch the sample users you can use to login with.
-
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
