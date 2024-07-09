@@ -39,7 +39,6 @@ import com.kaleyra.demo_video_sdk.R.string
 import com.kaleyra.demo_video_sdk.databinding.ActivityLoginBinding
 import com.kaleyra.demo_video_sdk.ui.activities.CollapsingToolbarActivity
 import com.kaleyra.demo_video_sdk.ui.adapter_items.UserItem
-import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.mikepenz.fastadapter.FastAdapter
@@ -49,9 +48,6 @@ import com.mikepenz.fastadapter.extensions.ExtensionsFactories.register
 import com.mikepenz.fastadapter.listeners.ItemFilterListener
 import com.mikepenz.fastadapter.select.SelectExtension
 import com.mikepenz.fastadapter.select.SelectExtensionFactory
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -74,6 +70,7 @@ class LoginActivity : CollapsingToolbarActivity(), OnQueryTextListener {
     // the userAlias is the identifier of the created user via Bandyer-server restCall see https://docs.bandyer.com/Bandyer-RESTAPI/#create-user
     private var userAlias: String? = ""
     private val usersList = ArrayList<UserItem>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_login)
@@ -154,25 +151,23 @@ class LoginActivity : CollapsingToolbarActivity(), OnQueryTextListener {
 
     override fun onRefresh() {
         itemAdapter.clear()
+        setRefreshing(true)
         binding!!.loading.visibility = View.VISIBLE
         // Fetch the sample users you can use to login with.
         lifecycleScope.launch {
-            binding!!.loading.visibility = View.GONE
             usersList.clear()
-            restApi.listUsers()
-                .map { UserItem(it) }
-                .forEach { user ->
-                    // Add each user(except the logged one) to the recyclerView adapter to be displayed in the list.
-                    usersList.add(user)
-                    setRefreshing(false)
-                    itemAdapter.set(usersList)
-                    if (searchView != null) itemAdapter.filter(searchView!!.query)
-                }
+            usersList.addAll(restApi.listUsers().map { UserItem(it) })
+            setRefreshing(false)
+            binding!!.loading.visibility = View.GONE
+            itemAdapter.setNewList(usersList)
+            searchView?.query?.let { filter -> itemAdapter.filter(filter) }
+
         }
     }
 
     companion object {
-        @JvmStatic fun show(context: Activity) {
+        @JvmStatic
+        fun show(context: Activity) {
             val intent = Intent(context, LoginActivity::class.java)
             context.startActivity(intent)
         }
