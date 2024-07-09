@@ -1376,8 +1376,11 @@ class VCallScreenTest {
                 windowSizeClass = WindowSizeClassUtil.currentWindowAdaptiveInfo(configuration),
                 sheetState = sheetState,
                 modalSheetComponent = modalSheetComponent,
+                onChangeSheetState = {},
+                selectedStreamId = null,
+                onStreamSelected = {},
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                onModalSheetComponentChange = onModalSheetComponentChange,
+                onModalSheetComponentRequest = onModalSheetComponentChange,
                 onBackPressed = onBackPressed,
             )
         }
