@@ -230,7 +230,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction(isToggled = true))),
+                callActions = ImmutableList(listOf(ScreenShareAction())),
                 onModalSheetComponentRequest = {}
             )
         }
@@ -251,7 +251,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction(isToggled = true))),
+                callActions = ImmutableList(listOf(ScreenShareAction())),
                 onModalSheetComponentRequest = { component = it }
             )
         }

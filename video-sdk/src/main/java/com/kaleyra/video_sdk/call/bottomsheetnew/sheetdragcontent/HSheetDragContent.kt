@@ -60,7 +60,7 @@ internal fun HSheetDragContent(
         onMicToggle = remember(viewModel) { { viewModel.toggleMic(activity) } },
         onCameraToggle = remember(viewModel) { { viewModel.toggleCamera(activity) } } ,
         onScreenShareToggle = remember(viewModel) {
-                { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
+            { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },

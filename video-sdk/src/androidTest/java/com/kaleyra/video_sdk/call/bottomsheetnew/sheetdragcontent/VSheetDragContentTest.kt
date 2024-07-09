@@ -4,25 +4,36 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
+import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
 import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
 import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -32,6 +43,228 @@ class VSheetDragContentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private val callActionsUiState = MutableStateFlow(CallActionsUiState())
+
+    private val callActionsViewModel = mockk<CallActionsViewModel>(relaxed = true) {
+        every { uiState } returns callActionsUiState
+    }
+    
+    @Test
+    fun userClicksHangUp_hangUpInvoked() {
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(HangUpAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.hangUp() }
+    }
+
+    @Test
+    fun userTogglesMic_toggleMicInvoked() {
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(MicAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.toggleMic(any()) }
+    }
+
+    @Test
+    fun userTogglesCamera_toggleCameraInvoked() {
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(CameraAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.toggleCamera(any()) }
+    }
+
+    @Test
+    fun userClicksChat_showChatInvoked() {
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ChatAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.showChat(any()) }
+    }
+
+    @Test
+    fun userClicksFlipCamera_switchCameraInvoked() {
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FlipCameraAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.switchCamera() }
+    }
+
+    @Test
+    fun userClicksAudio_onModalSheetComponentRequestAudio() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(AudioAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.Audio, component)
+    }
+
+    @Test
+    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.FileShare, component)
+    }
+
+    @Test
+    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(WhiteboardAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.Whiteboard, component)
+    }
+
+    @Test
+    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(VirtualBackgroundAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.VirtualBackground, component)
+    }
+
+    @Test
+    fun userClicksScreenShareWhenEnabled_tryStopScreenShareInvoked() {
+        every { callActionsViewModel.tryStopScreenShare() } returns true
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            VSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.ScreenShare, component)
+    }
+    
     @Test
     fun testItemsPlacement() {
         val itemsPerColumn = 2
@@ -52,8 +285,8 @@ class VSheetDragContentTest {
                 ),
                 itemsPerColumn = itemsPerColumn,
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -87,8 +320,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(MicAction())),
                 onHangUpClick = { },
-                onMicToggled = { isClicked = it },
-                onCameraToggled = { },
+                onMicToggle = { isClicked = it },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -111,8 +344,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(CameraAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { isClicked = it },
+                onMicToggle = { },
+                onCameraToggle = { isClicked = it },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -135,8 +368,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(ScreenShareAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { isClicked = true },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -159,8 +392,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { isClicked = true },
                 onAudioClick = { },
@@ -183,8 +416,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(AudioAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { isClicked = true },
@@ -207,8 +440,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(ChatAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -231,8 +464,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -255,8 +488,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
@@ -279,8 +512,8 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
                 onHangUpClick = { },
-                onMicToggled = { },
-                onCameraToggled = { },
+                onMicToggle = { },
+                onCameraToggle = { },
                 onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
