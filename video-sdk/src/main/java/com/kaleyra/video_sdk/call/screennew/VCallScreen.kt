@@ -6,7 +6,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,24 +21,18 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.CameraMessageText
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.MicMessageText
@@ -47,16 +40,10 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import kotlinx.coroutines.launch
-import kotlin.math.max
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -67,45 +54,20 @@ internal val StreamMenuContentTestTag = "StreamMenuContentTestTag"
 internal fun VCallScreen(
     windowSizeClass: WindowSizeClass,
     sheetState: CallSheetState,
-    modalSheetComponent: ModalSheetComponent?,
     modalSheetState: SheetState,
+    onChangeSheetState: (Boolean) -> Unit,
+    selectedStreamId: String?,
+    onStreamSelected: (String?) -> Unit,
+    modalSheetComponent: ModalSheetComponent?,
+    onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
     onBackPressed: () -> Unit,
-    onModalSheetComponentChange: (ModalSheetComponent?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(
-        WindowWidthSizeClass.Medium,
-        WindowWidthSizeClass.Expanded
-    )
+    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
 
-    val scope = rememberCoroutineScope()
-    val onChangeSheetState: (Boolean) -> Unit = remember(sheetState) {
-        { isSheetCollapsed: Boolean ->
-            scope.launch {
-                if (isSheetCollapsed) sheetState.expand()
-                else sheetState.collapse()
-            }
-        }
-    }
-
-    val callActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
-    val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
-
-    val onAudioClick = remember { { onModalSheetComponentChange(ModalSheetComponent.Audio) } }
-    val onFileShareClick = remember { { onModalSheetComponentChange(ModalSheetComponent.FileShare) } }
-    val onWhiteboardClick = remember { { onModalSheetComponentChange(ModalSheetComponent.Whiteboard) } }
-    val onVirtualBackgroundClick = remember { { onModalSheetComponentChange(ModalSheetComponent.VirtualBackground) } }
-    val onScreenShareClick = remember { { onModalSheetComponentChange(ModalSheetComponent.ScreenShare) } }
-
-    val onMicClick = rememberOnMicClick(callActionsViewModel)
-    val onCameraToggle = rememberOnCameraClick(callActionsViewModel)
-    val onChatClick = rememberOnChatClick(callActionsViewModel)
-    val onHangUpClick = rememberOnHangUpClick(callActionsViewModel)
-    val onScreenShareToggle = rememberOnScreenShareClick(callActionsViewModel, onScreenShareClick)
-
-    var selectedStream by remember { mutableStateOf<StreamUi?>(null) }
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && selectedStream == null && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
+
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
     VCallScreenScaffold(
@@ -125,44 +87,22 @@ internal fun VCallScreen(
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
                     enter = fadeIn(tween()),
-                    exit = fadeOut(tween())
-                ) {
-                    SheetPanelContent(
-                        items = sheetDragActions,
-                        modifier = Modifier.testTag(PanelTestTag),
-                        onItemClick = { callAction ->
-                            when (callAction) {
-                                is ScreenShareAction -> onScreenShareToggle(callAction.isToggled)
-                                is FlipCameraAction -> callActionsViewModel.switchCamera()
-                                is AudioAction -> onAudioClick()
-                                is ChatAction -> onChatClick()
-                                is FileShareAction -> onFileShareClick()
-                                is WhiteboardAction -> onWhiteboardClick()
-                                is VirtualBackgroundAction -> onVirtualBackgroundClick()
-                            }
-                        }
-                    )
-                }
+                    exit = fadeOut(tween()),
+                    content = {
+                        SheetPanelContent(
+                            callActions = sheetDragActions,
+                            onModalSheetComponentRequest = onModalSheetComponentRequest,
+                            modifier = Modifier.testTag(PanelTestTag)
+                        )
+                    }
+                )
             }
         } else null,
         sheetDragContent = {
             if (hasSheetDragContent) {
-                val sheetActionsCount = callActionsUiState.actionList.count()
-                val answerActionSlots = if (callActionsUiState.isRinging) AnswerActionMultiplier else 1
-                val itemsPerRow = max(1, sheetActionsCount - sheetDragActions.count() + answerActionSlots)
                 HSheetDragContent(
                     callActions = sheetDragActions,
-                    itemsPerRow = itemsPerRow,
-                    onHangUpClick = onHangUpClick,
-                    onMicToggled = onMicClick,
-                    onCameraToggled = onCameraToggle,
-                    onScreenShareToggle = onScreenShareToggle,
-                    onFlipCameraClick = callActionsViewModel::switchCamera,
-                    onAudioClick = onAudioClick,
-                    onChatClick = onChatClick,
-                    onFileShareClick = onFileShareClick,
-                    onWhiteboardClick = onWhiteboardClick,
-                    onVirtualBackgroundClick = onVirtualBackgroundClick,
+                    onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
                         .padding(14.dp)
@@ -171,27 +111,17 @@ internal fun VCallScreen(
         },
         sheetContent = {
             AnimatedContent(
-                targetState = selectedStream,
+                targetState = selectedStreamId,
                 contentAlignment = Alignment.Center,
                 label = "sheet content"
-            ) { currentlySelectedStream ->
-                if (currentlySelectedStream == null) {
+            ) { currentlySelectedStreamId ->
+                if (currentlySelectedStreamId == null) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                         if (isLargeScreen) {
-                            Box(
-                                modifier = Modifier
-                                    .width(250.dp)
-                                    .animateContentSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                // TODO test this
-                                InputMessageHost(
-                                    inputMessage = null,
-                                    micMessage = { enabled -> MicMessageText(enabled) },
-                                    cameraMessage = { enabled -> CameraMessageText(enabled) }
-                                )
-                            }
+                            LargeScreenInputMessageHost()
                         }
+
                         Box(Modifier.animateContentSize()) {
                             val isSheetExpanded by remember(sheetState) {
                                 derivedStateOf {
@@ -199,27 +129,11 @@ internal fun VCallScreen(
                                 }
                             }
                             HSheetContent(
-                                callActions = callActionsUiState.actionList,
-                                maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
-                                showAnswerAction = callActionsUiState.isRinging,
-                                isMoreToggled = isSheetExpanded,
                                 isLargeScreen = isLargeScreen,
-                                onActionsPlaced = { itemsPlaced ->
-                                    val actions = callActionsUiState.actionList.value
-                                    val dragActions = actions.takeLast(max(0, actions.count() - itemsPlaced))
-                                    sheetDragActions = dragActions.toImmutableList()
-                                },
-                                onAnswerClick = callActionsViewModel::accept,
-                                onHangUpClick = onHangUpClick,
-                                onMicToggle = onMicClick,
-                                onCameraToggle = onCameraToggle,
-                                onScreenShareToggle = onScreenShareToggle,
-                                onFlipCameraClick = callActionsViewModel::switchCamera,
-                                onAudioClick = onAudioClick,
-                                onChatClick = onChatClick,
-                                onFileShareClick = onFileShareClick,
-                                onWhiteboardClick = onWhiteboardClick,
-                                onVirtualBackgroundClick = onVirtualBackgroundClick,
+                                isMoreToggled = isSheetExpanded,
+                                maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
+                                onActionsOverflow = { sheetDragActions = it },
+                                onModalSheetComponentRequest = onModalSheetComponentRequest,
                                 onMoreToggle = { isSheetCollapsed ->
                                     if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
@@ -236,8 +150,8 @@ internal fun VCallScreen(
                     }
                 } else {
                     HStreamMenuContent(
-                        selectedStream = currentlySelectedStream,
-                        onDismiss = { selectedStream = null },
+                        selectedStreamId = currentlySelectedStreamId,
+                        onDismiss = { onStreamSelected(null) },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
@@ -260,8 +174,8 @@ internal fun VCallScreen(
                             showSheetPanelContent = false
                             true
                         }
-                        selectedStream != null -> {
-                            selectedStream = null
+                        selectedStreamId != null -> {
+                            onStreamSelected(null)
                             true
                         }
                         else -> false
@@ -271,9 +185,8 @@ internal fun VCallScreen(
         ) {
             StreamComponent(
                 windowSizeClass = windowSizeClass,
-                highlightedStream = selectedStream,
-                onStreamClick = { stream -> selectedStream = stream },
-                onStopScreenShareClick = callActionsViewModel::tryStopScreenShare,
+                highlightedStreamId = selectedStreamId,
+                onStreamClick = { stream -> onStreamSelected(stream.id) },
                 // TODO test this
                 onMoreParticipantClick = {},
                 modifier = Modifier
@@ -297,7 +210,7 @@ internal fun VCallScreen(
             CallScreenModalSheet(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
-                onRequestDismiss = { onModalSheetComponentChange(null) },
+                onRequestDismiss = { onModalSheetComponentRequest(null) },
                 // TODO test this
                 onUserMessageActionClick = { }
             )
@@ -305,3 +218,19 @@ internal fun VCallScreen(
     }
 }
 
+@Composable
+private fun LargeScreenInputMessageHost() {
+    Box(
+        modifier = Modifier
+            .width(250.dp)
+            .animateContentSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // TODO test this
+        InputMessageHost(
+            inputMessage = null,
+            micMessage = { enabled -> MicMessageText(enabled) },
+            cameraMessage = { enabled -> CameraMessageText(enabled) }
+        )
+    }
+}
