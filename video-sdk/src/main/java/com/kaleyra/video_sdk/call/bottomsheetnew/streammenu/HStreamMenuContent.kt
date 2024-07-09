@@ -25,7 +25,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun HStreamMenuContent(
-    selectedStream: StreamUi,
+    selectedStreamId: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StreamViewModel = viewModel<StreamViewModel>(
@@ -35,17 +35,17 @@ internal fun HStreamMenuContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HStreamMenuContent(
-        fullscreen = uiState.fullscreenStream?.id == selectedStream.id,
-        pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStream.id },
+        fullscreen = uiState.fullscreenStream?.id == selectedStreamId,
+        pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         onCancelClick = onDismiss,
         onFullscreenClick = { isFullscreen ->
             if (isFullscreen) viewModel.fullscreen(null)
-            else viewModel.fullscreen(selectedStream)
+            else viewModel.fullscreen(selectedStreamId)
             onDismiss()
         },
         onPinClick = { isPinned ->
-            if (isPinned) viewModel.unpin(selectedStream)
-            else viewModel.pin(selectedStream)
+            if (isPinned) viewModel.unpin(selectedStreamId)
+            else viewModel.pin(selectedStreamId)
             onDismiss()
         },
         modifier = modifier
