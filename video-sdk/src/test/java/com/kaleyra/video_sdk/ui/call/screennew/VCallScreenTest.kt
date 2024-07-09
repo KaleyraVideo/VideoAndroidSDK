@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.screennew
+package com.kaleyra.video_sdk.ui.call.screennew
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
@@ -27,6 +27,23 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
+import com.kaleyra.video_sdk.call.screennew.CompactScreenMaxActions
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.InputMessageDragHandleTag
+import com.kaleyra.video_sdk.call.screennew.LargeScreenMaxActions
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screennew.PanelTestTag
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.StreamMenuContentTestTag
+import com.kaleyra.video_sdk.call.screennew.VCallScreen
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
@@ -53,8 +70,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RunWith(RobolectricTestRunner::class)
 class VCallScreenTest {
 
     @get:Rule
@@ -482,57 +502,6 @@ class VCallScreenTest {
             composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
     }
-
-    // TODO move to call screen test
-//    @Test
-//    fun testSheetActions_expandMore() {
-//        val sheetState = CallSheetState()
-//        composeTestRule.setUpVCallScreen(
-//            configuration = compactScreenConfiguration,
-//            sheetState = sheetState
-//        )
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = allActions.toImmutableList()
-//        )
-//
-//        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-//
-//        val moreText =
-//            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-//    }
-//
-//    @Test
-//    fun testSheetActions_collapseMore() {
-//        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-//        composeTestRule.setUpVCallScreen(
-//            configuration = compactScreenConfiguration,
-//            sheetState = sheetState
-//        )
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = allActions.toImmutableList()
-//        )
-//
-//        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-//
-//        val moreText =
-//            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-//    }
 
     @Test
     fun testSheetActionsWithLargeScreen_moreShowPanel() {

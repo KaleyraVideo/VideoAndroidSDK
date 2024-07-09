@@ -130,7 +130,7 @@ internal fun VCallScreen(
                             }
                             HSheetContent(
                                 isLargeScreen = isLargeScreen,
-                                isMoreToggled = isSheetExpanded,
+                                isMoreToggled = isSheetExpanded || showSheetPanelContent,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 onActionsOverflow = { sheetDragActions = it },
                                 onModalSheetComponentRequest = onModalSheetComponentRequest,
