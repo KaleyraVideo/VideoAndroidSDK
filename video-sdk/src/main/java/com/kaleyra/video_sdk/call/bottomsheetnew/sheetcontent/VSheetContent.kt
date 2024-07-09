@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,18 +12,70 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.VSheetItemsLayout
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.MoreAction
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.screennew.CompactScreenMaxActions
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
 import com.kaleyra.video_sdk.call.screennew.NotifiableCallAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
+import kotlin.math.max
 
 private const val MaxVSheetItems = 5
+
+@Composable
+internal fun VSheetContent(
+    viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    isMoreToggled: Boolean,
+    onMoreToggle: (Boolean) -> Unit,
+    onActionsOverflow: (overflowedActions: ImmutableList<CallActionUI>) -> Unit,
+    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
+    modifier: Modifier = Modifier,
+    maxActions: Int = MaxVSheetItems
+) {
+    val activity = LocalContext.current.findActivity()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    VSheetContent(
+        callActions = uiState.actionList,
+        maxActions = maxActions,
+        showAnswerAction = uiState.isRinging,
+        isMoreToggled = isMoreToggled,
+        onActionsPlaced = { itemsPlaced ->
+            val actions = uiState.actionList.value
+            val dragActions = actions.takeLast(max(0, actions.count() - itemsPlaced))
+            onActionsOverflow(dragActions.toImmutableList())
+        },
+        onAnswerClick = viewModel::accept,
+        onHangUpClick = viewModel::hangUp,
+        onMicToggle = remember(viewModel) { { viewModel.toggleMic(activity) } },
+        onCameraToggle = remember(viewModel) { { viewModel.toggleCamera(activity) } } ,
+        onScreenShareToggle = remember(viewModel) {
+            { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
+        },
+        onFlipCameraClick = viewModel::switchCamera,
+        onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
+        onChatClick = remember(viewModel) { { viewModel.showChat(activity) } },
+        onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
+        onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
+        onVirtualBackgroundClick = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) },
+        onMoreToggle = onMoreToggle,
+        modifier = modifier
+    )
+}
 
 @Composable
 internal fun VSheetContent(
