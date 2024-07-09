@@ -203,7 +203,10 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
 
     private fun handleIntentAction(intent: Intent): Boolean {
         return when (intent.extras?.getString(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA)) {
-            CallNotificationActionReceiver.ACTION_ANSWER, CallNotificationActionReceiver.ACTION_HANGUP -> {
+            CallNotificationActionReceiver.ACTION_ANSWER -> {
+                // This parameter, passed as false from connection service provisional notification
+                // prevents that the answer intent is executed before granting or denying the
+                // phone permission, needed for the starting of the connection service
                 val isCallServiceRunning = intent.extras?.getBoolean(IS_CALL_SERVICE_RUNNING_EXTRA, true) ?: true
                 if (isCallServiceRunning) {
                     forwardIntentToReceiver(intent, CallNotificationActionReceiver::class.java)
