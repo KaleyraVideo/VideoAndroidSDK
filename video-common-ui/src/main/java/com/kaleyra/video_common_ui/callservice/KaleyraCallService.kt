@@ -23,9 +23,12 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.kaleyra.video.Synchronization
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.CallNotificationProducer.Companion.CALL_NOTIFICATION_ID
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasAudioInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasInternalCameraInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.requestConnect
@@ -38,7 +41,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
@@ -71,14 +73,14 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
 
     private var notificationJob: Job? = null
 
-    private var call: Call? = null
+    private var call: CallUI? = null
 
     /**
      * @suppress
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        intent?.extras ?: stopSelf().also { return START_NOT_STICKY  }
+        intent?.extras ?: stopSelf().also { return START_NOT_STICKY }
 
         MainScope().launch {
             if (!KaleyraVideo.isConfigured) {
@@ -134,18 +136,19 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
-        // Every time the app goes in foreground, try to promote the service in foreground.
-        // The runCatching is needed because the startForeground may fails when the app is in background but
-        // the isInForeground flag is still true. This happens because the onStop of the application lifecycle is
-        // dispatched 700ms after the last activity's onStop
         notificationJob?.cancel()
-        notificationJob = combine(AppLifecycle.isInForeground, flowOf(call).hasScreenSharingInput()) { isInForeground, hasScreenSharingPermission ->
-            if (!isInForeground) return@combine
-            kotlin.runCatching {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasScreenSharingPermission))
+        notificationJob =
+            combine(
+                AppLifecycle.isInForeground,
+                call.hasInternalCameraInput(),
+                call.hasAudioInput(),
+                call.hasScreenSharingInput()
+            ) { isInForeground, hasCameraPermission, hasMicPermission, hasScreenSharingPermission ->
+                if (!isInForeground) return@combine
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasCameraPermission, hasMicPermission, hasScreenSharingPermission))
                 else startForeground(id, notification)
-            }
-        }.launchIn(lifecycleScope)
+                this@KaleyraCallService.call ?: return@combine
+            }.launchIn(lifecycleScope)
     }
 
     @Suppress("DEPRECATION")

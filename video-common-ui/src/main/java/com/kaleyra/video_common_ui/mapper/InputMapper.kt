@@ -20,6 +20,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
 import kotlinx.coroutines.flow.Flow
@@ -103,6 +104,33 @@ object InputMapper {
     fun Flow<Call>.hasScreenSharingInput(): Flow<Boolean> =
         this.flatMapLatest { it.inputs.availableInputs }
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+
+    /**
+     * Utility function to detect whenever a screen sharing input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever a screen sharing input is currently available
+     */
+    fun Call.hasScreenSharingInput(): Flow<Boolean> =
+        this.inputs.availableInputs
+            .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+
+    /**
+     * Utility function to detect whenever an internal video input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever an internal video input is currently available
+     */
+    fun Call.hasInternalCameraInput(): Flow<Boolean> =
+        this.inputs.availableInputs
+            .map { inputs -> inputs.any { it is Input.Video.Camera.Internal } }
+
+    /**
+     * Utility function to detect whenever an audio input is available
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting true whenever an audio input is currently available
+     */
+    fun Call.hasAudioInput(): Flow<Boolean> =
+        this.inputs.availableInputs
+            .map { inputs -> inputs.any { it is Input.Audio } }
 
     fun Flow<Call>.toAudioInput(): Flow<Input.Audio> =
         this.flatMapLatest { it.inputs.availableInputs }
