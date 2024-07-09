@@ -11,23 +11,62 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun SheetPanelContent(
-    items: ImmutableList<CallActionUI>,
+    viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    callActions: ImmutableList<CallActionUI>,
+    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val activity = LocalContext.current.findActivity()
+
+    SheetPanelContent(
+        modifier = modifier,
+        callActions = callActions,
+        onItemClick = remember(viewModel) {
+            { callAction ->
+                when (callAction) {
+                    is ScreenShareAction -> {
+                        if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare)
+                    }
+
+                    is FlipCameraAction -> viewModel.switchCamera()
+                    is AudioAction -> onModalSheetComponentRequest(ModalSheetComponent.Audio)
+                    is ChatAction -> viewModel.showChat(activity)
+                    is FileShareAction -> onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+                    is WhiteboardAction -> onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
+                    is VirtualBackgroundAction -> onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground)
+                }
+            }
+        }
+    )
+}
+
+@Composable
+internal fun SheetPanelContent(
+    callActions: ImmutableList<CallActionUI>,
     onItemClick: (CallActionUI) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,7 +79,7 @@ internal fun SheetPanelContent(
             contentPadding = PaddingValues(vertical = 12.dp),
             modifier = modifier
         ) {
-            items(items = items.value, key = { it.id }) {
+            items(items = callActions.value, key = { it.id }) {
                 SheetPanelItem(
                     callAction = it,
                     modifier = Modifier
@@ -63,7 +102,7 @@ internal fun SheetPanelContentPreview() {
     KaleyraTheme {
         Surface {
             SheetPanelContent(
-                items = ImmutableList(
+                callActions = ImmutableList(
                     listOf(
                         FlipCameraAction(),
                         AudioAction(),

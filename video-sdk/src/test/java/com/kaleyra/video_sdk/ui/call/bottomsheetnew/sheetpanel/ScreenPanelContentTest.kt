@@ -26,17 +26,23 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
+import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
 import com.kaleyra.video_sdk.call.screennew.ChatAction
 import com.kaleyra.video_sdk.call.screennew.FileShareAction
 import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import org.junit.After
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -56,24 +62,184 @@ class ScreenPanelContentTest {
 
     @Before
     fun setUp() {
-        composeTestRule.setContent {
-            SheetPanelContent(
-                items = items,
-                onItemClick = { callAction = it }
-            )
-        }
+        items = ImmutableList()
         callAction = null
     }
 
-    @After
-    fun tearDown() {
-        items = ImmutableList(listOf())
-        callAction = null
+    private val callActionsUiState = MutableStateFlow(CallActionsUiState())
+
+    private val callActionsViewModel = mockk<CallActionsViewModel>(relaxed = true) {
+        every { uiState } returns callActionsUiState
+    }
+
+    @Test
+    fun userClicksChat_showChatInvoked() {
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ChatAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.showChat(any()) }
+    }
+
+    @Test
+    fun userClicksFlipCamera_switchCameraInvoked() {
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FlipCameraAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.switchCamera() }
+    }
+
+    @Test
+    fun userClicksAudio_onModalSheetComponentRequestAudio() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(AudioAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.Audio, component)
+    }
+
+    @Test
+    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.FileShare, component)
+    }
+
+    @Test
+    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(WhiteboardAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.Whiteboard, component)
+    }
+
+    @Test
+    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(VirtualBackgroundAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.VirtualBackground, component)
+    }
+
+    @Test
+    fun userClicksScreenShareWhenEnabled_tryStopScreenShareInvoked() {
+        every { callActionsViewModel.tryStopScreenShare() } returns true
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction())),
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction())),
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.ScreenShare, component)
     }
 
     @Test
     fun flipCameraAction_flipCameraItemIsDisplayed() {
         items = ImmutableList(listOf(FlipCameraAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -81,6 +247,12 @@ class ScreenPanelContentTest {
     @Test
     fun audioAction_audioItemIsDisplayed() {
         items = ImmutableList(listOf(AudioAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -88,6 +260,12 @@ class ScreenPanelContentTest {
     @Test
     fun chatAction_chatItemIsDisplayed() {
         items = ImmutableList(listOf(ChatAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -95,6 +273,12 @@ class ScreenPanelContentTest {
     @Test
     fun fileShareAction_fileShareItemIsDisplayed() {
         items = ImmutableList(listOf(FileShareAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -102,6 +286,12 @@ class ScreenPanelContentTest {
     @Test
     fun whiteboardAction_whiteboardItemIsDisplayed() {
         items = ImmutableList(listOf(WhiteboardAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -109,6 +299,12 @@ class ScreenPanelContentTest {
     @Test
     fun virtualBackgroundAction_virtualBackgroundItemIsDisplayed() {
         items = ImmutableList(listOf(VirtualBackgroundAction()))
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -127,6 +323,12 @@ class ScreenPanelContentTest {
                 VirtualBackgroundAction()
             )
         )
+        composeTestRule.setContent {
+            SheetPanelContent(
+                callActions = items,
+                onItemClick = { callAction = it }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
         composeTestRule.onNodeWithText(text).performClick()
         Assert.assertEquals(action, callAction)
