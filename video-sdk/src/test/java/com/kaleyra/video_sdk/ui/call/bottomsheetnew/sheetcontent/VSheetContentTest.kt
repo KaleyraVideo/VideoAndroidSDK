@@ -49,7 +49,6 @@ class VSheetContentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-
     private val callActionsUiState = MutableStateFlow(CallActionsUiState())
 
     private val callActionsViewModel = mockk<CallActionsViewModel>(relaxed = true) {
