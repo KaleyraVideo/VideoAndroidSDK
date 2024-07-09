@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,13 +19,12 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.S
 import com.kaleyra.video_sdk.call.callactionnew.CancelAction
 import com.kaleyra.video_sdk.call.callactionnew.FullscreenAction
 import com.kaleyra.video_sdk.call.callactionnew.PinAction
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun VStreamMenuContent(
-    selectedStream: StreamUi,
+    selectedStreamId: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StreamViewModel = viewModel<StreamViewModel>(
@@ -36,17 +34,17 @@ internal fun VStreamMenuContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     VStreamMenuContent(
-        fullscreen = uiState.fullscreenStream?.id == selectedStream.id,
-        pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStream.id },
+        fullscreen = uiState.fullscreenStream?.id == selectedStreamId,
+        pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         onCancelClick = onDismiss,
         onFullscreenClick = { isFullscreen ->
             if (isFullscreen)  viewModel.fullscreen(null)
-            else viewModel.fullscreen(selectedStream)
+            else viewModel.fullscreen(selectedStreamId)
             onDismiss()
         },
         onPinClick = { isPinned ->
-            if (isPinned) viewModel.unpin(selectedStream)
-            else viewModel.pin(selectedStream)
+            if (isPinned) viewModel.unpin(selectedStreamId)
+            else viewModel.pin(selectedStreamId)
             onDismiss()
         },
         modifier = modifier

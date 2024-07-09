@@ -8,7 +8,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactionnew.CancelAction
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -58,7 +57,7 @@ class VStreamMenuContentTest {
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStream = stream,
+                selectedStreamId = stream.id,
                 onDismiss = { dismissed = true }
             )
         }
@@ -81,7 +80,7 @@ class VStreamMenuContentTest {
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStream = stream,
+                selectedStreamId = stream.id,
                 onDismiss = { dismissed = true }
             )
         }
@@ -92,7 +91,7 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.fullscreen(stream) }
+        verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
         assertEquals(true, dismissed)
     }
 
@@ -104,7 +103,7 @@ class VStreamMenuContentTest {
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStream = stream,
+                selectedStreamId = stream.id,
                 onDismiss = { dismissed = true }
             )
         }
@@ -115,7 +114,7 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.unpin(stream) }
+        verify(exactly = 1) { streamViewModel.unpin(stream.id) }
         assertEquals(true, dismissed)
     }
 
@@ -127,7 +126,7 @@ class VStreamMenuContentTest {
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStream = stream,
+                selectedStreamId = stream.id,
                 onDismiss = { dismissed = true }
             )
         }
@@ -138,7 +137,7 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.pin(stream) }
+        verify(exactly = 1) { streamViewModel.pin(stream.id) }
         assertEquals(true, dismissed)
     }
 
@@ -147,7 +146,7 @@ class VStreamMenuContentTest {
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStream = StreamUi("streamId", username = "username"),
+                selectedStreamId = "streamId",
                 onDismiss = { dismissed = true }
             )
         }
