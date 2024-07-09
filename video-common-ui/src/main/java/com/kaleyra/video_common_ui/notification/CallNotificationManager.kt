@@ -62,6 +62,7 @@ internal interface CallNotificationManager {
      * @param isGroupCall True if the call is group call, false otherwise
      * @param activityClazz The call ui activity class
      * @param isHighPriority True to set the notification with high priority, false otherwise
+     * @param isCallServiceRunning True if call service is running, false otherwise
      * @return Notification
      */
     fun buildIncomingCallNotification(
@@ -69,8 +70,8 @@ internal interface CallNotificationManager {
         isGroupCall: Boolean,
         activityClazz: Class<*>,
         isHighPriority: Boolean,
-        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass,
-        isCallServiceRunning: Boolean = true
+        isCallServiceRunning: Boolean,
+        enableCallStyle: Boolean,
     ): Notification {
         val context = ContextRetainer.context
 
@@ -106,14 +107,15 @@ internal interface CallNotificationManager {
      * @param username The callee/caller
      * @param isGroupCall True if the call is group call, false otherwise
      * @param activityClazz The call ui activity class
+     * @param isCallServiceRunning True if call service is running, false otherwise
      * @return Notification
      */
     fun buildOutgoingCallNotification(
         username: String,
         isGroupCall: Boolean,
         activityClazz: Class<*>,
-        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass,
-        isCallServiceRunning: Boolean = true
+        isCallServiceRunning: Boolean = true,
+        enableCallStyle: Boolean,
     ): Notification {
         val context = ContextRetainer.context
         val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
@@ -156,7 +158,7 @@ internal interface CallNotificationManager {
         isSharingScreen: Boolean,
         isConnecting: Boolean,
         activityClazz: Class<*>,
-        enableCallStyle: Boolean = !DeviceUtils.isSmartGlass
+        enableCallStyle: Boolean
     ): Notification {
         val context = ContextRetainer.context
         val resources = context.resources

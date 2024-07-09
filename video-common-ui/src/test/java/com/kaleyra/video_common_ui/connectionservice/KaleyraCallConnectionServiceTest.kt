@@ -191,7 +191,7 @@ class KaleyraCallConnectionServiceTest {
         )
         assertNotEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
         assertEquals(
-            service!!.getForegroundServiceType(false),
+            service!!.getForegroundServiceType(false, false, false),
             service!!.foregroundServiceType
         )
     }

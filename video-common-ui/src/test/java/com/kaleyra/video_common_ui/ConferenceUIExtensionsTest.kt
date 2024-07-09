@@ -21,7 +21,9 @@ import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.CallExtensions
 import com.kaleyra.video_common_ui.utils.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.CallExtensions.showOnAppResumed
+import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
@@ -41,9 +43,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.job
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -99,7 +99,8 @@ class ConferenceUIExtensionsTest {
             KaleyraCallService,
             TelecomManagerExtensions,
             ContactDetailsManager,
-            CollaborationAudioExtensions
+            CollaborationAudioExtensions,
+            DeviceUtils
         )
         every { ContextRetainer.context } returns contextMock
         every { KaleyraCallService.start(any()) } returns Unit
@@ -111,8 +112,8 @@ class ConferenceUIExtensionsTest {
         every { contextMock.getSystemService(Context.TELECOM_SERVICE) } returns telecomManagerMock
         every { telecomManagerMock.addCall(call = any(), any()) } returns Unit
         every { callMock.participants } returns MutableStateFlow(participantsMock)
-        coEvery { CallNotificationProducer.buildIncomingCallNotification(any(), any(), any()) } returns incomingNotificationMock
-        coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any()) } returns outgoingNotificationMock
+        coEvery { CallNotificationProducer.buildIncomingCallNotification(any(), any(), any(), any()) } returns incomingNotificationMock
+        coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any(), any()) } returns outgoingNotificationMock
         every { NotificationManager.notify(any(), any()) } returns Unit
         every { NotificationManager.cancel(any()) } returns Unit
         coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
@@ -168,7 +169,7 @@ class ConferenceUIExtensionsTest {
 
         conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
 
-        coVerify(exactly = 0) { CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false) }
+        coVerify(exactly = 0) { CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false, true) }
         verify(exactly = 0) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingNotificationMock) }
     }
 
@@ -209,7 +210,7 @@ class ConferenceUIExtensionsTest {
         val userIds = participantsMock.list.map { it.userId }.toTypedArray()
         coVerifyOrder {
             ContactDetailsManager.refreshContactDetails(*userIds)
-            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false)
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false, true)
         }
         verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, incomingNotificationMock) }
     }
@@ -225,9 +226,69 @@ class ConferenceUIExtensionsTest {
         val userIds = participantsMock.list.map { it.userId }.toTypedArray()
         coVerifyOrder {
             ContactDetailsManager.refreshContactDetails(*userIds)
-            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false)
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false, true)
         }
         verify(exactly = 1) { NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, outgoingNotificationMock) }
+    }
+
+    @Test
+    fun incomingCallWithoutConnectionServicePermissions_configureCallServiceStart_incomingNotificationDisplayedWithCallStyle() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns false
+        every { contextMock.canUseFullScreenIntentCompat() } returns true
+        every { contextMock.hasConnectionServicePermissions() } returns false
+        every { CallExtensions.isIncoming(any(), any()) } returns true
+        every { CallExtensions.isOutgoing(any(), any()) } returns false
+
+        conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
+
+        coVerify {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false, true)
+        }
+    }
+
+    @Test
+    fun outgoingCallWithoutConnectionServicePermissions_configureCallServiceStart_incomingNotificationDisplayedWithCallStyle() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns false
+        every { contextMock.canUseFullScreenIntentCompat() } returns true
+        every { contextMock.hasConnectionServicePermissions() } returns false
+        every { CallExtensions.isIncoming(any(), any()) } returns false
+        every { CallExtensions.isOutgoing(any(), any()) } returns true
+
+        conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
+
+        coVerify {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false, true)
+        }
+    }
+
+    @Test
+    fun smartglassDevice_configureCallServiceStart_incomingNotificationDisplayedWithoutlStyle() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns true
+        every { contextMock.canUseFullScreenIntentCompat() } returns false
+        every { contextMock.hasConnectionServicePermissions() } returns false
+        every { CallExtensions.isIncoming(any(), any()) } returns true
+        every { CallExtensions.isOutgoing(any(), any()) } returns false
+
+        conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
+
+        coVerify {
+            CallNotificationProducer.buildIncomingCallNotification(participantsMock, clazz, false, false)
+        }
+    }
+
+    @Test
+    fun smartglassDevice_configureCallServiceStart_outgoingNotificationDisplayedWithoutlStyle() = runTest(UnconfinedTestDispatcher()) {
+        every { DeviceUtils.isSmartGlass } returns true
+        every { contextMock.canUseFullScreenIntentCompat() } returns false
+        every { contextMock.hasConnectionServicePermissions() } returns false
+        every { CallExtensions.isIncoming(any(), any()) } returns false
+        every { CallExtensions.isOutgoing(any(), any()) } returns true
+
+        conferenceMock.configureCallServiceStart(clazz, logger, backgroundScope)
+
+        coVerify {
+            CallNotificationProducer.buildOutgoingCallNotification(participantsMock, clazz, false, false)
+        }
     }
 
     @Test
