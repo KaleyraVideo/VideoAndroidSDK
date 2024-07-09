@@ -51,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
@@ -165,10 +166,17 @@ class RestApi(val applicationContext: Context) {
             while (client.get("$endpoint/v2/users?offset=$offset&limit=100") {
                     headers(configurationHeaders)
                     contentType(Application.Json)
-                }.body<KaleyraVideoUsers>().users.apply {
-                    offset += count()
-                    users.addAll(this.map { it.id })
-                }.isNotEmpty()) { }
+                }.let {
+                    if (it.status.value == 429) {
+                        delay(60000L)
+                        true
+                    } else {
+                        it.body<KaleyraVideoUsers>().users.apply {
+                            offset += count()
+                            users.addAll(this.map { it.id })
+                        }.isNotEmpty()
+                    }
+                }) { }
             withContext(Dispatchers.Main) { users.sorted() }
         } catch (t: Throwable) {
             Log.e("GetListUsers", t.message, t)
