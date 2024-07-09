@@ -151,7 +151,6 @@ class LoginActivity : CollapsingToolbarActivity(), OnQueryTextListener {
 
     override fun onRefresh() {
         itemAdapter.clear()
-        setRefreshing(true)
         binding!!.loading.visibility = View.VISIBLE
         // Fetch the sample users you can use to login with.
         lifecycleScope.launch {
