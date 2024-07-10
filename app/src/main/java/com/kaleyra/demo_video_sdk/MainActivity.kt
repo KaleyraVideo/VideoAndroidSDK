@@ -110,7 +110,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configuration = ConfigurationPrefsManager.getConfiguration(this)
-        requestPushNotificationPermissionApi33 { MainScope().launch { delay(1500); requestFullscreenPermissionActivityApi34() }  }
+        if (LoginManager.isUserLogged(this)) {
+            requestPushNotificationPermissionApi33 {
+                MainScope().launch { delay(1500); requestFullscreenPermissionActivityApi34() }
+            }
+        }
 
         // inflate main layout and keep a reference to it in case of use with dpad navigation
         setContentView(layout.activity_main)
