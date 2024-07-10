@@ -483,57 +483,6 @@ class VCallScreenTest {
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
     }
 
-    // TODO move to call screen test
-//    @Test
-//    fun testSheetActions_expandMore() {
-//        val sheetState = CallSheetState()
-//        composeTestRule.setUpVCallScreen(
-//            configuration = compactScreenConfiguration,
-//            sheetState = sheetState
-//        )
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = allActions.toImmutableList()
-//        )
-//
-//        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-//
-//        val moreText =
-//            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-//    }
-//
-//    @Test
-//    fun testSheetActions_collapseMore() {
-//        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
-//        composeTestRule.setUpVCallScreen(
-//            configuration = compactScreenConfiguration,
-//            sheetState = sheetState
-//        )
-//        callActionsUiState.value = CallActionsUiState(
-//            actionList = allActions.toImmutableList()
-//        )
-//
-//        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
-//
-//        val moreText =
-//            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
-//        composeTestRule
-//            .onNodeWithContentDescription(moreText, useUnmergedTree = true)
-//            .assertIsDisplayed()
-//            .performClick()
-//
-//        composeTestRule.waitForIdle()
-//
-//        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
-//    }
-
     @Test
     fun testSheetActionsWithLargeScreen_moreShowPanel() {
         composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
