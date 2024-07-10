@@ -54,7 +54,7 @@ internal fun HCallScreen(
     modifier: Modifier = Modifier,
 ) {
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(selectedStreamId) { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
 
     HCallScreenScaffold(
         modifier = modifier,

@@ -66,7 +66,7 @@ internal fun VCallScreen(
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember(isLargeScreen) { derivedStateOf { !isLargeScreen && selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
+    val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) { derivedStateOf { !isLargeScreen && selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
 
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
