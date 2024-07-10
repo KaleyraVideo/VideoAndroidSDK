@@ -85,6 +85,7 @@ fun AppCompatActivity.requestPushNotificationPermissionApi33(onCompleted: (() ->
 
 fun AppCompatActivity.requestFullscreenPermissionActivityApi34() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
+    if ((getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()) return
     androidx.appcompat.app.AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
         .setTitle(R.string.fullscreen_intent_permission)
         .setMessage(R.string.fullscreen_intent_permission_message)
