@@ -47,7 +47,7 @@ internal class CallForegroundServiceWorker(
         streamsManager.bind(call)
         participantManager.bind(call)
         streamsAudioManager.bind(call)
-        callNotificationProducer.bind(call)
+        callNotificationProducer.bind(call, service)
         callNotificationProducer.listener = callNotificationListener
 
         call.state

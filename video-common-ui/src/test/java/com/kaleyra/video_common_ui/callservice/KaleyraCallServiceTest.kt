@@ -238,7 +238,7 @@ class KaleyraCallServiceTest {
         assertEquals(10, shadowOf(service).lastForegroundNotificationId)
         assertEquals(notification, shadowOf(notificationManager).getNotification(10))
         assertNotEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
-        assertEquals(service!!.getForegroundServiceType(false), service!!.foregroundServiceType)
+        assertEquals(service!!.getForegroundServiceType(false, false, false), service!!.foregroundServiceType)
         unmockkObject(AppLifecycle)
     }
 

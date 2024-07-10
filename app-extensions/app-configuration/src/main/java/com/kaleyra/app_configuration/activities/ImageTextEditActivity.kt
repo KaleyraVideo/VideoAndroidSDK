@@ -16,7 +16,6 @@
 package com.kaleyra.app_configuration.activities
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -112,7 +111,7 @@ class ImageTextEditActivity : ScrollAwareToolbarActivity() {
 
     override fun onBackPressed() {
         if (hasChangedSettings()) {
-            AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+            androidx.appcompat.app.AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
                 .setMessage(R.string.pref_settings_save_confirmation_message)
                 .setPositiveButton(R.string.pref_settings_save_confirmation_message_confirmation) { dialog, _ ->
                     dialog.dismiss()

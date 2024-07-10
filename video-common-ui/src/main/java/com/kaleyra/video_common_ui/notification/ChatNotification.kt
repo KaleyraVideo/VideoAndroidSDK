@@ -33,6 +33,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.color.MaterialColors
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_utils.HostAppInfo
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -265,7 +266,7 @@ internal class ChatNotification {
                 builder.addAction(markAsReadAction)
             }
 //            deleteIntent?.also { builder.setDeleteIntent(it) }
-            fullscreenIntent?.also { builder.setFullScreenIntent(it, true) }
+            fullscreenIntent?.takeIf { context.canUseFullScreenIntentCompat() }?.also { builder.setFullScreenIntent(it, true) }
 
             MaterialColors
                 .getColor(context, R.attr.colorSecondary, -1)
