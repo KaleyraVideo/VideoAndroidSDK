@@ -104,6 +104,7 @@ object InputMapper {
     fun Flow<Call>.hasScreenSharingInput(): Flow<Boolean> =
         this.flatMapLatest { it.inputs.availableInputs }
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+            .distinctUntilChanged()
 
     /**
      * Utility function to detect whenever a screen sharing input is available
@@ -113,6 +114,7 @@ object InputMapper {
     fun Call.hasScreenSharingInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+            .distinctUntilChanged()
 
     /**
      * Utility function to detect whenever an internal video input is available
@@ -122,6 +124,7 @@ object InputMapper {
     fun Call.hasInternalCameraInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Camera.Internal } }
+            .distinctUntilChanged()
 
     /**
      * Utility function to detect whenever an audio input is available
@@ -131,6 +134,7 @@ object InputMapper {
     fun Call.hasAudioInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Audio } }
+            .distinctUntilChanged()
 
     fun Flow<Call>.toAudioInput(): Flow<Input.Audio> =
         this.flatMapLatest { it.inputs.availableInputs }
