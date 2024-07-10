@@ -157,31 +157,30 @@ class RestApi(val applicationContext: Context) {
 
     private var currentAccessToken: String? = null
 
-    suspend fun listUsers(): List<String> {
-        return try {
-            updateConfiguration()
-            val users: MutableList<String> = mutableListOf()
+    private val usersList: MutableList<String> = mutableListOf()
 
-            var offset = 0
-            while (client.get("$endpoint/v2/users?offset=$offset&limit=100") {
-                    headers(configurationHeaders)
-                    contentType(Application.Json)
-                }.let {
-                    if (it.status.value == 429) {
-                        delay(60000L)
-                        true
-                    } else {
-                        it.body<KaleyraVideoUsers>().users.apply {
-                            offset += count()
-                            users.addAll(this.map { it.id })
-                        }.isNotEmpty()
-                    }
-                }) { }
-            withContext(Dispatchers.Main) { users.sorted() }
-        } catch (t: Throwable) {
-            Log.e("GetListUsers", t.message, t)
-            withContext(Dispatchers.Main) { emptyList() }
+    suspend fun listUsers(): List<String> = usersList.takeIf { it.isNotEmpty() } ?: try {
+        updateConfiguration()
+        var offset = 0
+        while (client.get("$endpoint/v2/users?offset=$offset&limit=100") {
+                headers(configurationHeaders)
+                contentType(Application.Json)
+            }.let {
+                if (it.status.value == 429) {
+                    delay(60000L)
+                    true
+                } else {
+                    it.body<KaleyraVideoUsers>().users.apply {
+                        offset += count()
+                        usersList.addAll(this.map { it.id })
+                    }.isNotEmpty()
+                }
+            }) {
         }
+        withContext(Dispatchers.Main) { usersList }
+    } catch (t: Throwable) {
+        Log.e("GetListUsers", t.message, t)
+        withContext(Dispatchers.Main) { emptyList() }
     }
 
     fun registerDeviceForPushNotification(context: Context, pushProvider: PushProvider, devicePushToken: String) {
@@ -237,7 +236,7 @@ class RestApi(val applicationContext: Context) {
         }
     }
 
-    fun getAccessToken(userId:String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
+    fun getAccessToken(userId: String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
         scope.launch {
             updateConfiguration()
             kotlin.runCatching {
