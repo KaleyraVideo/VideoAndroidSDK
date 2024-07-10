@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.screennew
 
 import android.util.Rational
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -21,12 +22,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
-import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
+
+internal const val PipScreenTestTag = "PipScreenTestTag"
+internal const val VCallScreenTestTag = "VCallScreenTestTag"
+internal const val HCallScreenTestTag = "HCallScreenTestTag"
+
+internal const val CompactScreenMaxActions = 5
+internal const val LargeScreenMaxActions = 8
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,15 +63,7 @@ internal fun CallScreen(
 //    val activity = LocalContext.current.findActivity() as FragmentActivity
 //    val callUiState by viewModel.uiState.collectAsStateWithLifecycle()
 //    val whiteboardRequest by viewModel.whiteboardRequest.collectAsStateWithLifecycle(initialValue = null)
-//    val sheetState = rememberBottomSheetState(
-//        initialValue = BottomSheetValue.Hidden,
-//        collapsable = !callUiState.isAudioOnly,
-//        confirmStateChange = { it != BottomSheetValue.Hidden }
-//    )
-//    val callScreenState = rememberCallScreenState(
-//        sheetState = sheetState,
-//        shouldShowFileShareComponent = shouldShowFileShareComponent
-//    )
+
 //    // Needed this to handle properly a sequence of multiple permission
 //    // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
 //    val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(
@@ -172,15 +179,17 @@ internal fun CallScreen(
 //        )
 //    }
 
+    val callSheetState = rememberCallSheetState()
+
     KaleyraM3Theme {
         CallScreen(
             windowSizeClass = windowSizeClass,
-            whiteboardRequest = null,
-            shouldShowFileShareComponent = false,
+            isInPipMode = isInPipMode,
+            callSheetState = callSheetState,
+            shouldShowFileShareComponent = shouldShowFileShareComponent,
+            onFileShareVisibility = onFileShareVisibility,
+            onWhiteboardVisibility = onWhiteboardVisibility,
             onBackPressed = { },
-            onCallEndedBack = { },
-            onFileShareVisibility = { },
-            onWhiteboardVisibility = { },
         )
     }
 }
@@ -189,52 +198,59 @@ internal fun CallScreen(
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
-    whiteboardRequest: WhiteboardRequest?,
+    callSheetState: CallSheetState,
     shouldShowFileShareComponent: Boolean,
-    onBackPressed: () -> Unit,
-    isInPipMode: Boolean = false,
-    onCallEndedBack: () -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
-    onWhiteboardVisibility: (Boolean) -> Unit
+    onWhiteboardVisibility: (Boolean) -> Unit,
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier,
+    isInPipMode: Boolean = false
 ) {
-    val scope = rememberCoroutineScope()
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+    val scope = rememberCoroutineScope()
 
-    val sheetState = rememberCallSheetState()
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var modalSheetComponent: ModalSheetComponent? by remember { mutableStateOf(null) }
-    val onChangeSheetState: (Boolean) -> Unit = remember(sheetState) {
+
+    val onChangeCallSheetState: (Boolean) -> Unit = remember(callSheetState) {
         { isSheetCollapsed: Boolean ->
             scope.launch {
-                if (isSheetCollapsed) sheetState.expand()
-                else sheetState.collapse()
+                if (isSheetCollapsed) callSheetState.expand()
+                else callSheetState.collapse()
             }
         }
     }
 
+    var modalSheetComponent: ModalSheetComponent? by remember { mutableStateOf(null) }
+    val onModalSheetComponentRequest = remember {
+        { component: ModalSheetComponent? -> modalSheetComponent = component }
+    }
+
     var selectedStreamId by remember { mutableStateOf<String?>(null) }
+    val onStreamSelected = remember {
+        { streamId: String? -> selectedStreamId = streamId }
+    }
 
-//    FileShareVisibilityObserver(modalSheetComponent, onFileShareVisibility)
+    FileShareVisibilityObserver(modalSheetComponent, onFileShareVisibility)
 
-//    WhiteboardVisibilityObserver(modalSheetComponent, onWhiteboardVisibility)
+    WhiteboardVisibilityObserver(modalSheetComponent, onWhiteboardVisibility)
 
-//    if (shouldShowFileShareComponent) {
-//        LaunchedEffect(Unit) {
-//            modalSheetComponent = ModalSheetComponent.FileShare
-//        }
-//    }
+    if (shouldShowFileShareComponent) {
+        LaunchedEffect(Unit) {
+            modalSheetComponent = ModalSheetComponent.FileShare
+        }
+    }
 
 //    LaunchedEffect(whiteboardRequest) {
 //        when (whiteboardRequest) {
 //            is WhiteboardRequest.Show -> {
 //                if (modalSheetComponent == ModalSheetComponent.Whiteboard) return@LaunchedEffect
-//                modalSheetComponent = ModalSheetComponent.Whiteboard
+//                onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
 //                snapshotFlow { modalSheetComponent }.first { it == ModalSheetComponent.Whiteboard }
 //                CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
 //            }
 //            is WhiteboardRequest.Hide -> {
 //                if (modalSheetComponent != ModalSheetComponent.Whiteboard) return@LaunchedEffect
-//                modalSheetComponent = null
+//                onModalSheetComponentRequest(null)
 //                snapshotFlow { modalSheetComponent }.first { it == null }
 //                CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
 //            }
@@ -242,50 +258,40 @@ internal fun CallScreen(
 //        }
 //    }
 
-//    val collapseSheet: () -> Unit = remember {
-//        {
-//            scope.launch {
-//                sheetState.collapse()
-//            }
-//        }
-//    }
-
-//    when {
-//        callUiState.callState is CallStateUi.Disconnected.Ended -> BackHandler(onBack = onCallEndedBack)
-//        sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
-//        streamUiState.fullscreenStream != null -> BackHandler(onBack = {
-//            streamViewModel.fullscreen(
-//                null
-//            )
-//        })
-//    }
+//    BackHandler(
+//        sheetState = sheetState,
+//        isCallEnded = false,
+//        onCallEndedBack = onCallEndedBack
+//    )
 
     if (isInPipMode) {
-        Text("to implement")
+        Text("to implement", modifier = Modifier.testTag(PipScreenTestTag))
     } else {
         if (isCompactHeight) {
             HCallScreen(
                 windowSizeClass = windowSizeClass,
-                sheetState = sheetState,
+                sheetState = callSheetState,
                 modalSheetState = modalSheetState,
                 modalSheetComponent = modalSheetComponent,
-                onChangeSheetState = onChangeSheetState,
+                onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
-                onStreamSelected = { selectedStreamId = it },
-                onModalSheetComponentRequest = { modalSheetComponent = it },
-                onBackPressed = onBackPressed
+                onStreamSelected = onStreamSelected,
+                onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onBackPressed = onBackPressed,
+                modifier = modifier.testTag(HCallScreenTestTag)
             )
         } else {
             VCallScreen(
                 windowSizeClass = windowSizeClass,
-                sheetState = sheetState,
+                sheetState = callSheetState,
                 modalSheetState = modalSheetState,
                 modalSheetComponent = modalSheetComponent,
-                onChangeSheetState = onChangeSheetState,
+                onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
-                onStreamSelected = { selectedStreamId = it },
-                onModalSheetComponentRequest = { modalSheetComponent = it },
-                onBackPressed = onBackPressed
+                onStreamSelected = onStreamSelected,
+                onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onBackPressed = onBackPressed,
+                modifier = modifier.testTag(VCallScreenTestTag)
             )
         }
 
@@ -306,12 +312,9 @@ internal fun CallScreen(
     }
 }
 
-internal const val CompactScreenMaxActions = 5
-internal const val LargeScreenMaxActions = 8
-
 @Composable
 internal fun FileShareVisibilityObserver(
-    modalSheetComponent: ModalSheetComponent,
+    modalSheetComponent: ModalSheetComponent?,
     onFileShareVisibility: (Boolean) -> Unit,
 ) {
     val isFileShareComponent = modalSheetComponent == ModalSheetComponent.FileShare
@@ -322,12 +325,37 @@ internal fun FileShareVisibilityObserver(
 
 @Composable
 internal fun WhiteboardVisibilityObserver(
-    modalSheetComponent: ModalSheetComponent,
+    modalSheetComponent: ModalSheetComponent?,
     onWhiteboardVisibility: (Boolean) -> Unit,
 ) {
     val isWhiteboardComponent = modalSheetComponent == ModalSheetComponent.Whiteboard
     LaunchedEffect(isWhiteboardComponent) {
         onWhiteboardVisibility(isWhiteboardComponent)
+    }
+}
+
+@Composable
+private fun BackHandler(
+    sheetState: CallSheetState,
+    isCallEnded: Boolean,
+    onCallEndedBack: () -> Unit
+) {
+    val streamViewModel = viewModel<StreamViewModel>(factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
+    val collapseSheet: () -> Unit = remember {
+        {
+            scope.launch {
+                sheetState.collapse()
+            }
+        }
+    }
+
+    when {
+        isCallEnded -> BackHandler(onBack = onCallEndedBack)
+        sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
+        streamUiState.fullscreenStream != null -> BackHandler(onBack = { streamViewModel.fullscreen(null) })
     }
 }
 
