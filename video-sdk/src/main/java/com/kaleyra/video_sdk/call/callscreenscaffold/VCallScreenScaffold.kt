@@ -94,7 +94,7 @@ internal fun VCallScreenScaffold(
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.HDragHandle() },
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
-    containerColor: Color = MaterialTheme.colorScheme.background,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(containerColor),
     paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
     content: @Composable (PaddingValues) -> Unit
