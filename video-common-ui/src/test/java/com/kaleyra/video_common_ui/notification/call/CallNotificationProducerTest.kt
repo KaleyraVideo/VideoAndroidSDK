@@ -150,10 +150,13 @@ class CallNotificationProducerTest {
     fun testNotifyIncomingCall() = runTest(UnconfinedTestDispatcher()) {
         mockkObject(CallNotificationProducer) {
             every { CallExtensions.isIncoming(any(), any()) } returns true
+            every { CallExtensions.isOutgoing(any(), any()) } returns false
+            every { CallExtensions.isOngoing(any(), any()) } returns false
+            every { contextMock.canUseFullScreenIntentCompat() } returns true
             coEvery { CallNotificationProducer.buildIncomingCallNotification(any(), any(), any(), any()) } returns incomingCallNotification
             val callNotificationProducer = CallNotificationProducer(backgroundScope)
             callNotificationProducer.listener = listener
-            callNotificationProducer.bind(callMock, mockk())
+            callNotificationProducer.bind(callMock, mockk(relaxed = true))
             val participants = callMock.participants.value
             val activityClazz = callMock.activityClazz
             coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId", "myUserId").toTypedArray()) }
@@ -440,10 +443,13 @@ class CallNotificationProducerTest {
 
     @Test
     fun oneToOneCall_buildOngoingCallNotification_isGroupCallIsFalse() = runTest(UnconfinedTestDispatcher()) {
+        every { CallExtensions.isIncoming(any(), any()) } returns false
+        every { CallExtensions.isOutgoing(any(), any()) } returns false
         every { CallExtensions.isOngoing(any(), any()) } returns true
+        every { contextMock.canUseFullScreenIntentCompat() } returns true
         every { participantsMock.others } returns listOf(otherParticipantMock)
         val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock, mockk())
+        callNotificationProducer.bind(callMock, mockk(relaxed = true))
         verify(exactly = 1) { NotificationManager.buildOngoingCallNotification(any(), any(), isGroupCall = false, any(), any(),  any(), any(), any()) }
     }
 
@@ -479,9 +485,12 @@ class CallNotificationProducerTest {
     @Test
     fun sharingScreenNotActive_buildOngoingCallNotification_isSharingScreenFalse() = runTest(UnconfinedTestDispatcher()) {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf())
+        every { CallExtensions.isIncoming(any(), any()) } returns false
+        every { CallExtensions.isOutgoing(any(), any()) } returns false
         every { CallExtensions.isOngoing(any(), any()) } returns true
+        every { contextMock.canUseFullScreenIntentCompat() } returns true
         val callNotificationProducer = CallNotificationProducer(backgroundScope)
-        callNotificationProducer.bind(callMock, mockk())
+        callNotificationProducer.bind(callMock, mockk(relaxed = true))
         verify(exactly = 1) { NotificationManager.buildOngoingCallNotification(any(), any(), any(), any(), isSharingScreen = false, any(), any(), any()) }
     }
 
