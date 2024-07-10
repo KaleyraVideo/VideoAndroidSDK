@@ -43,6 +43,7 @@ import com.kaleyra.app_configuration.activities.ConfigurationActivity
 import com.kaleyra.app_configuration.model.CallOptionsType
 import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_utilities.notification.NotificationProxy
+import com.kaleyra.app_utilities.notification.requestFullscreenPermissionActivityApi34
 import com.kaleyra.app_utilities.notification.requestPushNotificationPermissionApi33
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.LoginManager
@@ -76,6 +77,8 @@ import com.mikepenz.fastadapter.extensions.ExtensionsFactories
 import com.mikepenz.fastadapter.listeners.ItemFilterListener
 import com.mikepenz.fastadapter.select.SelectExtension
 import com.mikepenz.fastadapter.select.SelectExtensionFactory
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
@@ -107,7 +110,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configuration = ConfigurationPrefsManager.getConfiguration(this)
-        requestPushNotificationPermissionApi33()
+        requestPushNotificationPermissionApi33 { MainScope().launch { delay(1500); requestFullscreenPermissionActivityApi34() }  }
 
         // inflate main layout and keep a reference to it in case of use with dpad navigation
         setContentView(layout.activity_main)

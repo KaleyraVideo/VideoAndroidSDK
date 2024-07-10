@@ -25,4 +25,7 @@
     <string name="notification_permission_message" translatable="false">Notification permission is required, please allow notification permissions.</string>
     <string name="notification_permission_app_settings" translatable="false">Notification permission is required, please allow notification permissions from app settings.</string>
 
+    <string name="fullscreen_intent_permission" translatable="false">Fullscreen Intent Permission</string>
+    <string name="fullscreen_intent_permission_message" translatable="false">It is required to allow\nfullscreen intent permission\nin order to receive incoming calls properly,\notherwise incoming calls will be shown as\nplain notifications and could be lost.</string>
+
 </resources>

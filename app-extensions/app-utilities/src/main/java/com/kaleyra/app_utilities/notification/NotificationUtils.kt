@@ -17,7 +17,6 @@
 package com.kaleyra.app_utilities.notification
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -36,28 +35,38 @@ import androidx.core.graphics.drawable.toBitmap
 import com.kaleyra.app_configuration.utils.hideKeyboard
 import com.kaleyra.app_utilities.R
 
-fun AppCompatActivity.requestPushNotificationPermissionApi33() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
-
+fun AppCompatActivity.requestPushNotificationPermissionApi33(onCompleted: (() -> Unit)? = null) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+        onCompleted?.invoke()
+        return
+    }
     registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
         val hideKeyboard = Handler(Looper.getMainLooper())
         hideKeyboard.postDelayed({ hideKeyboard() }, 4000)
         if (result) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+                androidx.appcompat.app.AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
                     .setTitle(R.string.notification_permission)
                     .setMessage(R.string.notification_permission_message)
-                    .setPositiveButton(R.string.button_ok) { _, _ -> showTestNotification() }
-                    .setNegativeButton(R.string.cancel_action, null)
+                    .setPositiveButton(R.string.button_ok) { _, _ ->
+                        showTestNotification()
+                        onCompleted?.invoke()
+                    }
+                    .setNegativeButton(R.string.cancel_action) { dialog, _ ->
+                        dialog.dismiss()
+                        onCompleted?.invoke()
+                    }
                     .show()
             } else {
                 showTestNotification()
+                onCompleted?.invoke()
             }
         } else {
-            AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+            androidx.appcompat.app.AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
                 .setTitle(R.string.notification_permission)
                 .setMessage(R.string.notification_permission_app_settings)
                 .setPositiveButton(R.string.button_ok) { _, _ ->
+                    onCompleted?.invoke()
                     kotlin.runCatching {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         val uri = Uri.fromParts("package", packageName, null)
@@ -65,10 +74,31 @@ fun AppCompatActivity.requestPushNotificationPermissionApi33() {
                         startActivity(intent)
                     }
                 }
-                .setNegativeButton(R.string.cancel_action, null)
+                .setNegativeButton(R.string.cancel_action) { dialog, _ ->
+                    dialog.dismiss()
+                    onCompleted?.invoke()
+                }
                 .show()
         }
     }.launch(Manifest.permission.POST_NOTIFICATIONS)
+}
+
+fun AppCompatActivity.requestFullscreenPermissionActivityApi34() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
+    androidx.appcompat.app.AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+        .setTitle(R.string.fullscreen_intent_permission)
+        .setMessage(R.string.fullscreen_intent_permission_message)
+        .setPositiveButton(R.string.button_ok) { _, _ ->
+            kotlin.runCatching {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                    Uri.parse("package:" + applicationContext.packageName)
+                )
+                startActivity(intent)
+            }
+        }
+        .setNegativeButton(R.string.cancel_action) { dialog, _ -> dialog.dismiss() }
+        .show()
 }
 
 fun AppCompatActivity.showTestNotification() = kotlin.runCatching {
