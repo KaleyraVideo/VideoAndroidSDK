@@ -762,12 +762,17 @@ class CallActionsViewModelTest {
 
     @Test
     fun testStopDeviceScreenShare() {
-        testTryStopScreenShare(mockk<Input.Video.Screen>())
+        val screenShareVideoMock = spyk<Input.Video.Screen>()
+        testTryStopScreenShare(screenShareVideoMock)
+        verify(exactly = 1) { screenShareVideoMock.dispose() }
     }
 
     @Test
     fun testStopAppScreenShare() {
-        testTryStopScreenShare(mockk<Input.Video.Application>())
+        val screenShareVideoMock = spyk<Input.Video.Application>()
+        testTryStopScreenShare(screenShareVideoMock)
+        verify(exactly = 1) { screenShareVideoMock.tryDisable() }
+
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
@@ -778,7 +783,6 @@ class CallActionsViewModelTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(availableInputs)
         advanceUntilIdle()
         val isStopped = viewModel.tryStopScreenShare()
-        verify(exactly = 1) { screenShareVideoMock.tryDisable() }
         verify(exactly = 1) { meMock.removeStream(myStreamMock) }
         assertEquals(true, isStopped)
     }
