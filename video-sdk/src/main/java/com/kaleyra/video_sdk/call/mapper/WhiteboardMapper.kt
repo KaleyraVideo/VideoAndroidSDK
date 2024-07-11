@@ -36,13 +36,12 @@ internal object WhiteboardMapper {
             .map { it is Whiteboard.State.Loading }
             .distinctUntilChanged()
 
-    fun Flow<CallUI>.getWhiteboardRequestEvents(): Flow<WhiteboardRequest> {
-        return this.map { it.whiteboard }
-            .flatMapLatest { it.events }
+    fun CallUI.getWhiteboardRequestEvents(): Flow<WhiteboardRequest> {
+        return whiteboard.events
             .filterIsInstance<Whiteboard.Event.Request>()
             .map { request ->
-                val participants =  this@getWhiteboardRequestEvents.firstOrNull()?.participants?.value?.list
-                val displayName = participants?.firstOrNull { it.userId == request.adminUserId }?.combinedDisplayName?.firstOrNull()
+                val participants = participants.value.list
+                val displayName = participants.firstOrNull { it.userId == request.adminUserId }?.combinedDisplayName?.firstOrNull()
                 when (request) {
                     is Whiteboard.Event.Request.Show -> WhiteboardRequest.Show(username = displayName)
                     is Whiteboard.Event.Request.Hide -> WhiteboardRequest.Hide(username = displayName)

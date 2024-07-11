@@ -113,9 +113,8 @@ class WhiteboardMapperTest {
         }
         every { callMock.participants.value.list } returns listOf(participant1, participant2)
         every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Show(adminUserId = "userId2"))
-        val flow = MutableStateFlow(callMock)
         val actual = withTimeoutOrNull(50) {
-            flow.getWhiteboardRequestEvents().first()
+            callMock.getWhiteboardRequestEvents().first()
         }
         assertEquals(true, actual is WhiteboardRequest.Show)
         assertEquals("username2", actual?.username)
@@ -135,9 +134,8 @@ class WhiteboardMapperTest {
         }
         every { callMock.participants.value.list } returns listOf(participant1, participant2)
         every { whiteboardMock.events } returns MutableStateFlow(Whiteboard.Event.Request.Hide(adminUserId = "userId2"))
-        val flow = MutableStateFlow(callMock)
         val actual = withTimeoutOrNull(50) {
-            flow.getWhiteboardRequestEvents().first()
+            callMock.getWhiteboardRequestEvents().first()
         }
         assertEquals(true, actual is WhiteboardRequest.Hide)
         assertEquals("username2", actual?.username)
