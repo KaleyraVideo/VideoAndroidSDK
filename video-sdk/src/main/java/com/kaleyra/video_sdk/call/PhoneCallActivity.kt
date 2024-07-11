@@ -49,11 +49,9 @@ import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getScreenAspectRatio
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_sdk.call.screennew.CallScreen
 import com.kaleyra.video_sdk.call.utils.Android12CallActivityTasksFixService
-import com.kaleyra.video_sdk.extensions.RationalExtensions.coerceRationalForPip
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -65,7 +63,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, ServiceConnection {
 
     private companion object {
-        var pictureInPictureAspectRatio: Rational = Rational(9, 16)
+        val pictureInPictureAspectRatio: Rational = Rational(9, 16)
 
         val isInPipMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -120,7 +118,6 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
                 onFileShareVisibility = ::onFileShareVisibility,
                 onWhiteboardVisibility = { isWhiteboardDisplayed = it },
                 onDisplayMode = ::onDisplayMode,
-                onPipAspectRatio = ::onAspectRatio,
                 onUsbCameraConnected = ::onUsbConnecting,
                 onActivityFinishing = { isActivityFinishing = true },
                 onAskInputPermissions = { isAskingInputPermissions = it },
@@ -241,7 +238,6 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     }
 
     private fun onAspectRatio(aspectRatio: Rational) {
-        pictureInPictureAspectRatio = if (aspectRatio == Rational.NaN) getScreenAspectRatio() else aspectRatio.coerceRationalForPip()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         updatePipParams()?.let { setPictureInPictureParams(it) }
     }
