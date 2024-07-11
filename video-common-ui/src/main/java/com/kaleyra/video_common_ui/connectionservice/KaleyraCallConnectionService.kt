@@ -27,6 +27,7 @@ import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -64,6 +65,8 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
     private var notificationJob: Job? = null
 
     private var call: CallUI? = null
+
+    private val notificationFlow: MutableStateFlow<Pair<Notification, Int>?> = MutableStateFlow(null)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -123,6 +126,21 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
 
     private fun configureService(call: CallUI, connection: KaleyraCallConnection) {
         this.call = call
+
+        notificationJob = combine(
+            call.hasInternalCameraInput(),
+            call.hasAudioInput(),
+            call.hasScreenSharingInput(),
+            notificationFlow.filterNotNull()
+        ) { hasCameraInput, hasMicInput, hasScreenSharingInput, notificationPair ->
+            val notification = notificationPair.first
+            val notificationId = notificationPair.second
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(notificationId, notification, getForegroundServiceType(hasCameraInput, hasMicInput, hasScreenSharingInput))
+            else startForeground(notificationId, notification)
+        }.launchIn(MainScope())
+        // should be launched on main scope otherwise it will receive that the screen input is active
+        // when it has been stopped causing app crash on android 14
+
         call.enableAudioRouting(
             connection = connection,
             currentDevice = connection.currentAudioDevice,
@@ -179,15 +197,9 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
-        notificationJob?.cancel()
-        notificationJob = combine(
-            call.hasInternalCameraInput(),
-            call.hasAudioInput(),
-            call.hasScreenSharingInput()
-        ) { hasCameraPermission, hasMicPermission, hasScreenSharingPermission ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasCameraPermission, hasMicPermission, hasScreenSharingPermission))
-            else startForeground(id, notification)
-        }.launchIn(coroutineScope)
+        coroutineScope.launch {
+            this@KaleyraCallConnectionService.notificationFlow.emit(Pair(notification, id))
+        }
     }
 
 

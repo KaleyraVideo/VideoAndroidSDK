@@ -56,7 +56,6 @@ internal class CallRecordingTextToSpeechNotifier(
             .debounce(CALL_RECORDING_DEBOUNCE_MILLIS)
             .onEach { (recording, _)  ->
                 if (!shouldNotify || !voicePromptsEnabled) return@onEach
-                println("over")
                 when (recording.type) {
                     Call.Recording.Type.OnConnect -> {
                         val text = context.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded)

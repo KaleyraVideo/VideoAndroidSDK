@@ -39,7 +39,9 @@ import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -74,6 +76,8 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
     private var notificationJob: Job? = null
 
     private var call: CallUI? = null
+
+    private val notificationFlow: MutableStateFlow<Pair<Notification, Int>?> = MutableStateFlow(null)
 
     /**
      * @suppress
@@ -113,6 +117,23 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
                 call = this
             }
             callForegroundServiceWorker.bind(this@KaleyraCallService, call)
+
+            notificationJob =
+                combine(
+                    AppLifecycle.isInForeground,
+                    call.hasInternalCameraInput(),
+                    call.hasAudioInput(),
+                    call.hasScreenSharingInput(),
+                    notificationFlow.filterNotNull()
+                ) { isInForeground, hasCameraInput, hasMicInput, hasScreenSharingInput, notificationPair ->
+                    if (!isInForeground) return@combine
+                    val notification = notificationPair.first
+                    val notificationId = notificationPair.second
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(notificationId, notification, getForegroundServiceType(hasCameraInput, hasMicInput, hasScreenSharingInput))
+                    else startForeground(notificationId, notification)
+                    this@KaleyraCallService.call ?: return@combine
+                }.launchIn(lifecycleScope)
+
             call.enableAudioRouting(
                 logger = logger,
                 coroutineScope = lifecycleScope,
@@ -136,19 +157,9 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
     }
 
     override fun onNewNotification(call: Call, notification: Notification, id: Int) {
-        notificationJob?.cancel()
-        notificationJob =
-            combine(
-                AppLifecycle.isInForeground,
-                call.hasInternalCameraInput(),
-                call.hasAudioInput(),
-                call.hasScreenSharingInput()
-            ) { isInForeground, hasCameraPermission, hasMicPermission, hasScreenSharingPermission ->
-                if (!isInForeground) return@combine
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(id, notification, getForegroundServiceType(hasCameraPermission, hasMicPermission, hasScreenSharingPermission))
-                else startForeground(id, notification)
-                this@KaleyraCallService.call ?: return@combine
-            }.launchIn(lifecycleScope)
+        lifecycleScope.launch {
+            this@KaleyraCallService.notificationFlow.emit(Pair(notification, id))
+        }
     }
 
     @Suppress("DEPRECATION")

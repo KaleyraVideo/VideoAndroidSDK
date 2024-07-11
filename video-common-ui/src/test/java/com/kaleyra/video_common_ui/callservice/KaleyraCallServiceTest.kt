@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.lifecycle.lifecycleScope
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -96,6 +98,7 @@ class KaleyraCallServiceTest {
         every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any()) } returns Unit
         every { anyConstructed<CallForegroundServiceWorker>().dispose() } returns Unit
         every { KaleyraVideo.conference } returns conferenceMock
+        every { KaleyraVideo.isConfigured } returns true
         with(callMock) {
             every { shouldShowAsActivity() } returns false
             every { showOnAppResumed(any()) } returns Unit
@@ -172,11 +175,11 @@ class KaleyraCallServiceTest {
     fun testOnNewNotification() {
         mockkObject(AppLifecycle)
         val notification = notificationBuilder!!.build()
-        val callMock = mockk<Call>(relaxed = true)
         val isInForegroundFlow = MutableStateFlow(false)
         every { AppLifecycle.isInForeground } returns isInForegroundFlow
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
 
+        service!!.onStartCommand(mockk(relaxed = true),0, 0)
         service!!.onNewNotification(callMock, notification, 10)
         assertEquals(null, shadowOf(service).lastForegroundNotification)
         assertEquals(0, shadowOf(service).lastForegroundNotificationId)
@@ -197,10 +200,10 @@ class KaleyraCallServiceTest {
     fun testStartForegroundIsExecutedOnNotificationUpdate() {
         mockkObject(AppLifecycle)
         val notification = notificationBuilder!!.build()
-        val callMock = mockk<Call>(relaxed = true)
         every { AppLifecycle.isInForeground } returns MutableStateFlow(true)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
 
+        service!!.onStartCommand(mockk(relaxed = true),0, 0)
         service!!.onNewNotification(callMock, notification, 10)
         assertEquals(notification, shadowOf(service).lastForegroundNotification)
         assertEquals(10, shadowOf(service).lastForegroundNotificationId)
@@ -221,11 +224,11 @@ class KaleyraCallServiceTest {
     fun testOnNewNotificationWithForegroundServiceType() {
         mockkObject(AppLifecycle)
         val notification = notificationBuilder!!.build()
-        val callMock = mockk<Call>(relaxed = true)
         val isInForegroundFlow = MutableStateFlow(false)
         every { AppLifecycle.isInForeground } returns isInForegroundFlow
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf())
 
+        service!!.onStartCommand(mockk(relaxed = true),0, 0)
         service!!.onNewNotification(callMock, notification, 10)
         assertEquals(null, shadowOf(service).lastForegroundNotification)
         assertEquals(0, shadowOf(service).lastForegroundNotificationId)
@@ -239,6 +242,39 @@ class KaleyraCallServiceTest {
         assertEquals(notification, shadowOf(notificationManager).getNotification(10))
         assertNotEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
         assertEquals(service!!.getForegroundServiceType(false, false, false), service!!.foregroundServiceType)
+        unmockkObject(AppLifecycle)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testInputRemovedForegroundTypenUpdated() = runTest {
+        mockkObject(AppLifecycle)
+        val notification = notificationBuilder!!.build()
+        val isInForegroundFlow = MutableStateFlow(false)
+        every { AppLifecycle.isInForeground } returns isInForegroundFlow
+        val inputsFlow = MutableStateFlow(setOf(mockk<Input.Audio>(), mockk<Input.Video.Camera.Internal>(), mockk<Input.Video.Screen.My>()))
+        every { callMock.inputs.availableInputs } returns inputsFlow
+
+        service!!.onStartCommand(mockk(relaxed = true),0, 0)
+        service!!.onNewNotification(callMock, notification, 10)
+        assertEquals(null, shadowOf(service).lastForegroundNotification)
+        assertEquals(0, shadowOf(service).lastForegroundNotificationId)
+        assertEquals(null, shadowOf(notificationManager).getNotification(10))
+        assertEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
+
+        // when the value is set to true, the service is promoted to foreground
+        isInForegroundFlow.value = true
+        assertEquals(notification, shadowOf(service).lastForegroundNotification)
+        assertEquals(10, shadowOf(service).lastForegroundNotificationId)
+        assertEquals(notification, shadowOf(notificationManager).getNotification(10))
+        assertNotEquals(0, notification.flags and Notification.FLAG_FOREGROUND_SERVICE)
+        assertEquals(service!!.getForegroundServiceType(true, true, true), service!!.foregroundServiceType)
+
+        inputsFlow.emit(setOf())
+        runCurrent()
+
+        assertEquals(service!!.getForegroundServiceType(false, false, false), service!!.foregroundServiceType)
+
         unmockkObject(AppLifecycle)
     }
 
