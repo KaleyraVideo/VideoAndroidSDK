@@ -44,6 +44,7 @@ import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
+import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
@@ -60,6 +61,8 @@ import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMess
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_sdk.findBackButton
+import com.kaleyra.video_sdk.pressBack
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil
 import io.mockk.every
 import io.mockk.mockk
@@ -146,9 +149,6 @@ class CallScreenTest {
 
     private var backPressed = false
 
-    private var finishActivity = false
-
-    @OptIn(ExperimentalMaterial3Api::class)
     @Before
     fun setUp() {
         mockkObject(CallActionsViewModel)
@@ -205,57 +205,45 @@ class CallScreenTest {
         unmockkAll()
     }
 
-    //    @Test
-//    fun callActionsComponentExpanded_userPerformsBack_sheetIsCollapsed() {
-//        sheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded)
-//        sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
-//        composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
-//        composeTestRule.pressBack()
-//        composeTestRule.waitForIdle()
-//        assertEquals(BottomSheetValue.Collapsed, sheetState.currentValue)
-//    }
-//
-//    @Test
-//    fun callActionsComponentExpandedAndNotCollapsable_userPerformsBack_sheetIsHalfExpanded() {
-//        sheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded, isCollapsable = false)
-//        sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Expanded)
-//        composeTestRule.onNodeWithTag(CallActionsComponentTag).assertIsDisplayed()
-//        composeTestRule.pressBack()
-//        composeTestRule.waitForIdle()
-//        assertEquals(BottomSheetValue.HalfExpanded, sheetState.currentValue)
-//    }
-//
-//    @Test
-//    fun callActionsComponentHalfExpandedAndNotCollapsable_userPerformsBack_activityIsFinishing() {
-//        callUiState = CallUiState()
-//        sheetState = BottomSheetState(initialValue = BottomSheetValue.HalfExpanded, isCollapsable = false)
-//        sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
-//        composeTestRule.waitForIdle()
-//        composeTestRule.pressBack()
-//        assertEquals(true, composeTestRule.activity.isFinishing)
-//    }
-//
-//    @Test
-//    fun callActionsComponentCollapsed_userPerformsBack_activityIsFinishing() {
-//        callUiState = CallUiState()
-//        sheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed)
-//        sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
-//        composeTestRule.waitForIdle()
-//        composeTestRule.activityRule.scenario.onActivity { activity ->
-//            activity.onBackPressedDispatcher.onBackPressed()
-//        }
-//        assertEquals(true, composeTestRule.activity.isFinishing)
-//    }
-//
-//    @Test
-//    fun callStateEnded_userPerformsBack_finishActivityInvoked() {
-//        callUiState = CallUiState(callState = CallStateUi.Disconnected.Ended)
-//        sheetContentState = BottomSheetContentState(BottomSheetComponent.CallActions, LineState.Collapsed())
-//        composeTestRule.waitForIdle()
-//        composeTestRule.pressBack()
-//        assertEquals(true, finishActivity)
-//    }
-//
+    @Test
+    fun callBottomSheetExpanded_userPerformsBack_sheetIsCollapsed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList()
+        )
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpCallScreen(callSheetState = sheetState)
+
+        composeTestRule.pressBack()
+        composeTestRule.waitForIdle()
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+    @Test
+    fun callBottomSheetCollapsed_userPerformsBack_activityIsFinishing() {
+        val sheetState = CallSheetState(CallSheetValue.Collapsed)
+        composeTestRule.setUpCallScreen(callSheetState = sheetState)
+
+        composeTestRule.pressBack()
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, composeTestRule.activity.isFinishing)
+    }
+
+    @Test
+    fun callStateEnded_userPerformsBack_onCallEndedBackInvoked() {
+        var isInvoked = false
+        composeTestRule.setUpCallScreen(
+            uiState = MainUiState(isCallEnded = true),
+            onCallEndedBack = { isInvoked = true }
+        )
+
+        composeTestRule.pressBack()
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, isInvoked)
+    }
+
     @Test
     fun userClicksFileShareAction_fileShareComponentDisplayed() {
         callActionsUiState.value = CallActionsUiState(
@@ -493,13 +481,17 @@ class CallScreenTest {
 
         assertEquals(true, isWhiteboardDisplayed)
     }
-//
-//    @Test
-//    fun userClicksBackButton_onBackPressedInvoked() {
-//        callUiState = CallUiState()
-//        composeTestRule.findBackButton().performClick()
-//        assert(backPressed)
-//    }
+
+    @Test
+    fun userClicksBackButton_onBackPressedInvoked() {
+        var isBackPressed = false
+        composeTestRule.setUpCallScreen(
+            onBackPressed = { isBackPressed = true }
+        )
+
+        composeTestRule.findBackButton().performClick()
+        assertEquals(true, isBackPressed)
+    }
 //
 //    @Test
 //    fun showWhiteboardRequestReceived_whiteboardDisplayed() {
@@ -555,21 +547,25 @@ class CallScreenTest {
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpCallScreen(
         configuration: Configuration? = null,
+        uiState: MainUiState = MainUiState(),
         callSheetState: CallSheetState = CallSheetState(),
         shouldShowFileShareComponent: State<Boolean> = mutableStateOf(false),
+        onCallEndedBack: () -> Unit = {},
+        onBackPressed: () -> Unit = {},
         onFileShareVisibility: (Boolean) -> Unit = {},
         onWhiteboardVisibility: (Boolean) -> Unit = {},
         isPipMode: Boolean = false,
     ) {
         setContent {
             CallScreen(
+                uiState = uiState,
                 windowSizeClass = configuration?.let {
                     WindowSizeClassUtil.currentWindowAdaptiveInfo(it)
                 } ?:  WindowSizeClassUtil.currentWindowAdaptiveInfo(),
                 shouldShowFileShareComponent = shouldShowFileShareComponent.value,
                 callSheetState = callSheetState,
-                onBackPressed = { backPressed = true },
-//                onCallEndedBack = { finishActivity = true },
+                onBackPressed = onBackPressed,
+                onCallEndedBack = onCallEndedBack,
                 onFileShareVisibility = onFileShareVisibility,
                 onWhiteboardVisibility = onWhiteboardVisibility,
                 isInPipMode = isPipMode
