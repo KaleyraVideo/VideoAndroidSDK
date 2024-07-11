@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.screennew
 
-import android.util.Rational
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,23 +16,40 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
+import com.kaleyra.video_sdk.call.screennew.model.MainUiState
+import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.call.utils.CameraPermission
+import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
+import com.kaleyra.video_sdk.call.utils.ContactsPermissions
+import com.kaleyra.video_sdk.call.utils.RecordAudioPermission
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
+import com.kaleyra.video_sdk.theme.CollaborationM3Theme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal const val PipScreenTestTag = "PipScreenTestTag"
@@ -43,14 +59,19 @@ internal const val HCallScreenTestTag = "HCallScreenTestTag"
 internal const val CompactScreenMaxActions = 5
 internal const val LargeScreenMaxActions = 8
 
-@OptIn(ExperimentalMaterial3Api::class)
+private const val ActivityFinishDelay = 1100L
+private const val ActivityFinishErrorDelay = 1500L
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun CallScreen(
+    viewModel: MainViewModel = viewModel(
+        factory = MainViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+    ),
     windowSizeClass: WindowSizeClass,
     shouldShowFileShareComponent: Boolean,
     isInPipMode: Boolean,
     enterPip: () -> Unit,
-    onPipAspectRatio: (Rational) -> Unit,
     onDisplayMode: (CallUI.DisplayMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
@@ -59,137 +80,122 @@ internal fun CallScreen(
     onAskInputPermissions: (Boolean) -> Unit,
     onConnectionServicePermissionsResult: () -> Unit,
 ) {
-//    val theme by viewModel.theme.collectAsStateWithLifecycle()
-//    val activity = LocalContext.current.findActivity() as FragmentActivity
-//    val callUiState by viewModel.uiState.collectAsStateWithLifecycle()
-//    val whiteboardRequest by viewModel.whiteboardRequest.collectAsStateWithLifecycle(initialValue = null)
-
-//    // Needed this to handle properly a sequence of multiple permission
-//    // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
-//    val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(
-//        RecordAudioPermission, CameraPermission
-//    )) { permissionsResult ->
-//        onAskInputPermissions(false)
-//        permissionsResult.forEach { (permission, isGranted) ->
-//            when {
-//                permission == RecordAudioPermission && isGranted -> viewModel.startMicrophone(activity)
-//                permission == CameraPermission && isGranted -> viewModel.startCamera(activity)
-//            }
-//        }
-//    }
-//    val micPermissionState = rememberPermissionState(permission = RecordAudioPermission) { isGranted ->
-//        onAskInputPermissions(false)
-//        if (isGranted) viewModel.startMicrophone(activity)
-//    }
-//    val cameraPermissionState = rememberPermissionState(permission = CameraPermission) { isGranted ->
-//        onAskInputPermissions(false)
-//        if (isGranted) viewModel.startCamera(activity)
-//    }
-//    val finishActivity = remember(activity) {
-//        {
-//            onActivityFinishing()
-//            activity.finishAndRemoveTask()
-//        }
-//    }
-//    // code executed when pressing the back button in the call ui
-//    // the system back gesture or system back button are handled using the BackHandler composable
-//    val onBackPressed by remember(finishActivity, enterPip) {
-//        derivedStateOf {
-//            {
-//                when {
-//                    callUiState.callState is CallStateUi.Disconnected.Ended -> finishActivity()
-//                    callUiState.fullscreenStream != null -> {
-//                        viewModel.fullscreenStream(null)
-//                    }
-//
-//                    else -> enterPip()
-//                }
-//            }
-//        }
-//    }
-//    LaunchedEffect(isInPipMode, onActivityFinishing) {
-//        viewModel.setOnCallEnded { hasFeedback, hasErrorOccurred, hasBeenKicked ->
-//            onActivityFinishing()
-//            when {
-//                isInPipMode || !activity.isAtLeastResumed() -> activity.finishAndRemoveTask()
-//                !hasFeedback && !hasBeenKicked -> {
-//                    val delayMs = if (hasErrorOccurred) ActivityFinishErrorDelay else ActivityFinishDelay
-//                    delay(delayMs)
-//                    activity.finishAndRemoveTask()
-//                }
-//            }
-//        }
-//    }
-//    LaunchedEffect(onPipAspectRatio) {
-//        viewModel.setOnPipAspectRatio(onPipAspectRatio)
-//    }
-//    LaunchedEffect(onDisplayMode) {
-//        viewModel.setOnDisplayMode(onDisplayMode)
-//    }
-//    val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
-//    var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
-//    val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
-//        viewModel.startConnectionService(activity)
-//        shouldAskInputPermissions = true
-//    }
-//    val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = if (ConnectionServiceUtils.isConnectionServiceSupported) ConnectionServicePermissions else listOf()) { permissionsResult ->
-//        if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
-//            contactsPermissionsState.launchMultiplePermissionRequest()
-//        } else {
-//            viewModel.tryStartCallService()
-//            shouldAskInputPermissions = true
-//        }
-//        onConnectionServicePermissionsResult()
-//    }
-//    if (shouldAskConnectionServicePermissions) {
-//        LaunchedEffect(connectionServicePermissionsState) {
-//            connectionServicePermissionsState.launchMultiplePermissionRequest()
-//        }
-//    }
-//    if (shouldAskInputPermissions) {
-//        LaunchedEffect(inputPermissionsState, micPermissionState, cameraPermissionState) {
-//            viewModel.setOnAudioOrVideoChanged { isAudioEnabled, isVideoEnabled ->
-//                onAskInputPermissions(true)
-//                when {
-//                    isAudioEnabled && isVideoEnabled -> inputPermissionsState.launchMultiplePermissionRequest()
-//                    isAudioEnabled -> micPermissionState.launchPermissionRequest()
-//                    isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
-//                }
-//            }
-//        }
-//    }
-//    LaunchedEffect(onUsbCameraConnected) {
-//        viewModel.setOnUsbCameraConnected(onUsbCameraConnected)
-//    }
-//    CollaborationTheme(theme = theme, transparentSystemBars = true) { isDarkTheme ->
-//        CallScreen(
-//            windowSizeClass = windowSizeClass,
-//            whiteboardRequest = whiteboardRequest,
-//            onThumbnailStreamClick = viewModel::swapThumbnail,
-//            onThumbnailStreamDoubleClick = viewModel::fullscreenStream,
-//            onFullscreenStreamClick = viewModel::fullscreenStream,
-//            onUserFeedback = viewModel::sendUserFeedback,
-//            onConfigurationChange = viewModel::updateStreamsArrangement,
-//            onBackPressed = onBackPressed,
-//            onCallEndedBack = finishActivity,
-//            isInPipMode = isInPipMode,
-//            isDarkTheme = isDarkTheme,
-//            onFileShareVisibility = onFileShareVisibility,
-//            onWhiteboardVisibility = onWhiteboardVisibility,
-//        )
-//    }
+    val theme by viewModel.theme.collectAsStateWithLifecycle()
+    val activity = LocalContext.current.findActivity() as FragmentActivity
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val whiteboardRequest by viewModel.whiteboardRequest.collectAsStateWithLifecycle(initialValue = null)
 
     val callSheetState = rememberCallSheetState()
 
-    KaleyraM3Theme {
+    // Needed this to handle properly a sequence of multiple permission
+    // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
+    val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(
+        RecordAudioPermission, CameraPermission
+    )) { permissionsResult ->
+        onAskInputPermissions(false)
+        permissionsResult.forEach { (permission, isGranted) ->
+            when {
+                permission == RecordAudioPermission && isGranted -> viewModel.startMicrophone(activity)
+                permission == CameraPermission && isGranted -> viewModel.startCamera(activity)
+            }
+        }
+    }
+    val micPermissionState = rememberPermissionState(permission = RecordAudioPermission) { isGranted ->
+        onAskInputPermissions(false)
+        if (isGranted) viewModel.startMicrophone(activity)
+    }
+    val cameraPermissionState = rememberPermissionState(permission = CameraPermission) { isGranted ->
+        onAskInputPermissions(false)
+        if (isGranted) viewModel.startCamera(activity)
+    }
+    val finishActivity = remember(activity) {
+        {
+            onActivityFinishing()
+            activity.finishAndRemoveTask()
+        }
+    }
+    // code executed when pressing the back button in the call ui
+    // the system back gesture or system back button are handled using the BackHandler composable
+    val streamViewModel = viewModel<StreamViewModel>(factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
+    val onBackPressed by remember(finishActivity, enterPip) {
+        derivedStateOf {
+            {
+                when {
+                    uiState.isCallEnded -> finishActivity()
+                    streamUiState.fullscreenStream != null -> streamViewModel.fullscreen(null)
+                    else -> enterPip()
+                }
+            }
+        }
+    }
+
+    val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
+    var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
+    val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
+        viewModel.startConnectionService(activity)
+        shouldAskInputPermissions = true
+    }
+    val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = if (ConnectionServiceUtils.isConnectionServiceSupported) ConnectionServicePermissions else listOf()) { permissionsResult ->
+        if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
+            contactsPermissionsState.launchMultiplePermissionRequest()
+        } else {
+            viewModel.tryStartCallService()
+            shouldAskInputPermissions = true
+        }
+        onConnectionServicePermissionsResult()
+    }
+    if (shouldAskConnectionServicePermissions) {
+        LaunchedEffect(connectionServicePermissionsState) {
+            connectionServicePermissionsState.launchMultiplePermissionRequest()
+        }
+    }
+    if (shouldAskInputPermissions) {
+        LaunchedEffect(inputPermissionsState, micPermissionState, cameraPermissionState) {
+            viewModel.setOnAudioOrVideoChanged { isAudioEnabled, isVideoEnabled ->
+                onAskInputPermissions(true)
+                when {
+                    isAudioEnabled && isVideoEnabled -> inputPermissionsState.launchMultiplePermissionRequest()
+                    isAudioEnabled -> micPermissionState.launchPermissionRequest()
+                    isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(isInPipMode, onActivityFinishing) {
+        viewModel.setOnCallEnded { hasFeedback, hasErrorOccurred, hasBeenKicked ->
+            onActivityFinishing()
+            when {
+                isInPipMode || !activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) -> activity.finishAndRemoveTask()
+                !hasFeedback && !hasBeenKicked -> {
+                    val delayMs = if (hasErrorOccurred) ActivityFinishErrorDelay else ActivityFinishDelay
+                    delay(delayMs)
+                    activity.finishAndRemoveTask()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(onDisplayMode) {
+        viewModel.setOnDisplayMode(onDisplayMode)
+    }
+
+    LaunchedEffect(onUsbCameraConnected) {
+        viewModel.setOnUsbCameraConnected(onUsbCameraConnected)
+    }
+
+    CollaborationM3Theme(theme = theme) {
         CallScreen(
             windowSizeClass = windowSizeClass,
+            uiState = uiState,
             isInPipMode = isInPipMode,
             callSheetState = callSheetState,
             shouldShowFileShareComponent = shouldShowFileShareComponent,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
-            onBackPressed = { },
+            onCallEndedBack = finishActivity,
+            onBackPressed = onBackPressed,
         )
     }
 }
@@ -198,10 +204,12 @@ internal fun CallScreen(
 @Composable
 internal fun CallScreen(
     windowSizeClass: WindowSizeClass,
+    uiState: MainUiState,
     callSheetState: CallSheetState,
     shouldShowFileShareComponent: Boolean,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onCallEndedBack: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     isInPipMode: Boolean = false
@@ -258,11 +266,11 @@ internal fun CallScreen(
 //        }
 //    }
 
-//    BackHandler(
-//        sheetState = sheetState,
-//        isCallEnded = false,
-//        onCallEndedBack = onCallEndedBack
-//    )
+    BackHandler(
+        sheetState = callSheetState,
+        isCallEnded = uiState.isCallEnded,
+        onCallEndedBack = onCallEndedBack
+    )
 
     if (isInPipMode) {
         Text("to implement", modifier = Modifier.testTag(PipScreenTestTag))
