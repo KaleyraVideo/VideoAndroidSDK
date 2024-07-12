@@ -177,13 +177,17 @@ class CallNotificationActionReceiverTest {
     }
 
     @Test
-    fun testStopApplicationScreenShare() {
-        testScreenShare(mockk<Input.Video.Application>(relaxed = true))
+    fun testStopDeviceScreenShare() {
+        val screenShareVideoMock = spyk<Input.Video.Screen.My>()
+        testScreenShare(screenShareVideoMock)
+        verify(exactly = 1) { screenShareVideoMock.dispose() }
     }
 
     @Test
-    fun testStopDeviceScreenShare() {
-        testScreenShare(mockk<Input.Video.Screen.My>(relaxed = true))
+    fun testStopAppScreenShare() {
+        val screenShareVideoMock = spyk<Input.Video.Application>()
+        testScreenShare(screenShareVideoMock)
+        verify(exactly = 1) { screenShareVideoMock.tryDisable() }
     }
 
     private fun testScreenShare(screenShareVideo: Input.Video.My) = runTest {
@@ -208,7 +212,6 @@ class CallNotificationActionReceiverTest {
         receiver.onReceive(contextMock, intent)
 
         advanceUntilIdle()
-        verify(exactly = 1) { screenShareVideo.tryDisable() }
         verify(exactly = 1) { meMock.removeStream(myStreamMock) }
     }
 
