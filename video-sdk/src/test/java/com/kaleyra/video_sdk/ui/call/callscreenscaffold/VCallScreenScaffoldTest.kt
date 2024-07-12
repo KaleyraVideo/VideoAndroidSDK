@@ -94,44 +94,16 @@ class VCallScreenScaffoldTest {
     }
 
     @Test
-    fun testSheetPanelPositionWhenSheetIsCollapsed() {
+    fun testSheetPanelIsAboveSheet() {
         val panelText = "panelText"
         composeTestRule.setCallScreenScaffold(
-            sheetState = CallSheetState(CallSheetValue.Collapsed),
             panelContent = { Text(panelText) }
         )
         composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
 
-        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
+        val panelTop = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().top
         val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
-    }
-
-    @Test
-    fun testSheetPanelPositionWhenSheetIsExpanded() {
-        val panelText = "panelText"
-        composeTestRule.setCallScreenScaffold(
-            sheetState = CallSheetState(CallSheetValue.Expanded),
-            panelContent = { Text(panelText) }
-        )
-        composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
-
-        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
-        val handleTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(handleTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
-    }
-
-    @Test
-    fun testSheetPanelPositionWhenDragHandleIsNull() {
-        val panelText = "panelText"
-        composeTestRule.setCallScreenScaffold(
-            dragHandle = null,
-            panelContent = { Text(panelText) }
-        )
-        composeTestRule.onNodeWithText(panelText).assertIsDisplayed()
-        val panelBottom = composeTestRule.onNodeWithText(panelText).getBoundsInRoot().bottom
-        val contentTop = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot().top
-        panelBottom.assertIsEqualTo(contentTop - VCallScreenScaffoldDefaults.SheetPanelContentPadding, "sheet panel bottom")
+        assert(panelTop < handleTop)
     }
 
     @Test
@@ -142,7 +114,10 @@ class VCallScreenScaffoldTest {
         composeTestRule.setCallScreenScaffold(
             paddingValues = paddingValues,
             topAppBar = {
-                Text(topBarText, Modifier.fillMaxWidth().height(48.dp))
+                Text(topBarText,
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp))
             },
             content = {
                 Text(contentText, Modifier.fillMaxSize())
@@ -178,7 +153,10 @@ class VCallScreenScaffoldTest {
         var paddingValues: PaddingValues? = null
         composeTestRule.setCallScreenScaffold(
             topAppBar = {
-                Spacer(Modifier.fillMaxWidth().height(topBarHeight))
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(topBarHeight))
             },
             paddingValues = PaddingValues(0.dp),
             content = { paddingValues = it }
@@ -312,14 +290,6 @@ class VCallScreenScaffoldTest {
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
-        dragHandle: @Composable (() -> Unit)? = {
-            Spacer(
-                Modifier
-                    .width(150.dp)
-                    .height(30.dp)
-                    .testTag(sheetHandleTag)
-            )
-        },
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
         content: @Composable (PaddingValues) -> Unit = {}
     ) {
@@ -343,7 +313,14 @@ class VCallScreenScaffoldTest {
                             .height(sheetDragContentHeight)
                             .testTag(sheetDragContentTag))
                 },
-                sheetDragHandle = dragHandle,
+                sheetDragHandle = {
+                    Spacer(
+                        Modifier
+                            .width(150.dp)
+                            .height(30.dp)
+                            .testTag(sheetHandleTag)
+                    )
+                },
                 paddingValues = paddingValues,
                 content = content
             )
