@@ -277,10 +277,10 @@ internal class CallViewModel(configure: suspend () -> Configuration) : BaseViewM
 //            onUsbCameraConnected.invoke(isUsbConnecting)
 //        }.launchIn(viewModelScope)
 
-        call
-            .getWhiteboardRequestEvents()
-            .onEach { event -> _whiteboardRequest.send(event) }
-            .launchIn(viewModelScope)
+//        call
+//            .getWhiteboardRequestEvents()
+//            .onEach { event -> _whiteboardRequest.send(event) }
+//            .launchIn(viewModelScope)
     }
 
     override fun onCleared() {

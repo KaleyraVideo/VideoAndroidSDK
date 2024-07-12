@@ -27,11 +27,11 @@
 //import com.kaleyra.video.conference.Call
 //import com.kaleyra.video.whiteboard.Whiteboard
 //import com.kaleyra.video_common_ui.CallUI
+//import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
 //import com.kaleyra.video_common_ui.CompanyUI.Theme
 //import com.kaleyra.video_common_ui.ConferenceUI
-//import com.kaleyra.video_common_ui.DisplayModeEvent
-//import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
 //import com.kaleyra.video_common_ui.ConnectionServiceOption
+//import com.kaleyra.video_common_ui.DisplayModeEvent
 //import com.kaleyra.video_common_ui.KaleyraVideo
 //import com.kaleyra.video_common_ui.KaleyraVideoService
 //import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
@@ -48,7 +48,6 @@
 //import com.kaleyra.video_sdk.MainDispatcherRule
 //import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 //import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
-//import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
 //import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 //import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 //import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -64,7 +63,6 @@
 //import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 //import io.mockk.*
 //import kotlinx.coroutines.ExperimentalCoroutinesApi
-//import kotlinx.coroutines.flow.MutableSharedFlow
 //import kotlinx.coroutines.flow.MutableStateFlow
 //import kotlinx.coroutines.flow.first
 //import kotlinx.coroutines.flow.flowOf
