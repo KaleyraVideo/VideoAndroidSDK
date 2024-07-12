@@ -36,6 +36,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -120,6 +121,7 @@ private fun FileTypeAndSize(
     fileSize: Long?,
     modifier: Modifier = Modifier
 ) {
+    val contentColorAlpha70 = LocalContentColor.current.copy(alpha = .7f)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -150,7 +152,8 @@ private fun FileTypeAndSize(
                 // The file size is NA when is Download && state != InProgress && state != Success
                 stringResource(id = R.string.kaleyra_fileshare_na)
             },
-            fontSize = 12.sp
+            fontSize = 12.sp,
+            color = contentColorAlpha70
         )
     }
 }
@@ -160,6 +163,7 @@ private fun SharedFileInfoAndProgress(
     sharedFile: SharedFileUi,
     modifier: Modifier = Modifier
 ) {
+    val contentColorAlpha70 = LocalContentColor.current.copy(alpha = .7f)
     Column(modifier = modifier) {
         val progress by animateFloatAsState(targetValue = when (sharedFile.state) {
             is SharedFileUi.State.InProgress -> sharedFile.state.progress
@@ -199,6 +203,7 @@ private fun SharedFileInfoAndProgress(
                 maxLines = 1,
                 fontSize = 12.sp,
                 overflow = TextOverflow.Ellipsis,
+                color = contentColorAlpha70,
                 modifier = Modifier.weight(1f)
             )
             Text(
@@ -210,7 +215,8 @@ private fun SharedFileInfoAndProgress(
 
                     else -> TimestampUtils.parseTime(sharedFile.time)
                 },
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                color = contentColorAlpha70
             )
         }
     }
@@ -222,6 +228,7 @@ private fun ActionButton(
     onActionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val onSurfaceAlpha50 = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
     IconButton(
         onClick = onActionClick,
         modifier = modifier
@@ -249,7 +256,7 @@ private fun ActionButton(
                 is SharedFileUi.State.Available,
                 is SharedFileUi.State.Cancelled,
                 is SharedFileUi.State.InProgress,
-                is SharedFileUi.State.Pending -> MaterialTheme.colorScheme.onSurface
+                is SharedFileUi.State.Pending -> onSurfaceAlpha50
             },
             modifier = Modifier
                 .size(32.dp)
@@ -261,7 +268,7 @@ private fun ActionButton(
                         is SharedFileUi.State.Available,
                         is SharedFileUi.State.Cancelled,
                         is SharedFileUi.State.InProgress,
-                        is SharedFileUi.State.Pending -> MaterialTheme.colorScheme.onSurface
+                        is SharedFileUi.State.Pending -> onSurfaceAlpha50
                     },
                     shape = CircleShape
                 )
