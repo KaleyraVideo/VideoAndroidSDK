@@ -105,7 +105,14 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             val streams = me?.streams?.value
             val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
-            input.tryDisable() && stream != null
+            val hasStopped = when(input) {
+                is Input.Video.Screen -> true.also {
+                    input.dispose()
+                }
+                is Input.Video.Application -> input.tryDisable()
+                else -> false
+            }
+            hasStopped && stream != null
         }
     }
 
