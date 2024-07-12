@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -47,9 +49,14 @@ import com.kaleyra.video_sdk.call.utils.CameraPermission
 import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
 import com.kaleyra.video_sdk.call.utils.ContactsPermissions
 import com.kaleyra.video_sdk.call.utils.RecordAudioPermission
+import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.CollaborationM3Theme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 internal const val PipScreenTestTag = "PipScreenTestTag"
@@ -192,6 +199,7 @@ internal fun CallScreen(
             isInPipMode = isInPipMode,
             callSheetState = callSheetState,
             shouldShowFileShareComponent = shouldShowFileShareComponent,
+            whiteboardRequest = whiteboardRequest,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
             onCallEndedBack = finishActivity,
@@ -207,6 +215,7 @@ internal fun CallScreen(
     uiState: MainUiState,
     callSheetState: CallSheetState,
     shouldShowFileShareComponent: Boolean,
+    whiteboardRequest: WhiteboardRequest?,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onCallEndedBack: () -> Unit,
@@ -248,23 +257,23 @@ internal fun CallScreen(
         }
     }
 
-//    LaunchedEffect(whiteboardRequest) {
-//        when (whiteboardRequest) {
-//            is WhiteboardRequest.Show -> {
-//                if (modalSheetComponent == ModalSheetComponent.Whiteboard) return@LaunchedEffect
-//                onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
-//                snapshotFlow { modalSheetComponent }.first { it == ModalSheetComponent.Whiteboard }
-//                CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
-//            }
-//            is WhiteboardRequest.Hide -> {
-//                if (modalSheetComponent != ModalSheetComponent.Whiteboard) return@LaunchedEffect
-//                onModalSheetComponentRequest(null)
-//                snapshotFlow { modalSheetComponent }.first { it == null }
-//                CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
-//            }
-//            else -> Unit
-//        }
-//    }
+    LaunchedEffect(whiteboardRequest) {
+        when (whiteboardRequest) {
+            is WhiteboardRequest.Show -> {
+                if (modalSheetComponent == ModalSheetComponent.Whiteboard) return@LaunchedEffect
+                onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
+                modalSheetState.expand()
+                CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
+            }
+            is WhiteboardRequest.Hide -> {
+                if (modalSheetComponent != ModalSheetComponent.Whiteboard) return@LaunchedEffect
+                onModalSheetComponentRequest(null)
+                modalSheetState.hide()
+                CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
+            }
+            else -> Unit
+        }
+    }
 
     BackHandler(
         sheetState = callSheetState,

@@ -1,17 +1,12 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.kaleyra.video_sdk.call.screennew
+package com.kaleyra.video_sdk.ui.call.screennew
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -26,24 +21,29 @@ import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetComponent
-import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetContentState
-import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetState
-import com.kaleyra.video_sdk.call.bottomsheet.BottomSheetValue
-import com.kaleyra.video_sdk.call.bottomsheet.CallActionsComponentTag
-import com.kaleyra.video_sdk.call.bottomsheet.FileShareComponentTag
-import com.kaleyra.video_sdk.call.bottomsheet.LineState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screen.model.CallUiState
+import com.kaleyra.video_sdk.call.screennew.AudioAction
+import com.kaleyra.video_sdk.call.screennew.CallScreen
+import com.kaleyra.video_sdk.call.screennew.CameraAction
+import com.kaleyra.video_sdk.call.screennew.ChatAction
+import com.kaleyra.video_sdk.call.screennew.FileShareAction
+import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
+import com.kaleyra.video_sdk.call.screennew.HCallScreenTestTag
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
+import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.PipScreenTestTag
+import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
+import com.kaleyra.video_sdk.call.screennew.StreamMenuContentTestTag
+import com.kaleyra.video_sdk.call.screennew.VCallScreenTestTag
+import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -61,25 +61,25 @@ import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMess
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
-import com.kaleyra.video_sdk.findBackButton
-import com.kaleyra.video_sdk.pressBack
+import com.kaleyra.video_sdk.ui.findBackButton
+import com.kaleyra.video_sdk.ui.pressBack
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
-import junit.framework.TestCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class CallScreenTest {
 
     @get:Rule
