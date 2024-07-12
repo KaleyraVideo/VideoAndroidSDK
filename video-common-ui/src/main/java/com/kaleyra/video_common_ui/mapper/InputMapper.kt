@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -103,6 +107,7 @@ object InputMapper {
     fun Call.hasScreenSharingInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Screen.My } }
+            .distinctUntilChanged()
 
     /**
      * Utility function to detect whenever an internal video input is available
@@ -112,6 +117,7 @@ object InputMapper {
     fun Call.hasInternalCameraInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Video.Camera.Internal } }
+            .distinctUntilChanged()
 
     /**
      * Utility function to detect whenever an audio input is available
@@ -121,6 +127,7 @@ object InputMapper {
     fun Call.hasAudioInput(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.any { it is Input.Audio } }
+            .distinctUntilChanged()
 
     fun Call.toAudioInput(): Flow<Input.Audio> =
         this.inputs.availableInputs

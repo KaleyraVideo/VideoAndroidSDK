@@ -23,6 +23,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_utils.HostAppInfo
 
 internal class TermsAndConditionsNotification {
@@ -77,7 +78,7 @@ internal class TermsAndConditionsNotification {
             }
 
             contentIntent?.also { builder.setContentIntent(it) }
-            fullscreenIntent?.also { builder.setFullScreenIntent(it, true) }
+            fullscreenIntent?.takeIf { context.canUseFullScreenIntentCompat() }?.also { builder.setFullScreenIntent(it, true) }
             deleteIntent?.also { builder.setDeleteIntent(it) }
 
             return builder.build()

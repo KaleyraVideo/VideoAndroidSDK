@@ -45,7 +45,7 @@ class CallForegroundServiceWorkerTest {
         mockkConstructor(StreamsManager::class)
         mockkConstructor(ParticipantManager::class)
         mockkConstructor(StreamsAudioManager::class)
-        every { anyConstructed<CallNotificationProducer>().bind(callMock) } returns Unit
+        every { anyConstructed<CallNotificationProducer>().bind(callMock, any()) } returns Unit
         every { anyConstructed<FileShareNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) } returns Unit
         every { anyConstructed<CameraStreamManager>().bind(callMock) } returns Unit
@@ -77,7 +77,7 @@ class CallForegroundServiceWorkerTest {
         }
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, listener)
         callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
-        verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock) }
+        verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock, any()) }
         verify(exactly = 1) { anyConstructed<CameraStreamManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<StreamsManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<ParticipantManager>().bind(callMock) }
@@ -96,7 +96,7 @@ class CallForegroundServiceWorkerTest {
         }
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, listener)
         callForegroundServiceWorker.bind(mockk(relaxed = true), callMock)
-        verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock) }
+        verify(exactly = 1) { anyConstructed<CallNotificationProducer>().bind(callMock, any()) }
         verify(exactly = 1) { anyConstructed<CameraStreamManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<StreamsManager>().bind(callMock) }
         verify(exactly = 1) { anyConstructed<ParticipantManager>().bind(callMock) }

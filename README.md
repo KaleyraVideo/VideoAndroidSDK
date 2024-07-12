@@ -38,7 +38,7 @@
 
 **Java 1.8**
 
-**Target API 33**
+**Target API 34**
 
 **Supported API level 21+ (Android 5.0 Lollipop).**
 

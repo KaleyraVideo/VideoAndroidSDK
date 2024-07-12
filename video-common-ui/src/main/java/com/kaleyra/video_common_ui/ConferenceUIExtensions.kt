@@ -11,9 +11,11 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
+import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
@@ -105,11 +107,19 @@ internal object ConferenceUIExtensions {
 
             val notification = when {
                 CallExtensions.isIncoming(state, participants) -> {
-                    CallNotificationProducer.buildIncomingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
+                    CallNotificationProducer.buildIncomingCallNotification(
+                        participants,
+                        callActivityClazz,
+                        isCallServiceRunning = false,
+                        enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat())
                 }
 
                 CallExtensions.isOutgoing(state, participants) -> {
-                    CallNotificationProducer.buildOutgoingCallNotification(participants, callActivityClazz, isCallServiceRunning = false)
+                    CallNotificationProducer.buildOutgoingCallNotification(
+                        participants,
+                        callActivityClazz,
+                        isCallServiceRunning = false,
+                        enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat())
                 }
 
                 else -> return@combine

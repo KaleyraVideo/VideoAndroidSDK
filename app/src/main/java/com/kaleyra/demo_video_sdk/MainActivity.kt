@@ -43,6 +43,7 @@ import com.kaleyra.app_configuration.activities.ConfigurationActivity
 import com.kaleyra.app_configuration.model.CallOptionsType
 import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_utilities.notification.NotificationProxy
+import com.kaleyra.app_utilities.notification.requestFullscreenPermissionActivityApi34
 import com.kaleyra.app_utilities.notification.requestPushNotificationPermissionApi33
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.LoginManager
@@ -76,6 +77,8 @@ import com.mikepenz.fastadapter.extensions.ExtensionsFactories
 import com.mikepenz.fastadapter.listeners.ItemFilterListener
 import com.mikepenz.fastadapter.select.SelectExtension
 import com.mikepenz.fastadapter.select.SelectExtensionFactory
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
@@ -108,7 +111,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         super.onCreate(savedInstanceState)
 
         configuration = ConfigurationPrefsManager.getConfiguration(this)
-        requestPushNotificationPermissionApi33()
+        if (LoginManager.isUserLogged(this)) {
+            requestPushNotificationPermissionApi33 {
+                MainScope().launch { delay(1500); requestFullscreenPermissionActivityApi34() }
+            }
+        }
 
         // inflate main layout and keep a reference to it in case of use with dpad navigation
         setContentView(layout.activity_main)
@@ -364,22 +371,19 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         selectedUsersItemAdapter.add(NoUserSelectedItem())
 
         lifecycleScope.launch {
-            restApi.listUsers()
-                .filter { it != LoginManager.getLoggedUser(this@MainActivity) }
-                .forEach {
-                    binding!!.loading.visibility = View.GONE
-                    // Add each user(except the logged one) to the recyclerView adapter to be displayed in the list.
-                    usersList.add(UserSelectionItem(it))
-                    itemAdapter!!.set(usersList)
-                    for (userSelected in calleeSelected) {
-                        selectUser(userSelected, usersList.indexOf(UserSelectionItem(userSelected)))
-                    }
-                    if (searchView != null) itemAdapter!!.filter(searchView!!.query)
-                    setRefreshing(false)
+            // Fetch the sample users you can use to login with.
+            // Add each user(except the logged one) to the recyclerView adapter to be displayed in the list.
+            restApi.listUsers().filter { it != LoginManager.getLoggedUser(this@MainActivity) }.apply {
+                usersList.addAll(map { UserSelectionItem(it) })
+                itemAdapter!!.setNewList(usersList)
+                for (userSelected in calleeSelected) {
+                    selectUser(userSelected, usersList.indexOf(UserSelectionItem(userSelected)))
                 }
+                searchView?.query?.let { itemAdapter!!.filter(searchView!!.query) }
+                binding!!.loading.visibility = View.GONE
+                setRefreshing(false)
+            }
         }
-        // Fetch the sample users you can use to login with.
-
     }
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {

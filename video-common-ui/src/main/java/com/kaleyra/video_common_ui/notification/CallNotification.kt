@@ -31,7 +31,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntent
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_utils.HostAppInfo
 
 /**
@@ -260,7 +260,7 @@ class CallNotification {
 
             color?.let { builder.setColor(it) }
             contentIntent?.also { builder.setContentIntent(it) }
-            fullscreenIntent?.also { builder.setFullScreenIntent(it, true) }
+            fullscreenIntent?.takeIf { context.canUseFullScreenIntentCompat() }?.also { builder.setFullScreenIntent(it, true) }
 
             var screenShareAction: NotificationCompat.Action? = null
             screenShareIntent?.also {
@@ -339,7 +339,7 @@ class CallNotification {
                 .setContentText(contentText)
                 .addPerson(person)
 
-            if (enableCallStyle && context.canUseFullScreenIntent()) {
+            if (enableCallStyle) {
                 builder.style = style
             } else {
                 when(type) {
@@ -369,7 +369,7 @@ class CallNotification {
 
             color?.let { builder.setColor(it) }
             contentIntent?.also { builder.setContentIntent(it) }
-            fullscreenIntent?.takeIf { context.canUseFullScreenIntent() }?.also { builder.setFullScreenIntent(it, true) }
+            fullscreenIntent?.takeIf { context.canUseFullScreenIntentCompat() }?.also { builder.setFullScreenIntent(it, true) }
             screenShareIntent?.also {
                 val screenShareAction = Notification.Action.Builder(
                     Icon.createWithResource(context, R.drawable.ic_kaleyra_screen_share),

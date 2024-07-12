@@ -240,78 +240,19 @@ class CallNotificationManagerTest {
     }
 
     @Test
-    fun deviceIsSmartphone_buildOngoingCallNotification_callStyleEnabled() {
-        every { DeviceUtils.isSmartGlass } returns false
+    fun callNotificationManager_buildOngoingCallNotification_callStyleEnabled() {
         callNotificationManager.buildOngoingCallNotification(
             "",
             isLink = false,
             isGroupCall = false,
             isCallRecorded = false,
             isSharingScreen = false,
-            isConnecting = false, activityClazz = this::class.java
+            isConnecting = false,
+            activityClazz = this::class.java,
+            enableCallStyle = true
         )
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().enableCallStyle(true)
-        }
-    }
-
-    @Test
-    fun deviceIsSmartglass_buildOngoingCallNotification_callStyleDisabled() {
-        every { DeviceUtils.isSmartGlass } returns true
-        callNotificationManager.buildOngoingCallNotification(
-             "",
-            isLink = false,
-            isGroupCall = false,
-            isCallRecorded = false,
-            isSharingScreen = false,
-            isConnecting = false, activityClazz = this::class.java
-        )
-        verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
-        }
-    }
-
-    @Test
-    fun deviceIsSmartphone_buildOutgoingCallNotification_callStyleEnabled() {
-        every { DeviceUtils.isSmartGlass } returns false
-        callNotificationManager.buildOutgoingCallNotification(
-            username = "", isGroupCall = false, activityClazz = this::class.java
-        )
-        verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().enableCallStyle(true)
-        }
-    }
-
-    @Test
-    fun deviceIsSmartglass_buildOutgoingCallNotification_callStyleDisabled() {
-        every { DeviceUtils.isSmartGlass } returns true
-        callNotificationManager.buildOutgoingCallNotification(
-            username = "", isGroupCall = false, activityClazz = this::class.java
-        )
-        verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
-        }
-    }
-
-    @Test
-    fun deviceIsSmartphone_buildIncomingCallNotification_callStyleEnabled() {
-        every { DeviceUtils.isSmartGlass } returns false
-        callNotificationManager.buildIncomingCallNotification(
-            username = "", isGroupCall = false, activityClazz = this::class.java, false
-        )
-        verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().enableCallStyle(true)
-        }
-    }
-
-    @Test
-    fun deviceIsSmartglass_buildIncomingCallNotification_callStyleDisabled() {
-        every { DeviceUtils.isSmartGlass } returns true
-        callNotificationManager.buildIncomingCallNotification(
-            username = "", isGroupCall = false, activityClazz = this::class.java, false
-        )
-        verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().enableCallStyle(false)
         }
     }
 

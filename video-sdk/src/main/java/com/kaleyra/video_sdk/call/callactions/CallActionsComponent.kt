@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
@@ -58,11 +59,17 @@ internal fun CallActionsComponent(
                     is CallAction.SwitchCamera -> viewModel.switchCamera()
                     is CallAction.HangUp -> viewModel.hangUp()
                     is CallAction.ScreenShare -> {
-                        if (!viewModel.tryStopScreenShare()) {
-                            onItemClick(action)
+                        activity.unlockDevice {
+                            if (!viewModel.tryStopScreenShare()) {
+                                onItemClick(action)
+                            }
                         }
                     }
-                    is CallAction.Chat -> viewModel.showChat(activity.baseContext)
+                    is CallAction.Chat -> {
+                        activity.unlockDevice {
+                            viewModel.showChat(activity.baseContext)
+                        }
+                    }
                     else -> onItemClick(action)
                 }
             }
