@@ -17,12 +17,15 @@
 package com.kaleyra.video_common_ui.utils.extensions
 
 import android.app.Activity
+import android.app.KeyguardManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isScreenLocked
 
 /**
  * ActivityExtensions
@@ -30,6 +33,8 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDraw
 object ActivityExtensions {
 
     private const val SCREEN_SHARE_REQUEST_CODE = 233
+
+    private var dismissKeyguardRequested = false
 
     /**
      * Turn and keep the screen on
@@ -74,5 +79,34 @@ object ActivityExtensions {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.fromParts("package", application.packageName, null))
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         startActivityForResult(intent, SCREEN_SHARE_REQUEST_CODE)
+    }
+
+    fun Activity.unlockDevice(success: (() -> Unit)? = null) {
+        if (!isScreenLocked()) {
+            success?.invoke()
+            return
+        }
+        if (dismissKeyguardRequested) return
+        dismissKeyguardRequested = true
+        val keyguardManager = application.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        when {
+            // requestDismissKeyguard should be applied only for O_MR1 and higher, on android O it does not work correctly
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> keyguardManager.requestDismissKeyguard(
+                this,
+                object : KeyguardManager.KeyguardDismissCallback() {
+                    override fun onDismissCancelled() { dismissKeyguardRequested = false }
+
+                    override fun onDismissSucceeded() {
+                        super.onDismissSucceeded()
+                        dismissKeyguardRequested = false
+                        success?.invoke()
+                    }
+                })
+
+            else -> {
+                dismissKeyguardRequested = false
+                window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+            }
+        }
     }
 }
