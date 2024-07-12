@@ -63,6 +63,7 @@ class ScreenShareViewModelTest {
             every { participants } returns MutableStateFlow(mockk {
                 every { me } returns meMock
             })
+            every { setDisplayMode(any()) } returns true
         }
         every { meMock.streams } returns MutableStateFlow(listOf(screenShareStreamMock))
         with(screenShareStreamMock) {
@@ -80,6 +81,7 @@ class ScreenShareViewModelTest {
         advanceUntilIdle()
         verify(exactly = 1) { videoDeviceMock.tryEnable() }
         verify(exactly = 1) { screenShareStreamMock.open() }
+        verify(exactly = 1) { callMock.setDisplayMode(CallUI.DisplayMode.PictureInPicture) }
         assertEquals(videoDeviceMock, screenShareStreamMock.video.first())
     }
 
@@ -92,6 +94,7 @@ class ScreenShareViewModelTest {
         advanceUntilIdle()
         verify(exactly = 1) { videoAppMock.tryEnable() }
         verify(exactly = 1) { screenShareStreamMock.open() }
+        verify(exactly = 1) { callMock.setDisplayMode(CallUI.DisplayMode.PictureInPicture) }
         assertEquals(videoAppMock, screenShareStreamMock.video.first())
     }
 

@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ internal class ScreenShareViewModel(configure: suspend () -> Configuration) : Ba
             )
             stream.video.value = input
             stream.open()
+            call.setDisplayMode(CallUI.DisplayMode.PictureInPicture)
         }
     }
 
