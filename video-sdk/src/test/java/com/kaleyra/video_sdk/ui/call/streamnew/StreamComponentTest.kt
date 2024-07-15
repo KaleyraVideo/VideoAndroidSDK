@@ -372,7 +372,15 @@ class StreamComponentTest {
 
     @Test
     fun localStream_youAsUsernameIsDisplayed() {
+        val stream1 = defaultStreamUi(username = "mario", mine = true)
+        streamUiState = StreamUiState(
+            streams = listOf(stream1).toImmutableList()
+        )
 
+        composeTestRule.waitForIdle()
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(you).assertIsDisplayed()
     }
 
     fun defaultStreamUi(
