@@ -136,6 +136,7 @@ internal fun BottomSheetContent(
     onAudioDeviceClick: () -> Unit,
     onScreenShareTargetClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
+    onAskInputPermissions: (Boolean) -> Unit,
     contentVisible: Boolean = true,
     isDarkTheme: Boolean = false,
     isTesting: Boolean = false
@@ -186,9 +187,10 @@ internal fun BottomSheetContent(
 
                 BottomSheetComponent.ScreenShare -> {
                     ScreenShareComponent(
+                        modifier = Modifier.testTag(ScreenShareComponentTag),
                         onItemClick = { onScreenShareTargetClick() },
                         onCloseClick = { contentState.navigateToComponent(BottomSheetComponent.CallActions) },
-                        modifier = Modifier.testTag(ScreenShareComponentTag)
+                        onAskInputPermissions = onAskInputPermissions
                     )
                     contentState.updateCurrentComponent(BottomSheetComponent.ScreenShare)
                 }

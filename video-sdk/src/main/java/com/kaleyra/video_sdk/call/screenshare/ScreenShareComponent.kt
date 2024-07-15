@@ -44,6 +44,7 @@ internal fun ScreenShareComponent(
     viewModel: ScreenShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
+    onAskInputPermissions: (Boolean) -> Unit,
     onItemClick: (ScreenShareTargetUi) -> Unit,
     onCloseClick: () -> Unit,
 ) {
@@ -52,11 +53,25 @@ internal fun ScreenShareComponent(
     val onClick = remember {
         { target: ScreenShareTargetUi ->
             when (target) {
-                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity)
+                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity, {}, {})
                 ScreenShareTargetUi.Device -> {
+                    onAskInputPermissions(true)
                     activity.unlockDevice(
-                        onUnlocked = { viewModel.shareDeviceScreen(activity) },
-                        onDismiss = onCloseClick)
+                        onUnlocked = {
+                            viewModel.shareDeviceScreen(
+                                activity,
+                                onScreenSharingStarted = {
+                                    onAskInputPermissions(false)
+                                },
+                                onScreenSharingAborted = {
+                                    onAskInputPermissions(false)
+                                }
+                            )
+                        },
+                        onDismiss = {
+                            onCloseClick()
+                            onAskInputPermissions(false)
+                        })
                 }
             }
             onItemClick(target)
