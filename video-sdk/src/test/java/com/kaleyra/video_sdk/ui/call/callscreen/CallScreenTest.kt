@@ -150,6 +150,7 @@ class CallScreenTest: ComposeViewModelsMockTest() {
                 onFullscreenStreamClick = { },
                 onFileShareVisibility = { fileShareDisplayed = it },
                 onWhiteboardVisibility = { whiteboardDisplayed = it },
+                onAskInputPermissions = { },
                 onCallEndedBack = { finishActivity = true },
                 onUserFeedback = { _,_ -> },
             )

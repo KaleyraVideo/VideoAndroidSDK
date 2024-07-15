@@ -158,7 +158,7 @@ class KaleyraCallServiceTest {
         verify(exactly = 1) {
             callMock.enableAudioRouting(logger, service!!.lifecycleScope, true)
         }
-        assertEquals(Service.START_REDELIVER_INTENT, startType)
+        assertEquals(Service.START_NOT_STICKY, startType)
     }
 
     @Test

@@ -92,6 +92,7 @@ class CallNotificationActionReceiver internal constructor(val dispatcher: Corout
                             if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.hangUp()
                             else call.end()
                         }
+                        // TODO remove duplication with call actions view model
                         ACTION_STOP_SCREEN_SHARE -> {
                             val screenShareInputs =
                                 call.inputs.availableInputs.value
@@ -105,7 +106,12 @@ class CallNotificationActionReceiver internal constructor(val dispatcher: Corout
                                     stream.video.value is Input.Video.Application || stream.video.value is Input.Video.Screen.My
                                 }
                             screenShareStreams.forEach { stream -> me.removeStream(stream) }
-                            screenShareInputs.forEach { input -> input.tryDisable() }
+                            screenShareInputs.forEach { input ->
+                                when (input) {
+                                    is Input.Video.Screen -> input.dispose()
+                                    is Input.Video.Application -> input.tryDisable()
+                                }
+                            }
                         }
 
                         else -> Unit

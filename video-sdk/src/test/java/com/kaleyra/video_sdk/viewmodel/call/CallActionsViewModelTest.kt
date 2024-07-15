@@ -772,7 +772,6 @@ class CallActionsViewModelTest {
         val screenShareVideoMock = spyk<Input.Video.Application>()
         testTryStopScreenShare(screenShareVideoMock)
         verify(exactly = 1) { screenShareVideoMock.tryDisable() }
-
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {

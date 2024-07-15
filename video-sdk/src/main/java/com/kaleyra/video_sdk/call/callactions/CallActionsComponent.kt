@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
@@ -62,7 +63,11 @@ internal fun CallActionsComponent(
                             onItemClick(action)
                         }
                     }
-                    is CallAction.Chat -> viewModel.showChat(activity.baseContext)
+                    is CallAction.Chat -> {
+                        activity.unlockDevice(onUnlocked = {
+                            viewModel.showChat(activity.baseContext)
+                        })
+                    }
                     else -> onItemClick(action)
                 }
             }

@@ -65,6 +65,7 @@ class CallScreenRecreationTest : ComposeViewModelsMockTest() {
                 onFullscreenStreamClick = { },
                 onUserFeedback = { _,_ -> },
                 onCallEndedBack = {  },
+                onAskInputPermissions = { },
                 onFileShareVisibility = { },
                 onWhiteboardVisibility = { },
                 isTesting = true
