@@ -103,7 +103,7 @@ class KaleyraCallService : LifecycleService(), CallForegroundService, CallNotifi
             isLink = call.isLink
         )
 
-        return START_REDELIVER_INTENT
+        return START_NOT_STICKY
     }
 
     /**
