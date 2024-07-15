@@ -34,24 +34,30 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 
 @Composable
 internal fun ScreenShareComponent(
+    modifier: Modifier = Modifier,
     viewModel: ScreenShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onItemClick: (ScreenShareTargetUi) -> Unit,
     onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+    val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onClick = remember {
         { target: ScreenShareTargetUi ->
             when (target) {
-                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(context)
-                ScreenShareTargetUi.Device -> viewModel.shareDeviceScreen(context)
+                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity)
+                ScreenShareTargetUi.Device -> {
+                    activity.unlockDevice(
+                        onUnlocked = { viewModel.shareDeviceScreen(activity) },
+                        onDismiss = onCloseClick)
+                }
             }
             onItemClick(target)
         }

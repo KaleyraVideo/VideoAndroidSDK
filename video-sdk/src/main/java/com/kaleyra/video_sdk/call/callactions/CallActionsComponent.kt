@@ -60,6 +60,7 @@ internal fun CallActionsComponent(
                     is CallAction.HangUp -> viewModel.hangUp()
                     is CallAction.ScreenShare -> {
                         if (!viewModel.tryStopScreenShare()) {
+                            onItemClick(action)
                         }
                     }
                     is CallAction.Chat -> {
