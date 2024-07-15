@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
@@ -36,6 +37,7 @@ import com.kaleyra.video_sdk.call.screenshare.view.ScreenShareContent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
@@ -46,13 +48,13 @@ internal fun ScreenShareComponent(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+    val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onClick = remember {
         { target: ScreenShareTargetUi ->
             when (target) {
-                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(context)
-                ScreenShareTargetUi.Device -> viewModel.shareDeviceScreen(context)
+                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity)
+                ScreenShareTargetUi.Device -> activity.unlockDevice { viewModel.shareDeviceScreen(activity) }
             }
             onDismiss()
         }

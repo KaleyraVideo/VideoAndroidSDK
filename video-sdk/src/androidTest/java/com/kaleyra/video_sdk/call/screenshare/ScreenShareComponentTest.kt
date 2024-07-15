@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.screenshare
+package com.kaleyra.video_sdk.call.screenshare
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -26,11 +26,21 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -38,54 +48,91 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class ScreenShareComponentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var items by mutableStateOf(ImmutableList(listOf<ScreenShareTargetUi>()))
+    private var screenShareViewModel = mockk<ScreenShareViewModel>(relaxed = true)
 
-    private var screenShareTarget: ScreenShareTargetUi? = null
-
-    private var isCloseClicked = false
+    private var screenShareUiState = MutableStateFlow(ScreenShareUiState())
 
     @Before
     fun setUp() {
-        composeTestRule.setContent {
-            ScreenShareComponent(
-                uiState = ScreenShareUiState(targetList = items),
-                onItemClick = { screenShareTarget = it },
-                onCloseClick = { isCloseClicked = true }
-            )
+        mockkObject(ScreenShareViewModel)
+        every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
+            every { create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
         }
+        every { screenShareViewModel.uiState } returns screenShareUiState
     }
 
-    @After
-    fun tearDown() {
-        items = ImmutableList(listOf())
-        screenShareTarget = null
-        isCloseClicked = false
+    @Test
+    fun testShareApplicationScreen() {
+        screenShareUiState.update { it.copy(targetList = ImmutableList(listOf(ScreenShareTargetUi.Application))) }
+        composeTestRule.setContent {
+            ScreenShareComponent(onDismiss = { })
+        }
+        val appOnly = composeTestRule.activity.getString(R.string.kaleyra_screenshare_app_only)
+        composeTestRule.onNodeWithText(appOnly).performClick()
+        verify(exactly = 1) { screenShareViewModel.shareApplicationScreen(any()) }
+    }
+
+    @Test
+    fun testShareDeviceScreen() {
+        mockkObject(ActivityExtensions)
+        screenShareUiState.update { it.copy(targetList = ImmutableList(listOf(ScreenShareTargetUi.Device))) }
+        composeTestRule.setContent {
+            ScreenShareComponent(onDismiss = { })
+        }
+        val device = composeTestRule.activity.getString(R.string.kaleyra_screenshare_full_device)
+        composeTestRule.onNodeWithText(device).performClick()
+        verify(exactly = 1) { screenShareViewModel.shareDeviceScreen(any()) }
+        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any()) }
+        unmockkObject(ActivityExtensions)
     }
 
     @Test
     fun screenShareTitleDisplayed() {
         val title = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
+        composeTestRule.setContent {
+            ScreenShareComponent(
+                uiState = ScreenShareUiState(),
+                onItemClick = { },
+                onCloseClick = { }
+            )
+        }
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
     @Test
     fun userClicksClose_onCloseClickInvoked() {
+        var isCloseClicked = false
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.setContent {
+            ScreenShareComponent(
+                uiState = ScreenShareUiState(),
+                onItemClick = { },
+                onCloseClick = { isCloseClicked = true }
+            )
+        }
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isCloseClicked)
     }
 
     @Test
     fun userClicksOnItem_onItemClickInvoked() {
-        items = ImmutableList(listOf(ScreenShareTargetUi.Device, ScreenShareTargetUi.Application))
+        var screenShareTarget: ScreenShareTargetUi? = null
+        val items = ImmutableList(listOf(ScreenShareTargetUi.Device, ScreenShareTargetUi.Application))
+        composeTestRule.setContent {
+            ScreenShareComponent(
+                uiState = ScreenShareUiState(targetList = items),
+                onItemClick = { screenShareTarget = it },
+                onCloseClick = { }
+            )
+        }
         val appOnly = composeTestRule.activity.getString(R.string.kaleyra_screenshare_app_only)
         composeTestRule.onNodeWithText(appOnly).performClick()
         assertEquals(ScreenShareTargetUi.Application, screenShareTarget)
     }
+
 }
