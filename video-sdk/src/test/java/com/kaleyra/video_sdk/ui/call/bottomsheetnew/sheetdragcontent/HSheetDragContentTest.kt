@@ -12,6 +12,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
@@ -34,6 +36,8 @@ import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,6 +118,7 @@ class HSheetDragContentTest {
 
     @Test
     fun userClicksChat_showChatInvoked() {
+        mockkObject(ActivityExtensions)
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
@@ -129,6 +134,8 @@ class HSheetDragContentTest {
             .performClick()
 
         verify(exactly = 1) { callActionsViewModel.showChat(any()) }
+        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any()) }
+        unmockkObject(ActivityExtensions)
     }
 
     @Test

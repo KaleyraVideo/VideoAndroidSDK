@@ -13,6 +13,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
@@ -33,6 +35,9 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.spyk
+import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -163,6 +168,7 @@ class VSheetContentTest {
 
     @Test
     fun userClicksChat_showChatInvoked() {
+        mockkObject(ActivityExtensions)
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ChatAction()).toImmutableList())
         composeTestRule.setContent {
             VSheetContent(
@@ -181,6 +187,8 @@ class VSheetContentTest {
             .performClick()
 
         verify(exactly = 1) { callActionsViewModel.showChat(any()) }
+        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any()) }
+        unmockkObject(ActivityExtensions)
     }
 
     @Test

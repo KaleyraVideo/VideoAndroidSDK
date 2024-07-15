@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
@@ -55,13 +56,13 @@ internal fun VSheetDragContent(
         itemsPerColumn = itemsPerColumn,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel) { { viewModel.toggleMic(activity) } },
-        onCameraToggle = remember(viewModel) { { viewModel.toggleCamera(activity) } } ,
+        onCameraToggle = remember(viewModel) { { viewModel.toggleCamera(activity) } },
         onScreenShareToggle = remember(viewModel) {
             { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
-        onChatClick = remember(viewModel) { { viewModel.showChat(activity) } },
+        onChatClick = remember(viewModel) { { activity.unlockDevice { viewModel.showChat(activity) } } },
         onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
         onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
         onVirtualBackgroundClick = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
@@ -83,7 +84,7 @@ internal fun VSheetDragContent(
     onWhiteboardClick: () -> Unit,
     onVirtualBackgroundClick: () -> Unit,
     modifier: Modifier = Modifier,
-    itemsPerColumn : Int = MaxVSheetDragItems
+    itemsPerColumn: Int = MaxVSheetDragItems,
 ) {
     val chunkedActions = remember(callActions, itemsPerColumn) {
         callActions.value.chunked(itemsPerColumn, transform = { it.reversed() }).flatten()

@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
@@ -54,7 +55,7 @@ internal fun SheetPanelContent(
 
                     is FlipCameraAction -> viewModel.switchCamera()
                     is AudioAction -> onModalSheetComponentRequest(ModalSheetComponent.Audio)
-                    is ChatAction -> viewModel.showChat(activity)
+                    is ChatAction -> activity.unlockDevice { viewModel.showChat(activity) }
                     is FileShareAction -> onModalSheetComponentRequest(ModalSheetComponent.FileShare)
                     is WhiteboardAction -> onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
                     is VirtualBackgroundAction -> onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground)
