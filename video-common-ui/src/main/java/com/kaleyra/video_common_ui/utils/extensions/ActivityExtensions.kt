@@ -24,7 +24,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.requestOverlayPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDeviceSecure
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isScreenLocked
 
 /**
@@ -81,31 +83,36 @@ object ActivityExtensions {
         startActivityForResult(intent, SCREEN_SHARE_REQUEST_CODE)
     }
 
-    fun Activity.unlockDevice(success: (() -> Unit)? = null) {
+    fun Activity.unlockDevice(onUnlocked: (() -> Unit)? = null, onDismiss: (() -> Unit)? = null) {
         if (!isScreenLocked()) {
-            success?.invoke()
+            onUnlocked?.invoke()
             return
         }
         if (dismissKeyguardRequested) return
         dismissKeyguardRequested = true
         val keyguardManager = application.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+
         when {
             // requestDismissKeyguard should be applied only for O_MR1 and higher, on android O it does not work correctly
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> keyguardManager.requestDismissKeyguard(
                 this,
                 object : KeyguardManager.KeyguardDismissCallback() {
-                    override fun onDismissCancelled() { dismissKeyguardRequested = false }
+                    override fun onDismissCancelled() {
+                        dismissKeyguardRequested = false
+                        onDismiss?.invoke()
+                    }
 
                     override fun onDismissSucceeded() {
                         super.onDismissSucceeded()
                         dismissKeyguardRequested = false
-                        success?.invoke()
+                        onUnlocked?.invoke()
                     }
                 })
 
             else -> {
                 dismissKeyguardRequested = false
                 window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+                onUnlocked?.invoke()
             }
         }
     }
