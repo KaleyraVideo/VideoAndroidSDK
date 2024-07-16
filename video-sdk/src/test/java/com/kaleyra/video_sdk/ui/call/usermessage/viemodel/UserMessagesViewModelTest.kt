@@ -75,6 +75,7 @@ class UserMessagesViewModelTest {
 
     @Test
     fun testUserMessageAutoDismissed() = runTest {
+        userMessages.emit(RecordingMessage.Started)
         advanceUntilIdle()
         Assert.assertEquals(ImmutableList(listOf(RecordingMessage.Started)), viewModel.userMessage.first())
         advanceTimeBy(15000L)
