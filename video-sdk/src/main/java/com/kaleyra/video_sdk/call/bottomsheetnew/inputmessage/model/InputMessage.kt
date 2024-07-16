@@ -4,11 +4,11 @@ import androidx.compose.runtime.Stable
 import java.util.UUID
 
 @Stable
-internal interface InputMessage {
+interface InputMessage {
     val id: String
 }
 
-internal sealed class MicMessage(
+sealed class MicMessage(
     override val id: String = UUID.randomUUID().toString()
 ): InputMessage {
 
@@ -17,7 +17,7 @@ internal sealed class MicMessage(
     data object Disabled: MicMessage()
 }
 
-internal sealed class CameraMessage(
+sealed class CameraMessage(
     override val id: String = UUID.randomUUID().toString()
 ): InputMessage {
 

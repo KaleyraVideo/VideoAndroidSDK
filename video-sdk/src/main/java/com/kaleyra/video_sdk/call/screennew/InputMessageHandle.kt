@@ -22,7 +22,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.MicMessageTex
 internal const val InputMessageDragHandleTag = "InputMessageDragHandleTag"
 
 @Composable
-internal fun InputMessageHandle(inputMessage: InputMessage?) {
+internal fun InputMessageHandle() {
     val snackbarHostState = remember { SnackbarHostState() }
     val showHandle by remember {
         derivedStateOf { snackbarHostState.currentSnackbarData == null }
@@ -37,7 +37,6 @@ internal fun InputMessageHandle(inputMessage: InputMessage?) {
             CallBottomSheetDefaults.HDragHandle(Modifier.testTag(InputMessageDragHandleTag))
         }
         InputMessageHost(
-            inputMessage = inputMessage,
             snackbarHostState = snackbarHostState,
             micMessage = { enabled -> MicMessageText(enabled) },
             cameraMessage = { enabled -> CameraMessageText(enabled) },

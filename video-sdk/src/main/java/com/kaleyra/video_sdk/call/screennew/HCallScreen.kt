@@ -159,7 +159,6 @@ internal fun HCallScreen(
 
             // TODO test this
             InputMessageHost(
-                inputMessage = null,
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .align(Alignment.BottomCenter)

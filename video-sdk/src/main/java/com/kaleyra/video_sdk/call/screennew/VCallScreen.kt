@@ -158,7 +158,7 @@ internal fun VCallScreen(
             }
         },
         // TODO test this
-        sheetDragHandle = (@Composable { InputMessageHandle(null) }).takeIf { hasSheetDragContent }
+        sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         val layoutDirection = LocalLayoutDirection.current
         val top = paddingValues.calculateTopPadding()
@@ -228,7 +228,6 @@ private fun LargeScreenInputMessageHost() {
     ) {
         // TODO test this
         InputMessageHost(
-            inputMessage = null,
             micMessage = { enabled -> MicMessageText(enabled) },
             cameraMessage = { enabled -> CameraMessageText(enabled) }
         )
