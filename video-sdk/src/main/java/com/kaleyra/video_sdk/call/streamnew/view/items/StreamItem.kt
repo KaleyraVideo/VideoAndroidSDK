@@ -105,8 +105,8 @@ private fun UserLabel(
     pin: Boolean
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = .1f),
-        contentColor = MaterialTheme.colorScheme.inverseSurface,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         shape = RoundedCornerShape(4.dp),
         modifier = modifier
     ) {
@@ -167,8 +167,8 @@ private fun StreamStatusIcon(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = .1f),
-        contentColor = MaterialTheme.colorScheme.inverseSurface,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         shape = RoundedCornerShape(4.dp),
         modifier = modifier.size(24.dp)
     ) {
