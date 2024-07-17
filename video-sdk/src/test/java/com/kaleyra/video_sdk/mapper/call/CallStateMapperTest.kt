@@ -50,9 +50,13 @@ class CallStateMapperTest {
 
     private val callMock = mockk<Call>()
 
-    private val participantMeMock = mockk<CallParticipant.Me>()
+    private val participantMeMock = mockk<CallParticipant.Me>(relaxed = true) {
+        every { state } returns MutableStateFlow(CallParticipant.State.InCall)
+    }
 
-    private val participantMock = mockk<CallParticipant>()
+    private val participantMock = mockk<CallParticipant>(relaxed = true) {
+        every { state } returns MutableStateFlow(CallParticipant.State.InCall)
+    }
 
     private val callParticipantsMock = mockk<CallParticipants>(relaxed = true)
 

@@ -7,13 +7,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageDuration
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.viewmodel.InputMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.screennew.InputMessageDragHandleTag
@@ -25,6 +25,7 @@ import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -55,6 +56,8 @@ class InputMessageHandleTest {
         }
         with(call) {
             every { participants } returns MutableStateFlow(callParticipants)
+            every { state } returns MutableStateFlow(Call.State.Connected)
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         }
         with(conference) {
             every { call } returns MutableSharedFlow<CallUI>(replay = 1).apply {
@@ -87,7 +90,14 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnMicInputMessage() = runTest {
-        every { call.isMyMicEnabled() } returns MutableStateFlow(true)
+        every { call.isMyMicEnabled() } returns flow {
+            // drops first 2 values
+            emit(false)
+            emit(true)
+
+            emit(false)
+            emit(true)
+        }
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
 
@@ -108,7 +118,14 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnCameraInputMessage() = runTest {
-        every { call.isMyCameraEnabled() } returns MutableStateFlow(true)
+        every { call.isMyCameraEnabled() } returns flow {
+            // drops first 2 values
+            emit(false)
+            emit(true)
+
+            emit(false)
+            emit(true)
+        }
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
 

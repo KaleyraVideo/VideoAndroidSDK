@@ -15,7 +15,6 @@ import com.kaleyra.video_common_ui.CollaborationViewModel
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageDuration
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.viewmodel.InputMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
