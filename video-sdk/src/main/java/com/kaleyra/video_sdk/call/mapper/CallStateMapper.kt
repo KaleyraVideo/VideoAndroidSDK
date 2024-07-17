@@ -13,29 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.mapper.ParticipantMapper.areOtherParticipantsRinging
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doAnyOfMyStreamsIsLive
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.stateIn
 
 internal object CallStateMapper {
 
@@ -49,17 +40,12 @@ internal object CallStateMapper {
             state,
             participants,
             doAnyOfMyStreamsIsLive(),
-            participants.flatMapLatest { participants ->
-                participants.others
-                    .map { otherParticipant ->
-                        otherParticipant.state.stateIn(CoroutineScope(Dispatchers.IO))
-                    }.merge()
-            }
-        ) { state, participants, doAnyOfMyStreamsIsLive, _ ->
+            areOtherParticipantsRinging()
+        ) { state, participants, doAnyOfMyStreamsIsLive, areOtherParticipantsRinging ->
             when {
                 KaleyraVideo.connectedUser.value == null || (state is Call.State.Connected && !doAnyOfMyStreamsIsLive) -> CallStateUi.Connecting
                 isRingingLocally(state, participants) -> CallStateUi.Ringing
-                isRingingRemotely(state, participants) -> CallStateUi.RingingRemotely
+                areOtherParticipantsRinging -> CallStateUi.RingingRemotely
                 isDialing(state, participants) -> CallStateUi.Dialing
                 state is Call.State.Connected -> CallStateUi.Connected
                 state is Call.State.Reconnecting -> CallStateUi.Reconnecting
@@ -89,9 +75,4 @@ internal object CallStateMapper {
 
     private fun isRingingLocally(state: Call.State, participants: CallParticipants) =
             participants.me != participants.creator() && (state == Call.State.Disconnected || state is Call.State.Connecting)
-
-    private fun isRingingRemotely(state: Call.State, participants: CallParticipants) =
-        (state == Call.State.Disconnected || state is Call.State.Connecting) &&
-            (participants.others.any { it.state.value == CallParticipant.State.NotInCall.Ringing }
-                && participants.others.none { it.state.value == CallParticipant.State.InCall })
 }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
@@ -78,4 +79,28 @@ object ParticipantMapper {
                     }
             }
             .distinctUntilChanged()
+
+    fun Call.areOtherParticipantsRinging(): Flow<Boolean> {
+        return participants
+            .map { it.others }
+            .flatMapLatest { participants ->
+                val map = mutableMapOf<String, CallParticipant.State>()
+                if (participants.isEmpty()) flowOf( false)
+                else participants
+                    .map { participant ->
+                        participant.state.map { participant.userId to it }
+                    }
+                    .merge()
+                    .transform { (userId, state) ->
+                        map[userId] = state
+                        val values = map.values.toList()
+                        if (values.size == participants.size) {
+                            val isAnyRinging = values.any { it is CallParticipant.State.NotInCall.Ringing }
+                            val isNoneInCall = values.none { it is CallParticipant.State.InCall }
+                            emit(isAnyRinging && isNoneInCall)
+                        }
+                    }
+            }
+            .distinctUntilChanged()
+    }
 }
