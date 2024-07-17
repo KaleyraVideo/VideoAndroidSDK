@@ -8,7 +8,6 @@ import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.viewmodel.InputMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import io.mockk.every

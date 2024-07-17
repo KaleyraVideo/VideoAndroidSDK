@@ -15,7 +15,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.viewmodel.InputMessageViewModel
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
@@ -26,12 +26,12 @@ internal const val InputMessageDuration = 1000L
 @Composable
 internal fun InputMessageHost(
     modifier: Modifier = Modifier,
-    inputMessageViewModel: InputMessageViewModel = viewModel(factory = InputMessageViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    viewModel: CallActionsViewModel = viewModel(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     micMessage: @Composable (enabled: Boolean) -> Unit = { MicMessage(it) },
     cameraMessage: @Composable (enabled: Boolean) -> Unit = { CameraMessage(it) }
 ) {
-    val inputMessage = inputMessageViewModel.inputMessage.collectAsStateWithLifecycle(initialValue = null)
+    val inputMessage = viewModel.inputMessage.collectAsStateWithLifecycle(initialValue = null)
     InputMessageHost(
         modifier = modifier,
         inputMessage = inputMessage.value,
