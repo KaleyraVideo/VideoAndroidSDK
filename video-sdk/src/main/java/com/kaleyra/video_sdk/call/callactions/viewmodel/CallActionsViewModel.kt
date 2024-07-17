@@ -197,7 +197,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val isMicEnabled = input.enabled.value
             val hasSucceed = if (!isMicEnabled) input.tryEnable() else input.tryDisable()
             if (hasSucceed) {
-                val message = if (isMicEnabled) MicMessage.Enabled else MicMessage.Disabled
+                val message = if (isMicEnabled) MicMessage.Disabled else MicMessage.Enabled
                 inputMessageChannel.send(message)
             }
         }
