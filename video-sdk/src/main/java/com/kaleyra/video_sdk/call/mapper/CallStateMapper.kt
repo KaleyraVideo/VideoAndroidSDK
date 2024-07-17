@@ -25,6 +25,8 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doAnyOfMyStreamsIsLive
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -32,6 +34,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.stateIn
 
 internal object CallStateMapper {
 
@@ -44,8 +48,14 @@ internal object CallStateMapper {
         return combine(
             state,
             participants,
-            doAnyOfMyStreamsIsLive()
-        ) { state, participants, doAnyOfMyStreamsIsLive ->
+            doAnyOfMyStreamsIsLive(),
+            participants.flatMapLatest { participants ->
+                participants.others
+                    .map { otherParticipant ->
+                        otherParticipant.state.stateIn(CoroutineScope(Dispatchers.IO))
+                    }.merge()
+            }
+        ) { state, participants, doAnyOfMyStreamsIsLive, _ ->
             when {
                 KaleyraVideo.connectedUser.value == null || (state is Call.State.Connected && !doAnyOfMyStreamsIsLive) -> CallStateUi.Connecting
                 isRingingLocally(state, participants) -> CallStateUi.Ringing
