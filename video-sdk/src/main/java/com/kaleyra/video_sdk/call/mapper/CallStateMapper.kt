@@ -45,7 +45,7 @@ internal object CallStateMapper {
             when {
                 KaleyraVideo.connectedUser.value == null || (state is Call.State.Connected && !doAnyOfMyStreamsIsLive) -> CallStateUi.Connecting
                 isRingingLocally(state, participants) -> CallStateUi.Ringing
-                areOtherParticipantsRinging -> CallStateUi.RingingRemotely
+                isRingingRemotely(state, areOtherParticipantsRinging) -> CallStateUi.RingingRemotely
                 isDialing(state, participants) -> CallStateUi.Dialing
                 state is Call.State.Connected -> CallStateUi.Connected
                 state is Call.State.Reconnecting -> CallStateUi.Reconnecting
@@ -75,4 +75,7 @@ internal object CallStateMapper {
 
     private fun isRingingLocally(state: Call.State, participants: CallParticipants) =
             participants.me != participants.creator() && (state == Call.State.Disconnected || state is Call.State.Connecting)
+
+    private fun isRingingRemotely(state: Call.State, areOtherParticipantsRinging: Boolean) =
+        (state == Call.State.Disconnected || state is Call.State.Connecting) && areOtherParticipantsRinging
 }
