@@ -107,11 +107,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             val isMyMicEnabledFlow = call
                 .isMyMicEnabled()
-                .stateIn(this, SharingStarted.Eagerly, true)
+                .stateIn(this, SharingStarted.Eagerly, call.preferredType.value.isAudioEnabled())
 
             val isMyCameraEnabledFlow = call
                 .isMyCameraEnabled()
-                .stateIn(this, SharingStarted.Eagerly, true)
+                .stateIn(this, SharingStarted.Eagerly, call.preferredType.value.isVideoEnabled())
 
             val hasUsbCameraFlow = call
                 .hasUsbCamera()
