@@ -436,6 +436,86 @@ class CallActionsViewModelTest {
     }
 
     @Test
+    fun isMyMicEnabledNotEmitting_preferredTypeAudioVideo_uiStateMicNotToggled() = runTest {
+        every { callMock.isMyMicEnabled() } returns flowOf()
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().actionList.value
+        val expected = listOf(MicAction(isToggled = false))
+        assertEquals(expected, new)
+    }
+
+    @Test
+    fun isMyMicEnabledNotEmitting_preferredTypeAudioUpgradable_uiStateMicNotToggled() = runTest {
+        every { callMock.isMyMicEnabled() } returns flowOf()
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().actionList.value
+        val expected = listOf(MicAction(isToggled = false))
+        assertEquals(expected, new)
+    }
+
+    @Test
+    fun isMyMicEnabledNotEmitting_preferredTypeAudioOnly_uiStateMicNotToggled() = runTest {
+        every { callMock.isMyMicEnabled() } returns flowOf()
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().actionList.value
+        val expected = listOf(MicAction(isToggled = false))
+        assertEquals(expected, new)
+    }
+
+    @Test
+    fun isMyCameraEnabledNotEmitting_preferredTypeAudioVideo_uiStateCameraNotToggled() = runTest {
+        every { callMock.isMyCameraEnabled() } returns flowOf()
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().actionList.value
+        val expected = listOf(CameraAction(isToggled = false))
+        assertEquals(expected, new)
+    }
+
+    @Test
+    fun isMyCameraEnabledNotEmitting_preferredTypeAudioUpgradable_uiStateCameraNotToggled() = runTest {
+        every { callMock.isMyCameraEnabled() } returns flowOf()
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().actionList.value
+        val expected = listOf(CameraAction(isToggled = true))
+        assertEquals(expected, new)
+    }
+
+    @Test
     fun localParticipantInitialized_micActionStateEnabled() = runTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isEnabled = false)))
         every { callMock.isMeParticipantInitialized() } returns flowOf(true)
