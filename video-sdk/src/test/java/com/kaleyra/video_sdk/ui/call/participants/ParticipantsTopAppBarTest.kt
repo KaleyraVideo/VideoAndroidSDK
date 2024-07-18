@@ -36,7 +36,6 @@ class ParticipantsTopAppBarTest {
     fun setUp() {
         composeTestRule.setContent {
             ParticipantsTopAppBar(
-                companyLogo = Logo(),
                 participantsCount = participantsCount,
                 onCloseClick = { isCloseClicked = true }
             )

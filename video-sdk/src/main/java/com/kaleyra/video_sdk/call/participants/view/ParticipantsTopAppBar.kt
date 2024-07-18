@@ -1,10 +1,6 @@
 package com.kaleyra.video_sdk.call.participants.view
 
-import android.content.res.Configuration
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,33 +15,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ParticipantsTopAppBar(
-    companyLogo: Logo,
     participantsCount: Int,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onCloseClick: () -> Unit
 ) {
-    val isSystemInDarkTheme = isSystemInDarkTheme()
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            Avatar(
-                uri = (if (isSystemInDarkTheme) companyLogo.dark else companyLogo.light)?.let { ImmutableUri(it) },
-                username = "",
-                modifier = Modifier.padding(12.dp)
-            )
-        },
         title = {
             Text(
                 pluralStringResource(id = R.plurals.kaleyra_participants_component_participants, count = participantsCount, participantsCount),
@@ -70,11 +54,11 @@ internal fun ParticipantsTopAppBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun ParticipantsTopAppBarPreview() {
     KaleyraM3Theme {
-        ParticipantsTopAppBar(companyLogo = Logo(), participantsCount = 3, onCloseClick = {})
+        ParticipantsTopAppBar(participantsCount = 3, onCloseClick = {})
     }
 }

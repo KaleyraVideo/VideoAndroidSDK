@@ -39,6 +39,8 @@ import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
 
@@ -66,7 +68,6 @@ internal fun ParticipantsComponent(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ParticipantsTopAppBar(
-                companyLogo = companyLogo,
                 participantsCount = streams.count(),
                 scrollBehavior = scrollBehavior,
                 onCloseClick = onCloseClick
@@ -180,8 +181,8 @@ internal fun ParticipantsComponent(
     }
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun ParticipantsComponentPreview() {
     KaleyraM3Theme {

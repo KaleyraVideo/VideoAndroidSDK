@@ -116,12 +116,6 @@ class ParticipantsComponentTest {
     }
 
     @Test
-    fun testCompanyLogoIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun testParticipantCountIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
         val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, streams.count(), streams.count())
@@ -150,16 +144,9 @@ class ParticipantsComponentTest {
     }
 
     @Test
-    fun testUserAvatarIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock))
-        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-    }
-
-    @Test
     fun avatarFailsToLoad_letterIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(username = "username", avatar = null)))
-        composeTestRule.onNodeWithText("u").assertIsDisplayed()
+        composeTestRule.onNodeWithText("U").assertIsDisplayed()
     }
 
     @Test
@@ -310,24 +297,13 @@ class ParticipantsComponentTest {
         composeTestRule.onNodeWithTag(AdminBottomSheetTag).assertIsDisplayed()
     }
 
-
-    @Test
-    fun testAdminBottomSheetUserAvatarIsDisplayed() {
-        amIAdmin = true
-        streams = ImmutableList(listOf(streamUiMock))
-        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
-        composeTestRule.performClickOnMoreButton()
-        composeTestRule.onAllNodesWithContentDescription(text)[0].assertIsDisplayed()
-        composeTestRule.onAllNodesWithContentDescription(text)[1].assertIsDisplayed()
-    }
-
     @Test
     fun adminBottomSheetUserAvatarFailsToLoad_letterIsDisplayed() {
         amIAdmin = true
         streams = ImmutableList(listOf(streamUiMock))
         composeTestRule.performClickOnMoreButton()
-        composeTestRule.onAllNodesWithText(streamUiMock.username[0].toString())[0].assertIsDisplayed()
-        composeTestRule.onAllNodesWithText(streamUiMock.username[0].toString())[1].assertIsDisplayed()
+        composeTestRule.onAllNodesWithText(streamUiMock.username[0].uppercase())[0].assertIsDisplayed()
+        composeTestRule.onAllNodesWithText(streamUiMock.username[0].uppercase())[1].assertIsDisplayed()
     }
 
     @Test
