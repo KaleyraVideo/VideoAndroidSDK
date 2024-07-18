@@ -4,6 +4,7 @@ package com.kaleyra.video_sdk.call.inputmessagehandle
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -200,5 +201,80 @@ class InputMessageHandleTest {
         composeTestRule.onNodeWithText(camera).assertDoesNotExist()
         composeTestRule.onNodeWithText(off).assertDoesNotExist()
         composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun testInputMessageHandleNotShownOnEnableMicrophoneFailure() = runTest {
+        every { myMic.enabled } returns MutableStateFlow(false)
+        every { myMic.tryEnable() } returns false
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
+        composeTestRule.setContent {
+            InputMessageHandle()
+        }
+        advanceUntilIdle()
+        composeTestRule.awaitIdle()
+
+        callActionsViewModel.toggleMic(mockk<FragmentActivity>(relaxed = true))
+
+        composeTestRule.onNodeWithText(microphone).assertIsNotDisplayed()
+        composeTestRule.onNodeWithText(on).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertExists()
+    }
+
+    @Test
+    fun testInputMessageHandleNotShownOnEnableCameraFailure() = runTest {
+        every { myVideo.enabled } returns MutableStateFlow(false)
+        every { myVideo.tryEnable() } returns false
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
+        composeTestRule.setContent {
+            InputMessageHandle()
+        }
+        advanceUntilIdle()
+        composeTestRule.awaitIdle()
+
+        callActionsViewModel.toggleCamera(mockk<FragmentActivity>(relaxed = true))
+
+        composeTestRule.onNodeWithText(camera).assertIsNotDisplayed()
+        composeTestRule.onNodeWithText(on).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertExists()
+    }
+
+    @Test
+    fun testInputMessageHandleNotShownOnDisableMicrophoneFailure() = runTest {
+        every { myMic.enabled } returns MutableStateFlow(true)
+        every { myMic.tryDisable() } returns false
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
+        composeTestRule.setContent {
+            InputMessageHandle()
+        }
+        advanceUntilIdle()
+        composeTestRule.awaitIdle()
+
+        callActionsViewModel.toggleMic(mockk<FragmentActivity>(relaxed = true))
+
+        composeTestRule.onNodeWithText(microphone).assertIsNotDisplayed()
+        composeTestRule.onNodeWithText(off).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertExists()
+    }
+
+    @Test
+    fun testInputMessageHandleNotShownOnDisableCameraFailure() = runTest {
+        every { myVideo.enabled } returns MutableStateFlow(true)
+        every { myVideo.tryDisable() } returns false
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
+        composeTestRule.setContent {
+            InputMessageHandle()
+        }
+        advanceUntilIdle()
+        composeTestRule.awaitIdle()
+
+        callActionsViewModel.toggleCamera(mockk<FragmentActivity>(relaxed = true))
+        composeTestRule.onNodeWithText(camera).assertIsNotDisplayed()
+        composeTestRule.onNodeWithText(off).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertExists()
     }
 }
