@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -65,7 +66,9 @@ internal fun HCallScreen(
                 // TODO test this
                 onParticipantClick = { /*TODO*/ },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .statusBarsPadding()
             )
         },
         sheetDragContent = {
@@ -155,6 +158,7 @@ internal fun HCallScreen(
                 modifier = Modifier
                     .padding(top = top)
                     .padding(horizontal = 8.dp, vertical = 48.dp)
+                    .padding(end = 116.dp)
             )
 
             // TODO test this
