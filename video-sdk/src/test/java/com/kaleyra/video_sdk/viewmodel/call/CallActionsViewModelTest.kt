@@ -35,6 +35,9 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isCo
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
+import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
@@ -80,6 +83,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -829,6 +833,7 @@ class CallActionsViewModelTest {
         val inputs = mockk<Inputs>(relaxed = true)
         val audio = mockk<Input.Audio>(relaxed = true) {
             every { enabled } returns MutableStateFlow(false)
+            every { tryEnable() } returns true
         }
         every { callMock.inputs } returns inputs
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
@@ -838,11 +843,14 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
         coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
         verify(exactly = 1) { audio.tryEnable() }
+        assertEquals(MicMessage.Enabled, inputMessage)
     }
 
     @Test
@@ -851,6 +859,7 @@ class CallActionsViewModelTest {
         val inputs = mockk<Inputs>(relaxed = true)
         val audio = mockk<Input.Audio>(relaxed = true) {
             every { enabled } returns MutableStateFlow(true)
+            every { tryDisable() } returns true
         }
         every { callMock.inputs } returns inputs
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
@@ -860,11 +869,14 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
         coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
         verify(exactly = 1) { audio.tryDisable() }
+        assertEquals(MicMessage.Disabled, inputMessage)
     }
 
     @Test
@@ -878,6 +890,7 @@ class CallActionsViewModelTest {
         }
         val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { enabled } returns MutableStateFlow(false)
+            every { tryEnable() } returns true
         }
         val cameraStream = mockk<Stream.Mutable> {
             every { id } returns CAMERA_STREAM_ID
@@ -898,9 +911,13 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel.toggleCamera(activity)
         runCurrent()
+
         verify(exactly = 1) { cameraVideo.tryEnable() }
+        assertEquals(CameraMessage.Enabled, inputMessage)
     }
 
     @Test
@@ -1014,6 +1031,7 @@ class CallActionsViewModelTest {
         }
         val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
             every { enabled } returns MutableStateFlow(true)
+            every { tryDisable() } returns true
         }
         val cameraStream = mockk<Stream.Mutable> {
             every { id } returns CAMERA_STREAM_ID
@@ -1029,14 +1047,17 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)
         })
         advanceUntilIdle()
-
         viewModel.toggleCamera(activity)
         runCurrent()
+
         verify(exactly = 1) { cameraVideo.tryDisable() }
+        assertEquals(CameraMessage.Disabled, inputMessage)
     }
 
     @Test
