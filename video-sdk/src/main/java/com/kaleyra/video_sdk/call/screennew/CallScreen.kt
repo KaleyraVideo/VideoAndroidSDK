@@ -277,7 +277,9 @@ internal fun CallScreen(
     BackHandler(
         sheetState = callSheetState,
         isCallEnded = uiState.isCallEnded,
-        onCallEndedBack = onCallEndedBack
+        isAnyStreamSelected = selectedStreamId != null,
+        onCallEndedBack = onCallEndedBack,
+        onDismissSelectedStream = { selectedStreamId = null }
     )
 
     if (isInPipMode) {
@@ -356,7 +358,9 @@ internal fun WhiteboardVisibilityObserver(
 private fun BackHandler(
     sheetState: CallSheetState,
     isCallEnded: Boolean,
-    onCallEndedBack: () -> Unit
+    isAnyStreamSelected: Boolean,
+    onCallEndedBack: () -> Unit,
+    onDismissSelectedStream: () -> Unit
 ) {
     val streamViewModel = viewModel<StreamViewModel>(factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
     val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
@@ -373,6 +377,7 @@ private fun BackHandler(
     when {
         isCallEnded -> BackHandler(onBack = onCallEndedBack)
         sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
+        isAnyStreamSelected -> BackHandler(onBack = onDismissSelectedStream)
         streamUiState.fullscreenStream != null -> BackHandler(onBack = { streamViewModel.fullscreen(null) })
     }
 }

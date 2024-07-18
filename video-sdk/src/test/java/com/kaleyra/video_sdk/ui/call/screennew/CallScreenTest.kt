@@ -219,6 +219,27 @@ class CallScreenTest {
     }
 
     @Test
+    fun streamMenuDisplayed_userPerformsBack_streamMenuIsDismissed() {
+        val streams = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(streams).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen()
+
+        composeTestRule
+            .onNodeWithText("username", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
+
+        composeTestRule.pressBack()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertDoesNotExist()
+    }
+
+    @Test
     fun callBottomSheetCollapsed_userPerformsBack_activityIsFinishing() {
         val sheetState = CallSheetState(CallSheetValue.Collapsed)
         composeTestRule.setUpCallScreen(callSheetState = sheetState)
