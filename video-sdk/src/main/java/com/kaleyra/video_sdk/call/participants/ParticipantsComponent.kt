@@ -184,7 +184,6 @@ internal fun ParticipantsComponent(
 internal fun ParticipantsComponentPreview() {
     KaleyraM3Theme {
         ParticipantsComponent(
-            companyLogo = Logo(),
             streamsLayout = StreamsLayout.Grid,
             adminsStreamsIds = ImmutableList(listOf("id1")),
             amIAdmin = true,
