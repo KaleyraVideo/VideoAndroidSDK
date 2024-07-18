@@ -16,10 +16,15 @@
 
 package com.kaleyra.video_sdk.mapper.call
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conference.VideoStreamView
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.mapper.InputMapper
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
@@ -28,9 +33,11 @@ import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointerUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointersUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.shouldMirrorPointer
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -269,5 +276,40 @@ class VideoMapperTest {
 
         val result = flowOf(usbCameraMock).shouldMirrorPointer()
         assertEquals(false, result.first())
+    }
+
+    @Test
+    fun cameraStreamVideo_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(true)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoNull_toMyCameraVideoUi_null() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(null)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        Assert.assertEquals(null, actual)
+        unmockkObject(InputMapper)
     }
 }

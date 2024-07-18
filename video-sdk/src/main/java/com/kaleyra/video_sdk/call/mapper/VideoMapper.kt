@@ -16,8 +16,11 @@
 
 package com.kaleyra.video_sdk.call.mapper
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
@@ -77,6 +80,11 @@ internal object VideoMapper {
             }.collect()
         }.distinctUntilChanged()
     }
+
+    fun Call.toMyCameraVideoUi(): Flow<VideoUi?> =
+        this
+            .toMyCameraStream()
+            .flatMapLatest { it.video.mapToVideoUi() }
 
     fun Flow<Input.Video>.shouldMirrorPointer(): Flow<Boolean> =
         flatMapLatest { video ->
