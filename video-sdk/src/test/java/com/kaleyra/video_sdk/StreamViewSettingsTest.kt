@@ -19,8 +19,10 @@ package com.kaleyra.video_sdk
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.pipSettings
+import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.thumbnailSettings
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -69,5 +71,23 @@ class StreamViewSettingsTest {
         view.pipSettings()
         val videoStreamView = view.value as VideoStreamView
         assertEquals(StreamView.ScaleType.Fit, videoStreamView.scaleType.value)
+    }
+
+    @Test
+    fun testDefaultSettings() {
+        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
+        view.defaultStreamViewSettings()
+        val videoStreamView = view.value as VideoStreamView
+        assertEquals(true, videoStreamView.zoomGesturesEnabled.value)
+        assertEquals(StreamView.ScaleType.Fill(.2f), videoStreamView.scaleType.value)
+    }
+
+    @Test
+    fun testPreCallStreamViewSettings() {
+        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
+        view.preCallStreamViewSettings()
+        val videoStreamView = view.value as VideoStreamView
+        assertEquals(false, videoStreamView.zoomGesturesEnabled.value)
+        assertEquals(StreamView.ScaleType.Fill(1f), videoStreamView.scaleType.value)
     }
 }
