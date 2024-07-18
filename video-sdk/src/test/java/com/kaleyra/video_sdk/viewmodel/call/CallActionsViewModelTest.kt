@@ -120,6 +120,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.Muted)
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
