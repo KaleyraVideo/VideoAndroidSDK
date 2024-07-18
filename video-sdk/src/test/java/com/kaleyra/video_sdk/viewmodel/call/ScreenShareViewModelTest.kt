@@ -25,10 +25,13 @@ import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -77,12 +80,14 @@ class ScreenShareViewModelTest {
         val videoDeviceMock = mockk<Input.Video.Screen.My>(relaxed = true)
         coEvery { inputsMock.request(context, Inputs.Type.Screen) } returns Inputs.RequestResult.Success(videoDeviceMock)
         advanceUntilIdle()
-        viewModel.shareDeviceScreen(context)
+        var isScreenSharingStarted = true
+        viewModel.shareDeviceScreen(context, onScreenSharingStarted = { isScreenSharingStarted = true }, onScreenSharingAborted =  {})
         advanceUntilIdle()
         verify(exactly = 1) { videoDeviceMock.tryEnable() }
         verify(exactly = 1) { screenShareStreamMock.open() }
         verify(exactly = 1) { callMock.setDisplayMode(CallUI.DisplayMode.PictureInPicture) }
         assertEquals(videoDeviceMock, screenShareStreamMock.video.first())
+        assertEquals(true, isScreenSharingStarted)
     }
 
     @Test
@@ -90,7 +95,7 @@ class ScreenShareViewModelTest {
         val videoAppMock = mockk<Input.Video.Application>(relaxed = true)
         coEvery { inputsMock.request(context, Inputs.Type.Application) } returns Inputs.RequestResult.Success(videoAppMock)
         advanceUntilIdle()
-        viewModel.shareApplicationScreen(context)
+        viewModel.shareApplicationScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  {})
         advanceUntilIdle()
         verify(exactly = 1) { videoAppMock.tryEnable() }
         verify(exactly = 1) { screenShareStreamMock.open() }
@@ -104,7 +109,7 @@ class ScreenShareViewModelTest {
         val videoDeviceMock = mockk<Input.Video.Application>(relaxed = true)
         coEvery { inputsMock.request(context, Inputs.Type.Application) } returns Inputs.RequestResult.Success(videoDeviceMock)
         advanceUntilIdle()
-        viewModel.shareApplicationScreen(context)
+        viewModel.shareApplicationScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  {})
         advanceUntilIdle()
         verify(exactly = 1) { meMock.addStream(ScreenShareViewModel.SCREEN_SHARE_STREAM_ID) }
     }
@@ -115,8 +120,44 @@ class ScreenShareViewModelTest {
         val videoDeviceMock = mockk<Input.Video.Screen.My>(relaxed = true)
         coEvery { inputsMock.request(context, Inputs.Type.Screen) } returns Inputs.RequestResult.Success(videoDeviceMock)
         advanceUntilIdle()
-        viewModel.shareDeviceScreen(context)
+        viewModel.shareDeviceScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  {})
         advanceUntilIdle()
         verify(exactly = 1) { meMock.addStream(ScreenShareViewModel.SCREEN_SHARE_STREAM_ID) }
+    }
+
+    @Test
+    fun screenShareStreamInputNotAvailable_shareDeviceScreen_screenSharingAborted() = runTest {
+        every { meMock.streams } returns MutableStateFlow(listOf())
+        coEvery { inputsMock.request(context, Inputs.Type.Screen) } returns mockk(relaxed = true)
+        advanceUntilIdle()
+        var isScreenSharingAborted = false
+        viewModel.shareDeviceScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  { isScreenSharingAborted = true })
+        advanceUntilIdle()
+        Assert.assertEquals(true, isScreenSharingAborted)
+    }
+
+    @Test
+    fun screenShareStreamCallIsNull_shareDeviceScreen_screenSharingAborted() = runTest {
+        every { conferenceMock.call } returns MutableSharedFlow<CallUI>(replay = 1)
+        advanceUntilIdle()
+        var isScreenSharingAborted = false
+        viewModel.shareDeviceScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  { isScreenSharingAborted = true })
+        advanceUntilIdle()
+        Assert.assertEquals(true, isScreenSharingAborted)
+    }
+
+    @Test
+    fun screenShareStreamMeParticipantIsNull_shareDeviceScreen_screenSharingAborted() = runTest {
+        with(callMock) {
+            every { participants } returns MutableStateFlow(mockk {
+                every { me } returns null
+            })
+        }
+        coEvery { inputsMock.request(context, Inputs.Type.Screen) } returns mockk(relaxed = true)
+        advanceUntilIdle()
+        var isScreenSharingAborted = false
+        viewModel.shareDeviceScreen(context, onScreenSharingStarted = {}, onScreenSharingAborted =  { isScreenSharingAborted = true })
+        advanceUntilIdle()
+        Assert.assertEquals(true, isScreenSharingAborted)
     }
 }

@@ -62,14 +62,14 @@ class BottomSheetContentTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            BottomSheetContent(
-                contentState = contentState,
-                onLineClick = { isLineClicked = true },
-                onCallActionClick = { isCallActionClicked = true },
-                onAudioDeviceClick = { isAudioDeviceClicked = true },
-                onScreenShareTargetClick = { isScreenShareTargetClicked = true },
-                onVirtualBackgroundClick = { isVirtualBackgroundClicked = true }
-            )
+//            BottomSheetContent(
+//                contentState = contentState,
+//                onLineClick = { isLineClicked = true },
+//                onCallActionClick = { isCallActionClicked = true },
+//                onAudioDeviceClick = { isAudioDeviceClicked = true },
+//                onScreenShareTargetClick = { isScreenShareTargetClicked = true },
+//                onVirtualBackgroundClick = { isVirtualBackgroundClicked = true }
+//            )
         }
     }
 

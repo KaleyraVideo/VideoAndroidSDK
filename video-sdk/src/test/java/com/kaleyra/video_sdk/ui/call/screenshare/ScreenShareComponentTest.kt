@@ -71,11 +71,11 @@ class ScreenShareComponentTest {
     fun testShareApplicationScreen() {
         screenShareUiState.update { it.copy(targetList = ImmutableList(listOf(ScreenShareTargetUi.Application))) }
         composeTestRule.setContent {
-            ScreenShareComponent(onDismiss = { })
+            ScreenShareComponent(onDismiss = { }, onAskInputPermissions = {})
         }
         val appOnly = composeTestRule.activity.getString(R.string.kaleyra_screenshare_app_only)
         composeTestRule.onNodeWithText(appOnly).performClick()
-        verify(exactly = 1) { screenShareViewModel.shareApplicationScreen(any()) }
+        verify(exactly = 1) { screenShareViewModel.shareApplicationScreen(any(), any(), any()) }
     }
 
     @Test
@@ -83,12 +83,12 @@ class ScreenShareComponentTest {
         mockkObject(ActivityExtensions)
         screenShareUiState.update { it.copy(targetList = ImmutableList(listOf(ScreenShareTargetUi.Device))) }
         composeTestRule.setContent {
-            ScreenShareComponent(onDismiss = { })
+            ScreenShareComponent(onDismiss = { }, onAskInputPermissions = {})
         }
         val device = composeTestRule.activity.getString(R.string.kaleyra_screenshare_full_device)
         composeTestRule.onNodeWithText(device).performClick()
-        verify(exactly = 1) { screenShareViewModel.shareDeviceScreen(any()) }
-        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any()) }
+        verify(exactly = 1) { screenShareViewModel.shareDeviceScreen(any(), any(), any()) }
+        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any(), any()) }
         unmockkObject(ActivityExtensions)
     }
 

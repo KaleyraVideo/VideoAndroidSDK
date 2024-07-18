@@ -38,6 +38,7 @@ internal fun CallScreenModalSheet(
     modalSheetComponent: ModalSheetComponent?,
     sheetState: SheetState,
     onRequestDismiss: () -> Unit,
+    onAskInputPermissions: (Boolean) -> Unit,
     onUserMessageActionClick: (UserMessage.Action) -> Unit,
     modifier: Modifier = Modifier,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
@@ -66,7 +67,10 @@ internal fun CallScreenModalSheet(
             when (modalSheetComponent) {
                 ModalSheetComponent.Audio -> AudioOutputComponent(onDismiss = onDismiss)
 
-                ModalSheetComponent.ScreenShare -> ScreenShareComponent(onDismiss = onDismiss)
+                ModalSheetComponent.ScreenShare -> ScreenShareComponent(
+                    onDismiss = onDismiss,
+                    onAskInputPermissions = onAskInputPermissions
+                )
 
                 ModalSheetComponent.FileShare -> FileShareComponent(
                     onDismiss = onDismiss,

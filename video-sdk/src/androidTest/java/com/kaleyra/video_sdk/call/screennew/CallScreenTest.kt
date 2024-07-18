@@ -573,6 +573,27 @@ class CallScreenTest {
         }
     }
 
+    @Test
+    fun testUserClicksDeviceScreenShare_onAskInputPermissionsInvoked() {
+        var arePermissionAsked = false
+       composeTestRule.setUpCallScreen(
+            onAskInputPermissions = { arePermissionAsked = true }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(ScreenShareAction()).toImmutableList()
+        )
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule.onNodeWithContentDescription(screenShareText, useUnmergedTree = true).performClick()
+
+        composeTestRule.waitForIdle()
+
+        val deviceText = composeTestRule.activity.getString(R.string.kaleyra_screenshare_full_device)
+        composeTestRule.onNodeWithText(deviceText).performClick()
+
+        TestCase.assertEquals(true, arePermissionAsked)
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpCallScreen(
         configuration: Configuration? = null,
         uiState: MainUiState = MainUiState(),
@@ -581,6 +602,7 @@ class CallScreenTest {
         whiteboardRequest: State<WhiteboardRequest?> = mutableStateOf(null),
         onCallEndedBack: () -> Unit = {},
         onBackPressed: () -> Unit = {},
+        onAskInputPermissions: (Boolean) -> Unit = {},
         onFileShareVisibility: (Boolean) -> Unit = {},
         onWhiteboardVisibility: (Boolean) -> Unit = {},
         isPipMode: Boolean = false,
@@ -595,6 +617,7 @@ class CallScreenTest {
                 whiteboardRequest = whiteboardRequest.value,
                 callSheetState = callSheetState,
                 onBackPressed = onBackPressed,
+                onAskInputPermissions = onAskInputPermissions,
                 onCallEndedBack = onCallEndedBack,
                 onFileShareVisibility = onFileShareVisibility,
                 onWhiteboardVisibility = onWhiteboardVisibility,

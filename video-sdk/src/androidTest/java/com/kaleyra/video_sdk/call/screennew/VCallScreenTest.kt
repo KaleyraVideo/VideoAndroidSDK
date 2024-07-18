@@ -1340,6 +1340,7 @@ class VCallScreenTest {
         onStreamSelected: (String?) -> Unit = {},
         modalSheetComponent: ModalSheetComponent? = null,
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
+        onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
     ) {
         setContent {
@@ -1352,6 +1353,7 @@ class VCallScreenTest {
                 onStreamSelected = onStreamSelected,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onModalSheetComponentRequest = onModalSheetComponentChange,
+                onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )
         }

@@ -740,7 +740,7 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-       assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModalSheetComponent.ScreenShare, component)
     }
 
     @Test
@@ -1179,9 +1179,9 @@ class VCallScreenTest {
         composeTestRule.setUpVCallScreen(selectedStreamId = "streamId")
 
         composeTestRule
-                .onNodeWithText("username", useUnmergedTree = true)
-                .assertIsDisplayed()
-                .performClick()
+            .onNodeWithText("username", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
 
         composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
     }
@@ -1360,6 +1360,7 @@ class VCallScreenTest {
         onStreamSelected: (String?) -> Unit = {},
         modalSheetComponent: ModalSheetComponent? = null,
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
+        onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
     ) {
         setContent {
@@ -1372,6 +1373,7 @@ class VCallScreenTest {
                 onStreamSelected = onStreamSelected,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onModalSheetComponentRequest = onModalSheetComponentChange,
+                onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )
         }

@@ -31,18 +31,39 @@ import kotlinx.coroutines.launch
 internal class ScreenShareViewModel(configure: suspend () -> Configuration) : BaseViewModel<ScreenShareUiState>(configure) {
     override fun initialState() = ScreenShareUiState()
 
-    fun shareApplicationScreen(context: Context) = shareScreen(context, Inputs.Type.Application)
+    fun shareApplicationScreen(
+        context: Context,
+        onScreenSharingStarted: (() -> Unit)? = null,
+        onScreenSharingAborted: (() -> Unit)? = null
+    ) = shareScreen(context, Inputs.Type.Application, onScreenSharingStarted, onScreenSharingAborted)
 
-    fun shareDeviceScreen(context: Context) = shareScreen(context, Inputs.Type.Screen)
+    fun shareDeviceScreen(
+        context: Context,
+        onScreenSharingStarted: (() -> Unit)? = null,
+        onScreenSharingAborted: (() -> Unit)? = null
+    ) = shareScreen(context, Inputs.Type.Screen, onScreenSharingStarted, onScreenSharingAborted)
 
-    private fun shareScreen(context: Context, inputType: Inputs.Type) {
+    private fun shareScreen(
+        context: Context, inputType: Inputs.Type,
+        onScreenSharingStarted: (() -> Unit)? = null,
+        onScreenSharingAborted: (() -> Unit)? = null
+    ) {
         viewModelScope.launch {
             val call = call.getValue()
-            if (context !is FragmentActivity || call == null) return@launch
-            val me = call.participants.value.me ?: return@launch
+            if (context !is FragmentActivity || call == null) {
+                onScreenSharingAborted?.invoke()
+                return@launch
+            }
+            val me = call.participants.value.me ?: run {
+                onScreenSharingAborted?.invoke()
+                return@launch
+            }
             val input = call.inputs
                 .request(context, inputType)
-                .getOrNull<Input.Video.My>() ?: return@launch
+                .getOrNull<Input.Video.My>() ?: run {
+                    onScreenSharingAborted?.invoke()
+                    return@launch
+            }
             input.tryEnable()
             val stream = me.streams.value.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID } ?: me.addStream(
                 SCREEN_SHARE_STREAM_ID
@@ -50,6 +71,7 @@ internal class ScreenShareViewModel(configure: suspend () -> Configuration) : Ba
             stream.video.value = input
             stream.open()
             call.setDisplayMode(CallUI.DisplayMode.PictureInPicture)
+            onScreenSharingStarted?.invoke()
         }
     }
 
@@ -58,10 +80,10 @@ internal class ScreenShareViewModel(configure: suspend () -> Configuration) : Ba
         const val SCREEN_SHARE_STREAM_ID = "screenshare"
 
         fun provideFactory(configure: suspend () -> Configuration) = object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return ScreenShareViewModel(configure) as T
-                }
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ScreenShareViewModel(configure) as T
             }
+        }
     }
 }

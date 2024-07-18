@@ -8,7 +8,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -180,7 +179,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_accept() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(isRinging = true)
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
@@ -194,7 +193,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_hangUp() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(HangUpAction()).toImmutableList()
         )
@@ -210,7 +209,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_micToggleOn() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(MicAction()).toImmutableList()
         )
@@ -227,7 +226,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_micToggleOff() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(MicAction(isToggled = true)).toImmutableList()
         )
@@ -244,7 +243,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_cameraToggleOn() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(CameraAction()).toImmutableList()
         )
@@ -261,7 +260,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_cameraToggleOff() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(CameraAction(isToggled = true)).toImmutableList()
         )
@@ -278,7 +277,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_flipCamera() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FlipCameraAction()).toImmutableList()
         )
@@ -294,7 +293,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_chat() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(ChatAction()).toImmutableList()
         )
@@ -310,7 +309,7 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_screenShareToggleOff() {
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(ScreenShareAction(isToggled = true)).toImmutableList()
         )
@@ -328,7 +327,7 @@ class HCallScreenTest {
     @Test
     fun testSheetActions_screenShareToggleOn() {
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             onModalSheetComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
@@ -348,7 +347,7 @@ class HCallScreenTest {
     @Test
     fun testSheetActions_onModalSheetComponentChangeToAudio() {
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = null,
             onModalSheetComponentChange = { component = it }
         )
@@ -367,7 +366,7 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetAudio_audioComponentIsDisplayed() {
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Audio,
         )
         callActionsUiState.value = CallActionsUiState(
@@ -381,7 +380,7 @@ class HCallScreenTest {
     @Test
     fun testSheetActions_onModalSheetComponentChangeToFileShare() {
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = null,
             onModalSheetComponentChange = { component = it }
         )
@@ -399,7 +398,7 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.FileShare,
         )
         callActionsUiState.value = CallActionsUiState(
@@ -413,7 +412,7 @@ class HCallScreenTest {
     @Test
     fun testSheetActions_onModalSheetComponentChangeToWhiteboard() {
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = null,
             onModalSheetComponentChange = { component = it }
         )
@@ -432,7 +431,7 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetWhiteboard_whiteboardComponentIsDisplayed() {
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Whiteboard,
         )
         callActionsUiState.value = CallActionsUiState(
@@ -446,7 +445,7 @@ class HCallScreenTest {
     @Test
     fun testSheetActions_virtualBackgroundComponentIsDisplayed() {
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = null,
             onModalSheetComponentChange = { component = it }
         )
@@ -466,7 +465,7 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetVirtualBackground_virtualBackgroundComponentIsDisplayed() {
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.VirtualBackground,
         )
         callActionsUiState.value = CallActionsUiState(
@@ -481,7 +480,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_hangUp() {
         val actions = allActions.filterNot { it is  HangUpAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -503,7 +502,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_micToggleOn() {
         val actions = allActions.filterNot { it is  MicAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -526,7 +525,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_micToggleOff() {
         val actions = allActions.filterNot { it is  MicAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -549,7 +548,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_cameraToggleOn() {
         val actions = allActions.filterNot { it is CameraAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -572,7 +571,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_cameraToggleOff() {
         val actions = allActions.filterNot { it is  CameraAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -595,7 +594,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_flipCamera() {
         val actions = allActions.filterNot { it is  FlipCameraAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -617,7 +616,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_chat() {
         val actions = allActions.filterNot { it is  ChatAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -639,7 +638,7 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_screenShareToggleOff() {
         val actions = allActions.filterNot { it is  ScreenShareAction}.take(CompactScreenMaxActions)
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
         )
@@ -663,7 +662,7 @@ class HCallScreenTest {
     fun testSheetDragActions_screenShareToggleOn() {
         val actions = allActions.filterNot { it is  ScreenShareAction}.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
             onModalSheetComponentChange = { component = it }
@@ -688,7 +687,7 @@ class HCallScreenTest {
     fun testSheetDragActions_audioComponentIsDisplayed() {
         val actions = (allActions - AudioAction()).take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
             onModalSheetComponentChange = { component = it }
@@ -712,7 +711,7 @@ class HCallScreenTest {
     fun testSheetDragActions_fileShareComponentIsDisplayed() {
         val actions = (allActions - FileShareAction()).take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
             onModalSheetComponentChange = { component = it }
@@ -737,7 +736,7 @@ class HCallScreenTest {
     fun testSheetDragActions_onModalSheetComponentChangeToWhiteboard() {
         val actions = allActions.filterNot { it is  WhiteboardAction}.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
             onModalSheetComponentChange = { component = it }
@@ -762,7 +761,7 @@ class HCallScreenTest {
     fun testSheetDragActions_virtualBackgroundComponentChange() {
         val actions = allActions.filterNot { it is  VirtualBackgroundAction}.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
             onModalSheetComponentChange = { component = it }
@@ -786,7 +785,7 @@ class HCallScreenTest {
     @Test
     fun audioModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
         var component: ModalSheetComponent? = ModalSheetComponent.Audio
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Audio,
             onModalSheetComponentChange = { component = it }
         )
@@ -805,7 +804,7 @@ class HCallScreenTest {
     @Test
     fun screenShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
         var component: ModalSheetComponent? = ModalSheetComponent.ScreenShare
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.ScreenShare,
             onModalSheetComponentChange = { component = it }
         )
@@ -824,7 +823,7 @@ class HCallScreenTest {
     @Test
     fun fileShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
         var component: ModalSheetComponent? = ModalSheetComponent.FileShare
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.FileShare,
             onModalSheetComponentChange = { component = it }
         )
@@ -843,7 +842,7 @@ class HCallScreenTest {
     @Test
     fun whiteboardModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
         var component: ModalSheetComponent? = ModalSheetComponent.Whiteboard
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Whiteboard,
             onModalSheetComponentChange = { component = it }
         )
@@ -862,7 +861,7 @@ class HCallScreenTest {
     @Test
     fun virtualBgModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
         var component: ModalSheetComponent? = ModalSheetComponent.VirtualBackground
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.VirtualBackground,
             onModalSheetComponentChange = { component = it }
         )
@@ -884,7 +883,7 @@ class HCallScreenTest {
         streamUiState.value = StreamUiState(
             streams = listOf(streams).toImmutableList()
         )
-        composeTestRule.setUpVCallScreen(selectedStreamId = "streamId")
+        composeTestRule.setUpHCallScreen(selectedStreamId = "streamId")
 
         composeTestRule
                 .onNodeWithText("username", useUnmergedTree = true)
@@ -901,7 +900,7 @@ class HCallScreenTest {
             streams = listOf(streams).toImmutableList()
         )
         var selectedStreamId: String? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             selectedStreamId = null,
             onStreamSelected = { selectedStreamId = it }
         )
@@ -921,7 +920,7 @@ class HCallScreenTest {
             streams = listOf(streams).toImmutableList()
         )
         var selectedStream: String? = "streamId"
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             selectedStreamId = "streamId",
             onStreamSelected = { selectedStream = null }
@@ -947,7 +946,7 @@ class HCallScreenTest {
         streamUiState.value = StreamUiState(
             streams = listOf(streams).toImmutableList()
         )
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
         composeTestRule
@@ -967,7 +966,7 @@ class HCallScreenTest {
         callActionsUiState.value = CallActionsUiState(
             actionList = allActions.toImmutableList()
         )
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             selectedStreamId = "streamId"
         )
 
@@ -981,7 +980,7 @@ class HCallScreenTest {
         callActionsUiState.value = CallActionsUiState(
             actionList = ImmutableList(listOf(MicAction()))
         )
-        composeTestRule.setUpVCallScreen()
+        composeTestRule.setUpHCallScreen()
 
         composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertDoesNotExist()
     }
@@ -989,7 +988,7 @@ class HCallScreenTest {
     @Test
     fun userClicksAppBarBack_onBackPressedInvoked() {
         var clicked = false
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             onBackPressed = { clicked = true }
         )
 
@@ -1006,7 +1005,7 @@ class HCallScreenTest {
     fun userClicksMoreActionWhenSheetExpanded_onChangeSheetStateToNotToggled() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
         var isToggled: Boolean? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             configuration = compactScreenConfiguration,
             sheetState = sheetState,
             onChangeSheetState = { isToggled = it }
@@ -1029,7 +1028,7 @@ class HCallScreenTest {
     fun userClicksMoreActionWhenSheetCollapsed_onChangeSheetStateToNotToggled() {
         val sheetState = CallSheetState(initialValue = CallSheetValue.Collapsed)
         var isToggled: Boolean? = null
-        composeTestRule.setUpVCallScreen(
+        composeTestRule.setUpHCallScreen(
             configuration = compactScreenConfiguration,
             sheetState = sheetState,
             onChangeSheetState = { isToggled = it }
@@ -1048,7 +1047,7 @@ class HCallScreenTest {
         assertEquals(true, isToggled)
     }
 
-    private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
+    private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpHCallScreen(
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
         onChangeSheetState: (Boolean) -> Unit = {},
@@ -1056,6 +1055,7 @@ class HCallScreenTest {
         onStreamSelected: (String?) -> Unit = {},
         modalSheetComponent: ModalSheetComponent? = null,
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
+        onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
     ) {
         setContent {
@@ -1068,6 +1068,7 @@ class HCallScreenTest {
                 onStreamSelected = onStreamSelected,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onModalSheetComponentRequest = onModalSheetComponentChange,
+                onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )
         }

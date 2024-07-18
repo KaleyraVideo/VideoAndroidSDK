@@ -99,6 +99,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.Audio,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -113,6 +114,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.ScreenShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -127,6 +129,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -141,6 +144,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -155,6 +159,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -172,6 +177,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.Audio,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -197,6 +203,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.ScreenShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -222,6 +229,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -238,6 +246,25 @@ class CallScreenModalSheetTest {
     }
 
     @Test
+    fun screenShareComponentDisplayed_onAskInputPermissionsInvoked() {
+        var arePermissionAsked = false
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { arePermissionAsked = it },
+                onUserMessageActionClick = {}
+            )
+        }
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
+        val deviceText = composeTestRule.activity.getString(R.string.kaleyra_screenshare_full_device)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithText(deviceText).performClick()
+        assertEquals(true, arePermissionAsked)
+    }
+
+    @Test
     fun whiteboardComponentDisplayed_closeComponentDismissesSheet() {
         var dismissed = false
         var sheetState: SheetState? = null
@@ -247,6 +274,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -272,6 +300,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = {}
             )
         }
@@ -301,6 +330,7 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {},
+                onAskInputPermissions = {},
                 lifecycleOwner = lifecycleOwner
             )
         }
@@ -324,6 +354,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = { clicked = true }
             )
         }
@@ -346,6 +377,7 @@ class CallScreenModalSheetTest {
                 modalSheetComponent = ModalSheetComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
+                onAskInputPermissions = {},
                 onUserMessageActionClick = { clicked = true }
             )
         }

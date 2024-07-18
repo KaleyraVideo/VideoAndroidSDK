@@ -199,6 +199,7 @@ internal fun CallScreen(
             whiteboardRequest = whiteboardRequest,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
+            onAskInputPermissions = onAskInputPermissions,
             onCallEndedBack = finishActivity,
             onBackPressed = onBackPressed,
         )
@@ -215,6 +216,7 @@ internal fun CallScreen(
     whiteboardRequest: WhiteboardRequest?,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onAskInputPermissions: (Boolean) -> Unit,
     onCallEndedBack: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -291,6 +293,7 @@ internal fun CallScreen(
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(HCallScreenTestTag)
             )
@@ -304,6 +307,7 @@ internal fun CallScreen(
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(VCallScreenTestTag)
             )

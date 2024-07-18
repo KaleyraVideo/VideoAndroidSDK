@@ -59,16 +59,14 @@ internal fun CallActionsComponent(
                     is CallAction.SwitchCamera -> viewModel.switchCamera()
                     is CallAction.HangUp -> viewModel.hangUp()
                     is CallAction.ScreenShare -> {
-                        activity.unlockDevice {
-                            if (!viewModel.tryStopScreenShare()) {
-                                onItemClick(action)
-                            }
+                        if (!viewModel.tryStopScreenShare()) {
+                            onItemClick(action)
                         }
                     }
                     is CallAction.Chat -> {
-                        activity.unlockDevice {
+                        activity.unlockDevice(onUnlocked = {
                             viewModel.showChat(activity.baseContext)
-                        }
+                        })
                     }
                     else -> onItemClick(action)
                 }

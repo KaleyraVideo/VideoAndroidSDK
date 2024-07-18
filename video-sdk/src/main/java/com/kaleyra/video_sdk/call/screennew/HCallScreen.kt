@@ -51,6 +51,7 @@ internal fun HCallScreen(
     onStreamSelected: (String?) -> Unit,
     modalSheetComponent: ModalSheetComponent?,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
+    onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -172,6 +173,7 @@ internal fun HCallScreen(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
+                onAskInputPermissions = onAskInputPermissions,
                 // TODO test this
                 onUserMessageActionClick = { }
             )

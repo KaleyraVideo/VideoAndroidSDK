@@ -16,8 +16,6 @@
 
 package com.kaleyra.video_sdk.call.screenshare
 
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
@@ -37,26 +33,45 @@ import com.kaleyra.video_sdk.call.screenshare.view.ScreenShareContent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
 internal fun ScreenShareComponent(
+    modifier: Modifier = Modifier,
     viewModel: ScreenShareViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
+    onAskInputPermissions: (Boolean) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onClick = remember {
         { target: ScreenShareTargetUi ->
             when (target) {
-                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity)
-                ScreenShareTargetUi.Device -> activity.unlockDevice { viewModel.shareDeviceScreen(activity) }
+                ScreenShareTargetUi.Application -> viewModel.shareApplicationScreen(activity, {}, {})
+                ScreenShareTargetUi.Device -> {
+                    onAskInputPermissions(true)
+                    activity.unlockDevice(
+                        onUnlocked = {
+                            viewModel.shareDeviceScreen(
+                                activity,
+                                onScreenSharingStarted = {
+                                    onAskInputPermissions(false)
+                                },
+                                onScreenSharingAborted = {
+                                    onAskInputPermissions(false)
+                                }
+                            )
+                        },
+                        onDismiss = {
+                            onDismiss()
+                            onAskInputPermissions(false)
+                        })
+                }
             }
-            onDismiss()
         }
     }
     ScreenShareComponent(
@@ -77,7 +92,7 @@ internal fun ScreenShareComponent(
     SubFeatureLayout(
         title = stringResource(id = R.string.kaleyra_screenshare_picker_title),
         onCloseClick = onCloseClick,
-        modifier = Modifier.padding(top = 16.dp).then(modifier)
+        modifier = modifier
     ) {
         ScreenShareContent(
             items = uiState.targetList,
@@ -86,8 +101,7 @@ internal fun ScreenShareComponent(
     }
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@MultiConfigPreview
 @Composable
 internal fun ScreenShareComponentPreview() {
     KaleyraM3Theme {

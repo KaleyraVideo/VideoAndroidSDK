@@ -452,6 +452,7 @@ internal fun CallScreen(
             onCallEndedBack = finishActivity,
             isInPipMode = isInPipMode,
             isDarkTheme = isDarkTheme,
+            onAskInputPermissions = onAskInputPermissions,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
         )
@@ -474,6 +475,7 @@ internal fun CallScreen(
     onCallEndedBack: () -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onAskInputPermissions: (Boolean) -> Unit,
     isTesting: Boolean = false
 ) {
     FileShareVisibilityObserver(callScreenState, onFileShareVisibility)
@@ -575,6 +577,7 @@ internal fun CallScreen(
             onUserFeedback = onUserFeedback,
             onCallEndedBack = onCallEndedBack,
             isDarkTheme = isDarkTheme,
+            onAskInputPermissions = onAskInputPermissions,
             isTesting = isTesting
         )
     }
@@ -658,6 +661,7 @@ internal fun DefaultCallScreen(
     onUserFeedback: (Float, String) -> Unit,
     onCallEndedBack: () -> Unit,
     isDarkTheme: Boolean,
+    onAskInputPermissions: (Boolean) -> Unit,
     isTesting: Boolean = false
 ) {
     val configuration = LocalConfiguration.current
@@ -703,6 +707,7 @@ internal fun DefaultCallScreen(
                     contentVisible = !callScreenState.isSheetCollapsed,
                     isDarkTheme = isDarkTheme,
                     modifier = Modifier.horizontalCutoutPadding(),
+                    onAskInputPermissions = onAskInputPermissions,
                     isTesting = isTesting
                 )
             },

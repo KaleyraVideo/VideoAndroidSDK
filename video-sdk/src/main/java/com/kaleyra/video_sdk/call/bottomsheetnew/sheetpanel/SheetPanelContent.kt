@@ -55,7 +55,7 @@ internal fun SheetPanelContent(
 
                     is FlipCameraAction -> viewModel.switchCamera()
                     is AudioAction -> onModalSheetComponentRequest(ModalSheetComponent.Audio)
-                    is ChatAction -> activity.unlockDevice { viewModel.showChat(activity) }
+                    is ChatAction -> activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) })
                     is FileShareAction -> onModalSheetComponentRequest(ModalSheetComponent.FileShare)
                     is WhiteboardAction -> onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
                     is VirtualBackgroundAction -> onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground)

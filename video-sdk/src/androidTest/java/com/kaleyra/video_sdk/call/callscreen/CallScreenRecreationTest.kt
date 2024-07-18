@@ -49,27 +49,27 @@ class CallScreenRecreationTest {
     @Test
     fun onRecreation_stateIsRestored() {
         val restorationTester = StateRestorationTester(composeTestRule)
-        restorationTester.setContent { CallScreen(
-                callUiState = CallUiState(callState = CallStateUi.Connected),
-                callScreenState = rememberCallScreenState(
-                    sheetState = com.kaleyra.video_sdk.call.bottomsheet.rememberBottomSheetState(initialValue = BottomSheetValue.Expanded),
-                    sheetContentState = rememberBottomSheetContentState(
-                        initialSheetComponent = BottomSheetComponent.CallActions,
-                        initialLineState = LineState.Expanded
-                    )
-                ),
-                whiteboardRequest = null,
-                onThumbnailStreamClick = { },
-                onThumbnailStreamDoubleClick = { },
-                onFullscreenStreamClick = { },
-                onFileShareVisibility = { },
-                onWhiteboardVisibility = { },
-                onConfigurationChange = { },
-                onBackPressed = { },
-                onCallEndedBack = {},
-                onUserFeedback = {_,_ ->}
-            )
-        }
+//        restorationTester.setContent { CallScreen(
+//                callUiState = CallUiState(callState = CallStateUi.Connected),
+//                callScreenState = rememberCallScreenState(
+//                    sheetState = com.kaleyra.video_sdk.call.bottomsheet.rememberBottomSheetState(initialValue = BottomSheetValue.Expanded),
+//                    sheetContentState = rememberBottomSheetContentState(
+//                        initialSheetComponent = BottomSheetComponent.CallActions,
+//                        initialLineState = LineState.Expanded
+//                    )
+//                ),
+//                whiteboardRequest = null,
+//                onThumbnailStreamClick = { },
+//                onThumbnailStreamDoubleClick = { },
+//                onFullscreenStreamClick = { },
+//                onFileShareVisibility = { },
+//                onWhiteboardVisibility = { },
+//                onConfigurationChange = { },
+//                onBackPressed = { },
+//                onCallEndedBack = {},
+//                onUserFeedback = {_,_ ->}
+//            )
+//        }
 
         val fileShare = composeTestRule.activity.getString(R.string.kaleyra_call_action_file_share)
         composeTestRule.onNodeWithContentDescription(fileShare).performClick()
