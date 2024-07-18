@@ -64,15 +64,15 @@ class InputMessageHandleTest {
                 tryEmit(this@InputMessageHandleTest.call)
             }
         }
-        mockkObject(InputMessageViewModel.Companion)
-        every { InputMessageViewModel.provideFactory(any()) } returns object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return InputMessageViewModel {
-                    CollaborationViewModel.Configuration.Success(conference, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))
-                } as T
-            }
-        }
+//        mockkObject(InputMessageViewModel.Companion)
+//        every { InputMessageViewModel.provideFactory(any()) } returns object : ViewModelProvider.Factory {
+//            @Suppress("UNCHECKED_CAST")
+//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//                return InputMessageViewModel {
+//                    CollaborationViewModel.Configuration.Success(conference, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))
+//                } as T
+//            }
+//        }
     }
 
     @After
