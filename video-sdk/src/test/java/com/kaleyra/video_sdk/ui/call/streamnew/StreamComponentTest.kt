@@ -54,7 +54,7 @@ class StreamComponentTest {
     fun setUp() {
         composeTestRule.setContent {
             StreamComponent(
-                streamUiState = streamUiState,
+                uiState = streamUiState,
                 windowSizeClass = currentWindowAdaptiveInfo(),
                 highlightedStreamId = highlightedStreamId,
                 onStreamClick = { streamClicked = it },

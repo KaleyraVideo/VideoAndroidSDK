@@ -7,19 +7,31 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
+import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -36,17 +48,17 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         viewModelScope.launch {
             val call = call.first()
 
+            val callState = call.toCallStateUi()
             combine(
                 call.toInCallParticipants(),
                 call.toStreamsUi(),
-                call.toCallStateUi()
+                callState
             ) { p, s, c -> Triple(p, s, c) }
                 .debounce { (participants, streams, callState: CallStateUi) ->
                     determineDebounceDelay(participants, streams, callState)
                 }
-                .onEach { (_, streams, callState) ->
+                .mapLatest { (_, streams, callState) ->
                     val updatedStreams = when {
-                        callState == CallStateUi.Disconnected.Ended -> ImmutableList(listOf())
                         streams == uiState.value.streams.value -> uiState.value.streams
                         else -> streams.toImmutableList()
                     }
@@ -58,6 +70,39 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                             pinnedStreams = updatePinnedStreams(streams).toImmutableList()
                         )
                     }
+                    callState is CallStateUi.Disconnected.Ended
+                }
+                .takeWhile { !it }
+                .onCompletion { _uiState.update { StreamUiState() } }
+                .launchIn(this)
+
+            val isPreCallState = callState
+                .map { state -> state == CallStateUi.Ringing || state == CallStateUi.Dialing || state == CallStateUi.RingingRemotely }
+                .distinctUntilChanged()
+            combine(
+                isPreCallState,
+                call.toMyCameraVideoUi()
+            ) { state, video -> state to video }
+                .onEach { (isPreCallState, video) ->
+                    if (!isPreCallState) return@onEach
+                    val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
+                    val otherUsername = call.toOtherDisplayNames().first()[0]
+                    val otherAvatar = call.toOtherDisplayImages().first()[0]
+                    _uiState.update {
+                        it.copy(
+                            preview = StreamPreview(
+                                isGroupCall = isGroupCall,
+                                video = video,
+                                username = otherUsername,
+                                avatar = ImmutableUri(otherAvatar)
+                            )
+                        )
+                    }
+                }
+                .takeWhile { (isPreCallState, _) -> isPreCallState }
+                .onCompletion {
+                    uiState.first { it.streams.value.size > 1 }
+                    _uiState.update { it.copy(preview = null) }
                 }
                 .launchIn(this)
         }

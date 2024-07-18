@@ -1,24 +1,31 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
-import com.kaleyra.video_common_ui.mapper.ParticipantMapper
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.mapper.StreamMapper
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
+import com.kaleyra.video_sdk.call.mapper.VideoMapper
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
+import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.every
 import io.mockk.mockk
@@ -29,6 +36,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -60,15 +68,129 @@ class StreamViewModelTest {
 
     @Before
     fun setUp() {
-        mockkObject(ParticipantMapper)
+        mockkObject(com.kaleyra.video_common_ui.mapper.ParticipantMapper)
+        mockkObject(com.kaleyra.video_sdk.call.mapper.ParticipantMapper)
         mockkObject(StreamMapper)
         mockkObject(CallStateMapper)
+        mockkObject(VideoMapper)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
 
     @After
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    fun `stream preview set on call ringing`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
+            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = "displayName",
+            avatar = ImmutableUri(uriMock)
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview set on call dialing`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
+            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = "displayName",
+            avatar = ImmutableUri(uriMock)
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview set on call ringing remotely`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
+            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = "displayName",
+            avatar = ImmutableUri(uriMock)
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview reset to null after pre call state is ended and streams count is more than 1`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.RingingRemotely)
+        val streams = MutableStateFlow(listOf(streamMock1))
+        with(callMock) {
+            every { toCallStateUi() } returns callState
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
+            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toStreamsUi() } returns streams
+            every { toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = "displayName",
+            avatar = ImmutableUri(uriMock)
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+
+        callState.value = CallStateUi.Connected
+        advanceUntilIdle()
+
+        // check preview is not update yet on non pre call state
+        assertEquals(expected, viewModel.uiState.first().preview)
+
+        // update the streams
+        streams.value = listOf(streamMock1, streamMock2)
+        advanceUntilIdle()
+
+        assertEquals(null, viewModel.uiState.first().preview)
     }
 
     @Test
@@ -104,11 +226,87 @@ class StreamViewModelTest {
         assertEquals(streams, current)
 
         callState.value = CallStateUi.Disconnected.Ended
-
         advanceUntilIdle()
 
         val new = viewModel.uiState.first().streams.value
         assertEquals(listOf<String>(), new)
+    }
+
+    @Test
+    fun `test pinned streams cleaned on call ended`() = runTest {
+        val streams = listOf(streamMock1, streamMock2, streamMock3)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+        every { callMock.toCallStateUi() } returns callState
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+
+        val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
+        advanceUntilIdle()
+
+        viewModel.pin(streamMock1.id)
+        val current = viewModel.uiState.first().pinnedStreams.value
+        assertEquals(listOf(streamMock1), current)
+
+        callState.value = CallStateUi.Disconnected.Ended
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().pinnedStreams.value
+        assertEquals(listOf<String>(), new)
+    }
+
+    @Test
+    fun `test fullscreen stream cleaned on call ended`() = runTest {
+        val streams = listOf(streamMock1, streamMock2, streamMock3)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+        every { callMock.toCallStateUi() } returns callState
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+
+        val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
+        advanceUntilIdle()
+
+        viewModel.fullscreen(streamMock1.id)
+        val current = viewModel.uiState.first().fullscreenStream
+        assertEquals(streamMock1, current)
+
+        callState.value = CallStateUi.Disconnected.Ended
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().fullscreenStream
+        assertEquals(null, new)
+    }
+
+    @Test
+    fun `test stream preview cleaned on call ended`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.Dialing)
+        with(callMock) {
+            every { toCallStateUi() } returns callState
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
+            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+            every { toStreamsUi() } returns MutableStateFlow(listOf())
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = "displayName",
+            avatar = ImmutableUri(uriMock)
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+
+        callState.value = CallStateUi.Disconnected.Ended
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().preview
+        assertEquals(null, new)
     }
 
     @Test

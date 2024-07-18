@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.streamnew.model
 
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.uistate.UiState
 
@@ -15,6 +16,7 @@ import com.kaleyra.video_sdk.common.uistate.UiState
  */
 @Immutable
 internal data class StreamUiState(
+    val preview: StreamPreview? = null,
     val streams: ImmutableList<StreamUi> = ImmutableList(),
     val pinnedStreams: ImmutableList<StreamUi> = ImmutableList(),
     val fullscreenStream: StreamUi? = null
