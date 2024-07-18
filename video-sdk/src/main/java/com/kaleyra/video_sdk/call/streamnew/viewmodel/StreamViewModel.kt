@@ -101,6 +101,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 }
                 .takeWhile { (isPreCallState, _) -> isPreCallState }
                 .onCompletion {
+                    // wait for at least another participant's stream to be added before setting the preview to null
                     uiState.first { it.streams.value.size > 1 }
                     _uiState.update { it.copy(preview = null) }
                 }
