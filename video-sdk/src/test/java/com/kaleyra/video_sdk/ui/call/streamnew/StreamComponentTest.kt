@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
+import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
@@ -381,6 +382,30 @@ class StreamComponentTest {
 
         val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
         composeTestRule.onNodeWithText(you).assertIsDisplayed()
+    }
+
+    @Test
+    fun previewStreamNotNull_previewIsDisplayed() {
+        val stream1 = defaultStreamUi(username = "mario")
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "previewUsername"),
+            streams = listOf(stream1).toImmutableList()
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("previewUsername").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewStreamNotNull_streamIsNotDisplayed() {
+        val stream1 = defaultStreamUi(username = "mario")
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "previewUsername"),
+            streams = listOf(stream1).toImmutableList()
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("mario").assertDoesNotExist()
     }
 
     fun defaultStreamUi(
