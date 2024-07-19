@@ -73,7 +73,6 @@ class ParticipantsComponentTest {
     fun setUp() {
         composeTestRule.setContent {
             ParticipantsComponent(
-                companyLogo = Logo(),
                 streamsLayout = streamsLayout,
                 streams = streams,
                 invited = invited,
