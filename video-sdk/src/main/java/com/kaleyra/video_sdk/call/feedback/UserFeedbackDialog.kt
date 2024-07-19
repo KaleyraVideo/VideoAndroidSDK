@@ -83,6 +83,9 @@ internal fun UserFeedbackDialog(
     feedbackUiState: FeedbackUiState.Display,
     onUserFeedback: (FeedbackUiRating, String) -> Unit,
     onDismiss: () -> Unit) {
+    val orientation = LocalConfiguration.current.orientation
+    val windowSizeClass = currentWindowAdaptiveInfo()
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
         var isFeedbackSent by remember { mutableStateOf(false) }
 
         if (isFeedbackSent) {
@@ -92,7 +95,14 @@ internal fun UserFeedbackDialog(
             }
         }
 
-        Box(Modifier.padding(24.dp)) {
+        val configuration = LocalConfiguration.current
+        Box(Modifier
+            .width(min(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
+            .padding(
+                if (
+                    orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                    windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+                ) 8.dp else 24.dp)) {
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
