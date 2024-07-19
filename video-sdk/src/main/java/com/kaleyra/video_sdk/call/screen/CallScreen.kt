@@ -86,7 +86,7 @@ import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import com.kaleyra.video_sdk.call.countdowntimer.rememberCountdownTimerState
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.helpertext.HelperText
-import com.kaleyra.video_sdk.call.kicked.KickedMessageDialog
+import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
 import com.kaleyra.video_sdk.call.recording.view.RecordingLabel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -747,7 +747,7 @@ internal fun DefaultCallScreen(
         if (callState is CallStateUi.Disconnected.Ended.Kicked) {
             val activity = LocalContext.current.findActivity() as ComponentActivity
             if (activity.isAtLeastResumed()) {
-                KickedMessageDialog(adminName = callState.adminName, onDismiss = onCallEndedBack)
+                KickedMessageDialog(onDismiss = onCallEndedBack)
             }
         }
     }
