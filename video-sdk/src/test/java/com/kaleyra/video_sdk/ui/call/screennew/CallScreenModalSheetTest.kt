@@ -15,12 +15,17 @@ import androidx.lifecycle.LifecycleOwner
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
+import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screennew.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
@@ -59,6 +64,9 @@ class CallScreenModalSheetTest {
         mockkObject(FileShareViewModel)
         mockkObject(WhiteboardViewModel)
         mockkObject(VirtualBackgroundViewModel)
+        mockkObject(ParticipantsViewModel)
+        mockkObject(StreamViewModel)
+        mockkObject(CallActionsViewModel)
         mockkObject(UserMessagesViewModel)
 
         every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
@@ -84,6 +92,21 @@ class CallScreenModalSheetTest {
         every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
             every { create<VirtualBackgroundViewModel>(any(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
+            }
+        }
+        every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
+            every { create<ParticipantsViewModel>(any(), any()) } returns mockk<ParticipantsViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(ParticipantsUiState())
+            }
+        }
+        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
+            every { create<VirtualBackgroundViewModel>(any(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
+            }
+        }
+        every { StreamViewModel.provideFactory(any()) } returns mockk {
+            every { create<StreamViewModel>(any(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(StreamUiState())
             }
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
@@ -172,6 +195,21 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun participantsSheetComponent_participantsComponentIsDisplayed() {
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.Participants,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = {},
+                onAskInputPermissions = {},
+                onUserMessageActionClick = {}
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
@@ -313,6 +351,32 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithContentDescription(closeText)
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(true, dismissed)
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
+    }
+
+    @Test
+    fun participantsComponentDisplayed_closeComponentDismissesSheet() {
+        var dismissed = false
+        var sheetState: SheetState? = null
+        composeTestRule.setContent {
+            sheetState = rememberModalBottomSheetState()
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.Participants,
+                sheetState = sheetState!!,
+                onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
+                onUserMessageActionClick = {}
+            )
+        }
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)

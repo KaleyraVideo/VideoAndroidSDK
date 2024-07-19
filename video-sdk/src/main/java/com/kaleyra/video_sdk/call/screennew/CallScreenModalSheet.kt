@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
+import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
@@ -29,7 +30,8 @@ internal enum class ModalSheetComponent {
     ScreenShare,
     FileShare,
     Whiteboard,
-    VirtualBackground
+    VirtualBackground,
+    Participants
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +85,10 @@ internal fun CallScreenModalSheet(
                 )
 
                 ModalSheetComponent.VirtualBackground -> VirtualBackgroundComponent(
+                    onDismiss = onDismiss
+                )
+
+                ModalSheetComponent.Participants -> ParticipantsComponent(
                     onDismiss = onDismiss
                 )
             }

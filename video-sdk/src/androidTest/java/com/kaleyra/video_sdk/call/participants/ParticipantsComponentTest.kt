@@ -17,7 +17,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
@@ -67,7 +66,6 @@ class ParticipantsComponentTest {
     fun setUp() {
         composeTestRule.setContent {
             ParticipantsComponent(
-                companyLogo = Logo(),
                 streamsLayout = streamsLayout,
                 streams = streams,
                 invited = invited,
