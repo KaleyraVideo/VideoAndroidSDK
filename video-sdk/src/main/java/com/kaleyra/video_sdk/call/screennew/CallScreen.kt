@@ -40,6 +40,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnect
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
+import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -264,12 +265,14 @@ internal fun CallScreen(
                 modalSheetState.expand()
                 CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
             }
+
             is WhiteboardRequest.Hide -> {
                 if (modalSheetComponent != ModalSheetComponent.Whiteboard) return@LaunchedEffect
                 onModalSheetComponentRequest(null)
                 modalSheetState.hide()
                 CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
             }
+
             else -> Unit
         }
     }
@@ -314,14 +317,8 @@ internal fun CallScreen(
                 modifier = modifier.testTag(VCallScreenTestTag)
             )
         }
-
-//    val callState = callUiState.callState
-//    if (callUiState.showFeedback) {
-//        val activity = LocalContext.current.findActivity() as ComponentActivity
-//        if (activity.isAtLeastResumed()) {
-//            UserFeedbackDialog(onDismiss = onCallEndedBack)
-//        }
-//    }
+        
+        UserFeedbackDialog(onDismiss = onCallEndedBack)
 
 //    if (callState is CallStateUi.Disconnected.Ended.Kicked) {
 //        val activity = LocalContext.current.findActivity() as ComponentActivity

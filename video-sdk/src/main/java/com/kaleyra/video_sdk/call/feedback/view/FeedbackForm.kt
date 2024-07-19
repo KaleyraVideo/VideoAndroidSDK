@@ -69,13 +69,14 @@ const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable
 internal fun FeedbackForm(
-    feedbackUiState: FeedbackUiState? = FeedbackUiState(),
+    feedbackUiState: FeedbackUiState? = FeedbackUiState.Display(),
     onUserFeedback: (FeedbackUiRating, String) -> Unit,
     onDismiss: () -> Unit) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState!!.comment ?: "")) }
+    if (feedbackUiState == null || feedbackUiState is FeedbackUiState.Hidden) return
+    feedbackUiState as FeedbackUiState.Display
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState.comment ?: "")) }
     var isEditTextFocused by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(feedbackUiState!!.rating) }
-
+    var sliderValue by remember { mutableStateOf(feedbackUiState.rating) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -194,7 +195,7 @@ internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float
 internal fun FeedbackFormPreview() = KaleyraM3Theme {
     Surface {
         FeedbackForm(
-            FeedbackUiState(comment = "comment this call", rating = FeedbackUiRating.Good),
+            FeedbackUiState.Display(comment = "comment this call", rating = FeedbackUiRating.Good),
             { _, _ -> }, {}
         )
     }
@@ -206,7 +207,7 @@ internal fun FeedbackFormPreview() = KaleyraM3Theme {
 internal fun FeedbackFormDefaultRatingPreview() = KaleyraM3Theme {
     Surface {
         FeedbackForm(
-            FeedbackUiState(),
+            FeedbackUiState.Display(),
             { _, _ -> }, {}
         )
     }

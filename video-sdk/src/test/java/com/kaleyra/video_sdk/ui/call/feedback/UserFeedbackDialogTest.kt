@@ -55,7 +55,7 @@ class UserFeedbackDialogTest {
     fun setUp() {
         composeTestRule.setContent {
             UserFeedbackDialog(
-                FeedbackUiState(),
+                feedbackUiState = FeedbackUiState.Display(),
                 onUserFeedback = { rating, comment ->
                     this@UserFeedbackDialogTest.rating = rating
                     this@UserFeedbackDialogTest.comment = comment
