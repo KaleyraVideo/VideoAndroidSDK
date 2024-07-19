@@ -49,19 +49,28 @@ class AudioMapperTest {
     }
 
     @Test
-    fun audioInputEnabledUpdated_mapToAudioUi_isEnabledFlagUpdated() = runTest {
+    fun disabledAudioInput_mapToAudioUi_isMutedForYouIsTrue() = runTest {
+        every { audioMock.enabled } returns MutableStateFlow(false)
+        val flow = MutableStateFlow(audioMock)
+        val actual = flow.mapToAudioUi().first()
+        val expected = AudioUi(id = "audioId", isEnabled = false, isMutedForYou = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun audioInputEnabledUpdated_mapToAudioUi_audioUiUpdated() = runTest {
         val enabledFlow = MutableStateFlow(false)
         every { audioMock.enabled } returns enabledFlow
         val flow = MutableStateFlow(audioMock)
 
         val actual = flow.mapToAudioUi().first()
-        val expected = AudioUi(id = "audioId", isEnabled = false)
+        val expected = AudioUi(id = "audioId", isEnabled = false, isMutedForYou = true)
         Assert.assertEquals(expected, actual)
 
         enabledFlow.value = true
 
         val new = flow.mapToAudioUi().first()
-        val newExpected = AudioUi(id = "audioId", isEnabled = true)
+        val newExpected = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false)
         Assert.assertEquals(newExpected, new)
     }
 }

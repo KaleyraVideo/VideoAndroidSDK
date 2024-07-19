@@ -17,7 +17,8 @@ internal object AudioMapper {
             val initialValue = value?.let { audio ->
                 AudioUi(
                     id = audio.id,
-                    isEnabled = audio.enabled.value
+                    isEnabled = audio.enabled.value,
+                    isMutedForYou = !audio.enabled.value
                 )
             }
             emit(initialValue)
@@ -27,7 +28,7 @@ internal object AudioMapper {
                 flow.map { it.id },
                 flow.flatMapLatest { it.enabled },
             ) { id, enabled ->
-                AudioUi(id = id, isEnabled = enabled)
+                AudioUi(id = id, isEnabled = enabled, isMutedForYou = !enabled)
             }.collect {
                 emit(it)
             }
