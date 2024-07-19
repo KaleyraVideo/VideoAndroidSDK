@@ -27,6 +27,8 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
+import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.ChatAction
@@ -44,6 +46,7 @@ import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.streamnew.MaxFeaturedStreamsCompact
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
@@ -151,6 +154,7 @@ class HCallScreenTest {
         mockkObject(VirtualBackgroundViewModel)
         mockkObject(CallInfoViewModel)
         mockkObject(CallAppBarViewModel)
+        mockkObject(ParticipantsViewModel)
         mockkObject(UserMessagesViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
@@ -185,6 +189,11 @@ class HCallScreenTest {
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
             every { create<CallAppBarViewModel>(any(), any()) } returns callAppBarViewModel
+        }
+        every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
+            every { create<ParticipantsViewModel>(any(), any()) } returns mockk(relaxed = true) {
+                every { uiState } returns MutableStateFlow(ParticipantsUiState())
+            }
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<UserMessagesViewModel>(any(), any()) } returns userMessagesViewModel
@@ -388,9 +397,6 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Audio,
         )
-        callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(AudioAction()).toImmutableList()
-        )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
@@ -420,11 +426,19 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.FileShare,
         )
-        callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(AudioAction()).toImmutableList()
-        )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testModalSheetParticipants_participantsComponentIsDisplayed() {
+        composeTestRule.setUpHCallScreen(
+            modalSheetComponent = ModalSheetComponent.Participants,
+        )
+
+        val componentTitle =
+            composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
     }
 
@@ -452,9 +466,6 @@ class HCallScreenTest {
     fun testModalSheetWhiteboard_whiteboardComponentIsDisplayed() {
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Whiteboard,
-        )
-        callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(AudioAction()).toImmutableList()
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
@@ -486,9 +497,6 @@ class HCallScreenTest {
     fun testModalSheetVirtualBackground_virtualBackgroundComponentIsDisplayed() {
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.VirtualBackground,
-        )
-        callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(AudioAction()).toImmutableList()
         )
 
         val componentTitle =
@@ -897,6 +905,27 @@ class HCallScreenTest {
     }
 
     @Test
+    fun participantsModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
+        var component: ModalSheetComponent? = ModalSheetComponent.Participants
+        composeTestRule.setUpHCallScreen(
+            modalSheetComponent = ModalSheetComponent.Participants,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+
+
+    @Test
     fun selectedStreamIdSet_streamMenuIsDisplayed() {
         val streams = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(
@@ -1064,6 +1093,40 @@ class HCallScreenTest {
             .performClick()
 
         assertEquals(true, isToggled)
+    }
+
+    @Test
+    fun userClicksMoreParticipantsStream_onModalSheetComponentChangeToParticipants() {
+        val streams = (1..MaxFeaturedStreamsCompact + 1).map { index ->
+            StreamUi(id = "streamId$index", username = "username$index" )
+        }
+        streamUiState.value = StreamUiState(streams = streams.toImmutableList())
+
+        var component: ModalSheetComponent? = null
+        composeTestRule.setUpHCallScreen(
+            configuration = compactScreenConfiguration,
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule
+            .onNodeWithText(otherText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(ModalSheetComponent.Participants, component)
+    }
+
+    @Test
+    fun userClicksParticipantsButton_onModalSheetComponentChangeToParticipants() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setUpHCallScreen(
+            onModalSheetComponentChange = { component = it }
+        )
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        composeTestRule.onNodeWithContentDescription(text).performClick()
+
+        assertEquals(ModalSheetComponent.Participants, component)
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpHCallScreen(

@@ -208,7 +208,8 @@ internal fun StreamComponent(
                                         onClick = {
                                             if (displayAsMoreParticipantsItem) onMoreParticipantClick()
                                             else onStreamClick(stream)
-                                        }
+                                        },
+                                        label = if (!displayAsMoreParticipantsItem) stringResource(id = R.string.kaleyra_stream_show_actions) else stringResource(id = R.string.kaleyra_stream_show_participants)
                                     )
                                     .testTag(stream.id)
                             ) {
@@ -296,11 +297,12 @@ private fun calculateThumbnailsSize(
 private fun Modifier.streamClickable(
     enabled: Boolean,
     onClick: () -> Unit,
+    label: String,
 ): Modifier = composed {
     this.clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
-        onClickLabel = stringResource(id = R.string.kaleyra_stream_show_actions),
+        onClickLabel = label,
         role = Role.Button,
         enabled = enabled,
         onClick = onClick

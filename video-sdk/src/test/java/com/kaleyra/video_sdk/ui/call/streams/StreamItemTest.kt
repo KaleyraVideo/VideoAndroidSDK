@@ -127,9 +127,16 @@ class StreamItemTest {
     }
 
     @Test
-    fun streamMutedForYou_mutedForYouIconIsDisplayed() {
-        stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = true))
+    fun streamMutedForYouAndNotMine_mutedForYouIconIsDisplayed() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = false, isMutedForYou = true))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_muted_for_you)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun streamMutedForYouAndMine_muteIconIsDisplayed() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = false, isMutedForYou = true), isMine = true)
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 

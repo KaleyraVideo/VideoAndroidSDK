@@ -58,11 +58,12 @@ internal fun ParticipantsComponent(
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
     onKickParticipantClick: (streamId: String) -> Unit,
-    onCloseClick: () -> Unit
+    onCloseClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ParticipantsTopAppBar(
                 participantsCount = streams.count(),
@@ -158,21 +159,26 @@ internal fun ParticipantsComponent(
                 )
             }
 
-            item {
-                Spacer(Modifier.height(16.dp))
-            }
+            if (invited.count() > 0) {
+                item {
+                    Spacer(Modifier.height(16.dp))
+                }
 
-            item {
-                Text(
-                    fontWeight = FontWeight.SemiBold,
-                    text = stringResource(R.string.kaleyra_participants_component_users_invited),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                item {
+                    Text(
+                        fontWeight = FontWeight.SemiBold,
+                        text = stringResource(R.string.kaleyra_participants_component_users_invited),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-            items(items = invited.value) { username ->
-                Text(username, Modifier.fillMaxWidth())
+                items(items = invited.value) { username ->
+                    Text(
+                        text = username,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }

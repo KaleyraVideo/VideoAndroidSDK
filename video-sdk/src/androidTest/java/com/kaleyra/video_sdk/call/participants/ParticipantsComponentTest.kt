@@ -17,7 +17,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
@@ -554,6 +553,20 @@ class ParticipantsComponentTest {
         composeTestRule.onNodeWithTag(AdminBottomSheetTag).performVerticalSwipe(-1f)
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(AdminBottomSheetTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun invitedParticipantsIsNotEmpty_invitedTitleIsDisplayed() {
+        invited = ImmutableList(listOf("id1", "id2"))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun invitedParticipantsIsEmpty_invitedTitleDoesNotExists() {
+        invited = ImmutableList()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.performClickOnMoreButton() {

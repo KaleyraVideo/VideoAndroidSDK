@@ -15,7 +15,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -36,9 +35,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.VStreamMenuContent
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -64,8 +61,7 @@ internal fun HCallScreen(
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 8.dp, vertical = 4.dp),
         topAppBar = {
             CallAppBarComponent(
-                // TODO test this
-                onParticipantClick = { /*TODO*/ },
+                onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 onBackPressed = onBackPressed,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -141,8 +137,7 @@ internal fun HCallScreen(
                 windowSizeClass = windowSizeClass,
                 highlightedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
-                // TODO test this
-                onMoreParticipantClick = {},
+                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding()
@@ -162,7 +157,6 @@ internal fun HCallScreen(
                     .padding(end = 116.dp)
             )
 
-            // TODO test this
             InputMessageHost(
                 modifier = Modifier
                     .padding(vertical = 16.dp)

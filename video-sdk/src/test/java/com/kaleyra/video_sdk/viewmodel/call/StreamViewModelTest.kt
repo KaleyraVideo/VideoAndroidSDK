@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import android.net.Uri
-import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
@@ -528,6 +527,28 @@ class StreamViewModelTest {
 
         assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
     }
+
+    @Test
+    fun testUnpinAll() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.setMaxPinnedStreams(3)
+        viewModel.pin(streamMock1.id)
+        viewModel.pin(streamMock2.id)
+        viewModel.pin(streamMock3.id)
+
+        assertEquals(listOf(streamMock1, streamMock2, streamMock3), viewModel.uiState.value.pinnedStreams.value)
+
+        viewModel.unpinAll()
+
+        assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
+    }
+
 
     @Test
     fun `local screen share is added as first pinned stream`() = runTest {

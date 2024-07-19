@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.kaleyra.video_sdk.ui.call.screennew
 
 import android.content.res.Configuration
@@ -29,6 +27,8 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
+import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallScreen
 import com.kaleyra.video_sdk.call.screennew.CameraAction
@@ -38,6 +38,7 @@ import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
 import com.kaleyra.video_sdk.call.screennew.HCallScreenTestTag
 import com.kaleyra.video_sdk.call.screennew.HangUpAction
 import com.kaleyra.video_sdk.call.screennew.MicAction
+import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
 import com.kaleyra.video_sdk.call.screennew.PipScreenTestTag
 import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
 import com.kaleyra.video_sdk.call.screennew.StreamMenuContentTestTag
@@ -47,6 +48,7 @@ import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.streamnew.MaxFeaturedStreamsCompact
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -159,6 +161,7 @@ class CallScreenTest {
         mockkObject(VirtualBackgroundViewModel)
         mockkObject(CallInfoViewModel)
         mockkObject(CallAppBarViewModel)
+        mockkObject(ParticipantsViewModel)
         mockkObject(UserMessagesViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
@@ -193,6 +196,11 @@ class CallScreenTest {
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
             every { create<CallAppBarViewModel>(any(), any()) } returns callAppBarViewModel
+        }
+        every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
+            every { create<ParticipantsViewModel>(any(), any()) } returns mockk(relaxed = true) {
+                every { uiState } returns MutableStateFlow(ParticipantsUiState())
+            }
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<UserMessagesViewModel>(any(), any()) } returns userMessagesViewModel
@@ -356,6 +364,38 @@ class CallScreenTest {
             .performClick()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksParticipantsButton_participantsComponentDisplayed() {
+        composeTestRule.setUpCallScreen()
+
+        val virtualBgText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        composeTestRule
+            .onNodeWithContentDescription(virtualBgText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksMoreParticipantsStream_participantsComponentDisplayed() {
+        val streams = (1..MaxFeaturedStreamsCompact + 1).map { index ->
+            StreamUi(id = "streamId$index", username = "username$index" )
+        }
+        streamUiState.value = StreamUiState(streams = streams.toImmutableList())
+
+        composeTestRule.setUpCallScreen(configuration = compactScreenConfiguration)
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule
+            .onNodeWithText(otherText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

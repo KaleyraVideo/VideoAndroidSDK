@@ -52,6 +52,7 @@
     <string name="kaleyra_stream_muted_for_you">The stream is muted for you</string>
     <string name="kaleyra_stream_you">You</string>
     <string name="kaleyra_stream_other_participants">%d others</string>
+    <string name="kaleyra_stream_show_participants">Show participants</string>
     <string name="kaleyra_stream_show_actions">Show the stream\'s actions</string>
     <string name="kaleyra_stream_selected">Stream selected</string>
 

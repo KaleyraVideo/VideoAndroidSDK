@@ -63,6 +63,7 @@ internal fun StreamItem(
         StatusIcons(
             streamAudioUi = stream.audio,
             fullscreen = fullscreen,
+            mine = stream.isMine,
             modifier = Modifier
                 .align(statusIconsAlignment)
                 .padding(StreamItemPadding)
@@ -83,6 +84,7 @@ internal fun StreamItem(
 private fun StatusIcons(
     streamAudioUi: AudioUi?,
     fullscreen: Boolean,
+    mine: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -91,8 +93,9 @@ private fun StatusIcons(
         modifier = modifier
     ) {
         when {
-            streamAudioUi == null || !streamAudioUi.isEnabled -> MicDisabledIcon()
-            streamAudioUi.isMutedForYou -> AudioMutedForYouIcon()
+            streamAudioUi == null -> MicDisabledIcon()
+            streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
+            !streamAudioUi.isEnabled -> MicDisabledIcon()
         }
         if (fullscreen) FullscreenIcon()
     }
