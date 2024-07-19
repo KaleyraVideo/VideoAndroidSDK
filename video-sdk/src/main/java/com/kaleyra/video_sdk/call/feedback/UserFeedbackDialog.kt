@@ -52,8 +52,8 @@ import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackSent
 import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions.isAtLeastResumed
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.extensions.isAtLeastResumed
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import kotlinx.coroutines.delay
@@ -67,12 +67,8 @@ internal fun UserFeedbackDialog(
 
     val feedbackUiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (feedbackUiState.value is FeedbackUiState.Hidden) return
-    val activity = LocalContext.current.findActivity() as ComponentActivity
-    if (!activity.isAtLeastResumed()) return
-
     UserFeedbackDialog(
-        feedbackUiState = feedbackUiState.value as FeedbackUiState.Display,
+        feedbackUiState = feedbackUiState.value,
         onUserFeedback = { rating, comment ->
             viewModel.sendUserFeedback(comment, rating)
         }, onDismiss = onDismiss)
@@ -80,9 +76,13 @@ internal fun UserFeedbackDialog(
 
 @Composable
 internal fun UserFeedbackDialog(
-    feedbackUiState: FeedbackUiState.Display,
+    feedbackUiState: FeedbackUiState,
     onUserFeedback: (FeedbackUiRating, String) -> Unit,
     onDismiss: () -> Unit) {
+    if (feedbackUiState is FeedbackUiState.Hidden) return
+    val activity = LocalContext.current.findActivity() as ComponentActivity
+    if (!activity.isAtLeastResumed()) return
+
     val orientation = LocalConfiguration.current.orientation
     val windowSizeClass = currentWindowAdaptiveInfo()
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {

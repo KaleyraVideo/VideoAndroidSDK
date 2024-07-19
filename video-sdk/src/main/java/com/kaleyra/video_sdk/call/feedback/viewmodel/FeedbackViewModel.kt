@@ -29,7 +29,7 @@ internal class FeedbackViewModel(configure: suspend () -> Configuration) : BaseV
             var doAnyOfMyStreamsIsLive = false
             call.doAnyOfMyStreamsIsLive().filter { it }.onEach { doAnyOfMyStreamsIsLive = true }.launchIn(this)
             call.state
-                .takeWhile { it !is Call.State.Disconnected.Ended }
+                .takeWhile { it is Call.State.Disconnected.Ended.Kicked || it !is Call.State.Disconnected.Ended  }
                 .onCompletion {
                     if (!doAnyOfMyStreamsIsLive) return@onCompletion
                     _uiState.emit(FeedbackUiState.Display())
