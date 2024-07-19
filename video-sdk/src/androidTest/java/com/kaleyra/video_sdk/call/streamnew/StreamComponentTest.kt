@@ -128,7 +128,6 @@ class StreamComponentTest {
         composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
     }
 
-
     @Test
     fun fullscreenIsSet_fullscreenStreamIsDisplayed() {
         val stream1 = defaultStreamUi(username = "mario")
@@ -352,7 +351,7 @@ class StreamComponentTest {
     }
 
     @Test
-    fun streamMicDisabledAndMutedForYou_micDisabledIconIsDisplayed() {
+    fun remoteStreamMicDisabledAndMutedForYou_mutedForIconIsDisplayed() {
         val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -363,6 +362,23 @@ class StreamComponentTest {
         val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         val mutedForYouDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_muted_for_you)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription(mutedForYouDescription).assertIsDisplayed()
+    }
+
+    @Test
+    fun localStreamMicDisabledAndMutedForYou_micDisabledIsDisplayed() {
+        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true), mine = true)
+        streamUiState = StreamUiState(
+            streams = listOf(stream1).toImmutableList()
+        )
+
+        composeTestRule.waitForIdle()
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        val mutedForYouDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_muted_for_you)
+        composeTestRule.onNodeWithText(you).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(mutedForYouDescription).assertDoesNotExist()
     }
