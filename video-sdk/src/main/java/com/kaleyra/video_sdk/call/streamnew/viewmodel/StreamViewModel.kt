@@ -141,6 +141,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         }
     }
 
+    fun unpinAll() {
+        _uiState.update { it.copy(pinnedStreams = ImmutableList()) }
+    }
+
     // TODO remove code duplication in CallActionsViewModel
     fun tryStopScreenShare(): Boolean {
         val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value }
