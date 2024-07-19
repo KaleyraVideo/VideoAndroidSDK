@@ -562,6 +562,20 @@ class ParticipantsComponentTest {
         composeTestRule.onNodeWithTag(AdminBottomSheetTag).assertDoesNotExist()
     }
 
+    @Test
+    fun invitedParticipantsIsNotEmpty_invitedTitleIsDisplayed() {
+        invited = ImmutableList(listOf("id1", "id2"))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun invitedParticipantsIsEmpty_invitedTitleDoesNotExists() {
+        invited = ImmutableList()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.performClickOnMoreButton() {
         val description = activity.getString(R.string.kaleyra_participants_component_show_more_actions)
         onNodeWithContentDescription(description).performClick()
