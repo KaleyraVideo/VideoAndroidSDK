@@ -66,7 +66,6 @@ class CallScreenModalSheetTest {
         mockkObject(VirtualBackgroundViewModel)
         mockkObject(ParticipantsViewModel)
         mockkObject(StreamViewModel)
-        mockkObject(CallActionsViewModel)
         mockkObject(UserMessagesViewModel)
 
         every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
