@@ -78,8 +78,7 @@ internal fun VCallScreen(
         paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
         topAppBar = {
             CallAppBarComponent(
-                // TODO test this
-                onParticipantClick = { /*TODO*/ },
+                onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 onBackPressed = onBackPressed,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -161,7 +160,6 @@ internal fun VCallScreen(
                 }
             }
         },
-        // TODO test this
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         val layoutDirection = LocalLayoutDirection.current
@@ -191,8 +189,7 @@ internal fun VCallScreen(
                 windowSizeClass = windowSizeClass,
                 highlightedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
-                // TODO test this
-                onMoreParticipantClick = {},
+                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding()
@@ -231,7 +228,6 @@ private fun LargeScreenInputMessageHost() {
             .animateContentSize(),
         contentAlignment = Alignment.Center
     ) {
-        // TODO test this
         InputMessageHost(
             micMessage = { enabled -> MicMessageText(enabled) },
             cameraMessage = { enabled -> CameraMessageText(enabled) }
