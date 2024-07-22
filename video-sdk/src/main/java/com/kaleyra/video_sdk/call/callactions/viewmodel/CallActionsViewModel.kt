@@ -191,7 +191,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val inputs = call.getValue()?.inputs
             val input = inputs?.request(activity, Inputs.Type.Microphone)?.getOrNull<Input.Audio>() ?: return@launch
-            val isMicEnabled = input.enabled.value
+            val isMicEnabled = input.enabled.value.local
             val hasSucceed = if (!isMicEnabled) input.tryEnable() else input.tryDisable()
             if (hasSucceed) {
                 val message = if (isMicEnabled) MicMessage.Disabled else MicMessage.Enabled
@@ -221,7 +221,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
         when {
             existingCameraVideo == null || !currentCall.inputs.availableInputs.value.contains(existingCameraVideo) -> requestVideoInputs(currentCall, activity)
-            existingCameraVideo.enabled.value -> {
+            existingCameraVideo.enabled.value.local -> {
                 val hasSucceed = existingCameraVideo.tryDisable()
                 if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Disabled)
             }
@@ -236,14 +236,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.External)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
 
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.Internal)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
     }
@@ -276,7 +276,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     // TODO remove code duplication in StreamViewModel
     fun tryStopScreenShare(): Boolean {
-        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value }
+        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.local }
         val call = call.getValue()
         return if (input == null || call == null) false
         else {

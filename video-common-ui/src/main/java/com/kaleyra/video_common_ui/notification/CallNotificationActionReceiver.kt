@@ -97,7 +97,7 @@ class CallNotificationActionReceiver internal constructor(val dispatcher: Corout
                             val screenShareInputs =
                                 call.inputs.availableInputs.value
                                     .filter { input -> input is Input.Video.Screen.My || input is Input.Video.Application }
-                                    .filter { input -> input.enabled.value }
+                                    .filter { input -> input.enabled.value.local }
 
                             val me = call.participants.value.me ?: return@onCallReady
                             val streams = me.streams.value
