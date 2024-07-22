@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,25 +25,99 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participants.view.AdminBottomSheetContent
 import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
+import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
 
 internal const val AdminBottomSheetTag = "AdminBottomSheetTag"
+
+@Composable
+internal fun ParticipantsComponent(
+    modifier: Modifier = Modifier,
+    participantsViewModel: ParticipantsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = ParticipantsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+    ),
+    streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
+    ),
+    onDismiss: () -> Unit
+) {
+    val activity = LocalContext.current.findActivity()
+    val participantsUiState by participantsViewModel.uiState.collectAsStateWithLifecycle()
+    val streamsUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
+
+    val streamsLayout by remember {
+        derivedStateOf {
+            if (streamsUiState.pinnedStreams.count() > 0) StreamsLayout.Pin else StreamsLayout.Grid
+        }
+    }
+    val pinnedStreamsIds by remember {
+        derivedStateOf {
+            streamsUiState.pinnedStreams.value.map { it.id }.toImmutableList()
+        }
+    }
+    val firstStreamNotMine by remember {
+        derivedStateOf {
+            streamsUiState.streams.value.firstOrNull { !it.isMine }
+        }
+    }
+
+    ParticipantsComponent(
+        streamsLayout = streamsLayout,
+        streams = streamsUiState.streams,
+        invited = participantsUiState.invitedParticipants,
+        adminsStreamsIds = participantsUiState.adminsStreamsIds,
+        pinnedStreamsIds = pinnedStreamsIds,
+        amIAdmin = participantsUiState.isLocalParticipantAdmin,
+        onLayoutClick = remember(streamViewModel, firstStreamNotMine) {
+            { layout ->
+                if (layout == StreamsLayout.Grid) streamViewModel.unpinAll()
+                else firstStreamNotMine?.let { streamViewModel.pin(it.id) }
+            }
+        },
+        onMuteStreamClick = remember(participantsViewModel) {
+            { streamId, _ ->
+                participantsViewModel.muteStreamAudio(streamId)
+            }
+        },
+        onDisableMicClick = remember(participantsViewModel) {
+            { streamId, _ ->
+                val isMyStream = streamId == CameraStreamConstants.CAMERA_STREAM_ID
+                if (isMyStream) participantsViewModel.toggleMic(activity)
+            }
+        },
+        onPinStreamClick = remember(streamViewModel) {
+            { streamId, pin ->
+                if (pin) streamViewModel.pin(streamId)
+                else streamViewModel.unpin(streamId)
+            }
+        } ,
+        onKickParticipantClick = {},
+        onCloseClick = onDismiss,
+        modifier = modifier
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

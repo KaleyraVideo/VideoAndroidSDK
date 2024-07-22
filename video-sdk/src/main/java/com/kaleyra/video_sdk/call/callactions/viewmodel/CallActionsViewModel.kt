@@ -185,6 +185,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         else call.getValue()?.connect()
     }
 
+    // TODO remove code duplication in ParticipantsViewModel
     fun toggleMic(activity: Activity?) {
         if (activity !is FragmentActivity) return
         viewModelScope.launch {
