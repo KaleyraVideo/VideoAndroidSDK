@@ -37,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +63,7 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toSliderValue
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
 /**
  * Feedback Form Tag
@@ -69,13 +72,16 @@ const val FeedbackFormTag = "FeedbackFormTag"
 
 @Composable
 internal fun FeedbackForm(
-    feedbackUiState: FeedbackUiState? = FeedbackUiState(),
+    feedbackUiState: FeedbackUiState? = FeedbackUiState.Display(),
     onUserFeedback: (FeedbackUiRating, String) -> Unit,
     onDismiss: () -> Unit) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState!!.comment ?: "")) }
+    if (feedbackUiState == null || feedbackUiState is FeedbackUiState.Hidden) return
+    feedbackUiState as FeedbackUiState.Display
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState.comment ?: "")) }
     var isEditTextFocused by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(feedbackUiState!!.rating) }
-
+    var sliderValue by remember { mutableStateOf(feedbackUiState.rating) }
+    val orientation = LocalConfiguration.current.orientation
+    val windowSizeClass = currentWindowAdaptiveInfo()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -97,7 +103,7 @@ internal fun FeedbackForm(
                     .align(Alignment.CenterHorizontally)
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        if (!isEditTextFocused) Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
             fontSize = 16.sp,
@@ -129,8 +135,15 @@ internal fun FeedbackForm(
                     isEditTextFocused = it.hasFocus
                 }
                 .animateContentSize(),
-            maxLines = 4,
-            minLines = if (isEditTextFocused) 4 else 1,
+            maxLines = when {
+                orientation == Configuration.ORIENTATION_LANDSCAPE && windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact -> 1
+                else -> 4
+            },
+            minLines = when {
+                orientation == Configuration.ORIENTATION_LANDSCAPE && windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact -> 1
+                isEditTextFocused -> 4
+                else -> 1
+            },
             textStyle = TextStyle(
                 fontSize = 14.sp
             ),
@@ -194,7 +207,7 @@ internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float
 internal fun FeedbackFormPreview() = KaleyraM3Theme {
     Surface {
         FeedbackForm(
-            FeedbackUiState(comment = "comment this call", rating = FeedbackUiRating.Good),
+            FeedbackUiState.Display(comment = "comment this call", rating = FeedbackUiRating.Good),
             { _, _ -> }, {}
         )
     }
@@ -206,7 +219,7 @@ internal fun FeedbackFormPreview() = KaleyraM3Theme {
 internal fun FeedbackFormDefaultRatingPreview() = KaleyraM3Theme {
     Surface {
         FeedbackForm(
-            FeedbackUiState(),
+            FeedbackUiState.Display(),
             { _, _ -> }, {}
         )
     }

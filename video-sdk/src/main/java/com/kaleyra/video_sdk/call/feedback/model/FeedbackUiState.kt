@@ -17,9 +17,23 @@ enum class FeedbackUiRating {
 
 /**
  * Feedback ui state
- * @property comment String? optional comment
- * @property rating FeedbackUiRating rating value
- * @constructor
  */
 @Immutable
-data class FeedbackUiState(val rating: FeedbackUiRating? = FeedbackUiRating.Excellent, val comment: String? = null): UiState
+sealed class FeedbackUiState: UiState {
+
+    /**
+     * Feedback ui state
+     * @property comment String? optional comment
+     * @property rating FeedbackUiRating rating value
+     * @constructor
+     */
+    @Immutable
+    data class Display(val rating: FeedbackUiRating? = FeedbackUiRating.Excellent, val comment: String? = null): FeedbackUiState()
+
+    /**
+     * Feedback ui state hidden, not ready to be displayed yet
+     */
+    @Immutable
+    data object Hidden: FeedbackUiState()
+
+}

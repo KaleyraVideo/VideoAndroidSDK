@@ -24,7 +24,12 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.kicked.KickedMessageDialog
+import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
+import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
+import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions
+import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions.isAtLeastResumed
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,21 +37,19 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+
 @RunWith(RobolectricTestRunner::class)
 class KickedMessageDialogTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var adminName by mutableStateOf("")
-
     private var isDismissed = false
 
     @Before
-    fun setUp() {
-        composeTestRule.setContent {
-            KickedMessageDialog(adminName = adminName, onDismiss = { isDismissed = true })
-        }
+    fun setup() {
+        mockkObject(ActivityComponentExtensions)
+        every { composeTestRule.activity.isAtLeastResumed() } returns true
     }
 
     @After
@@ -55,16 +58,39 @@ class KickedMessageDialogTest {
     }
 
     @Test
-    fun emptyAdminName_defaultTextIsDisplayed() {
+    fun kickedMessageUiStateHidden_kickedDialogNotShown() {
+        composeTestRule.setContent {
+            KickedMessageDialog(kickedUiState = KickedMessageUiState.Hidden, onDismiss = { isDismissed = true })
+        }
         val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "")
-        adminName = ""
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun activityNotResumed_kickedDialogNotShown() {
+        every { composeTestRule.activity.isAtLeastResumed() } returns false
+        composeTestRule.setContent {
+            KickedMessageDialog(kickedUiState = KickedMessageUiState.Display("admin"), onDismiss = { isDismissed = true })
+        }
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "admin")
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun emptyAdminName_defaultTextIsDisplayed() {
+        composeTestRule.setContent {
+            KickedMessageDialog(kickedUiState = KickedMessageUiState.Display(), onDismiss = { isDismissed = true })
+        }
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "")
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun customAdminName_customTextIsDisplayed() {
+        composeTestRule.setContent {
+            KickedMessageDialog(kickedUiState = KickedMessageUiState.Display(adminName = "CustomAdmin"), onDismiss = { isDismissed = true })
+        }
         val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 1, "CustomAdmin")
-        adminName = "CustomAdmin"
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 }

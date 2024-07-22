@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.ui.call.feedback
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -31,6 +32,10 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackFormTag
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackSentTag
+import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions
+import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions.isAtLeastResumed
+import io.mockk.every
+import io.mockk.mockkObject
 import junit.framework.TestCase
 import org.junit.After
 import org.junit.Before
@@ -53,16 +58,8 @@ class UserFeedbackDialogTest {
 
     @Before
     fun setUp() {
-        composeTestRule.setContent {
-            UserFeedbackDialog(
-                FeedbackUiState(),
-                onUserFeedback = { rating, comment ->
-                    this@UserFeedbackDialogTest.rating = rating
-                    this@UserFeedbackDialogTest.comment = comment
-                },
-                onDismiss = { isDismissed = true }
-            )
-        }
+        mockkObject(ActivityComponentExtensions)
+        every { composeTestRule.activity.isAtLeastResumed() } returns true
     }
 
     @After
@@ -73,12 +70,57 @@ class UserFeedbackDialogTest {
     }
 
     @Test
+    fun feedbackUiStateHidden_feedbackNotDisplayed() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Hidden,
+                onUserFeedback = { rating, comment -> },
+                onDismiss = { }
+            )
+        }
+        composeTestRule.onNodeWithTag(FeedbackFormTag).assertIsNotDisplayed()
+    }
+
+    @Test
     fun feedbackFormIsDisplayed() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Display(),
+                onUserFeedback = { rating, comment -> },
+                onDismiss = { }
+            )
+        }
         composeTestRule.onNodeWithTag(FeedbackFormTag).assertIsDisplayed()
     }
 
     @Test
+    fun activityNotResumed_feedbackNotDisplayed() {
+        every { composeTestRule.activity.isAtLeastResumed() } returns false
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Display(),
+                onUserFeedback = { rating, comment ->
+                    this@UserFeedbackDialogTest.rating = rating
+                    this@UserFeedbackDialogTest.comment = comment
+                },
+                onDismiss = { isDismissed = true }
+            )
+        }
+        composeTestRule.onNodeWithTag(FeedbackFormTag).assertIsNotDisplayed()
+    }
+
+    @Test
     fun userClicksVote_feedbackSentIsDisplayed() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Display(),
+                onUserFeedback = { rating, comment ->
+                    this@UserFeedbackDialogTest.rating = rating
+                    this@UserFeedbackDialogTest.comment = comment
+                },
+                onDismiss = { isDismissed = true }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_vote)
         composeTestRule.onNodeWithText(text).performClick()
         composeTestRule.onNodeWithTag(FeedbackSentTag).assertIsDisplayed()
@@ -86,6 +128,16 @@ class UserFeedbackDialogTest {
 
     @Test
     fun userClicksVote_onUserFeedbackInvoked() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Display(),
+                onUserFeedback = { rating, comment ->
+                    this@UserFeedbackDialogTest.rating = rating
+                    this@UserFeedbackDialogTest.comment = comment
+                },
+                onDismiss = { isDismissed = true }
+            )
+        }
         val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_vote)
         val button = composeTestRule.onNodeWithText(text)
         val textField = composeTestRule.onNode(hasSetTextAction())
@@ -97,6 +149,16 @@ class UserFeedbackDialogTest {
 
     @Test
     fun userDismissesDialog_onDismissInvoked() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                feedbackUiState = FeedbackUiState.Display(),
+                onUserFeedback = { rating, comment ->
+                    this@UserFeedbackDialogTest.rating = rating
+                    this@UserFeedbackDialogTest.comment = comment
+                },
+                onDismiss = { isDismissed = true }
+            )
+        }
         val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
         composeTestRule.onNodeWithText(cancel).performClick()
         TestCase.assertEquals(true, isDismissed)

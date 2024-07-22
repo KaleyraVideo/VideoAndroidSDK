@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.call.feedback
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -56,7 +57,7 @@ class UserFeedbackDialogTest {
     fun setUp() {
         composeTestRule.setContent {
             UserFeedbackDialog(
-                FeedbackUiState(),
+                FeedbackUiState.Display(),
                 onUserFeedback = { rating, comment ->
                     this@UserFeedbackDialogTest.rating = rating
                     this@UserFeedbackDialogTest.comment = comment
@@ -72,6 +73,20 @@ class UserFeedbackDialogTest {
         rating = FeedbackUiRating.Awful
         comment = ""
     }
+
+
+    @Test
+    fun feedbackUiStateHidden_feedbackFormNotDisplayed() {
+        composeTestRule.setContent {
+            UserFeedbackDialog(
+                FeedbackUiState.Hidden,
+                onUserFeedback = { _, _ -> },
+                onDismiss = { isDismissed = true }
+            )
+        }
+        composeTestRule.onNodeWithTag(FeedbackFormTag).assertIsNotDisplayed()
+    }
+
 
     @Test
     fun feedbackFormIsDisplayed() {
