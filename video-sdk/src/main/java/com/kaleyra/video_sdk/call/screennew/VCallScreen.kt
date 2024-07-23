@@ -144,7 +144,7 @@ internal fun VCallScreen(
                                 modifier = Modifier
                                     .padding(
                                         start = 14.dp,
-                                        top = if (isLargeScreen) 14.dp else 5.dp,
+                                        top = if (!hasSheetDragContent) 14.dp else 5.dp,
                                         end = 14.dp,
                                         bottom = 14.dp
                                     )
