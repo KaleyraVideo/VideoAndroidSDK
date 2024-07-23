@@ -79,7 +79,7 @@ class VideoMapperTest {
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         with(pointerMock1) {
             every { producer } returns mockk {
@@ -286,7 +286,7 @@ class VideoMapperTest {
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID

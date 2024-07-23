@@ -181,16 +181,16 @@ class StreamMapperTest {
         with(myVideoMock) {
             every { id } returns "myVideoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         with(audioMock) {
             every { id } returns "audioId"
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
     }
 
@@ -525,7 +525,7 @@ class StreamMapperTest {
         val newStreamVideoMock = mockk<Input.Video.Camera>(relaxed = true) {
             every { id } returns "videoId2"
             every { this@mockk.view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(false)
+            every { enabled } returns MutableStateFlow(Input.Enabled(false, false))
         }
         modifiedStreamVideoFlow.value = newStreamVideoMock
         val newActual = result.first()
@@ -554,7 +554,7 @@ class StreamMapperTest {
         val modifiedStreamUi = StreamUi(
             id = "modifiedStreamId",
             video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
-            audio = AudioUi(id = "audioId", isEnabled = true),
+            audio = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false),
             username = "displayName",
             avatar = ImmutableUri(uriMock)
         )
@@ -572,17 +572,14 @@ class StreamMapperTest {
         // Update stream audio
         val newStreamAudioMock = mockk<Input.Audio>(relaxed = true) {
             every { id } returns "audioId2"
-            every { enabled } returns MutableStateFlow(false)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         modifiedStreamAudioFlow.value = newStreamAudioMock
         val newActual = result.first()
         val newExpected = listOf(
             streamUi1,
             modifiedStreamUi.copy(
-                audio = AudioUi(
-                    id = "audioId2",
-                    isEnabled = false
-                )
+                audio = AudioUi(id = "audioId2", isEnabled = true, isMutedForYou = false)
             ),
             streamUi3
         )

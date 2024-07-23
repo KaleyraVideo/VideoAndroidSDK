@@ -200,7 +200,7 @@ class CallNotificationActionReceiverTest {
         every { callParticipantsMock.me } returns meMock
         every { meMock.streams } returns MutableStateFlow(listOf(myStreamMock))
         every { myStreamMock.video } returns MutableStateFlow(screenShareVideo)
-        every { screenShareVideo.enabled } returns MutableStateFlow(true)
+        every { screenShareVideo.enabled } returns MutableStateFlow(Input.Enabled(true, true))
         every { screenShareVideo.tryDisable() } returns true
 
         val intent = Intent().apply {

@@ -115,7 +115,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnMicInputMessage() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(false)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myMic.tryEnable() } returns true
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -138,7 +138,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnCameraInputMessage() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(false)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myVideo.tryEnable() } returns true
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -160,7 +160,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffMicInputMessage() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(true)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myMic.tryDisable() } returns true
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -183,7 +183,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffCameraInputMessage() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(true)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myVideo.tryDisable() } returns true
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -205,7 +205,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnEnableMicrophoneFailure() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(false)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myMic.tryEnable() } returns false
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -224,7 +224,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnEnableCameraFailure() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(false)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(false, false))
         every { myVideo.tryEnable() } returns false
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -243,7 +243,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableMicrophoneFailure() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(true)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(true, true))
         every { myMic.tryDisable() } returns false
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -262,7 +262,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableCameraFailure() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(true)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(true, true))
         every { myVideo.tryDisable() } returns false
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
