@@ -39,7 +39,9 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
@@ -51,26 +53,30 @@ const val CallInfoSubtitleTestTag = "CallInfoSubtitleTestTag"
 @Composable
 fun CallInfoComponent(
     modifier: Modifier = Modifier,
-    viewModel: CallInfoViewModel = viewModel(factory = CallInfoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))) {
+    viewModel: CallInfoViewModel = viewModel(factory = CallInfoViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    isPipMode: Boolean = false
+) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     CallInfoComponent(
         modifier = modifier,
-        callInfoUiState = uiState
+        callInfoUiState = uiState,
+        isPipMode = isPipMode
     )
 }
 
 @Composable
 fun CallInfoComponent(
     modifier: Modifier = Modifier,
-    callInfoUiState: CallInfoUiState
+    callInfoUiState: CallInfoUiState,
+    isPipMode: Boolean = false
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
@@ -126,7 +132,7 @@ fun CallInfoComponent(
                 modifier = Modifier.testTag(CallInfoTitleTestTag),
                 text = it,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 28.sp,
+                fontSize = if (isPipMode) 14.sp else 28.sp,
                 fontWeight = FontWeight.Bold,
                 ellipsize = Ellipsize.Marquee,
                 shadow = textStyle.shadow
@@ -139,14 +145,16 @@ fun CallInfoComponent(
                 text = it,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Thin,
-                fontSize = 14.sp,
+                fontSize = if (isPipMode) 12.sp else 14.sp,
+                maxLines = 1,
                 style = textStyle
             )
         }
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun CallInfoConnectingWithDisplayNames() {
     KaleyraM3Theme {
@@ -162,7 +170,8 @@ internal fun CallInfoConnectingWithDisplayNames() {
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun CallInfoConnectingWithNoDisplayNames() {
     KaleyraM3Theme {
@@ -174,6 +183,25 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
                     displayNames = listOf()
                 )
+            )
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun CallInfoPipMode() {
+    KaleyraM3Theme {
+        Surface {
+            CallInfoComponent(
+                modifier = Modifier,
+                callInfoUiState = CallInfoUiState(
+                    callStateUi = CallStateUi.Connecting,
+                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
+                    displayNames = listOf("Fede", "Kri", "Ste")
+                ),
+                isPipMode = true
             )
         }
     }

@@ -44,11 +44,8 @@ internal object VirtualBackgroundMapper {
         }.distinctUntilChanged()
     }
 
-    fun CallUI.hasVirtualBackground(): Flow<Boolean> {
-        return combine(effects.preselected, effects.available) { preselectedEffect, availableEffect ->
-            preselectedEffect != Effect.Video.None && availableEffect.isNotEmpty()
-        }.distinctUntilChanged()
-    }
+    fun CallUI.hasVirtualBackground(): Flow<Boolean> =
+        effects.available.map { it.isNotEmpty() }.distinctUntilChanged()
 
     fun CallUI.isVirtualBackgroundEnabled(): Flow<Boolean> =
         this.toCurrentCameraVideoEffect()
