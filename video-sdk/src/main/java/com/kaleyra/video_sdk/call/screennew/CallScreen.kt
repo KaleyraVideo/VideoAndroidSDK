@@ -41,6 +41,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
+import com.kaleyra.video_sdk.call.pip.PipScreen
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
