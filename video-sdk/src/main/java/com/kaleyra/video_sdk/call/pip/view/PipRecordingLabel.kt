@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.recording.view
+package com.kaleyra.video_sdk.call.pip.view
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,12 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
-import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 internal const val RecordingDotTestTag = "RecordingDotTestTag"
 
 @Composable
-internal fun RecordingLabel(modifier: Modifier = Modifier) {
+internal fun PipRecordingLabel(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -56,7 +56,7 @@ internal fun RecordingLabel(modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun RecordingDot(modifier: Modifier = Modifier) {
+private fun RecordingDot(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(id = R.drawable.ic_kaleyra_recording_dot),
         contentDescription = null,
@@ -70,8 +70,8 @@ internal fun RecordingDot(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-internal fun RecordingLabelPreview() {
-    KaleyraTheme {
-        RecordingLabel()
+internal fun PipRecordingLabelPreview() {
+    KaleyraM3Theme {
+        PipRecordingLabel()
     }
 }
