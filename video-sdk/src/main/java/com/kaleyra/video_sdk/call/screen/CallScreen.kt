@@ -88,7 +88,7 @@ import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.helpertext.HelperText
 import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
 import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.recording.view.RecordingLabel
+import com.kaleyra.video_sdk.call.pip.view.PipRecordingLabel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBar
@@ -640,7 +640,7 @@ internal fun PipScreen(
         }
 
         if (isRecording) {
-            RecordingLabel(
+            PipRecordingLabel(
                 modifier = Modifier
                     .padding(12.dp)
                     .align(Alignment.TopEnd)

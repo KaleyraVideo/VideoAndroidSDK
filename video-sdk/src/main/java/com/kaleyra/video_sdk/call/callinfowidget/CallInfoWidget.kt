@@ -43,7 +43,7 @@ import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
 import com.kaleyra.video_sdk.call.callinfowidget.view.DESIGN_PREFS
 import com.kaleyra.video_sdk.call.callinfowidget.view.Watermark
-import com.kaleyra.video_sdk.call.recording.view.RecordingLabel
+import com.kaleyra.video_sdk.call.pip.view.PipRecordingLabel
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.horizontalCutoutPadding
@@ -105,7 +105,7 @@ internal fun CallInfoWidget(
                         .height(48.dp)
                         .padding(end = 12.dp),
                     contentAlignment = Alignment.Center,
-                    content = { RecordingLabel() }
+                    content = { PipRecordingLabel() }
                 )
             }
         }
