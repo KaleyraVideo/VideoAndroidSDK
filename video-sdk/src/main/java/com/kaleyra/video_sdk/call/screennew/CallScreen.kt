@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -287,7 +286,7 @@ internal fun CallScreen(
     )
 
     if (isInPipMode) {
-        Text("to implement", modifier = Modifier.testTag(PipScreenTestTag))
+        PipScreen(modifier = Modifier.testTag(PipScreenTestTag))
     } else {
         if (isCompactHeight) {
             HCallScreen(
