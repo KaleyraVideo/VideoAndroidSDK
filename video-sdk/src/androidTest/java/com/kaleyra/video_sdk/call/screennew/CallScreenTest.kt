@@ -24,8 +24,12 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
+import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
+import com.kaleyra.video_sdk.call.kicked.viewmodel.KickedMessageViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
@@ -143,6 +147,9 @@ class CallScreenTest {
         mockkObject(CallAppBarViewModel)
         mockkObject(ParticipantsViewModel)
         mockkObject(UserMessagesViewModel)
+        mockkObject(FeedbackViewModel)
+        mockkObject(KickedMessageViewModel)
+        mockkObject(UserMessagesViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create<CallActionsViewModel>(any(), any()) } returns callViewModel
@@ -184,6 +191,16 @@ class CallScreenTest {
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<UserMessagesViewModel>(any(), any()) } returns userMessagesViewModel
+        }
+        every { FeedbackViewModel.provideFactory(any()) } returns mockk {
+            every { create<FeedbackViewModel>(any(), any()) } returns mockk(relaxed = true) {
+                every { uiState } returns MutableStateFlow(FeedbackUiState.Hidden)
+            }
+        }
+        every { KickedMessageViewModel.provideFactory(any()) } returns mockk {
+            every { create<KickedMessageViewModel>(any(), any()) } returns mockk(relaxed = true) {
+                every { uiState } returns MutableStateFlow(KickedMessageUiState.Hidden)
+            }
         }
     }
 
