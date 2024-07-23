@@ -29,7 +29,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
 
-@RunWith(AndroidJUnit4::class)
 class RecordingLabelTest {
 
     @get:Rule
