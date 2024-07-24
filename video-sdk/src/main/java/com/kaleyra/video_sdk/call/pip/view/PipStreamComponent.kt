@@ -25,6 +25,8 @@ import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 
+internal const val PipStreamComponentTag = "PipStreamComponentTag"
+
 @Composable
 internal fun PipStreamComponent(
     modifier: Modifier = Modifier,
@@ -54,7 +56,10 @@ internal fun PipStreamComponent(
 
     val shouldDisplayMoreParticipantItem = nonDisplayedParticipantsData.isNotEmpty() && streamsToDisplay.size > 1 && uiState.pinnedStreams.count() == 0
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.testTag(PipStreamComponentTag)
+    ) {
         if (uiState.preview != null) {
             val video = uiState.preview.video
             Stream(
