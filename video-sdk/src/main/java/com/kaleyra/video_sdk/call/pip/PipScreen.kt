@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.pip
 
+import android.util.Rational
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -14,10 +15,13 @@ import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
 
 @Composable
 internal fun PipScreen(
+    onPipAspectRatio: (Rational) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
-        PipStreamComponent()
+        PipStreamComponent(
+            onPipAspectRatio = onPipAspectRatio
+        )
 
         Column(Modifier.padding(8.dp)) {
             PipRecordingComponent(
