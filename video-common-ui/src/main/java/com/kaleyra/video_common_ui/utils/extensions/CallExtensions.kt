@@ -41,7 +41,7 @@ internal object CallExtensions {
         val me = participants.value.me ?: return false
         val videos = me.streams.value.map { it.video.value }
         val video = videos.firstOrNull { it is Input.Video.Camera.Internal }
-        return video?.enabled?.value ?: false
+        return video?.enabled?.value?.local ?: false
     }
 
     fun Call.isMyInternalCameraUsingFrontLens(): Boolean {
@@ -72,7 +72,7 @@ internal object CallExtensions {
         val participants = participants.value.list
         val streams = participants.map { it.streams.value }.flatten()
         val videos = streams.map { it.video.value }
-        return videos.any { it != null && it.enabled.value && it is Input.Video.Camera }
+        return videos.any { it != null && it.enabled.value.remote && it is Input.Video.Camera }
     }
 
     fun Call.getMyInternalCamera() = inputs.availableInputs.value.firstOrNull { it is Input.Video.Camera.Internal }

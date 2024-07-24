@@ -213,6 +213,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
             .flatMapLatest { it!!.video }
             .filter { it != null }
             .flatMapLatest { it!!.enabled }
+            .map { it.local }
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val micEnabled: StateFlow<Boolean> =
@@ -221,6 +222,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
             .flatMapLatest { it!!.audio }
             .filter { it != null }
             .flatMapLatest { it!!.enabled }
+            .map { it.local }
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val amIAlone: SharedFlow<Boolean> = combine(

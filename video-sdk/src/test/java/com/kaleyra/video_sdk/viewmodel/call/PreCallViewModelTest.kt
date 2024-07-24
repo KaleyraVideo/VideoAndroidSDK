@@ -128,12 +128,12 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         with(myVideoMock) {
             every { id } returns "myVideoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(true)
+            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
         }
         with(myStreamMock) {
             every { id } returns "myStreamId"
@@ -187,7 +187,7 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
         val expected = VideoUi(
                 id = myVideoMock.id,
                 view = myVideoMock.view.value?.let { ImmutableView(it) },
-                isEnabled = myVideoMock.enabled.value
+                isEnabled = myVideoMock.enabled.value.remote
             )
         assertEquals(expected, new)
     }

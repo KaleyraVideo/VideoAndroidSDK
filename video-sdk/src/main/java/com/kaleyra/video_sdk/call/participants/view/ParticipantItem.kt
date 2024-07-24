@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -88,7 +89,11 @@ internal fun ParticipantItem(
             IconButton(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit },
+                onClick = {
+                    if (stream.audio != null && (stream.audio.isEnabled || stream.audio.isMutedForYou))
+                        onMuteStreamClick(stream.id, !stream.audio.isMutedForYou)
+                    else Unit
+                },
                 content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
             )
         }
@@ -145,7 +150,7 @@ internal fun ParticipantItemAsAdminPreview() {
     KaleyraM3Theme {
         Surface {
             ParticipantItem(
-                stream = streamUiMock,
+                stream = streamUiMock.copy(audio = AudioUi(id = "", isMutedForYou = true, isEnabled = false)),
                 pinned = true,
                 isAdminStream = false,
                 amIAdmin = false,

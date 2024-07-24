@@ -44,7 +44,7 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
         viewModelScope.launch {
             val inputs = call.getValue()?.inputs
             val input = inputs?.request(activity, Inputs.Type.Microphone)?.getOrNull<Input.Audio>() ?: return@launch
-            val isMicEnabled = input.enabled.value
+            val isMicEnabled = input.enabled.value.local
             if (!isMicEnabled) input.tryEnable() else input.tryDisable()
         }
     }
@@ -55,7 +55,7 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
             other.streams.value.find { it.id == streamId }
         }
         val audio = stream?.audio?.getValue() ?: return
-        if (!audio.enabled.value) audio.tryEnable()
+        if (!audio.enabled.value.local) audio.tryEnable()
         else audio.tryDisable()
     }
 

@@ -154,7 +154,7 @@ internal abstract class StreamItem<T : RecyclerView.ViewHolder>(
                 .onEach { if (it == null) onAudioEnabled(false) }
                 .filter { it != null }
                 .flatMapLatest { combine(it!!.state, it.enabled) { s, e -> Pair(s, e) } }
-                .onEach { onAudioEnabled(if (it.first !is Input.State.Active) false else it.second) }
+                .onEach { onAudioEnabled(if (it.first !is Input.State.Active) false else it.second.remote) }
                 .launchIn(item.scope)
 
             jobs += video
@@ -164,7 +164,7 @@ internal abstract class StreamItem<T : RecyclerView.ViewHolder>(
                     combine(it!!.state, it.enabled, it.view) { s, e, v -> Triple(s, e, v) }
                 }
                 .onEach {
-                    onVideoEnabled(if (it.first !is Input.State.Active) false else it.second)
+                    onVideoEnabled(if (it.first !is Input.State.Active) false else it.second.remote)
                     it.third?.also { onStreamView(it) }
                 }.launchIn(item.scope)
 
