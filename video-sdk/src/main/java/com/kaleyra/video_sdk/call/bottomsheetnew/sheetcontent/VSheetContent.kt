@@ -72,7 +72,7 @@ internal fun VSheetContent(
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
         onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
         onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
-        onVirtualBackgroundClick = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) },
+        onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
         modifier = modifier
     )
@@ -89,12 +89,12 @@ internal fun VSheetContent(
     onMicToggle: (Boolean) -> Unit,
     onCameraToggle: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
+    onVirtualBackgroundToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit,
     onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxVSheetItems
@@ -143,7 +143,7 @@ internal fun VSheetContent(
                             onChatClick = onChatClick,
                             onFileShareClick = onFileShareClick,
                             onWhiteboardClick = onWhiteboardClick,
-                            onVirtualBackgroundClick = onVirtualBackgroundClick
+                            onVirtualBackgroundToggle = onVirtualBackgroundToggle
                         )
                     }
                 }

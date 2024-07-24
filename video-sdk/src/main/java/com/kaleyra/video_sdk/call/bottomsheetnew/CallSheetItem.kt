@@ -40,7 +40,7 @@ internal fun CallSheetItem(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit
+    onVirtualBackgroundToggle: (Boolean) -> Unit
 ) {
     when(val ca = callAction) {
         is HangUpAction -> {
@@ -128,7 +128,8 @@ internal fun CallSheetItem(
             VirtualBackgroundAction(
                 label = label,
                 enabled = ca.isEnabled,
-                onClick = onVirtualBackgroundClick,
+                checked = ca.isToggled,
+                onCheckedChange = onVirtualBackgroundToggle,
                 modifier = modifier
             )
         }

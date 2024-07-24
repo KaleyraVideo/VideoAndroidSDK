@@ -50,7 +50,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -74,7 +74,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -98,7 +98,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -122,7 +122,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -146,7 +146,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -170,7 +170,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -194,7 +194,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -218,7 +218,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -242,7 +242,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -266,7 +266,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -290,7 +290,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -314,7 +314,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -338,7 +338,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -362,7 +362,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -386,7 +386,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -410,7 +410,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -434,7 +434,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -458,7 +458,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -482,7 +482,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -506,7 +506,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -531,7 +531,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -557,7 +557,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -583,7 +583,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -609,7 +609,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -635,7 +635,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -661,7 +661,7 @@ class SheetCallActionTest {
                 onChatClick = { clicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -687,7 +687,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { clicked = true },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -713,7 +713,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -739,7 +739,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { clicked = true },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -765,7 +765,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { clicked = true }
+                onVirtualBackgroundToggle = { clicked = true }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -790,7 +790,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -814,7 +814,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -838,7 +838,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -861,7 +861,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -884,7 +884,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -907,7 +907,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -930,7 +930,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -953,7 +953,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -976,7 +976,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -999,7 +999,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -1022,7 +1022,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -1045,7 +1045,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -1068,7 +1068,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -1091,7 +1091,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -1114,7 +1114,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -1137,7 +1137,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -1159,7 +1159,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -1181,7 +1181,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("3").assertIsDisplayed()
@@ -1203,7 +1203,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -1225,7 +1225,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("3").assertIsDisplayed()
@@ -1247,7 +1247,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -1269,7 +1269,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("3").assertIsDisplayed()
@@ -1291,7 +1291,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
@@ -1313,7 +1313,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
@@ -1335,7 +1335,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
@@ -1357,7 +1357,7 @@ class SheetCallActionTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { }
+                onVirtualBackgroundToggle = { }
             )
         }
         composeTestRule.onNodeWithText("!").assertIsDisplayed()

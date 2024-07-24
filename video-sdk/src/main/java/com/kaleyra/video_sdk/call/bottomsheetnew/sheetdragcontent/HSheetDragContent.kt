@@ -68,7 +68,7 @@ internal fun HSheetDragContent(
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
         onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
         onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
-        onVirtualBackgroundClick = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
+        onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
     )
 }
 
@@ -80,12 +80,12 @@ internal fun HSheetDragContent(
     onMicToggle: (Boolean) -> Unit,
     onCameraToggle: (Boolean) -> Unit,
     onScreenShareToggle: (Boolean) -> Unit,
+    onVirtualBackgroundToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundClick: () -> Unit,
     modifier: Modifier = Modifier,
     itemsPerRow: Int = MaxHSheetDragItems,
     labels: Boolean = true,
@@ -124,7 +124,7 @@ internal fun HSheetDragContent(
                onChatClick = onChatClick,
                onFileShareClick = onFileShareClick,
                onWhiteboardClick = onWhiteboardClick,
-               onVirtualBackgroundClick = onVirtualBackgroundClick
+               onVirtualBackgroundToggle = onVirtualBackgroundToggle
            )
        }
     }

@@ -30,7 +30,8 @@ class VirtualBackgroundActionTest {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
             VirtualBackgroundAction(
-                onClick = {}
+                onCheckedChange = {},
+                checked = false
             )
         }
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
@@ -42,7 +43,8 @@ class VirtualBackgroundActionTest {
         composeTestRule.setContent {
             VirtualBackgroundAction(
                 label = true,
-                onClick = {}
+                onCheckedChange = {},
+                checked = false
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -54,22 +56,41 @@ class VirtualBackgroundActionTest {
         composeTestRule.setContent {
             VirtualBackgroundAction(
                 modifier = Modifier.width(200.dp),
-                onClick = {}
+                onCheckedChange = {},
+                checked = false
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
-    fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
-        var clicked = false
+    fun testOnCheckedChangeTrue() {
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        var checked = false
         composeTestRule.setContent {
-            VirtualBackgroundAction(onClick = { clicked = true })
+            VirtualBackgroundAction(
+                onCheckedChange = { checked = it },
+                checked = false
+            )
         }
-        composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
-        composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(true, clicked)
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(descr).performClick()
+        Assert.assertEquals(true, checked)
+    }
+
+    @Test
+    fun testOnCheckedChangeFalse() {
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
+        var checked = true
+        composeTestRule.setContent {
+            VirtualBackgroundAction(
+                onCheckedChange = { checked = it },
+                checked = true
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
+        composeTestRule.onNodeWithContentDescription(descr).performClick()
+        Assert.assertEquals(false, checked)
     }
 
     @Test
@@ -78,7 +99,8 @@ class VirtualBackgroundActionTest {
         composeTestRule.setContent {
             VirtualBackgroundAction(
                 enabled = false,
-                onClick = { }
+                checked = true,
+                onCheckedChange = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsNotEnabled()
