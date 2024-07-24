@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.screennew
 
 import android.content.res.Configuration
+import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,8 @@ import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
 import com.kaleyra.video_sdk.call.kicked.viewmodel.KickedMessageViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
+import com.kaleyra.video_sdk.call.pip.PipScreen
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CallScreen
 import com.kaleyra.video_sdk.call.screennew.CameraAction
@@ -671,6 +674,18 @@ class CallScreenTest {
         TestCase.assertEquals(true, arePermissionAsked)
     }
 
+    @Test
+    fun testOnPipAspectRatioInvoked() {
+        var aspectRatio: Rational? = null
+        composeTestRule.setUpCallScreen(
+            onPipAspectRatio = { aspectRatio = it },
+            isPipMode = true
+        )
+        composeTestRule.waitForIdle()
+
+        assertEquals(DefaultPipAspectRatio, aspectRatio)
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpCallScreen(
         configuration: Configuration? = null,
         uiState: MainUiState = MainUiState(),
@@ -679,6 +694,7 @@ class CallScreenTest {
         whiteboardRequest: State<WhiteboardRequest?> = mutableStateOf(null),
         onCallEndedBack: () -> Unit = {},
         onBackPressed: () -> Unit = {},
+        onPipAspectRatio: (Rational) -> Unit = {},
         onAskInputPermissions: (Boolean) -> Unit = {},
         onFileShareVisibility: (Boolean) -> Unit = {},
         onWhiteboardVisibility: (Boolean) -> Unit = {},
@@ -695,6 +711,7 @@ class CallScreenTest {
                 callSheetState = callSheetState,
                 onBackPressed = onBackPressed,
                 onAskInputPermissions = onAskInputPermissions,
+                onPipAspectRatio = onPipAspectRatio,
                 onCallEndedBack = onCallEndedBack,
                 onFileShareVisibility = onFileShareVisibility,
                 onWhiteboardVisibility = onWhiteboardVisibility,

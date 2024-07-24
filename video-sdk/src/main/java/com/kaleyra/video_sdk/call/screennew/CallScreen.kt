@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.screennew
 
+import android.util.Rational
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -78,6 +79,7 @@ internal fun CallScreen(
     shouldShowFileShareComponent: Boolean,
     isInPipMode: Boolean,
     enterPip: () -> Unit,
+    onPipAspectRatio: (Rational) -> Unit,
     onDisplayMode: (CallUI.DisplayMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
@@ -202,6 +204,7 @@ internal fun CallScreen(
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
             onAskInputPermissions = onAskInputPermissions,
+            onPipAspectRatio = onPipAspectRatio,
             onCallEndedBack = finishActivity,
             onBackPressed = onBackPressed,
         )
@@ -219,6 +222,7 @@ internal fun CallScreen(
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
+    onPipAspectRatio: (Rational) -> Unit,
     onCallEndedBack: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -287,7 +291,10 @@ internal fun CallScreen(
     )
 
     if (isInPipMode) {
-        PipScreen(modifier = Modifier.testTag(PipScreenTestTag))
+        PipScreen(
+            onPipAspectRatio = onPipAspectRatio,
+            modifier = Modifier.testTag(PipScreenTestTag)
+        )
     } else {
         if (isCompactHeight) {
             HCallScreen(
