@@ -1,9 +1,12 @@
 package com.kaleyra.video_sdk.call.pip.view
 
+import android.util.Rational
+import android.util.Size
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -13,7 +16,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
@@ -24,7 +29,9 @@ import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import kotlinx.coroutines.flow.take
 
+internal val DefaultPipAspectRatio = Rational(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
 
 @Composable
@@ -32,12 +39,14 @@ internal fun PipStreamComponent(
     modifier: Modifier = Modifier,
     viewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
-    )
+    ),
+    onPipAspectRatio: (Rational) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     PipStreamComponent(
         uiState = uiState,
+        onPipAspectRatio = onPipAspectRatio,
         modifier = modifier
     )
 }
@@ -45,9 +54,24 @@ internal fun PipStreamComponent(
 @Composable
 internal fun PipStreamComponent(
     uiState: StreamUiState,
+    onPipAspectRatio: (Rational) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val streamsToDisplay = remember(uiState) { streamsToDisplayFor(uiState) }
+    val aspectRatioView = remember(streamsToDisplay) {
+        if (streamsToDisplay.size == 1) {
+            streamsToDisplay[0].video?.view?.value as? VideoStreamView
+        } else null
+    }
+
+    LaunchedEffect(aspectRatioView) {
+        if (aspectRatioView == null) onPipAspectRatio.invoke(DefaultPipAspectRatio)
+        else {
+            aspectRatioView.videoSize.collect { size ->
+                onPipAspectRatio.invoke(computePipAspectRatio(size))
+            }
+        }
+    }
 
     val nonDisplayedParticipantsData = remember(uiState, streamsToDisplay) {
         val nonDisplayedStreams = uiState.streams.value.filter { !it.isMine } - streamsToDisplay.toSet()
@@ -120,4 +144,10 @@ private fun streamsToDisplayFor(uiState: StreamUiState): List<StreamUi> {
         pinnedStreams.isNotEmpty() -> pinnedStreams.take(2)
         else -> streams.filter { !it.isMine }.take(2)
     }
+}
+
+private fun computePipAspectRatio(size: Size): Rational {
+    val gcd = MathUtils.findGreatestCommonDivisor(size.width, size.height)
+    return if (gcd != 0) Rational(size.width / gcd, size.height / gcd)
+    else Rational.NaN
 }

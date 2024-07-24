@@ -1,5 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.pip
 
+import android.util.Rational
+import android.util.Size
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,16 +11,23 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import io.mockk.every
+import io.mockk.spyk
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,16 +43,46 @@ class PipStreamComponentTest {
 
     private var streamUiState by mutableStateOf(StreamUiState())
 
+    private var aspectRatio: Rational = Rational(1, 1)
+
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            PipStreamComponent(uiState = streamUiState)
+            PipStreamComponent(
+                uiState = streamUiState,
+                onPipAspectRatio = { aspectRatio = it }
+            )
         }
     }
 
     @After
     fun tearDown() {
         streamUiState = StreamUiState()
+    }
+
+    @Test
+    fun multipleStream_rationalIsDefaultPipAspectRatio() {
+        val stream1 = defaultStreamUi(username = "mario")
+        val stream2 = defaultStreamUi(username = "alice")
+        streamUiState = StreamUiState(
+            streams = listOf(stream1, stream2).toImmutableList()
+        )
+
+        assertEquals(DefaultPipAspectRatio, aspectRatio)
+    }
+
+    @Test
+    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
+        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+            every { videoSize } returns MutableStateFlow(Size(500, 300))
+        }
+
+        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+        val stream = defaultStreamUi(username = "mario", video = video)
+        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
+        composeTestRule.waitForIdle()
+
+        assertEquals(Rational(5, 3), aspectRatio)
     }
 
     @Test
@@ -101,7 +140,7 @@ class PipStreamComponentTest {
         val stream1 = defaultStreamUi(username = "mario")
         val stream2 = defaultStreamUi(username = "alice", mine = true)
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2,).toImmutableList()
+            streams = listOf(stream1, stream2).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
