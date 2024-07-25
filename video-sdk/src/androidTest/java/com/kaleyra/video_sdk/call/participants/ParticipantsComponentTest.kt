@@ -116,7 +116,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testCloseIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
@@ -377,7 +377,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testOnCloseClick() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(text).performClick()
         Assert.assertEquals(true, isCloseClicked)
     }
@@ -385,7 +385,7 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantItemOnMuteStreamClick() {
         amIAdmin = false
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = false))))
+        streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isEnabled = true, isMutedForYou = false))))
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)

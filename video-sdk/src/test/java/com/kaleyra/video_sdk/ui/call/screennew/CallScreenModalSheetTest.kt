@@ -375,7 +375,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)

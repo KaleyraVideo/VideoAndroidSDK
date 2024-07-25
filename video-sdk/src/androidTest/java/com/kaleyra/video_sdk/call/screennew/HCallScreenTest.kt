@@ -893,7 +893,7 @@ class HCallScreenTest {
             onModalSheetComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
