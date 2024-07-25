@@ -549,7 +549,6 @@ class StreamViewModelTest {
         assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
     }
 
-
     @Test
     fun `local screen share is added as first pinned stream`() = runTest {
         val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = true, video = VideoUi(id = "videoId", isScreenShare = true))
@@ -587,6 +586,41 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         assertEquals(listOf(screenShareMock, streamMock2), viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun `remote screen share is automatically added as first pinned stream`() = runTest {
+        val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = false, video = VideoUi(id = "videoId", isScreenShare = true))
+        val streams = MutableStateFlow(listOf(streamMock1))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        streams.value = listOf(streamMock1, screenShareMock)
+        advanceUntilIdle()
+
+        assertEquals(listOf(screenShareMock), viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun `remote screen share is not automatically if there is already a pinned stream`() = runTest {
+        val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = false, video = VideoUi(id = "videoId", isScreenShare = true))
+        val streams = MutableStateFlow(listOf(streamMock1))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+        viewModel.pin(streamMock1.id)
+
+        streams.value = listOf(streamMock1, screenShareMock)
+        advanceUntilIdle()
+
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test

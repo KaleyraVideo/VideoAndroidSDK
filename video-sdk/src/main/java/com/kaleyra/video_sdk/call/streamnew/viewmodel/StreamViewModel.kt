@@ -168,6 +168,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     private fun updatePinnedStreams(streams: List<StreamUi>): List<StreamUi> {
         val localScreenShare = streams.find { it.video?.isScreenShare == true && it.isMine }
+        val remoteScreenShare = streams.find { it.video?.isScreenShare == true && !it.isMine }
         // Clear the removed pinned streams
         val updatedPinnedStreams = uiState.value.pinnedStreams.value.mapNotNull { stream ->
             streams.find { it.id == stream.id }
@@ -177,6 +178,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             updatedPinnedStreams.add(0, it)
             if (updatedPinnedStreams.size > maxPinnedStreams) {
                 updatedPinnedStreams.removeAt(1)
+            }
+        }
+        remoteScreenShare?.let {
+            if (updatedPinnedStreams.size == 0) {
+                updatedPinnedStreams.add(0, it)
             }
         }
         return updatedPinnedStreams
