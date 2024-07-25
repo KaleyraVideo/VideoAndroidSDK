@@ -78,7 +78,7 @@ internal fun FileShareComponent(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit,
     isTesting: Boolean = false
 ) {
     val context = LocalContext.current
@@ -137,7 +137,7 @@ internal fun FileShareComponent(
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
     onBackPressed: (() -> Unit)? = null,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
