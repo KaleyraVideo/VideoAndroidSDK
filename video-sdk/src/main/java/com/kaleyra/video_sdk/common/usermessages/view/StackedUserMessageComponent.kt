@@ -36,7 +36,7 @@ import kotlin.random.Random
 internal fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
     viewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
-    onActionClick: (UserMessage.Action) -> Unit
+    onActionClick: (UserMessage) -> Unit
 ) {
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(ImmutableList())
     val alertMessages by viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,7 +63,7 @@ fun StackedUserMessageSnackbarHandlerPreview() = KaleyraM3Theme {
         CameraRestrictionMessage(),
         AudioConnectionFailureMessage.Generic,
         AudioConnectionFailureMessage.InSystemCall,
-        PinScreenshareMessage("User")
+        PinScreenshareMessage("id","User")
     )
 
     val alerts = listOf(

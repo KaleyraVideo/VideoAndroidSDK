@@ -1,30 +1,15 @@
 package com.kaleyra.video_sdk.common.snackbarm3.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.RequestDisallowInterceptTouchEvent
-import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.unit.IntSize
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
@@ -37,13 +22,13 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun StackedSnackbar(
     snackbarData: ImmutableList<UserMessage>,
     modifier: Modifier = Modifier,
     onDismissClick: (UserMessage) -> Unit,
-    onActionClick: (UserMessage.Action) -> Unit
+    onActionClick: (UserMessage) -> Unit
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,7 +58,7 @@ internal fun StackedSnackbar(
                         is MutedMessage -> MutedSnackbarM3(userMessage.admin, onDismissClick = dismiss)
                         is PinScreenshareMessage -> PinScreenshareSnackbarM3(userDisplayName = userMessage.userDisplayName, onPinClicked = {
                             dismiss()
-                            onActionClick(UserMessage.Action.PinScreenshare)
+                            onActionClick(userMessage)
                         })
 
                         AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()

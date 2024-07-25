@@ -11,7 +11,7 @@ fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
     userMessages: ImmutableList<UserMessage> = ImmutableList(),
     alertMessages: ImmutableList<AlertMessage> = ImmutableList(),
-    onActionClick: (UserMessage.Action) -> Unit,
+    onActionClick: (UserMessage) -> Unit,
     onDismissClick: (UserMessage) -> Unit,
 ) {
     StackedSnackbar(
