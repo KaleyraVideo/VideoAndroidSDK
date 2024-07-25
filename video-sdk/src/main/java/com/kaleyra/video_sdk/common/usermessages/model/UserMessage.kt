@@ -22,15 +22,8 @@ import java.util.UUID
 /**
  * User Message
  * @property id String user message identifier
- * @property action UserMessage.Action optional action associated with user message
  */
 @Stable
 sealed class UserMessage {
     val id: String = UUID.randomUUID().toString()
-    open val action: Action? = null
-
-    @Stable
-    sealed class Action {
-        data object PinScreenshare: Action()
-    }
 }
