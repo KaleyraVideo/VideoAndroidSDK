@@ -23,8 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -68,14 +68,14 @@ internal fun PipRecordingComponent(
 @Composable
 internal fun PipRecordingComponent(modifier: Modifier = Modifier) {
     Surface(
-        color = Color.Black.copy(alpha = .35f),
+        color = Color.Black.copy(alpha = .6f),
         contentColor = Color.White,
         shape = RoundedCornerShape(5.dp),
         modifier = modifier
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 2.dp, bottom = 2.dp, start = 2.dp, end = 4.dp)
+            modifier = Modifier.padding(start = 2.dp, end = 4.dp)
         ) {
             RecordingDot()
             Spacer(Modifier.width(4.dp))
