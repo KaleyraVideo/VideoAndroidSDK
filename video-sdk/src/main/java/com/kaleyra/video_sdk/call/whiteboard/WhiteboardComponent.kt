@@ -121,7 +121,7 @@ internal fun WhiteboardComponent(
                     }
                 }
 
-                StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
+                StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
             }
 
             NavigationBarsSpacer()

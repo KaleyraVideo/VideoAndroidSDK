@@ -36,7 +36,7 @@ import kotlin.random.Random
 internal fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
     viewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
-    onActionCLick: (UserMessage.Action) -> Unit
+    onActionClick: (UserMessage.Action) -> Unit
 ) {
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(ImmutableList())
     val alertMessages by viewModel.uiState.collectAsStateWithLifecycle()
@@ -45,7 +45,7 @@ internal fun StackedUserMessageComponent(
         modifier = modifier,
         userMessages = userMessage,
         alertMessages = alertMessages.alertMessages,
-        onActionClick = onActionCLick,
+        onActionClick = onActionClick,
         onDismissClick = { viewModel.dismiss(it) }
     )
 }
@@ -101,6 +101,6 @@ fun StackedUserMessageSnackbarHandlerPreview() = KaleyraM3Theme {
         .fillMaxHeight()
         .background(MaterialTheme.colorScheme.surface)) {
         StackedUserMessageComponent(
-            onActionCLick = {})
+            onActionClick = {})
     }
 }

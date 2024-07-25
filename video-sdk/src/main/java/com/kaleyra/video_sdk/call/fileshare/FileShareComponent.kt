@@ -212,7 +212,7 @@ internal fun FileShareComponent(
             }
 
             StackedUserMessageComponent(
-                onActionCLick = onUserMessageActionClick
+                onActionClick = onUserMessageActionClick
             )
 
             SnackbarHost(
