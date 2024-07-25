@@ -41,7 +41,7 @@ internal fun CallScreenModalSheet(
     sheetState: SheetState,
     onRequestDismiss: () -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit,
     modifier: Modifier = Modifier,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
