@@ -105,7 +105,7 @@ internal fun HSheetDragContent(
        itemsIndexed(
            key = { _, item -> item.id },
            span = { index, _ ->
-               if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow % chunkedActions.size + 1)
+               if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow - (chunkedActions.size % itemsPerRow - 1))
                else  GridItemSpan(1)
            },
            items = chunkedActions
