@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import kotlin.math.roundToInt
@@ -328,7 +329,8 @@ private fun ButtonLayout(
                             placeable.placeRelative(0, 0)
                         }
                     },
-                text = text
+                text = text,
+                fontSize = 14.sp
             )
         }
     }
