@@ -25,6 +25,8 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.every
 import io.mockk.mockk
@@ -72,6 +74,7 @@ class StreamViewModelTest {
         mockkObject(StreamMapper)
         mockkObject(CallStateMapper)
         mockkObject(VideoMapper)
+        mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
 
@@ -693,6 +696,24 @@ class StreamViewModelTest {
         assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
+    @Test
+    fun `pin screen share message is sent if remote screen share is not added to the pinned streams`() = runTest {
+        val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = false, video = VideoUi(id = "videoId", isScreenShare = true))
+        val streams = MutableStateFlow(listOf(streamMock1))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+        viewModel.pin(streamMock1.id)
+
+        streams.value = listOf(streamMock1, screenShareMock)
+        advanceUntilIdle()
+
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
+        verify(exactly = 1) { CallUserMessagesProvider.sendUserMessage(PinScreenshareMessage("screenShareId", "username")) }
+    }
     @Test
     fun `clean pinned stream if they were removed from the stream list`() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2))

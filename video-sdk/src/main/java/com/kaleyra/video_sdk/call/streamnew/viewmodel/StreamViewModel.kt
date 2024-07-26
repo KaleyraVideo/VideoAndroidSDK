@@ -21,6 +21,8 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -191,6 +193,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         remoteScreenShare?.let {
             if (updatedPinnedStreams.size == 0) {
                 updatedPinnedStreams.add(0, it)
+            if (updatedPinnedStreams.size == 0) updatedPinnedStreams.add(0, it)
+            else {
+                val message = PinScreenshareMessage(it.id, it.username)
+                CallUserMessagesProvider.sendUserMessage(message)
             }
         }
         return updatedPinnedStreams
