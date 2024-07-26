@@ -72,83 +72,85 @@ fun CallInfoComponent(
     callInfoUiState: CallInfoUiState,
     isPipMode: Boolean = false
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
-        val callee = callInfoUiState.displayNames.joinToString(", ")
-        val textStyle = LocalTextStyle.current.shadow(
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        var displayTitle: String? = null
-        var displaySubtitle: String? = null
+    if (callInfoUiState.callStateUi != null && (callInfoUiState.displayNames.isNotEmpty() || callInfoUiState.displayState != null)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier),
+            horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
+            val callee = callInfoUiState.displayNames.joinToString(", ")
+            val textStyle = LocalTextStyle.current.shadow(
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            var displayTitle: String? = null
+            var displaySubtitle: String? = null
 
-        when (callInfoUiState.callStateUi) {
-            CallStateUi.Connecting,
-            CallStateUi.Dialing,
-            CallStateUi.Ringing,
-            CallStateUi.RingingRemotely -> {
-                if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
-                else {
-                    displayTitle = callee
+            when (callInfoUiState.callStateUi) {
+                CallStateUi.Connecting,
+                CallStateUi.Dialing,
+                CallStateUi.Ringing,
+                CallStateUi.RingingRemotely -> {
+                    if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
+                    else {
+                        displayTitle = callee
+                        displaySubtitle = callDisplayState
+                    }
+                }
+
+                CallStateUi.Connected, CallStateUi.Disconnecting -> {
+                    displayTitle = ""
+                    displaySubtitle = ""
+                }
+
+                CallStateUi.Reconnecting -> {
+                    displayTitle = callDisplayState
+                    displaySubtitle = ""
+                }
+
+                CallStateUi.Disconnected.Ended.Declined,
+                CallStateUi.Disconnected.Ended.LineBusy,
+                CallStateUi.Disconnected.Ended.Timeout,
+                CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
+
+                CallStateUi.Disconnected.Ended.Error,
+                CallStateUi.Disconnected.Ended.Error.Server,
+                CallStateUi.Disconnected.Ended.Error.Unknown,
+                CallStateUi.Disconnected.Ended,
+                CallStateUi.Disconnected.Ended.HungUp,
+                is CallStateUi.Disconnected.Ended.Kicked -> {
+                    displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
                     displaySubtitle = callDisplayState
                 }
+
+                else -> Unit
             }
 
-            CallStateUi.Connected, CallStateUi.Disconnecting -> {
-                displayTitle = ""
-                displaySubtitle = ""
+            displayTitle?.let {
+                EllipsizeText(
+                    modifier = Modifier.testTag(CallInfoTitleTestTag),
+                    text = it,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = if (isPipMode) 14.sp else 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    ellipsize = Ellipsize.Marquee,
+                    shadow = textStyle.shadow
+                )
             }
 
-            CallStateUi.Reconnecting -> {
-                displayTitle = callDisplayState
-                displaySubtitle = ""
+            displaySubtitle?.let {
+                Text(
+                    modifier = Modifier.testTag(CallInfoSubtitleTestTag),
+                    text = it,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Thin,
+                    fontSize = if (isPipMode) 12.sp else 14.sp,
+                    maxLines = 1,
+                    style = textStyle
+                )
             }
-
-            CallStateUi.Disconnected.Ended.Declined,
-            CallStateUi.Disconnected.Ended.LineBusy,
-            CallStateUi.Disconnected.Ended.Timeout,
-            CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
-
-            CallStateUi.Disconnected.Ended.Error,
-            CallStateUi.Disconnected.Ended.Error.Server,
-            CallStateUi.Disconnected.Ended.Error.Unknown,
-            CallStateUi.Disconnected.Ended,
-            CallStateUi.Disconnected.Ended.HungUp,
-            is CallStateUi.Disconnected.Ended.Kicked -> {
-                displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
-                displaySubtitle = callDisplayState
-            }
-
-            else -> Unit
-        }
-
-        displayTitle?.let {
-            EllipsizeText(
-                modifier = Modifier.testTag(CallInfoTitleTestTag),
-                text = it,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = if (isPipMode) 14.sp else 28.sp,
-                fontWeight = FontWeight.Bold,
-                ellipsize = Ellipsize.Marquee,
-                shadow = textStyle.shadow
-            )
-        }
-
-        displaySubtitle?.let {
-            Text(
-                modifier = Modifier.testTag(CallInfoSubtitleTestTag),
-                text = it,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Thin,
-                fontSize = if (isPipMode) 12.sp else 14.sp,
-                maxLines = 1,
-                style = textStyle
-            )
         }
     }
 }
