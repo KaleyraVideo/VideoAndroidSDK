@@ -120,13 +120,21 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         maxPinnedStreams = count
     }
 
-    fun pin(streamId: String): Boolean {
+    fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
         val streams = uiState.value.streams.value
-        val stream = streams.find { it.id == streamId }
-        if (stream == null || uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
+        val stream = streams.find { it.id == streamId } ?: return false
+        val isMaxStreamsReached = uiState.value.pinnedStreams.count() >= maxPinnedStreams
+        if (isMaxStreamsReached && !force) return false
+
+        val pinnedStreams = if (isMaxStreamsReached) {
+            val pinnedStreams = uiState.value.pinnedStreams.value.toMutableList()
+            if (prepend) pinnedStreams.removeFirstOrNull() else pinnedStreams.removeLastOrNull()
+            pinnedStreams
+        } else uiState.value.pinnedStreams.value
+
         _uiState.update {
-            val new = (it.pinnedStreams.value + stream).toImmutableList()
-            it.copy(pinnedStreams = new)
+            val newPinnedStreams = if (prepend) listOf(stream) + pinnedStreams else pinnedStreams + stream
+            it.copy(pinnedStreams = newPinnedStreams.toImmutableList())
         }
         return true
     }

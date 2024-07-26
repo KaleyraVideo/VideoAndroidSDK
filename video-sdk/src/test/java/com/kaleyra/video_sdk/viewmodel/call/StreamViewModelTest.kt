@@ -477,6 +477,76 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun setPrependTrue_pinnedStreamIsPrepended() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.setMaxPinnedStreams(3)
+        viewModel.pin(streamMock2.id)
+
+        val isPinned = viewModel.pin(streamMock1.id, prepend = true)
+        assertEquals(true, isPinned)
+        assertEquals(listOf(streamMock1, streamMock2) , viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun setPrependFalse_pinnedStreamIsAppended() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.setMaxPinnedStreams(3)
+        viewModel.pin(streamMock2.id)
+
+        val isPinned = viewModel.pin(streamMock1.id, prepend = false)
+        assertEquals(true, isPinned)
+        assertEquals(listOf(streamMock2, streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun setForceAppend_pinnedStreamIsPinnedEvenIfMaxPinnedStreamsIsReached() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.setMaxPinnedStreams(2)
+        viewModel.pin(streamMock2.id)
+        viewModel.pin(streamMock3.id)
+
+        val isPinned = viewModel.pin(streamMock1.id, prepend = false, force = true)
+        assertEquals(true, isPinned)
+        assertEquals(listOf(streamMock2, streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
+    fun setForcePrepend_pinnedStreamIsPinnedEvenIfMaxPinnedStreamsIsReached() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.setMaxPinnedStreams(2)
+        viewModel.pin(streamMock2.id)
+        viewModel.pin(streamMock3.id)
+
+        val isPinned = viewModel.pin(streamMock1.id, prepend = true, force = true)
+        assertEquals(true, isPinned)
+        assertEquals(listOf(streamMock1, streamMock3) , viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
     fun testPinOverMaxPinnedStreams() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
         every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
