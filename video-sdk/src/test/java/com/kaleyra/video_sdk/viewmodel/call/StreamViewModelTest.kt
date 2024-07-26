@@ -714,6 +714,29 @@ class StreamViewModelTest {
         assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
         verify(exactly = 1) { CallUserMessagesProvider.sendUserMessage(PinScreenshareMessage("screenShareId", "username")) }
     }
+
+    @Test
+    fun `remote screen share is not pinned automatically again on stream list update`() = runTest {
+        val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = false, video = VideoUi(id = "videoId", isScreenShare = true))
+        val streams = MutableStateFlow(listOf(streamMock1, screenShareMock))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        assertEquals(listOf(screenShareMock), viewModel.uiState.value.pinnedStreams.value)
+
+        viewModel.unpin(screenShareMock.id)
+        assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
+
+        streams.value = listOf(streamMock1, screenShareMock, streamMock2)
+        advanceUntilIdle()
+
+        assertEquals(listOf<StreamUi>(), viewModel.uiState.value.pinnedStreams.value)
+    }
+
     @Test
     fun `clean pinned stream if they were removed from the stream list`() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2))

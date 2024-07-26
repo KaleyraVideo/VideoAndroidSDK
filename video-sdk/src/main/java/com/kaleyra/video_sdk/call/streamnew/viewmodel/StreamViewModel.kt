@@ -191,8 +191,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             }
         }
         remoteScreenShare?.let {
-            if (updatedPinnedStreams.size == 0) {
-                updatedPinnedStreams.add(0, it)
+            if (uiState.value.streams.value.find { stream -> remoteScreenShare.id == stream.id } != null) return@let
             if (updatedPinnedStreams.size == 0) updatedPinnedStreams.add(0, it)
             else {
                 val message = PinScreenshareMessage(it.id, it.username)
