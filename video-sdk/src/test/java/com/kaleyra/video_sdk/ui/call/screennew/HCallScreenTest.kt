@@ -24,11 +24,13 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
+import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.ChatAction
@@ -119,7 +121,7 @@ class HCallScreenTest {
     }
 
     private val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallInfoUiState())
+        every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
     }
 
     private val callAppBarViewModel = mockk<CallAppBarViewModel>(relaxed = true) {
@@ -1127,6 +1129,17 @@ class HCallScreenTest {
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         assertEquals(ModalSheetComponent.Participants, component)
+    }
+
+    @Test
+    fun testCallInfoComponentIsDisplayed() {
+        composeTestRule.setUpHCallScreen()
+
+        val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        // check the content description because it's a TextView
+        composeTestRule.onNodeWithContentDescription(title, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subtitle, useUnmergedTree = true).assertIsDisplayed()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpHCallScreen(

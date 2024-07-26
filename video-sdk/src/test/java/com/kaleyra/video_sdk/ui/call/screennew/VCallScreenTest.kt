@@ -126,7 +126,7 @@ class VCallScreenTest {
     }
 
     private val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallInfoUiState())
+        every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
     }
 
     private val callAppBarViewModel = mockk<CallAppBarViewModel>(relaxed = true) {
@@ -1411,6 +1411,17 @@ class VCallScreenTest {
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         assertEquals(ModalSheetComponent.Participants, component)
+    }
+
+    @Test
+    fun testCallInfoComponentIsDisplayed() {
+        composeTestRule.setUpVCallScreen()
+
+        val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        // check the content description because it's a TextView
+        composeTestRule.onNodeWithContentDescription(title, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subtitle, useUnmergedTree = true).assertIsDisplayed()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
