@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
@@ -41,7 +40,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
-import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun GroupAppBar(
@@ -69,7 +67,8 @@ internal fun GroupAppBar(
                 image = image,
                 title = name,
                 subtitle = textFor(connectionState, participantsState, participantsDetails),
-                typingDots = participantsState.typing.count() > 0
+                typingDots = participantsState.typing.count() > 0,
+                isGroup = true
             )
         }
     )
