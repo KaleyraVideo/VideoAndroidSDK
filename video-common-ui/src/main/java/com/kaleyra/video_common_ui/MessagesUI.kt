@@ -86,7 +86,7 @@ class MessagesUI(
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
             chatUI.id.takeIf { chatUI.participants.value.others.size > 1 },
-            chatUI.name,
+            "",
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity

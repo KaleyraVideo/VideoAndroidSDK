@@ -75,7 +75,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
-  
+
     override fun initialState() = CallActionsUiState()
 
     private val inputMessageChannel = Channel<InputMessage>(Channel.BUFFERED)
@@ -191,7 +191,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val inputs = call.getValue()?.inputs
             val input = inputs?.request(activity, Inputs.Type.Microphone)?.getOrNull<Input.Audio>() ?: return@launch
-            val isMicEnabled = input.enabled.value.local
+            val isMicEnabled = with(input.enabled.value) { this is Input.Enabled.Both || this is Input.Enabled.Local }
             val hasSucceed = if (!isMicEnabled) input.tryEnable() else input.tryDisable()
             if (hasSucceed) {
                 val message = if (isMicEnabled) MicMessage.Disabled else MicMessage.Enabled
@@ -221,10 +221,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
         when {
             existingCameraVideo == null || !currentCall.inputs.availableInputs.value.contains(existingCameraVideo) -> requestVideoInputs(currentCall, activity)
-            existingCameraVideo.enabled.value.local -> {
+            existingCameraVideo.enabled.value.isAtLeastLocallyEnabled() -> {
                 val hasSucceed = existingCameraVideo.tryDisable()
                 if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Disabled)
             }
+
             else -> {
                 val hasSucceed = existingCameraVideo.tryEnable()
                 if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
@@ -236,14 +237,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.External)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
 
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.Internal)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
     }
@@ -276,7 +277,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     // TODO remove code duplication in StreamViewModel
     fun tryStopScreenShare(): Boolean {
-        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.local }
+        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.isAtLeastLocallyEnabled() }
         val call = call.getValue()
         return if (input == null || call == null) false
         else {
@@ -284,14 +285,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val streams = me?.streams?.value
             val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
-            val hasStopped = when(input) {
-                is Input.Video.Screen -> true.also {
-                    input.dispose()
-                }
-                is Input.Video.Application -> input.tryDisable()
-                else -> false
-            }
-            hasStopped && stream != null
+            call.inputs.release(Inputs.Type.Screen)
+            call.inputs.release(Inputs.Type.Application)
+            stream != null
         }
     }
 

@@ -75,14 +75,14 @@ internal object InputMapper {
             .flatMapLatest { it.video }
             .filterNotNull()
             .flatMapLatest { it.enabled }
-            .map { it.local }
+            .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 
     fun Call.isMyMicEnabled(): Flow<Boolean> =
         this.toCameraStreamAudio()
             .filterNotNull()
             .flatMapLatest { it.enabled }
-            .map { it.local }
+            .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 
     fun Call.isSharingScreen(): Flow<Boolean> =

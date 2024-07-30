@@ -44,7 +44,7 @@ internal object VideoMapper {
                 VideoUi(
                     video.id,
                     video.view.value?.let { ImmutableView(it) },
-                    video.enabled.value.remote,
+                    video.enabled.value.isAtLeastRemotelyEnabled(),
                     video.isScreenShare(),
                     ImmutableList(emptyList())
                 )
@@ -59,8 +59,8 @@ internal object VideoMapper {
                 flow.map { it.isScreenShare() },
                 flow.mapToPointersUi()
             ) { id, view, enabled, isScreenShare, pointers ->
-                val pointerList = ImmutableList(if (view != null && enabled.remote) pointers else emptyList())
-                VideoUi(id, view, enabled.remote, isScreenShare, pointerList)
+                val pointerList = ImmutableList(if (view != null && enabled.isAtLeastRemotelyEnabled()) pointers else emptyList())
+                VideoUi(id, view, enabled.isAtLeastRemotelyEnabled(), isScreenShare, pointerList)
             }.collect {
                 emit(it)
             }

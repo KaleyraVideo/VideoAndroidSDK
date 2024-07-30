@@ -49,7 +49,6 @@ import io.mockk.mockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
@@ -94,7 +93,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamVideoEnabled_isMyCameraEnabled_true() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(true, actual)
@@ -103,7 +102,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamVideoDisabled_isMyCameraEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(false, actual)
@@ -128,7 +127,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamNotExists_isMyCameraEnabled_null() = runTest {
         every { streamMock.id } returns "streamId"
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val myCameraFlow = callMock.isMyCameraEnabled()
         launch {
             val result = withTimeoutOrNull(1000L) {
@@ -141,7 +140,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamAudioEnabled_isMyMicEnabled_true() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(true, actual)
@@ -179,7 +178,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamAudioDisable_isMyMicEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(false, actual)

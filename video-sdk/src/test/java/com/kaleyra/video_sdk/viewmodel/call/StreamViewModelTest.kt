@@ -783,10 +783,10 @@ class StreamViewModelTest {
     @Test
     fun noScreenShareInputAvailable_stopScreenShareFail() = runTest {
         val cameraInput = mockk<Input.Video.Camera.Internal> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         val availableInputs = setOf(cameraInput, usbInput)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
@@ -801,11 +801,11 @@ class StreamViewModelTest {
     @Test
     fun noScreenShareInputActive_stopScreenShareFail() = runTest {
         val screenShareInput = mockk<Input.Video.Application> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(false, false))
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
             every { tryDisable() } returns true
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns SCREEN_SHARE_STREAM_ID
@@ -832,11 +832,11 @@ class StreamViewModelTest {
     @Test
     fun noScreenShareStream_stopScreenShareFail() = runTest {
         val screenShareInput = mockk<Input.Video.Application> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
             every { tryDisable() } returns true
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns "streamId"
@@ -874,7 +874,7 @@ class StreamViewModelTest {
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
-        every { screenShareVideoMock.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { screenShareVideoMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { screenShareVideoMock.tryDisable() } returns true
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns SCREEN_SHARE_STREAM_ID

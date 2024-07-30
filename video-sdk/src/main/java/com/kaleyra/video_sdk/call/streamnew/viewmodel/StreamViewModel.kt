@@ -157,7 +157,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     // TODO remove code duplication in CallActionsViewModel
     fun tryStopScreenShare(): Boolean {
-        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.local }
+        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.isAtLeastLocallyEnabled() }
         val call = call.getValue()
         return if (input == null || call == null) false
         else {

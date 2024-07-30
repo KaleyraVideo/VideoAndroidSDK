@@ -181,16 +181,16 @@ class StreamMapperTest {
         with(myVideoMock) {
             every { id } returns "myVideoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         with(audioMock) {
             every { id } returns "audioId"
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
     }
 
@@ -525,7 +525,7 @@ class StreamMapperTest {
         val newStreamVideoMock = mockk<Input.Video.Camera>(relaxed = true) {
             every { id } returns "videoId2"
             every { this@mockk.view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(false, false))
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
         }
         modifiedStreamVideoFlow.value = newStreamVideoMock
         val newActual = result.first()
@@ -572,7 +572,7 @@ class StreamMapperTest {
         // Update stream audio
         val newStreamAudioMock = mockk<Input.Audio>(relaxed = true) {
             every { id } returns "audioId2"
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         modifiedStreamAudioFlow.value = newStreamAudioMock
         val newActual = result.first()

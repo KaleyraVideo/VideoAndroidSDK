@@ -128,12 +128,12 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         with(myVideoMock) {
             every { id } returns "myVideoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         with(myStreamMock) {
             every { id } returns "myStreamId"

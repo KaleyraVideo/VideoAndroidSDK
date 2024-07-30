@@ -22,12 +22,8 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageDuration
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.mapper.InputMapper
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.screennew.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screennew.InputMessageHandle
-import com.kaleyra.video_sdk.common.usermessages.view.CameraRestriction
 import com.kaleyra.video_utils.MutableSharedStateFlow
 import io.mockk.coEvery
 import io.mockk.every
@@ -35,9 +31,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -115,7 +109,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnMicInputMessage() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myMic.tryEnable() } returns true
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -138,7 +132,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOnCameraInputMessage() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myVideo.tryEnable() } returns true
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -160,7 +154,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffMicInputMessage() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { myMic.tryDisable() } returns true
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -183,7 +177,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffCameraInputMessage() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { myVideo.tryDisable() } returns true
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -205,7 +199,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnEnableMicrophoneFailure() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myMic.tryEnable() } returns false
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -224,7 +218,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnEnableCameraFailure() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myVideo.tryEnable() } returns false
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
@@ -243,7 +237,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableMicrophoneFailure() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myMic.tryDisable() } returns false
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -262,7 +256,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableCameraFailure() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myVideo.tryDisable() } returns false
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)

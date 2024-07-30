@@ -132,7 +132,7 @@ class ConversationUI(
                     val lastMessage = it.other.firstOrNull { it.state.value is Message.State.Received }
                     if (lastMessage == null || lastMessagePerChat[chat.id] == lastMessage.id) return@messagesUI
                     lastMessagePerChat[chat.id] = lastMessage.id
-                    it.showUnreadMsgs(chat.id, chatParticipants)
+                    it.showUnreadMsgs(chat)
                 }.onCompletion {
                     chats.forEach { NotificationManager.cancel(it.id.hashCode()) }
                 }.launchIn(msgsScope!!)

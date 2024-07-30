@@ -17,8 +17,8 @@ internal object AudioMapper {
             val initialValue = value?.let { audio ->
                 AudioUi(
                     id = audio.id,
-                    isEnabled = audio.enabled.value.remote,
-                    isMutedForYou = !audio.enabled.value.local
+                    isEnabled = audio.enabled.value.isAtLeastRemotelyEnabled(),
+                    isMutedForYou = !audio.enabled.value.isAtLeastLocallyEnabled()
                 )
             }
             emit(initialValue)
@@ -30,8 +30,8 @@ internal object AudioMapper {
             ) { id, enabled ->
                 AudioUi(
                     id = id,
-                    isEnabled = enabled.remote,
-                    isMutedForYou = !enabled.local)
+                    isEnabled = enabled.isAtLeastRemotelyEnabled(),
+                    isMutedForYou = !enabled.isAtLeastLocallyEnabled())
             }.collect {
                 emit(it)
             }

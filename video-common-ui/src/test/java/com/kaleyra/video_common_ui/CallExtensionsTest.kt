@@ -100,7 +100,7 @@ class CallExtensionsTest {
         val video = mockk<Input.Video.Camera.Internal>()
         every { me.streams } returns MutableStateFlow(listOf(myStream))
         every { myStream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.Both)
         assertEquals(true, call.isMyInternalCameraEnabled())
     }
 
@@ -110,7 +110,7 @@ class CallExtensionsTest {
         val video = mockk<Input.Video.Camera.Internal>()
         every { me.streams } returns MutableStateFlow(listOf(myStream))
         every { myStream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.None)
         assertEquals(false, call.isMyInternalCameraEnabled())
     }
 
@@ -120,7 +120,7 @@ class CallExtensionsTest {
         val video = mockk<Input.Video.My>()
         every { me.streams } returns MutableStateFlow(listOf(myStream))
         every { myStream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.Both)
         assertEquals(false, call.isMyInternalCameraEnabled())
     }
 
@@ -265,7 +265,7 @@ class CallExtensionsTest {
         every { callParticipants.list } returns listOf(me)
         every { me.streams } returns MutableStateFlow(listOf(stream))
         every { stream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.Both)
         assertEquals(true, call.hasUsersWithCameraEnabled())
     }
 
@@ -276,7 +276,7 @@ class CallExtensionsTest {
         every { callParticipants.list } returns listOf(me)
         every { me.streams } returns MutableStateFlow(listOf(stream))
         every { stream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.None)
         assertEquals(false, call.hasUsersWithCameraEnabled())
     }
 
@@ -288,7 +288,7 @@ class CallExtensionsTest {
         every { callParticipants.list } returns listOf(user)
         every { user.streams } returns MutableStateFlow(listOf(stream))
         every { stream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.Both)
         assertEquals(true, call.hasUsersWithCameraEnabled())
     }
 
@@ -300,7 +300,7 @@ class CallExtensionsTest {
         every { callParticipants.list } returns listOf(user)
         every { user.streams } returns MutableStateFlow(listOf(stream))
         every { stream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.None)
         assertEquals(false, call.hasUsersWithCameraEnabled())
     }
 
@@ -322,7 +322,7 @@ class CallExtensionsTest {
         every { callParticipants.list } returns listOf(user)
         every { user.streams } returns MutableStateFlow(listOf(stream))
         every { stream.video } returns MutableStateFlow(video)
-        every { video.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { video.enabled } returns MutableStateFlow(Input.Enabled.Both)
         assertEquals(false, call.hasUsersWithCameraEnabled())
     }
 
