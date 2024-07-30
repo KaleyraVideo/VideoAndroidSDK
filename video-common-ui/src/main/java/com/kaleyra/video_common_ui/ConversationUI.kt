@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * The conversation UI
@@ -111,11 +112,28 @@ class ConversationUI(
     }
 
     /**
+     * @suppress
+     */
+    override fun create(userIds: List<String>, chatId: String)= conversation.create(userIds, chatId).map {
+        getOrCreateChatUI(it)
+    }
+
+    /**
      * Given a user, open a chat ui.
      * @param context launching context of the chat ui
      * @param userId the user id of the user to chat with
      */
     fun chat(context: Context, userId: String): Result<ChatUI> = create(userId).onSuccess {
+        show(context, KaleyraVideo.connectedUser.value?.userId, it)
+    }
+
+    /**
+     * Given a list of users, open a chat ui.
+     * @param context launching context of the chat ui
+     * @param userIds the user ids of the users to chat with
+     * @param chatId the chat unique identifier
+     */
+    fun chat(context: Context, userIds: List<String>, chatId: String): Result<ChatUI> = create(userIds, chatId).onSuccess {
         show(context, KaleyraVideo.connectedUser.value?.userId, it)
     }
 
@@ -132,7 +150,7 @@ class ConversationUI(
                     val lastMessage = it.other.firstOrNull { it.state.value is Message.State.Received }
                     if (lastMessage == null || lastMessagePerChat[chat.id] == lastMessage.id) return@messagesUI
                     lastMessagePerChat[chat.id] = lastMessage.id
-                    it.showUnreadMsgs(chat.id, chatParticipants)
+                    it.showUnreadMsgs(chat)
                 }.onCompletion {
                     chats.forEach { NotificationManager.cancel(it.id.hashCode()) }
                 }.launchIn(msgsScope!!)

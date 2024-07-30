@@ -59,10 +59,11 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
     /**
      * Set the current one-to-one chat by passing the other participant's userId
      * @param loggedUserId String optional logged user identification if the user has already connected or is connecting
-     * @param userId String the other participant's userId
+     * @param userIds List<String> the other participant's userIds
+     * @param chatId String? optional chat id associated with the chat to be set
      * @return ChatUI? the retrieved ChatUI if available
      */
-    suspend fun setChat(loggedUserId: String?, userId: String): ChatUI? {
+    suspend fun setChat(loggedUserId: String?, userIds: List<String>, chatId: String? = null): ChatUI? {
         val conversation = conversation.first()
 
         if (!KaleyraVideo.isConfigured) {
@@ -74,7 +75,13 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
             requestConnect(loggedUserId)
         }
 
-        val chat = conversation.create(userId).getOrNull() ?: return null
+        val chat = when (userIds.size) {
+            1 -> conversation.create(userIds.first()).getOrNull() ?: return null
+            else -> {
+                chatId ?: return null
+                conversation.create(userIds, chatId).getOrNull() ?: return null
+            }
+        }
         _chat.tryEmit(chat)
         return chat
     }

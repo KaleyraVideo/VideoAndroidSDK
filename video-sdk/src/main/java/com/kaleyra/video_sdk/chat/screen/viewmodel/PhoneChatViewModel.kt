@@ -254,9 +254,10 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
     private fun call(preferredType: Call.PreferredType) {
         val conference = conference.getValue() ?: return
         val chat = chat.getValue() ?: return
-        val userId = chat.participants.value.others.first().userId
-        conference.call(listOf(userId)) {
+        val userId = chat.participants.value.others.map { it.userId }
+        conference.call(userId) {
             this.preferredType = preferredType
+            this.chatId = chat.id
         }
     }
 
