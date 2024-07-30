@@ -48,14 +48,15 @@ internal fun ChatAppBarContent(
     image: ImmutableUri,
     title: String,
     subtitle: String,
-    typingDots: Boolean
+    typingDots: Boolean,
+    isGroup: Boolean = false,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(
             uri = image,
             contentDescription = stringResource(id = R.string.kaleyra_chat_avatar_desc),
-            placeholder = R.drawable.ic_kaleyra_avatar,
-            error = R.drawable.ic_kaleyra_avatar,
+            placeholder = if (isGroup) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar,
+            error = if (isGroup) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
             size = 40.dp
@@ -103,6 +104,7 @@ internal fun ChatScreenPreview() = KaleyraM3Theme {
             title = "John Smith",
             subtitle = "typing",
             typingDots = true,
+            isGroup = true,
         )
     }
 }

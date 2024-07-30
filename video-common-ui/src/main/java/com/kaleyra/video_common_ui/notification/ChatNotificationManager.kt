@@ -59,13 +59,15 @@ internal interface ChatNotificationManager {
     /**
      * Build the chat notification
      *
-     * @param loggedUserId Logged user id
-     * @param otherUserId The other user id
-     * @param otherUserName The other user name
-     * @param otherUserAvatar The other user avatar
-     * @param messages The list of messages
-     * @param activityClazz The chat activity Class<*>
-     * @param fullScreenIntentClazz The fullscreen intent activity Class<*>?
+     * @param loggedUserId String Logged user id
+     * @param otherUserId String The other user id
+     * @param otherUserName String The other user name
+     * @param otherUserAvatar Uri The other user avatar
+     * @param chatId String? optional chat identifier
+     * @param chatTitle String? optional chat title
+     * @param messages List<ChatNotificationMessage> The list of messages
+     * @param activityClazz Class<*> The chat activity Class<*>
+     * @param fullScreenIntentClazz Class<*>? The fullscreen intent activity Class<*>?
      * @return Notification
      */
     suspend fun buildChatNotification(
@@ -74,6 +76,7 @@ internal interface ChatNotificationManager {
         otherUserName: String,
         otherUserAvatar: Uri,
         chatId: String?,
+        chatTitle: String?,
         messages: List<ChatNotificationMessage>,
         activityClazz: Class<*>,
         fullScreenIntentClazz: Class<*>? = null,
@@ -97,6 +100,9 @@ internal interface ChatNotificationManager {
             .loggedUserId(loggedUserId)
             .username(otherUserName)
             .avatar(otherUserAvatar)
+            .also { builder ->
+                chatTitle?.let { builder.contentTitle(it) }
+            }
             .isGroupChat(true) // Always true because of a notification ui bug
 //            .isGroupChat(messages.map { it.userId }.distinct().count() > 1)
             .contentIntent(contentIntent)

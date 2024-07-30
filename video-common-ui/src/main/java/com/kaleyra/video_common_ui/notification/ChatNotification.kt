@@ -31,6 +31,7 @@ import androidx.core.app.RemoteInput
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.color.MaterialColors
+import com.kaleyra.video_common_ui.KaleyraVideo.conversation
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
@@ -198,7 +199,7 @@ internal class ChatNotification {
             val applicationIcon =
                 context.applicationContext.packageManager.getApplicationIcon(HostAppInfo.name)
             val person = Person.Builder()
-                .also { builder -> iconAvatar?.let { builder.setIcon(iconAvatar) } }
+                .also { builder -> iconAvatar?.let { builder.setIcon(it) } }
                 .setName(username.takeIf { it.isNotEmpty() } ?: " ")
                 .setKey(userId)
                 .build()
@@ -219,9 +220,11 @@ internal class ChatNotification {
                     .setGroupConversation(isGroupChat)
 
             messages.forEach {
+                val messageAuthorBitmapAvatar = withTimeoutOrNull(3000) { it.displayImage.toBitmap().getOrNull() }
+                val messageAuthoriconAvatar = messageAuthorBitmapAvatar?.let { IconCompat.createWithBitmap(messageAuthorBitmapAvatar) }
                 val participant = Person.Builder()
-                    .setName(it.username.takeIf { it.isNotEmpty() } ?: " ")
-                    .also { builder -> iconAvatar?.let { builder.setIcon(iconAvatar) } }
+                    .setName(it.displayName.takeIf { it.isNotEmpty() } ?: " ")
+                    .also { builder -> messageAuthoriconAvatar?.let { builder.setIcon(it) } }
                     .setKey(it.userId)
                     .build()
                 val message = NotificationCompat.MessagingStyle.Message(
@@ -238,7 +241,7 @@ internal class ChatNotification {
                 NotificationCompat.Builder(context.applicationContext, channelId)
                     .setStyle(messagingStyle)
                     .setSmallIcon(R.drawable.ic_kaleyra_chat)
-                    .setLargeIcon(bitmapAvatar ?: applicationIcon.toBitmap())
+                    .setLargeIcon(applicationIcon.toBitmap())
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     // Auto-bundling is enabled for 4 or more notifications on API 24+ (N+)
                     // devices and all Wear devices. If you have more than one notification and

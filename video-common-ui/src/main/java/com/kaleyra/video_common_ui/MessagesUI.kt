@@ -17,6 +17,7 @@
 package com.kaleyra.video_common_ui
 
 import android.net.Uri
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.ChatParticipants
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video.conversation.Messages
@@ -27,6 +28,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.notification.ChatNotificationMessage
 import com.kaleyra.video_common_ui.notification.CustomChatNotificationManager
 import com.kaleyra.video_common_ui.notification.DisplayedChatActivity
+import com.kaleyra.video_common_ui.notification.DisplayedChatActivity.Companion.chatId
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import kotlinx.coroutines.flow.filterNotNull
@@ -48,37 +50,34 @@ class MessagesUI(
     /**
      * Shows the notification of the unread messages
      *
-     * @param chatId The Chat id
-     * @param chatParticipants ChatParticipants
+     * @param chatUI The Chat to be shown as unread messages
      */
-    suspend fun showUnreadMsgs(chatId: String, chatParticipants: ChatParticipants) {
-        if (DisplayedChatActivity.chatId.value == chatId) return
+    suspend fun showUnreadMsgs(chatUI: ChatUI) {
+        if (DisplayedChatActivity.chatId.value == chatUI.id) return
         chatCustomNotificationActivityClazz?.let {
-            showCustomInAppNotification(chatId, chatParticipants, it)
-        } ?: showNotification(chatId, chatParticipants)
+            showCustomInAppNotification(chatUI, it)
+        } ?: showNotification(chatUI)
     }
 
     private suspend fun showCustomInAppNotification(
-        chatId: String,
-        chatParticipants: ChatParticipants,
+        chatUI: ChatUI,
         chatCustomNotificationActivity: Class<*>
     ) {
-        if (AppLifecycle.isInForeground.value) CustomChatNotificationManager.notify(chatId, chatCustomNotificationActivity)
-        else showNotification(chatId, chatParticipants, chatCustomNotificationActivity)
+        if (AppLifecycle.isInForeground.value) CustomChatNotificationManager.notify(chatUI.id, chatCustomNotificationActivity)
+        else showNotification(chatUI, chatCustomNotificationActivity)
     }
 
     private suspend fun showNotification(
-        chatId: String,
-        chatParticipants: ChatParticipants,
+        chatUI: ChatUI,
         chatCustomNotificationActivity: Class<*>? = null
     ) {
-        ContactDetailsManager.refreshContactDetails(*chatParticipants.list.map { it.userId }.toTypedArray())
+        ContactDetailsManager.refreshContactDetails(*chatUI.participants.value.list.map { it.userId }.toTypedArray())
 
         val messages = other
             .filter { it.state.value is Message.State.Received }
-            .map { it.toChatNotificationMessage(chatParticipants) }
+            .map { it.toChatNotificationMessage(chatUI.participants.value) }
             .sortedBy { it.timestamp }
-        val me = chatParticipants.me ?: return
+        val me = chatUI.participants.value.me ?: return
 
         val notification = NotificationManager.buildChatNotification(
             KaleyraVideo.connectedUser.value!!.userId,
@@ -86,12 +85,13 @@ class MessagesUI(
             me.combinedDisplayName.filterNotNull().firstOrNull() ?: " ",
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
-            chatId.takeIf { chatParticipants.others.size > 1 },
+            chatUI.id.takeIf { chatUI.participants.value.others.size > 1 },
+            chatUI.name,
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity
         )
-        if (DisplayedChatActivity.chatId.value == chatId) return
+        if (DisplayedChatActivity.chatId.value == chatUI.id) return
         NotificationManager.notify(chatId.hashCode(), notification)
     }
 
