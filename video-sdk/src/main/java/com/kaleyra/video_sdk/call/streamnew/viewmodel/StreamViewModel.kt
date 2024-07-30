@@ -21,6 +21,8 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -120,13 +122,21 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         maxPinnedStreams = count
     }
 
-    fun pin(streamId: String): Boolean {
+    fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
         val streams = uiState.value.streams.value
-        val stream = streams.find { it.id == streamId }
-        if (stream == null || uiState.value.pinnedStreams.count() >= maxPinnedStreams) return false
+        val stream = streams.find { it.id == streamId } ?: return false
+        val isMaxStreamsReached = uiState.value.pinnedStreams.count() >= maxPinnedStreams
+        if (isMaxStreamsReached && !force) return false
+
+        val pinnedStreams = if (isMaxStreamsReached) {
+            val pinnedStreams = uiState.value.pinnedStreams.value.toMutableList()
+            if (prepend) pinnedStreams.removeFirstOrNull() else pinnedStreams.removeLastOrNull()
+            pinnedStreams
+        } else uiState.value.pinnedStreams.value
+
         _uiState.update {
-            val new = (it.pinnedStreams.value + stream).toImmutableList()
-            it.copy(pinnedStreams = new)
+            val newPinnedStreams = if (prepend) listOf(stream) + pinnedStreams else pinnedStreams + stream
+            it.copy(pinnedStreams = newPinnedStreams.toImmutableList())
         }
         return true
     }
@@ -168,6 +178,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     private fun updatePinnedStreams(streams: List<StreamUi>): List<StreamUi> {
         val localScreenShare = streams.find { it.video?.isScreenShare == true && it.isMine }
+        val remoteScreenShare = streams.find { it.video?.isScreenShare == true && !it.isMine }
         // Clear the removed pinned streams
         val updatedPinnedStreams = uiState.value.pinnedStreams.value.mapNotNull { stream ->
             streams.find { it.id == stream.id }
@@ -177,6 +188,14 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             updatedPinnedStreams.add(0, it)
             if (updatedPinnedStreams.size > maxPinnedStreams) {
                 updatedPinnedStreams.removeAt(1)
+            }
+        }
+        remoteScreenShare?.let {
+            if (uiState.value.streams.value.find { stream -> remoteScreenShare.id == stream.id } != null) return@let
+            if (updatedPinnedStreams.size == 0) updatedPinnedStreams.add(0, it)
+            else {
+                val message = PinScreenshareMessage(it.id, it.username)
+                CallUserMessagesProvider.sendUserMessage(message)
             }
         }
         return updatedPinnedStreams

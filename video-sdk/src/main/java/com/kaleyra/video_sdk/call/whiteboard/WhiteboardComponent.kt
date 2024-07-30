@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.kaleyra.video_sdk.call.whiteboard
 
 import android.content.res.Configuration
@@ -57,7 +54,7 @@ internal fun WhiteboardComponent(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -84,7 +81,7 @@ internal fun WhiteboardComponent(
     onReloadClick: () -> Unit,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit
 ) {
     DisposableEffect(Unit) {
         onDispose(onWhiteboardClosed)
@@ -121,7 +118,7 @@ internal fun WhiteboardComponent(
                     }
                 }
 
-                StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
+                StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
             }
 
             NavigationBarsSpacer()

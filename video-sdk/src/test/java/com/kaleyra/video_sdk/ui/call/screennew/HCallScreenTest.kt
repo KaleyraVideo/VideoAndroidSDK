@@ -24,11 +24,13 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
+import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screennew.AudioAction
 import com.kaleyra.video_sdk.call.screennew.CameraAction
 import com.kaleyra.video_sdk.call.screennew.ChatAction
@@ -57,7 +59,9 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil
 import io.mockk.every
@@ -67,6 +71,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -119,7 +124,7 @@ class HCallScreenTest {
     }
 
     private val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallInfoUiState())
+        every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
     }
 
     private val callAppBarViewModel = mockk<CallAppBarViewModel>(relaxed = true) {
@@ -912,7 +917,7 @@ class HCallScreenTest {
             onModalSheetComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1127,6 +1132,80 @@ class HCallScreenTest {
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         assertEquals(ModalSheetComponent.Participants, component)
+    }
+
+    @Test
+    fun testCallInfoComponentIsDisplayed() {
+        composeTestRule.setUpHCallScreen()
+
+        val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        // check the content description because it's a TextView
+        composeTestRule.onNodeWithContentDescription(title, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(subtitle, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksScreenShareMessagePin_streamPinIsInvoked() {
+        every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(
+            PinScreenshareMessage("streamId", "username")
+        )))
+        composeTestRule.setUpHCallScreen()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(pinText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        verify(exactly = 1) { streamViewModel.pin("streamId", prepend = true, force = true) }
+    }
+
+    @Test
+    fun userClicksScreenShareMessagePinOnWhiteboard_streamPinIsInvoked() {
+        val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
+        every { userMessagesViewModel.userMessage } returns userMessageFlow
+
+        composeTestRule.setUpHCallScreen(modalSheetComponent = ModalSheetComponent.Whiteboard)
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+
+        userMessageFlow.value = ImmutableList(listOf(PinScreenshareMessage("streamId", "username")))
+        composeTestRule.waitForIdle()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(pinText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        verify(exactly = 1) { streamViewModel.pin("streamId", prepend = true, force = true) }
+    }
+
+    @Test
+    fun userClicksScreenShareMessagePinOnFileShare_streamPinIsInvoked() {
+        val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
+        every { userMessagesViewModel.userMessage } returns userMessageFlow
+
+        composeTestRule.setUpHCallScreen(modalSheetComponent = ModalSheetComponent.FileShare)
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+
+        userMessageFlow.value = ImmutableList(listOf(PinScreenshareMessage("streamId", "username")))
+        composeTestRule.waitForIdle()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(pinText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        verify(exactly = 1) { streamViewModel.pin("streamId", prepend = true, force = true) }
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpHCallScreen(

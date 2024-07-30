@@ -43,9 +43,6 @@ import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

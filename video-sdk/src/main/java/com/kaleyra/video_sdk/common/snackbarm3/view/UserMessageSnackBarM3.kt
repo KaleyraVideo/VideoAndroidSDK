@@ -43,7 +43,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
+import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 private val UserMessageSnackBarMessageActionSpacing = 60.dp
@@ -152,7 +154,8 @@ internal fun UserMessageErrorSnackbarM3(message: String, onDismissClick: () -> U
     )
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 fun UserMessageInfoSnackbarPreview() = KaleyraM3Theme {
     Row(
@@ -169,7 +172,8 @@ fun UserMessageInfoSnackbarPreview() = KaleyraM3Theme {
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 fun UserMessageInfoSnackbarPreviewWithLongText() = KaleyraM3Theme {
     Row(
@@ -185,7 +189,8 @@ fun UserMessageInfoSnackbarPreviewWithLongText() = KaleyraM3Theme {
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 fun UserMessageErrorSnackbarPreview() = KaleyraM3Theme {
     Row(
@@ -200,7 +205,8 @@ fun UserMessageErrorSnackbarPreview() = KaleyraM3Theme {
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 fun AlertMessageSnackbarPreview() = KaleyraM3Theme {
     Row(

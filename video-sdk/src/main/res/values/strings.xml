@@ -72,7 +72,6 @@
     <string name="kaleyra_participants_component_remove_from_call">Remove from call</string>
     <string name="kaleyra_participants_component_disable_microphone">Disable microphone</string>
     <string name="kaleyra_participants_component_enable_microphone">Enable microphone</string>
-    <string name="kaleyra_participants_component_close">Close participants\' panel</string>
     <string name="kaleyra_participants_component_show_more_actions">Show more actions</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participant</item>

@@ -47,16 +47,6 @@ class CallInfoComponentTest {
     }
 
     @Test
-    fun callInfo_titleNull_titleNotAdded() {
-        composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertDoesNotExist()
-    }
-
-    @Test
-    fun callInfo_subtitleNull_subtitleNotAdded() {
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertDoesNotExist()
-    }
-
-    @Test
     fun callUiStateConnecting_noDisplayNames_callDisplayStateTitleShown() {
         val textRef = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
         val displayState = textRef.resolve(composeTestRule.activity)

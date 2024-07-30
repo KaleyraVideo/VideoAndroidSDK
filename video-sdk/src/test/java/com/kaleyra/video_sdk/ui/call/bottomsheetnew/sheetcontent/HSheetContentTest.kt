@@ -407,7 +407,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -443,7 +443,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -478,7 +478,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -512,7 +512,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
             )
         }
@@ -540,7 +540,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -568,7 +568,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -596,7 +596,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -626,7 +626,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -656,7 +656,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -686,7 +686,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -716,7 +716,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -746,7 +746,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -776,7 +776,7 @@ class HSheetContentTest {
                 onChatClick = { isChatClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -806,7 +806,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { isFileShareClicked = true },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -836,7 +836,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { isWhiteboardClicked = true },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -866,7 +866,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { isVirtualClicked = true },
+                onVirtualBackgroundToggle = { isVirtualClicked = true },
                 onMoreToggle = { }
             )
         }
@@ -897,7 +897,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -935,7 +935,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { isMoreClicked = true }
             )
         }
@@ -974,7 +974,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1008,7 +1008,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1046,7 +1046,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1084,7 +1084,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1123,7 +1123,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1165,7 +1165,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1212,7 +1212,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1257,7 +1257,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1303,7 +1303,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1337,7 +1337,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1366,7 +1366,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1394,7 +1394,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }
@@ -1422,7 +1422,7 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundClick = { },
+                onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
         }

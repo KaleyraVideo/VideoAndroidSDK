@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
@@ -44,7 +45,11 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -176,16 +181,31 @@ internal fun VCallScreen(
                             showSheetPanelContent = false
                             true
                         }
+
                         selectedStreamId != null -> {
                             onStreamSelected(null)
                             true
                         }
+
                         else -> false
                     }
                 }
-            .clearAndSetSemantics {}
+                .clearAndSetSemantics {}
         ) {
+            val streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+            )
+            val onUserMessageActionClick = remember(streamViewModel) {
+                { message: UserMessage ->
+                    when (message) {
+                        is PinScreenshareMessage -> { streamViewModel.pin(message.streamId, prepend = true, force = true); Unit }
+                        else -> Unit
+                    }
+                }
+            }
+
             StreamComponent(
+                viewModel = streamViewModel,
                 windowSizeClass = windowSizeClass,
                 highlightedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
@@ -202,19 +222,23 @@ internal fun VCallScreen(
                     .padding(top = 14.dp)
             )
 
-            CallInfoComponent(
+            Column(
                 modifier = Modifier
                     .padding(top = top)
-                    .padding(horizontal = 8.dp, vertical = 48.dp)
-            )
+                    .padding(vertical = 24.dp)
+            ) {
+                CallInfoComponent(Modifier.padding(vertical = 12.dp))
+                if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
+                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                }
+            }
 
             CallScreenModalSheet(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
-                // TODO test this
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = onUserMessageActionClick
             )
         }
     }

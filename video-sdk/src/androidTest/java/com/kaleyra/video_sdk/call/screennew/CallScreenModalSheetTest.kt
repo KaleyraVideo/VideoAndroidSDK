@@ -103,7 +103,7 @@ class CallScreenModalSheetTest {
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
             every { create<UserMessagesViewModel>(any(), any()) } returns mockk<UserMessagesViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
-                every { userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("username"))))
+                every { userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("streamId", "username"))))
             }
         }
     }
@@ -367,7 +367,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)

@@ -143,7 +143,7 @@ internal fun ParticipantsComponent(
             ParticipantsTopAppBar(
                 participantsCount = streams.count(),
                 scrollBehavior = scrollBehavior,
-                onCloseClick = onCloseClick
+                onBackPressed = onCloseClick
             )
         }
     ) { contentPadding ->

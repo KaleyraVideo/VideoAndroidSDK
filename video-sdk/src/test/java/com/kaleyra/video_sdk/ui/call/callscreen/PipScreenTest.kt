@@ -32,7 +32,7 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.screen.PipScreen
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
-import com.kaleyra.video_sdk.call.recording.view.RecordingDotTestTag
+import com.kaleyra.video_sdk.call.pip.view.RecordingDotTestTag
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import org.junit.After
 import org.junit.Before

@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.screennew
 
+import android.util.Rational
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -41,6 +42,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
+import com.kaleyra.video_sdk.call.pip.PipScreen
 import com.kaleyra.video_sdk.call.screennew.model.MainUiState
 import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -77,6 +79,7 @@ internal fun CallScreen(
     shouldShowFileShareComponent: Boolean,
     isInPipMode: Boolean,
     enterPip: () -> Unit,
+    onPipAspectRatio: (Rational) -> Unit,
     onDisplayMode: (CallUI.DisplayMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
@@ -201,6 +204,7 @@ internal fun CallScreen(
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
             onAskInputPermissions = onAskInputPermissions,
+            onPipAspectRatio = onPipAspectRatio,
             onCallEndedBack = finishActivity,
             onBackPressed = onBackPressed,
         )
@@ -218,6 +222,7 @@ internal fun CallScreen(
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
+    onPipAspectRatio: (Rational) -> Unit,
     onCallEndedBack: () -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -286,7 +291,10 @@ internal fun CallScreen(
     )
 
     if (isInPipMode) {
-        PipScreen(modifier = Modifier.testTag(PipScreenTestTag))
+        PipScreen(
+            onPipAspectRatio = onPipAspectRatio,
+            modifier = Modifier.testTag(PipScreenTestTag)
+        )
     } else {
         if (isCompactHeight) {
             HCallScreen(

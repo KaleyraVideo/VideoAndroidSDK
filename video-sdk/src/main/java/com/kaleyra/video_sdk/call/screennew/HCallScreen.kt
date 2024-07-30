@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.screennew
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
@@ -35,7 +37,11 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.VStreamMenuContent
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
+import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -122,6 +128,18 @@ internal fun HCallScreen(
         val left = paddingValues.calculateLeftPadding(layoutDirection)
         val bottom = paddingValues.calculateBottomPadding()
 
+        val streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+            factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+        )
+        val onUserMessageActionClick = remember(streamViewModel) {
+            { message: UserMessage ->
+                when (message) {
+                    is PinScreenshareMessage -> { streamViewModel.pin(message.streamId, prepend = true, force = true); Unit }
+                    else -> Unit
+                }
+            }
+        }
+
         Box(
             modifier = Modifier
                 .pointerInteropFilter {
@@ -134,6 +152,7 @@ internal fun HCallScreen(
                 .clearAndSetSemantics {}
         ) {
             StreamComponent(
+                viewModel = streamViewModel,
                 windowSizeClass = windowSizeClass,
                 highlightedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
@@ -150,12 +169,16 @@ internal fun HCallScreen(
                     .padding(top = 14.dp)
             )
 
-            CallInfoComponent(
+            Column(
                 modifier = Modifier
-                    .padding(top = top)
-                    .padding(horizontal = 8.dp, vertical = 48.dp)
-                    .padding(end = 116.dp)
-            )
+                    .padding(top = top, end = 116.dp)
+                    .padding(vertical = 24.dp)
+            ) {
+                CallInfoComponent(Modifier.padding(vertical = 12.dp))
+                if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
+                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                }
+            }
 
             InputMessageHost(
                 modifier = Modifier
@@ -168,8 +191,7 @@ internal fun HCallScreen(
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
-                // TODO test this
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = onUserMessageActionClick
             )
         }
     }

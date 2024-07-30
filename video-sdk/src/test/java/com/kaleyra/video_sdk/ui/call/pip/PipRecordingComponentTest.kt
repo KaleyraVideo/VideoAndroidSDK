@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.ui.call
+package com.kaleyra.video_sdk.ui.call.pip
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.recording.view.RecordingLabel
+import com.kaleyra.video_sdk.call.pip.view.PipRecordingComponent
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.*
-
 
 @RunWith(RobolectricTestRunner::class)
-class RecordingLabelTest {
+class PipRecordingComponentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -39,7 +37,7 @@ class RecordingLabelTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            RecordingLabel()
+            PipRecordingComponent()
         }
     }
 
