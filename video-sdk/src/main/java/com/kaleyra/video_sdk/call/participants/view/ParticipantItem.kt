@@ -90,8 +90,7 @@ internal fun ParticipantItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
                 onClick = {
-                    if (stream.audio != null && (stream.audio.isEnabled || stream.audio.isMutedForYou))
-                        onMuteStreamClick(stream.id, !stream.audio.isMutedForYou)
+                    if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou)
                     else Unit
                 },
                 content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
