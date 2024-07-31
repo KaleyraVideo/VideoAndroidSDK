@@ -42,7 +42,8 @@ internal fun StreamItem(
     fullscreen: Boolean,
     pin: Boolean,
     modifier: Modifier = Modifier,
-    statusIconsAlignment: Alignment = Alignment.BottomEnd
+    statusIconsAlignment: Alignment = Alignment.BottomEnd,
+    onClick: (() -> Unit)? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -56,7 +57,8 @@ internal fun StreamItem(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
                 avatar = stream.avatar,
                 username = stream.username,
-                showStreamView = stream.video?.view != null && stream.video.isEnabled
+                showStreamView = stream.video?.view != null && stream.video.isEnabled,
+                onClick = onClick
             )
         }
 

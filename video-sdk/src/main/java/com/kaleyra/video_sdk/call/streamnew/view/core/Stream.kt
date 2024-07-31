@@ -25,7 +25,8 @@ internal fun Stream(
     streamView: ImmutableView?,
     username: String,
     avatar: ImmutableUri?,
-    showStreamView: Boolean
+    showStreamView: Boolean,
+    onClick: (() -> Unit)? = null
 ) {
     if (showStreamView && streamView != null) {
         key(streamView) {
@@ -34,6 +35,7 @@ internal fun Stream(
                     streamView.value.also {
                         val parentView = it.parent as? ViewGroup
                         parentView?.removeView(it)
+                        it.setOnClickListener { onClick?.invoke() }
                     }
                 },
                 update = { view ->

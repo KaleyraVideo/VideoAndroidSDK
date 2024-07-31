@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -197,6 +199,14 @@ internal fun StreamComponent(
                             val displayAsMoreParticipantsItem =
                                 !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
 
+                            val onClick = remember {
+                                onClick@ {
+                                    if (streamItemState.isLocalScreenShare) return@onClick
+                                    if (displayAsMoreParticipantsItem) onMoreParticipantClick()
+                                    else onStreamClick(stream)
+                                }
+                            }
+
                             Surface(
                                 shape = RoundedCornerShape(4.dp),
                                 tonalElevation = 1.dp,
@@ -205,10 +215,7 @@ internal fun StreamComponent(
                                     .streamHighlight(streamItemState.isHighlighted)
                                     .streamClickable(
                                         enabled = !streamItemState.isLocalScreenShare,
-                                        onClick = {
-                                            if (displayAsMoreParticipantsItem) onMoreParticipantClick()
-                                            else onStreamClick(stream)
-                                        },
+                                        onClick = onClick,
                                         label = if (!displayAsMoreParticipantsItem) stringResource(id = R.string.kaleyra_stream_show_actions) else stringResource(id = R.string.kaleyra_stream_show_participants)
                                     )
                                     .testTag(stream.id)
@@ -220,6 +227,7 @@ internal fun StreamComponent(
                                             val participants = listOf(NonDisplayedParticipantData(stream.id, stream.username, stream.avatar)) + nonDisplayedParticipantsData.value
                                             MoreParticipantsItem(participants.toImmutableList())
                                         }
+
                                         streamItemState.isLocalScreenShare -> ScreenShareItem(onStopScreenShareClick)
 
                                         else -> {
@@ -232,7 +240,8 @@ internal fun StreamComponent(
                                                 stream = stream,
                                                 fullscreen = streamItemState.isFullscreen,
                                                 pin = streamItemState.isPinned,
-                                                statusIconsAlignment = statusIconsAlignment
+                                                statusIconsAlignment = statusIconsAlignment,
+                                                onClick = onClick
                                             )
                                         }
                                     }
@@ -324,7 +333,6 @@ private fun Modifier.streamHighlight(enabled: Boolean): Modifier = composed {
 
     } else this
 }
-
 
 
 @MultiConfigPreview
