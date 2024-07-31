@@ -12,8 +12,12 @@ import com.kaleyra.video_common_ui.utils.TimerParser
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.RecordingMapper.mapToRecordingStateUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -29,6 +33,18 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
         viewModelScope.launch {
             val ongoingCall = call.first()
 
+            if (ongoingCall.recording.value.type is Call.Recording.Type.OnConnect)
+                _uiState.update { uiState ->
+                    uiState.copy(automaticRecording = true)
+                }
+
+            ongoingCall.toCallStateUi()
+                .onEach { callStateUi ->
+                    _uiState.update { uiState ->
+                        uiState.copy(callStateUi = callStateUi)
+                    }
+                }.launchIn(this)
+
             ongoingCall.toInCallParticipants()
                 .onEach { inCallParticipants ->
                     _uiState.update { uiState ->
@@ -37,6 +53,7 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
                 }.launchIn(this)
 
             ongoingCall.time.elapsed
+                .filter { it > 0 }
                 .map { timeStamp -> TimerParser.parseTimestamp(timeStamp) }
                 .onEach { formattedElapsedSeconds ->
                     _uiState.update { uiState ->
@@ -44,11 +61,13 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
                     }
                 }.launchIn(this)
 
-            ongoingCall.recording.flatMapLatest { it.state }.onEach { recordingState ->
-                _uiState.update { uiState ->
-                    uiState.copy(recording = recordingState == Call.Recording.State.Started)
-                }
-            }.launchIn(this)
+            ongoingCall.recording.flatMapLatest { it.state }
+                .dropWhile { it is Call.Recording.State.Stopped }
+                .onEach { recordingState ->
+                    _uiState.update { uiState ->
+                        uiState.copy(recordingStateUi = recordingState.mapToRecordingStateUi())
+                    }
+                }.launchIn(this)
 
             company.first().combinedTheme.onEach { companyTheme ->
                 _uiState.update { uiState ->

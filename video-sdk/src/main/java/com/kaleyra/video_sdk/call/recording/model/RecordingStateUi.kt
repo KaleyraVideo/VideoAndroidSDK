@@ -16,9 +16,12 @@
 
 package com.kaleyra.video_sdk.call.recording.model
 
+import androidx.compose.runtime.Stable
+
 /**
  * Representation of the Recording State on the UI
  */
+@Stable
 enum class RecordingStateUi {
 
     /**

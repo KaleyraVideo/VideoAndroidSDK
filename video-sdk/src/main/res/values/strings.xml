@@ -292,6 +292,7 @@
     <string name="kaleyra_feedback_thank_you">Thank you for your feedback!</string>
 
     <!-- RECORDING -->
+    <string name="kaleyra_rec" translatable="false">REC</string>
     <string name="kaleyra_recording_started">Recording started</string>
     <string name="kaleyra_recording_started_message">The call recording has started.</string>
     <string name="kaleyra_recording_stopped">Recording stopped</string>

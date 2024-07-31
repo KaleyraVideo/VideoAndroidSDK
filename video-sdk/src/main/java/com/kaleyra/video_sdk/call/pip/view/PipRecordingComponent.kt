@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
+import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
@@ -58,7 +59,7 @@ internal fun PipRecordingComponent(
     )
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val isRecording by remember { derivedStateOf { uiState.recording } }
+    val isRecording by remember { derivedStateOf { uiState.automaticRecording || uiState.recordingStateUi == RecordingStateUi.Started } }
 
     if (isRecording) {
         PipRecordingComponent(modifier)

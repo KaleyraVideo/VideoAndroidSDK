@@ -51,7 +51,7 @@ class PipScreenTest {
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
             every { create<CallAppBarViewModel>(any(), any()) } returns mockk<CallAppBarViewModel>(relaxed = true) {
-                every { uiState } returns MutableStateFlow(CallAppBarUiState(recording = true))
+                every { uiState } returns MutableStateFlow(CallAppBarUiState(automaticRecording = true))
             }
         }
         every { CallInfoViewModel.provideFactory(any()) } returns mockk {

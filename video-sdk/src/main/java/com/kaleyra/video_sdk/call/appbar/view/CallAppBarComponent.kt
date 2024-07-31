@@ -2,10 +2,13 @@ package com.kaleyra.video_sdk.call.appbar.view
 
 import android.content.res.Configuration
 import android.net.Uri
+import android.telecom.Call
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +47,10 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.button.BackIconButton
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.typography
@@ -69,7 +78,9 @@ internal fun CallAppBarComponent(
         modifier = modifier,
         title = uiState.title,
         logo = uiState.logo,
-        recording = uiState.recording,
+        automaticRecording = uiState.automaticRecording,
+        recordingStateUi = uiState.recordingStateUi,
+        callStateUi = uiState.callStateUi,
         participantCount = uiState.participantCount,
         onParticipantClick = onParticipantClick,
         onBackPressed = onBackPressed)
@@ -80,12 +91,18 @@ internal fun CallAppBarComponent(
     modifier: Modifier = Modifier,
     title: String?,
     logo: Logo,
-    recording: Boolean,
+    automaticRecording: Boolean,
+    recordingStateUi: RecordingStateUi,
+    callStateUi: CallStateUi,
     participantCount: Int,
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
     val isDarkTheme = isSystemInDarkTheme()
+
+    var hasConnectedOnce by remember { mutableStateOf(false) }
+    if (callStateUi is CallStateUi.Connected) hasConnectedOnce = true
+
     Surface(
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = CallAppBarDefaults.Elevation,
@@ -97,7 +114,27 @@ internal fun CallAppBarComponent(
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
-            content = { title?.let { Title(recording = recording, title = title) } }
+            content = {
+                when {
+                    (callStateUi is CallStateUi.Disconnected && hasConnectedOnce)
+                        || callStateUi is CallStateUi.Disconnecting ->
+                            return@Box
+
+                    automaticRecording
+                        && recordingStateUi == RecordingStateUi.Stopped ->
+                            Title(
+                                recording = automaticRecording ||
+                                    recordingStateUi == RecordingStateUi.Started,
+                                pulseRecording = false,
+                                title = stringResource(id = R.string.kaleyra_rec))
+
+                    else -> Title(
+                        recording = automaticRecording ||
+                            recordingStateUi == RecordingStateUi.Started,
+                        pulseRecording = recordingStateUi == RecordingStateUi.Started,
+                        title = title ?: automaticRecording.takeIf { it }?.let { stringResource(id = R.string.kaleyra_rec) } ?: "")
+                }
+            }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -129,7 +166,7 @@ internal fun CallAppBarComponent(
 }
 
 @Composable
-private fun Title(recording: Boolean, title: String) {
+private fun Title(recording: Boolean, pulseRecording: Boolean, title: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         AnimatedVisibility(visible = recording) {
             Icon(
@@ -138,7 +175,7 @@ private fun Title(recording: Boolean, title: String) {
                 tint = Color.Unspecified,
                 modifier = Modifier
                     .size(18.dp)
-                    .pulse()
+                    .pulse(enabled = pulseRecording)
                     .testTag(RecordingDotTag)
             )
         }
@@ -185,16 +222,32 @@ private fun CallParticipantsButton(
     }
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@MultiConfigPreview
 @Composable
 internal fun CallAppBarComponentPreview() = KaleyraM3Theme {
-    CallAppBarComponent(
-        logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
-        title = "09:56",
-        participantCount = 2,
-        recording = true,
-        onParticipantClick = {},
-        onBackPressed = {}
-    )
+    Column {
+        CallAppBarComponent(
+            logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
+            title = "09:56",
+            participantCount = 2,
+            automaticRecording = true,
+            recordingStateUi = RecordingStateUi.Started,
+            callStateUi = CallStateUi.Connected,
+            onParticipantClick = {},
+            onBackPressed = {}
+        )
+
+        Spacer(modifier = Modifier.size(16.dp))
+
+        CallAppBarComponent(
+            logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
+            title = "09:56",
+            participantCount = 2,
+            automaticRecording = true,
+            recordingStateUi = RecordingStateUi.Started,
+            callStateUi = CallStateUi.Connecting,
+            onParticipantClick = {},
+            onBackPressed = {}
+        )
+    }
 }
