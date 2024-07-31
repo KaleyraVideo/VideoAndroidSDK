@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.mapper.call
 
+import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -59,7 +60,7 @@ class AudioMapperTest {
 
     @Test
     fun audioInputEnabledUpdated_mapToAudioUi_audioUiUpdated() = runTest {
-        val enabledFlow = MutableStateFlow(Input.Enabled.None)
+        val enabledFlow: MutableStateFlow<Input.Enabled> = MutableStateFlow(Input.Enabled.None)
         every { audioMock.enabled } returns enabledFlow
         val flow = MutableStateFlow(audioMock)
 

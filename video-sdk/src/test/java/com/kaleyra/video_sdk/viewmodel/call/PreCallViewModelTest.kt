@@ -187,7 +187,7 @@ internal abstract class PreCallViewModelTest<VM: PreCallViewModel<T>, T: PreCall
         val expected = VideoUi(
                 id = myVideoMock.id,
                 view = myVideoMock.view.value?.let { ImmutableView(it) },
-                isEnabled = myVideoMock.enabled.value.remote
+                isEnabled = myVideoMock.enabled.value.isAtLeastRemotelyEnabled()
             )
         assertEquals(expected, new)
     }

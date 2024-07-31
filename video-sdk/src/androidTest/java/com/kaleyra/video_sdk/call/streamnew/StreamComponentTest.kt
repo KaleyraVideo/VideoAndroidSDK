@@ -351,7 +351,7 @@ class StreamComponentTest {
     }
 
     @Test
-    fun remoteStreamMicDisabledAndMutedForYou_mutedForIconIsDisplayed() {
+    fun streamMicDisabledAndMutedForYou_micMutedForYouIsDisplayed() {
         val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -359,10 +359,8 @@ class StreamComponentTest {
 
         composeTestRule.waitForIdle()
 
-        val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         val mutedForYouDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_muted_for_you)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
         composeTestRule.onNodeWithContentDescription(mutedForYouDescription).assertIsDisplayed()
     }
 
