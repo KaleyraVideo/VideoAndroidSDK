@@ -56,7 +56,7 @@ internal object StreamViewSettings {
     internal fun ImmutableView.preCallStreamViewSettings(): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = false
+            view.zoomGesturesEnabled.value = true
             view.scaleType.value = StreamView.ScaleType.Fill(1f)
         }
         return this
