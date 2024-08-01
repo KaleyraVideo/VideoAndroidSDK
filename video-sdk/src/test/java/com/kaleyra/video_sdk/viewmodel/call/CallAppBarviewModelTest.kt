@@ -126,15 +126,59 @@ class CallAppBarViewModelTest {
     }
 
     @Test
-    fun testRecordingUpdated() = runTest {
-        advanceUntilIdle()
+    fun testAutomaticRecordingStoppedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
             override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
         })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
         advanceUntilIdle()
         Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
         Assert.assertEquals(RecordingStateUi.Stopped, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testAutomaticRecordingStartedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Started, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testManualRecordingStoppedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(false, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Stopped, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testManualRecordingStartedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(false, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Started, viewModel.uiState.first().recordingStateUi)
     }
 
     @Test
