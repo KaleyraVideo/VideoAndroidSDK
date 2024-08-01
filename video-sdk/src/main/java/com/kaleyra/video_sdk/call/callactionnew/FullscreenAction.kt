@@ -21,7 +21,7 @@ internal fun FullscreenAction(
     val text = if (fullscreen) stringResource(id = R.string.kaleyra_call_sheet_fullscreen_off) else stringResource(id = R.string.kaleyra_call_sheet_fullscreen_on)
     CallAction(
         modifier = modifier,
-        icon = if (fullscreen) painterResource(id = R.drawable.ic_kaleyra_call_sheet_fullscreen_off) else painterResource(id = R.drawable.ic_kaleyra_call_sheet_fullscreen_on),
+        icon = if (fullscreen) painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_action_off) else painterResource(id = R.drawable.ic_kaleyra_stream_fullscreen_action_on),
         contentDescription = text,
         enabled = enabled,
         label = if (label) text else null,
@@ -32,10 +32,21 @@ internal fun FullscreenAction(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-internal fun FullscreenActionPreview() {
+internal fun FullscreenOnActionPreview() {
     KaleyraM3Theme {
         Surface {
             FullscreenAction(onClick = {})
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun FullscreenOffActionPreview() {
+    KaleyraM3Theme {
+        Surface {
+            FullscreenAction(fullscreen = true, onClick = {})
         }
     }
 }

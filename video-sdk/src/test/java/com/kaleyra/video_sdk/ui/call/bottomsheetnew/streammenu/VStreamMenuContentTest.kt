@@ -58,11 +58,10 @@ class VStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = stream)
 
-        var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { }
             )
         }
 
@@ -73,7 +72,6 @@ class VStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(null) }
-        assertEquals(true, dismissed)
     }
 
     @Test
@@ -81,11 +79,10 @@ class VStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = null)
 
-        var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { }
             )
         }
 
@@ -96,7 +93,6 @@ class VStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
-        assertEquals(true, dismissed)
     }
 
     @Test

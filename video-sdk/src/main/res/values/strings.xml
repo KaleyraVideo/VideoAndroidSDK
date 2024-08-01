@@ -25,7 +25,7 @@
     <string name="kaleyra_call_sheet_pin">Pin</string>
     <string name="kaleyra_call_sheet_unpin">Unpin</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Fullscreen</string>
-    <string name="kaleyra_call_sheet_fullscreen_off">Minimize</string>
+    <string name="kaleyra_call_sheet_fullscreen_off">Exit</string>
     <string name="kaleyra_call_sheet_flip_camera">Flip cam</string>
     <string name="kaleyra_call_sheet_recording">Recording</string>
     <string name="kaleyra_call_sheet_cancel">Cancel</string>

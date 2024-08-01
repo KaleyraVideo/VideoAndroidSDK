@@ -25,7 +25,7 @@
     <string name="kaleyra_call_sheet_pin">Fijar</string>
     <string name="kaleyra_call_sheet_unpin">Desfijar</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Pantalla completa</string>
-    <string name="kaleyra_call_sheet_fullscreen_off">Reducir</string>
+    <string name="kaleyra_call_sheet_fullscreen_off">Salir</string>
     <string name="kaleyra_call_sheet_flip_camera">Voltear cámara</string>
     <string name="kaleyra_call_sheet_recording">Grabación</string>
     <string name="kaleyra_call_sheet_cancel">Cancelar</string>

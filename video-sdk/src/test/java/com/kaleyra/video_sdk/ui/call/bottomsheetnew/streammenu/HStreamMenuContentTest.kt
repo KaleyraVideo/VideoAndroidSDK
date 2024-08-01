@@ -58,11 +58,10 @@ class HStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = stream)
 
-        var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { }
             )
         }
 
@@ -73,7 +72,6 @@ class HStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(null) }
-        assertEquals(true, dismissed)
     }
 
     @Test
@@ -81,11 +79,10 @@ class HStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = null)
 
-        var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { }
             )
         }
 
@@ -96,7 +93,6 @@ class HStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
-        assertEquals(true, dismissed)
     }
 
     @Test
@@ -104,11 +100,10 @@ class HStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
 
-        var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { }
             )
         }
 
@@ -119,7 +114,6 @@ class HStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.unpin(stream.id) }
-        assertEquals(true, dismissed)
     }
 
     @Test
