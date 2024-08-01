@@ -41,7 +41,6 @@ import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
-import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
@@ -73,7 +72,53 @@ fun CallInfoComponent(
     callInfoUiState: CallInfoUiState,
     isPipMode: Boolean = false
 ) {
-    if (callInfoUiState.callStateUi != null && (callInfoUiState.displayNames.isNotEmpty() || callInfoUiState.displayState != null)) {
+    val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
+    val callee = callInfoUiState.displayNames.value.joinToString(", ")
+
+    var displayTitle: String? = null
+    var displaySubtitle: String? = null
+
+    when (callInfoUiState.callStateUi) {
+        CallStateUi.Connecting,
+        CallStateUi.Dialing,
+        CallStateUi.Ringing,
+        CallStateUi.RingingRemotely -> {
+            if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
+            else {
+                displayTitle = callee
+                displaySubtitle = callDisplayState
+            }
+        }
+
+        CallStateUi.Connected, CallStateUi.Disconnecting -> {
+            displayTitle = ""
+            displaySubtitle = ""
+        }
+
+        CallStateUi.Reconnecting -> {
+            displayTitle = callDisplayState
+            displaySubtitle = ""
+        }
+
+        CallStateUi.Disconnected.Ended.Declined,
+        CallStateUi.Disconnected.Ended.LineBusy,
+        CallStateUi.Disconnected.Ended.Timeout,
+        CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
+
+        CallStateUi.Disconnected.Ended.Error,
+        CallStateUi.Disconnected.Ended.Error.Server,
+        CallStateUi.Disconnected.Ended.Error.Unknown,
+        CallStateUi.Disconnected.Ended,
+        CallStateUi.Disconnected.Ended.HungUp,
+        is CallStateUi.Disconnected.Ended.Kicked -> {
+            displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
+            displaySubtitle = callDisplayState
+        }
+
+        else -> Unit
+    }
+
+    if (callInfoUiState.callStateUi != null && (!displayTitle.isNullOrEmpty() || !displaySubtitle.isNullOrEmpty())) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,53 +126,9 @@ fun CallInfoComponent(
             horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
-            val callee = callInfoUiState.displayNames.value.joinToString(", ")
             val textStyle = LocalTextStyle.current.shadow(
                 color = MaterialTheme.colorScheme.onSurface
             )
-            var displayTitle: String? = null
-            var displaySubtitle: String? = null
-
-            when (callInfoUiState.callStateUi) {
-                CallStateUi.Connecting,
-                CallStateUi.Dialing,
-                CallStateUi.Ringing,
-                CallStateUi.RingingRemotely -> {
-                    if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
-                    else {
-                        displayTitle = callee
-                        displaySubtitle = callDisplayState
-                    }
-                }
-
-                CallStateUi.Connected, CallStateUi.Disconnecting -> {
-                    displayTitle = ""
-                    displaySubtitle = ""
-                }
-
-                CallStateUi.Reconnecting -> {
-                    displayTitle = callDisplayState
-                    displaySubtitle = ""
-                }
-
-                CallStateUi.Disconnected.Ended.Declined,
-                CallStateUi.Disconnected.Ended.LineBusy,
-                CallStateUi.Disconnected.Ended.Timeout,
-                CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
-
-                CallStateUi.Disconnected.Ended.Error,
-                CallStateUi.Disconnected.Ended.Error.Server,
-                CallStateUi.Disconnected.Ended.Error.Unknown,
-                CallStateUi.Disconnected.Ended,
-                CallStateUi.Disconnected.Ended.HungUp,
-                is CallStateUi.Disconnected.Ended.Kicked -> {
-                    displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
-                    displaySubtitle = callDisplayState
-                }
-
-                else -> Unit
-            }
 
             displayTitle?.let {
                 EllipsizeText(
@@ -187,6 +188,20 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
                     displayNames = ImmutableList()
                 )
+            )
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun CallInfoComponentHidden() {
+    KaleyraM3Theme {
+        Surface {
+            CallInfoComponent(
+                modifier = Modifier,
+                callInfoUiState = CallInfoUiState()
             )
         }
     }
