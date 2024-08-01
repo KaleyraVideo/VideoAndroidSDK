@@ -11,6 +11,7 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -37,7 +38,7 @@ class CallInfoViewModel(configure: suspend () -> Configuration) : BaseViewModel<
             val callStateUi = combinedFlows.first
             val displayNames = combinedFlows.second
             val displayState = callStateUi.toTextRef(ongoingCall)
-            _uiState.update { it.copy(callStateUi = callStateUi, displayNames = displayNames, displayState = displayState) }
+            _uiState.update { it.copy(callStateUi = callStateUi, displayNames = ImmutableList(displayNames), displayState = displayState) }
         }.launchIn(viewModelScope)
     }
 

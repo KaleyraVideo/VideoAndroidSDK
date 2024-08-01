@@ -39,6 +39,7 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
@@ -81,7 +82,7 @@ fun CallInfoComponent(
             verticalArrangement = Arrangement.Center,
         ) {
             val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
-            val callee = callInfoUiState.displayNames.joinToString(", ")
+            val callee = callInfoUiState.displayNames.value.joinToString(", ")
             val textStyle = LocalTextStyle.current.shadow(
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -166,7 +167,8 @@ internal fun CallInfoConnectingWithDisplayNames() {
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf("Fede", "Kri", "Ste"))
+                    displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
+                )
             )
         }
     }
@@ -183,7 +185,7 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf()
+                    displayNames = ImmutableList()
                 )
             )
         }
@@ -201,7 +203,7 @@ internal fun CallInfoPipMode() {
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf("Fede", "Kri", "Ste")
+                    displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
                 ),
                 isPipMode = true
             )
