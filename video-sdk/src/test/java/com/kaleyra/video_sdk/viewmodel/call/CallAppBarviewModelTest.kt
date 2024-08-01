@@ -11,6 +11,7 @@ import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
+import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
@@ -121,7 +122,7 @@ class CallAppBarViewModelTest {
     @Test
     fun testRecordingReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(true, viewModel.uiState.first().recording)
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
     }
 
     @Test
@@ -132,7 +133,8 @@ class CallAppBarViewModelTest {
             override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
         })
         advanceUntilIdle()
-        Assert.assertEquals(false, viewModel.uiState.first().recording)
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Stopped, viewModel.uiState.first().recordingStateUi)
     }
 
     @Test
