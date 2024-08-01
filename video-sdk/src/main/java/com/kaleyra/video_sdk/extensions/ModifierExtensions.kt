@@ -159,7 +159,6 @@ internal object ModifierExtensions {
             label = "pulse"
         )
         graphicsLayer {
-            Log.e("recording", "alpha: $alpha")
             if (enabled) this.alpha = alpha
         }
     }
