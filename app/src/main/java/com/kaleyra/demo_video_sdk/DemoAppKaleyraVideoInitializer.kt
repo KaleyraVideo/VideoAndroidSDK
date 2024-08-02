@@ -29,7 +29,7 @@ import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIActions
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideoService
+import com.kaleyra.video_common_ui.KaleyraVideoInitializer
 import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 
-class DemoAppKaleyraVideoService : KaleyraVideoService() {
+class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
 
     companion object {
 

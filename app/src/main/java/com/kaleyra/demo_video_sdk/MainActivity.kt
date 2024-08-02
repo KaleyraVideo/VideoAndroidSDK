@@ -154,8 +154,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         binding!!.selectedUsersChipgroup.adapter = selectedUsersAdapter
         selectedUsersItemAdapter.add(NoUserSelectedItem())
 
-        DemoAppKaleyraVideoService.configure(this)
-
         // Update the button colors based on their current module status to avoid interaction before the modules are ready.
         KaleyraVideo.conference.state.combine(KaleyraVideo.synchronization) { state, sync -> binding?.let { setButtonColor(it.call, state, sync) } }.launchIn(lifecycleScope)
         KaleyraVideo.conversation.state.combine(KaleyraVideo.synchronization) { state, sync -> binding?.let { setButtonColor(it.chat, state, sync) } }.launchIn(lifecycleScope)
@@ -196,7 +194,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
 
         if (isHandlingExternalUrl(intent)) intent.data = null
 
-        DemoAppKaleyraVideoService.connect(this)
+        DemoAppKaleyraVideoInitializer.connect(this)
     }
 
     private fun isHandlingExternalUrl(intent: Intent): Boolean = intent.data != null
@@ -213,8 +211,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         if (notificationId == 0) return
         MissedNotificationPayloadWorker.cancelNotification(this, notificationId)
         if (!LoginManager.isUserLogged(this)) return
-        DemoAppKaleyraVideoService.configure(this)
-        DemoAppKaleyraVideoService.connect(this)
         intent.getStringArrayListExtra(MissedNotificationPayloadWorker.startCall)?.let {
             KaleyraVideo.conference.call(it)
         }
@@ -244,7 +240,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
      * To connect using an access link the Kaleyra Video needs to be first configured.
      */
     private fun connectWithAccessLink(joinUrl: String) = lifecycleScope.launch {
-        DemoAppKaleyraVideoService.configure(this@MainActivity)
         kotlin.runCatching { KaleyraVideo.connect(joinUrl).await() }
     }
 
@@ -255,7 +250,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         lifecycleScope.launch {
             when {
                 !KaleyraVideo.isConfigured               -> {
-                    DemoAppKaleyraVideoService.configure(this@MainActivity)
                     val loggedUserId = LoginManager.getLoggedUser(this@MainActivity)
                     KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }.await()
                 }

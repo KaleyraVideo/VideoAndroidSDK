@@ -100,7 +100,7 @@ internal class FileShareNotificationActionReceiverTest {
     @Test
     fun testOnReceiveWithCollaborationNotConfigured() = runTest {
         mockkObject(KaleyraVideo)
-        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializerKt")
         coEvery { requestConfiguration() } returns false
         every { KaleyraVideo.isConfigured } returns false
         fileShareNotificationActionReceiver.onReceive(contextMock, mockk(relaxed = true))

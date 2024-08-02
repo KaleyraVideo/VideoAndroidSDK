@@ -32,7 +32,7 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideoService
+import com.kaleyra.video_common_ui.KaleyraVideoInitializer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
@@ -99,7 +99,7 @@ class MainViewModelTest {
         mockkObject(CompanyThemeManager)
         mockkObject(CallStateMapper)
         mockkObject(InputMapper)
-        mockkObject(KaleyraVideoService.Companion)
+        mockkObject(KaleyraVideoInitializer.Companion)
         mockkObject(ConnectionServiceUtils)
         mockkObject(TelecomManagerExtensions)
         mockkObject(CallExtensions)
@@ -108,7 +108,7 @@ class MainViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.isUsbCameraWaitingPermission() } returns flowOf(false)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
-        coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
+        coEvery { KaleyraVideoInitializer.get() } returns mockk(relaxed = true)
     }
 
     @After

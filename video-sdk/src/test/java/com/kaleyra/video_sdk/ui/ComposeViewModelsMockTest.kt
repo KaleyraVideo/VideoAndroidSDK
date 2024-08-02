@@ -17,14 +17,12 @@
 package com.kaleyra.video_sdk.ui
 
 import androidx.lifecycle.ViewModelProvider
-import com.kaleyra.video_common_ui.KaleyraVideoService
+import com.kaleyra.video_common_ui.KaleyraVideoInitializer
 import com.kaleyra.video_sdk.call.screen.model.CallUiState
 import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.callactions.model.mockCallActions
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.dialing.view.DialingUiState
 import com.kaleyra.video_sdk.call.dialing.viewmodel.DialingViewModel
@@ -87,7 +85,7 @@ abstract class ComposeViewModelsMockTest {
         @BeforeClass
         @JvmStatic
         fun setup() {
-            mockkObject(KaleyraVideoService)
+            mockkObject(KaleyraVideoInitializer)
             mockkObject(CallViewModel)
             mockkObject(DialingViewModel)
             mockkObject(RingingViewModel)
@@ -97,7 +95,7 @@ abstract class ComposeViewModelsMockTest {
             mockkObject(WhiteboardViewModel)
             mockkObject(VirtualBackgroundViewModel)
 
-            coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
+            coEvery { KaleyraVideoInitializer.get() } returns mockk(relaxed = true)
 
             every { CallViewModel.provideFactory(any()) } returns callViewModelFactory
             every { callViewModelFactory.create<CallViewModel>(any(), any()) } returns callViewModel
