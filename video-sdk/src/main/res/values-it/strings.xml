@@ -53,6 +53,7 @@
     <string name="kaleyra_stream_show_participants">Mostra partecipanti</string>
     <string name="kaleyra_stream_show_actions">Mostra le azioni dello stream</string>
     <string name="kaleyra_stream_dimmed">Stream non selezionato</string>
+    <string name="kaleyra_stream_screenshare_received">%s sta condividendo il suo schermo</string>
 
     <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>

@@ -75,6 +75,7 @@
     <string name="kaleyra_participants_component_show_more_actions">Show more actions</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participant</item>
+        <item quantity="many">%d Participants</item>
         <item quantity="other">%d Participants</item>
     </plurals>
 
