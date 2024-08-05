@@ -131,7 +131,10 @@ internal fun CallScreen(
             {
                 when {
                     uiState.isCallEnded -> finishActivity()
-                    streamUiState.fullscreenStream != null -> streamViewModel.fullscreen(null)
+                    streamUiState.fullscreenStream != null -> {
+                        streamViewModel.fullscreen(null)
+                        streamViewModel.unpinAll()
+                    }
                     else -> enterPip()
                 }
             }
@@ -378,7 +381,10 @@ private fun BackHandler(
         isCallEnded -> BackHandler(onBack = onCallEndedBack)
         sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
         isAnyStreamSelected -> BackHandler(onBack = onDismissSelectedStream)
-        streamUiState.fullscreenStream != null -> BackHandler(onBack = { streamViewModel.fullscreen(null) })
+        streamUiState.fullscreenStream != null -> BackHandler(onBack = {
+            streamViewModel.fullscreen(null)
+            streamViewModel.unpinAll()
+        })
     }
 }
 

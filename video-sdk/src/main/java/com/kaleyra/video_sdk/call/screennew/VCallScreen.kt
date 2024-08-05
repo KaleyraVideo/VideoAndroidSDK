@@ -77,6 +77,8 @@ internal fun VCallScreen(
 
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
+    var isInFullscreenMode by remember { mutableStateOf(false) }
+
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
@@ -160,6 +162,7 @@ internal fun VCallScreen(
                     HStreamMenuContent(
                         selectedStreamId = currentlySelectedStreamId,
                         onDismiss = { onStreamSelected(null) },
+                        onFullscreen = { isInFullscreenMode = true },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
@@ -182,7 +185,7 @@ internal fun VCallScreen(
                             true
                         }
 
-                        selectedStreamId != null -> {
+                        selectedStreamId != null && !isInFullscreenMode -> {
                             onStreamSelected(null)
                             true
                         }

@@ -1,6 +1,6 @@
 package com.kaleyra.video_sdk.call.bottomsheetnew.streammenu
 
-import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,7 +21,6 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.S
 import com.kaleyra.video_sdk.call.callactionnew.CancelAction
 import com.kaleyra.video_sdk.call.callactionnew.FullscreenAction
 import com.kaleyra.video_sdk.call.callactionnew.PinAction
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
@@ -31,6 +29,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 internal fun HStreamMenuContent(
     selectedStreamId: String,
     onDismiss: () -> Unit,
+    onFullscreen: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StreamViewModel = viewModel<StreamViewModel>(
         factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
@@ -39,15 +38,24 @@ internal fun HStreamMenuContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFullscreenMenu by remember { mutableStateOf(false) }
 
+    val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
+        if (isFullscreen) {
+            viewModel.fullscreen(null)
+            onDismiss()
+        } else viewModel.fullscreen(selectedStreamId)
+        showFullscreenMenu = true
+        onFullscreen()
+    }
+
+    BackHandler(enabled = showFullscreenMenu) {
+        onFullscreenClick(true)
+    }
+
     HStreamMenuContent(
         fullscreen = uiState.fullscreenStream?.id == selectedStreamId,
         pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         onCancelClick = onDismiss,
-        onFullscreenClick = { isFullscreen ->
-            if (isFullscreen) viewModel.fullscreen(null)
-            else viewModel.fullscreen(selectedStreamId)
-            showFullscreenMenu = true
-        },
+        onFullscreenClick = { isFullscreen -> onFullscreenClick(isFullscreen) },
         onPinClick = { isPinned ->
             if (isPinned) viewModel.unpin(selectedStreamId)
             else viewModel.pin(selectedStreamId)

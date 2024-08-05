@@ -61,7 +61,8 @@ class VStreamMenuContentTest {
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { }
+                onDismiss = { },
+                onFullscreen = { }
             )
         }
 
@@ -78,11 +79,12 @@ class VStreamMenuContentTest {
     fun testEnterFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = null)
-
+        var fullscreen = false
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { }
+                onDismiss = { },
+                onFullscreen = { fullscreen = true}
             )
         }
 
@@ -93,6 +95,31 @@ class VStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
+        Assert.assertEquals(true, fullscreen)
+    }
+
+    @Test
+    fun fullScreeEntered_backPressed_menuDismissed() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(fullscreenStream = null)
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStreamId = stream.id,
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+        composeTestRule.activity.onBackPressed()
+
+        assertEquals(true, dismissed)
     }
 
     @Test
@@ -104,7 +131,8 @@ class VStreamMenuContentTest {
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
             )
         }
 
@@ -127,7 +155,8 @@ class VStreamMenuContentTest {
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
             )
         }
 
@@ -147,7 +176,8 @@ class VStreamMenuContentTest {
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = "streamId",
-                onDismiss = { dismissed = true }
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
             )
         }
 

@@ -60,6 +60,7 @@ internal fun HCallScreen(
 ) {
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(selectedStreamId) { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
+    var isInFullscreenMode by remember { mutableStateOf(false) }
 
     HCallScreenScaffold(
         modifier = modifier,
@@ -116,6 +117,7 @@ internal fun HCallScreen(
                     VStreamMenuContent(
                         selectedStreamId = currentlySelectedStreamId,
                         onDismiss = { onStreamSelected(null) },
+                        onFullscreen = { isInFullscreenMode = true },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
@@ -144,7 +146,7 @@ internal fun HCallScreen(
             modifier = Modifier
                 .pointerInteropFilter {
                     // TODO test this
-                    if (selectedStreamId != null) {
+                    if (selectedStreamId != null && !isInFullscreenMode) {
                         onStreamSelected(null)
                         true
                     } else false

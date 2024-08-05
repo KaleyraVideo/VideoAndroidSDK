@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
+import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.VStreamMenuContent
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
@@ -61,7 +62,8 @@ class HStreamMenuContentTest {
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { }
+                onDismiss = { },
+                onFullscreen = { }
             )
         }
 
@@ -78,11 +80,12 @@ class HStreamMenuContentTest {
     fun testEnterFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = null)
-
+        var fullscreen = false
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { }
+                onDismiss = { },
+                onFullscreen = { fullscreen = true }
             )
         }
 
@@ -93,6 +96,31 @@ class HStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
+        assertEquals(true, fullscreen)
+    }
+
+    @Test
+    fun fullScreeEntered_backPressed_menuDismissed() {
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(fullscreenStream = null)
+        var dismissed = false
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStreamId = stream.id,
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+        composeTestRule.activity.onBackPressed()
+
+        assertEquals(true, dismissed)
     }
 
     @Test
@@ -103,7 +131,8 @@ class HStreamMenuContentTest {
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { }
+                onDismiss = { },
+                onFullscreen = { }
             )
         }
 
@@ -125,7 +154,8 @@ class HStreamMenuContentTest {
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { dismissed = true }
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
             )
         }
 
@@ -145,7 +175,8 @@ class HStreamMenuContentTest {
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = "streamId",
-                onDismiss = { dismissed = true }
+                onDismiss = { dismissed = true },
+                onFullscreen = { }
             )
         }
 
