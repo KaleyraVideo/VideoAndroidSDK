@@ -15,7 +15,6 @@
   -->
 
 <resources>
-    <string name="kaleyra_day_time_pattern" translatable="false">%1$s, %2$s</string>
     <string name="kaleyra_today">hoje</string>
     <string name="kaleyra_yesterday">ontem</string>
     <string name="kaleyra_notification_answer">Responder</string>
