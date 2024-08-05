@@ -99,7 +99,6 @@ class MainViewModelTest {
         mockkObject(CompanyThemeManager)
         mockkObject(CallStateMapper)
         mockkObject(InputMapper)
-        mockkObject(KaleyraVideoInitializer.Companion)
         mockkObject(ConnectionServiceUtils)
         mockkObject(TelecomManagerExtensions)
         mockkObject(CallExtensions)
@@ -108,7 +107,6 @@ class MainViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.isUsbCameraWaitingPermission() } returns flowOf(false)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
-        coEvery { KaleyraVideoInitializer.get() } returns mockk(relaxed = true)
     }
 
     @After

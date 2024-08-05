@@ -85,7 +85,6 @@ abstract class ComposeViewModelsMockTest {
         @BeforeClass
         @JvmStatic
         fun setup() {
-            mockkObject(KaleyraVideoInitializer)
             mockkObject(CallViewModel)
             mockkObject(DialingViewModel)
             mockkObject(RingingViewModel)
@@ -94,8 +93,6 @@ abstract class ComposeViewModelsMockTest {
             mockkObject(CallActionsViewModel)
             mockkObject(WhiteboardViewModel)
             mockkObject(VirtualBackgroundViewModel)
-
-            coEvery { KaleyraVideoInitializer.get() } returns mockk(relaxed = true)
 
             every { CallViewModel.provideFactory(any()) } returns callViewModelFactory
             every { callViewModelFactory.create<CallViewModel>(any(), any()) } returns callViewModel
