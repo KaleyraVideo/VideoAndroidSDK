@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.streamnew
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -17,10 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -87,7 +84,7 @@ internal object StreamComponentDefaults {
 }
 
 private data class StreamItemState(
-    val isHighlighted: Boolean,
+    val isDimmed: Boolean,
     val isLocalScreenShare: Boolean,
     val isFullscreen: Boolean,
     val isPinned: Boolean,
@@ -102,7 +99,7 @@ internal fun StreamComponent(
     windowSizeClass: WindowSizeClass,
     onStreamClick: (StreamUi) -> Unit,
     onMoreParticipantClick: () -> Unit,
-    highlightedStreamId: String? = null,
+    selectedStreamId: String? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -116,7 +113,7 @@ internal fun StreamComponent(
     StreamComponent(
         uiState = uiState,
         windowSizeClass = windowSizeClass,
-        highlightedStreamId = highlightedStreamId,
+        selectedStreamId = selectedStreamId,
         onStreamClick = onStreamClick,
         onStopScreenShareClick = viewModel::tryStopScreenShare,
         onMoreParticipantClick = onMoreParticipantClick,
@@ -128,7 +125,7 @@ internal fun StreamComponent(
 internal fun StreamComponent(
     uiState: StreamUiState,
     windowSizeClass: WindowSizeClass,
-    highlightedStreamId: String?,
+    selectedStreamId: String?,
     onStreamClick: (StreamUi) -> Unit,
     onStopScreenShareClick: () -> Unit,
     onMoreParticipantClick: () -> Unit,
@@ -193,8 +190,8 @@ internal fun StreamComponent(
                 ) {
                     streamsToDisplay.fastForEachIndexed { index, stream ->
                         key(stream.id) {
-                            val streamItemState: StreamItemState = remember(stream, highlightedStreamId, uiState) {
-                                streamItemStateFor(stream, highlightedStreamId, uiState)
+                            val streamItemState: StreamItemState = remember(stream, selectedStreamId, uiState) {
+                                streamItemStateFor(stream, selectedStreamId, uiState)
                             }
                             val displayAsMoreParticipantsItem =
                                 !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
@@ -212,7 +209,7 @@ internal fun StreamComponent(
                                 tonalElevation = 1.dp,
                                 modifier = itemModifier
                                     .pin(streamItemState.isPinned)
-                                    .streamHighlight(streamItemState.isHighlighted)
+                                    .streamDim(streamItemState.isDimmed)
                                     .streamClickable(
                                         enabled = !streamItemState.isLocalScreenShare,
                                         onClick = onClick,
@@ -281,11 +278,11 @@ private fun streamsToDisplayFor(
 
 private fun streamItemStateFor(
     stream: StreamUi,
-    highlightedStreamId: String?,
+    selectedStreamId: String?,
     state: StreamUiState,
 ): StreamItemState {
     return StreamItemState(
-        isHighlighted = stream.id == highlightedStreamId,
+        isDimmed = selectedStreamId != null && stream.id != selectedStreamId,
         isLocalScreenShare = stream.video?.isScreenShare == true && stream.isMine,
         isFullscreen = state.fullscreenStream?.id == stream.id,
         isPinned = state.pinnedStreams.value.fastAny { it.id == stream.id }
@@ -318,15 +315,11 @@ private fun Modifier.streamClickable(
     )
 }
 
-private fun Modifier.streamHighlight(enabled: Boolean): Modifier = composed {
+private fun Modifier.streamDim(enabled: Boolean): Modifier = composed {
     if (enabled) {
-        val description = stringResource(id = R.string.kaleyra_stream_selected)
+        val description = stringResource(id = R.string.kaleyra_stream_dimmed)
         this
-            .border(
-                color = MaterialTheme.colorScheme.primary,
-                width = 2.dp,
-                shape = RoundedCornerShape(4.dp)
-            )
+            .alpha(.3f)
             .semantics {
                 contentDescription = description
             }
@@ -343,7 +336,7 @@ internal fun StreamComponentPreview() {
             StreamComponent(
                 uiState = StreamUiState(streams = previewStreams),
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStreamId = null,
+                selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
                 onMoreParticipantClick = {}
@@ -363,7 +356,7 @@ internal fun StreamComponentPinPreview() {
                     pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
                 ),
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStreamId = null,
+                selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
                 onMoreParticipantClick = {}

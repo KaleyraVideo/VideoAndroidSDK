@@ -210,7 +210,7 @@ internal fun VCallScreen(
             StreamComponent(
                 viewModel = streamViewModel,
                 windowSizeClass = windowSizeClass,
-                highlightedStreamId = selectedStreamId,
+                selectedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
                 onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 modifier = Modifier
