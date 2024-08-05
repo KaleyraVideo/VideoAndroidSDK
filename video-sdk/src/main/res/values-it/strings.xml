@@ -52,7 +52,7 @@
     <string name="kaleyra_stream_other_participants">%d altri</string>
     <string name="kaleyra_stream_show_participants">Mostra partecipanti</string>
     <string name="kaleyra_stream_show_actions">Mostra le azioni dello stream</string>
-    <string name="kaleyra_stream_selected">Stream selezionato</string>
+    <string name="kaleyra_stream_dimmed">Stream non selezionato</string>
 
     <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>

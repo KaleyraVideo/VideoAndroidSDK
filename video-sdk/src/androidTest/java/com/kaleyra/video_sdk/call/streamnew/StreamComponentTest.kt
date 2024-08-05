@@ -37,7 +37,7 @@ class StreamComponentTest {
 
     private var streamUiState by mutableStateOf(StreamUiState())
 
-    private var highlightedStreamId by mutableStateOf<String?>(null)
+    private var selectedStreamId by mutableStateOf<String?>(null)
 
     private var maxFeaturedStreams by mutableStateOf(Int.MAX_VALUE)
 
@@ -53,7 +53,7 @@ class StreamComponentTest {
             StreamComponent(
                 uiState = streamUiState,
                 windowSizeClass = currentWindowAdaptiveInfo(),
-                highlightedStreamId = highlightedStreamId,
+                selectedStreamId = selectedStreamId,
                 onStreamClick = { streamClicked = it },
                 onStopScreenShareClick = { stopScreenShareClicked = true },
                 onMoreParticipantClick = { moreParticipantClicked = true },
@@ -65,7 +65,7 @@ class StreamComponentTest {
     @After
     fun tearDown() {
         streamUiState = StreamUiState()
-        highlightedStreamId = null
+        selectedStreamId = null
         maxFeaturedStreams = Int.MAX_VALUE
         moreParticipantClicked = false
         stopScreenShareClicked = false
@@ -249,13 +249,15 @@ class StreamComponentTest {
     }
 
     @Test
-    fun highlightedStreamIsValid_highlightedStreamIsDisplayed() {
-        val stream = defaultStreamUi()
-        highlightedStreamId = stream.id
-        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
+    fun selectedStreamIsValid_nonSelectedStreamsAreDimmed() {
+        val stream1 = defaultStreamUi()
+        val stream2 = defaultStreamUi()
+        val stream3 = defaultStreamUi()
+        selectedStreamId = stream1.id
+        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_selected)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_dimmed)
+        composeTestRule.onAllNodesWithContentDescription(text).assertCountEquals(2)
     }
 
     @Test
