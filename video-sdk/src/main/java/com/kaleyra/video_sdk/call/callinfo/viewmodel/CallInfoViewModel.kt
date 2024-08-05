@@ -31,9 +31,14 @@ class CallInfoViewModel(configure: suspend () -> Configuration) : BaseViewModel<
 
     private fun observeCallStates() {
         val call = call.getValue()!!
+        var hasBeenConnectingOnce = false
         combine(call.toCallStateUi(), call.toOtherDisplayNames()) { callUiState, otherDisplayNames ->
             callUiState to otherDisplayNames
         }.onEach { combinedFlows ->
+            if (combinedFlows.first == CallStateUi.Connecting) {
+                if (hasBeenConnectingOnce) return@onEach
+                hasBeenConnectingOnce = true
+            }
             val ongoingCall = this@CallInfoViewModel.call.getValue()
             val callStateUi = combinedFlows.first
             val displayNames = combinedFlows.second

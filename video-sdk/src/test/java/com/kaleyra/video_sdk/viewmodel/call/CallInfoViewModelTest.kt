@@ -360,6 +360,23 @@ class CallInfoViewModelTest {
     }
 
     @Test
+    fun testCallStateUiConnectingMultipleTimes_updateNotReceived() = runTest {
+        every { callParticipants.others } returns listOf()
+        val callStateUiFlow: MutableStateFlow<CallStateUi> = MutableStateFlow(CallStateUi.Connecting)
+        every { call.toCallStateUi() } returns callStateUiFlow
+        every { call.toOtherDisplayNames() } returns MutableStateFlow(listOf())
+
+        viewModel.uiState.first()
+        advanceUntilIdle()
+        callStateUiFlow.emit(CallStateUi.Reconnecting)
+        advanceUntilIdle()
+        callStateUiFlow.emit(CallStateUi.Connecting)
+        advanceUntilIdle()
+
+        Assert.assertEquals(CallStateUi.Reconnecting, viewModel.uiState.value.callStateUi)
+    }
+
+    @Test
     fun testCallStateNotShownStates_toCallStateUi() {
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Error.Server.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Error.Unknown.toTextRef(call))
