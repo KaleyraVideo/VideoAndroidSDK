@@ -74,6 +74,7 @@ internal fun ScreenShareComponent(
                         })
                 }
             }
+            onDismiss()
         }
     }
     ScreenShareComponent(
