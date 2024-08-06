@@ -14,6 +14,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactionnew.HangUpAction
+import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedMultiplier
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -36,7 +37,7 @@ class HangUpActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.MinButtonSize * 2
+        val width = CallActionDefaults.MinButtonSize * HangUpActionExtendedMultiplier + SheetItemsSpacing * (HangUpActionExtendedMultiplier - 1)
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
