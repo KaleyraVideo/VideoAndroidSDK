@@ -67,10 +67,7 @@ internal class CameraStreamManager(
         jobs += coroutineScope.launch {
             val me = call.participants.mapNotNull { it.me }.first()
             if (me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } != null) return@launch
-            me.addStream(CAMERA_STREAM_ID).let {
-                it.audio.value = null
-                it.video.value = null
-            }
+            me.addStream(CAMERA_STREAM_ID)
         }
     }
 
