@@ -30,7 +30,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.MinButtonSize * 2 + SheetItemsSpacing
+        val width = CallActionDefaults.MinButtonSize * AnswerActionMultiplier + SheetItemsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
@@ -44,7 +44,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.MinButtonSize * 3
+        val width = CallActionDefaults.MinButtonSize * AnswerActionExtendedMultiplier + SheetItemsSpacing * (AnswerActionExtendedMultiplier - 1)
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 

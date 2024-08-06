@@ -12,6 +12,8 @@ import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactionnew.AnswerAction
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
 import org.junit.Assert
 import org.junit.Rule
@@ -35,7 +37,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.MinButtonSize * 2 + SheetItemsSpacing
+        val width = CallActionDefaults.MinButtonSize * AnswerActionMultiplier + SheetItemsSpacing
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 
@@ -49,7 +51,7 @@ class AnswerActionTest {
                 modifier = Modifier.testTag(testTag)
             )
         }
-        val width =  CallActionDefaults.MinButtonSize * 3
+        val width = CallActionDefaults.MinButtonSize * AnswerActionExtendedMultiplier + SheetItemsSpacing * (AnswerActionExtendedMultiplier - 1)
         composeTestRule.onNodeWithTag(testTag).assertWidthIsEqualTo(width)
     }
 

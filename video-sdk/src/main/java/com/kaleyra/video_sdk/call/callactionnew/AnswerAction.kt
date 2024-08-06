@@ -16,7 +16,7 @@ val AnswerActionMultiplier = 2
 val AnswerActionExtendedMultiplier = 3
 
 val AnswerActionWidth = CallActionDefaults.MinButtonSize * AnswerActionMultiplier + SheetItemsSpacing
-val AnswerActionExtendedWidth = CallActionDefaults.MinButtonSize * AnswerActionExtendedMultiplier
+val AnswerActionExtendedWidth = CallActionDefaults.MinButtonSize * AnswerActionExtendedMultiplier + SheetItemsSpacing * (AnswerActionExtendedMultiplier - 1)
 //+ SheetItemsSpacing * (AnswerActionExtendedMultiplier - 1)
 
 @Composable
