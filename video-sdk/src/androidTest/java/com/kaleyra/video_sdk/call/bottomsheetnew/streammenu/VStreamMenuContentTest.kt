@@ -203,7 +203,7 @@ class VStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -219,7 +219,7 @@ class VStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -235,7 +235,7 @@ class VStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -251,7 +251,7 @@ class VStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -267,7 +267,7 @@ class VStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
