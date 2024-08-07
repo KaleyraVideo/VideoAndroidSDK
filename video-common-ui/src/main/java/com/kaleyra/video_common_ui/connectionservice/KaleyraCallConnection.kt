@@ -197,7 +197,7 @@ class KaleyraCallConnection private constructor(val call: CallUI, val coroutineS
     override fun onActivityStarted(activity: Activity) = Unit
 
     override fun onActivityResumed(activity: Activity) {
-        if (activity::class.java != call.activityClazz) return
+        if (callAudioState == null || activity::class.java != call.activityClazz) return
         coroutineScope.launch {
             _availableAudioDevices.emit(callAudioState.mapToAvailableAudioOutputDevices())
         }
