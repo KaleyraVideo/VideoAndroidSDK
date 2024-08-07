@@ -89,6 +89,12 @@ internal fun VCallScreen(
 
     var isInFullscreenMode by remember { mutableStateOf(false) }
 
+    if (!isRinging && isLargeScreen) {
+        LaunchedEffect(Unit) {
+            sheetState.collapse()
+        }
+    }
+
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
@@ -102,7 +108,7 @@ internal fun VCallScreen(
                     .statusBarsPadding()
             )
         },
-        sheetPanelContent = if (isLargeScreen) {
+        sheetPanelContent = if (!isRinging && isLargeScreen) {
             {
                 AnimatedVisibility(
                     visible = showSheetPanelContent,
@@ -151,7 +157,7 @@ internal fun VCallScreen(
                             }
                             HSheetContent(
                                 isLargeScreen = isLargeScreen,
-                                isMoreToggled = (isSheetExpanded && !isLargeScreen) || showSheetPanelContent,
+                                isMoreToggled = isSheetExpanded || showSheetPanelContent,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 onActionsOverflow = { sheetDragActions = it },
                                 onModalSheetComponentRequest = onModalSheetComponentRequest,

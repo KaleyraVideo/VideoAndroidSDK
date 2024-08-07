@@ -545,6 +545,29 @@ class VCallScreenTest {
     }
 
     @Test
+    fun testLargeScreenAndNoMoreRingingState_sheetActionsIsCollapsed() {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = true
+        )
+        composeTestRule.setUpVCallScreen(
+            sheetState = sheetState,
+            configuration = largeScreenConfiguration
+        )
+
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = false
+        )
+        composeTestRule.waitForIdle()
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+    @Test
     fun testSheetDragActions_hangUp() {
         val actions = allActions.filterNot { it is  HangUpAction}.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(

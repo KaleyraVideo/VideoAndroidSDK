@@ -517,6 +517,17 @@ class VCallScreenTest {
     }
 
     @Test
+    fun testRingingAndLargeScreen_sheetDragActionsAreDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = true
+        )
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
     fun testSheetActionsWithLargeScreen_moreShowPanel() {
         composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
         callActionsUiState.value = CallActionsUiState(
@@ -548,6 +559,29 @@ class VCallScreenTest {
         composeTestRule.onNodeWithContentDescription(hideText, useUnmergedTree = true).performClick()
 
         composeTestRule.onNodeWithText(PanelTestTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun testLargeScreenAndNoMoreRingingState_sheetActionsIsCollapsed() {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = true
+        )
+        composeTestRule.setUpVCallScreen(
+            sheetState = sheetState,
+            configuration = largeScreenConfiguration
+        )
+
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = false
+        )
+        composeTestRule.waitForIdle()
+
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
     @Test
@@ -1431,9 +1465,7 @@ class VCallScreenTest {
 
     @Test
     fun userClicksScreenShareMessagePin_streamPinIsInvoked() {
-        every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(
-            PinScreenshareMessage("streamId", "username")
-        )))
+        every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("streamId", "username"))))
         composeTestRule.setUpVCallScreen()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
