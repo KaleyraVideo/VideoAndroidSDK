@@ -55,8 +55,11 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -494,6 +497,17 @@ class VCallScreenTest {
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun testRingingAndLargeScreen_sheetDragActionsAreDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = allActions.toImmutableList(),
+            isRinging = true
+        )
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+
+        composeTestRule.onNodeWithTag(InputMessageDragHandleTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test

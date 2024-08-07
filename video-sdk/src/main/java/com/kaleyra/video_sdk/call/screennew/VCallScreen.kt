@@ -18,6 +18,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
@@ -42,6 +44,7 @@ import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.streamnew.StreamComponent
@@ -70,11 +73,18 @@ internal fun VCallScreen(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val callActionsViewModel: CallActionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = CallActionsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+    )
+    val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
+    val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
+
     val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) { derivedStateOf { !isLargeScreen && selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
-
+    val hasSheetDragContent by remember(isLargeScreen, selectedStreamId, isRinging) {
+        derivedStateOf { (!isLargeScreen || isRinging) && selectedStreamId == null && sheetDragActions.value.isNotEmpty() }
+    }
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
 
     var isInFullscreenMode by remember { mutableStateOf(false) }
@@ -112,6 +122,7 @@ internal fun VCallScreen(
             if (hasSheetDragContent) {
                 HSheetDragContent(
                     callActions = sheetDragActions,
+                    isLargeScreen = isLargeScreen,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
@@ -128,7 +139,7 @@ internal fun VCallScreen(
                 if (currentlySelectedStreamId == null) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                        if (isLargeScreen) {
+                        if (isLargeScreen && !isRinging) {
                             LargeScreenInputMessageHost()
                         }
 
@@ -140,7 +151,7 @@ internal fun VCallScreen(
                             }
                             HSheetContent(
                                 isLargeScreen = isLargeScreen,
-                                isMoreToggled = isSheetExpanded || showSheetPanelContent,
+                                isMoreToggled = (isSheetExpanded && !isLargeScreen) || showSheetPanelContent,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 onActionsOverflow = { sheetDragActions = it },
                                 onModalSheetComponentRequest = onModalSheetComponentRequest,
@@ -252,8 +263,9 @@ private fun LargeScreenInputMessageHost() {
     Box(
         modifier = Modifier
             .width(250.dp)
+            .padding(top = 6.dp)
             .animateContentSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         InputMessageHost(
             micMessage = { enabled -> MicMessageText(enabled) },
