@@ -104,10 +104,7 @@ internal fun StreamComponent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(windowSizeClass) {
-        viewModel.setMaxPinnedStreams(
-            if (windowSizeClass.isCompactInAnyDimension()) MaxPinnedStreamsCompact
-            else MaxPinnedStreamsExpanded
-        )
+        viewModel.maxPinnedStreams = if (windowSizeClass.isCompactInAnyDimension()) MaxPinnedStreamsCompact else MaxPinnedStreamsExpanded
     }
 
     StreamComponent(

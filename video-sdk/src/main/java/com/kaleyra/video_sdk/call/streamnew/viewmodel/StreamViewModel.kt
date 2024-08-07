@@ -41,7 +41,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     override fun initialState() = StreamUiState()
 
-    private var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
+    var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
@@ -116,10 +116,6 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         val stream = streams.find { it.id == streamId }
         if (streamId != null && stream == null) return
         _uiState.update { it.copy(fullscreenStream = stream) }
-    }
-
-    fun setMaxPinnedStreams(count: Int) {
-        maxPinnedStreams = count
     }
 
     fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {

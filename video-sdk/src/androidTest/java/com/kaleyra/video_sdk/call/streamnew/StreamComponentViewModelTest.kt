@@ -68,7 +68,7 @@ class StreamComponentViewModelTest {
                 onMoreParticipantClick = { })
         }
 
-        verify(exactly = 1) { streamViewModel.setMaxPinnedStreams(MaxPinnedStreamsCompact) }
+        verify(exactly = 1) { streamViewModel.maxPinnedStreams = MaxPinnedStreamsCompact  }
     }
 
     @Test
@@ -85,7 +85,7 @@ class StreamComponentViewModelTest {
                 onMoreParticipantClick = { })
         }
 
-        verify(exactly = 1) { streamViewModel.setMaxPinnedStreams(MaxPinnedStreamsExpanded) }
+        verify(exactly = 1) { streamViewModel.maxPinnedStreams = MaxPinnedStreamsExpanded }
     }
 
 }

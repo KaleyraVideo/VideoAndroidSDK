@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,7 +23,9 @@ import com.kaleyra.video_sdk.call.callactionnew.CancelAction
 import com.kaleyra.video_sdk.call.callactionnew.FullscreenAction
 import com.kaleyra.video_sdk.call.callactionnew.PinAction
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 @Composable
@@ -46,14 +49,20 @@ internal fun HStreamMenuContent(
         showFullscreenMenu = true
         onFullscreen()
     }
+    val isPinLimitReached by remember(viewModel) {
+        derivedStateOf {
+            uiState.pinnedStreams.count() >= viewModel.maxPinnedStreams
+        }
+    }
 
     BackHandler(enabled = showFullscreenMenu) {
         onFullscreenClick(true)
     }
 
     HStreamMenuContent(
-        fullscreen = uiState.fullscreenStream?.id == selectedStreamId,
-        pin = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
+        isFullscreen = uiState.fullscreenStream?.id == selectedStreamId,
+        isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
+        isPinLimitReached = isPinLimitReached,
         onCancelClick = onDismiss,
         onFullscreenClick = { isFullscreen -> onFullscreenClick(isFullscreen) },
         onPinClick = { isPinned ->
@@ -67,15 +76,16 @@ internal fun HStreamMenuContent(
 
 @Composable
 internal fun HStreamMenuContent(
-    fullscreen: Boolean,
-    pin: Boolean,
+    isFullscreen: Boolean,
+    isPinned: Boolean,
+    isPinLimitReached: Boolean,
     onCancelClick: () -> Unit,
     onFullscreenClick: (Boolean) -> Unit,
     onPinClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier.padding(14.dp)) {
-        if (!fullscreen) {
+        if (!isFullscreen) {
             CancelAction(
                 label = true,
                 onClick = onCancelClick
@@ -83,35 +93,49 @@ internal fun HStreamMenuContent(
             Spacer(modifier = Modifier.width(SheetItemsSpacing))
             PinAction(
                 label = true,
-                pin = pin,
-                onClick = { onPinClick(pin) }
+                pin = isPinned,
+                enabled = !isPinLimitReached,
+                onClick = { onPinClick(isPinned) }
             )
             Spacer(modifier = Modifier.width(SheetItemsSpacing))
         }
         FullscreenAction(
             label = true,
-            fullscreen = fullscreen,
-            onClick = { onFullscreenClick(fullscreen) }
+            fullscreen = isFullscreen,
+            onClick = { onFullscreenClick(isFullscreen) }
         )
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun HStreamMenuContentPreview() {
     KaleyraM3Theme {
         Surface {
-            HStreamMenuContent(false, false, {}, {}, {})
+            HStreamMenuContent(false, false, false, {}, {}, {})
         }
     }
 }
 
-@MultiConfigPreview
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun HStreamFullscreenMenuContentPreview() {
     KaleyraM3Theme {
         Surface {
-            HStreamMenuContent(true, false, {}, {}, {})
+            HStreamMenuContent(true, false, false, {}, {}, {})
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun HStreamPinLimiMenuContentPreview() {
+    KaleyraM3Theme {
+        Surface {
+            HStreamMenuContent(false, false, true, {}, {}, {})
         }
     }
 }

@@ -488,7 +488,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.setMaxPinnedStreams(3)
+        viewModel.maxPinnedStreams = 3
         viewModel.pin(streamMock2.id)
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = true)
@@ -505,7 +505,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.setMaxPinnedStreams(3)
+        viewModel.maxPinnedStreams = 3
         viewModel.pin(streamMock2.id)
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = false)
@@ -522,7 +522,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.setMaxPinnedStreams(2)
+        viewModel.maxPinnedStreams = 2
         viewModel.pin(streamMock2.id)
         viewModel.pin(streamMock3.id)
 
@@ -540,7 +540,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.setMaxPinnedStreams(2)
+        viewModel.maxPinnedStreams = 2
         viewModel.pin(streamMock2.id)
         viewModel.pin(streamMock3.id)
 
@@ -557,7 +557,7 @@ class StreamViewModelTest {
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
 
-        viewModel.setMaxPinnedStreams(1)
+        viewModel.maxPinnedStreams = 1
 
         advanceUntilIdle()
         viewModel.pin(streamMock1.id)
@@ -610,7 +610,7 @@ class StreamViewModelTest {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
 
-        viewModel.setMaxPinnedStreams(3)
+        viewModel.maxPinnedStreams = 3
         viewModel.pin(streamMock1.id)
         viewModel.pin(streamMock2.id)
         viewModel.pin(streamMock3.id)
@@ -650,7 +650,7 @@ class StreamViewModelTest {
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
         advanceUntilIdle()
-        viewModel.setMaxPinnedStreams(2)
+        viewModel.maxPinnedStreams = 2
         viewModel.pin(streamMock1.id)
         viewModel.pin(streamMock2.id)
 
