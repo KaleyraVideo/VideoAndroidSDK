@@ -19,9 +19,13 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedMultiplier
 import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
+import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.callactionnew.HangUpActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.screennew.HangUpAction
 import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
@@ -36,6 +40,7 @@ private const val MaxHSheetDragItems = 5
 internal fun HSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
+    isLargeScreen: Boolean,
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,13 +48,35 @@ internal fun HSheetDragContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sheetActionsCount by remember {
         derivedStateOf {
-            uiState.actionList.count()
+            uiState.actionList.value.count { it !is HangUpAction }
         }
     }
-    val answerActionSlots = if (uiState.isRinging) AnswerActionMultiplier else 1
-    val itemsPerRow by remember(callActions) {
+    val hasHangUpAction by remember {
         derivedStateOf {
-            max(1, sheetActionsCount - callActions.count() + answerActionSlots)
+            uiState.actionList.value.find { it is HangUpAction } != null
+        }
+    }
+    val isRinging by remember {
+        derivedStateOf { uiState.isRinging }
+    }
+    val hangUpActionSlots = remember(hasHangUpAction, isLargeScreen) {
+        when {
+            !hasHangUpAction -> 0
+            isLargeScreen -> HangUpActionExtendedMultiplier
+            else -> HangUpActionMultiplier
+        }
+    }
+    val answerActionSlots = remember(isLargeScreen, isRinging) {
+        when {
+            !isRinging -> 0
+            isLargeScreen -> AnswerActionExtendedMultiplier
+            else -> AnswerActionMultiplier
+        }
+    }
+    val moreSlots = if (isRinging) 1 else 0
+    val itemsPerRow by remember(callActions, hangUpActionSlots, answerActionSlots, moreSlots) {
+        derivedStateOf {
+            max(1, sheetActionsCount - callActions.count() + hangUpActionSlots + answerActionSlots + moreSlots)
         }
     }
 
@@ -106,7 +133,7 @@ internal fun HSheetDragContent(
            key = { _, item -> item.id },
            span = { index, _ ->
                if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow - (chunkedActions.size % itemsPerRow - 1))
-               else  GridItemSpan(1)
+               else GridItemSpan(1)
            },
            items = chunkedActions
        ) { _, callAction, ->

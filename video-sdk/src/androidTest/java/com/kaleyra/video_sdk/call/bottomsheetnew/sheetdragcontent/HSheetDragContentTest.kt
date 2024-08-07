@@ -3,15 +3,20 @@ package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
@@ -37,7 +42,9 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -54,11 +61,144 @@ class HSheetDragContentTest {
     }
 
     @Test
+    fun largeScreenAndHangUpActionInBaseBottomSheet_twoItemsPerRowInSheetDragContent() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(HangUpAction(), FileShareAction(), FlipCameraAction()))
+        )
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+                isLargeScreen = true,
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
+
+        val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
+        val flipCameraRight = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().right
+
+        assertEquals(0.dp, fileShareLeft)
+        assertEquals(fileShareRight + SheetItemsSpacing, flipCameraLeft)
+        assertEquals(composeTestRule.onRoot().getBoundsInRoot().right, flipCameraRight)
+    }
+
+    @Test
+    fun smallScreenAndHangUpActionInBaseBottomSheet_oneItemPerRowInSheetDragContent() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(HangUpAction()))
+        )
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction())),
+                isLargeScreen = false,
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
+
+        assertEquals(0.dp, fileShareLeft)
+        assertEquals(composeTestRule.onRoot().getBoundsInRoot().right, fileShareRight)
+    }
+
+    @Test
+    fun largeScreenAndAnswerActionInBaseBottomSheet_threeItemsPerRowInSheetDragContent() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
+            isRinging = true
+        )
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
+                isLargeScreen = true,
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+
+        val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipCameraLeft = composeTestRule.onNodeWithContentDescription(flipCameraText).getBoundsInRoot().left
+        val flipCameraRight = composeTestRule.onNodeWithContentDescription(flipCameraText).getBoundsInRoot().right
+
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val whiteboardLeft = composeTestRule.onNodeWithText(whiteboardText).getBoundsInRoot().left
+        val whiteboardRight = composeTestRule.onNodeWithText(whiteboardText).getBoundsInRoot().right
+
+        assertEquals(0.dp, fileShareLeft)
+        assertEquals(fileShareRight + SheetItemsSpacing, flipCameraLeft)
+        assertEquals(flipCameraRight + SheetItemsSpacing, whiteboardLeft)
+        assertEquals(composeTestRule.onRoot().getBoundsInRoot().right, whiteboardRight)
+    }
+
+    @Test
+    fun smallScreenAndAnswerActionInBaseBottomSheet_twoItemsPerRowInSheetDragContent() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+            isRinging = true
+        )
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+                isLargeScreen = true,
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+
+        val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
+        val flipCameraRight = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().right
+
+        assertEquals(0.dp, fileShareLeft)
+        assertEquals(fileShareRight + SheetItemsSpacing, flipCameraLeft)
+        assertEquals(composeTestRule.onRoot().getBoundsInRoot().right, flipCameraRight)
+    }
+
+    @Test
+    fun isRingingFalse_oneItemsPerRowInSheetDragContent() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = ImmutableList(listOf(FileShareAction()))
+        )
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+                isLargeScreen = true,
+                onModalSheetComponentRequest = {}
+            )
+        }
+
+        val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
+        val flipCameraRight = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().right
+
+        assertEquals(0.dp, flipCameraLeft)
+        assertEquals(composeTestRule.onRoot().getBoundsInRoot().right, flipCameraRight)
+    }
+
+    @Test
     fun userClicksHangUp_hangUpInvoked() {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(HangUpAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -78,6 +218,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(MicAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -97,6 +238,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(CameraAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -117,6 +259,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ChatAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -138,6 +281,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FlipCameraAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -158,6 +302,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(AudioAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = { component = it }
             )
         }
@@ -178,6 +323,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FileShareAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = { component = it }
             )
         }
@@ -198,6 +344,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(WhiteboardAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = { component = it }
             )
         }
@@ -218,6 +365,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = { component = it }
             )
         }
@@ -238,6 +386,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = {}
             )
         }
@@ -259,6 +408,7 @@ class HSheetDragContentTest {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
+                isLargeScreen = false,
                 onModalSheetComponentRequest = { component = it }
             )
         }
@@ -547,7 +697,7 @@ class HSheetDragContentTest {
     }
 
     @Test
-    fun testonVirtualBackgroundToggle() {
+    fun testOnVirtualBackgroundToggle() {
         var isClicked = false
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_virtual_background)
         composeTestRule.setContent {
