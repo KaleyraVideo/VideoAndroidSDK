@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.ui.call.pip
 
 import android.util.Rational
-import android.util.Size
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,21 +10,16 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
 import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
 import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import io.mockk.every
-import io.mockk.spyk
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -71,19 +65,20 @@ class PipStreamComponentTest {
         assertEquals(DefaultPipAspectRatio, aspectRatio)
     }
 
-    @Test
-    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
-        val view = spyk(VideoStreamView(composeTestRule.activity)) {
-            every { videoSize } returns MutableStateFlow(Size(500, 300))
-        }
-
-        val video = VideoUi(id = "videoId", view = ImmutableView(view))
-        val stream = defaultStreamUi(username = "mario", video = video)
-        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
-        composeTestRule.waitForIdle()
-
-        assertEquals(Rational(5, 3), aspectRatio)
-    }
+//    No way found to run this test on instrumented test
+//    @Test
+//    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
+//        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+//            every { videoSize } returns MutableStateFlow(Size(500, 300))
+//        }
+//
+//        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+//        val stream = defaultStreamUi(username = "mario", video = video)
+//        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
+//        composeTestRule.waitForIdle()
+//
+//        assertEquals(Rational(5, 3), aspectRatio)
+//    }
 
     @Test
     fun testUpToTwoStreamsAreDisplayed() {
@@ -297,6 +292,20 @@ class PipStreamComponentTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("previewUsername").assertDoesNotExist()
+    }
+
+    @Test
+    fun localScreenSharePinnedStream_streamIsNotDisplayed() {
+        val stream = defaultStreamUi(id = "id1", username = "username1")
+        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
+        streamUiState = StreamUiState(
+            streams = listOf(stream, localScreenShareStream).toImmutableList(),
+            pinnedStreams = listOf(stream, localScreenShareStream).toImmutableList()
+        )
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(you).assertDoesNotExist()
     }
 
     @Test

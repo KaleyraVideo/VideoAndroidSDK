@@ -292,6 +292,20 @@ class PipStreamComponentTest {
     }
 
     @Test
+    fun localScreenSharePinnedStream_streamIsNotDisplayed() {
+        val stream = defaultStreamUi(id = "id1", username = "username1")
+        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
+        streamUiState = StreamUiState(
+            streams = listOf(stream, localScreenShareStream).toImmutableList(),
+            pinnedStreams = listOf(stream, localScreenShareStream).toImmutableList()
+        )
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(you).assertDoesNotExist()
+    }
+
+    @Test
     fun previewStreamNotNull_streamIsNotDisplayed() {
         val stream1 = defaultStreamUi(username = "mario")
         streamUiState = StreamUiState(

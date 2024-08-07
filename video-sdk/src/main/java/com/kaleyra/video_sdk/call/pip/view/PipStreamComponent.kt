@@ -136,7 +136,7 @@ internal fun PipStreamComponent(
 
 private fun streamsToDisplayFor(uiState: StreamUiState): List<StreamUi> {
     val streams = uiState.streams.value
-    val pinnedStreams = uiState.pinnedStreams.value
+    val pinnedStreams = uiState.pinnedStreams.value.filterNot { it.isMine && it.video?.isScreenShare == true }
     val fullscreenStream = uiState.fullscreenStream
 
     return when {
