@@ -132,7 +132,7 @@ internal fun HStreamFullscreenMenuContentPreview() {
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun HStreamPinLimiMenuContentPreview() {
+internal fun HStreamPinLimitMenuContentPreview() {
     KaleyraM3Theme {
         Surface {
             HStreamMenuContent(false, false, true, {}, {}, {})
