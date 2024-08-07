@@ -225,6 +225,20 @@ class ParticipantItemTest {
     }
 
     @Test
+    fun screenShareStream_micButtonIsNotDisplayed() {
+        stream = streamUiMock.copy(video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone)
+        composeTestRule.onNodeWithContentDescription(description).assertDoesNotExist()
+    }
+
+    @Test
+    fun localScreenShareStream_unpinButtonIsNotDisplayed() {
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
+        composeTestRule.onNodeWithContentDescription(description).assertDoesNotExist()
+    }
+
+    @Test
     fun testOnMuteStreamClick() {
         amIAdmin = false
         stream = streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = false))

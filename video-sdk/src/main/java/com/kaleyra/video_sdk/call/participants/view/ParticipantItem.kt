@@ -56,7 +56,10 @@ internal fun ParticipantItem(
         Column(Modifier.weight(1f)) {
             Text(
                 text = if (stream.isMine) {
-                    stringResource(id = R.string.kaleyra_participants_component_you, stream.username)
+                    stringResource(
+                        id = R.string.kaleyra_participants_component_you,
+                        stream.username
+                    )
                 } else stream.username,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -76,48 +79,65 @@ internal fun ParticipantItem(
             )
         }
 
-        if (amIAdmin || stream.isMine) {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = { if (stream.audio != null) onDisableMicClick(stream.id, stream.audio.isEnabled) else Unit },
-                content = { Icon(disableMicPainterFor(stream.audio), disableMicTextFor(stream.audio)) }
-            )
-        } else {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = {
-                    if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou)
-                    else Unit
-                },
-                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
-            )
+        if (stream.video == null || !stream.video.isScreenShare) {
+            if (amIAdmin || stream.isMine) {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = {
+                        if (stream.audio != null) onDisableMicClick(
+                            stream.id,
+                            stream.audio.isEnabled
+                        ) else Unit
+                    },
+                    content = {
+                        Icon(
+                            disableMicPainterFor(stream.audio),
+                            disableMicTextFor(stream.audio)
+                        )
+                    }
+                )
+            } else {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = {
+                        if (stream.audio != null) onMuteStreamClick(
+                            stream.id,
+                            !stream.audio.isMutedForYou
+                        )
+                        else Unit
+                    },
+                    content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
+                )
+            }
         }
 
-        if (!amIAdmin || stream.isMine) {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = { onPinStreamClick(stream.id, !pinned) },
-                content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
-            )
-        } else {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = onMoreClick,
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
-                        contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
-                    )
-                }
-            )
+        if (!stream.isMine || stream.video?.isScreenShare == false) {
+            if (!amIAdmin || stream.isMine) {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = { onPinStreamClick(stream.id, !pinned) },
+                    content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
+                )
+            } else {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = onMoreClick,
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
+                            contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
+                        )
+                    }
+                )
+            }
         }
     }
 }
