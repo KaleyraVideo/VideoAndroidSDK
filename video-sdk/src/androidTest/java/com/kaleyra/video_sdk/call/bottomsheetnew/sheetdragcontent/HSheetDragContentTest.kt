@@ -3,15 +3,11 @@ package com.kaleyra.video_sdk.call.bottomsheetnew.sheetdragcontent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.getBoundsInRoot
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -42,9 +38,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -125,12 +119,12 @@ class HSheetDragContentTest {
         }
 
         val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
-        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
-        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
         val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val flipCameraLeft = composeTestRule.onNodeWithContentDescription(flipCameraText).getBoundsInRoot().left
-        val flipCameraRight = composeTestRule.onNodeWithContentDescription(flipCameraText).getBoundsInRoot().right
+        val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
+        val flipCameraRight = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().right
 
         val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         val whiteboardLeft = composeTestRule.onNodeWithText(whiteboardText).getBoundsInRoot().left
@@ -158,8 +152,8 @@ class HSheetDragContentTest {
         }
 
         val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
-        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
-        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
         val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
@@ -173,12 +167,12 @@ class HSheetDragContentTest {
     @Test
     fun isRingingFalse_oneItemsPerRowInSheetDragContent() {
         callActionsUiState.value = CallActionsUiState(
-            actionList = ImmutableList(listOf(FileShareAction()))
+            actionList = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
         )
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
                 isLargeScreen = true,
                 onModalSheetComponentRequest = {}
             )

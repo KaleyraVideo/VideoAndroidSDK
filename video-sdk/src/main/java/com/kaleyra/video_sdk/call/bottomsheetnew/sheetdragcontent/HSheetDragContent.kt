@@ -73,7 +73,7 @@ internal fun HSheetDragContent(
             else -> AnswerActionMultiplier
         }
     }
-    val moreSlots = if (isRinging) 1 else 0
+    val moreSlots = if (isRinging) 0 else 1
     val itemsPerRow by remember(callActions, hangUpActionSlots, answerActionSlots, moreSlots) {
         derivedStateOf {
             max(1, sheetActionsCount - callActions.count() + hangUpActionSlots + answerActionSlots + moreSlots)

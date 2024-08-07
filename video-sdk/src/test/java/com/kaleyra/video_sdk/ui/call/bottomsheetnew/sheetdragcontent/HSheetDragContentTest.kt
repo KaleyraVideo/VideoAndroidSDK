@@ -125,8 +125,8 @@ class HSheetDragContentTest {
         }
 
         val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
-        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
-        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
         val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
@@ -158,8 +158,8 @@ class HSheetDragContentTest {
         }
 
         val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
-        val fileShareLeft = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().left
-        val fileShareRight = composeTestRule.onNodeWithContentDescription(fileShareText).getBoundsInRoot().right
+        val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
+        val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
         val flipCameraText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val flipCameraLeft = composeTestRule.onNodeWithText(flipCameraText).getBoundsInRoot().left
@@ -173,12 +173,12 @@ class HSheetDragContentTest {
     @Test
     fun isRingingFalse_oneItemsPerRowInSheetDragContent() {
         callActionsUiState.value = CallActionsUiState(
-            actionList = ImmutableList(listOf(FileShareAction()))
+            actionList = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
         )
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction())),
+                callActions = ImmutableList(listOf(FileShareAction(), FlipCameraAction(), WhiteboardAction())),
                 isLargeScreen = true,
                 onModalSheetComponentRequest = {}
             )
