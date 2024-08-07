@@ -94,7 +94,7 @@ internal fun HStreamMenuContent(
             PinAction(
                 label = true,
                 pin = isPinned,
-                enabled = !isPinLimitReached,
+                enabled = isPinned || !isPinLimitReached,
                 onClick = { onPinClick(isPinned) }
             )
             Spacer(modifier = Modifier.width(SheetItemsSpacing))

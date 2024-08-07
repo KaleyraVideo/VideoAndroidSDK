@@ -183,6 +183,28 @@ class HStreamMenuContentTest {
 
         composeTestRule.setContent {
             HStreamMenuContent(
+                selectedStreamId = "id",
+                onDismiss = { },
+                onFullscreen = { }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_pin)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun testPinLimitReached_unpinButtonIsEnabled() {
+        every { streamViewModel.maxPinnedStreams } returns 1
+
+        val stream = StreamUi(id = "streamId", username = "username")
+        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+
+        composeTestRule.setContent {
+            HStreamMenuContent(
                 selectedStreamId = stream.id,
                 onDismiss = { },
                 onFullscreen = { }
@@ -193,7 +215,7 @@ class HStreamMenuContentTest {
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertHasClickAction()
-            .assertIsNotEnabled()
+            .assertIsEnabled()
     }
 
     @Test
