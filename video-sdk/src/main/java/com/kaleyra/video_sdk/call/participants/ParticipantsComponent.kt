@@ -82,6 +82,11 @@ internal fun ParticipantsComponent(
             streamsUiState.streams.value.firstOrNull { !it.isMine }
         }
     }
+    val isLocalScreenShareEnabled by remember {
+        derivedStateOf {
+            streamsUiState.streams.value.find { it.video?.isScreenShare == true && it.isMine } != null
+        }
+    }
 
     ParticipantsComponent(
         streamsLayout = streamsLayout,
@@ -90,6 +95,7 @@ internal fun ParticipantsComponent(
         adminsStreamsIds = participantsUiState.adminsStreamsIds,
         pinnedStreamsIds = pinnedStreamsIds,
         amIAdmin = participantsUiState.isLocalParticipantAdmin,
+        enableGridLayout = !isLocalScreenShareEnabled,
         onLayoutClick = remember(streamViewModel, firstStreamNotMine) {
             { layout ->
                 if (layout == StreamsLayout.Grid) streamViewModel.unpinAll()
@@ -128,6 +134,7 @@ internal fun ParticipantsComponent(
     adminsStreamsIds: ImmutableList<String>,
     pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
+    enableGridLayout: Boolean,
     onLayoutClick: (layout: StreamsLayout) -> Unit,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
@@ -205,7 +212,11 @@ internal fun ParticipantsComponent(
             }
 
             item {
-                StreamsLayoutSelector(streamsLayout, onLayoutClick)
+                StreamsLayoutSelector(
+                    streamsLayout = streamsLayout,
+                    enableGridLayout = enableGridLayout,
+                    onLayoutClick = onLayoutClick
+                )
             }
 
             item {
@@ -275,6 +286,7 @@ internal fun ParticipantsComponentPreview() {
                 )
             ),
             pinnedStreamsIds = ImmutableList(),
+            enableGridLayout = true,
             invited = ImmutableList(
                 listOf(
                     "Mario Rossi",

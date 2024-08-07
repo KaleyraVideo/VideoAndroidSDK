@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -55,6 +56,8 @@ class ParticipantsComponentTest {
 
     private var amIAdmin by mutableStateOf(false)
 
+    private var enableGridLayout by mutableStateOf(true)
+
     private var layoutClicked: StreamsLayout? = null
 
     private var clickedStreamId: String? = null
@@ -79,6 +82,7 @@ class ParticipantsComponentTest {
                 adminsStreamsIds = adminStreamsIds,
                 pinnedStreamsIds = pinnedStreamsIds,
                 amIAdmin = amIAdmin,
+                enableGridLayout = enableGridLayout,
                 onLayoutClick = { layoutClicked = it },
                 onMuteStreamClick = { streamId, value ->
                     clickedStreamId = streamId
@@ -106,6 +110,7 @@ class ParticipantsComponentTest {
         pinnedStreamsIds = ImmutableList()
         invited = ImmutableList()
         amIAdmin = false
+        enableGridLayout = true
         layoutClicked = null
         isStreamMuted = null
         isStreamMicDisabled = null
@@ -574,6 +579,13 @@ class ParticipantsComponentTest {
         invited = ImmutableList()
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun testEnabledGridLayoutFalse_gridLayoutButtonIsDisabled() {
+        enableGridLayout = false
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
+        composeTestRule.onNodeWithText(text).assertHasClickAction().assertIsNotEnabled()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.performClickOnMoreButton() {

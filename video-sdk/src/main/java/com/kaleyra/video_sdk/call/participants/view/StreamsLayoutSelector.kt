@@ -30,6 +30,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 @Composable
 internal fun StreamsLayoutSelector(
     streamsLayout: StreamsLayout,
+    enableGridLayout: Boolean,
     onLayoutClick: (streamsLayout: StreamsLayout) -> Unit
 ) {
     Row(
@@ -43,6 +44,7 @@ internal fun StreamsLayoutSelector(
                 containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
                 contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimary else it.onSurfaceVariant }
             ),
+            enabled = enableGridLayout,
             modifier = Modifier
                 .weight(1f)
                 .highlightOnFocus(gridInteractionSource),
@@ -89,6 +91,6 @@ internal fun StreamsLayoutSelector(
 @Composable
 internal fun StreamsLayoutSelectorPreview() {
     KaleyraM3Theme {
-        StreamsLayoutSelector(StreamsLayout.Grid, onLayoutClick = {})
+        StreamsLayoutSelector(StreamsLayout.Grid, true, onLayoutClick = {})
     }
 }

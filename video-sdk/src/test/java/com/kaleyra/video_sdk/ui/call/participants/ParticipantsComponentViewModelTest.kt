@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.participants
+package com.kaleyra.video_sdk.ui.call.participants
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertHasClickAction
@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
@@ -23,7 +24,10 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class ParticipantsComponentViewModelTest {
 
     @get:Rule
