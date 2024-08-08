@@ -153,6 +153,13 @@ class FileShareItemTest {
     }
 
     @Test
+    fun negativeFileSize_inProgressState_fileSizeFormattedDisplayed() {
+        sharedFile = mockDownloadSharedFile.copy(size = -1)
+        val na = composeTestRule.activity.getString(R.string.kaleyra_fileshare_na)
+        composeTestRule.onNodeWithText(na).assertIsDisplayed()
+    }
+
+    @Test
     fun inProgressState_progressBarValueUpdated() {
         sharedFile = mockDownloadSharedFile.copy(state = SharedFileUi.State.InProgress(progress = .74f))
         composeTestRule

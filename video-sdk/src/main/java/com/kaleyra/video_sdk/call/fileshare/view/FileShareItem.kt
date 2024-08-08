@@ -63,6 +63,8 @@ import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockDownloadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isArchiveMimeType
@@ -146,7 +148,7 @@ private fun FileTypeAndSize(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = if (fileSize != null) {
+            text = if (fileSize != null && fileSize >= 0L) {
                 Formatter.formatShortFileSize(LocalContext.current, fileSize)
             } else {
                 // The file size is NA when is Download && state != InProgress && state != Success
@@ -305,43 +307,43 @@ private fun ErrorMessage(isMyMessage: Boolean) {
     )
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemInProgressPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile)
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemCancelledPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Cancelled))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemErrorPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Error))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemAvailablePreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Available))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemPendingPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Pending))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemSuccessPreview() {
     FileShareItemPreview(sharedFile = mockDownloadSharedFile.copy(state = SharedFileUi.State.Success(ImmutableUri(Uri.EMPTY))))
