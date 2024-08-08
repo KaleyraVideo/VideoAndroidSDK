@@ -641,6 +641,28 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun `local screen share is not pinned automatically again on stream list update`() = runTest {
+        val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = true, video = VideoUi(id = "videoId", isScreenShare = true))
+        val streams = MutableStateFlow(listOf(streamMock1))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        streams.value = listOf(screenShareMock)
+        advanceUntilIdle()
+
+        assertEquals(listOf(screenShareMock), viewModel.uiState.value.pinnedStreams.value)
+
+        streams.value = listOf(streamMock1, screenShareMock, streamMock2)
+        advanceUntilIdle()
+
+        assertEquals(listOf(screenShareMock), viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
     fun `first pinned stream is removed if a local screen share is added and max pinned limit is reached`() = runTest {
         val screenShareMock = StreamUi(id = "screenShareId", username = "username", isMine = true, video = VideoUi(id = "videoId", isScreenShare = true))
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2))

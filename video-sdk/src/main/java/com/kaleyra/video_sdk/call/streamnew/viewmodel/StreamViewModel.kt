@@ -180,8 +180,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             streams.find { it.id == stream.id }
         }.toMutableList()
         // Pin the local screen share as first stream
-        localScreenShare?.let {
-            updatedPinnedStreams.add(0, it)
+        localScreenShare?.let { screenShare ->
+            if (uiState.value.pinnedStreams.value.find { it.id == screenShare.id } != null) return@let
+            updatedPinnedStreams.add(0, screenShare)
             if (updatedPinnedStreams.size > maxPinnedStreams) {
                 updatedPinnedStreams.removeAt(1)
             }
