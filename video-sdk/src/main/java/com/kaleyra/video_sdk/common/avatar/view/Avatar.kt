@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.common.avatar.view
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -89,21 +90,23 @@ internal fun Avatar(
     uri: ImmutableUri?,
     username: String,
     modifier: Modifier = Modifier,
+    size: Dp = AvatarDefaults.defaultSize,
     color: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(color),
     onSuccess: (() -> Unit)? = null
 ) {
     var isImageLoaded by remember { mutableStateOf(false) }
 
-    BoxWithConstraints(
+    Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.size(AvatarDefaults.defaultSize)
+        modifier = modifier
     ) {
         AsyncImage(
             model = uri?.value,
             contentDescription = null,
             modifier = Modifier
                 .clip(CircleShape)
+                .size(size)
                 .background(color = color),
             contentScale = ContentScale.Crop,
             onSuccess = {
@@ -112,7 +115,7 @@ internal fun Avatar(
             }
         )
         if (!isImageLoaded) {
-            val fontSize = with(LocalDensity.current) { (constraints.maxWidth / 2).toSp() }
+            val fontSize = with(LocalDensity.current) { size.toSp() / 2 }
             Text(
                 text = username.firstOrNull()?.uppercase() ?: "",
                 color = contentColor,

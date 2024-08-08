@@ -57,7 +57,7 @@ internal fun Stream(
             Avatar(
                 uri = avatar,
                 username = username,
-                modifier = Modifier.size(size)
+                size = size
             )
         }
     }
