@@ -82,6 +82,7 @@ class ParticipantsComponentTest {
                 adminsStreamsIds = adminStreamsIds,
                 pinnedStreamsIds = pinnedStreamsIds,
                 amIAdmin = amIAdmin,
+                isPinLimitReached = true,
                 enableGridLayout = enableGridLayout,
                 onLayoutClick = { layoutClicked = it },
                 onMuteStreamClick = { streamId, value ->

@@ -49,6 +49,8 @@ class ParticipantsComponentTest {
 
     private var amIAdmin by mutableStateOf(false)
 
+    private var isPinLimitReached by mutableStateOf(false)
+
     private var enableGridLayout by mutableStateOf(true)
 
     private var layoutClicked: StreamsLayout? = null
@@ -76,6 +78,7 @@ class ParticipantsComponentTest {
                 pinnedStreamsIds = pinnedStreamsIds,
                 amIAdmin = amIAdmin,
                 enableGridLayout = enableGridLayout,
+                isPinLimitReached = isPinLimitReached,
                 onLayoutClick = { layoutClicked = it },
                 onMuteStreamClick = { streamId, value ->
                     clickedStreamId = streamId
@@ -579,6 +582,17 @@ class ParticipantsComponentTest {
         enableGridLayout = false
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
         composeTestRule.onNodeWithText(text).assertHasClickAction().assertIsNotEnabled()
+    }
+
+    @Test
+    fun testIsPinLimitReached_streamPinButtonIsDisabled() {
+        streams = ImmutableList(listOf(streamUiMock.copy(video = VideoUi(id = "id", isEnabled = true))))
+        isPinLimitReached = true
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.performClickOnMoreButton() {

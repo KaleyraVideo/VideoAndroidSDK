@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.participants
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
@@ -17,10 +19,13 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
 import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
 import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -160,6 +165,8 @@ class ParticipantsComponentViewModelTest {
     
     @Test
     fun userClicksPinStream_streamPinIsInvoked() {
+        every { streamViewModel.maxPinnedStreams } returns 2
+
         val stream = StreamUi(id = "id1", username = "username1")
         streamUiState.value = StreamUiState(
             streams = ImmutableList(listOf(stream))
@@ -197,5 +204,58 @@ class ParticipantsComponentViewModelTest {
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { streamViewModel.unpin(stream.id) }
+    }
+
+
+    @Test
+    fun testPinLimitReached_pinButtonIsNotEnabled() {
+        every { streamViewModel.maxPinnedStreams } returns 1
+
+        val stream1 = StreamUi(id = "streamId1", username = "username")
+        val stream2 = StreamUi(id = "streamId2", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(stream1, stream2).toImmutableList(),
+            pinnedStreams = listOf(stream2).toImmutableList()
+        )
+
+        composeTestRule.setContent {
+            ParticipantsComponent(
+                participantsViewModel = participantsViewModel,
+                streamViewModel = streamViewModel,
+                onDismiss = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun testPinLimitReached_unpinButtonIsEnabled() {
+        every { streamViewModel.maxPinnedStreams } returns 1
+
+        val stream1 = StreamUi(id = "streamId1", username = "username")
+        val stream2 = StreamUi(id = "streamId2", username = "username")
+        streamUiState.value = StreamUiState(
+            streams = listOf(stream1, stream2).toImmutableList(),
+            pinnedStreams = listOf(stream2).toImmutableList()
+        )
+
+        composeTestRule.setContent {
+            ParticipantsComponent(
+                participantsViewModel = participantsViewModel,
+                streamViewModel = streamViewModel,
+                onDismiss = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertHasClickAction()
+            .assertIsEnabled()
     }
 }

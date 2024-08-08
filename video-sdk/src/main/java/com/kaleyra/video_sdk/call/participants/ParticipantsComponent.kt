@@ -87,6 +87,11 @@ internal fun ParticipantsComponent(
             streamsUiState.streams.value.find { it.video?.isScreenShare == true && it.isMine } != null
         }
     }
+    val isPinLimitReached by remember(streamViewModel) {
+        derivedStateOf {
+            streamsUiState.pinnedStreams.count() >= streamViewModel.maxPinnedStreams
+        }
+    }
 
     ParticipantsComponent(
         streamsLayout = streamsLayout,
@@ -96,6 +101,7 @@ internal fun ParticipantsComponent(
         pinnedStreamsIds = pinnedStreamsIds,
         amIAdmin = participantsUiState.isLocalParticipantAdmin,
         enableGridLayout = !isLocalScreenShareEnabled,
+        isPinLimitReached = isPinLimitReached,
         onLayoutClick = remember(streamViewModel, firstStreamNotMine) {
             { layout ->
                 if (layout == StreamsLayout.Grid) streamViewModel.unpinAll()
@@ -135,6 +141,7 @@ internal fun ParticipantsComponent(
     pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
     enableGridLayout: Boolean,
+    isPinLimitReached: Boolean,
     onLayoutClick: (layout: StreamsLayout) -> Unit,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
@@ -174,11 +181,9 @@ internal fun ParticipantsComponent(
                 modifier = Modifier.testTag(AdminBottomSheetTag)
             ) {
                 AdminBottomSheetContent(
-                    avatar = avatar,
-                    username = username,
-                    streamId = id,
-                    streamAudio = audio,
-                    streamPinned = pinnedStreamsIds.value.contains(id),
+                    stream = this@apply,
+                    isStreamPinned = pinnedStreamsIds.value.contains(id),
+                    isPinLimitReached = isPinLimitReached,
                     onMuteStreamClick = { streamId, value ->
                         onMuteStreamClick(streamId, value)
                         animateToDismiss()
@@ -235,9 +240,10 @@ internal fun ParticipantsComponent(
             items(items = streams.value, key = { it.id }) { stream ->
                 ParticipantItem(
                     stream = stream,
-                    pinned = pinnedStreamsIds.value.contains(stream.id),
+                    isPinned = pinnedStreamsIds.value.contains(stream.id),
                     isAdminStream = adminsStreamsIds.value.contains(stream.id),
                     amIAdmin = amIAdmin,
+                    isPinLimitReached = isPinLimitReached,
                     onMuteStreamClick = onMuteStreamClick,
                     onDisableMicClick = onDisableMicClick,
                     onPinStreamClick = onPinStreamClick,
@@ -287,6 +293,7 @@ internal fun ParticipantsComponentPreview() {
             ),
             pinnedStreamsIds = ImmutableList(),
             enableGridLayout = true,
+            isPinLimitReached = false,
             invited = ImmutableList(
                 listOf(
                     "Mario Rossi",

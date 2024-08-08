@@ -34,9 +34,10 @@ internal val ParticipantItemAvatarSize = 28.dp
 @Composable
 internal fun ParticipantItem(
     stream: StreamUi,
-    pinned: Boolean,
+    isPinned: Boolean,
     isAdminStream: Boolean,
     amIAdmin: Boolean,
+    isPinLimitReached: Boolean,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
@@ -79,65 +80,64 @@ internal fun ParticipantItem(
             )
         }
 
-        if (stream.video == null || !stream.video.isScreenShare) {
-            if (amIAdmin || stream.isMine) {
-                val interactionSource = remember { MutableInteractionSource() }
-                IconButton(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.highlightOnFocus(interactionSource),
-                    onClick = {
-                        if (stream.audio != null) onDisableMicClick(
-                            stream.id,
-                            stream.audio.isEnabled
-                        ) else Unit
-                    },
-                    content = {
-                        Icon(
-                            disableMicPainterFor(stream.audio),
-                            disableMicTextFor(stream.audio)
-                        )
-                    }
-                )
-            } else {
-                val interactionSource = remember { MutableInteractionSource() }
-                IconButton(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.highlightOnFocus(interactionSource),
-                    onClick = {
-                        if (stream.audio != null) onMuteStreamClick(
-                            stream.id,
-                            !stream.audio.isMutedForYou
-                        )
-                        else Unit
-                    },
-                    content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
-                )
-            }
+        if (amIAdmin || stream.isMine) {
+            val interactionSource = remember { MutableInteractionSource() }
+            IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
+                enabled = stream.video == null || !stream.video.isScreenShare,
+                onClick = {
+                    if (stream.audio != null) onDisableMicClick(
+                        stream.id,
+                        stream.audio.isEnabled
+                    ) else Unit
+                },
+                content = {
+                    Icon(
+                        disableMicPainterFor(stream.audio),
+                        disableMicTextFor(stream.audio)
+                    )
+                }
+            )
+        } else {
+            val interactionSource = remember { MutableInteractionSource() }
+            IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
+                enabled = stream.video == null || !stream.video.isScreenShare,
+                onClick = {
+                    if (stream.audio != null) onMuteStreamClick(
+                        stream.id,
+                        !stream.audio.isMutedForYou
+                    )
+                    else Unit
+                },
+                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
+            )
         }
 
-        if (!stream.isMine || stream.video?.isScreenShare == false) {
-            if (!amIAdmin || stream.isMine) {
-                val interactionSource = remember { MutableInteractionSource() }
-                IconButton(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.highlightOnFocus(interactionSource),
-                    onClick = { onPinStreamClick(stream.id, !pinned) },
-                    content = { Icon(pinnedPainterFor(pinned), pinnedTextFor(pinned)) }
-                )
-            } else {
-                val interactionSource = remember { MutableInteractionSource() }
-                IconButton(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.highlightOnFocus(interactionSource),
-                    onClick = onMoreClick,
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
-                            contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
-                        )
-                    }
-                )
-            }
+        if (!amIAdmin || stream.isMine) {
+            val interactionSource = remember { MutableInteractionSource() }
+            IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
+                enabled = (!isPinLimitReached || isPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
+                onClick = { onPinStreamClick(stream.id, !isPinned) },
+                content = { Icon(pinnedPainterFor(isPinned), pinnedTextFor(isPinned)) }
+            )
+        } else {
+            val interactionSource = remember { MutableInteractionSource() }
+            IconButton(
+                interactionSource = interactionSource,
+                modifier = Modifier.highlightOnFocus(interactionSource),
+                onClick = onMoreClick,
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
+                        contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
+                    )
+                }
+            )
         }
     }
 }
@@ -150,9 +150,10 @@ internal fun ParticipantItemPreview() {
         Surface {
             ParticipantItem(
                 stream = streamUiMock,
-                pinned = true,
+                isPinned = true,
                 isAdminStream = true,
                 amIAdmin = true,
+                isPinLimitReached = false,
                 onMuteStreamClick = { _, _ -> },
                 onDisableMicClick = { _, _ -> },
                 onPinStreamClick = { _, _ -> },
@@ -170,9 +171,10 @@ internal fun ParticipantItemAsAdminPreview() {
         Surface {
             ParticipantItem(
                 stream = streamUiMock.copy(audio = AudioUi(id = "", isMutedForYou = true, isEnabled = false)),
-                pinned = true,
+                isPinned = true,
                 isAdminStream = false,
                 amIAdmin = false,
+                isPinLimitReached = false,
                 onMuteStreamClick = { _, _ -> },
                 onDisableMicClick = { _, _ -> },
                 onPinStreamClick = { _, _ -> },
