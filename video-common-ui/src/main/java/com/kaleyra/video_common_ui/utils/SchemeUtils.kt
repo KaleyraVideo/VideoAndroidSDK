@@ -1,7 +1,8 @@
-package com.kaleyra.video_common_ui.material.colorutils.scheme
+package com.kaleyra.video_common_ui.utils
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
+import com.kaleyra.material_color_utilities.scheme.Scheme
 
 object SchemeUtils {
 

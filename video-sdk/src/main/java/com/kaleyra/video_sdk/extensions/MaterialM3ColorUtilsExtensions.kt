@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.extensions
 
-import com.kaleyra.video_common_ui.material.colorutils.scheme.Scheme
-import com.kaleyra.video_common_ui.material.colorutils.scheme.SchemeUtils.toColorScheme
+import com.kaleyra.material_color_utilities.scheme.Scheme
+import com.kaleyra.video_common_ui.utils.SchemeUtils.toColorScheme
 
 /**
  * Generate a light color scheme from input argb seed

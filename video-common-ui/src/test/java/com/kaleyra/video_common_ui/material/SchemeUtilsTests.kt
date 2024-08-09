@@ -1,8 +1,8 @@
 package com.kaleyra.video_common_ui.material
 
 import androidx.compose.ui.graphics.toArgb
-import com.kaleyra.video_common_ui.material.colorutils.scheme.Scheme
-import com.kaleyra.video_common_ui.material.colorutils.scheme.SchemeUtils.toColorScheme
+import com.kaleyra.material_color_utilities.scheme.Scheme
+import com.kaleyra.video_common_ui.utils.SchemeUtils.toColorScheme
 import org.junit.Assert
 import org.junit.Test
 import java.util.Random
