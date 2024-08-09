@@ -15,6 +15,8 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.MockKSettings.relaxed
 import io.mockk.every
@@ -88,7 +90,7 @@ class CallInfoViewModelTest {
         viewModel.uiState.first()
         advanceUntilIdle()
 
-        Assert.assertEquals(listOf<String>(), viewModel.uiState.value.displayNames)
+        Assert.assertEquals(ImmutableList<String>(), viewModel.uiState.value.displayNames)
     }
 
     @Test
@@ -101,7 +103,7 @@ class CallInfoViewModelTest {
         viewModel.uiState.first()
         advanceUntilIdle()
 
-        Assert.assertEquals(userDisplayNames, viewModel.uiState.value.displayNames)
+        Assert.assertEquals(userDisplayNames.toImmutableList(), viewModel.uiState.value.displayNames)
     }
 
     @Test
