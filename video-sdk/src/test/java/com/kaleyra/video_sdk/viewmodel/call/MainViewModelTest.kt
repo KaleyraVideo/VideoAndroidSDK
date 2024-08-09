@@ -173,7 +173,7 @@ class MainViewModelTest {
     @Test
     fun `kaleyra video object not configured, request configuration called`() = runTest {
         every { KaleyraVideo.isConfigured } returns false
-        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializerKt")
         coEvery { requestConfiguration() } returns mockk(relaxed = true)
 
         MainViewModel { Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
@@ -185,7 +185,7 @@ class MainViewModelTest {
     @Test
     fun `conversation state disconnected, requestConnect called`() = runTest {
         every { KaleyraVideo.conversation.state } returns MutableStateFlow(State.Disconnected)
-        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializerKt")
         coEvery { requestConnect() } returns mockk(relaxed = true)
 
         MainViewModel { Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
