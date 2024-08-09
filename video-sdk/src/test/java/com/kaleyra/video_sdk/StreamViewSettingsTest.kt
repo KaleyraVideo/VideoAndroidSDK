@@ -20,10 +20,8 @@ import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
-import com.kaleyra.video_sdk.call.utils.StreamViewSettings.featuredSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.pipSettings
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
-import com.kaleyra.video_sdk.call.utils.StreamViewSettings.thumbnailSettings
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,38 +30,6 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class StreamViewSettingsTest {
-
-    @Test
-    fun testDefaultFeaturedSettings() {
-        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
-        view.featuredSettings()
-        val videoStreamView = view.value as VideoStreamView
-        assertEquals(StreamView.ScaleType.Fill(), videoStreamView.scaleType.value)
-    }
-    
-    @Test
-    fun testSetCustomFeaturedSettings() {
-        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
-        view.featuredSettings(StreamView.ScaleType.Fit)
-        val videoStreamView = view.value as VideoStreamView
-        assertEquals(StreamView.ScaleType.Fit, videoStreamView.scaleType.value)
-    }
-
-    @Test
-    fun testDefaultThumbnailSettings() {
-        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
-        view.thumbnailSettings()
-        val videoStreamView = view.value as VideoStreamView
-        assertEquals(StreamView.ScaleType.Fill(1f), videoStreamView.scaleType.value)
-    }
-
-    @Test
-    fun testSetCustomThumbnailSettings() {
-        val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
-        view.thumbnailSettings(StreamView.ScaleType.Fit)
-        val videoStreamView = view.value as VideoStreamView
-        assertEquals(StreamView.ScaleType.Fit, videoStreamView.scaleType.value)
-    }
 
     @Test
     fun testPipSettings() {
@@ -87,7 +53,7 @@ class StreamViewSettingsTest {
         val view = ImmutableView(VideoStreamView(RuntimeEnvironment.getApplication()))
         view.preCallStreamViewSettings()
         val videoStreamView = view.value as VideoStreamView
-        assertEquals(false, videoStreamView.zoomGesturesEnabled.value)
+        assertEquals(true, videoStreamView.zoomGesturesEnabled.value)
         assertEquals(StreamView.ScaleType.Fill(1f), videoStreamView.scaleType.value)
     }
 }

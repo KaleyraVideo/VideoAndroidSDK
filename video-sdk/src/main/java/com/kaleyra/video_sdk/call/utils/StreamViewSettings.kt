@@ -22,28 +22,6 @@ import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 
 internal object StreamViewSettings {
 
-    internal fun ImmutableView.thumbnailSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill(1f)): ImmutableView {
-        val view = value
-        if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = false
-            if (view.scaleType.value != scaleType) {
-                view.scaleType.value = scaleType
-            }
-        }
-        return this
-    }
-
-   internal fun ImmutableView.featuredSettings(scaleType: StreamView.ScaleType = StreamView.ScaleType.Fill()): ImmutableView {
-        val view = value
-        if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = true
-            if (view.scaleType.value != scaleType) {
-                view.scaleType.value = scaleType
-            }
-        }
-        return this
-    }
-
     internal fun ImmutableView.defaultStreamViewSettings(): ImmutableView {
         val view = value
         if (view is VideoStreamView) {
