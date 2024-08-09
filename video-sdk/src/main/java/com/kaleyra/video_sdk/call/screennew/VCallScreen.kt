@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
@@ -98,14 +96,12 @@ internal fun VCallScreen(
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(horizontal = 4.dp, vertical = 8.dp),
+        paddingValues = callScreenScaffoldPaddingValues(),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .statusBarsPadding()
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
         sheetPanelContent = if (!isRinging && isLargeScreen) {
@@ -187,10 +183,7 @@ internal fun VCallScreen(
         },
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
-        val layoutDirection = LocalLayoutDirection.current
-        val top = paddingValues.calculateTopPadding()
-        val left = paddingValues.calculateLeftPadding(layoutDirection)
-        val right = paddingValues.calculateRightPadding(layoutDirection)
+        val top = paddingValues.calculateTopPadding() + 4.dp
 
         Box(
             modifier = Modifier
@@ -234,12 +227,11 @@ internal fun VCallScreen(
                     .fillMaxSize()
                     .navigationBarsPadding()
                     .padding(
-                        start = left,
+                        start = 4.dp,
                         top = top,
-                        end = right,
-                        bottom = 116.dp
+                        end = 4.dp,
+                        bottom = 100.dp
                     )
-                    .padding(top = 14.dp)
             )
 
             Column(

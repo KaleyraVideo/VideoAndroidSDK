@@ -32,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -96,17 +98,15 @@ internal fun HCallScreenScaffold(
         contentColor = contentColor
     ) {
         Box(Modifier.fillMaxSize()) {
-            Box(Modifier.padding(start = startPadding, top = topPadding, bottom = bottomPadding)) {
-                content(contentPaddingValues)
-                Box(
-                    modifier = Modifier
-                        .padding(end = bottomSheetPadding)
-                        .onSizeChanged {
-                            topAppBarPadding = with(density) { it.height.toDp() }
-                        },
-                    content = { topAppBar() }
-                )
-            }
+            content(contentPaddingValues)
+            Box(
+                modifier = Modifier
+                    .padding(start = startPadding, top = topPadding, bottom = bottomPadding, end = bottomSheetPadding)
+                    .onGloballyPositioned {
+                        topAppBarPadding = with(density) { it.boundsInRoot().bottom.toDp() }
+                    },
+                content = { topAppBar() }
+            )
             Scrim(
                 color = sheetScrimColor,
                 onDismissRequest = animateToDismiss,

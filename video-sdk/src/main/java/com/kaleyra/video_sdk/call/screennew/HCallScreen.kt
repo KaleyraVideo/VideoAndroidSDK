@@ -4,8 +4,14 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,14 +71,12 @@ internal fun HCallScreen(
     HCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(horizontal = 8.dp, vertical = 4.dp),
+        paddingValues = callScreenScaffoldPaddingValues(),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .statusBarsPadding()
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
         },
         sheetDragContent = {
@@ -151,7 +155,7 @@ internal fun HCallScreen(
                         true
                     } else false
                 }
-                .clearAndSetSemantics {}
+                .clearAndSetSemantics {},
         ) {
             StreamComponent(
                 viewModel = streamViewModel,
@@ -162,18 +166,19 @@ internal fun HCallScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding()
+                    .displayCutoutPadding()
                     .padding(
                         start = left,
                         top = top,
-                        end = 116.dp,
+                        end = 96.dp,
                         bottom = bottom,
                     )
-                    .padding(top = 14.dp)
+                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
             )
 
             Column(
                 modifier = Modifier
-                    .padding(top = top, end = 116.dp)
+                    .padding(top = top, end = 96.dp)
                     .padding(vertical = 24.dp)
             ) {
                 CallInfoComponent(Modifier.padding(vertical = 12.dp))

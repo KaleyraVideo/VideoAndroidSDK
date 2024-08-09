@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
@@ -389,9 +390,9 @@ private fun BackHandler(
 }
 
 @Composable
-internal fun callScreenScaffoldPaddingValues(horizontal: Dp, vertical: Dp): PaddingValues {
+internal fun callScreenScaffoldPaddingValues(): PaddingValues {
     return WindowInsets.navigationBars
+        .add(WindowInsets.statusBars)
         .add(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-        .add(WindowInsets(left = horizontal, top = vertical, right = horizontal, bottom = vertical))
         .asPaddingValues()
 }
