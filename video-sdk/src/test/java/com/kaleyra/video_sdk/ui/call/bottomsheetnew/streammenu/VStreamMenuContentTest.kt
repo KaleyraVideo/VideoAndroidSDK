@@ -10,11 +10,11 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.HStreamMenuContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.streammenu.VStreamMenuContent
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
+import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
+import com.kaleyra.video_sdk.call.stream.model.StreamUiState
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
 import io.mockk.mockk

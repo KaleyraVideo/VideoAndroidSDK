@@ -19,8 +19,8 @@ import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

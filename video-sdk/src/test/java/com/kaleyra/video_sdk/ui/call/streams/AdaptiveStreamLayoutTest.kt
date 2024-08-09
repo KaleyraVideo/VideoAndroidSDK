@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
-import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
-import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveGridCalculator
+import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
+import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
+import com.kaleyra.video_sdk.call.stream.utils.AdaptiveGridCalculator
 import com.kaleyra.video_sdk.ui.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.ui.assertLeftPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.ui.assertRightPositionInRootIsEqualTo

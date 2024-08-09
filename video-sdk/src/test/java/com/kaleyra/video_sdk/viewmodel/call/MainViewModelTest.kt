@@ -32,7 +32,6 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideoInitializer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
@@ -51,8 +50,8 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermissio
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
-import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel.Companion.NULL_CALL_TIMEOUT
+import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.utils.CallExtensions
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest

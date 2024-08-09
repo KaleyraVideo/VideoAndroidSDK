@@ -24,7 +24,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

@@ -13,11 +13,11 @@ import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
-import com.kaleyra.video_sdk.call.streamnew.model.StreamPreview
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.StreamPreview
+import com.kaleyra.video_sdk.call.stream.model.StreamUiState
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import org.junit.After

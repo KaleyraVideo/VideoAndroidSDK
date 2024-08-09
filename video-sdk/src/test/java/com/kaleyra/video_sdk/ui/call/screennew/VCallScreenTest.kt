@@ -19,8 +19,8 @@ import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
@@ -31,30 +31,30 @@ import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.CompactScreenMaxActions
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.InputMessageDragHandleTag
-import com.kaleyra.video_sdk.call.screennew.LargeScreenMaxActions
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
-import com.kaleyra.video_sdk.call.screennew.PanelTestTag
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.screennew.VCallScreen
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
+import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.PanelTestTag
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.streamnew.MaxFeaturedStreamsCompact
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsCompact
+import com.kaleyra.video_sdk.call.stream.model.StreamUiState
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
@@ -586,7 +586,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_hangUp() {
-        val actions = allActions.filterNot { it is  HangUpAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is HangUpAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -608,7 +608,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_micToggleOn() {
-        val actions = allActions.filterNot { it is  MicAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is MicAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -631,7 +631,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_micToggleOff() {
-        val actions = allActions.filterNot { it is  MicAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is MicAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -654,7 +654,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_cameraToggleOn() {
-        val actions = allActions.filterNot { it is CameraAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is CameraAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -677,7 +677,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_cameraToggleOff() {
-        val actions = allActions.filterNot { it is  CameraAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is CameraAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -700,7 +700,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_flipCamera() {
-        val actions = allActions.filterNot { it is  FlipCameraAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is FlipCameraAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -722,7 +722,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_chat() {
-        val actions = allActions.filterNot { it is  ChatAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is ChatAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -744,7 +744,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_screenShareToggleOff() {
-        val actions = allActions.filterNot { it is  ScreenShareAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is ScreenShareAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration
@@ -767,7 +767,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_screenShareToggleOn() {
-        val actions = allActions.filterNot { it is  ScreenShareAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is ScreenShareAction }.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
@@ -841,7 +841,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_onModalSheetComponentChangeToWhiteboard() {
-        val actions = allActions.filterNot { it is  WhiteboardAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is WhiteboardAction }.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
@@ -866,7 +866,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_virtualBackgroundComponentChange() {
-        val actions = allActions.filterNot { it is  VirtualBackgroundAction}.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(CompactScreenMaxActions)
         var component: ModalSheetComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
@@ -891,7 +891,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_flipCamera() {
-        val actions = allActions.filterNot { it is  FlipCameraAction }.take(LargeScreenMaxActions)
+        val actions = allActions.filterNot { it is FlipCameraAction }.take(LargeScreenMaxActions)
         composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + FlipCameraAction()).toImmutableList()
@@ -917,7 +917,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_audioComponentIsDisplayed() {
-        val actions = allActions.filterNot { it is  AudioAction}.take(LargeScreenMaxActions)
+        val actions = allActions.filterNot { it is AudioAction }.take(LargeScreenMaxActions)
         var component: ModalSheetComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
@@ -1093,7 +1093,7 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_virtualBackgroundComponentIsDisplayed() {
-        val actions = allActions.filterNot { it is  VirtualBackgroundAction }.take(LargeScreenMaxActions)
+        val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(LargeScreenMaxActions)
         var component: ModalSheetComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,

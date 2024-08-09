@@ -51,7 +51,7 @@ import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScree
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.getScreenAspectRatio
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
-import com.kaleyra.video_sdk.call.screennew.CallScreen
+import com.kaleyra.video_sdk.call.screen.CallScreen
 import com.kaleyra.video_sdk.call.utils.Android12CallActivityTasksFixService
 import com.kaleyra.video_sdk.extensions.RationalExtensions.coerceRationalForPip
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -11,19 +11,20 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedWidth
-import com.kaleyra.video_sdk.call.callactionnew.HangUpActionWidth
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.InputCallAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -794,7 +795,9 @@ class SheetCallActionTest {
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription(description).assertWidthIsEqualTo(HangUpActionWidth)
+        composeTestRule.onNodeWithContentDescription(description).assertWidthIsEqualTo(
+            HangUpActionWidth
+        )
     }
 
     @Test
@@ -818,7 +821,9 @@ class SheetCallActionTest {
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription(description).assertWidthIsEqualTo(HangUpActionExtendedWidth)
+        composeTestRule.onNodeWithContentDescription(description).assertWidthIsEqualTo(
+            HangUpActionExtendedWidth
+        )
     }
 
     @Test

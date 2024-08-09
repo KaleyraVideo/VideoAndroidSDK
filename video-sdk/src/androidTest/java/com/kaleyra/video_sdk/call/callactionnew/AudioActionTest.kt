@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
+import com.kaleyra.video_sdk.call.callactions.view.AudioAction
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

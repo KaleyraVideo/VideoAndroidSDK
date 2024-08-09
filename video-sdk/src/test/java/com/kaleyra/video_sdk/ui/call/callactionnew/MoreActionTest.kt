@@ -8,7 +8,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactionnew.MoreAction
+import com.kaleyra.video_sdk.call.callactions.view.MoreAction
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

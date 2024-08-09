@@ -54,12 +54,12 @@
 //import com.kaleyra.video_sdk.call.bottomsheet.ScreenShareComponentTag
 //import com.kaleyra.video_sdk.call.bottomsheet.VirtualBackgroundComponentTag
 //import com.kaleyra.video_sdk.call.bottomsheet.WhiteboardComponentTag
-//import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-//import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-//import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+//import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
+//import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingTypeUi
+//import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingUi
 //import com.kaleyra.video_sdk.call.screen.CallScreen
 //import com.kaleyra.video_sdk.call.screen.CallScreenState
-//import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+//import com.kaleyra.video_sdk.call.screennew.model.CallStateUi
 //import com.kaleyra.video_sdk.call.screen.model.CallUiState
 //import com.kaleyra.video_sdk.call.screen.rememberCallScreenState
 //import com.kaleyra.video_sdk.call.screen.view.CallScreenAppBarTag

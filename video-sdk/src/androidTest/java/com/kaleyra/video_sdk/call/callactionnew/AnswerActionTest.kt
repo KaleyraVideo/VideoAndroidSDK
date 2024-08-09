@@ -10,7 +10,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactions.view.AnswerAction
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionMultiplier
+import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

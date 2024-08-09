@@ -17,8 +17,7 @@
 package com.kaleyra.video_sdk.call.callactions.model
 
 import androidx.compose.runtime.Immutable
-import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 

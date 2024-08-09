@@ -1,9 +1,6 @@
 package com.kaleyra.video_sdk.call.appbar.view
 
-import android.content.res.Configuration
 import android.net.Uri
-import android.telecom.Call
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +35,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,8 +42,8 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.Logo
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview

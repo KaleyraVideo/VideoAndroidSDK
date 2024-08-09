@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

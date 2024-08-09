@@ -14,7 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.HSheetItemsLayout
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.HSheetItemsLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

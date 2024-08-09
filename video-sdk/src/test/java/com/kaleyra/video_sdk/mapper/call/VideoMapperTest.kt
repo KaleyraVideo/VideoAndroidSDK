@@ -26,9 +26,9 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.InputMapper
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointerUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointersUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi

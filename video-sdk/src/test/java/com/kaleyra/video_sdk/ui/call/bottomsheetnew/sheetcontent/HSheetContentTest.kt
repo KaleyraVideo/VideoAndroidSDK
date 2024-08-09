@@ -1,10 +1,8 @@
 package com.kaleyra.video_sdk.ui.call.bottomsheetnew.sheetcontent
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
@@ -19,28 +17,28 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.HSheetContent
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedMultiplier
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionExtendedWidth
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionMultiplier
-import com.kaleyra.video_sdk.call.callactionnew.AnswerActionWidth
-import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedWidth
-import com.kaleyra.video_sdk.call.callactionnew.HangUpActionWidth
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.HSheetContent
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionMultiplier
+import com.kaleyra.video_sdk.call.callactions.view.AnswerActionWidth
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CallActionUI
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ModalSheetComponent
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
@@ -49,9 +47,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -1371,7 +1367,9 @@ class HSheetContentTest {
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText(answerDescription).assertWidthIsEqualTo(AnswerActionExtendedWidth)
+        composeTestRule.onNodeWithText(answerDescription).assertWidthIsEqualTo(
+            AnswerActionExtendedWidth
+        )
     }
 
     @Test
@@ -1399,7 +1397,9 @@ class HSheetContentTest {
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(HangUpActionWidth)
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(
+            HangUpActionWidth
+        )
     }
 
     @Test
@@ -1427,6 +1427,8 @@ class HSheetContentTest {
             )
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(HangUpActionExtendedWidth)
+        composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(
+            HangUpActionExtendedWidth
+        )
     }
 }

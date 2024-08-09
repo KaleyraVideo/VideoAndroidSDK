@@ -28,10 +28,10 @@ import com.kaleyra.video_sdk.call.mapper.StreamMapper.hasAtLeastAVideoEnabled
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.mapToStreamsUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toMyStreamsUi
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import io.mockk.every
 import io.mockk.mockk

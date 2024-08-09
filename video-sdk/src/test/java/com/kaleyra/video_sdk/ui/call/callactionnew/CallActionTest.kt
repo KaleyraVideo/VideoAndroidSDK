@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactionnew.CallAction
+import com.kaleyra.video_sdk.call.callactions.view.CallAction
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

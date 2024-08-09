@@ -19,17 +19,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.MathUtils
-import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
-import com.kaleyra.video_sdk.call.streamnew.model.StreamUiState
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.view.core.Stream
-import com.kaleyra.video_sdk.call.streamnew.view.items.MoreParticipantsItem
-import com.kaleyra.video_sdk.call.streamnew.view.items.NonDisplayedParticipantData
-import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
+import com.kaleyra.video_sdk.call.stream.model.StreamUiState
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.view.core.Stream
+import com.kaleyra.video_sdk.call.stream.view.items.MoreParticipantsItem
+import com.kaleyra.video_sdk.call.stream.view.items.NonDisplayedParticipantData
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import kotlinx.coroutines.flow.take
 
 internal val DefaultPipAspectRatio = Rational(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"

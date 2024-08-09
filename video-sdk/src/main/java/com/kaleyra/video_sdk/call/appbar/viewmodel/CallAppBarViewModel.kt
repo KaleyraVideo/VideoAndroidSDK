@@ -10,8 +10,7 @@ import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_common_ui.utils.TimerParser
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
-import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.appbar.model.Logo
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.mapToRecordingStateUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel

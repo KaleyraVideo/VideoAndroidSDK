@@ -22,10 +22,10 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.AdminBottomSheetTag
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
 import kotlinx.coroutines.test.runTest

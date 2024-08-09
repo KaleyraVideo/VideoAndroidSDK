@@ -11,10 +11,10 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.sheetcontent.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.callactionnew.CallActionDefaults
-import com.kaleyra.video_sdk.call.callactionnew.HangUpAction
-import com.kaleyra.video_sdk.call.callactionnew.HangUpActionExtendedMultiplier
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
+import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedMultiplier
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

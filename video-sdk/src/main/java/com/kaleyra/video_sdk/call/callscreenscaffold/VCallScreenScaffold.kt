@@ -42,11 +42,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetNestedScrollConnection
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
+import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetNestedScrollConnection
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 

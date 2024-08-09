@@ -14,11 +14,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
-import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
-import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItemPadding
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
 import com.kaleyra.video_sdk.ui.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.ui.assertRightPositionInRootIsEqualTo
 import org.junit.After

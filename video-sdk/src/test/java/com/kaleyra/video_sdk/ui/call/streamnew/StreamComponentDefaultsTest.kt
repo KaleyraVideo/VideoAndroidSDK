@@ -4,10 +4,10 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.MaxFeaturedStreamsCompact
-import com.kaleyra.video_sdk.call.streamnew.MaxFeaturedStreamsExpanded
-import com.kaleyra.video_sdk.call.streamnew.StreamComponentDefaults
+import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
+import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsCompact
+import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsExpanded
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
 import org.junit.Assert.*
 import org.junit.Test
 

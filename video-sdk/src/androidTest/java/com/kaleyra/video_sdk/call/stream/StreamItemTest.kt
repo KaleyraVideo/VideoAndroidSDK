@@ -16,11 +16,11 @@ import androidx.compose.ui.test.onParent
 import com.kaleyra.video_sdk.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
-import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItem
-import com.kaleyra.video_sdk.call.streamnew.view.items.StreamItemPadding
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

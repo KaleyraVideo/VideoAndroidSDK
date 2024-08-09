@@ -15,8 +15,8 @@ import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.appbar.view.RecordingDotTag
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.Logo
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import org.junit.After
 import org.junit.Before

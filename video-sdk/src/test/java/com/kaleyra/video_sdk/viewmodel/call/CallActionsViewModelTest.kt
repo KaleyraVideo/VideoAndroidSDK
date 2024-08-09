@@ -35,9 +35,9 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isCo
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
@@ -55,17 +55,17 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitia
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CallActionUI
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
@@ -623,7 +623,9 @@ class CallActionsViewModelTest {
 
     @Test
     fun virtualBackgroundEnabled_virtualBackgroundActionToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(VirtualBackgroundAction(isToggled = false)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(
+            VirtualBackgroundAction(isToggled = false)
+        ))
         every { callMock.isVirtualBackgroundEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -638,7 +640,9 @@ class CallActionsViewModelTest {
 
     @Test
     fun virtualBackgroundDisabled_virtualBackgroundActionNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(VirtualBackgroundAction(isToggled = true)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(
+            VirtualBackgroundAction(isToggled = true)
+        ))
         every { callMock.isVirtualBackgroundEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1479,7 +1483,7 @@ class CallActionsViewModelTest {
         val screenShareVideoMock = spyk<Input.Video.Screen>()
         testTryStopScreenShare(screenShareVideoMock)
     }
-    
+
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
         every { screenShareVideoMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { screenShareVideoMock.tryDisable() } returns true

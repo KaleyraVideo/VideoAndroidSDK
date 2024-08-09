@@ -45,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 

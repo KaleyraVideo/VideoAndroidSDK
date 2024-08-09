@@ -7,11 +7,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageDuration
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageHost
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageDuration
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test

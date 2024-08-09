@@ -17,9 +17,9 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingTypeUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingUi
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

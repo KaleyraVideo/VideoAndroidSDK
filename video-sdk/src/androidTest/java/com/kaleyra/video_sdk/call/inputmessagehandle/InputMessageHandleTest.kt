@@ -20,10 +20,10 @@ import com.kaleyra.video_common_ui.CollaborationViewModel
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.view.InputMessageDuration
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageDuration
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.screennew.InputMessageDragHandleTag
-import com.kaleyra.video_sdk.call.screennew.InputMessageHandle
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageHandle
 import com.kaleyra.video_utils.MutableSharedStateFlow
 import io.mockk.coEvery
 import io.mockk.every

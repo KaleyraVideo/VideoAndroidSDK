@@ -43,8 +43,8 @@ import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
 import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
-import com.kaleyra.video_sdk.call.streamnew.model.core.StreamUi
-import com.kaleyra.video_sdk.call.streamnew.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview

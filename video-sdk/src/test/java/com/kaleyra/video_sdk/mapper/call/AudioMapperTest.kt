@@ -5,7 +5,7 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject

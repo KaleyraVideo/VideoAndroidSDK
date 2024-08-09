@@ -1,8 +1,7 @@
 package com.kaleyra.video_sdk.call.appbar.model
 
 import androidx.compose.runtime.Immutable
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.uistate.UiState
 

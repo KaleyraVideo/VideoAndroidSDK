@@ -24,9 +24,9 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingMessage
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingStateUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingTypeUi
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-import com.kaleyra.video_sdk.call.recording.model.RecordingUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingTypeUi
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingUi
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import io.mockk.every
 import io.mockk.mockk
