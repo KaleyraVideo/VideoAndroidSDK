@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.common.snackbarm3.model
+package com.kaleyra.video_sdk.common.snackbar.model
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Stable

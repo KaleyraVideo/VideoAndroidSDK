@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbar
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable

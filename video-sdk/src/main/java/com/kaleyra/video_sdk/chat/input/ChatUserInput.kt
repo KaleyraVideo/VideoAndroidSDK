@@ -54,7 +54,7 @@ import com.kaleyra.video_sdk.common.userinput.ChatUserInputText
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.clearFocusOnKeyboardDismiss
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.supportRtl
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal const val TextFieldTag = "TextFieldTag"
 
@@ -130,7 +130,7 @@ internal fun ChatUserInput(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ChatUserInputPreview() = KaleyraM3Theme {
+internal fun ChatUserInputPreview() = KaleyraTheme {
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         ChatUserInput(onTextChanged = { }, onMessageSent = { })
     }

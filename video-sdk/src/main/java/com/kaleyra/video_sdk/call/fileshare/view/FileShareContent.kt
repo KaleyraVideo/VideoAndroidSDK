@@ -38,7 +38,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import java.util.UUID
 
 /**
@@ -94,7 +94,7 @@ internal fun FileShareContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareContent(
                 items = ImmutableList((0..200).map { mockUploadSharedFile.copy(id = UUID.randomUUID().toString()) }),

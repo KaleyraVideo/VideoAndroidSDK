@@ -14,48 +14,34 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun AudioOutputGenericFailureSnackbarM3(
-    onDismissClick: () -> Unit,
+internal fun MutedSnackbarM3(
+    adminDisplayName: String? = null,
+    onDismissClick: () -> Unit
 ) {
     val resources = LocalContext.current.resources
     UserMessageInfoSnackbarM3(
-        message = resources.getString(R.string.kaleyra_generic_audio_routing_error),
+        message = resources.getQuantityString(
+            R.plurals.kaleyra_call_participant_muted_by_admin,
+            if (adminDisplayName.isNullOrBlank()) 0 else 1,
+            adminDisplayName
+        ),
         onDismissClick = onDismissClick
     )
 }
 
-@Composable
-internal fun AudioOutputInSystemCallFailureSnackbarM3(
-    onDismissClick: () -> Unit,
-) {
-    val resources = LocalContext.current.resources
-    UserMessageInfoSnackbarM3(
-        message = resources.getString(R.string.kaleyra_already_in_system_call_audio_routing_error),
-        onDismissClick = onDismissClick,
-    )
-}
-
 @MultiConfigPreview
 @Composable
-internal fun AudioOutputGenericFailureSnackbarPreviewM3() {
-    KaleyraM3Theme {
-        AudioOutputGenericFailureSnackbarM3({})
-    }
-}
-
-@MultiConfigPreview
-@Composable
-internal fun AudioOutputInSystemCallFailureSnackbarPreviewM3() {
-    KaleyraM3Theme {
-        AudioOutputInSystemCallFailureSnackbarM3({})
+internal fun MutedSnackbarPreviewM3() {
+    KaleyraTheme {
+        MutedSnackbarM3("admin", {})
     }
 }

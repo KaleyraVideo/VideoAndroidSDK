@@ -37,7 +37,7 @@ import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun ScreenShareComponent(
@@ -107,7 +107,7 @@ internal fun ScreenShareComponent(
 @MultiConfigPreview
 @Composable
 internal fun ScreenShareComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             ScreenShareComponent(
                 uiState = ScreenShareUiState(targetList = ImmutableList(listOf(ScreenShareTargetUi.Device, ScreenShareTargetUi.Application))),

@@ -1,10 +1,10 @@
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 fun AutomaticRecordingSnackbarM3() {
@@ -33,7 +33,7 @@ fun LeftAloneSnackbarM3() {
 @MultiConfigPreview
 @Composable
 internal fun AutomaticRecordingMessagePreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         AutomaticRecordingSnackbarM3()
     }
 }
@@ -41,7 +41,7 @@ internal fun AutomaticRecordingMessagePreviewM3() {
 @MultiConfigPreview
 @Composable
 internal fun WaitingForOtherParticipantsMessagePreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         WaitingForOtherParticipantsSnackbarM3()
     }
 }
@@ -49,7 +49,7 @@ internal fun WaitingForOtherParticipantsMessagePreviewM3() {
 @MultiConfigPreview
 @Composable
 internal fun LeftAloneMessagePreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         LeftAloneSnackbarM3()
     }
 }

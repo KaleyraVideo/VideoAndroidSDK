@@ -14,43 +14,41 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.fileshare.view
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
 import android.content.res.Configuration
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun MaxFileSizeDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = onDismiss,
-            ) {
-                Text(stringResource(id = R.string.kaleyra_button_ok))
-            }
-        },
-        title = {
-            Text(text = stringResource(id = R.string.kaleyra_max_bytes_dialog_title))
-        },
-        text = {
-            Text(text = stringResource(id = R.string.kaleyra_max_bytes_dialog_descr))
-        },
-    )
+internal fun AudioOutputGenericFailureSnackbar() {
+    val resources = LocalContext.current.resources
+    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_generic_audio_routing_error))
+}
+
+@Composable
+internal fun AudioOutputInSystemCallFailureSnackbar() {
+    val resources = LocalContext.current.resources
+    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_already_in_system_call_audio_routing_error))
 }
 
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun FileShareComponentPreview() {
+internal fun AudioOutputGenericFailureSnackbarPreview() {
     KaleyraTheme {
-        MaxFileSizeDialog { }
+        AudioOutputGenericFailureSnackbar()
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun AudioOutputInSystemCallFailureSnackbarPreview() {
+    KaleyraTheme {
+        AudioOutputInSystemCallFailureSnackbar()
     }
 }

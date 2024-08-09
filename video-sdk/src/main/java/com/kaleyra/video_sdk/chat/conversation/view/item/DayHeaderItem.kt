@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private val DayHeaderItemCornerShape = 4.dp
 private val DayHeaderItemInternalHorizontalPadding = 2.dp
@@ -67,7 +67,7 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun DayHeaderItemPreview() = KaleyraM3Theme {
+internal fun DayHeaderItemPreview() = KaleyraTheme {
     Surface {
         DayHeaderItem(0)
     }

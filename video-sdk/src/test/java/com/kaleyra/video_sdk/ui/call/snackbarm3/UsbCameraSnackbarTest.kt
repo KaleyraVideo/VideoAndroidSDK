@@ -23,9 +23,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbConnectedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbDisconnectedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.UsbNotSupportedSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.UsbConnectedSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.UsbDisconnectedSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.UsbNotSupportedSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

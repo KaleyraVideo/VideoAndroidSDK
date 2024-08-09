@@ -39,7 +39,7 @@ import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.call.audiooutput.model.isConnectedOrPlaying
 import com.kaleyra.video_sdk.call.audiooutput.model.isConnecting
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun AudioOutputItem(
@@ -183,7 +183,7 @@ internal fun AudioOutputSelectedItemPreview() {
 
 @Composable
 private fun AudioOutputItemPreview(audioDevice: AudioDeviceUi, selected: Boolean = false) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             AudioOutputItem(
                 audioDevice = audioDevice,

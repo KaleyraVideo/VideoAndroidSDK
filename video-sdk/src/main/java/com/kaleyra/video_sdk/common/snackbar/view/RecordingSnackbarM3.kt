@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 fun RecordingStartedSnackbarM3(
@@ -62,7 +60,7 @@ fun RecordingErrorSnackbarM3(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun RecordingStartedSnackbarPreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         RecordingStartedSnackbarM3({})
     }
 }
@@ -72,7 +70,7 @@ internal fun RecordingStartedSnackbarPreviewM3() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun RecordingStoppedSnackbarPreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         RecordingEndedSnackbarM3({})
     }
 }
@@ -82,7 +80,7 @@ internal fun RecordingStoppedSnackbarPreviewM3() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun RecordingErrorSnackbarPreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         RecordingErrorSnackbarM3({})
     }
 }

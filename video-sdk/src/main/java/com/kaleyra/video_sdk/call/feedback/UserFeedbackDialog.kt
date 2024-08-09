@@ -20,8 +20,6 @@ import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -34,11 +32,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.window.Dialog
@@ -54,7 +50,7 @@ import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ActivityComponentExtensions.isAtLeastResumed
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import kotlinx.coroutines.delay
 
@@ -126,7 +122,7 @@ internal fun UserFeedbackDialog(
 
 @MultiConfigPreview
 @Composable
-internal fun UserFeedbackDialog() = KaleyraM3Theme {
+internal fun UserFeedbackDialog() = KaleyraTheme {
     UserFeedbackDialog(
         onDismiss = {}
     )
@@ -134,7 +130,7 @@ internal fun UserFeedbackDialog() = KaleyraM3Theme {
 
 @MultiConfigPreview
 @Composable
-internal fun UserFeedbackDialogPreview() = KaleyraM3Theme {
+internal fun UserFeedbackDialogPreview() = KaleyraTheme {
     UserFeedbackDialog(
         FeedbackUiState.Display(comment = "test comment", rating = FeedbackUiRating.Good),
         onUserFeedback = { _, _ -> },
@@ -144,7 +140,7 @@ internal fun UserFeedbackDialogPreview() = KaleyraM3Theme {
 
 @MultiConfigPreview
 @Composable
-internal fun UserFeedbackDialogDefaultFeedbackPreview() = KaleyraM3Theme {
+internal fun UserFeedbackDialogDefaultFeedbackPreview() = KaleyraTheme {
     UserFeedbackDialog(
         FeedbackUiState.Display(),
         onUserFeedback = { _, _ -> },

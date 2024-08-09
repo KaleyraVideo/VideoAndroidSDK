@@ -1,7 +1,6 @@
-package com.kaleyra.video_sdk.common.snackbar
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.kaleyra.video_sdk.R
 

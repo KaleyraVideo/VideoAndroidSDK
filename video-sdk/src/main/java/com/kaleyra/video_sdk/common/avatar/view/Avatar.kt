@@ -19,7 +19,6 @@ package com.kaleyra.video_sdk.common.avatar.view
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal object AvatarDefaults {
 
@@ -128,7 +127,7 @@ internal fun Avatar(
 @Preview
 @Composable
 internal fun AvatarPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Avatar(
             username = "J",
             uri = null

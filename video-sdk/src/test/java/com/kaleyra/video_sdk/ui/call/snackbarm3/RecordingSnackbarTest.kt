@@ -23,9 +23,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingEndedSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingErrorSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.RecordingStartedSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.RecordingEndedSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.RecordingErrorSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.RecordingStartedSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

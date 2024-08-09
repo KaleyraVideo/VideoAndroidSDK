@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbar
+package com.kaleyra.video_sdk.common.snackbar.view
 
-import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun CameraRestrictionSnackbar() {
+internal fun CameraRestrictionSnackbarM3(
+    onDismissClick: () -> Unit,
+) {
     val resources = LocalContext.current.resources
-    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_user_has_no_video_permissions))
+    UserMessageInfoSnackbarM3(
+        message = resources.getString(R.string.kaleyra_user_has_no_video_permissions),
+        onDismissClick = onDismissClick
+    )
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@MultiConfigPreview
 @Composable
-internal fun CameraRestrictionSnackbarPreview() {
+internal fun CameraRestrictionSnackbarPreviewM3() {
     KaleyraTheme {
-        CameraRestrictionSnackbar()
+        CameraRestrictionSnackbarM3({})
     }
 }

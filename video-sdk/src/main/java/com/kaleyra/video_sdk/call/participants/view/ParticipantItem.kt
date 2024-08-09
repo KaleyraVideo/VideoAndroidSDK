@@ -27,7 +27,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val ParticipantItemAvatarSize = 28.dp
 
@@ -146,7 +146,7 @@ internal fun ParticipantItem(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun ParticipantItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             ParticipantItem(
                 stream = streamUiMock,
@@ -167,7 +167,7 @@ internal fun ParticipantItemPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun ParticipantItemAsAdminPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             ParticipantItem(
                 stream = streamUiMock.copy(audio = AudioUi(id = "", isMutedForYou = true, isEnabled = false)),

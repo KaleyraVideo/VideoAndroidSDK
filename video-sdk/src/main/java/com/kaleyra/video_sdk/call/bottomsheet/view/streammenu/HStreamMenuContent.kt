@@ -25,7 +25,7 @@ import com.kaleyra.video_sdk.call.callactions.view.PinAction
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun HStreamMenuContent(
@@ -110,7 +110,7 @@ internal fun HStreamMenuContent(
 @NightModePreview
 @Composable
 internal fun HStreamMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             HStreamMenuContent(false, false, false, {}, {}, {})
         }
@@ -121,7 +121,7 @@ internal fun HStreamMenuContentPreview() {
 @NightModePreview
 @Composable
 internal fun HStreamFullscreenMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             HStreamMenuContent(true, false, false, {}, {}, {})
         }
@@ -132,7 +132,7 @@ internal fun HStreamFullscreenMenuContentPreview() {
 @NightModePreview
 @Composable
 internal fun HStreamPinLimitMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             HStreamMenuContent(false, false, true, {}, {}, {})
         }

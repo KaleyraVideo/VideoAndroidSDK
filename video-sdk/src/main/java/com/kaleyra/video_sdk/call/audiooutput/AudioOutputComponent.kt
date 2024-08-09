@@ -42,7 +42,7 @@ import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -111,7 +111,7 @@ internal fun AudioOutputComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun AudioOutputComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             AudioOutputComponent(
                 uiState = AudioOutputUiState(

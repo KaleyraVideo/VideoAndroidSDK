@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

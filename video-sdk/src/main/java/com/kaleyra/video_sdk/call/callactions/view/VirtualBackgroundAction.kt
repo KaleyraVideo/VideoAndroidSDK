@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun VirtualBackgroundAction(
@@ -35,7 +35,7 @@ internal fun VirtualBackgroundAction(
 @NightModePreview
 @Composable
 internal fun VirtualBackgroundActionPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VirtualBackgroundAction(false, {})
         }

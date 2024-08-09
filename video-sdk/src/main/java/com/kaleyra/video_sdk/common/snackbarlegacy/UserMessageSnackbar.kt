@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbar
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -23,12 +23,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.Text
-import androidx.compose.material.rememberDismissState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,18 +40,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun UserMessageSnackbar(
     iconPainter: Painter,
     title: String,
     subtitle: String? = null,
-    backgroundColor: Color = MaterialTheme.colors.onSurface.copy(alpha = .8f)
-        .compositeOver(MaterialTheme.colors.surface)
+    backgroundColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = .8f)
+        .compositeOver(MaterialTheme.colorScheme.surface)
 ) {
-    SwipeToDismiss(state = rememberDismissState(), background = {}) {
+    SwipeToDismissBox(state = rememberSwipeToDismissBoxState(), backgroundContent = {}) {
         Snackbar(
-            backgroundColor = backgroundColor,
+            containerColor = backgroundColor,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
@@ -60,7 +60,7 @@ internal fun UserMessageSnackbar(
                 Image(
                     painter = iconPainter,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.surface),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
                     modifier = Modifier.alignByBaseline()
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -88,7 +88,7 @@ internal fun UserMessageErrorSnackbar(title: String, subtitle: String? = null) {
         iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_error),
         title = title,
         subtitle = subtitle,
-        backgroundColor = MaterialTheme.colors.error.copy(alpha = .8f)
-            .compositeOver(MaterialTheme.colors.onError)
+        backgroundColor = MaterialTheme.colorScheme.error.copy(alpha = .8f)
+            .compositeOver(MaterialTheme.colorScheme.onError)
     )
 }

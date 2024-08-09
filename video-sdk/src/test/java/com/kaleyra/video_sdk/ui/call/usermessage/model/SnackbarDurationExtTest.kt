@@ -2,7 +2,7 @@ package com.kaleyra.video_sdk.ui.call.usermessage.model
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.platform.AccessibilityManager
-import com.kaleyra.video_sdk.common.snackbarm3.model.toMillis
+import com.kaleyra.video_sdk.common.snackbar.model.toMillis
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert

@@ -21,7 +21,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbar.CameraRestrictionSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.CameraRestrictionSnackbar
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

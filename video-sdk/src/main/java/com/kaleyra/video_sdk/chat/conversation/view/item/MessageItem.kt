@@ -38,7 +38,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -64,7 +63,7 @@ import com.kaleyra.video_sdk.chat.conversation.model.Message
 import com.kaleyra.video_sdk.chat.conversation.view.MessageStateTag
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 internal val MessageItemAvatarSize = 28.dp
@@ -287,7 +286,7 @@ private fun contentDescriptionFor(state: Message.State): String =
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun OtherMessageItemPreview() = KaleyraM3Theme {
+internal fun OtherMessageItemPreview() = KaleyraTheme {
     Surface {
         OtherMessageItem(
             message = Message.OtherMessage(
@@ -303,7 +302,7 @@ internal fun OtherMessageItemPreview() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun MyMessageItemPreview() = KaleyraM3Theme {
+internal fun MyMessageItemPreview() = KaleyraTheme {
     Surface {
         MyMessageItem(
             message = Message.MyMessage(

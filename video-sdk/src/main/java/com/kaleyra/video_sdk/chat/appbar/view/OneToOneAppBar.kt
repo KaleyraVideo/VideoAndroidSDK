@@ -39,7 +39,7 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantState
 import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +103,7 @@ private fun textFor(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun OneToOneAppBarPreview() = KaleyraM3Theme {
+internal fun OneToOneAppBarPreview() = KaleyraTheme {
     OneToOneAppBar(
         connectionState = ConnectionState.Connected,
         recipientDetails = ChatParticipantDetails(username = "John Smith", state = MutableStateFlow(ChatParticipantState.Typing)),

@@ -27,16 +27,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +46,7 @@ import com.kaleyra.video_sdk.chat.conversation.view.item.NewMessagesHeaderItem
 import com.kaleyra.video_sdk.chat.conversation.view.item.OtherMessageItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal const val MessageStateTag = "MessageStateTag"
 internal const val ConversationContentTag = "ConversationContentTag"
@@ -134,7 +130,7 @@ internal fun ConversationContent(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ConversationContentPreview() = KaleyraM3Theme {
+internal fun ConversationContentPreview() = KaleyraTheme {
     Surface {
         ConversationContent(
             items = mockConversationElements,
@@ -148,7 +144,7 @@ internal fun ConversationContentPreview() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ConversationContentGroupPreview() = KaleyraM3Theme {
+internal fun ConversationContentGroupPreview() = KaleyraTheme {
     Surface {
         ConversationContent(
             items = mockConversationElements,

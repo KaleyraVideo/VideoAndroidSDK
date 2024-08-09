@@ -9,7 +9,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -38,7 +37,7 @@ internal fun MicAction(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun MicActionPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MicAction(false, {})
         }
@@ -49,7 +48,7 @@ internal fun MicActionPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun MicActionWarningPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MicAction(false, {}, warning = true)
         }
@@ -60,7 +59,7 @@ internal fun MicActionWarningPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun MicActionErrorPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MicAction(false, {}, error = true)
         }

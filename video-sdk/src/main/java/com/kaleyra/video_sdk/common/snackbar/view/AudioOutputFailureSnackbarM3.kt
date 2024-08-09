@@ -14,29 +14,48 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun CameraRestrictionSnackbarM3(
+internal fun AudioOutputGenericFailureSnackbarM3(
     onDismissClick: () -> Unit,
 ) {
     val resources = LocalContext.current.resources
     UserMessageInfoSnackbarM3(
-        message = resources.getString(R.string.kaleyra_user_has_no_video_permissions),
+        message = resources.getString(R.string.kaleyra_generic_audio_routing_error),
         onDismissClick = onDismissClick
+    )
+}
+
+@Composable
+internal fun AudioOutputInSystemCallFailureSnackbarM3(
+    onDismissClick: () -> Unit,
+) {
+    val resources = LocalContext.current.resources
+    UserMessageInfoSnackbarM3(
+        message = resources.getString(R.string.kaleyra_already_in_system_call_audio_routing_error),
+        onDismissClick = onDismissClick,
     )
 }
 
 @MultiConfigPreview
 @Composable
-internal fun CameraRestrictionSnackbarPreviewM3() {
-    KaleyraM3Theme {
-        CameraRestrictionSnackbarM3({})
+internal fun AudioOutputGenericFailureSnackbarPreviewM3() {
+    KaleyraTheme {
+        AudioOutputGenericFailureSnackbarM3({})
+    }
+}
+
+@MultiConfigPreview
+@Composable
+internal fun AudioOutputInSystemCallFailureSnackbarPreviewM3() {
+    KaleyraTheme {
+        AudioOutputInSystemCallFailureSnackbarM3({})
     }
 }

@@ -9,7 +9,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 // TODO add label
@@ -39,7 +38,7 @@ internal fun CameraAction(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun CameraActionPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CameraAction(false, {})
         }
@@ -50,7 +49,7 @@ internal fun CameraActionPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun CameraActionWarningPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CameraAction(false, {}, warning = true)
         }
@@ -61,7 +60,7 @@ internal fun CameraActionWarningPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun CameraActionErrorPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CameraAction(false, {}, error = true)
         }

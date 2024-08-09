@@ -23,7 +23,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.view.CameraRestrictionSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.CameraRestrictionSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

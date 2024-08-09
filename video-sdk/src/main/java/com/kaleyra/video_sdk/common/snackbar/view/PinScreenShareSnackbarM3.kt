@@ -1,11 +1,11 @@
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun PinScreenshareSnackbarM3(
@@ -23,7 +23,7 @@ internal fun PinScreenshareSnackbarM3(
 @MultiConfigPreview
 @Composable
 internal fun PinScreenshareSnackbarPreviewM3() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         PinScreenshareSnackbarM3("admin", {})
     }
 }

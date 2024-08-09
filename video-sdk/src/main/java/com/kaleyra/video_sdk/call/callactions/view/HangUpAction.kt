@@ -9,7 +9,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 val HangUpActionMultiplier = 1
@@ -45,7 +44,7 @@ internal fun HangUpAction(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun HangUpActionPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         HangUpAction({})
     }
 }

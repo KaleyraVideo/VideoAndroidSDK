@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +51,7 @@ internal fun FileShareAppBar(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareAppBarTest() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         FileShareAppBar(
             onBackPressed = { },
             lazyGridState = rememberLazyGridState()

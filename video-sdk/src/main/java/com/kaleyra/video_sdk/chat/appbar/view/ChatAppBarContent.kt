@@ -33,13 +33,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_common_ui.KaleyraM3FontFamily
+import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val TypingDotsPadding = 4.dp
 
@@ -65,7 +65,7 @@ internal fun ChatAppBarContent(
             EllipsizeText(
                 text = title,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontFamily = KaleyraM3FontFamily.default,
+                fontFamily = KaleyraFontFamily.default,
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                 fontWeight = MaterialTheme.typography.titleMedium.fontWeight!!,
                 ellipsize = Ellipsize.Marquee
@@ -73,7 +73,7 @@ internal fun ChatAppBarContent(
             Row {
                 EllipsizeText(
                     text = subtitle,
-                    fontFamily = KaleyraM3FontFamily.default,
+                    fontFamily = KaleyraFontFamily.default,
                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
                     fontWeight = MaterialTheme.typography.titleSmall.fontWeight!!,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -97,7 +97,7 @@ internal fun ChatAppBarContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ChatScreenPreview() = KaleyraM3Theme {
+internal fun ChatScreenPreview() = KaleyraTheme {
     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
         ChatAppBarContent(
             image = ImmutableUri(Uri.parse("https://www.kaleyra.com/wp-content/uploads/Video-Call.png")),

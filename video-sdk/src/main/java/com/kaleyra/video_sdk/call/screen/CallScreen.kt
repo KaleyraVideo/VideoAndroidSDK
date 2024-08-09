@@ -58,7 +58,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMess
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.theme.CollaborationM3Theme
+import com.kaleyra.video_sdk.theme.CollaborationTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -199,7 +199,7 @@ internal fun CallScreen(
         viewModel.setOnUsbCameraConnected(onUsbCameraConnected)
     }
 
-    CollaborationM3Theme(theme = theme) {
+    CollaborationTheme(theme = theme) {
         CallScreen(
             windowSizeClass = windowSizeClass,
             uiState = uiState,

@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
 import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
@@ -52,7 +51,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
@@ -69,7 +67,7 @@ import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isArchiveMimeType
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isImageMimeType
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlin.math.roundToInt
 
 private const val FileMediaType = "MediaType"
@@ -351,7 +349,7 @@ internal fun FileShareItemSuccessPreview() {
 
 @Composable
 private fun FileShareItemPreview(sharedFile: SharedFileUi) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareItem(
                 sharedFile = sharedFile,

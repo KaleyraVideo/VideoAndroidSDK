@@ -32,7 +32,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamItemPadding = 8.dp
 
@@ -189,7 +189,7 @@ private fun StreamStatusIcon(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun StreamItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             StreamItem(
                 stream = StreamUi(

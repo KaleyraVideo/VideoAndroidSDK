@@ -35,7 +35,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private const val AvatarCount = 3
 
@@ -120,7 +120,7 @@ private fun Avatars(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun MoreParticipantsItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MoreParticipantsItem(
                 nonDisplayedParticipantList = ImmutableList(

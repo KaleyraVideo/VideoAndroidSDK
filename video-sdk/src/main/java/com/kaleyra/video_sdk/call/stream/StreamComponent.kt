@@ -53,7 +53,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
 internal const val MaxFeaturedStreamsCompact = 8
@@ -336,7 +336,7 @@ private fun Modifier.streamDim(enabled: Boolean): Modifier = composed {
 @MultiConfigPreview
 @Composable
 internal fun StreamComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(streams = previewStreams),
@@ -353,7 +353,7 @@ internal fun StreamComponentPreview() {
 @MultiConfigPreview
 @Composable
 internal fun StreamComponentPinPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(

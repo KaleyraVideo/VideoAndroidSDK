@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.common.snackbarm3.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.common.snackbar.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
@@ -26,7 +26,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.concurrent.timer
@@ -52,7 +52,7 @@ internal fun StackedUserMessageComponent(
 
 @MultiConfigPreview
 @Composable
-fun StackedUserMessageSnackbarHandlerPreview() = KaleyraM3Theme {
+fun StackedUserMessageSnackbarHandlerPreview() = KaleyraTheme {
     val messages = listOf(
         RecordingMessage.Started,
         RecordingMessage.Stopped,

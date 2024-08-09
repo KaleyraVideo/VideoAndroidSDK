@@ -35,7 +35,7 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 import com.kaleyra.video_sdk.call.virtualbackground.model.mockVirtualBackgrounds
 import com.kaleyra.video_sdk.call.virtualbackground.view.VirtualBackgroundContent
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun VirtualBackgroundComponent(
@@ -84,7 +84,7 @@ internal fun VirtualBackgroundComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun VirtualBackgroundComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VirtualBackgroundComponent(
                 uiState = VirtualBackgroundUiState(backgroundList = mockVirtualBackgrounds),

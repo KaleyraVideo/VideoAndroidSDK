@@ -48,7 +48,7 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.theme.typography
 
 @Stable
@@ -220,7 +220,7 @@ private fun CallParticipantsButton(
 
 @MultiConfigPreview
 @Composable
-internal fun CallAppBarComponentPreview() = KaleyraM3Theme {
+internal fun CallAppBarComponentPreview() = KaleyraTheme {
     Column {
         CallAppBarComponent(
             logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),

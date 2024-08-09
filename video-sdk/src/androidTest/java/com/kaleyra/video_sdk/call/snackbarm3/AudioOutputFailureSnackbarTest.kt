@@ -24,8 +24,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.view.AudioOutputGenericFailureSnackbarM3
-import com.kaleyra.video_sdk.common.snackbarm3.view.AudioOutputInSystemCallFailureSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.AudioOutputGenericFailureSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.AudioOutputInSystemCallFailureSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -92,7 +92,7 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun UploadCardUploadingPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         UploadCardPreview(WhiteboardUploadUi.Uploading(.7f))
     }
 }
@@ -101,14 +101,14 @@ internal fun UploadCardUploadingPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun UploadCardErrorPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         UploadCardPreview(WhiteboardUploadUi.Error)
     }
 }
 
 @Composable
 private fun UploadCardPreview(upload: WhiteboardUploadUi) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         WhiteboardUploadCard(upload = upload)
     }
 }

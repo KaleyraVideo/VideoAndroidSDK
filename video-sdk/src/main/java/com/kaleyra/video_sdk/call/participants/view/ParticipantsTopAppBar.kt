@@ -1,18 +1,15 @@
 package com.kaleyra.video_sdk.call.participants.view
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +32,7 @@ internal fun ParticipantsTopAppBar(
 @NightModePreview
 @Composable
 internal fun ParticipantsTopAppBarPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         ParticipantsTopAppBar(participantsCount = 3, onBackPressed = {})
     }
 }

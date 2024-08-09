@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val KickParticipantColor = Color(0xFFAE1300)
 
@@ -109,7 +109,7 @@ internal fun AdminBottomSheetContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun AdminBottomSheetContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             AdminBottomSheetContent(
                 stream = streamUiMock,

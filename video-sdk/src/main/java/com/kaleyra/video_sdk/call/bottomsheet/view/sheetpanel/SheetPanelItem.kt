@@ -28,7 +28,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun SheetPanelItem(
@@ -93,7 +93,7 @@ private fun textFor(callAction: CallActionUI) =
 @NightModePreview
 @Composable
 internal fun SheetPanelScreenShareItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = ScreenShareAction())
         }
@@ -104,7 +104,7 @@ internal fun SheetPanelScreenShareItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelScreenShareItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = ScreenShareAction(isEnabled = false))
         }
@@ -115,7 +115,7 @@ internal fun SheetPanelScreenShareItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelFlipCameraItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = FlipCameraAction())
         }
@@ -126,7 +126,7 @@ internal fun SheetPanelFlipCameraItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelFlipCameraItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = FlipCameraAction(isEnabled = false))
         }
@@ -137,7 +137,7 @@ internal fun SheetPanelFlipCameraItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelAudioItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = AudioAction())
         }
@@ -148,7 +148,7 @@ internal fun SheetPanelAudioItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelAudioItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = AudioAction(isEnabled = false))
         }
@@ -159,7 +159,7 @@ internal fun SheetPanelAudioItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelFileShareItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = FileShareAction())
         }
@@ -170,7 +170,7 @@ internal fun SheetPanelFileShareItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelFileShareItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = FileShareAction(isEnabled = false))
         }
@@ -181,7 +181,7 @@ internal fun SheetPanelFileShareItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelChatItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = ChatAction())
         }
@@ -192,7 +192,7 @@ internal fun SheetPanelChatItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelChatItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = ChatAction(isEnabled = false))
         }
@@ -203,7 +203,7 @@ internal fun SheetPanelChatItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelWhiteboardItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = WhiteboardAction(notificationCount = 2))
         }
@@ -214,7 +214,7 @@ internal fun SheetPanelWhiteboardItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelWhiteboardItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = WhiteboardAction(notificationCount = 2, isEnabled = false))
         }
@@ -225,7 +225,7 @@ internal fun SheetPanelWhiteboardItemDisabledPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelVirtualBackgroundItemPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = VirtualBackgroundAction())
         }
@@ -236,7 +236,7 @@ internal fun SheetPanelVirtualBackgroundItemPreview() {
 @NightModePreview
 @Composable
 internal fun SheetPanelVirtualBackgroundItemDisabledPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = VirtualBackgroundAction(isEnabled = false))
         }

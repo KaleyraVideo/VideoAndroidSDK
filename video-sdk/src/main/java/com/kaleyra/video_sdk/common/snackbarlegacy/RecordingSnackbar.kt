@@ -14,40 +14,48 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbar
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun UsbConnectedSnackbar(name: String) {
+internal fun RecordingStartedSnackbar() {
+    val resources = LocalContext.current.resources
     UserMessageInfoSnackbar(
-        title = if (name.isBlank()) stringResource(R.string.kaleyra_generic_external_camera_connected) else
-            stringResource(R.string.kaleyra_external_camera_connected, name)
+        title = resources.getString(R.string.kaleyra_recording_started),
+        subtitle = resources.getString(R.string.kaleyra_recording_started_message)
     )
 }
 
 @Composable
-internal fun UsbDisconnectedSnackbar() {
-    UserMessageInfoSnackbar(title = stringResource(R.string.kaleyra_external_camera_disconnected))
+internal fun RecordingEndedSnackbar() {
+    val resources = LocalContext.current.resources
+    UserMessageInfoSnackbar(
+        title = resources.getString(R.string.kaleyra_recording_stopped),
+        subtitle = resources.getString(R.string.kaleyra_recording_stopped_message)
+    )
 }
 
 @Composable
-internal fun UsbNotSupportedSnackbar() {
-    UserMessageInfoSnackbar(title = stringResource(R.string.kaleyra_external_camera_unsupported))
+internal fun RecordingErrorSnackbar() {
+    val resources = LocalContext.current.resources
+    UserMessageErrorSnackbar(
+        title = resources.getString(R.string.kaleyra_recording_failed),
+        subtitle = resources.getString(R.string.kaleyra_recording_failed_message)
+    )
 }
 
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun UsbConnectedSnackbarPreview() {
+internal fun RecordingStartedSnackbarPreview() {
     KaleyraTheme {
-        UsbConnectedSnackbar("name")
+        RecordingStartedSnackbar()
     }
 }
 
@@ -55,9 +63,9 @@ internal fun UsbConnectedSnackbarPreview() {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun UsbDisconnectedSnackbarPreview() {
+internal fun RecordingStoppedSnackbarPreview() {
     KaleyraTheme {
-        UsbDisconnectedSnackbar()
+        RecordingEndedSnackbar()
     }
 }
 
@@ -65,8 +73,8 @@ internal fun UsbDisconnectedSnackbarPreview() {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun UsbNotSupportedSnackbarPreview() {
+internal fun RecordingErrorSnackbarPreview() {
     KaleyraTheme {
-        UsbNotSupportedSnackbar()
+        RecordingErrorSnackbar()
     }
 }

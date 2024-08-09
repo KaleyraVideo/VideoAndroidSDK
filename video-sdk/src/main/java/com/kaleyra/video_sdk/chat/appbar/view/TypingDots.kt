@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val defaultDotSize = 4.dp
 internal const val defaultDelay = 300
@@ -94,7 +94,7 @@ internal fun TypingDots(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun DotsPreview() = KaleyraM3Theme {
+internal fun DotsPreview() = KaleyraTheme {
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         TypingDots()
     }

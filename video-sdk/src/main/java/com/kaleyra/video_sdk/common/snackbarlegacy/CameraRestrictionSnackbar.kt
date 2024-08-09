@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.common.snackbarm3.view
+package com.kaleyra.video_sdk.common.snackbarlegacy
 
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
-internal fun MutedSnackbarM3(
-    adminDisplayName: String? = null,
-    onDismissClick: () -> Unit
-) {
+internal fun CameraRestrictionSnackbar() {
     val resources = LocalContext.current.resources
-    UserMessageInfoSnackbarM3(
-        message = resources.getQuantityString(
-            R.plurals.kaleyra_call_participant_muted_by_admin,
-            if (adminDisplayName.isNullOrBlank()) 0 else 1,
-            adminDisplayName
-        ),
-        onDismissClick = onDismissClick
-    )
+    UserMessageInfoSnackbar(title = resources.getString(R.string.kaleyra_user_has_no_video_permissions))
 }
 
-@MultiConfigPreview
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun MutedSnackbarPreviewM3() {
-    KaleyraM3Theme {
-        MutedSnackbarM3("admin", {})
+internal fun CameraRestrictionSnackbarPreview() {
+    KaleyraTheme {
+        CameraRestrictionSnackbar()
     }
 }

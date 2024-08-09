@@ -26,7 +26,7 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun VStreamMenuContent(
@@ -110,7 +110,7 @@ internal fun VStreamMenuContent(
 @MultiConfigPreview
 @Composable
 internal fun VStreamMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VStreamMenuContent(false, false, false,  {}, {}, {})
         }
@@ -120,7 +120,7 @@ internal fun VStreamMenuContentPreview() {
 @MultiConfigPreview
 @Composable
 internal fun VStreamFullscreenMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VStreamMenuContent(true, false, false, {}, {}, {})
         }
@@ -131,7 +131,7 @@ internal fun VStreamFullscreenMenuContentPreview() {
 @NightModePreview
 @Composable
 internal fun VStreamPinLimitMenuContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VStreamMenuContent(false, false, true, {}, {}, {})
         }

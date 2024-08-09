@@ -45,7 +45,7 @@ import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 const val CallInfoTitleTestTag = "CallInfoTitleTestTag"
 const val CallInfoSubtitleTestTag = "CallInfoSubtitleTestTag"
@@ -161,7 +161,7 @@ fun CallInfoComponent(
 @NightModePreview
 @Composable
 internal fun CallInfoConnectingWithDisplayNames() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CallInfoComponent(
                 modifier = Modifier,
@@ -179,7 +179,7 @@ internal fun CallInfoConnectingWithDisplayNames() {
 @NightModePreview
 @Composable
 internal fun CallInfoConnectingWithNoDisplayNames() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CallInfoComponent(
                 modifier = Modifier,
@@ -197,7 +197,7 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
 @NightModePreview
 @Composable
 internal fun CallInfoComponentHidden() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CallInfoComponent(
                 modifier = Modifier,
@@ -211,7 +211,7 @@ internal fun CallInfoComponentHidden() {
 @NightModePreview
 @Composable
 internal fun CallInfoPipMode() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CallInfoComponent(
                 modifier = Modifier,

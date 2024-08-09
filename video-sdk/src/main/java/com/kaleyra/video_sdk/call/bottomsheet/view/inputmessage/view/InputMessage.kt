@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun MicMessage(
@@ -130,7 +130,7 @@ private fun InputMessageText(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun MicOnInputMessagePreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MicMessage(true)
         }
@@ -141,7 +141,7 @@ internal fun MicOnInputMessagePreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun MicOffInputMessagePreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             MicMessage(false)
         }
@@ -152,7 +152,7 @@ internal fun MicOffInputMessagePreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun CameraOnInputMessagePreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CameraMessage(true)
         }
@@ -163,7 +163,7 @@ internal fun CameraOnInputMessagePreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun CameraOffInputMessagePreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CameraMessage(false)
         }

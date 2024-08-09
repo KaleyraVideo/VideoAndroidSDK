@@ -24,8 +24,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
-import com.kaleyra.video_sdk.common.snackbarm3.view.UserMessageSnackbarActionConfig
-import com.kaleyra.video_sdk.common.snackbarm3.view.UserMessageSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.UserMessageSnackbarActionConfig
+import com.kaleyra.video_sdk.common.snackbar.view.UserMessageSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test

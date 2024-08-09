@@ -42,7 +42,7 @@ import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private val WhiteboardBackgroundColor = Color(0xFFF5F5F5)
 
@@ -129,7 +129,7 @@ internal fun WhiteboardComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun WhiteboardComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         WhiteboardComponentPreview(
             uiState = WhiteboardUiState(
                 whiteboardView = View(LocalContext.current),
@@ -152,7 +152,7 @@ internal fun WhiteboardScreenOfflinePreview() {
 
 @Composable
 private fun WhiteboardComponentPreview(uiState: WhiteboardUiState) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             WhiteboardContent(
                 whiteboardView = uiState.whiteboardView!!,

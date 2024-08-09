@@ -8,7 +8,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun WhiteboardAction(
@@ -35,7 +35,7 @@ internal fun WhiteboardAction(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun WhiteboardActionPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             WhiteboardAction({})
         }
@@ -46,7 +46,7 @@ internal fun WhiteboardActionPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 internal fun WhiteboardActionBadgePreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             WhiteboardAction({}, badgeText = "1")
         }

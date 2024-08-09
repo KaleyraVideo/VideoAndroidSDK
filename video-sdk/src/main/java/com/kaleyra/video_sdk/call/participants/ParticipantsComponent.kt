@@ -51,7 +51,7 @@ import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.launch
 
 internal const val AdminBottomSheetTag = "AdminBottomSheetTag"
@@ -290,7 +290,7 @@ internal fun ParticipantsComponent(
 @NightModePreview
 @Composable
 internal fun ParticipantsComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         ParticipantsComponent(
             streamsLayout = StreamsLayout.Grid,
             adminsStreamsIds = ImmutableList(listOf("id1")),
