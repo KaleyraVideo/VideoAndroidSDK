@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
@@ -63,7 +64,7 @@ internal fun CallScreenModalSheet(
             onDismissRequest = onRequestDismiss,
             sheetState = sheetState,
             dragHandle = null,
-            windowInsets = WindowInsets.navigationBars.only(WindowInsetsSides.Vertical),
+            windowInsets = WindowInsets(0.dp),
             modifier = modifier
         ) {
             when (modalSheetComponent) {

@@ -1,8 +1,11 @@
 package com.kaleyra.video_sdk.call.participants
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,6 +49,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import kotlinx.coroutines.launch
@@ -200,78 +204,84 @@ internal fun ParticipantsComponent(
             }
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(contentPadding),
-            contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
-                Text(
-                    text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        Column(Modifier.fillMaxSize()) {
+            Box(Modifier.weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(contentPadding),
+                    contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        Text(
+                            text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-            item {
-                StreamsLayoutSelector(
-                    streamsLayout = streamsLayout,
-                    enableGridLayout = enableGridLayout,
-                    onLayoutClick = onLayoutClick
-                )
-            }
+                    item {
+                        StreamsLayoutSelector(
+                            streamsLayout = streamsLayout,
+                            enableGridLayout = enableGridLayout,
+                            onLayoutClick = onLayoutClick
+                        )
+                    }
 
-            item {
-                Spacer(Modifier.height(16.dp))
-            }
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                    }
 
-            item {
-                Text(
-                    text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                    item {
+                        Text(
+                            text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-            items(items = streams.value, key = { it.id }) { stream ->
-                ParticipantItem(
-                    stream = stream,
-                    isPinned = pinnedStreamsIds.value.contains(stream.id),
-                    isAdminStream = adminsStreamsIds.value.contains(stream.id),
-                    amIAdmin = amIAdmin,
-                    isPinLimitReached = isPinLimitReached,
-                    onMuteStreamClick = onMuteStreamClick,
-                    onDisableMicClick = onDisableMicClick,
-                    onPinStreamClick = onPinStreamClick,
-                    onMoreClick = { bottomSheetStream = stream }
-                )
-            }
+                    items(items = streams.value, key = { it.id }) { stream ->
+                        ParticipantItem(
+                            stream = stream,
+                            isPinned = pinnedStreamsIds.value.contains(stream.id),
+                            isAdminStream = adminsStreamsIds.value.contains(stream.id),
+                            amIAdmin = amIAdmin,
+                            isPinLimitReached = isPinLimitReached,
+                            onMuteStreamClick = onMuteStreamClick,
+                            onDisableMicClick = onDisableMicClick,
+                            onPinStreamClick = onPinStreamClick,
+                            onMoreClick = { bottomSheetStream = stream }
+                        )
+                    }
 
-            if (invited.count() > 0) {
-                item {
-                    Spacer(Modifier.height(16.dp))
+                    if (invited.count() > 0) {
+                        item {
+                            Spacer(Modifier.height(16.dp))
+                        }
+
+                        item {
+                            Text(
+                                fontWeight = FontWeight.SemiBold,
+                                text = stringResource(R.string.kaleyra_participants_component_users_invited),
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        items(items = invited.value) { username ->
+                            Text(
+                                text = username,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
                 }
-
-                item {
-                    Text(
-                        fontWeight = FontWeight.SemiBold,
-                        text = stringResource(R.string.kaleyra_participants_component_users_invited),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                items(items = invited.value) { username ->
-                    Text(
-                        text = username,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
             }
+
+            NavigationBarsSpacer()
         }
     }
 }
