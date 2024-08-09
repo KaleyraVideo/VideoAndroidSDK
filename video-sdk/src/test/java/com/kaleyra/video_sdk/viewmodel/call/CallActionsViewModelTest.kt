@@ -125,6 +125,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.Muted)
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.inputs.release(any()) } returns Unit
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
@@ -1474,19 +1475,11 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun deviceScreenShareActive_stopScreenShareSuccess() {
+    fun screenShareActive_stopScreenShareSuccess() {
         val screenShareVideoMock = spyk<Input.Video.Screen>()
         testTryStopScreenShare(screenShareVideoMock)
-        verify(exactly = 1) { screenShareVideoMock.dispose() }
     }
-
-    @Test
-    fun appScreenShareActive_stopScreenShareSuccess() {
-        val screenShareVideoMock = spyk<Input.Video.Application>()
-        testTryStopScreenShare(screenShareVideoMock)
-        verify(exactly = 1) { screenShareVideoMock.tryDisable() }
-    }
-
+    
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
         every { screenShareVideoMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { screenShareVideoMock.tryDisable() } returns true
@@ -1499,8 +1492,10 @@ class CallActionsViewModelTest {
         val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meMock
         }
+        val inputs = mockk<Inputs>(relaxed = true)
         val availableInputs = setOf(screenShareVideoMock, mockk<Input.Video.Screen>(), mockk<Input.Video.Application>(), mockk<Input.Video.Camera>())
-        every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
+        every { callMock.inputs } returns inputs
+        every { inputs.availableInputs } returns MutableStateFlow(availableInputs)
         every { callMock.participants } returns MutableStateFlow(participants)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1510,6 +1505,8 @@ class CallActionsViewModelTest {
 
         val isStopped = viewModel.tryStopScreenShare()
         verify(exactly = 1) { meMock.removeStream(myStreamMock) }
+        verify(exactly = 1) { inputs.release(Inputs.Type.Screen) }
+        verify(exactly = 1) { inputs.release(Inputs.Type.Application) }
         assertEquals(true, isStopped)
     }
 }
