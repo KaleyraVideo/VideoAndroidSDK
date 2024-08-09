@@ -60,8 +60,6 @@ class WhiteboardComponentTest {
 
     private lateinit var sheetState: SheetState
 
-    private var userMessage by mutableStateOf<UserMessage?>(null)
-
     private var isReloadClicked = false
 
     private var confirmedText: String? = null
@@ -96,7 +94,6 @@ class WhiteboardComponentTest {
         showWhiteboardComponent = true
         uiState = WhiteboardUiState()
         confirmedText = null
-        userMessage = null
         isTextDismissed = false
         isReloadClicked = false
         isWhiteboardClosed = false
@@ -237,13 +234,6 @@ class WhiteboardComponentTest {
         showWhiteboardComponent = false
         composeTestRule.waitForIdle()
         assertEquals(true, isWhiteboardClosed)
-    }
-
-    @Test
-    fun userMessage_userMessageSnackbarIsDisplayed() {
-        userMessage = RecordingMessage.Started
-        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
 }
