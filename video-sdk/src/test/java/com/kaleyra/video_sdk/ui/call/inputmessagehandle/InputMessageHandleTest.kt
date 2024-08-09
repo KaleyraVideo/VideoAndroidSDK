@@ -45,8 +45,8 @@ class InputMessageHandleTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val callParticipants = mockk<CallParticipants>()
-    private val call = mockk<CallUI>(relaxed = true)
+    private val callParticipants = mockk<CallParticipants>(relaxed = true)
+    private val mockCall = mockk<CallUI>(relaxed = true)
     private val conference = mockk<ConferenceUI>(relaxed = true)
     private lateinit var callActionsViewModel: CallActionsViewModel
 
@@ -72,7 +72,7 @@ class InputMessageHandleTest {
             every { creator() } returns mockk(relaxed = true)
             every { others } returns listOf(mockk(relaxed = true))
         }
-        with(call) {
+        with(mockCall) {
             every { participants } returns MutableStateFlow(callParticipants)
             every { state } returns MutableStateFlow(Call.State.Connected)
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
@@ -82,10 +82,10 @@ class InputMessageHandleTest {
             }
         }
         with(conference) {
-            every { call } returns MutableSharedStateFlow<CallUI>(this@InputMessageHandleTest.call)
+            every { call } returns MutableSharedStateFlow<CallUI>(this@InputMessageHandleTest.mockCall)
         }
         callActionsViewModel = CallActionsViewModel {
-           CollaborationViewModel.Configuration.Success(conference, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))
+            CollaborationViewModel.Configuration.Success(conference, mockk(), mockk(relaxed = true), MutableStateFlow(mockk()))
         }
         mockkObject(CallActionsViewModel.Companion)
         every { CallActionsViewModel.provideFactory(any()) } returns object : ViewModelProvider.Factory {
@@ -156,7 +156,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffMicInputMessage() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.None)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { myMic.tryDisable() } returns true
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -179,7 +179,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleOffCameraInputMessage() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.None)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.Both)
         every { myVideo.tryDisable() } returns true
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -239,7 +239,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableMicrophoneFailure() = runTest {
-        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.Both)
+        every { myMic.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myMic.tryDisable() } returns false
         val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
@@ -258,7 +258,7 @@ class InputMessageHandleTest {
 
     @Test
     fun testInputMessageHandleNotShownOnDisableCameraFailure() = runTest {
-        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.Both)
+        every { myVideo.enabled } returns MutableStateFlow(Input.Enabled.None)
         every { myVideo.tryDisable() } returns false
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
