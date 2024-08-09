@@ -29,7 +29,6 @@ import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.callactions.model.CallAction
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -96,7 +95,7 @@ class AudioOutputViewModelTest {
     fun testAudioOutputUiState_deviceListUpdated() = runTest {
         every { callMock.audioOutputDevicesList } returns MutableStateFlow(listOf(AudioOutputDevice.Loudspeaker(), AudioOutputDevice.WiredHeadset(), AudioOutputDevice.None()))
         val current = viewModel.uiState.first().audioDeviceList.value
-        Assert.assertEquals(listOf<CallAction>(), current)
+        Assert.assertEquals(listOf<AudioDeviceUi>(), current)
         advanceUntilIdle()
         val new = viewModel.uiState.first().audioDeviceList.value
         val expected = listOf(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.WiredHeadset, AudioDeviceUi.Muted)

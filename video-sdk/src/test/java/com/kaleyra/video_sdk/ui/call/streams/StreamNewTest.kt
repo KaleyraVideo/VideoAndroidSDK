@@ -11,7 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.streamnew.view.core.Stream
-import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
+import com.kaleyra.video_sdk.call.streamnew.view.core.StreamViewTestTag
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

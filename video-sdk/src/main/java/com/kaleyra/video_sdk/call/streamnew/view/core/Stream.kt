@@ -3,7 +3,6 @@ package com.kaleyra.video_sdk.call.streamnew.view.core
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -14,11 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 
-//const val StreamViewTestTag = "StreamViewTestTag"
+const val StreamViewTestTag = "StreamViewTestTag"
 
 @Composable
 internal fun Stream(
