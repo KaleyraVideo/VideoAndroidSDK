@@ -68,7 +68,7 @@ internal object CallActionDefaults {
     val ContainerColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.onSurface.copy(.1f)
+        get() = MaterialTheme.colorScheme.surfaceContainerHighest
 
     val ContentColor: Color
         @Composable
@@ -78,7 +78,7 @@ internal object CallActionDefaults {
     val DisabledContainerColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.onSurface.copy(.12f)
+        get() = MaterialTheme.colorScheme.surfaceContainerHighest.copy(.38f)
 
     val DisabledContentColor: Color
         @Composable
@@ -88,17 +88,17 @@ internal object CallActionDefaults {
     val CheckedContainerColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isSystemInDarkTheme()) 1f else .66f)
+        get() = MaterialTheme.colorScheme.inverseSurface
 
     val CheckedContentColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.surface
+        get() = MaterialTheme.colorScheme.inverseOnSurface
 
     val BadgeContainerColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.primary
+        get() = MaterialTheme.colorScheme.primaryContainer
 
     @Composable
     fun iconButtonColors(
@@ -149,7 +149,7 @@ internal fun CallToggleAction(
     buttonText: String? = null,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
 ) {
@@ -200,7 +200,7 @@ internal fun CallAction(
     disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
 ) {
@@ -247,7 +247,7 @@ private fun CallActionLayout(
     iconButton: @Composable () -> Unit,
     label: String? = null,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
 ) {
     Box(modifier.width(IntrinsicSize.Max)) {
@@ -340,7 +340,7 @@ private fun ButtonLayout(
 internal fun CallActionBadge(
     text: String,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.primary,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = contentColorFor(containerColor),
 ) {
     Card(

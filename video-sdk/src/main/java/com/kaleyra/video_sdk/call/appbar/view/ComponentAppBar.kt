@@ -76,7 +76,7 @@ internal fun ComponentAppBar(
                 actions()
             }
         },
-        containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else MaterialTheme.colorScheme.surface,
+        containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = modifier
     )
 }

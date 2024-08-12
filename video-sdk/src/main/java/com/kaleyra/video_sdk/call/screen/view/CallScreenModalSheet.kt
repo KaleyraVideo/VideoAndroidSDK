@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.screen.view
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
@@ -62,6 +63,7 @@ internal fun CallScreenModalSheet(
             sheetState = sheetState,
             dragHandle = null,
             windowInsets = WindowInsets(0.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = modifier
         ) {
             when (modalSheetComponent) {

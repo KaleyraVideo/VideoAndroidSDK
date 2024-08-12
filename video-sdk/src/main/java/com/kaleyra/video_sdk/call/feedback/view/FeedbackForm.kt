@@ -34,9 +34,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -146,7 +148,7 @@ internal fun FeedbackForm(
             },
             textStyle = TextStyle(
                 fontSize = 14.sp
-            ),
+            )
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -173,7 +175,7 @@ internal fun FeedbackForm(
             Button(
                 onClick = { onUserFeedback(sliderValue!!, textFieldValue.text) },
                 shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_feedback_vote),

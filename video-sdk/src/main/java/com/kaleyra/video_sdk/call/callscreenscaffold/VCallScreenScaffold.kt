@@ -96,7 +96,7 @@ internal fun VCallScreenScaffold(
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.HDragHandle() },
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
     contentColor: Color = contentColorFor(containerColor),
     paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
     content: @Composable (PaddingValues) -> Unit
@@ -171,7 +171,7 @@ internal fun VCallScreenScaffold(
                         .clip(sheetCornerShape),
                     sheetContent = {
                         Surface(
-                            color = MaterialTheme.colorScheme.surface,
+                            color = MaterialTheme.colorScheme.surfaceContainer,
                             tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier.anchoredDraggable(
                                 state = sheetState.anchoredDraggableState,
@@ -185,7 +185,7 @@ internal fun VCallScreenScaffold(
                     sheetDragContent = sheetDragHandle?.let { dragHandle ->
                         {
                             Surface(
-                                color = MaterialTheme.colorScheme.surface,
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                                 tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)

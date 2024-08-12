@@ -90,7 +90,7 @@ internal fun Avatar(
     username: String,
     modifier: Modifier = Modifier,
     size: Dp = AvatarDefaults.defaultSize,
-    color: Color = MaterialTheme.colorScheme.primary,
+    color: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = contentColorFor(color),
     onSuccess: (() -> Unit)? = null
 ) {

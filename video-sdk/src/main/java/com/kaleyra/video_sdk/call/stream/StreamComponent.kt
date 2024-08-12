@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -211,7 +212,7 @@ internal fun StreamComponent(
 
                             Surface(
                                 shape = RoundedCornerShape(4.dp),
-                                tonalElevation = 1.dp,
+                                color = MaterialTheme.colorScheme.surfaceContainerLow,
                                 modifier = itemModifier
                                     .pin(streamItemState.isPinned)
                                     .streamDim(streamItemState.isDimmed)

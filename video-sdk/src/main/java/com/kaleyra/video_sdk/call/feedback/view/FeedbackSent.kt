@@ -75,7 +75,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
         Button(
             onClick = onDismiss,
             shape = RoundedCornerShape(4.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             modifier = Modifier
                 .fillMaxWidth()
         ) {

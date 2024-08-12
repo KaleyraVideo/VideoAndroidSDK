@@ -98,7 +98,7 @@ internal fun OtherMessageItem(
                         contentDescription = stringResource(id = R.string.kaleyra_avatar),
                         placeholder = R.drawable.ic_kaleyra_avatar,
                         error = R.drawable.ic_kaleyra_avatar,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         backgroundColor = colorResource(R.color.kaleyra_color_grey_light),
                         size = MessageItemAvatarSize
                     )
@@ -150,8 +150,8 @@ internal fun MyMessageItem(
                 bottomStart = BubbleCornerRadius,
                 bottomEnd = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius
             ),
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }

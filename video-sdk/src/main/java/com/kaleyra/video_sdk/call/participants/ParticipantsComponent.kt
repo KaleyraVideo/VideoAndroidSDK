@@ -163,7 +163,8 @@ internal fun ParticipantsComponent(
                 scrollBehavior = scrollBehavior,
                 onBackPressed = onCloseClick
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
     ) { contentPadding ->
         var bottomSheetStream by remember { mutableStateOf<StreamUi?>(null) }
 
@@ -182,7 +183,8 @@ internal fun ParticipantsComponent(
                 sheetState = sheetState,
                 shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
                 onDismissRequest = { bottomSheetStream = null },
-                modifier = Modifier.testTag(AdminBottomSheetTag)
+                modifier = Modifier.testTag(AdminBottomSheetTag),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             ) {
                 AdminBottomSheetContent(
                     stream = this@apply,

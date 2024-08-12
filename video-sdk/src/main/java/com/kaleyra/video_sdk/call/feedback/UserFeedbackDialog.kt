@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
@@ -100,6 +101,7 @@ internal fun UserFeedbackDialog(
                     windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
                 ) 8.dp else 24.dp)) {
             Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .wrapContentSize()

@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -86,7 +87,7 @@ internal fun WhiteboardComponent(
         onDispose(onWhiteboardClosed)
     }
 
-    Surface {
+    Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
         Column {
             WhiteboardAppBar(
                 isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,

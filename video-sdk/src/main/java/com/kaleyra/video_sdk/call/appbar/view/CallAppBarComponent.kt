@@ -100,8 +100,7 @@ internal fun CallAppBarComponent(
     if (callStateUi is CallStateUi.Connected) hasConnectedOnce = true
 
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = CallAppBarDefaults.Elevation,
+        color = MaterialTheme.colorScheme.surfaceContainer,
         shape = RoundedCornerShape(percent = 50),
         modifier = modifier
             .fillMaxWidth()

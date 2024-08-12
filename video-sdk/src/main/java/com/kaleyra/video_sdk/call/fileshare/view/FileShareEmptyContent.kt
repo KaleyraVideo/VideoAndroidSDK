@@ -45,9 +45,7 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 fun FileShareEmptyContent(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .background(color = MaterialTheme.colorScheme.surface)
-            .padding(start = 48.dp, bottom = 56.dp, end = 48.dp),
+        modifier = modifier.padding(start = 48.dp, bottom = 56.dp, end = 48.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
