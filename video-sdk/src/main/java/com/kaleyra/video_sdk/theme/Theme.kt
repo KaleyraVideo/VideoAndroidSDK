@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -32,33 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.kaleyra.material_color_utilities.hct.Hct
+import com.kaleyra.material_color_utilities.scheme.SchemeContent
+import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
 import com.kaleyra.video_common_ui.CompanyUI.Theme
-import com.kaleyra.video_common_ui.KaleyraFontFamily
-import com.kaleyra.video_sdk.extensions.darkColorSchemeFrom
-import com.kaleyra.video_sdk.extensions.lightColorSchemeFrom
-
-internal val defaultTypography = androidx.compose.material3.Typography()
-internal val typography = androidx.compose.material3.Typography(
-    displayLarge = defaultTypography.displayLarge.copy(fontFamily = KaleyraFontFamily.default),
-    displayMedium = defaultTypography.displayMedium.copy(fontFamily = KaleyraFontFamily.default),
-    displaySmall = defaultTypography.displaySmall.copy(fontFamily = KaleyraFontFamily.default),
-
-    headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = KaleyraFontFamily.default),
-    headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = KaleyraFontFamily.default),
-    headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = KaleyraFontFamily.default),
-
-    titleLarge = defaultTypography.titleLarge.copy(fontFamily = KaleyraFontFamily.default),
-    titleMedium = defaultTypography.titleMedium.copy(fontFamily = KaleyraFontFamily.default),
-    titleSmall = defaultTypography.titleSmall.copy(fontFamily = KaleyraFontFamily.default),
-
-    bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = KaleyraFontFamily.default),
-    bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = KaleyraFontFamily.default),
-    bodySmall = defaultTypography.bodySmall.copy(fontFamily = KaleyraFontFamily.default),
-
-    labelLarge = defaultTypography.labelLarge.copy(fontFamily = KaleyraFontFamily.default),
-    labelMedium = defaultTypography.labelMedium.copy(fontFamily = KaleyraFontFamily.default),
-    labelSmall = defaultTypography.labelSmall.copy(fontFamily = KaleyraFontFamily.default)
-)
 
 /**
  * Composable function to generate the Collaboration M3 Theme
@@ -87,23 +65,64 @@ fun CollaborationTheme(
         }
     }
 
-
-    val colors = when {
-        isDarkTheme -> when(darkColors) {
-            is Theme.Colors.Seed -> darkColorSchemeFrom(darkColors.color)
-            else -> darkColorSchemeFrom(kaleyra_m3_seed.toArgb())
-
+    val seed = if (isDarkTheme) {
+        when(darkColors) {
+            is Theme.Colors.Seed -> darkColors.color
+            else -> kaleyra_m3_seed.toArgb()
         }
-        else ->  when(lightColors) {
-            is Theme.Colors.Seed -> lightColorSchemeFrom(lightColors.color)
-            else -> lightColorSchemeFrom(kaleyra_m3_seed.toArgb())
-
+    } else {
+        when(lightColors) {
+            is Theme.Colors.Seed -> lightColors.color
+            else -> kaleyra_m3_seed.toArgb()
         }
     }
+
     val kaleyraColors = when {
         isDarkTheme -> darkKaleyraColors()
         else -> lightKaleyraColors()
     }
+
+    val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed), isDarkTheme, .0)
+    val contentScheme = SchemeContent(Hct.fromInt(seed), isDarkTheme, .0)
+
+    val scheme = ColorScheme(
+        primary = Color(contentScheme.primary),
+        onPrimary = Color(contentScheme.onPrimary),
+        primaryContainer = Color(contentScheme.primaryContainer),
+        onPrimaryContainer = Color(contentScheme.onPrimaryContainer),
+        inversePrimary = Color(contentScheme.inversePrimary),
+        secondary = Color(contentScheme.secondary),
+        onSecondary = Color(contentScheme.onSecondary),
+        secondaryContainer = Color(contentScheme.secondaryContainer),
+        onSecondaryContainer = Color(contentScheme.onSecondaryContainer),
+        tertiary = Color(contentScheme.tertiary),
+        onTertiary = Color(contentScheme.onTertiary),
+        tertiaryContainer = Color(contentScheme.tertiaryContainer),
+        onTertiaryContainer = Color(contentScheme.onTertiaryContainer),
+        background = Color(monochromeScheme.background),
+        onBackground = Color(monochromeScheme.onBackground),
+        surface = Color(monochromeScheme.surface),
+        onSurface = Color(monochromeScheme.onSurface),
+        surfaceVariant = Color(monochromeScheme.surfaceVariant),
+        onSurfaceVariant = Color(monochromeScheme.onSurfaceVariant),
+        surfaceTint = Color(monochromeScheme.surfaceTint),
+        inverseSurface = Color(monochromeScheme.inverseSurface),
+        inverseOnSurface = Color(monochromeScheme.inverseOnSurface),
+        error = Color(contentScheme.error),
+        onError = Color(contentScheme.onError),
+        errorContainer = Color(contentScheme.errorContainer),
+        onErrorContainer = Color(contentScheme.onErrorContainer),
+        outline = Color(monochromeScheme.outline),
+        outlineVariant = Color(monochromeScheme.outlineVariant),
+        scrim = Color(monochromeScheme.scrim),
+        surfaceBright = Color(monochromeScheme.surfaceBright),
+        surfaceContainer = Color(monochromeScheme.surfaceContainer),
+        surfaceContainerHigh = Color(monochromeScheme.surfaceContainerHigh),
+        surfaceContainerHighest = Color(monochromeScheme.surfaceContainerHighest),
+        surfaceContainerLow = Color(monochromeScheme.surfaceContainerLow),
+        surfaceContainerLowest = Color(monochromeScheme.surfaceContainerLowest),
+        surfaceDim = Color(monochromeScheme.surfaceDim),
+    )
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -119,7 +138,7 @@ fun CollaborationTheme(
 
     CompositionLocalProvider(value = LocalKaleyraColors provides kaleyraColors) {
         MaterialTheme(
-            colorScheme = colors,
+            colorScheme = scheme,
             typography = typography,
             content = { content(isDarkTheme) }
         )
