@@ -52,6 +52,7 @@ import com.kaleyra.video_sdk.call.stream.view.items.ScreenShareItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
+import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasMediumWidth
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -82,7 +83,7 @@ internal object StreamComponentDefaults {
     fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
         return when {
             windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
-            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
+            windowSizeClass.hasExpandedWidth() || windowSizeClass.hasMediumWidth() -> ThumbnailsArrangement.Start
             else -> ThumbnailsArrangement.Bottom
         }
     }

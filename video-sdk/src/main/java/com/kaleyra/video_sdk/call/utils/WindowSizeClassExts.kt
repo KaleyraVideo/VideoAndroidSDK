@@ -17,6 +17,10 @@ internal object WindowSizeClassExts {
         return widthSizeClass == WindowWidthSizeClass.Expanded
     }
 
+    fun WindowSizeClass.hasMediumWidth(): Boolean {
+        return widthSizeClass == WindowWidthSizeClass.Medium
+    }
+
     fun WindowSizeClass.isCompactInAnyDimension(): Boolean {
         return hasCompactHeight() || hasCompactWidth()
     }
