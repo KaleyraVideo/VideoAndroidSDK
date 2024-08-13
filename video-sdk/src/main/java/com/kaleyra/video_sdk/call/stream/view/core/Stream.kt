@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.view.core
 
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.viewinterop.AndroidView
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -24,6 +26,7 @@ internal fun Stream(
     username: String,
     avatar: ImmutableUri?,
     showStreamView: Boolean,
+    @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
     onClick: (() -> Unit)? = null
 ) {
     if (showStreamView && streamView != null) {
@@ -55,7 +58,8 @@ internal fun Stream(
             Avatar(
                 uri = avatar,
                 username = username,
-                size = size
+                placeholder = avatarPlaceholder,
+                size = size,
             )
         }
     }

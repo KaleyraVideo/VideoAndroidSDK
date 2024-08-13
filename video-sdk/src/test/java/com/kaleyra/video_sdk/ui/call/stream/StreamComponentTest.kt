@@ -424,6 +424,16 @@ class StreamComponentTest {
         composeTestRule.onNodeWithText("mario").assertDoesNotExist()
     }
 
+    @Test
+    fun previewIsGroupCallTrue_avatarLetterIsNotDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(isGroupCall = true, username = "mario"),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
     fun defaultStreamUi(
         id: String = UUID.randomUUID().toString(),
         username: String = "username",

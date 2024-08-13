@@ -1,5 +1,7 @@
 package com.kaleyra.video_sdk.call.stream
 
+import android.content.ContentResolver
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -49,6 +52,7 @@ import com.kaleyra.video_sdk.call.stream.view.items.ScreenShareItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -144,10 +148,14 @@ internal fun StreamComponent(
     Box(contentAlignment = Alignment.Center) {
         if (uiState.preview != null) {
             val video = uiState.preview.video
+            val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
+            val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
+            val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
             Stream(
                 streamView = video?.view?.preCallStreamViewSettings(),
-                avatar = uiState.preview.avatar,
-                username = uiState.preview.username ?: "",
+                avatar = avatar,
+                avatarPlaceholder = avatarPlaceholder,
+                username = username,
                 showStreamView = video?.view != null && video.isEnabled
             )
         } else {

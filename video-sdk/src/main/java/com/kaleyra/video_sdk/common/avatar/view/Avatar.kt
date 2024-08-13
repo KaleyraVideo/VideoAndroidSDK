@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -92,9 +93,16 @@ internal fun Avatar(
     size: Dp = AvatarDefaults.defaultSize,
     color: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = contentColorFor(color),
+    @DrawableRes placeholder: Int = R.drawable.ic_kaleyra_avatar_bold,
     onSuccess: (() -> Unit)? = null
 ) {
     var isImageLoaded by remember { mutableStateOf(false) }
+    val placeholderFilter by rememberUpdatedState(newValue = ColorFilter.tint(color = contentColor))
+    val colorFilter by remember {
+        derivedStateOf {
+            if (isImageLoaded) null else placeholderFilter
+        }
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -107,7 +115,10 @@ internal fun Avatar(
                 .clip(CircleShape)
                 .size(size)
                 .background(color = color),
+            placeholder = if (username.isBlank()) painterResource(placeholder) else null,
+            error = if (username.isBlank()) painterResource(placeholder) else null,
             contentScale = ContentScale.Crop,
+            colorFilter = colorFilter,
             onSuccess = {
                 onSuccess?.invoke()
                 isImageLoaded = true
@@ -130,6 +141,17 @@ internal fun AvatarPreview() {
     KaleyraTheme {
         Avatar(
             username = "J",
+            uri = null
+        )
+    }
+}
+
+@Preview
+@Composable
+internal fun AvatarPlaceholderPreview() {
+    KaleyraTheme {
+        Avatar(
+            username = "",
             uri = null
         )
     }
