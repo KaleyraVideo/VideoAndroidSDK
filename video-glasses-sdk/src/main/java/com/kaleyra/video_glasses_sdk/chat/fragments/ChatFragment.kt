@@ -253,7 +253,7 @@ internal class ChatFragment : BaseFragment(), TiltListener {
             scope.launch {
                 val allPages = mutableListOf<ChatMessagePage>()
                 messages.forEach {
-                    val user = it.creator.combinedDisplayName.first() ?: ""
+                    val user = it.creator.combinedDisplayName.first() ?: it.creator.userId
                     val avatar = it.creator.combinedDisplayImage.first() ?: Uri.EMPTY
                     val pages = paginateMessage(user, it.content, it.creationDate.time)
                     for (i in pages.indices) {

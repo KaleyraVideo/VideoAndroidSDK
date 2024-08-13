@@ -114,7 +114,7 @@ internal abstract class ParticipantsFragment : BaseFragment(), TiltListener {
                     with(binding.kaleyraUserInfo) {
                         lifecycleScope.launch {
                             val user = participants.find { it.userId == userId }
-                            val name = user?.combinedDisplayName?.first() ?: ""
+                            val name = user?.combinedDisplayName?.first() ?: user?.userId ?: ""
                             setName(name)
 
                             val image = user?.combinedDisplayImage?.first() ?: Uri.EMPTY

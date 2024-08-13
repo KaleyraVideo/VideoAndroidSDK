@@ -99,7 +99,7 @@ internal class GlassChatNotificationActivity : AppCompatActivity(), com.kaleyra.
         msgsPerChat[chat.id] = nOfMessages
         val message = getLastReceivedMessage(chat) ?: return@launch
         val participant = message.creator
-        val username = participant.combinedDisplayName.first() ?: ""
+        val username = participant.combinedDisplayName.first() ?: participant.userId
         val avatar = participant.combinedDisplayImage.first() ?: Uri.EMPTY
         val text = (message.content as? Message.Content.Text)?.message ?: ""
         val counter = msgsPerChat.values.sum()

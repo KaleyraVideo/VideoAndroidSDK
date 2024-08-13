@@ -151,7 +151,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
                             participant,
                             itsMe,
                             it,
-                            participant.combinedDisplayName.first() ?: "",
+                            participant.combinedDisplayName.first() ?: participant.userId,
                             participant.combinedDisplayImage.first() ?: Uri.EMPTY
                         )
                     }
