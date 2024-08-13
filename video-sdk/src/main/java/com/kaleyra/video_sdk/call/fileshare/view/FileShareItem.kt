@@ -186,7 +186,7 @@ private fun SharedFileInfoAndProgress(
                 .size(LinearProgressIndicatorWidth, LinearProgressIndicatorHeight)
                 .clip(RoundedCornerShape(percent = 50))
                 .testTag(ProgressIndicatorTag),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.primary,
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -264,7 +264,7 @@ private fun ActionButton(
                     width = 2.dp,
                     color = when (sharedFileState) {
                         is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
-                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primaryContainer
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primary
                         is SharedFileUi.State.Available,
                         is SharedFileUi.State.Cancelled,
                         is SharedFileUi.State.InProgress,
@@ -274,7 +274,7 @@ private fun ActionButton(
                 )
                 .background(
                     color = when (sharedFileState) {
-                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primaryContainer
+                        is SharedFileUi.State.Success -> MaterialTheme.colorScheme.primary
                         is SharedFileUi.State.Error -> MaterialTheme.colorScheme.error
                         else -> Color.Transparent
                     },

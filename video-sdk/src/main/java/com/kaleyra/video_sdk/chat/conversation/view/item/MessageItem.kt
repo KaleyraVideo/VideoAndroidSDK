@@ -150,7 +150,7 @@ internal fun MyMessageItem(
                 bottomStart = BubbleCornerRadius,
                 bottomEnd = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius
             ),
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            backgroundColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }

@@ -91,7 +91,7 @@ internal fun Avatar(
     username: String,
     modifier: Modifier = Modifier,
     size: Dp = AvatarDefaults.defaultSize,
-    color: Color = MaterialTheme.colorScheme.primaryContainer,
+    color: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(color),
     @DrawableRes placeholder: Int = R.drawable.ic_kaleyra_avatar_bold,
     onSuccess: (() -> Unit)? = null

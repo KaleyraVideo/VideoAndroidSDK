@@ -175,7 +175,7 @@ internal fun FeedbackForm(
             Button(
                 onClick = { onUserFeedback(sliderValue!!, textFieldValue.text) },
                 shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_feedback_vote),

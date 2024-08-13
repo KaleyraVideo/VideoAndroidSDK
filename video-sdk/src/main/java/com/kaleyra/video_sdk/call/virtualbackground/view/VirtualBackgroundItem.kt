@@ -57,14 +57,14 @@ internal fun VirtualBackgroundItem(
                 }
             ),
             contentDescription = null,
-            tint = if (selected) MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current
+            tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = textFor(background),
             fontSize = 14.sp,
             maxLines = 1,
-            color = if (selected) MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current,
+            color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         )
     }

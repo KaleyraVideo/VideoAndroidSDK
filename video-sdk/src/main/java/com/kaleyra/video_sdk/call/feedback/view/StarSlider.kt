@@ -80,7 +80,7 @@ internal fun StarSlider(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_full_star),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primaryContainer,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .matchParentSize()
                             .graphicsLayer {

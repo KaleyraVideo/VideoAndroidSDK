@@ -41,7 +41,7 @@ internal fun StreamsLayoutSelector(
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primaryContainer else it.surfaceVariant },
+                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
                 contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimaryContainer else it.onSurfaceVariant }
             ),
             enabled = enableGridLayout,
@@ -66,7 +66,7 @@ internal fun StreamsLayoutSelector(
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primaryContainer else it.surfaceVariant },
+                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant },
                 contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimaryContainer else it.onSurfaceVariant }
             ),
             modifier = Modifier

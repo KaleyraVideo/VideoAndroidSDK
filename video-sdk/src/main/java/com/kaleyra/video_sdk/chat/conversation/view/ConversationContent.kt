@@ -115,7 +115,7 @@ internal fun ConversationContent(
         if (isFetching) {
             item {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 3.dp,
                     modifier = Modifier
                         .padding(16.dp)

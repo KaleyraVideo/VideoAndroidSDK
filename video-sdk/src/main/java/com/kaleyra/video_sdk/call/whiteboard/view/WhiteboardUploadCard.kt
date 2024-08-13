@@ -64,7 +64,7 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                     val progress by animateFloatAsState(targetValue = progressValue)
                     CircularProgressIndicator(
                         progress = progress,
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.primary,
                         size = 56.dp,
                         strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
                     )

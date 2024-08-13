@@ -78,7 +78,7 @@ internal fun WhiteboardContent(
                     .fillMaxWidth()
                     .height(2.dp)
                     .testTag(LinearProgressIndicatorTag),
-                color = MaterialTheme.colorScheme.primaryContainer
+                color = MaterialTheme.colorScheme.primary
             )
         }
         if (upload != null) {

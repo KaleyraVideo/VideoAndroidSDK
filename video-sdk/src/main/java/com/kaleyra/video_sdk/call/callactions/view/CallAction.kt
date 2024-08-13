@@ -98,7 +98,7 @@ internal object CallActionDefaults {
     val BadgeContainerColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.primaryContainer
+        get() = MaterialTheme.colorScheme.primary
 
     @Composable
     fun iconButtonColors(
@@ -149,7 +149,7 @@ internal fun CallToggleAction(
     buttonText: String? = null,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
 ) {
@@ -200,7 +200,7 @@ internal fun CallAction(
     disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
 ) {
@@ -247,7 +247,7 @@ private fun CallActionLayout(
     iconButton: @Composable () -> Unit,
     label: String? = null,
     badgeText: String? = null,
-    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
 ) {
     Box(modifier.width(IntrinsicSize.Max)) {
@@ -340,7 +340,7 @@ private fun ButtonLayout(
 internal fun CallActionBadge(
     text: String,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(containerColor),
 ) {
     Card(

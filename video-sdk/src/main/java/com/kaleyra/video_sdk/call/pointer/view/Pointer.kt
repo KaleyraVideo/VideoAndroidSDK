@@ -58,7 +58,7 @@ internal fun TextPointer(
         Pointer()
         Text(
             text = username,
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .onGloballyPositioned { onTextWidth(it.size.width) }
                 .graphicsLayer { alpha = textAlpha },
@@ -73,7 +73,7 @@ internal fun Pointer(modifier: Modifier = Modifier) {
         modifier
             .size(PointerSize)
             .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             )
     )

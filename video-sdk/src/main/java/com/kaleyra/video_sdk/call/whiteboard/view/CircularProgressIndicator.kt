@@ -88,7 +88,7 @@ internal fun CircularProgressIndicatorPreview() {
         Surface {
             CircularProgressIndicator(
                 progress = .6f,
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.primary,
                 size = 56.dp,
                 strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
             )

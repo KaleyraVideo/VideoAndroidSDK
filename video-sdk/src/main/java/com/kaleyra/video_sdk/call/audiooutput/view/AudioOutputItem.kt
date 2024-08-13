@@ -54,7 +54,7 @@ internal fun AudioOutputItem(
         Icon(
             painter = painterFor(audioDevice),
             contentDescription = null,
-            tint = if (selected) MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current
+            tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.Center) {
@@ -63,7 +63,7 @@ internal fun AudioOutputItem(
                 fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = if (selected) MaterialTheme.colorScheme.primaryContainer else LocalContentColor.current,
+                color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
             )
             val subtitle = subtitleFor(audioDevice)
