@@ -51,7 +51,7 @@ class StreamMapperTest {
     var mainDispatcherRule = MainDispatcherRule()
 
     private val callMock = mockk<Call>()
-    
+
     private val viewMock = mockk<VideoStreamView>()
 
     private val uriMock = mockk<Uri>()
@@ -61,7 +61,7 @@ class StreamMapperTest {
     private val audioMock = mockk<Input.Audio>(relaxed = true)
 
     private val myVideoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
-    
+
     private val streamMock1 = mockk<Stream>()
 
     private val streamMock2 = mockk<Stream>()
@@ -71,7 +71,7 @@ class StreamMapperTest {
     private val myStreamMock1 = mockk<Stream.Mutable>()
 
     private val myStreamMock2 = mockk<Stream.Mutable>()
-    
+
     private val participantMeMock = mockk<CallParticipant.Me>()
 
     private val participantMock1 = mockk<CallParticipant>()
@@ -426,7 +426,7 @@ class StreamMapperTest {
     @Test
     fun emptyList_mapToStreamsUi_emptyMappedList() = runTest {
         val streams = MutableStateFlow(listOf<Stream>())
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf<StreamUi>()
         Assert.assertEquals(expected, actual)
@@ -435,7 +435,7 @@ class StreamMapperTest {
     @Test
     fun emptyListToFilledList_mapToStreamsUi_filledMapperList() = runTest {
         val streams = MutableStateFlow(listOf<Stream>())
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf<StreamUi>()
         Assert.assertEquals(expected, actual)
@@ -449,7 +449,7 @@ class StreamMapperTest {
     @Test
     fun filledListToEmptyList_mapToStreamsUi_emptyMappedList() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1)
         Assert.assertEquals(expected, actual)
@@ -463,7 +463,7 @@ class StreamMapperTest {
     @Test
     fun filledList_mapToStreamsUi_filledMappedList() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1, streamUi2, streamUi3)
         Assert.assertEquals(expected, actual)
@@ -472,7 +472,7 @@ class StreamMapperTest {
     @Test
     fun removeElementsFromList_mapToStreamsUi_mappedListWithElementsRemoved() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1, streamUi2, streamUi3)
         Assert.assertEquals(expected, actual)
@@ -487,7 +487,7 @@ class StreamMapperTest {
     @Test
     fun addElementsToList_mapToStreamsUi_mappedListWithElementsAdded() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1)
         Assert.assertEquals(expected, actual)
@@ -516,7 +516,7 @@ class StreamMapperTest {
         )
 
         val streams = MutableStateFlow(listOf(streamMock1, modifiedStreamMock, streamMock3))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1, modifiedStreamUi, streamUi3)
         Assert.assertEquals(expected, actual)
@@ -562,6 +562,7 @@ class StreamMapperTest {
         val streams = MutableStateFlow(listOf(streamMock1, modifiedStreamMock, streamMock3))
         val result = streams.mapToStreamsUi(
             isLocalParticipant = false,
+            userId = "userId",
             displayNameFlow,
             displayImageFlow
         )
@@ -589,7 +590,7 @@ class StreamMapperTest {
     @Test
     fun updateUserDisplayName_mapToStreamsUi_mappedStreamUiUpdated() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1, streamUi2, streamUi3)
         Assert.assertEquals(expected, actual)
@@ -608,7 +609,7 @@ class StreamMapperTest {
     @Test
     fun updateUserDisplayImage_mapToStreamsUi_mappedStreamUiUpdated() = runTest {
         val streams = MutableStateFlow(listOf(streamMock1, streamMock2, streamMock3))
-        val result = streams.mapToStreamsUi(false, displayNameFlow, displayImageFlow)
+        val result = streams.mapToStreamsUi(false, "userId", displayNameFlow, displayImageFlow)
         val actual = result.first()
         val expected = listOf(streamUi1, streamUi2, streamUi3)
         Assert.assertEquals(expected, actual)

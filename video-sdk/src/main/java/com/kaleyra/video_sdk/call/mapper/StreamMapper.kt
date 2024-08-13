@@ -53,6 +53,7 @@ internal object StreamMapper {
                     participant.streams
                         .mapToStreamsUi(
                             isLocalParticipant = participant.userId == participants.me?.userId,
+                            userId = participant.userId,
                             displayName = participant.combinedDisplayName,
                             displayImage = participant.combinedDisplayImage
                         )
@@ -74,12 +75,13 @@ internal object StreamMapper {
         this.participants
             .mapNotNull { it.me }
             .flatMapLatest { me ->
-                me.streams.mapToStreamsUi(isLocalParticipant = true, me.combinedDisplayName, me.combinedDisplayImage)
+                me.streams.mapToStreamsUi(isLocalParticipant = true, userId = me.userId, me.combinedDisplayName, me.combinedDisplayImage)
             }
             .distinctUntilChanged()
 
     fun Flow<List<Stream>>.mapToStreamsUi(
         isLocalParticipant: Boolean,
+        userId: String,
         displayName: Flow<String?>,
         displayImage: Flow<Uri?>
     ): Flow<List<StreamUi>> =
@@ -103,7 +105,7 @@ internal object StreamMapper {
                             id = id,
                             video = video,
                             audio = audio,
-                            username = name ?: "",
+                            username = name ?: userId,
                             avatar = image?.let { ImmutableUri(it) },
                             isMine = isLocalParticipant
                         )

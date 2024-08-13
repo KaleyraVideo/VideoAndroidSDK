@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.chat.mapper
 
+import android.net.Uri
 import com.kaleyra.video.conversation.ChatParticipant
 import com.kaleyra.video.conversation.ChatParticipants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -49,8 +51,8 @@ internal object ParticipantsMapper {
             coroutineScope {
                 val participantsDetails = list
                     .map {
-                        val name = async { it.combinedDisplayName.filterNotNull().first() }
-                        val image = async { it.combinedDisplayImage.filterNotNull().first() }
+                        val name = async { it.combinedDisplayName.firstOrNull() ?: it.userId }
+                        val image = async { it.combinedDisplayImage.firstOrNull() ?: Uri.EMPTY }
                         Triple(it, name, image)
                     }
                     .map { (participant, name, image) ->

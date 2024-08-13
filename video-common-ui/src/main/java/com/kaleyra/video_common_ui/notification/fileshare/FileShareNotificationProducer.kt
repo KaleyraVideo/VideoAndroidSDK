@@ -74,7 +74,7 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
         val participant = participants.others.firstOrNull { it.userId == sharedFile.sender.userId }
         val participantsList = participant?.userId?.let { listOf(it) } ?: listOf()
         ContactDetailsManager.refreshContactDetails(*participantsList.toTypedArray())
-        val username = participant?.combinedDisplayName?.first() ?: ""
+        val username = participant?.combinedDisplayName?.first() ?: participant?.userId ?: ""
         return NotificationManager.buildIncomingFileNotification(context, username, sharedFile.id, activityClazz)
     }
 }

@@ -93,7 +93,7 @@ internal object VideoMapper {
 
     suspend fun Input.Video.Event.Pointer.mapToPointerUi(mirror: Boolean = false): PointerUi {
         return PointerUi(
-            username = producer.combinedDisplayName.firstOrNull() ?: "",
+            username = producer.combinedDisplayName.firstOrNull() ?: producer.userId,
             x = if (mirror) 100 - position.x else position.x,
             y = position.y
         )

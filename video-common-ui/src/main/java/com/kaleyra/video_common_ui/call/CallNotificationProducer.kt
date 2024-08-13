@@ -62,7 +62,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
         ): Notification {
             val isGroupCall = participants.others.count() > 1
             val calleeDescription = participants.others.map {
-                it.combinedDisplayName.filterNotNull().firstOrNull() ?: " "
+                it.combinedDisplayName.firstOrNull() ?: it.userId
             }.joinToString()
             return NotificationManager.buildOutgoingCallNotification(
                 calleeDescription,
@@ -81,7 +81,8 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
         ): Notification {
             val context = ContextRetainer.context
             val isGroupCall = participants.others.count() > 1
-            val callerDescription = participants.creator()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: " "
+            val creator = participants.creator()
+            val callerDescription = creator?.combinedDisplayName?.firstOrNull() ?: creator?.userId ?: " "
             return NotificationManager.buildIncomingCallNotification(
                 callerDescription,
                 isGroupCall,
@@ -198,7 +199,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
     ): Notification {
         val isGroupCall = participants.others.count() > 1
         val calleeDescription = participants.others.map {
-            it.combinedDisplayName.filterNotNull().firstOrNull() ?: " "
+            it.combinedDisplayName.firstOrNull() ?: it.userId
         }.joinToString()
         return NotificationManager.buildOngoingCallNotification(
             calleeDescription,
