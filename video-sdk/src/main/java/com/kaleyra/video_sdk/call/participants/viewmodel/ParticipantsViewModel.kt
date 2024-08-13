@@ -7,12 +7,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,9 +32,10 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
                 call.participants,
                 call.toInCallParticipants()
             ) { participants, inCallParticipants ->
-                val invited = (listOfNotNull(participants.me) + participants.others - inCallParticipants.toSet()).map { it.userId }
+                val invitedUsers = (listOfNotNull(participants.me) + participants.others - inCallParticipants.toSet())
+                val invitedNames = invitedUsers.map { user -> user.combinedDisplayName.firstOrNull() ?: user.userId }
                 _uiState.update {
-                    it.copy(invitedParticipants = invited.toImmutableList())
+                    it.copy(invitedParticipants = invitedNames.toImmutableList())
                 }
             }.launchIn(this)
         }
