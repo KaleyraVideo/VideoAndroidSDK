@@ -67,6 +67,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
@@ -113,13 +114,14 @@ class CallActionsViewModelTest {
         mockkObject(ParticipantMapper)
         mockkObject(AudioOutputMapper)
         mockkObject(CallStateMapper)
+        mockkObject(VirtualBackgroundViewModel)
 
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
         every { callMock.isMyCameraEnabled() } returns MutableStateFlow(true)
         every { callMock.hasUsbCamera() } returns MutableStateFlow(false)
         every { callMock.isSharingScreen() } returns MutableStateFlow(false)
-        every { callMock.isVirtualBackgroundEnabled() } returns MutableStateFlow(false)
+        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(false)
         every { callMock.isMeParticipantInitialized() } returns MutableStateFlow(true)
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.Muted)
@@ -327,7 +329,7 @@ class CallActionsViewModelTest {
     fun testCallActionsUiState_virtualBackgroundKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(VirtualBackgroundAction(), HangUpAction()))
         every { callMock.toCallActions(any()) } returns actions
-        every { callMock.isVirtualBackgroundEnabled() } returns flowOf(true)
+        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)
@@ -626,7 +628,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(
             VirtualBackgroundAction(isToggled = false)
         ))
-        every { callMock.isVirtualBackgroundEnabled() } returns flowOf(true)
+        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)

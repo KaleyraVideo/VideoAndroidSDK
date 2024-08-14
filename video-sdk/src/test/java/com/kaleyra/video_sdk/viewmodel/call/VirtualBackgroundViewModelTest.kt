@@ -26,11 +26,15 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.mapper.InputMapper
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,8 +72,8 @@ class VirtualBackgroundViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel =
-            VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        mockkObject(InputMapper)
+        viewModel = VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.participants } returns MutableStateFlow(participantsMock)
         every { participantsMock.me } returns meMock
@@ -79,6 +83,7 @@ class VirtualBackgroundViewModelTest {
             every { video } returns MutableStateFlow(myVideoMock)
         }
         every { callMock.effects } returns effectsMock
+        every { callMock.toMyCameraStream() } returns MutableStateFlow(myStreamMock)
         with(effectsMock) {
             every { preselected } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = mockk()))
             every { available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(id = "blurId", factor = 1f)))
@@ -88,15 +93,6 @@ class VirtualBackgroundViewModelTest {
     @After
     fun tearDown() {
         unmockkAll()
-    }
-
-    @Test
-    fun testVirtualBackgroundUiState_currentBackgroundUpdated() = runTest {
-        every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur(id = "blurId", factor = 1f))
-        advanceUntilIdle()
-        val actual = viewModel.uiState.first().currentBackground
-        val expected = VirtualBackgroundUi.Blur("blurId")
-        assertEquals(expected, actual)
     }
 
     @Test
@@ -110,14 +106,24 @@ class VirtualBackgroundViewModelTest {
     fun testSetNoneEffect() = runTest {
         advanceUntilIdle()
         viewModel.setEffect(VirtualBackgroundUi.None)
-        verify(exactly = 1) { myVideoMock.tryApplyEffect(Effect.Video.None) }
+
+        val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
+        assertEquals(VirtualBackgroundUi.None, uiStateBackground)
+        assertEquals(false, isVirtualBackgroundEnabled)
+        verify { myVideoMock.tryApplyEffect(Effect.Video.None) }
     }
 
     @Test
     fun testSetBlurEffect() = runTest {
         advanceUntilIdle()
         viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
-        verify(exactly = 1) {
+
+        val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
+        assertEquals(VirtualBackgroundUi.Blur("blurId"), uiStateBackground)
+        assertEquals(true, isVirtualBackgroundEnabled)
+        verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Blur)
             })
@@ -128,9 +134,38 @@ class VirtualBackgroundViewModelTest {
     fun testSetImageEffect() = runTest {
         advanceUntilIdle()
         viewModel.setEffect(VirtualBackgroundUi.Image("imageId"))
-        verify(exactly = 1) {
+
+        val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
+        assertEquals(VirtualBackgroundUi.Image("imageId"), uiStateBackground)
+        assertEquals(true, isVirtualBackgroundEnabled)
+        verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Image)
+            })
+        }
+    }
+
+    @Test
+    fun effectAppliedAfterStreamVideoIsSet() = runTest {
+        val videoFlow = MutableStateFlow<Input.Video.My?>(null)
+        every { myStreamMock.video } returns videoFlow
+
+        val viewModel = VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
+
+        verify(exactly = 0) {
+            myVideoMock.tryApplyEffect(withArg {
+                assert(it is Effect.Video.Background.Blur)
+            })
+        }
+
+        videoFlow.value = myVideoMock
+        advanceUntilIdle()
+
+        verify(exactly = 1) {
+            myVideoMock.tryApplyEffect(withArg {
+                assert(it is Effect.Video.Background.Blur)
             })
         }
     }

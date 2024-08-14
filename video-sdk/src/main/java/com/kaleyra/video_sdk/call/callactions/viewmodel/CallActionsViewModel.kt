@@ -56,6 +56,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
@@ -117,9 +118,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .isSharingScreen()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isVirtualBackgroundEnabledFlow = call
-                .isVirtualBackgroundEnabled()
-                .stateIn(this, SharingStarted.Eagerly, false)
+            val isVirtualBackgroundEnabledFlow = VirtualBackgroundViewModel.isVirtualBackgroundEnabled
 
             val isLocalParticipantInitializedFlow = call
                 .isMeParticipantInitialized()
