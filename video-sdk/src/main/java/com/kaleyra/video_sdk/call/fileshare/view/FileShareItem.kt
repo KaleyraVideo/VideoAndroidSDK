@@ -93,7 +93,7 @@ internal fun FileShareItem(
             modifier = Modifier.padding(start = 6.dp)
         )
 
-        Spacer(Modifier.width(28.dp))
+        Spacer(Modifier.width(16.dp))
 
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -101,7 +101,7 @@ internal fun FileShareItem(
                     sharedFile = sharedFile,
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(8.dp))
                 ActionButton(
                     sharedFileState = sharedFile.state,
                     onActionClick = onActionClick
