@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.material_color_utilities.hct.Hct
-import com.kaleyra.material_color_utilities.scheme.SchemeContent
+import com.kaleyra.material_color_utilities.scheme.SchemeFidelity
 import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 
@@ -83,22 +83,22 @@ fun CollaborationTheme(
     }
 
     val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed), isDarkTheme, .0)
-    val contentScheme = SchemeContent(Hct.fromInt(seed), isDarkTheme, .0)
+    val fidelityScheme = SchemeFidelity(Hct.fromInt(seed), isDarkTheme, .0)
 
     val scheme = ColorScheme(
-        primary = Color(contentScheme.primary),
-        onPrimary = Color(contentScheme.onPrimary),
-        primaryContainer = Color(contentScheme.primaryContainer),
-        onPrimaryContainer = Color(contentScheme.onPrimaryContainer),
-        inversePrimary = Color(contentScheme.inversePrimary),
-        secondary = Color(contentScheme.secondary),
-        onSecondary = Color(contentScheme.onSecondary),
-        secondaryContainer = Color(contentScheme.secondaryContainer),
-        onSecondaryContainer = Color(contentScheme.onSecondaryContainer),
-        tertiary = Color(contentScheme.tertiary),
-        onTertiary = Color(contentScheme.onTertiary),
-        tertiaryContainer = Color(contentScheme.tertiaryContainer),
-        onTertiaryContainer = Color(contentScheme.onTertiaryContainer),
+        primary = Color(fidelityScheme.primary),
+        onPrimary = Color(fidelityScheme.onPrimary),
+        primaryContainer = Color(fidelityScheme.primaryContainer),
+        onPrimaryContainer = Color(fidelityScheme.onPrimaryContainer),
+        inversePrimary = Color(fidelityScheme.inversePrimary),
+        secondary = Color(fidelityScheme.secondary),
+        onSecondary = Color(fidelityScheme.onSecondary),
+        secondaryContainer = Color(fidelityScheme.secondaryContainer),
+        onSecondaryContainer = Color(fidelityScheme.onSecondaryContainer),
+        tertiary = Color(fidelityScheme.tertiary),
+        onTertiary = Color(fidelityScheme.onTertiary),
+        tertiaryContainer = Color(fidelityScheme.tertiaryContainer),
+        onTertiaryContainer = Color(fidelityScheme.onTertiaryContainer),
         background = Color(monochromeScheme.background),
         onBackground = Color(monochromeScheme.onBackground),
         surface = Color(monochromeScheme.surface),
@@ -108,10 +108,10 @@ fun CollaborationTheme(
         surfaceTint = Color(monochromeScheme.surfaceTint),
         inverseSurface = Color(monochromeScheme.inverseSurface),
         inverseOnSurface = Color(monochromeScheme.inverseOnSurface),
-        error = Color(contentScheme.error),
-        onError = Color(contentScheme.onError),
-        errorContainer = Color(contentScheme.errorContainer),
-        onErrorContainer = Color(contentScheme.onErrorContainer),
+        error = Color(fidelityScheme.error),
+        onError = Color(fidelityScheme.onError),
+        errorContainer = Color(fidelityScheme.errorContainer),
+        onErrorContainer = Color(fidelityScheme.onErrorContainer),
         outline = Color(monochromeScheme.outline),
         outlineVariant = Color(monochromeScheme.outlineVariant),
         scrim = Color(monochromeScheme.scrim),
