@@ -101,6 +101,7 @@ class CallActionsMapperTest {
 
     @Test
     fun allCallActions_toCallActions_mappedCallActions() = runTest {
+        every { callMock.hasVirtualBackground() } returns flowOf(true)
         every { callMock.actions } returns MutableStateFlow(
             setOf(
                 CallUI.Action.ToggleMicrophone,
@@ -121,11 +122,12 @@ class CallActionsMapperTest {
             MicAction(),
             CameraAction(),
             FlipCameraAction(),
-            ChatAction(),
-            WhiteboardAction(),
+            VirtualBackgroundAction(),
             AudioAction(),
             FileShareAction(),
-            ScreenShareAction()
+            ScreenShareAction(),
+            ChatAction(),
+            WhiteboardAction(),
         )
         assertEquals(expected, actual)
     }

@@ -67,12 +67,12 @@ internal object CallActionsMapper {
             if (hasMicrophone) result += MicAction()
             if (hasCamera) result += CameraAction()
             if (switchCamera) result += FlipCameraAction()
-            if (chat) result += ChatAction()
-            if (whiteboard) result += WhiteboardAction()
+            if (hasVirtualBackground) result += VirtualBackgroundAction()
             if (audio) result += AudioAction()
             if (fileShare) result += FileShareAction()
             if (screenShare) result += ScreenShareAction()
-            if (hasVirtualBackground) result += VirtualBackgroundAction()
+            if (chat) result += ChatAction()
+            if (whiteboard) result += WhiteboardAction()
 
             result
         }.distinctUntilChanged()
