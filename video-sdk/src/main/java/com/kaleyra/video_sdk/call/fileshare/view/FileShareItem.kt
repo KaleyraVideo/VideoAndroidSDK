@@ -163,7 +163,6 @@ private fun SharedFileInfoAndProgress(
     sharedFile: SharedFileUi,
     modifier: Modifier = Modifier
 ) {
-    val contentColorAlpha70 = LocalContentColor.current.copy(alpha = .7f)
     Column(modifier = modifier) {
         val progress by animateFloatAsState(targetValue = when (sharedFile.state) {
             is SharedFileUi.State.InProgress -> sharedFile.state.progress
@@ -203,7 +202,7 @@ private fun SharedFileInfoAndProgress(
                 maxLines = 1,
                 fontSize = 12.sp,
                 overflow = TextOverflow.Ellipsis,
-                color = contentColorAlpha70,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
             Text(
@@ -216,7 +215,7 @@ private fun SharedFileInfoAndProgress(
                     else -> TimestampUtils.parseTime(sharedFile.time)
                 },
                 fontSize = 12.sp,
-                color = contentColorAlpha70
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

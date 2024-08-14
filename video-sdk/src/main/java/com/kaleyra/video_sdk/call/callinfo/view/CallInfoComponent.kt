@@ -127,7 +127,7 @@ fun CallInfoComponent(
             verticalArrangement = Arrangement.Center,
         ) {
             val textStyle = LocalTextStyle.current.shadow(
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.surface
             )
 
             displayTitle?.let {
@@ -146,8 +146,7 @@ fun CallInfoComponent(
                 Text(
                     modifier = Modifier.testTag(CallInfoSubtitleTestTag),
                     text = it,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Thin,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = if (isPipMode) 12.sp else 14.sp,
                     maxLines = 1,
                     style = textStyle

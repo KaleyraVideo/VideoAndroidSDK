@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.kaleyra.video_sdk.chat.appbar.view
 
 import android.content.res.Configuration
@@ -76,13 +74,13 @@ internal fun ChatAppBarContent(
                     fontFamily = KaleyraFontFamily.default,
                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
                     fontWeight = MaterialTheme.typography.titleSmall.fontWeight!!,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.testTag(SubtitleTag),
                     ellipsize = Ellipsize.Marquee
                 )
                 if (typingDots) {
                     TypingDots(
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .align(Alignment.Bottom)
                             .padding(start = TypingDotsPadding, bottom = TypingDotsPadding)
