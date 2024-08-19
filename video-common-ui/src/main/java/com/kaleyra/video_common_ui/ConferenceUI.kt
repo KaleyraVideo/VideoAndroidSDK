@@ -24,13 +24,13 @@ import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.newFixedThreadPoolContext
 
 /**
  * Conference UI
@@ -46,13 +46,15 @@ class ConferenceUI(
     private val logger: PriorityLogger? = null,
 ) : Conference by conference {
 
-    private val callScope = CoroutineScope(Dispatchers.IO)
+    private val backgroundDispatcher = newFixedThreadPoolContext(100, "Conference dispatcher")
+
+    private val conferenceDispatcher = CoroutineScope(backgroundDispatcher)
 
     private var callUIMap: HashMap<String, CallUI> = HashMap()
 
-    override val call: SharedFlow<CallUI> = conference.call.map { getOrCreateCallUI(it) }.shareIn(callScope, SharingStarted.Eagerly, replay = 1)
+    override val call: SharedFlow<CallUI> = conference.call.map { getOrCreateCallUI(it) }.shareIn(conferenceDispatcher, SharingStarted.Eagerly, replay = 1)
 
-    override val callHistory: SharedFlow<List<CallUI>> = conference.callHistory.map { calls -> calls.map { getOrCreateCallUI(it) } }.shareIn(callScope, SharingStarted.Eagerly, replay = 1)
+    override val callHistory: SharedFlow<List<CallUI>> = conference.callHistory.map { calls -> calls.map { getOrCreateCallUI(it) } }.shareIn(conferenceDispatcher, SharingStarted.Eagerly, replay = 1)
 
     /**
      * The call actions that will be set on every call
@@ -65,14 +67,14 @@ class ConferenceUI(
     var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
 
     init {
-        configureCallServiceStart(callActivityClazz, logger, callScope)
-        configureCallSounds(logger, callScope)
-        configureScreenShareOverlayProducer(callScope)
-        configureCallActivityShow(callScope)
+        configureCallServiceStart(callActivityClazz, logger, conferenceDispatcher)
+        configureCallSounds(logger, conferenceDispatcher)
+        configureScreenShareOverlayProducer(conferenceDispatcher)
+        configureCallActivityShow(conferenceDispatcher)
     }
 
     internal fun dispose() {
-        callScope.cancel()
+        conferenceDispatcher.cancel()
     }
     /**
      * Call
