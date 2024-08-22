@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.mapper.call
 
 import com.bandyer.android_audiosession.model.AudioOutputDevice
+import com.kaleyra.video.Contact
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
@@ -30,6 +31,7 @@ import com.kaleyra.video_extension_audio.extensions.AudioOutputConnectionError
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
+import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
@@ -385,6 +387,32 @@ class InputMapperTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Closed.Error)
         val actual = callMock.isUsbCameraWaitingPermission().first()
+        assertEquals(false, actual)
+    }
+
+    @Test
+    fun cameraRestrictionEnabled_hasCameraUsageRestriction_true() = runTest {
+        val usage = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns true
+        }
+        every { participantMeMock.restrictions } returns mockk {
+            every { camera } returns MutableStateFlow(usage)
+        }
+
+        val actual = callMock.hasCameraUsageRestriction().first()
+        assertEquals(true, actual)
+    }
+
+    @Test
+    fun cameraRestrictionNotEnabled_hasCameraUsageRestriction_false() = runTest {
+        val usage = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        every { participantMeMock.restrictions } returns mockk {
+            every { camera } returns MutableStateFlow(usage)
+        }
+
+        val actual = callMock.hasCameraUsageRestriction().first()
         assertEquals(false, actual)
     }
 }

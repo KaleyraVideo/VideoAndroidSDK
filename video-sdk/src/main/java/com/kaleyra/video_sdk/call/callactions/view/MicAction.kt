@@ -28,8 +28,8 @@ internal fun MicAction(
         onCheckedChange = onCheckedChange,
         enabled = enabled,
         badgeText = if (warning || error) "!" else null,
-        badgeBackgroundColor = if (error) MaterialTheme.colorScheme.error else KaleyraTheme.colors.warning,
-        badgeContentColor = if (error) MaterialTheme.colorScheme.onError else KaleyraTheme.colors.onWarning
+        badgeBackgroundColor = if (warning) KaleyraTheme.colors.warning else MaterialTheme.colorScheme.error,
+        badgeContentColor = if (warning) KaleyraTheme.colors.onWarning else MaterialTheme.colorScheme.onError
     )
 }
 

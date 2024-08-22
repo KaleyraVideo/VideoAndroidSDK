@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
@@ -48,7 +49,7 @@ import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.stream.StreamComponent
@@ -72,6 +73,7 @@ internal fun VCallScreen(
     selectedStreamId: String?,
     onStreamSelected: (String?) -> Unit,
     modalSheetComponent: ModalSheetComponent?,
+    inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
@@ -131,6 +133,7 @@ internal fun VCallScreen(
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
+                    inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
@@ -161,6 +164,7 @@ internal fun VCallScreen(
                                 isLargeScreen = isLargeScreen,
                                 isMoreToggled = isSheetExpanded || showSheetPanelContent,
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
+                                inputPermissions = inputPermissions,
                                 onActionsOverflow = { sheetDragActions = it },
                                 onModalSheetComponentRequest = onModalSheetComponentRequest,
                                 onMoreToggle = { isSheetCollapsed ->

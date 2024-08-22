@@ -13,6 +13,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
@@ -32,6 +35,7 @@ import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
@@ -47,6 +51,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RunWith(RobolectricTestRunner::class)
 class VSheetContentTest {
 
@@ -127,11 +132,15 @@ class VSheetContentTest {
 
     @Test
     fun userTogglesMic_toggleMicInvoked() {
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         callActionsUiState.value = CallActionsUiState(actionList = listOf(MicAction()).toImmutableList())
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
+                inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModalSheetComponentRequest = {},
@@ -148,12 +157,42 @@ class VSheetContentTest {
     }
 
     @Test
+    fun userTogglesMicWithoutPermission_micPermissionLaunched() {
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Denied(false)
+        }
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(MicAction()).toImmutableList())
+        composeTestRule.setContent {
+            VSheetContent(
+                viewModel = callActionsViewModel,
+                isMoreToggled = false,
+                inputPermissions = InputPermissions(micPermission = micPermission),
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModalSheetComponentRequest = {},
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { micPermission.launchPermissionRequest() }
+    }
+
+    @Test
     fun userTogglesCamera_toggleCameraInvoked() {
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         callActionsUiState.value = CallActionsUiState(actionList = listOf(CameraAction()).toImmutableList())
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
+                inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModalSheetComponentRequest = {},
@@ -167,6 +206,32 @@ class VSheetContentTest {
             .performClick()
 
         verify(exactly = 1) { callActionsViewModel.toggleCamera(any()) }
+    }
+
+    @Test
+    fun userTogglesCameraWithoutPermission_cameraPermissionLaunched() {
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Denied(false)
+        }
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(CameraAction()).toImmutableList())
+        composeTestRule.setContent {
+            VSheetContent(
+                viewModel = callActionsViewModel,
+                isMoreToggled = false,
+                inputPermissions = InputPermissions(cameraPermission = cameraPermission),
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModalSheetComponentRequest = {},
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { cameraPermission.launchPermissionRequest() }
     }
 
     @Test

@@ -14,6 +14,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -48,6 +51,7 @@ import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestT
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsCompact
@@ -81,7 +85,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @RunWith(RobolectricTestRunner::class)
 class VCallScreenTest {
 
@@ -249,7 +253,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetActions_micToggleOn() {
-        composeTestRule.setUpVCallScreen()
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
+        composeTestRule.setUpVCallScreen(
+            inputPermissions = InputPermissions(micPermission = micPermission)
+        )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(MicAction()).toImmutableList()
         )
@@ -266,7 +275,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetActions_micToggleOff() {
-        composeTestRule.setUpVCallScreen()
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
+        composeTestRule.setUpVCallScreen(
+            inputPermissions = InputPermissions(micPermission = micPermission)
+        )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(MicAction(isToggled = true)).toImmutableList()
         )
@@ -283,7 +297,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetActions_cameraToggleOn() {
-        composeTestRule.setUpVCallScreen()
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
+        composeTestRule.setUpVCallScreen(
+            inputPermissions = InputPermissions(cameraPermission = cameraPermission)
+        )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(CameraAction()).toImmutableList()
         )
@@ -300,7 +319,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetActions_cameraToggleOff() {
-        composeTestRule.setUpVCallScreen()
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
+        composeTestRule.setUpVCallScreen(
+            inputPermissions = InputPermissions(cameraPermission = cameraPermission)
+        )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(CameraAction(isToggled = true)).toImmutableList()
         )
@@ -609,9 +633,13 @@ class VCallScreenTest {
     @Test
     fun testSheetDragActions_micToggleOn() {
         val actions = allActions.filterNot { it is MicAction }.take(CompactScreenMaxActions)
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
-            configuration = compactScreenConfiguration
+            configuration = compactScreenConfiguration,
+            inputPermissions = InputPermissions(micPermission = micPermission)
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + MicAction()).toImmutableList()
@@ -631,10 +659,14 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_micToggleOff() {
+        val micPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         val actions = allActions.filterNot { it is MicAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
-            configuration = compactScreenConfiguration
+            configuration = compactScreenConfiguration,
+            inputPermissions = InputPermissions(micPermission = micPermission)
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + MicAction(isToggled = true)).toImmutableList()
@@ -654,10 +686,14 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_cameraToggleOn() {
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         val actions = allActions.filterNot { it is CameraAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
-            configuration = compactScreenConfiguration
+            configuration = compactScreenConfiguration,
+            inputPermissions = InputPermissions(cameraPermission = cameraPermission)
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + CameraAction()).toImmutableList()
@@ -677,10 +713,14 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_cameraToggleOff() {
+        val cameraPermission = mockk<PermissionState>(relaxed = true) {
+            every { status } returns PermissionStatus.Granted
+        }
         val actions = allActions.filterNot { it is CameraAction }.take(CompactScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
-            configuration = compactScreenConfiguration
+            configuration = compactScreenConfiguration,
+            inputPermissions = InputPermissions(cameraPermission = cameraPermission)
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + CameraAction(isToggled = true)).toImmutableList()
@@ -1534,6 +1574,7 @@ class VCallScreenTest {
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
         onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
+        inputPermissions: InputPermissions = InputPermissions()
     ) {
         setContent {
             VCallScreen(
@@ -1543,6 +1584,7 @@ class VCallScreenTest {
                 onChangeSheetState = onChangeSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
+                inputPermissions = inputPermissions,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onModalSheetComponentRequest = onModalSheetComponentChange,
                 onAskInputPermissions = onAskInputPermissions,

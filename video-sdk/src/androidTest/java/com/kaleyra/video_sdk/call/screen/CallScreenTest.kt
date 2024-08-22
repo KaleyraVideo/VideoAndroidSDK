@@ -45,6 +45,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -684,6 +685,7 @@ class CallScreenTest {
         callSheetState: CallSheetState = CallSheetState(),
         shouldShowFileShareComponent: State<Boolean> = mutableStateOf(false),
         whiteboardRequest: State<WhiteboardRequest?> = mutableStateOf(null),
+        inputPermissions: InputPermissions = InputPermissions(),
         onCallEndedBack: () -> Unit = {},
         onBackPressed: () -> Unit = {},
         onPipAspectRatio: (Rational) -> Unit = {},
@@ -700,6 +702,7 @@ class CallScreenTest {
                 } ?:  WindowSizeClassUtil.currentWindowAdaptiveInfo(),
                 shouldShowFileShareComponent = shouldShowFileShareComponent.value,
                 whiteboardRequest = whiteboardRequest.value,
+                inputPermissions = inputPermissions,
                 callSheetState = callSheetState,
                 onBackPressed = onBackPressed,
                 onAskInputPermissions = onAskInputPermissions,

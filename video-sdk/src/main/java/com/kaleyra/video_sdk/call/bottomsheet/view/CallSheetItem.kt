@@ -2,16 +2,9 @@ package com.kaleyra.video_sdk.call.bottomsheet.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.kaleyra.video_sdk.call.callactions.view.AudioAction
-import com.kaleyra.video_sdk.call.callactions.view.CameraAction
-import com.kaleyra.video_sdk.call.callactions.view.ChatAction
-import com.kaleyra.video_sdk.call.callactions.view.FileShareAction
-import com.kaleyra.video_sdk.call.callactions.view.FlipCameraAction
-import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
-import com.kaleyra.video_sdk.call.callactions.view.MicAction
-import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
-import com.kaleyra.video_sdk.call.callactions.view.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.callactions.view.WhiteboardAction
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
@@ -24,7 +17,19 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.AudioAction
+import com.kaleyra.video_sdk.call.callactions.view.CameraAction
+import com.kaleyra.video_sdk.call.callactions.view.ChatAction
+import com.kaleyra.video_sdk.call.callactions.view.FileShareAction
+import com.kaleyra.video_sdk.call.callactions.view.FlipCameraAction
+import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
+import com.kaleyra.video_sdk.call.callactions.view.MicAction
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
+import com.kaleyra.video_sdk.call.callactions.view.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.callactions.view.WhiteboardAction
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun CallSheetItem(
     modifier: Modifier = Modifier,
@@ -40,7 +45,8 @@ internal fun CallSheetItem(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
-    onVirtualBackgroundToggle: (Boolean) -> Unit
+    onVirtualBackgroundToggle: (Boolean) -> Unit,
+    inputPermissions: InputPermissions = InputPermissions()
 ) {
     when(val ca = callAction) {
         is HangUpAction -> {
@@ -52,21 +58,27 @@ internal fun CallSheetItem(
             )
         }
         is MicAction -> {
+            val shouldShowPermissionWarning = !inputPermissions.wasMicPermissionAsked || with(inputPermissions.micPermission) { this != null && !status.isGranted && status.shouldShowRationale }
+            val shouldShowPermissionError = inputPermissions.wasMicPermissionAsked && with(inputPermissions.micPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
+
             MicAction(
                 checked = ca.isToggled,
                 enabled = ca.isEnabled,
-                warning = ca.state == InputCallAction.State.Warning,
-                error = ca.state == InputCallAction.State.Error,
+                warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
+                error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onMicToggle,
                 modifier = modifier
             )
         }
         is CameraAction -> {
+            val shouldShowPermissionWarning = (inputPermissions.shouldAskCameraPermission && !inputPermissions.wasCameraPermissionAsked) || with(inputPermissions.cameraPermission) { this != null && !status.isGranted && status.shouldShowRationale }
+            val shouldShowPermissionError = inputPermissions.wasCameraPermissionAsked && with(inputPermissions.cameraPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
+
             CameraAction(
                 checked = ca.isToggled,
                 enabled = ca.isEnabled,
-                warning = ca.state == InputCallAction.State.Warning,
-                error = ca.state == InputCallAction.State.Error,
+                warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
+                error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onCameraToggle,
                 modifier = modifier
             )

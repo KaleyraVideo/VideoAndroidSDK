@@ -16,6 +16,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.kaleyra.video_common_ui.CallUI
@@ -43,6 +45,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
 import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
 import com.kaleyra.video_sdk.call.pip.PipScreen
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
@@ -98,6 +101,10 @@ internal fun CallScreen(
 
     val callSheetState = rememberCallSheetState()
 
+    val wasMicPermissionAsked = remember { mutableStateOf(false) }
+    val wasCameraPermissionAsked = remember { mutableStateOf(false) }
+    val shouldAskCameraPermission = remember { mutableStateOf(false) }
+
     // Needed this to handle properly a sequence of multiple permission
     // Cannot call micPermissionState.launchPermission followed by cameraPermissionState.launchPermission, or vice versa
     val inputPermissionsState = rememberMultiplePermissionsState(permissions = listOf(
@@ -105,18 +112,22 @@ internal fun CallScreen(
     )) { permissionsResult ->
         onAskInputPermissions(false)
         permissionsResult.forEach { (permission, isGranted) ->
-            when {
+            when  {
                 permission == RecordAudioPermission && isGranted -> viewModel.startMicrophone(activity)
                 permission == CameraPermission && isGranted -> viewModel.startCamera(activity)
             }
         }
+        wasMicPermissionAsked.value = true
+        wasCameraPermissionAsked.value = true
     }
     val micPermissionState = rememberPermissionState(permission = RecordAudioPermission) { isGranted ->
         onAskInputPermissions(false)
+        wasMicPermissionAsked.value = true
         if (isGranted) viewModel.startMicrophone(activity)
     }
     val cameraPermissionState = rememberPermissionState(permission = CameraPermission) { isGranted ->
         onAskInputPermissions(false)
+        wasCameraPermissionAsked.value = true
         if (isGranted) viewModel.startCamera(activity)
     }
     val finishActivity = remember(activity) {
@@ -173,6 +184,7 @@ internal fun CallScreen(
                     isAudioEnabled -> micPermissionState.launchPermissionRequest()
                     isVideoEnabled -> cameraPermissionState.launchPermissionRequest()
                 }
+                shouldAskCameraPermission.value = isAudioEnabled && isVideoEnabled
             }
         }
     }
@@ -199,6 +211,18 @@ internal fun CallScreen(
         viewModel.setOnUsbCameraConnected(onUsbCameraConnected)
     }
 
+    val inputPermissions by remember(wasMicPermissionAsked, wasCameraPermissionAsked, shouldAskCameraPermission) {
+        derivedStateOf {
+            InputPermissions(
+                shouldAskCameraPermission = shouldAskCameraPermission.value,
+                wasMicPermissionAsked = wasMicPermissionAsked.value,
+                wasCameraPermissionAsked = wasCameraPermissionAsked.value,
+                micPermission = micPermissionState,
+                cameraPermission = cameraPermissionState
+            )
+        }
+    }
+
     CollaborationTheme(theme = theme) {
         CallScreen(
             windowSizeClass = windowSizeClass,
@@ -207,6 +231,7 @@ internal fun CallScreen(
             callSheetState = callSheetState,
             shouldShowFileShareComponent = shouldShowFileShareComponent,
             whiteboardRequest = whiteboardRequest,
+            inputPermissions = inputPermissions,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
             onAskInputPermissions = onAskInputPermissions,
@@ -225,6 +250,7 @@ internal fun CallScreen(
     callSheetState: CallSheetState,
     shouldShowFileShareComponent: Boolean,
     whiteboardRequest: WhiteboardRequest?,
+    inputPermissions: InputPermissions,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
@@ -308,6 +334,7 @@ internal fun CallScreen(
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
                 modalSheetComponent = modalSheetComponent,
+                inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
@@ -322,6 +349,7 @@ internal fun CallScreen(
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
                 modalSheetComponent = modalSheetComponent,
+                inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,

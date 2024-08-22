@@ -33,8 +33,22 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
@@ -45,7 +59,7 @@ import com.kaleyra.video_sdk.call.mapper.CallActionsMapper
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.InputMapper
+import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
@@ -55,17 +69,6 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitia
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
-import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
@@ -109,7 +112,8 @@ class CallActionsViewModelTest {
     @Before
     fun setUp() {
         mockkObject(CallActionsMapper)
-        mockkObject(InputMapper)
+        mockkObject(com.kaleyra.video_sdk.call.mapper.InputMapper)
+        mockkObject(com.kaleyra.video_common_ui.mapper.InputMapper)
         mockkObject(VirtualBackgroundMapper)
         mockkObject(ParticipantMapper)
         mockkObject(AudioOutputMapper)
@@ -128,6 +132,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         every { callMock.inputs.release(any()) } returns Unit
+        every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(false)
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
@@ -345,6 +350,155 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
         val newActual =  viewModel.uiState.first().actionList.value
         val newExpected = listOf(VirtualBackgroundAction(isToggled = true))
+        assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun testCallActionsUiState_isCameraUsageRestrictedUpdated() = runTest {
+        every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(true)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().isCameraUsageRestricted
+        assertEquals(true, actual)
+    }
+
+    @Test
+    fun audioInputAwaitingPermission_callActionsUiState_micActionWarning() = runTest {
+        val actions = MutableStateFlow(listOf(MicAction()))
+        val audioInput = mockk<Input.Audio> {
+            every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
+        }
+        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toAudioInput() } returns audioFlow
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().actionList.value
+        val expected = listOf(MicAction())
+        assertEquals(expected, actual)
+
+        audioFlow.value = audioInput
+        advanceUntilIdle()
+
+        val newActual = viewModel.uiState.first().actionList.value
+        val newExpected = listOf(MicAction(state = InputCallAction.State.Warning))
+        assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun audioInputError_callActionsUiState_micActionError() = runTest {
+        val actions = MutableStateFlow(listOf(MicAction()))
+        val audioInput = mockk<Input.Audio> {
+            every { state } returns MutableStateFlow(Input.State.Closed.Error)
+        }
+        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toAudioInput() } returns audioFlow
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().actionList.value
+        val expected = listOf(MicAction())
+        assertEquals(expected, actual)
+
+        audioFlow.value = audioInput
+        advanceUntilIdle()
+
+        val newActual = viewModel.uiState.first().actionList.value
+        val newExpected = listOf(MicAction(state = InputCallAction.State.Error))
+        assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun cameraInputAwaitingPermission_callActionsUiState_cameraActionWarning() = runTest {
+        val actions = MutableStateFlow(listOf(CameraAction()))
+        val videoInput = mockk<Input.Video.Camera.Internal> {
+            every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
+        }
+        val videoFlow = MutableStateFlow<Input.Video.Camera.Internal?>(null)
+        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCameraVideoInput() } returns videoFlow
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().actionList.value
+        val expected = listOf(CameraAction())
+        assertEquals(expected, actual)
+
+        videoFlow.value = videoInput
+        advanceUntilIdle()
+
+        val newActual = viewModel.uiState.first().actionList.value
+        val newExpected = listOf(CameraAction(state = InputCallAction.State.Warning))
+        assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun cameraInputAwaitingPermission_callActionsUiState_cameraActionError() = runTest {
+        val actions = MutableStateFlow(listOf(CameraAction()))
+        val videoInput = mockk<Input.Video.Camera.Internal> {
+            every { state } returns MutableStateFlow(Input.State.Closed.Error)
+        }
+        val videoFlow = MutableStateFlow<Input.Video.Camera.Internal?>(null)
+        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCameraVideoInput() } returns videoFlow
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().actionList.value
+        val expected = listOf(CameraAction())
+        assertEquals(expected, actual)
+
+        videoFlow.value = videoInput
+        advanceUntilIdle()
+
+        val newActual = viewModel.uiState.first().actionList.value
+        val newExpected = listOf(CameraAction(state = InputCallAction.State.Error))
+        assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun cameraInputUsageRestricted_callActionsUiState_cameraActionError() = runTest {
+        val actions = MutableStateFlow(listOf(CameraAction()))
+        val videoInput = mockk<Input.Video.Camera.Internal> {
+            every { state } returns MutableStateFlow(Input.State.Active)
+        }
+        val hasUsageRestricted = MutableStateFlow(false)
+        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoInput)
+        every { callMock.hasCameraUsageRestriction() } returns hasUsageRestricted
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val actual = viewModel.uiState.first().actionList.value
+        val expected = listOf(CameraAction())
+        assertEquals(expected, actual)
+
+        hasUsageRestricted.value = true
+        advanceUntilIdle()
+
+        val newActual = viewModel.uiState.first().actionList.value
+        val newExpected = listOf(CameraAction(state = InputCallAction.State.Error))
         assertEquals(newExpected, newActual)
     }
 
@@ -1216,7 +1370,7 @@ class CallActionsViewModelTest {
             every { lenses } returns listOf(rearLens, frontLens)
             every { currentLens } returns MutableStateFlow(rearLens)
         }
-        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>()))
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>(relaxed = true)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)
@@ -1239,7 +1393,7 @@ class CallActionsViewModelTest {
             every { lenses } returns listOf(rearLens, frontLens)
             every { currentLens } returns MutableStateFlow(frontLens)
         }
-        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>()))
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>(relaxed = true)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)
@@ -1404,6 +1558,7 @@ class CallActionsViewModelTest {
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { state } returns MutableStateFlow(Input.State.Active)
         }
         val availableInputs = setOf(cameraInput, usbInput)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
@@ -1425,6 +1580,7 @@ class CallActionsViewModelTest {
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { state } returns MutableStateFlow(Input.State.Active)
         }
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns SCREEN_SHARE_STREAM_ID
@@ -1457,6 +1613,7 @@ class CallActionsViewModelTest {
         }
         val usbInput = mockk<Input.Video.Camera.Usb> {
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { state } returns MutableStateFlow(Input.State.Active)
         }
         val myStreamMock = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns "streamId"

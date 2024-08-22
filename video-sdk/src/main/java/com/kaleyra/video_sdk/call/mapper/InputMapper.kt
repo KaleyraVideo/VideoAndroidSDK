@@ -113,4 +113,16 @@ internal object InputMapper {
             .flatMapLatest { it?.state ?: flowOf(null) }
             .map { it is Input.State.Closed.AwaitingPermission }
 
+    /**
+     * Utility function to get the camera usage restriction
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting if the local participant has the camera usage restriction
+     */
+    fun Call.hasCameraUsageRestriction(): Flow<Boolean> {
+        return this.toMe()
+            .map { it.restrictions }
+            .flatMapLatest { it.camera }
+            .map { it.usage }
+    }
+
 }

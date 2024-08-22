@@ -15,8 +15,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.VSheetItemsLayout
@@ -24,9 +28,8 @@ import com.kaleyra.video_sdk.call.callactions.view.AnswerAction
 import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactions.view.MoreAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
-import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
@@ -34,6 +37,7 @@ import kotlin.math.max
 
 private const val MaxVSheetItems = 5
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun VSheetContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
@@ -42,7 +46,8 @@ internal fun VSheetContent(
     onActionsOverflow: (overflowedActions: ImmutableList<CallActionUI>) -> Unit,
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier,
-    maxActions: Int = MaxVSheetItems
+    maxActions: Int = MaxVSheetItems,
+    inputPermissions: InputPermissions = InputPermissions()
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,6 +57,7 @@ internal fun VSheetContent(
         maxActions = maxActions,
         showAnswerAction = uiState.isRinging,
         isMoreToggled = isMoreToggled,
+        inputPermissions = inputPermissions,
         onActionsPlaced = { itemsPlaced ->
             val actions = uiState.actionList.value
             val dragActions = actions.takeLast(max(0, actions.count() - itemsPlaced))
@@ -59,8 +65,16 @@ internal fun VSheetContent(
         },
         onAnswerClick = viewModel::accept,
         onHangUpClick = viewModel::hangUp,
-        onMicToggle = remember(viewModel) { { viewModel.toggleMic(activity) } },
-        onCameraToggle = remember(viewModel) { { viewModel.toggleCamera(activity) } } ,
+        onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
+            val micPermission = inputPermissions.micPermission ?: return@lambda
+            if (micPermission.status.isGranted) viewModel.toggleMic(activity)
+            else micPermission.launchPermissionRequest()
+        } },
+        onCameraToggle = remember(viewModel, inputPermissions) { lambda@ {
+            val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
+            if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
+            else cameraPermission.launchPermissionRequest()
+        } } ,
         onScreenShareToggle = remember(viewModel) {
             { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
         },
@@ -75,6 +89,7 @@ internal fun VSheetContent(
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun VSheetContent(
     callActions: ImmutableList<CallActionUI>,
@@ -94,7 +109,8 @@ internal fun VSheetContent(
     onWhiteboardClick: () -> Unit,
     onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    maxActions: Int = MaxVSheetItems
+    maxActions: Int = MaxVSheetItems,
+    inputPermissions: InputPermissions = InputPermissions()
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
     val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }
@@ -131,6 +147,7 @@ internal fun VSheetContent(
                             callAction = callAction,
                             label = false,
                             extended = false,
+                            inputPermissions = inputPermissions,
                             onHangUpClick = onHangUpClick,
                             onMicToggle = onMicToggle,
                             onCameraToggle = onCameraToggle,

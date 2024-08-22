@@ -30,6 +30,7 @@ import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.VSheetContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.VSheetDragContent
@@ -37,7 +38,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
@@ -58,6 +59,7 @@ internal fun HCallScreen(
     selectedStreamId: String?,
     onStreamSelected: (String?) -> Unit,
     modalSheetComponent: ModalSheetComponent?,
+    inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
@@ -82,6 +84,7 @@ internal fun HCallScreen(
             if (hasSheetDragContent) {
                 VSheetDragContent(
                     callActions = sheetDragActions,
+                    inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
@@ -104,6 +107,7 @@ internal fun HCallScreen(
                         }
                         VSheetContent(
                             isMoreToggled = isSheetExpanded,
+                            inputPermissions = inputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
                             onModalSheetComponentRequest = onModalSheetComponentRequest,
                             onMoreToggle = onChangeSheetState,

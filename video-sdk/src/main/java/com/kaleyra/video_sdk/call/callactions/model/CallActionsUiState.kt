@@ -24,5 +24,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 @Immutable
 internal data class CallActionsUiState(
     val actionList: ImmutableList<CallActionUI> = ImmutableList(emptyList()),
-    val isRinging: Boolean = false
+    val isRinging: Boolean = false,
+    val isCameraUsageRestricted: Boolean = false
 ) : UiState
