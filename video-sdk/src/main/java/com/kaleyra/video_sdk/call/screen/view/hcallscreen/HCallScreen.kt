@@ -184,7 +184,12 @@ internal fun HCallScreen(
                     .padding(top = top, end = 96.dp)
                     .padding(vertical = 24.dp)
             ) {
-                CallInfoComponent(Modifier.padding(vertical = 12.dp))
+                CallInfoComponent(
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .navigationBarsPadding()
+                        .displayCutoutPadding()
+                )
                 if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
                 }
