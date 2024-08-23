@@ -111,32 +111,19 @@ class InputMapperTest {
     }
 
     @Test
-    fun cameraStreamVideoNull_isMyCameraEnabled_null() = runTest {
+    fun cameraStreamVideoNull_isMyCameraEnabled_false() = runTest {
         with(streamMock) {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(null)
         }
-        val myCameraFlow = callMock.isMyCameraEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myCameraFlow.first()
-            }
-            assertEquals(null, result)
-        }
+        assertEquals(false, callMock.isMyCameraEnabled().first())
     }
 
     @Test
-    fun cameraStreamNotExists_isMyCameraEnabled_null() = runTest {
+    fun cameraStreamNotExists_isMyCameraEnabled_false() = runTest {
         every { streamMock.id } returns "streamId"
         every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
-        val myCameraFlow = callMock.isMyCameraEnabled()
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myCameraFlow.first()
-            }
-            assertEquals(null, result)
-        }
+        assertEquals(false, callMock.isMyCameraEnabled().first())
     }
 
     @Test
@@ -149,16 +136,9 @@ class InputMapperTest {
     }
 
     @Test
-    fun cameraStreamNotExists_isMyMicEnabled_null() = runTest {
+    fun cameraStreamNotExists_isMyMicEnabled_false() = runTest {
         every { streamMock.id } returns "streamId"
-        val myMicFlow = callMock.isMyMicEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myMicFlow.first()
-            }
-            assertEquals(null, result)
-        }
+        assertEquals(false, callMock.isMyMicEnabled().first())
     }
 
     @Test
@@ -167,14 +147,7 @@ class InputMapperTest {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
-        val myMicFlow = callMock.isMyMicEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myMicFlow.first()
-            }
-            assertEquals(null, result)
-        }
+        assertEquals(false, callMock.isMyMicEnabled().first())
     }
 
     @Test
