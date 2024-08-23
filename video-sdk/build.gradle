@@ -53,7 +53,6 @@ dependencies {
     implementation catalog.androidxComposeConstraintLayout
     coreLibraryDesugaring catalog.desugar
     implementation platform(catalog.androidxComposeBom)
-    implementation 'androidx.compose.material:material'
     implementation 'androidx.compose.material3:material3'
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation 'androidx.compose.foundation:foundation'
