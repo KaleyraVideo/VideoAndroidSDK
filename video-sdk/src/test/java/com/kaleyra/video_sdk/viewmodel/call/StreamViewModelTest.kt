@@ -156,6 +156,29 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun `handle empty list for other display names and images`() = runTest {
+        val video = VideoUi(id = "videoId")
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { isGroupCall(any()) } returns flowOf(true)
+            every { toOtherDisplayNames() } returns flowOf(listOf())
+            every { toOtherDisplayImages() } returns flowOf(listOf())
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            isGroupCall = true,
+            video = video,
+            username = null,
+            avatar = null
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
     fun `stream preview reset to null after pre call state is ended and streams count is more than 1`() = runTest {
         val video = VideoUi(id = "videoId")
         val uriMock = mockk<Uri>(relaxed = true)

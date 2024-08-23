@@ -88,15 +88,15 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 .onEach { (isPreCallState, video) ->
                     if (!isPreCallState) return@onEach
                     val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
-                    val otherUsername = call.toOtherDisplayNames().first()[0]
-                    val otherAvatar = call.toOtherDisplayImages().first()[0]
+                    val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
+                    val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
                     _uiState.update {
                         it.copy(
                             preview = StreamPreview(
                                 isGroupCall = isGroupCall,
                                 video = video,
                                 username = otherUsername,
-                                avatar = ImmutableUri(otherAvatar)
+                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) }
                             )
                         )
                     }
