@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -420,9 +422,10 @@ private fun BackHandler(
 }
 
 @Composable
-internal fun callScreenScaffoldPaddingValues(): PaddingValues {
+internal fun callScreenScaffoldPaddingValues(left: Dp = 0.dp, top: Dp = 0.dp, right: Dp = 0.dp, bottom: Dp = 0.dp): PaddingValues {
     return WindowInsets.navigationBars
         .add(WindowInsets.statusBars)
         .add(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+        .add(WindowInsets(left, top, right, bottom))
         .asPaddingValues()
 }

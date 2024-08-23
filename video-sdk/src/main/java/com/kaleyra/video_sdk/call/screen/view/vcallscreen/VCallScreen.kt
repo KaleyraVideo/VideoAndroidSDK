@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -104,7 +105,7 @@ internal fun VCallScreen(
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(),
+        paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, bottom = 8.dp),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },

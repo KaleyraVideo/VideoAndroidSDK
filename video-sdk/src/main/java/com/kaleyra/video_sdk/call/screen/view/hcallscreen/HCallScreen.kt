@@ -72,7 +72,7 @@ internal fun HCallScreen(
     HCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(),
+        paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, right = 8.dp),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
