@@ -173,7 +173,7 @@ internal fun HCallScreen(
                     .padding(
                         start = left,
                         top = top,
-                        end = 96.dp,
+                        end = 104.dp,
                         bottom = bottom,
                     )
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)

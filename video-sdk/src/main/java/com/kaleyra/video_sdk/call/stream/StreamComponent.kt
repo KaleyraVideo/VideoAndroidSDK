@@ -1,7 +1,5 @@
 package com.kaleyra.video_sdk.call.stream
 
-import android.content.ContentResolver
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -21,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -37,14 +34,11 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
-import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasCompactHeight
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasExpandedWidth
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
+import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.items.MoreParticipantsItem
 import com.kaleyra.video_sdk.call.stream.view.items.NonDisplayedParticipantData
@@ -52,8 +46,10 @@ import com.kaleyra.video_sdk.call.stream.view.items.ScreenShareItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
+import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasCompactHeight
+import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasMediumWidth
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -152,13 +148,29 @@ internal fun StreamComponent(
             val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
             val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
             val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
-            Stream(
-                streamView = video?.view?.preCallStreamViewSettings(),
-                avatar = avatar,
-                avatarPlaceholder = avatarPlaceholder,
-                username = username,
-                showStreamView = video?.view != null && video.isEnabled
-            )
+
+            // TODO check if this logic can be improved and revise tests
+            if (video?.view != null && video.isEnabled) {
+                Stream(
+                    streamView = video.view.preCallStreamViewSettings(),
+                    avatar = null,
+                    username = username,
+                    showStreamView = true
+                )
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = modifier
+                ) {
+                    Stream(
+                        streamView = null,
+                        username = username,
+                        avatar = avatar,
+                        avatarPlaceholder = avatarPlaceholder,
+                        showStreamView = false
+                    )
+                }
+            }
         } else {
             BoxWithConstraints(
                 contentAlignment = Alignment.Center,

@@ -241,7 +241,7 @@ internal fun VCallScreen(
                         start = 4.dp,
                         top = top,
                         end = 4.dp,
-                        bottom = 100.dp
+                        bottom = 108.dp
                     )
             )
 
