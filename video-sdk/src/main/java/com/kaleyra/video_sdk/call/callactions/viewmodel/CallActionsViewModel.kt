@@ -33,6 +33,7 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
@@ -189,8 +190,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             is Input.State.Closed.Error -> InputCallAction.State.Error
                             else -> InputCallAction.State.Ok
                         }
-                        val micAction = (actionList[index] as MicAction).copy(state = inputState)
-                        val updatedActionList = actionList.toMutableList().also { it[index] = micAction }
+                        val action = (actionList[index] as MicAction).copy(state = inputState)
+                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
                         _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
                     }
                 }
@@ -207,8 +208,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             state is Input.State.Closed.Error || cameraUsage -> InputCallAction.State.Error
                             else -> InputCallAction.State.Ok
                         }
-                        val micAction = (actionList[index] as CameraAction).copy(state = inputState)
-                        val updatedActionList = actionList.toMutableList().also { it[index] = micAction }
+                        val action = (actionList[index] as CameraAction).copy(state = inputState)
+                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
                         _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
                     }
                 }

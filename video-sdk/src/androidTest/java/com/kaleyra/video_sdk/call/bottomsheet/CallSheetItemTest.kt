@@ -10,6 +10,9 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
@@ -25,11 +28,15 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
+import io.mockk.every
+import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class SheetCallActionTest {
+@OptIn(ExperimentalPermissionsApi::class)
+class CallSheetItemTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -1285,6 +1292,174 @@ class SheetCallActionTest {
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = MicAction(state = InputCallAction.State.Warning),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun micPermissionNotAsked_warningBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = MicAction(),
+                inputPermissions = InputPermissions(
+                    wasMicPermissionAsked = false
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun micPermissionShouldShowRationale_warningBadgeIsDisplayed() {
+        val permission = mockk<PermissionState> {
+            every { status } returns PermissionStatus.Denied(true)
+        }
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = MicAction(),
+                inputPermissions = InputPermissions(
+                    wasMicPermissionAsked = true,
+                    micPermission = permission
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun micPermissionDeniedForever_errorBadgeIsDisplayed() {
+        val permission = mockk<PermissionState> {
+            every { status } returns PermissionStatus.Denied(false)
+        }
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = MicAction(),
+                inputPermissions = InputPermissions(
+                    wasMicPermissionAsked = true,
+                    micPermission = permission
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraPermissionNotAskedAndShouldAskCameraPermission_warningBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CameraAction(),
+                inputPermissions = InputPermissions(
+                    shouldAskCameraPermission = true,
+                    wasCameraPermissionAsked = false
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraPermissionShouldShowRationale_warningBadgeIsDisplayed() {
+        val permission = mockk<PermissionState> {
+            every { status } returns PermissionStatus.Denied(true)
+        }
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CameraAction(),
+                inputPermissions = InputPermissions(
+                    shouldAskCameraPermission = true,
+                    wasCameraPermissionAsked = true,
+                    cameraPermission = permission
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("!").assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraPermissionDeniedForever_errorBadgeIsDisplayed() {
+        val permission = mockk<PermissionState> {
+            every { status } returns PermissionStatus.Denied(false)
+        }
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CameraAction(),
+                inputPermissions = InputPermissions(
+                    wasCameraPermissionAsked = true,
+                    cameraPermission = permission
+                ),
                 label = false,
                 extended = false,
                 onHangUpClick = {  },
