@@ -22,15 +22,25 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.bottomsheet.toPixel
 
 internal object TextStyleExtensions {
 
+    private var shadowAmountFontSizeMultiplier = 0.05f
+
     @Composable
-    fun TextStyle.shadow(color: Color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f)) =
-        copy(
+    fun TextStyle.shadow(color: Color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f)): TextStyle {
+        val shadowAmount: Float = when(fontSize.type.toString()) {
+            "Sp", "Em" -> (fontSize.times(shadowAmountFontSizeMultiplier)).value.dp.toPixel
+            else -> 0.7.dp.toPixel
+        }
+        return copy(
             shadow = Shadow(
+                blurRadius = shadowAmount,
                 color = color,
-                offset = Offset(x = 1f, y = 1f)
+                offset = Offset(x = shadowAmount, y = shadowAmount)
             )
         )
+    }
 }

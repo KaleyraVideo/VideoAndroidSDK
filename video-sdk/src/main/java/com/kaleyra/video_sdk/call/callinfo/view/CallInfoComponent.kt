@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.callinfo.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -126,30 +129,32 @@ fun CallInfoComponent(
             horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            val textStyle = LocalTextStyle.current.shadow(
-                color = MaterialTheme.colorScheme.surface
-            )
-
             displayTitle?.let {
+                val titleTextStyle = LocalTextStyle.current.copy(
+                    fontSize = TextUnit(if (isPipMode) 14f else 28f, TextUnitType.Companion.Sp)
+                ).shadow(color = MaterialTheme.colorScheme.surface)
                 EllipsizeText(
                     modifier = Modifier.testTag(CallInfoTitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = if (isPipMode) 14.sp else 28.sp,
+                    fontSize = titleTextStyle.fontSize,
                     fontWeight = FontWeight.Bold,
                     ellipsize = Ellipsize.Marquee,
-                    shadow = textStyle.shadow
+                    shadow = titleTextStyle.shadow
                 )
             }
 
             displaySubtitle?.let {
+                val subtitleTextStyle = LocalTextStyle.current.copy(
+                    fontSize = TextUnit(if (isPipMode) 12f else 14f, TextUnitType.Companion.Sp)
+                ).shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
                     modifier = Modifier.testTag(CallInfoSubtitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = if (isPipMode) 12.sp else 14.sp,
+                    fontSize = subtitleTextStyle.fontSize,
                     maxLines = 1,
-                    style = textStyle
+                    style = subtitleTextStyle
                 )
             }
         }
@@ -163,7 +168,7 @@ internal fun CallInfoConnectingWithDisplayNames() {
     KaleyraTheme {
         Surface {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
@@ -179,9 +184,9 @@ internal fun CallInfoConnectingWithDisplayNames() {
 @Composable
 internal fun CallInfoConnectingWithNoDisplayNames() {
     KaleyraTheme {
-        Surface {
+        Surface(modifier = Modifier) {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
@@ -199,7 +204,7 @@ internal fun CallInfoComponentHidden() {
     KaleyraTheme {
         Surface {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState()
             )
         }
@@ -213,7 +218,7 @@ internal fun CallInfoPipMode() {
     KaleyraTheme {
         Surface {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
