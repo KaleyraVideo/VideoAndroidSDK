@@ -329,5 +329,6 @@
         <item quantity="one">%d Participante</item>
         <item quantity="other">%d Participantes</item>
     </plurals>
+    <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
 
 </resources>

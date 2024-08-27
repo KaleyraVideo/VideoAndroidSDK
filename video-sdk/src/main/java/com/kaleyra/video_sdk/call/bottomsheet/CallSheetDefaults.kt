@@ -19,10 +19,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.R
 
 internal object AnchoredDraggableCallSheetDefaults {
 
@@ -50,8 +52,7 @@ object CallBottomSheetDefaults {
         shape: Shape = MaterialTheme.shapes.extraLarge,
         color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(CallSheetTokens.DragHandleOpacity)
     ) {
-        // TODO load a string resource
-        val dragHandleDescription = "description"
+        val dragHandleDescription = stringResource(id = R.string.kaleyra_call_sheet_drag_description)
         Surface(
             modifier = modifier
                 .padding(vertical = DragHandlePadding)
@@ -77,8 +78,7 @@ object CallBottomSheetDefaults {
         shape: Shape = MaterialTheme.shapes.extraLarge,
         color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(CallSheetTokens.DragHandleOpacity)
     ) {
-        // TODO load a string resource
-        val dragHandleDescription = "description"
+        val dragHandleDescription = stringResource(id = R.string.kaleyra_call_sheet_drag_description)
         Surface(
             modifier = modifier
                 .padding(horizontal = DragHandlePadding)

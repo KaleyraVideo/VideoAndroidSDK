@@ -327,5 +327,6 @@
     <string name="kaleyra_already_in_system_call_audio_routing_error">Unable to change audio output device while a system call is already ongoing.</string>
 
     <string name="kaleyra_waiting_for_other_participants">Waiting for other participants…</string>
+    <string name="kaleyra_call_sheet_drag_description">Drag</string>
 
 </resources>
