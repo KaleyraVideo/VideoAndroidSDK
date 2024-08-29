@@ -60,13 +60,12 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     )
             }
 
+            val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
+
+            KaleyraVideo.conference.callActions = callConfiguration.actions.mapToCallUIActions()
             KaleyraVideo.conference.call.onEach {
-                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-                it.actions.value = callConfiguration.actions.mapToCallUIActions()
                 it.withFeedback = callConfiguration.options.feedbackEnabled
-                if (callConfiguration.options.backCameraAsDefault) {
-                    it.inputs.useBackCamera()
-                }
+                if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
             }.launchIn(MainScope())
         }
 
