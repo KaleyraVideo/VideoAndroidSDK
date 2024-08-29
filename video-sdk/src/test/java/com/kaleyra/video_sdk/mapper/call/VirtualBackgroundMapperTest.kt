@@ -62,6 +62,7 @@ class VirtualBackgroundMapperTest {
     @Before
     fun setUp() {
         every { callMock.participants } returns MutableStateFlow(participantsMock)
+        every { callMock.actions } returns MutableStateFlow(CallUI.Action.all)
         every { participantsMock.me } returns meMock
         every { meMock.streams } returns MutableStateFlow(listOf(myStreamMock))
         with(myStreamMock) {
