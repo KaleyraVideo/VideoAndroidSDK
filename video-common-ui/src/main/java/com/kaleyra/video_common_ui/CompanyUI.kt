@@ -55,7 +55,7 @@ class CompanyUI(company: Company) : Company by company {
             data object Day : DefaultStyle()
 
             /**
-             * Night syle
+             * Night style
              */
             data object Night : DefaultStyle()
 
