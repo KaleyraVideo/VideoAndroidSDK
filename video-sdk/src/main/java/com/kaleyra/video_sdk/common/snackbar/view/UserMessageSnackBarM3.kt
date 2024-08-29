@@ -2,16 +2,21 @@
 
 package com.kaleyra.video_sdk.common.snackbar.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -30,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -41,20 +45,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-private val UserMessageSnackBarMessageActionSpacing = 60.dp
+private val UserMessageSnackBarMessageActionSpacing = 30.dp
 
 @Stable
-data class UserMessageSnackbarActionConfig(val action: TextRef, val onActionClick: () -> Unit)
+data class UserMessageSnackbarActionConfig(val action: TextRef, val iconResource: Int? = null, val onActionClick: () -> Unit)
 
 @Composable
 internal fun UserMessageSnackbarM3(
     iconPainter: Painter,
+    iconTint: Color = MaterialTheme.colorScheme.surface,
     message: String,
     actionConfig: UserMessageSnackbarActionConfig? = null,
     onDismissClick: (() -> Unit)? = null,
@@ -64,11 +70,15 @@ internal fun UserMessageSnackbarM3(
     var dismissButtonSize by remember { mutableStateOf(IntSize.Zero) }
     var actionsSize by remember { mutableStateOf(IntSize.Zero) }
     var contentSize by remember { mutableStateOf(IntSize.Zero) }
+    var messageSize by remember { mutableStateOf(IntSize.Zero) }
+    var isMultilineMessage by remember { mutableStateOf(false) }
     val isPreview = LocalInspectionMode.current
     var displaySnackbar by remember { mutableStateOf(isPreview) }
 
+
     BoxWithConstraints(
         modifier = Modifier.alpha(if (displaySnackbar) 1f else 0f)
+            .padding(16.dp)
     ) {
         Row(modifier = Modifier.width(with(LocalDensity.current) {
             if (dismissButtonSize.width == 0 && actionsSize.width == 0 && contentSize.width == 0) {
@@ -79,21 +89,28 @@ internal fun UserMessageSnackbarM3(
             }
         })) {
             Snackbar(
-                shape = CircleShape,
+                shape = if (actionConfig != null || isMultilineMessage) RoundedCornerShape(16.dp) else CircleShape,
                 containerColor = backgroundColor,
-                modifier = Modifier.padding(vertical = 8.dp),
                 dismissAction = {
                     if (actionConfig != null) Unit
                     else if (onDismissClick == null) Unit
-                    else IconButton(
-                        modifier = Modifier
-                            .onGloballyPositioned { coordinates -> dismissButtonSize = IntSize(coordinates.size.width, 0) }
-                            .padding(end = 8.dp),
-                        onClick = onDismissClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.kaleyra_f_close),
-                            tint = contentColor,
-                            contentDescription = stringResource(id = R.string.kaleyra_close))
+                    else {
+                        Column(
+                            modifier = Modifier.fillMaxHeight(),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            IconButton(
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates -> dismissButtonSize = IntSize(coordinates.size.width, 0) }
+                                    .padding(end = 16.dp, start = 8.dp)
+                                    .size(24.dp),
+                                onClick = onDismissClick) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.kaleyra_f_close),
+                                    tint = contentColor,
+                                    contentDescription = stringResource(id = R.string.kaleyra_close))
+                            }
+                        }
                     }
                 },
                 action = {
@@ -103,28 +120,56 @@ internal fun UserMessageSnackbarM3(
                             .onGloballyPositioned { coordinates -> actionsSize = IntSize(coordinates.size.width, 0) },
                         verticalAlignment = Alignment.CenterVertically) {
                         FilledTonalButton(
-                            colors = ButtonDefaults.filledTonalButtonColors(containerColor = MaterialTheme.colorScheme.surface),
-                            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                            colors = ButtonDefaults.filledTonalButtonColors(containerColor =  contentColor),
+                            modifier = Modifier
+                                .height(32.dp)
+                                .padding(end = 4.dp),
                             onClick = actionConfig.onActionClick) {
-                            Text(text = actionConfig.action.resolve(LocalContext.current))
+                            val actionDescription = actionConfig.action.resolve(LocalContext.current)
+                            if (actionConfig.iconResource != null) {
+                                Icon(
+                                    tint = backgroundColor,
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .padding(end = 8.dp),
+                                    painter = painterResource(id = actionConfig.iconResource),
+                                    contentDescription = actionDescription)
+                            }
+                            Text(fontSize = 14.sp, text = actionDescription, color = backgroundColor)
                         }
                     }
                 }
             ) {
-                Row(
-                    modifier = Modifier
-                        .onGloballyPositioned { coordinates -> contentSize = IntSize(coordinates.size.width, 0) }
-                ) {
-                    Image(
-                        painter = iconPainter,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(contentColor)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        color = contentColor,
-                        modifier = Modifier.align(Alignment.CenterVertically).padding(end = if(onDismissClick == null && actionConfig == null) 8.dp else 0.dp),
-                        text = message, fontWeight = FontWeight.Bold)
+                Column(
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.Center) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .onGloballyPositioned { coordinates -> contentSize = IntSize(coordinates.size.width, 0) }
+                    ) {
+                        if (actionConfig == null) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = iconPainter,
+                                contentDescription = null,
+                                tint = iconTint
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(
+                            color = contentColor,
+                            modifier = Modifier
+                                .onGloballyPositioned { coordinates -> messageSize = IntSize(0, coordinates.size.height) }
+                                .padding(end = if (onDismissClick == null && actionConfig == null) 4.dp else 0.dp),
+                            text = message,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            onTextLayout = { textLayoutResult ->
+                                isMultilineMessage = textLayoutResult.lineCount > 1
+                            })
+                    }
                 }
             }
         }
@@ -145,11 +190,10 @@ internal fun UserMessageInfoSnackbarM3(message: String, onDismissClick: (() -> U
 internal fun UserMessageErrorSnackbarM3(message: String, onDismissClick: () -> Unit, actionConfig: UserMessageSnackbarActionConfig? = null) {
     UserMessageSnackbarM3(
         iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_error),
+        iconTint = MaterialTheme.colorScheme.error,
         message = message,
         onDismissClick = onDismissClick,
         actionConfig = actionConfig,
-        backgroundColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer
     )
 }
 
@@ -165,7 +209,7 @@ fun UserMessageInfoSnackbarPreview() = KaleyraTheme {
         UserMessageSnackbarM3(
             iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
             message = "Info!!!",
-            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), {}),
+            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), R.drawable.ic_kaleyra_stream_pin, {}),
             onDismissClick = {},
             backgroundColor = MaterialTheme.colorScheme.inverseSurface)
     }
@@ -198,7 +242,7 @@ fun UserMessageErrorSnackbarPreview() = KaleyraTheme {
             .background(color = MaterialTheme.colorScheme.surface),
         horizontalArrangement = Arrangement.Center) {
         UserMessageErrorSnackbarM3(
-            message = "Info with very very very very very very very very very very long text",
+            message = "Info with very very very very very very very very very very very very very very very very very very very very very very long text",
             onDismissClick = {}
         )
     }

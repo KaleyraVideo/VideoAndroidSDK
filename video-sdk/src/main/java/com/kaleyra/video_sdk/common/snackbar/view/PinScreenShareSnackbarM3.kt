@@ -16,7 +16,7 @@ internal fun PinScreenshareSnackbarM3(
     UserMessageInfoSnackbarM3(
         message = resources.getString(R.string.kaleyra_stream_screenshare_received, userDisplayName),
         onDismissClick = {},
-        actionConfig = UserMessageSnackbarActionConfig(action = TextRef.StringResource(R.string.kaleyra_participants_component_pin), onActionClick = onPinClicked)
+        actionConfig = UserMessageSnackbarActionConfig(action = TextRef.StringResource(R.string.kaleyra_participants_component_pin), iconResource = R.drawable.ic_kaleyra_stream_pin, onActionClick = onPinClicked)
     )
 }
 

@@ -25,7 +25,6 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun MutedSnackbarM3(
     adminDisplayName: String? = null,
-    onDismissClick: () -> Unit
 ) {
     val resources = LocalContext.current.resources
     UserMessageInfoSnackbarM3(
@@ -34,7 +33,6 @@ internal fun MutedSnackbarM3(
             if (adminDisplayName.isNullOrBlank()) 0 else 1,
             adminDisplayName
         ),
-        onDismissClick = onDismissClick
     )
 }
 
@@ -42,6 +40,6 @@ internal fun MutedSnackbarM3(
 @Composable
 internal fun MutedSnackbarPreviewM3() {
     KaleyraTheme {
-        MutedSnackbarM3("admin", {})
+        MutedSnackbarM3("admin")
     }
 }

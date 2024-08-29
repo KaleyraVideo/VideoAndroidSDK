@@ -58,7 +58,7 @@ internal fun CallSheetItem(
             )
         }
         is MicAction -> {
-            val shouldShowPermissionWarning = !inputPermissions.wasMicPermissionAsked || with(inputPermissions.micPermission) { this != null && !status.isGranted && status.shouldShowRationale }
+            val shouldShowPermissionWarning = with(inputPermissions.micPermission) { this != null && !status.isGranted && status.shouldShowRationale }
             val shouldShowPermissionError = inputPermissions.wasMicPermissionAsked && with(inputPermissions.micPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
 
             MicAction(
@@ -71,7 +71,7 @@ internal fun CallSheetItem(
             )
         }
         is CameraAction -> {
-            val shouldShowPermissionWarning = (inputPermissions.shouldAskCameraPermission && !inputPermissions.wasCameraPermissionAsked) || with(inputPermissions.cameraPermission) { this != null && !status.isGranted && status.shouldShowRationale }
+            val shouldShowPermissionWarning = with(inputPermissions.cameraPermission) { this != null && !status.isGranted && status.shouldShowRationale }
             val shouldShowPermissionError = inputPermissions.wasCameraPermissionAsked && with(inputPermissions.cameraPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
 
             CameraAction(

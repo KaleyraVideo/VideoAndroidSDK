@@ -55,7 +55,7 @@ internal fun StackedSnackbar(
                         is CameraRestrictionMessage -> CameraRestrictionSnackbarM3(onDismissClick = dismiss)
                         is AudioConnectionFailureMessage.Generic -> AudioOutputGenericFailureSnackbarM3(onDismissClick = dismiss)
                         is AudioConnectionFailureMessage.InSystemCall -> AudioOutputInSystemCallFailureSnackbarM3(onDismissClick = dismiss)
-                        is MutedMessage -> MutedSnackbarM3(userMessage.admin, onDismissClick = dismiss)
+                        is MutedMessage -> MutedSnackbarM3(userMessage.admin)
                         is PinScreenshareMessage -> PinScreenshareSnackbarM3(userDisplayName = userMessage.userDisplayName, onPinClicked = {
                             dismiss()
                             onActionClick(userMessage)

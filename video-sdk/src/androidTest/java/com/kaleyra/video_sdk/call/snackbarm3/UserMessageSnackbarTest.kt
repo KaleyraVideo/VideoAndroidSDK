@@ -62,7 +62,7 @@ class UserMessageSnackbarM3Test {
                 iconPainter =  painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
                 message = "title",
                 onDismissClick = { },
-                actionConfig = UserMessageSnackbarActionConfig(actionTextRef, { actionClicked = true })
+                actionConfig = UserMessageSnackbarActionConfig(actionTextRef, 0, { actionClicked = true })
             )
         }
         composeTestRule.onNodeWithText(actionLabel).performClick()

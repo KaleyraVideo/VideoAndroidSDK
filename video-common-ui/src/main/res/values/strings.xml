@@ -55,8 +55,8 @@
     <!-- MUTE PARTICIPANT -->
 
     <plurals name="kaleyra_call_participant_muted_by_admin">
-        <item quantity="one">%s has muted you</item>
-        <item quantity="other">The admin has muted you</item>
+        <item quantity="one">%s has muted you.\nTo un-mute press the mic button.</item>
+        <item quantity="other">The admin has muted you.\nTo un-mute press the mic button</item>
     </plurals>
     <string name="kaleyra_call_participant_utterance_muted_by_admin">Muted</string>
 

@@ -53,8 +53,8 @@
     <string name="kaleyra_utterance_recording_stopped">Grabación detenida</string>
     <string name="kaleyra_yesterday">ayer</string>
     <plurals name="kaleyra_call_participant_muted_by_admin">
-        <item quantity="one">%s te ha silenciado</item>
-        <item quantity="other">El administrador te ha silenciado</item>
+        <item quantity="one">%s te ha silenciado.\nToque el botón del micrófono para activar el sonido.</item>
+        <item quantity="other">El administrador te ha silenciado.\nToque el botón del micrófono para activar el sonido.</item>
     </plurals>
     <plurals name="kaleyra_call_participant_removed">
         <item quantity="one">%s te ha eliminado de la llamada</item>
