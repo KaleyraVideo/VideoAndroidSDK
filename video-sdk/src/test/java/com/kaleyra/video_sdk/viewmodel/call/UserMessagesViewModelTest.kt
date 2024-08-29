@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.usermessage.viemodel
+package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -88,5 +90,10 @@ class UserMessagesViewModelTest {
         Assert.assertEquals(ImmutableList(listOf(RecordingMessage.Started)), viewModel.userMessage.first())
         viewModel.dismiss(RecordingMessage.Started)
         Assert.assertEquals(ImmutableList<UserMessage>(listOf()), viewModel.userMessage.first())
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 }
