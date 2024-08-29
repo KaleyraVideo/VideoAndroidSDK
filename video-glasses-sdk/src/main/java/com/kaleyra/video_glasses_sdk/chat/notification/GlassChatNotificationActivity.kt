@@ -39,8 +39,6 @@ import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScree
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
 import com.kaleyra.video_common_ui.utils.extensions.StringExtensions.parseToColor
 import com.kaleyra.video_common_ui.utils.extensions.ViewExtensions.animateViewHeight
-import com.kaleyra.video_glasses_sdk.GlassTouchEventManager
-import com.kaleyra.video_glasses_sdk.TouchEvent
 import com.kaleyra.video_glasses_sdk.bottom_navigation.BottomNavigationView
 import com.kaleyra.video_glasses_sdk.common.AvatarGroupView
 import com.kaleyra.video_glasses_sdk.R
@@ -164,7 +162,7 @@ internal class GlassChatNotificationActivity : AppCompatActivity(), com.kaleyra.
     /**
      * @suppress
      */
-    override fun dispatchKeyEvent(event: KeyEvent?): Boolean =
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean =
         if (glassTouchEventManager!!.toGlassTouchEvent(event)) true
         else super.dispatchKeyEvent(event)
 
