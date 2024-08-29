@@ -50,12 +50,13 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
+                val themeColorSeed = Color(0xFF0087E2).toArgb()
                 KaleyraVideo.theme =
                     CompanyUI.Theme(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
                         defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-                        day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = Color(0xFF0087E2).toArgb())),
-                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = android.graphics.Color.YELLOW))
+                        day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = themeColorSeed)),
+                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = themeColorSeed))
                     )
             }
 
