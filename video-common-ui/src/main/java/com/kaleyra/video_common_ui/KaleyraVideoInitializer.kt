@@ -27,7 +27,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * KaleyraVideoInitializer
- * An abstract service that once implemented is capable of being started from within KaleyraVideoSDK and being used to configure KaleyraVideoSDK when required
+ * An abstract initializer that once implemented is capable of being started from within KaleyraVideoSDK and being used to configure KaleyraVideoSDK when required
  */
 abstract class KaleyraVideoInitializer : Initializer<Unit> {
 
