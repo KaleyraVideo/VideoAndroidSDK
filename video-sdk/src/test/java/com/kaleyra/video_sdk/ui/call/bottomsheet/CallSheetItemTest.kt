@@ -14,9 +14,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
-import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
-import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
@@ -28,6 +25,9 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
+import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import io.mockk.every
 import io.mockk.mockk
@@ -1318,6 +1318,11 @@ class CallSheetItemTest {
             CallSheetItem(
                 callAction = MicAction(),
                 inputPermissions = InputPermissions(
+                    micPermission = object : PermissionState {
+                        override val permission: String = "testPermission"
+                        override val status: PermissionStatus = PermissionStatus.Denied(shouldShowRationale = true)
+                        override fun launchPermissionRequest() = Unit
+                    },
                     wasMicPermissionAsked = false
                 ),
                 label = false,
@@ -1401,6 +1406,11 @@ class CallSheetItemTest {
             CallSheetItem(
                 callAction = CameraAction(),
                 inputPermissions = InputPermissions(
+                    cameraPermission = object : PermissionState {
+                        override val permission: String = "testPermission"
+                        override val status: PermissionStatus = PermissionStatus.Denied(shouldShowRationale = true)
+                        override fun launchPermissionRequest() = Unit
+                    },
                     shouldAskCameraPermission = true,
                     wasCameraPermissionAsked = false
                 ),

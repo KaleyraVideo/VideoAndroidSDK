@@ -1315,6 +1315,11 @@ class CallSheetItemTest {
             CallSheetItem(
                 callAction = MicAction(),
                 inputPermissions = InputPermissions(
+                    micPermission = object : PermissionState {
+                        override val permission: String = "testPermission"
+                        override val status: PermissionStatus = PermissionStatus.Denied(shouldShowRationale = true)
+                        override fun launchPermissionRequest() = Unit
+                    },
                     wasMicPermissionAsked = false
                 ),
                 label = false,
@@ -1398,6 +1403,11 @@ class CallSheetItemTest {
             CallSheetItem(
                 callAction = CameraAction(),
                 inputPermissions = InputPermissions(
+                    cameraPermission = object : PermissionState {
+                        override val permission: String = "testPermission"
+                        override val status: PermissionStatus = PermissionStatus.Denied(shouldShowRationale = true)
+                        override fun launchPermissionRequest() = Unit
+                    },
                     shouldAskCameraPermission = true,
                     wasCameraPermissionAsked = false
                 ),

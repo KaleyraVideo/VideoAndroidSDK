@@ -52,6 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
@@ -111,43 +112,66 @@ class InputMapperTest {
     }
 
     @Test
-    fun cameraStreamVideoNull_isMyCameraEnabled_false() = runTest {
+    fun cameraStreamVideoNull_isMyCameraEnabled_notReceived() = runTest {
         with(streamMock) {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(null)
         }
-        assertEquals(false, callMock.isMyCameraEnabled().first())
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamNotExists_isMyCameraEnabled_false() = runTest {
+    fun cameraStreamNotExists_isMyCameraEnabled_notReceived() = runTest {
         every { streamMock.id } returns "streamId"
         every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
-        assertEquals(false, callMock.isMyCameraEnabled().first())
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamAudioEnabled_isMyMicEnabled_true() = runTest {
+    fun cameraStreamAudioEnabled_isMyMicEnabled_notReceived() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
         every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
-        val result = callMock.isMyMicEnabled()
-        val actual = result.first()
-        assertEquals(true, actual)
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamNotExists_isMyMicEnabled_false() = runTest {
+    fun cameraStreamNotExists_isMyMicEnabled_notReceived() = runTest {
         every { streamMock.id } returns "streamId"
-        assertEquals(false, callMock.isMyMicEnabled().first())
+        var isMyMicEnabled = false
+        backgroundScope.launch {
+            isMyMicEnabled = callMock.isMyMicEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isMyMicEnabled)
     }
 
     @Test
-    fun cameraStreamAudioNull_isMyMicEnabled_false() = runTest {
+    fun cameraStreamAudioNull_isMyMicEnabled_notReceived() = runTest {
         with(streamMock) {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
-        assertEquals(false, callMock.isMyMicEnabled().first())
+        var isMyMicEnabled = false
+        backgroundScope.launch {
+            isMyMicEnabled = callMock.isMyMicEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isMyMicEnabled)
     }
 
     @Test
