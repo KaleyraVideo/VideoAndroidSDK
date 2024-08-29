@@ -44,7 +44,7 @@ android {
 dependencies {
 
     /** Platform **/
-    implementation platform('androidx.compose:compose-bom:2024.02.02')
+    implementation platform(catalog.androidxComposeBom)
     compileOnly 'androidx.compose.material:material'
     compileOnly 'androidx.compose.material3:material3'
     compileOnly 'androidx.compose.foundation:foundation'
@@ -53,7 +53,7 @@ dependencies {
     compileOnly 'androidx.lifecycle:lifecycle-viewmodel-compose'
     compileOnly 'androidx.lifecycle:lifecycle-runtime-compose'
     compileOnly 'androidx.compose.ui:ui-tooling'
-    api 'com.kaleyra:material-color-utilities:2024.08.01'
+    api kaleyraCatalog.kaleyraMaterialColorUtilities
 
     api catalog.appcompat
     api catalog.androidXActivityCompose
