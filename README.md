@@ -20,8 +20,6 @@
 
 **Kaleyra Video Android SDK** makes it easy to add video conference and chat communication to mobile apps.
 
-**Even though this sdk encloses strongly the UI/UX, it is fully styleable through default Android style system.**
-
 ## Phone UI
 <img src="img/img0.png"/>
 
@@ -41,30 +39,6 @@
 **Target API 34**
 
 **Supported API level 21+ (Android 5.0 Lollipop).**
-
-
-```java
-android {
-
-   defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 33
-        [...]
-   }
-   
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion 1.5.3  // or newer
-    }
-    
-    [...]
-}
-
-```
 
 # Features
 
