@@ -87,9 +87,9 @@ suspend fun requestConnect(userId: String? = null): Boolean {
     val result = withTimeoutOrNull(1000) {
         KaleyraVideo.state.first { it !is State.Disconnected }
     }
-
+    
     if (result == null) {
-        Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be connected with userId $userId via KaleyraVideoService implementation, but no connect api has been called." +
+        Log.e("KaleyraVideoSDK", "KaleyraVideoSDK was required to be connected ${userId?.let { "with userId $it" }} via KaleyraVideoService implementation, but no connect api has been called." +
             "\nPlease implement KaleyraVideoService as requested in order to connect KaleyraVideoSDK when needed." +
             "\nFor further info please refer to: https://github.com/KaleyraVideo/VideoAndroidSDK/wiki/Configure-KaleyraVideoSDK#kaleyravideoservice")
         KaleyraVideo.disconnect()
