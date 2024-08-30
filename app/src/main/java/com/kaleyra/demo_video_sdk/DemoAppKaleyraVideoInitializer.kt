@@ -20,6 +20,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.startup.Initializer
 import com.kaleyra.app_configuration.model.UserDetailsProviderMode.CUSTOM
 import com.kaleyra.app_configuration.utils.MediaStorageUtils.getUriFromString
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -93,4 +94,6 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
     override fun onRequestKaleyraVideoConfigure() = configure(applicationContext)
 
     override fun onRequestKaleyraVideoConnect() = connect(applicationContext)
+
+    override fun dependencies(): List<Class<out Initializer<*>>> = super.dependencies()
 }

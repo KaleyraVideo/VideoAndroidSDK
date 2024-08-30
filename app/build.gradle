@@ -75,10 +75,6 @@ android {
         jvmTarget = "1.8"
     }
 
-    lint {
-        disable "EnsureInitializerMetadata"
-    }
-
     ndkVersion "23.1.7779620"
 }
 
