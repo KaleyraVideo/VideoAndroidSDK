@@ -75,17 +75,11 @@
             </intent-filter>
         </activity>
 
-        <!-- KaleyraVideo configuration app initializer -->
+        <!-- KaleyraVideoInitializer -->
 
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoInitializer"
-                android:value="androidx.startup" />
-        </provider>
+        <meta-data
+            android:name="kaleyra_video_initializer"
+            android:value="com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoInitializer" />
 
         <!-- FCM Notification Service -->
 

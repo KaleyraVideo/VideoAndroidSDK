@@ -84,8 +84,6 @@ dependencies {
 
     implementation project(":video-sdk")
 
-//    implementation "com.kaleyra:video-sdk"
-
     // define this dependency only if you desire to handle usb camera input in a video call
     implementation "com.kaleyra:video-extension-external-camera"
 }

@@ -20,7 +20,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.startup.Initializer
 import com.kaleyra.app_configuration.model.UserDetailsProviderMode.CUSTOM
 import com.kaleyra.app_configuration.utils.MediaStorageUtils.getUriFromString
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -39,16 +38,15 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-
 class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
 
     companion object {
 
-        fun configure(context: Context) {
-            val configuration = context.configuration()
+        fun configure(applicationContext: Context) {
+            val configuration = applicationContext.configuration()
             if (!KaleyraVideo.isConfigured) {
                 KaleyraVideo.configure(configuration)
-                KaleyraVideo.userDetailsProvider = customUserDetailsProvider(context)
+                KaleyraVideo.userDetailsProvider = customUserDetailsProvider(applicationContext)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
                 val themeColorSeed = Color(0xFF0087E2).toArgb()
@@ -62,12 +60,18 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
             }
 
             val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-
             KaleyraVideo.conference.callActions = callConfiguration.actions.mapToCallUIActions()
             KaleyraVideo.conference.call.onEach {
                 it.withFeedback = callConfiguration.options.feedbackEnabled
                 if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
             }.launchIn(MainScope())
+
+        }
+
+        fun connect(applicationContext: Context) {
+            val loggedUserId = LoginManager.getLoggedUser(applicationContext)
+            if (!LoginManager.isUserLogged(applicationContext)) return
+            KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }
         }
 
         internal fun customUserDetailsProvider(context: Context): UserDetailsProvider? {
@@ -83,17 +87,10 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 })
             }
         }
-
-        fun connect(context: Context) {
-            val loggedUserId = LoginManager.getLoggedUser(context)
-            if (!LoginManager.isUserLogged(context)) return
-            KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }
-        }
     }
 
     override fun onRequestKaleyraVideoConfigure() = configure(applicationContext)
 
     override fun onRequestKaleyraVideoConnect() = connect(applicationContext)
 
-    override fun dependencies(): List<Class<out Initializer<*>>> = super.dependencies()
 }
