@@ -74,7 +74,7 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
             KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }
         }
 
-        private fun customUserDetailsProvider(context: Context): UserDetailsProvider? {
+        internal fun customUserDetailsProvider(context: Context): UserDetailsProvider? {
             val appConfiguration = ConfigurationPrefsManager.getConfiguration(context)
             if (appConfiguration.userDetailsProviderMode != CUSTOM) return null
             return { userIds: List<String> ->
