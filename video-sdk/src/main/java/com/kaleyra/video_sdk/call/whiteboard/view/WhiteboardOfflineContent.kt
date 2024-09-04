@@ -21,6 +21,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +59,7 @@ internal fun WhiteboardOfflineContent(
         IconButton(onClick = onReloadClick) {
             Icon(painter = painterResource(id = R.drawable.ic_kaleyra_reload),
                 contentDescription = stringResource(id = R.string.kaleyra_error_button_reload),
-                tint = Color.Black,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .size(96.dp)
                     .padding(2.dp)
@@ -68,11 +69,11 @@ internal fun WhiteboardOfflineContent(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = stringResource(id = R.string.kaleyra_error_title), color = Color.Black
+            text = stringResource(id = R.string.kaleyra_error_title), color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = stringResource(id = R.string.kaleyra_error_subtitle),
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 12.sp
         )
     }
