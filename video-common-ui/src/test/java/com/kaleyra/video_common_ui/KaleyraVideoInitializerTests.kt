@@ -142,6 +142,30 @@ class KaleyraVideoInitializerTests {
         Assert.assertEquals(kaleyraVideoInitializer, KaleyraVideoInitializationProvider.kaleyraVideoInitializer)
     }
 
+    @Test
+    fun kaleyraVideoInitializerMissingManifestMetadata_kaleyraVideoInitializerNotInstantiated() {
+        val kaleyraVideoInitializer = object : KaleyraVideoInitializer() {
+            override fun onRequestKaleyraVideoConfigure() = Unit
+            override fun onRequestKaleyraVideoConnect() = Unit
+        }
+        mockkStatic("com.kaleyra.video_common_ui.utils.ClassUtilsKt")
+        every { instantiateClassWithEmptyConstructor<KaleyraVideoInitializer>(any()) } returns  kaleyraVideoInitializer
+        val classpath = "classPath"
+        val metaDataMock = mockk<Bundle>(relaxed = true)
+        every { metaDataMock.getString(KALEYRA_VIDEO_INITIALIZER) } returns null
+        val applicationInfoMock = ApplicationInfo()
+        applicationInfoMock.metaData = metaDataMock
+        val packageManagerMock = mockk<PackageManager>(relaxed = true)
+        every { packageManagerMock.getApplicationInfo(any<String>(), any<Int>()) } returns applicationInfoMock
+        val contextMock = mockk<Context>(relaxed = true)
+        every { contextMock.packageManager } returns packageManagerMock
+
+        val kaleyraVideoInitializationProvider = KaleyraVideoInitializationProvider()
+        kaleyraVideoInitializationProvider.create(contextMock)
+
+        Assert.assertEquals(null, KaleyraVideoInitializationProvider.kaleyraVideoInitializer)
+    }
+
     @After
     fun tearDown() {
         unmockkAll()
