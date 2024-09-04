@@ -134,6 +134,18 @@
             </intent-filter>
         </receiver>
 
+        <!-- KaleyraVideoInitializationBinder -->
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="com.kaleyra.video_common_ui.KaleyraVideoInitializationProvider"
+                android:value="androidx.startup" />
+        </provider>
+
     </application>
 
 </manifest>
