@@ -18,8 +18,8 @@ package com.kaleyra.video_sdk.common.usermessages.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,18 +29,18 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.common.snackbar.AudioOutputGenericFailureSnackbar
-import com.kaleyra.video_sdk.common.snackbar.AudioOutputInSystemCallFailureSnackbar
-import com.kaleyra.video_sdk.common.snackbar.CameraRestrictionSnackbar
-import com.kaleyra.video_sdk.common.snackbar.MutedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.RecordingEndedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.RecordingErrorSnackbar
-import com.kaleyra.video_sdk.common.snackbar.RecordingStartedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.UsbConnectedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.UsbDisconnectedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.UsbNotSupportedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.WhiteboardHideRequestSnackbar
-import com.kaleyra.video_sdk.common.snackbar.WhiteboardShowRequestSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.AudioOutputGenericFailureSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.AudioOutputInSystemCallFailureSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.CameraRestrictionSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.MutedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingEndedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingErrorSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingStartedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbConnectedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbDisconnectedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbNotSupportedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.WhiteboardHideRequestSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.WhiteboardShowRequestSnackbar
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
@@ -108,19 +108,19 @@ internal fun UserMessageSnackbarHandler(
         modifier = modifier.padding(vertical = 12.dp).background(color = Color.Transparent),
         hostState = snackbarHostState,
         snackbar = {
-            when (it.actionLabel) {
+            when (it.visuals.actionLabel) {
                 RecordingStarted -> RecordingStartedSnackbar()
                 RecordingStopped -> RecordingEndedSnackbar()
                 RecordingError -> RecordingErrorSnackbar()
-                UsbConnected -> UsbConnectedSnackbar(it.message)
+                UsbConnected -> UsbConnectedSnackbar(it.visuals.message)
                 UsbDisconnected -> UsbDisconnectedSnackbar()
                 UsbNotSupported -> UsbNotSupportedSnackbar()
                 CameraRestriction -> CameraRestrictionSnackbar()
                 AudioOutputGenericFailure -> AudioOutputGenericFailureSnackbar()
                 AudioOutputInSystemCallFailure -> AudioOutputInSystemCallFailureSnackbar()
-                MutedByAdmin -> MutedSnackbar(it.message)
-                WhiteboardShowRequest -> WhiteboardShowRequestSnackbar(it.message.takeIf { it.isNotBlank() })
-                WhiteboardHideRequest -> WhiteboardHideRequestSnackbar(it.message.takeIf { it.isNotBlank() })
+                MutedByAdmin -> MutedSnackbar(it.visuals.message)
+                WhiteboardShowRequest -> WhiteboardShowRequestSnackbar(it.visuals.message.takeIf { it.isNotBlank() })
+                WhiteboardHideRequest -> WhiteboardHideRequestSnackbar(it.visuals.message.takeIf { it.isNotBlank() })
             }
         }
     )

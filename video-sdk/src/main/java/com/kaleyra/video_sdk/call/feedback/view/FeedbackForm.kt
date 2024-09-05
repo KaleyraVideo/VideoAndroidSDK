@@ -34,9 +34,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +64,7 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toRatingStrin
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toSliderValue
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
 /**
@@ -146,7 +148,7 @@ internal fun FeedbackForm(
             },
             textStyle = TextStyle(
                 fontSize = 14.sp
-            ),
+            )
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -204,7 +206,7 @@ internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun FeedbackFormPreview() = KaleyraM3Theme {
+internal fun FeedbackFormPreview() = KaleyraTheme {
     Surface {
         FeedbackForm(
             FeedbackUiState.Display(comment = "comment this call", rating = FeedbackUiRating.Good),
@@ -216,7 +218,7 @@ internal fun FeedbackFormPreview() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun FeedbackFormDefaultRatingPreview() = KaleyraM3Theme {
+internal fun FeedbackFormDefaultRatingPreview() = KaleyraTheme {
     Surface {
         FeedbackForm(
             FeedbackUiState.Display(),

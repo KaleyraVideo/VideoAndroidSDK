@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
@@ -67,22 +68,19 @@ internal class CameraStreamManager(
         jobs += coroutineScope.launch {
             val me = call.participants.mapNotNull { it.me }.first()
             if (me.streams.value.firstOrNull { it.id == CAMERA_STREAM_ID } != null) return@launch
-            me.addStream(CAMERA_STREAM_ID).let {
-                it.audio.value = null
-                it.video.value = null
-            }
+            me.addStream(CAMERA_STREAM_ID)
         }
     }
 
     fun handleCameraStreamAudio(call: Call) {
-        jobs += combine(call.toAudioInput(), call.toMyCameraStream()) { audio, cameraStream ->
+        jobs += combine(call.toAudioInput().filterNotNull(), call.toMyCameraStream()) { audio, cameraStream ->
             cameraStream.audio.value = audio
         }.launchIn(coroutineScope)
     }
 
     fun handleCameraStreamVideo(call: Call) {
         jobs += combine(
-            call.toCameraVideoInput(),
+            call.toCameraVideoInput().filterNotNull(),
             call.preferredType,
             call.toMyCameraStream()
         ) { video, preferredType, cameraStream ->

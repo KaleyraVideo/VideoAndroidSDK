@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -86,6 +87,6 @@ object ContactDetailsManager {
         contactImagesFlow.emit(contactImages)
     }
 
-    private fun <T> Flow<Map<String, StateFlow<T>>>.mapToUserFlow(userId: String) = flatMapLatest { it[userId] ?: emptyFlow() }.distinctUntilChanged()
+    private fun <T> Flow<Map<String, StateFlow<T>>>.mapToUserFlow(userId: String) = flatMapLatest { it[userId] ?: flowOf(null) }.distinctUntilChanged()
 
 }

@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.kaleyra.video_sdk.call.whiteboard
 
 import android.content.res.Configuration
@@ -25,7 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -46,7 +43,7 @@ import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private val WhiteboardBackgroundColor = Color(0xFFF5F5F5)
 
@@ -57,7 +54,7 @@ internal fun WhiteboardComponent(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -84,13 +81,13 @@ internal fun WhiteboardComponent(
     onReloadClick: () -> Unit,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit
 ) {
     DisposableEffect(Unit) {
         onDispose(onWhiteboardClosed)
     }
 
-    Surface {
+    Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
         Column {
             WhiteboardAppBar(
                 isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
@@ -121,7 +118,7 @@ internal fun WhiteboardComponent(
                     }
                 }
 
-                StackedUserMessageComponent(onActionCLick = onUserMessageActionClick)
+                StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
             }
 
             NavigationBarsSpacer()
@@ -133,7 +130,7 @@ internal fun WhiteboardComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun WhiteboardComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         WhiteboardComponentPreview(
             uiState = WhiteboardUiState(
                 whiteboardView = View(LocalContext.current),
@@ -156,7 +153,7 @@ internal fun WhiteboardScreenOfflinePreview() {
 
 @Composable
 private fun WhiteboardComponentPreview(uiState: WhiteboardUiState) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             WhiteboardContent(
                 whiteboardView = uiState.whiteboardView!!,

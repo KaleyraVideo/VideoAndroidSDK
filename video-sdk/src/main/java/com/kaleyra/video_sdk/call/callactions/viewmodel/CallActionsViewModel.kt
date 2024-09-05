@@ -28,44 +28,51 @@ import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
+import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheetnew.inputmessage.model.MicMessage
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
-import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -75,7 +82,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
-  
+
     override fun initialState() = CallActionsUiState()
 
     private val inputMessageChannel = Channel<InputMessage>(Channel.BUFFERED)
@@ -117,9 +124,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .isSharingScreen()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isVirtualBackgroundEnabledFlow = call
-                .isVirtualBackgroundEnabled()
-                .stateIn(this, SharingStarted.Eagerly, false)
+            val isVirtualBackgroundEnabledFlow = VirtualBackgroundViewModel.isVirtualBackgroundEnabled
 
             val isLocalParticipantInitializedFlow = call
                 .isMeParticipantInitialized()
@@ -129,6 +134,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .filterNotNull()
                 .debounce(300)
                 .stateIn(this, SharingStarted.Eagerly, AudioDeviceUi.Muted)
+
+            val hasCameraUsageRestrictionFlow = call
+                .hasCameraUsageRestriction()
+                .stateIn(this, SharingStarted.Eagerly, false)
 
             FlowUtils.combine(
                 availableCallActionsFlow,
@@ -170,12 +179,49 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                     }
                 }
                 _uiState.update { it.copy(actionList = updatedActions.toImmutableList()) }
-            }
+            }.launchIn(this)
+
+            uiState
+                .map { it.actionList.value }
+                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) } ) { actionList, state ->
+                    actionList.indexOfFirst { it is MicAction }.takeIf { it != -1 }?.let { index ->
+                        val inputState = when (state) {
+                            is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
+                            is Input.State.Closed.Error -> InputCallAction.State.Error
+                            else -> InputCallAction.State.Ok
+                        }
+                        val action = (actionList[index] as MicAction).copy(state = inputState)
+                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
+                        _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
+                    }
+                }
+                .launchIn(this)
+
+            combine(
+                uiState.map { it.actionList.value },
+                call.toCameraVideoInput().flatMapLatest { it?.state ?: flowOf(null) },
+                hasCameraUsageRestrictionFlow
+            ) { actionList, state, cameraUsage ->
+                    actionList.indexOfFirst { it is CameraAction }.takeIf { it != -1 }?.let { index ->
+                        val inputState = when {
+                            state is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
+                            state is Input.State.Closed.Error || cameraUsage -> InputCallAction.State.Error
+                            else -> InputCallAction.State.Ok
+                        }
+                        val action = (actionList[index] as CameraAction).copy(state = inputState)
+                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
+                        _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
+                    }
+                }
                 .launchIn(this)
 
             call
                 .toCallStateUi()
                 .onEach { state -> _uiState.update { it.copy(isRinging = state == CallStateUi.Ringing) } }
+                .launchIn(this)
+
+            hasCameraUsageRestrictionFlow
+                .onEach { isUsageRestricted -> _uiState.update { it.copy(isCameraUsageRestricted = isUsageRestricted) } }
                 .launchIn(this)
         }
     }
@@ -191,7 +237,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val inputs = call.getValue()?.inputs
             val input = inputs?.request(activity, Inputs.Type.Microphone)?.getOrNull<Input.Audio>() ?: return@launch
-            val isMicEnabled = input.enabled.value.local
+            val isMicEnabled = with(input.enabled.value) { this is Input.Enabled.Both || this is Input.Enabled.Local }
             val hasSucceed = if (!isMicEnabled) input.tryEnable() else input.tryDisable()
             if (hasSucceed) {
                 val message = if (isMicEnabled) MicMessage.Disabled else MicMessage.Enabled
@@ -221,10 +267,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
         when {
             existingCameraVideo == null || !currentCall.inputs.availableInputs.value.contains(existingCameraVideo) -> requestVideoInputs(currentCall, activity)
-            existingCameraVideo.enabled.value.local -> {
+            existingCameraVideo.enabled.value.isAtLeastLocallyEnabled() -> {
                 val hasSucceed = existingCameraVideo.tryDisable()
                 if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Disabled)
             }
+
             else -> {
                 val hasSucceed = existingCameraVideo.tryEnable()
                 if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
@@ -236,14 +283,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.External)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
 
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.Internal)
                 .getOrNull<Input.Video>() ?: return@launch
-            val hasSucceed = if (!input.enabled.value.local) input.tryEnable() else true
+            val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
             if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
         }
     }
@@ -276,7 +323,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     // TODO remove code duplication in StreamViewModel
     fun tryStopScreenShare(): Boolean {
-        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.local }
+        val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.isAtLeastLocallyEnabled() }
         val call = call.getValue()
         return if (input == null || call == null) false
         else {
@@ -284,14 +331,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val streams = me?.streams?.value
             val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
-            val hasStopped = when(input) {
-                is Input.Video.Screen -> true.also {
-                    input.dispose()
-                }
-                is Input.Video.Application -> input.tryDisable()
-                else -> false
-            }
-            hasStopped && stream != null
+            call.inputs.release(Inputs.Type.Screen)
+            call.inputs.release(Inputs.Type.Application)
+            stream != null
         }
     }
 

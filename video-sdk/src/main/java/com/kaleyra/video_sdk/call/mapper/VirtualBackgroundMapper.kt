@@ -45,7 +45,9 @@ internal object VirtualBackgroundMapper {
     }
 
     fun CallUI.hasVirtualBackground(): Flow<Boolean> =
-        effects.available.map { it.isNotEmpty() }.distinctUntilChanged()
+        effects.available.map {
+            actions.value.contains(CallUI.Action.CameraEffects) && it.isNotEmpty()
+        }.distinctUntilChanged()
 
     fun CallUI.isVirtualBackgroundEnabled(): Flow<Boolean> =
         this.toCurrentCameraVideoEffect()

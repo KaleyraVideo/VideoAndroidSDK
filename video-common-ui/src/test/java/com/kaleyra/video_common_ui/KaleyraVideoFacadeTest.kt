@@ -4,11 +4,11 @@ import android.app.Application
 import com.kaleyra.video.Collaboration
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_utils.ContextRetainer
-import io.mockk.MockKSettings.relaxed
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -23,6 +23,7 @@ class KaleyraVideoFacadeTest {
 
     @Before
     fun setup() {
+        mockkStatic(::requestConfiguration)
         mockkStatic(Executors::class)
         mockkStatic("kotlinx.coroutines.ExecutorsKt")
         every { Executors.newSingleThreadExecutor() } returns mockk {
@@ -32,6 +33,7 @@ class KaleyraVideoFacadeTest {
                 override fun dispatch(context: CoroutineContext, block: Runnable) = block.run()
             }
         }
+        every { requestConfiguration() } returns false
         mockkObject(ContextRetainer)
         every { ContextRetainer.context } returns mockk<Application>(relaxed = true)
         mockkObject(PhoneActivityClazzProvider)
@@ -52,6 +54,42 @@ class KaleyraVideoFacadeTest {
     }
 
     @Test
+    fun conversationUI_requestConfigurationRequested() {
+        every { requestConfiguration() } answers {
+            KaleyraVideo.configure(mockk(relaxed = true))
+        }
+        KaleyraVideo.conversation
+        verify { requestConfiguration() }
+    }
+
+    @Test
+    fun collaborationState_requestConfigurationRequested() {
+        every { requestConfiguration() } answers {
+            KaleyraVideo.configure(mockk(relaxed = true))
+        }
+        KaleyraVideo.state
+        verify { requestConfiguration() }
+    }
+
+    @Test
+    fun collaborationSynchronization_requestConfigurationRequested() {
+        every { requestConfiguration() } answers {
+            KaleyraVideo.configure(mockk(relaxed = true))
+        }
+        KaleyraVideo.synchronization
+        verify { requestConfiguration() }
+    }
+
+    @Test
+    fun collaborationConnectedUser_requestConfigurationRequested() {
+        every { requestConfiguration() } answers {
+            KaleyraVideo.configure(mockk(relaxed = true))
+        }
+        KaleyraVideo.connectedUser
+        verify { requestConfiguration() }
+    }
+
+    @Test
     fun testConferenceUIReady() {
         KaleyraVideo.configure(mockk(relaxed = true))
         Assert.assertEquals(true, KaleyraVideo.conference != null)
@@ -62,4 +100,5 @@ class KaleyraVideoFacadeTest {
         KaleyraVideo.configure(mockk(relaxed = true))
         Assert.assertEquals(true, KaleyraVideo.conversation != null)
     }
+
 }

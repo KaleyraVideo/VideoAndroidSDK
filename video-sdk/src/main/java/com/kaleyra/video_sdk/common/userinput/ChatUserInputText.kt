@@ -50,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -119,7 +119,7 @@ internal fun ChatUserInputText(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ChatUserInputPreview() = KaleyraM3Theme {
+internal fun ChatUserInputPreview() = KaleyraTheme {
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         var textState by remember { mutableStateOf(TextFieldValue()) }
         ChatUserInputText(textFieldValue = textState, onDirectionLeft = {}, onTextChanged = {})

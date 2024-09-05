@@ -19,7 +19,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoService
+import com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoInitializer
 
 /**
  * Sample implementation of a worker object used to manage the push notification payload.
@@ -31,8 +31,8 @@ class PushNotificationPayloadWorker(context: Context, workerParams: WorkerParame
         try {
             val payload = inputData.getString("payload") ?: return Result.failure()
             Log.d(TAG, "Received payload\n$payload.")
-            DemoAppKaleyraVideoService.configure(applicationContext)
-            DemoAppKaleyraVideoService.connect(applicationContext)
+            DemoAppKaleyraVideoInitializer.configure(applicationContext)
+            DemoAppKaleyraVideoInitializer.connect(applicationContext)
         } catch (e: Throwable) {
             e.printStackTrace()
             return Result.failure()

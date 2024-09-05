@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 
 @Composable
 internal fun pinnedPainterFor(pinned: Boolean): Painter =
@@ -27,8 +27,7 @@ internal fun disableMicTextFor(streamAudio: AudioUi?): String =
 internal fun mutePainterFor(streamAudio: AudioUi?): Painter =
     painterResource(id =
     if (streamAudio == null || streamAudio.isMutedForYou) R.drawable.ic_kaleyra_participants_component_speaker_off
-    else if (streamAudio.isEnabled) R.drawable.ic_kaleyra_participants_component_speaker_on
-    else R.drawable.ic_kaleyra_mic_off
+    else R.drawable.ic_kaleyra_participants_component_speaker_on
     )
 
 @Composable

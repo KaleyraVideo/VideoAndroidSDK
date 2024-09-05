@@ -13,9 +13,9 @@ internal class PushNotificationPayloadWorker(context: Context, workerParams: Wor
 
     override fun doWork(): Result {
         Log.i("KaleyraVideoSDK", "Enqueued KaleyraVideoSDK push payload worker...")
+        Log.i("KaleyraVideoSDK", "Requesting KaleyraVideoSDK configure...")
+        requestConfiguration()
         MainScope().launch {
-            Log.i("KaleyraVideoSDK", "Requesting KaleyraVideoSDK configure...")
-            runCatching { requestConfiguration() }
             Log.i("KaleyraVideoSDK", "Requesting KaleyraVideoSDK connection...")
             runCatching { requestConnect() }
         }

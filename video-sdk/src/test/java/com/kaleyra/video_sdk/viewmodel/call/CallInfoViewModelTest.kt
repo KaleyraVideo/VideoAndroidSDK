@@ -15,15 +15,14 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_utils.ContextRetainer
-import io.mockk.MockKSettings.relaxed
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -88,7 +87,7 @@ class CallInfoViewModelTest {
         viewModel.uiState.first()
         advanceUntilIdle()
 
-        Assert.assertEquals(listOf<String>(), viewModel.uiState.value.displayNames)
+        Assert.assertEquals(ImmutableList<String>(), viewModel.uiState.value.displayNames)
     }
 
     @Test
@@ -101,7 +100,7 @@ class CallInfoViewModelTest {
         viewModel.uiState.first()
         advanceUntilIdle()
 
-        Assert.assertEquals(userDisplayNames, viewModel.uiState.value.displayNames)
+        Assert.assertEquals(userDisplayNames.toImmutableList(), viewModel.uiState.value.displayNames)
     }
 
     @Test
@@ -357,6 +356,23 @@ class CallInfoViewModelTest {
         val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_status_no_answer, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Disconnected.Ended.Timeout.toTextRef(call)
         Assert.assertEquals(expected, displayState)
+    }
+
+    @Test
+    fun testCallStateUiConnectingMultipleTimes_updateNotReceived() = runTest {
+        every { callParticipants.others } returns listOf()
+        val callStateUiFlow: MutableStateFlow<CallStateUi> = MutableStateFlow(CallStateUi.Connecting)
+        every { call.toCallStateUi() } returns callStateUiFlow
+        every { call.toOtherDisplayNames() } returns MutableStateFlow(listOf())
+
+        viewModel.uiState.first()
+        advanceUntilIdle()
+        callStateUiFlow.emit(CallStateUi.Reconnecting)
+        advanceUntilIdle()
+        callStateUiFlow.emit(CallStateUi.Connecting)
+        advanceUntilIdle()
+
+        Assert.assertEquals(CallStateUi.Reconnecting, viewModel.uiState.value.callStateUi)
     }
 
     @Test

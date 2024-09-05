@@ -82,11 +82,11 @@ class MessagesUI(
         val notification = NotificationManager.buildChatNotification(
             KaleyraVideo.connectedUser.value!!.userId,
             me.userId,
-            me.combinedDisplayName.filterNotNull().firstOrNull() ?: " ",
+            me.combinedDisplayName.filterNotNull().firstOrNull() ?: me.userId,
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
             chatUI.id.takeIf { chatUI.participants.value.others.size > 1 },
-            chatUI.name,
+            "",
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity
@@ -99,7 +99,7 @@ class MessagesUI(
         val otherParticipant = chatParticipants.others.find { it.userId == creator.userId }
         return  ChatNotificationMessage(
             creator.userId,
-            otherParticipant?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: "",
+            otherParticipant?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: otherParticipant?.userId ?: " ",
             otherParticipant?.combinedDisplayImage?.filterNotNull()?.firstOrNull() ?: Uri.EMPTY,
             (content as? Message.Content.Text)?.message ?: "",
             creationDate.time

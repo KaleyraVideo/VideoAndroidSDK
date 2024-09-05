@@ -1,320 +1,364 @@
-/*
- * Copyright 2023 Kaleyra @ https://www.kaleyra.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.kaleyra.video_sdk.call.callactions.view
 
-import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledIconToggleButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButtonColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.callactions.model.CallAction
-import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.theme.kaleyra_hang_up_dark_color
-import com.kaleyra.video_sdk.theme.kaleyra_hang_up_light_color
-import com.kaleyra.video_sdk.R
-
-@Stable
-internal interface CallActionColors {
-    @Composable
-    fun backgroundColor(toggled: Boolean, enabled: Boolean): State<Color>
-
-    @Composable
-    fun iconColor(toggled: Boolean, enabled: Boolean): State<Color>
-
-    @Composable
-    fun textColor(enabled: Boolean): State<Color>
-}
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
+import kotlin.math.roundToInt
 
 internal object CallActionDefaults {
 
-    val Size = 56.dp
+    val ButtonShape = RoundedCornerShape(18.dp)
 
-    val IconSize = 24.dp
+    val MinButtonSize = 48.dp
 
-    val RippleRadius = 28.dp
+    val ButtonContentPadding = PaddingValues(12.dp)
+
+    val BadgeShape = CircleShape
+
+    val BadgeSize = 20.dp
+
+    val BadgeOffset = 5.dp
+
+    val LabelWidth = MinButtonSize + SheetItemsSpacing
+
+    val ContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.surfaceContainerHighest
+
+    val ContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface
+
+    val DisabledContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.surfaceContainerHighest.copy(.38f)
+
+    val DisabledContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(.38f)
+
+    val CheckedContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.inverseSurface
+
+    val CheckedContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.inverseOnSurface
+
+    val BadgeContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.primary
 
     @Composable
-    fun colors(
-        backgroundColor: Color = LocalContentColor.current.copy(alpha = .12f),
-        iconColor: Color = contentColorFor(backgroundColor),
-        textColor: Color = LocalContentColor.current,
-        disabledBackgroundColor: Color = LocalContentColor.current.copy(alpha = .12f),
-        disabledIconColor: Color = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        disabledTextColor: Color = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        toggledBackgroundColor: Color = MaterialTheme.colors.secondaryVariant,
-        toggledIconColor: Color = if (toggledBackgroundColor.luminance() > .5f) Color.Black else Color.White
-    ): CallActionColors = DefaultColors(
-        backgroundColor = backgroundColor,
-        iconColor = iconColor,
-        textColor = textColor,
-        disabledBackgroundColor = disabledBackgroundColor,
-        disabledIconColor = disabledIconColor,
-        disabledTextColor = disabledTextColor,
-        toggledBackgroundColor = toggledBackgroundColor,
-        toggledIconColor = toggledIconColor
+    fun iconButtonColors(
+        containerColor: Color = ContainerColor,
+        contentColor: Color = ContentColor,
+        disabledContainerColor: Color = DisabledContainerColor,
+        disabledContentColor: Color = DisabledContentColor,
+    ): IconButtonColors =
+        IconButtonDefaults.filledIconButtonColors(
+            containerColor,
+            contentColor,
+            disabledContainerColor,
+            disabledContentColor
+        )
+
+    @Composable
+    fun iconToggleButtonColors(
+        containerColor: Color = ContainerColor,
+        contentColor: Color = ContentColor,
+        checkedContainerColor: Color = CheckedContainerColor,
+        checkedContentColor: Color = CheckedContentColor,
+    ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
+        containerColor = containerColor,
+        contentColor = contentColor,
+        checkedContainerColor = checkedContainerColor,
+        checkedContentColor = checkedContentColor
     )
+
+    @Composable
+    fun badgeColors(
+        containerColor: Color = BadgeContainerColor,
+        contentColor: Color = contentColorFor(
+            BadgeContainerColor
+        ),
+    ) =
+        CardDefaults.cardColors(containerColor, contentColor)
+
 }
 
-@Immutable
-private class DefaultColors(
-    private val backgroundColor: Color,
-    private val iconColor: Color,
-    private val textColor: Color,
-    private val disabledBackgroundColor: Color,
-    private val disabledIconColor: Color,
-    private val disabledTextColor: Color,
-    private val toggledBackgroundColor: Color,
-    private val toggledIconColor: Color,
-) : CallActionColors {
-    @Composable
-    override fun backgroundColor(toggled: Boolean, enabled: Boolean): State<Color> {
-        val color = when {
-            !enabled -> disabledBackgroundColor
-            !toggled -> backgroundColor
-            else -> toggledBackgroundColor
+@Composable
+internal fun CallToggleAction(
+    icon: Painter,
+    checked: Boolean,
+    contentDescription: String,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    buttonText: String? = null,
+    buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+    label: String? = null,
+) {
+    var isButtonTextDisplayed by remember { mutableStateOf(false) }
+    CallActionLayout(
+        modifier = modifier,
+        label = label.takeIf { !isButtonTextDisplayed },
+        badgeText = badgeText,
+        badgeBackgroundColor = badgeBackgroundColor,
+        badgeContentColor = badgeContentColor,
+        iconButton = {
+            FilledIconToggleButton(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                enabled = enabled,
+                modifier = Modifier
+                    .defaultMinSize(
+                        minWidth = CallActionDefaults.MinButtonSize,
+                        minHeight = CallActionDefaults.MinButtonSize
+                    )
+                    .fillMaxWidth(),
+                shape = CallActionDefaults.ButtonShape,
+                colors = CallActionDefaults.iconToggleButtonColors()
+            ) {
+                ButtonLayout(
+                    icon = icon,
+                    text = buttonText,
+                    contentDescription = contentDescription,
+                    contentPadding = buttonContentPadding,
+                    onButtonTextDisplay = { isButtonTextDisplayed = it }
+                )
+            }
         }
-        return rememberUpdatedState(color)
-    }
-
-    @Composable
-    override fun iconColor(toggled: Boolean, enabled: Boolean): State<Color> {
-        val color = when {
-            !enabled -> disabledIconColor
-            !toggled -> iconColor
-            else -> toggledIconColor
-        }
-        return rememberUpdatedState(color)
-    }
-
-    @Composable
-    override fun textColor(enabled: Boolean): State<Color> {
-        return rememberUpdatedState(if (enabled) textColor else disabledTextColor)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as DefaultColors
-
-        if (backgroundColor != other.backgroundColor) return false
-        if (iconColor != other.iconColor) return false
-        if (textColor != other.textColor) return false
-        if (disabledBackgroundColor != other.disabledBackgroundColor) return false
-        if (disabledIconColor != other.disabledIconColor) return false
-        if (disabledTextColor != other.disabledTextColor) return false
-        if (toggledBackgroundColor != other.toggledBackgroundColor) return false
-        if (toggledIconColor != other.toggledIconColor) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = backgroundColor.hashCode()
-        result = 31 * result + iconColor.hashCode()
-        result = 31 * result + textColor.hashCode()
-        result = 31 * result + disabledBackgroundColor.hashCode()
-        result = 31 * result + disabledIconColor.hashCode()
-        result = 31 * result + disabledTextColor.hashCode()
-        result = 31 * result + toggledBackgroundColor.hashCode()
-        result = 31 * result + toggledIconColor.hashCode()
-        return result
-    }
+    )
 }
 
 @Composable
 internal fun CallAction(
-    action: CallAction,
-    onToggle: (Boolean) -> Unit,
+    icon: Painter,
+    contentDescription: String,
+    onClick: (() -> Unit),
     modifier: Modifier = Modifier,
-    isDarkTheme: Boolean = false
+    enabled: Boolean = true,
+    buttonText: String? = null,
+    buttonColor: Color = CallActionDefaults.ContainerColor,
+    buttonContentColor: Color = CallActionDefaults.ContentColor,
+    disabledButtonColor: Color = CallActionDefaults.DisabledContainerColor,
+    disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
+    buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+    label: String? = null,
 ) {
-    val colors = colorsFor(action, isDarkTheme)
-    val toggled by remember(action) {
-        derivedStateOf {
-            action is CallAction.Toggleable && action.isToggled
-        }
-    }
-
-    Column(
+    var isButtonTextDisplayed by remember { mutableStateOf(false) }
+    CallActionLayout(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconToggleButton(
-            checked = toggled,
-            onCheckedChange = onToggle,
-            enabled = action.isEnabled,
-            indication = rememberRipple(bounded = false, radius = CallActionDefaults.RippleRadius),
-            modifier = Modifier
-                .size(CallActionDefaults.Size)
-                .background(
-                    color = colors.backgroundColor(
-                        toggled = toggled,
-                        enabled = action.isEnabled
-                    ).value,
-                    shape = CircleShape
+        label = label.takeIf { !isButtonTextDisplayed },
+        badgeText = badgeText,
+        badgeBackgroundColor = badgeBackgroundColor,
+        badgeContentColor = badgeContentColor,
+        iconButton = {
+            FilledIconButton(
+                modifier = Modifier
+                    .defaultMinSize(
+                        minWidth = CallActionDefaults.MinButtonSize,
+                        minHeight = CallActionDefaults.MinButtonSize
+                    )
+                    .fillMaxWidth(),
+                enabled = enabled,
+                shape = CallActionDefaults.ButtonShape,
+                colors = CallActionDefaults.iconButtonColors(
+                    containerColor = buttonColor,
+                    contentColor = buttonContentColor,
+                    disabledContainerColor = disabledButtonColor,
+                    disabledContentColor = disabledButtonContentColor
+                ),
+                onClick = onClick
+            ) {
+                ButtonLayout(
+                    icon = icon,
+                    text = buttonText,
+                    contentDescription = contentDescription,
+                    contentPadding = buttonContentPadding,
+                    onButtonTextDisplay = { isButtonTextDisplayed = it }
                 )
-        ) {
-            Icon(
-                painter = painterFor(action),
-                contentDescription = descriptionFor(action),
-                tint = colors.iconColor(toggled = toggled, enabled = action.isEnabled).value,
-                modifier = Modifier.size(CallActionDefaults.IconSize)
-            )
-        }
-        Text(
-            text = textFor(action),
-            color = colors.textColor(enabled = action.isEnabled).value,
-            fontSize = 12.sp,
-            maxLines = 2,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(6.dp)
-        )
-    }
-}
-
-@Composable
-private fun textFor(action: CallAction): String = stringResource(
-    id = when (action) {
-        is CallAction.Camera -> R.string.kaleyra_call_action_video_disable
-        is CallAction.Microphone -> R.string.kaleyra_call_action_mic_mute
-        is CallAction.SwitchCamera -> R.string.kaleyra_call_action_switch_camera
-        is CallAction.HangUp -> R.string.kaleyra_call_hangup
-        is CallAction.Answer -> R.string.kaleyra_call_answer
-        is CallAction.Chat -> R.string.kaleyra_call_action_chat
-        is CallAction.Whiteboard -> R.string.kaleyra_call_action_whiteboard
-        is CallAction.FileShare -> R.string.kaleyra_call_action_file_share
-        is CallAction.Audio -> R.string.kaleyra_call_action_audio_route
-        is CallAction.ScreenShare -> R.string.kaleyra_call_action_screen_share
-        is CallAction.VirtualBackground -> R.string.kaleyra_call_action_virtual_background
-        is CallAction.More -> R.string.kaleyra_call_action_more
-    }
-)
-
-@Composable
-private fun descriptionFor(action: CallAction) = stringResource(
-    id = when (action) {
-        is CallAction.Camera -> R.string.kaleyra_call_action_disable_camera_description
-        is CallAction.Microphone -> R.string.kaleyra_call_action_disable_mic_description
-        is CallAction.SwitchCamera -> R.string.kaleyra_call_action_switch_camera_description
-        is CallAction.HangUp -> R.string.kaleyra_call_hangup
-        is CallAction.Answer -> R.string.kaleyra_call_answer
-        is CallAction.Chat -> R.string.kaleyra_call_action_chat
-        is CallAction.Whiteboard -> R.string.kaleyra_call_action_whiteboard
-        is CallAction.FileShare -> R.string.kaleyra_call_action_file_share
-        is CallAction.Audio -> R.string.kaleyra_call_action_audio_route
-        is CallAction.ScreenShare -> R.string.kaleyra_call_action_screen_share
-        is CallAction.VirtualBackground -> R.string.kaleyra_call_action_virtual_background
-        is CallAction.More -> R.string.kaleyra_call_action_more
-    }
-)
-
-@Composable
-private fun painterFor(action: CallAction): Painter = painterResource(
-    id = when (action) {
-        is CallAction.Camera -> R.drawable.ic_kaleyra_camera_off
-        is CallAction.Microphone -> R.drawable.ic_kaleyra_mic_off
-        is CallAction.SwitchCamera -> R.drawable.ic_kaleyra_switch_camera
-        is CallAction.HangUp -> R.drawable.ic_kaleyra_hangup
-        is CallAction.Answer -> R.drawable.ic_kaleyra_answer
-        is CallAction.Chat -> R.drawable.ic_kaleyra_chat
-        is CallAction.Whiteboard -> R.drawable.ic_kaleyra_whiteboard
-        is CallAction.FileShare -> R.drawable.ic_kaleyra_file_share
-        is CallAction.Audio -> {
-            when (action.device) {
-                AudioDeviceUi.LoudSpeaker -> R.drawable.ic_kaleyra_loud_speaker
-                AudioDeviceUi.WiredHeadset -> R.drawable.ic_kaleyra_wired_headset
-                AudioDeviceUi.EarPiece -> R.drawable.ic_kaleyra_earpiece
-                AudioDeviceUi.Muted -> R.drawable.ic_kaleyra_muted
-                is AudioDeviceUi.Bluetooth -> R.drawable.ic_kaleyra_bluetooth_headset
             }
         }
-        is CallAction.ScreenShare -> R.drawable.ic_kaleyra_screen_share
-        is CallAction.VirtualBackground -> R.drawable.ic_kaleyra_virtual_background
-        is CallAction.More -> R.string.kaleyra_call_action_more
-    }
-)
-
-@Composable
-private fun colorsFor(action: CallAction, isDarkTheme: Boolean): CallActionColors {
-    return if (action is CallAction.HangUp) {
-        val backgroundColor = if (isDarkTheme) kaleyra_hang_up_dark_color else kaleyra_hang_up_light_color
-        CallActionDefaults.colors(
-            backgroundColor = backgroundColor,
-            iconColor = Color.White,
-            disabledBackgroundColor = backgroundColor.copy(alpha = .12f),
-            disabledIconColor = Color.White.copy(alpha = ContentAlpha.disabled)
-        )
-    } else CallActionDefaults.colors()
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun CallActionPreview() {
-    CallActionPreview(CallAction.Microphone(isToggled = false, isEnabled = true))
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun CallActionToggledPreview() {
-    CallActionPreview(CallAction.Microphone(isToggled = true, isEnabled = true))
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun CallActionDisabledPreview() {
-    CallActionPreview(CallAction.Microphone(isToggled = true, isEnabled = false))
-}
-
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-internal fun HangUpActionDisabledPreview() {
-    CallActionPreview(CallAction.HangUp(isEnabled = true))
+    )
 }
 
 @Composable
-private fun CallActionPreview(action: CallAction) {
-    KaleyraTheme {
-        Surface {
-            CallAction(
-                action = action,
-                onToggle = { }
+private fun CallActionLayout(
+    modifier: Modifier,
+    iconButton: @Composable () -> Unit,
+    label: String? = null,
+    badgeText: String? = null,
+    badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+) {
+    Box(modifier.width(IntrinsicSize.Max)) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            iconButton()
+            if (label != null) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    modifier = Modifier
+                        .layout { measurable, constraints ->
+                            val minWidth = CallActionDefaults.LabelWidth.toPx().roundToInt()
+                            val maxWidth = constraints.maxWidth.takeIf { it > minWidth } ?: minWidth
+                            val placeable = measurable.measure(
+                                constraints.copy(
+                                    minWidth = minWidth,
+                                    maxWidth = maxWidth
+                                )
+                            )
+                            layout(constraints.minWidth, placeable.height) {
+                                placeable.placeRelative(-placeable.width / 2, 0)
+                            }
+                        },
+                    text = label,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+        if (badgeText != null) {
+            CallActionBadge(
+                text = badgeText,
+                containerColor = badgeBackgroundColor,
+                contentColor = badgeContentColor,
+                modifier = modifier
+                    .align(Alignment.TopEnd)
+                    .offset {
+                        with(density) {
+                            val offset = CallActionDefaults.BadgeOffset
+                                .toPx()
+                                .roundToInt()
+                            IntOffset(offset, -offset)
+                        }
+                    }
             )
         }
     }
 }
+
+@Composable
+private fun ButtonLayout(
+    icon: Painter,
+    text: String?,
+    contentDescription: String,
+    contentPadding: PaddingValues,
+    onButtonTextDisplay: (isDisplayed: Boolean) -> Unit,
+) {
+    var shouldDisplayButtonText by remember { mutableStateOf(true) }
+    Row(
+        modifier = Modifier.padding(contentPadding),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = icon,
+            contentDescription = contentDescription.takeIf { text == null || !shouldDisplayButtonText }
+        )
+        if (text != null && shouldDisplayButtonText) {
+            Spacer(Modifier.width(12.dp))
+            Text(
+                modifier = Modifier
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints.copy(maxWidth = Constraints.Infinity))
+                        shouldDisplayButtonText = placeable.width <= constraints.maxWidth
+                        onButtonTextDisplay(shouldDisplayButtonText)
+                        layout(placeable.width, placeable.height) {
+                            placeable.placeRelative(0, 0)
+                        }
+                    },
+                text = text,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+@Composable
+internal fun CallActionBadge(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = contentColorFor(containerColor),
+) {
+    Card(
+        modifier = modifier,
+        colors = CallActionDefaults.badgeColors(containerColor, contentColor),
+        shape = CallActionDefaults.BadgeShape
+    ) {
+        Box(
+            modifier = Modifier
+                .size(CallActionDefaults.BadgeSize)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = text,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelMedium.clearFontPadding()
+            )
+        }
+    }
+}
+

@@ -1,10 +1,11 @@
 package com.kaleyra.video_sdk.mapper.call
 
+import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -30,7 +31,7 @@ class AudioMapperTest {
         mockkObject(ContactDetailsManager)
         with(audioMock) {
             every { id } returns "audioId"
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
     }
 
@@ -50,7 +51,7 @@ class AudioMapperTest {
 
     @Test
     fun disabledAudioInput_mapToAudioUi_isMutedForYouIsTrue() = runTest {
-        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val flow = MutableStateFlow(audioMock)
         val actual = flow.mapToAudioUi().first()
         val expected = AudioUi(id = "audioId", isEnabled = false, isMutedForYou = true)
@@ -59,7 +60,7 @@ class AudioMapperTest {
 
     @Test
     fun audioInputEnabledUpdated_mapToAudioUi_audioUiUpdated() = runTest {
-        val enabledFlow = MutableStateFlow(Input.Enabled(false, false))
+        val enabledFlow: MutableStateFlow<Input.Enabled> = MutableStateFlow(Input.Enabled.None)
         every { audioMock.enabled } returns enabledFlow
         val flow = MutableStateFlow(audioMock)
 
@@ -67,7 +68,7 @@ class AudioMapperTest {
         val expected = AudioUi(id = "audioId", isEnabled = false, isMutedForYou = true)
         Assert.assertEquals(expected, actual)
 
-        enabledFlow.value = Input.Enabled(true, true)
+        enabledFlow.value = Input.Enabled.Both
 
         val new = flow.mapToAudioUi().first()
         val newExpected = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false)

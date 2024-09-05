@@ -2,7 +2,7 @@
 
 package com.kaleyra.video_sdk.ui.call.usermessage.model
 
-import com.kaleyra.video_sdk.common.snackbarm3.model.StackedSnackbarHostMessagesHandler
+import com.kaleyra.video_sdk.common.snackbar.model.StackedSnackbarHostMessagesHandler
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage

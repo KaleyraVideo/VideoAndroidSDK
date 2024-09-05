@@ -21,9 +21,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbar.UsbConnectedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.UsbDisconnectedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.UsbNotSupportedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbConnectedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbDisconnectedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UsbNotSupportedSnackbar
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

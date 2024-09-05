@@ -39,8 +39,16 @@ android {
         unitTests {
             includeAndroidResources = true
             all {
+                jvmArgs "-Xmx8g"
+                setMaxHeapSize('8g')
                 maxParallelForks = Runtime.runtime.availableProcessors()
                 forkEvery = 100
+                testLogging {
+                    events "passed", "skipped", "failed", "standardOut", "standardError"
+                    outputs.upToDateWhen { false }
+                    showStandardStreams = true
+                }
+                systemProperty 'robolectric.logging.enabled', true
             }
         }
     }
@@ -53,9 +61,8 @@ dependencies {
     implementation catalog.androidxComposeConstraintLayout
     coreLibraryDesugaring catalog.desugar
     implementation platform(catalog.androidxComposeBom)
-    implementation 'androidx.compose.material:material'
     implementation 'androidx.compose.material3:material3'
-    implementation("androidx.compose.material3:material3-window-size-class")
+    implementation 'androidx.compose.material3:material3-window-size-class'
     implementation 'androidx.compose.foundation:foundation'
     implementation 'androidx.compose.runtime:runtime'
     implementation 'androidx.compose.ui:ui-tooling-preview'
@@ -73,6 +80,7 @@ dependencies {
     testImplementation catalog.mockkAndroid
     testImplementation catalog.androidxComposeUiTooling
     testImplementation catalog.androidxComposeUiTestManifest
+    testImplementation kaleyraCatalog.kaleyraVideo
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore

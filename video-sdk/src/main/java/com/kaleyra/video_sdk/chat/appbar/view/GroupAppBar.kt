@@ -39,7 +39,7 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun GroupAppBar(
@@ -111,7 +111,7 @@ private fun textFor(
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun GroupAppBarPreview() = KaleyraM3Theme {
+internal fun GroupAppBarPreview() = KaleyraTheme {
     GroupAppBar(
         image = ImmutableUri(),
         name = "Trip Crashers",

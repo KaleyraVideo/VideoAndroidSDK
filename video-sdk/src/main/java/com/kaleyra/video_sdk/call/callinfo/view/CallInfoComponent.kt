@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.callinfo.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -39,13 +42,13 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
-import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 const val CallInfoTitleTestTag = "CallInfoTitleTestTag"
 const val CallInfoSubtitleTestTag = "CallInfoSubtitleTestTag"
@@ -72,83 +75,88 @@ fun CallInfoComponent(
     callInfoUiState: CallInfoUiState,
     isPipMode: Boolean = false
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
-        val callee = callInfoUiState.displayNames.joinToString(", ")
-        val textStyle = LocalTextStyle.current.shadow(
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        var displayTitle: String? = null
-        var displaySubtitle: String? = null
+    val callDisplayState = callInfoUiState.displayState?.resolve(LocalContext.current) ?: ""
+    val callee = callInfoUiState.displayNames.value.joinToString(", ")
 
-        when (callInfoUiState.callStateUi) {
-            CallStateUi.Connecting,
-            CallStateUi.Dialing,
-            CallStateUi.Ringing,
-            CallStateUi.RingingRemotely -> {
-                if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
-                else {
-                    displayTitle = callee
-                    displaySubtitle = callDisplayState
-                }
-            }
+    var displayTitle: String? = null
+    var displaySubtitle: String? = null
 
-            CallStateUi.Connected, CallStateUi.Disconnecting -> {
-                displayTitle = ""
-                displaySubtitle = ""
-            }
-
-            CallStateUi.Reconnecting -> {
-                displayTitle = callDisplayState
-                displaySubtitle = ""
-            }
-
-            CallStateUi.Disconnected.Ended.Declined,
-            CallStateUi.Disconnected.Ended.LineBusy,
-            CallStateUi.Disconnected.Ended.Timeout,
-            CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
-
-            CallStateUi.Disconnected.Ended.Error,
-            CallStateUi.Disconnected.Ended.Error.Server,
-            CallStateUi.Disconnected.Ended.Error.Unknown,
-            CallStateUi.Disconnected.Ended,
-            CallStateUi.Disconnected.Ended.HungUp,
-            is CallStateUi.Disconnected.Ended.Kicked -> {
-                displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
+    when (callInfoUiState.callStateUi) {
+        CallStateUi.Connecting,
+        CallStateUi.Dialing,
+        CallStateUi.Ringing,
+        CallStateUi.RingingRemotely -> {
+            if (callInfoUiState.displayNames.isEmpty()) displayTitle = callDisplayState
+            else {
+                displayTitle = callee
                 displaySubtitle = callDisplayState
             }
-
-            else -> Unit
         }
 
-        displayTitle?.let {
-            EllipsizeText(
-                modifier = Modifier.testTag(CallInfoTitleTestTag),
-                text = it,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = if (isPipMode) 14.sp else 28.sp,
-                fontWeight = FontWeight.Bold,
-                ellipsize = Ellipsize.Marquee,
-                shadow = textStyle.shadow
-            )
+        CallStateUi.Connected, CallStateUi.Disconnecting -> {
+            displayTitle = ""
+            displaySubtitle = ""
         }
 
-        displaySubtitle?.let {
-            Text(
-                modifier = Modifier.testTag(CallInfoSubtitleTestTag),
-                text = it,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Thin,
-                fontSize = if (isPipMode) 12.sp else 14.sp,
-                maxLines = 1,
-                style = textStyle
-            )
+        CallStateUi.Reconnecting -> {
+            displayTitle = callDisplayState
+            displaySubtitle = ""
+        }
+
+        CallStateUi.Disconnected.Ended.Declined,
+        CallStateUi.Disconnected.Ended.LineBusy,
+        CallStateUi.Disconnected.Ended.Timeout,
+        CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
+
+        CallStateUi.Disconnected.Ended.Error,
+        CallStateUi.Disconnected.Ended.Error.Server,
+        CallStateUi.Disconnected.Ended.Error.Unknown,
+        CallStateUi.Disconnected.Ended,
+        CallStateUi.Disconnected.Ended.HungUp,
+        is CallStateUi.Disconnected.Ended.Kicked -> {
+            displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
+            displaySubtitle = callDisplayState
+        }
+
+        else -> Unit
+    }
+
+    if (callInfoUiState.callStateUi != null && (!displayTitle.isNullOrEmpty() || !displaySubtitle.isNullOrEmpty())) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier),
+            horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            displayTitle?.let {
+                val titleTextStyle = LocalTextStyle.current.copy(
+                    fontSize = TextUnit(if (isPipMode) 14f else 28f, TextUnitType.Companion.Sp)
+                ).shadow(color = MaterialTheme.colorScheme.surface)
+                EllipsizeText(
+                    modifier = Modifier.testTag(CallInfoTitleTestTag),
+                    text = it,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = titleTextStyle.fontSize,
+                    fontWeight = FontWeight.Bold,
+                    ellipsize = Ellipsize.Marquee,
+                    shadow = titleTextStyle.shadow
+                )
+            }
+
+            displaySubtitle?.let {
+                val subtitleTextStyle = LocalTextStyle.current.copy(
+                    fontSize = TextUnit(if (isPipMode) 12f else 14f, TextUnitType.Companion.Sp)
+                ).shadow(color = MaterialTheme.colorScheme.surface)
+                Text(
+                    modifier = Modifier.testTag(CallInfoSubtitleTestTag),
+                    text = it,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = subtitleTextStyle.fontSize,
+                    maxLines = 1,
+                    style = subtitleTextStyle
+                )
+            }
         }
     }
 }
@@ -157,31 +165,14 @@ fun CallInfoComponent(
 @NightModePreview
 @Composable
 internal fun CallInfoConnectingWithDisplayNames() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf("Fede", "Kri", "Ste"))
-            )
-        }
-    }
-}
-
-@DayModePreview
-@NightModePreview
-@Composable
-internal fun CallInfoConnectingWithNoDisplayNames() {
-    KaleyraM3Theme {
-        Surface {
-            CallInfoComponent(
-                modifier = Modifier,
-                callInfoUiState = CallInfoUiState(
-                    callStateUi = CallStateUi.Connecting,
-                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf()
+                    displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
                 )
             )
         }
@@ -191,15 +182,47 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun CallInfoPipMode() {
-    KaleyraM3Theme {
-        Surface {
+internal fun CallInfoConnectingWithNoDisplayNames() {
+    KaleyraTheme {
+        Surface(modifier = Modifier) {
             CallInfoComponent(
-                modifier = Modifier,
+                modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
                     displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
-                    displayNames = listOf("Fede", "Kri", "Ste")
+                    displayNames = ImmutableList()
+                )
+            )
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun CallInfoComponentHidden() {
+    KaleyraTheme {
+        Surface {
+            CallInfoComponent(
+                modifier = Modifier.background(color = Color.Blue),
+                callInfoUiState = CallInfoUiState()
+            )
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun CallInfoPipMode() {
+    KaleyraTheme {
+        Surface {
+            CallInfoComponent(
+                modifier = Modifier.background(color = Color.Blue),
+                callInfoUiState = CallInfoUiState(
+                    callStateUi = CallStateUi.Connecting,
+                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
+                    displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
                 ),
                 isPipMode = true
             )

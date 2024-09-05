@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun ScreenShareContent(
@@ -58,7 +58,7 @@ internal fun ScreenShareContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun ScreenShareContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             ScreenShareContent(
                 items = ImmutableList(listOf(ScreenShareTargetUi.Device, ScreenShareTargetUi.Application)),

@@ -23,7 +23,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbar.UserMessageSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.UserMessageSnackbar
 import com.kaleyra.video_sdk.ui.performHorizontalSwipe
 import org.junit.Rule
 import org.junit.Test

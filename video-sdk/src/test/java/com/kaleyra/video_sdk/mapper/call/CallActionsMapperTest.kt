@@ -27,17 +27,17 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CallActionUI
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -101,6 +101,7 @@ class CallActionsMapperTest {
 
     @Test
     fun allCallActions_toCallActions_mappedCallActions() = runTest {
+        every { callMock.hasVirtualBackground() } returns flowOf(true)
         every { callMock.actions } returns MutableStateFlow(
             setOf(
                 CallUI.Action.ToggleMicrophone,
@@ -121,11 +122,12 @@ class CallActionsMapperTest {
             MicAction(),
             CameraAction(),
             FlipCameraAction(),
-            ChatAction(),
-            WhiteboardAction(),
+            VirtualBackgroundAction(),
             AudioAction(),
             FileShareAction(),
-            ScreenShareAction()
+            ScreenShareAction(),
+            ChatAction(),
+            WhiteboardAction(),
         )
         assertEquals(expected, actual)
     }

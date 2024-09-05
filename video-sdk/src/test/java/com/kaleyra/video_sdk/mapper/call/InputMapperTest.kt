@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.mapper.call
 
 import com.bandyer.android_audiosession.model.AudioOutputDevice
+import com.kaleyra.video.Contact
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
@@ -30,6 +31,7 @@ import com.kaleyra.video_extension_audio.extensions.AudioOutputConnectionError
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
+import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioVideo
@@ -49,8 +51,8 @@ import io.mockk.mockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
@@ -94,7 +96,7 @@ class InputMapperTest {
     @Test
     fun cameraStreamVideoEnabled_isMyCameraEnabled_true() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
         val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(true, actual)
@@ -103,83 +105,79 @@ class InputMapperTest {
     @Test
     fun cameraStreamVideoDisabled_isMyCameraEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val result = callMock.isMyCameraEnabled()
         val actual = result.first()
         assertEquals(false, actual)
     }
 
     @Test
-    fun cameraStreamVideoNull_isMyCameraEnabled_null() = runTest {
+    fun cameraStreamVideoNull_isMyCameraEnabled_notReceived() = runTest {
         with(streamMock) {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(null)
         }
-        val myCameraFlow = callMock.isMyCameraEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myCameraFlow.first()
-            }
-            assertEquals(null, result)
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
         }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamNotExists_isMyCameraEnabled_null() = runTest {
+    fun cameraStreamNotExists_isMyCameraEnabled_notReceived() = runTest {
         every { streamMock.id } returns "streamId"
-        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
-        val myCameraFlow = callMock.isMyCameraEnabled()
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myCameraFlow.first()
-            }
-            assertEquals(null, result)
+        every { videoMock.enabled } returns MutableStateFlow(Input.Enabled.None)
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
         }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamAudioEnabled_isMyMicEnabled_true() = runTest {
+    fun cameraStreamAudioEnabled_isMyMicEnabled_notReceived() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled(true, true))
-        val result = callMock.isMyMicEnabled()
-        val actual = result.first()
-        assertEquals(true, actual)
-    }
-
-    @Test
-    fun cameraStreamNotExists_isMyMicEnabled_null() = runTest {
-        every { streamMock.id } returns "streamId"
-        val myMicFlow = callMock.isMyMicEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myMicFlow.first()
-            }
-            assertEquals(null, result)
+        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.Both)
+        var isCameraEnabled = false
+        backgroundScope.launch {
+            isCameraEnabled = callMock.isMyCameraEnabled().first()
         }
+        advanceUntilIdle()
+        assertEquals(false, isCameraEnabled)
     }
 
     @Test
-    fun cameraStreamAudioNull_isMyMicEnabled_false() = runTest {
+    fun cameraStreamNotExists_isMyMicEnabled_notReceived() = runTest {
+        every { streamMock.id } returns "streamId"
+        var isMyMicEnabled = false
+        backgroundScope.launch {
+            isMyMicEnabled = callMock.isMyMicEnabled().first()
+        }
+        advanceUntilIdle()
+        assertEquals(false, isMyMicEnabled)
+    }
+
+    @Test
+    fun cameraStreamAudioNull_isMyMicEnabled_notReceived() = runTest {
         with(streamMock) {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { audio } returns MutableStateFlow(null)
         }
-        val myMicFlow = callMock.isMyMicEnabled()
-
-        launch {
-            val result = withTimeoutOrNull(1000L) {
-                myMicFlow.first()
-            }
-            assertEquals(null, result)
+        var isMyMicEnabled = false
+        backgroundScope.launch {
+            isMyMicEnabled = callMock.isMyMicEnabled().first()
         }
+        advanceUntilIdle()
+        assertEquals(false, isMyMicEnabled)
     }
 
     @Test
     fun cameraStreamAudioDisable_isMyMicEnabled_false() = runTest {
         every { streamMock.id } returns CameraStreamConstants.CAMERA_STREAM_ID
-        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { audioMock.enabled } returns MutableStateFlow(Input.Enabled.None)
         val result = callMock.isMyMicEnabled()
         val actual = result.first()
         assertEquals(false, actual)
@@ -386,6 +384,32 @@ class InputMapperTest {
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf(usbMock))
         every { usbMock.state } returns MutableStateFlow(Input.State.Closed.Error)
         val actual = callMock.isUsbCameraWaitingPermission().first()
+        assertEquals(false, actual)
+    }
+
+    @Test
+    fun cameraRestrictionEnabled_hasCameraUsageRestriction_true() = runTest {
+        val usage = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns true
+        }
+        every { participantMeMock.restrictions } returns mockk {
+            every { camera } returns MutableStateFlow(usage)
+        }
+
+        val actual = callMock.hasCameraUsageRestriction().first()
+        assertEquals(true, actual)
+    }
+
+    @Test
+    fun cameraRestrictionNotEnabled_hasCameraUsageRestriction_false() = runTest {
+        val usage = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        every { participantMeMock.restrictions } returns mockk {
+            every { camera } returns MutableStateFlow(usage)
+        }
+
+        val actual = callMock.hasCameraUsageRestriction().first()
         assertEquals(false, actual)
     }
 }

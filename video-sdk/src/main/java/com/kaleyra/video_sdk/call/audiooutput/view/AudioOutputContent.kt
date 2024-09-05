@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun AudioOutputContent(
@@ -61,7 +61,7 @@ internal fun AudioOutputContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun AudioOutputContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             AudioOutputContent(
                 items = mockAudioDevices,

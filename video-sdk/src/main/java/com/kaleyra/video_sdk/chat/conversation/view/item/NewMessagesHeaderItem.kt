@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
@@ -64,7 +64,7 @@ internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ConversationContentGroupPreview() = KaleyraM3Theme {
+internal fun ConversationContentGroupPreview() = KaleyraTheme {
     Surface {
         NewMessagesHeaderItem()
     }

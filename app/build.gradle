@@ -13,7 +13,7 @@ plugins {
 apply from: 'versions.gradle'
 apply from: '../scripts/apply_dependencies.gradle'
 
-def kaleyraVideoSdkVersion = "4.0.0-rc16"
+def kaleyraVideoSdkVersion = "4.0.1"
 
 android {
     namespace "com.kaleyra.demo_video_sdk"
@@ -84,11 +84,6 @@ dependencies {
 
     implementation project(":video-sdk")
 
-//    implementation "com.kaleyra:video-sdk"
-
     // define this dependency only if you desire to handle usb camera input in a video call
     implementation "com.kaleyra:video-extension-external-camera"
-
-    // define this dependency only if you desire to handle virtual backgrounds in a video call
-    implementation "com.kaleyra:video-extension-virtual-background"
 }

@@ -8,6 +8,8 @@ import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
@@ -63,12 +65,13 @@ class ParticipantsViewModelTest {
     @Before
     fun setUp() {
         mockkObject(ParticipantMapper)
+        mockkObject(ContactDetailsManager)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
 
-        every { audioMock1.enabled } returns MutableStateFlow(Input.Enabled(true, true))
-        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { audioMock1.enabled } returns MutableStateFlow(Input.Enabled.Both)
+        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled.Both)
         with(streamMock1) {
             every { id } returns "streamId1"
             every { audio } returns MutableStateFlow(audioMock1)
@@ -77,13 +80,18 @@ class ParticipantsViewModelTest {
             every { id } returns "streamId2"
             every { audio } returns MutableStateFlow(audioMock2)
         }
-        every { meMock.userId } returns "userId1"
+        with(meMock) {
+            every { userId } returns "userId1"
+            every { combinedDisplayName } returns MutableStateFlow("displayName1")
+        }
         with(otherMock1) {
             every { userId } returns "userId2"
+            every { combinedDisplayName } returns MutableStateFlow("displayName2")
             every { streams } returns MutableStateFlow(listOf(streamMock1))
         }
         with(otherMock2) {
             every { userId } returns "userId3"
+            every { combinedDisplayName } returns MutableStateFlow("displayName3")
             every { streams } returns MutableStateFlow(listOf(streamMock2))
         }
         with(participantsMock) {
@@ -107,7 +115,7 @@ class ParticipantsViewModelTest {
         })
         advanceUntilIdle()
 
-        val expected = ImmutableList(listOf(meMock.userId, otherMock2.userId))
+        val expected = ImmutableList(listOf("displayName1", "displayName3"))
         assertEquals(expected, viewModel.uiState.first().invitedParticipants)
     }
 
@@ -116,7 +124,7 @@ class ParticipantsViewModelTest {
         val activity = mockk<FragmentActivity>()
         val inputs = mockk<Inputs>(relaxed = true)
         val audio = mockk<Input.Audio>(relaxed = true) {
-            every { enabled } returns MutableStateFlow(Input.Enabled(false, false))
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
             every { tryEnable() } returns true
         }
         every { callMock.inputs } returns inputs
@@ -139,7 +147,7 @@ class ParticipantsViewModelTest {
         val activity = mockk<FragmentActivity>()
         val inputs = mockk<Inputs>(relaxed = true)
         val audio = mockk<Input.Audio>(relaxed = true) {
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
             every { tryDisable() } returns true
         }
         every { callMock.inputs } returns inputs
@@ -159,7 +167,7 @@ class ParticipantsViewModelTest {
 
     @Test
     fun testMuteStreamAudio() = runTest {
-        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled(true, true))
+        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled.Both)
 
         val viewModel = spyk(ParticipantsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)
@@ -173,7 +181,7 @@ class ParticipantsViewModelTest {
 
     @Test
     fun testUnmuteStreamAudio() = runTest {
-        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled(false, false))
+        every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled.None)
 
         val viewModel = spyk(ParticipantsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock)

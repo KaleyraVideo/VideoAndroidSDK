@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,8 +17,8 @@ internal object AudioMapper {
             val initialValue = value?.let { audio ->
                 AudioUi(
                     id = audio.id,
-                    isEnabled = audio.enabled.value.remote,
-                    isMutedForYou = !audio.enabled.value.local
+                    isEnabled = audio.enabled.value.isAtLeastRemotelyEnabled(),
+                    isMutedForYou = !audio.enabled.value.isAtLeastLocallyEnabled()
                 )
             }
             emit(initialValue)
@@ -30,8 +30,8 @@ internal object AudioMapper {
             ) { id, enabled ->
                 AudioUi(
                     id = id,
-                    isEnabled = enabled.remote,
-                    isMutedForYou = !enabled.local)
+                    isEnabled = enabled.isAtLeastRemotelyEnabled(),
+                    isMutedForYou = !enabled.isAtLeastLocallyEnabled())
             }.collect {
                 emit(it)
             }

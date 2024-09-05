@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -14,7 +15,9 @@ import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.appbar.view.RecordingDotTag
-import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+import com.kaleyra.video_sdk.call.appbar.model.Logo
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -29,7 +32,11 @@ class CallAppBarComponentTest {
 
     private var recording by mutableStateOf(false)
 
-    private val title = "09:56"
+    private var recordingStateUi by mutableStateOf(RecordingStateUi.Stopped)
+
+    private var callStateUi: CallStateUi = CallStateUi.Connected
+
+    private var title = "09:56"
 
     private val participantCount = 2
 
@@ -42,9 +49,11 @@ class CallAppBarComponentTest {
         composeTestRule.setContent {
             CallAppBarComponent(
                 logo = logo,
-                recording = recording,
                 title = title,
+                automaticRecording = recording,
+                recordingStateUi = recordingStateUi,
                 participantCount = participantCount,
+                callStateUi = callStateUi,
                 onParticipantClick = { isParticipantButtonClicked = true  },
                 onBackPressed = { isBackPressed = true })
         }
@@ -93,7 +102,75 @@ class CallAppBarComponentTest {
     @Test
     fun recordingFalse_recordingDotDoesNotExists() {
         recording = false
-        composeTestRule.onNodeWithTag(RecordingDotTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun callDisconnecting_recordingAutomatic_recordingNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Disconnecting
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun callDisconnected_recordingAutomatic_recordingNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Disconnected
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun callDisconnecting_recordingAutomatic_titleNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Disconnecting
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun callDisconnectingtitleWithCallTimer_titleNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Disconnecting
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    }
+
+    @Test
+    fun callDisconnected_recordingAutomatic_titleNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Disconnected
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    }
+
+    @Test
+    fun automaticRecording_callConnecting_RECDisplayed() {
+        recording = true
+        callStateUi = CallStateUi.Connecting
+        val rec = composeTestRule.activity.getString(R.string.kaleyra_rec)
+        composeTestRule.onNodeWithText(rec).assertIsDisplayed()
+    }
+
+    @Test
+    fun automaticRecording_recordingStarted_titleShown() {
+        recording = true
+        callStateUi = CallStateUi.Connected
+        recordingStateUi = RecordingStateUi.Started
+        title = "test"
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    }
+
+    @Test
+    fun manualRecording_recordingStarted_redDotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Connected
+        recordingStateUi = RecordingStateUi.Started
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun manualRecording_recordingStopped_redDotNotDisplayed() {
+        recording = false
+        callStateUi = CallStateUi.Connected
+        recordingStateUi = RecordingStateUi.Stopped
+        composeTestRule.onNodeWithTag(RecordingDotTag).assertIsNotDisplayed()
     }
 
     @Test

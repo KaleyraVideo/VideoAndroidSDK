@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareTargetUi
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun ScreenShareItem(
@@ -90,7 +90,7 @@ internal fun ScreenShareAppItemPreview() {
 
 @Composable
 private fun ScreenShareItemPreview(screenShareTarget: ScreenShareTargetUi) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             ScreenShareItem(screenShareTarget = screenShareTarget)
         }

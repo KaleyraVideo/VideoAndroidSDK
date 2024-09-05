@@ -295,6 +295,7 @@ class ConferenceUIExtensionsTest {
     fun `provisional call notification when there is no connection service permissions is cancelled on call ended`() = runTest(UnconfinedTestDispatcher()) {
         val callStateFlow = MutableStateFlow(mockk<Call.State>(relaxed = true))
         every { callMock.state } returns callStateFlow
+        every { callMock.participants } returns MutableStateFlow( mockk(relaxed = true))
         every { contextMock.hasConnectionServicePermissions() } returns false
         every { CallExtensions.isIncoming(any(), any()) } returns true
         every { CallExtensions.isOutgoing(any(), any()) } returns false

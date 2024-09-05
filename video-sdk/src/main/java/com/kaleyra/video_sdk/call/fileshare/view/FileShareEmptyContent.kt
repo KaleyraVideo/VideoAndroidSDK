@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 /**
  * Composable File Share Empty Content
@@ -45,9 +45,7 @@ import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 @Composable
 fun FileShareEmptyContent(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .background(color = MaterialTheme.colorScheme.surface)
-            .padding(start = 48.dp, bottom = 56.dp, end = 48.dp),
+        modifier = modifier.padding(start = 48.dp, bottom = 56.dp, end = 48.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -65,6 +63,7 @@ fun FileShareEmptyContent(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(id = R.string.kaleyra_click_to_share_file),
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 12.sp
         )
     }
@@ -74,7 +73,7 @@ fun FileShareEmptyContent(modifier: Modifier = Modifier) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareEmptyContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareEmptyContent()
         }

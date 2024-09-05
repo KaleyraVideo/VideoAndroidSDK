@@ -11,6 +11,7 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -30,14 +31,19 @@ class CallInfoViewModel(configure: suspend () -> Configuration) : BaseViewModel<
 
     private fun observeCallStates() {
         val call = call.getValue()!!
+        var hasBeenConnectingOnce = false
         combine(call.toCallStateUi(), call.toOtherDisplayNames()) { callUiState, otherDisplayNames ->
             callUiState to otherDisplayNames
         }.onEach { combinedFlows ->
+            if (combinedFlows.first == CallStateUi.Connecting) {
+                if (hasBeenConnectingOnce) return@onEach
+                hasBeenConnectingOnce = true
+            }
             val ongoingCall = this@CallInfoViewModel.call.getValue()
             val callStateUi = combinedFlows.first
             val displayNames = combinedFlows.second
             val displayState = callStateUi.toTextRef(ongoingCall)
-            _uiState.update { it.copy(callStateUi = callStateUi, displayNames = displayNames, displayState = displayState) }
+            _uiState.update { it.copy(callStateUi = callStateUi, displayNames = ImmutableList(displayNames), displayState = displayState) }
         }.launchIn(viewModelScope)
     }
 

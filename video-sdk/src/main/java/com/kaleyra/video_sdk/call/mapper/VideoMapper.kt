@@ -21,9 +21,9 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +44,7 @@ internal object VideoMapper {
                 VideoUi(
                     video.id,
                     video.view.value?.let { ImmutableView(it) },
-                    video.enabled.value.remote,
+                    video.enabled.value.isAtLeastRemotelyEnabled(),
                     video.isScreenShare(),
                     ImmutableList(emptyList())
                 )
@@ -59,8 +59,8 @@ internal object VideoMapper {
                 flow.map { it.isScreenShare() },
                 flow.mapToPointersUi()
             ) { id, view, enabled, isScreenShare, pointers ->
-                val pointerList = ImmutableList(if (view != null && enabled.remote) pointers else emptyList())
-                VideoUi(id, view, enabled.remote, isScreenShare, pointerList)
+                val pointerList = ImmutableList(if (view != null && enabled.isAtLeastRemotelyEnabled()) pointers else emptyList())
+                VideoUi(id, view, enabled.isAtLeastRemotelyEnabled(), isScreenShare, pointerList)
             }.collect {
                 emit(it)
             }
@@ -93,7 +93,7 @@ internal object VideoMapper {
 
     suspend fun Input.Video.Event.Pointer.mapToPointerUi(mirror: Boolean = false): PointerUi {
         return PointerUi(
-            username = producer.combinedDisplayName.firstOrNull() ?: "",
+            username = producer.combinedDisplayName.firstOrNull() ?: producer.userId,
             x = if (mirror) 100 - position.x else position.x,
             y = position.y
         )

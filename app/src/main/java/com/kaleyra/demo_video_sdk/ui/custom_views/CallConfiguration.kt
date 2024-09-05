@@ -101,6 +101,10 @@ sealed class ConfigAction : Parcelable {
 
     @Serializable
     @Parcelize
+    data object CameraEffects : ConfigAction()
+
+    @Serializable
+    @Parcelize
     data object HangUp : ConfigAction()
 
     @Serializable
@@ -169,6 +173,7 @@ fun Set<CallUI.Action>.mapToConfigActions(): Set<ConfigAction> {
             CallUI.Action.ToggleCamera -> ConfigAction.ToggleCamera
             CallUI.Action.ToggleFlashlight -> ConfigAction.ToggleFlashlight
             CallUI.Action.ToggleMicrophone -> ConfigAction.ToggleMicrophone
+            CallUI.Action.CameraEffects -> ConfigAction.CameraEffects
         }
     }.toSet()
 }
@@ -191,6 +196,7 @@ fun Set<ConfigAction>.mapToCallUIActions(): Set<CallUI.Action> {
             ConfigAction.ToggleCamera -> CallUI.Action.ToggleCamera
             ConfigAction.ToggleFlashlight -> CallUI.Action.ToggleFlashlight
             ConfigAction.ToggleMicrophone -> CallUI.Action.ToggleMicrophone
+            ConfigAction.CameraEffects -> CallUI.Action.CameraEffects
         }
     }.toSet()
 }

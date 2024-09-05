@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.snackbarm3.model.StackedSnackbarHostMessagesHandler
+import com.kaleyra.video_sdk.common.snackbar.model.StackedSnackbarHostMessagesHandler
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider

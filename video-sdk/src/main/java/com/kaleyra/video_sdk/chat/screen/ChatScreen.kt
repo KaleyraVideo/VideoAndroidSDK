@@ -45,7 +45,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -55,9 +55,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,9 +76,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -93,7 +87,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.appbar.view.GroupAppBar
 import com.kaleyra.video_sdk.chat.appbar.view.OneToOneAppBar
 import com.kaleyra.video_sdk.chat.conversation.ConversationComponent
@@ -107,10 +100,9 @@ import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
-import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.CollaborationM3Theme
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.CollaborationTheme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.launch
 
 internal const val ConversationComponentTag = "ConversationComponentTag"
@@ -130,7 +122,7 @@ internal fun ChatScreen(
 //        }
 //    }
 
-    CollaborationM3Theme(theme = theme) {
+    CollaborationTheme(theme = theme) {
         ChatScreen(
             uiState = uiState,
             userMessage = userMessage,
@@ -376,7 +368,7 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ChatScreenPreview() = KaleyraM3Theme {
+internal fun ChatScreenPreview() = KaleyraTheme {
     ChatScreen(
         uiState = mockChatUiState,
         onBackPressed = { },

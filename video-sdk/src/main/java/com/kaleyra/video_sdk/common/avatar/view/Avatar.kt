@@ -18,7 +18,7 @@ package com.kaleyra.video_sdk.common.avatar.view
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal object AvatarDefaults {
 
@@ -89,30 +90,42 @@ internal fun Avatar(
     uri: ImmutableUri?,
     username: String,
     modifier: Modifier = Modifier,
+    size: Dp = AvatarDefaults.defaultSize,
     color: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(color),
+    @DrawableRes placeholder: Int = R.drawable.ic_kaleyra_avatar_bold,
     onSuccess: (() -> Unit)? = null
 ) {
     var isImageLoaded by remember { mutableStateOf(false) }
+    val placeholderFilter by rememberUpdatedState(newValue = ColorFilter.tint(color = contentColor))
+    val colorFilter by remember {
+        derivedStateOf {
+            if (isImageLoaded) null else placeholderFilter
+        }
+    }
 
-    BoxWithConstraints(
+    Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.size(AvatarDefaults.defaultSize)
+        modifier = modifier
     ) {
         AsyncImage(
             model = uri?.value,
             contentDescription = null,
             modifier = Modifier
                 .clip(CircleShape)
+                .size(size)
                 .background(color = color),
+            placeholder = if (username.isBlank()) painterResource(placeholder) else null,
+            error = if (username.isBlank()) painterResource(placeholder) else null,
             contentScale = ContentScale.Crop,
+            colorFilter = colorFilter,
             onSuccess = {
                 onSuccess?.invoke()
                 isImageLoaded = true
             }
         )
         if (!isImageLoaded) {
-            val fontSize = with(LocalDensity.current) { (constraints.maxWidth / 2).toSp() }
+            val fontSize = with(LocalDensity.current) { size.toSp() / 2 }
             Text(
                 text = username.firstOrNull()?.uppercase() ?: "",
                 color = contentColor,
@@ -125,9 +138,20 @@ internal fun Avatar(
 @Preview
 @Composable
 internal fun AvatarPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Avatar(
             username = "J",
+            uri = null
+        )
+    }
+}
+
+@Preview
+@Composable
+internal fun AvatarPlaceholderPreview() {
+    KaleyraTheme {
+        Avatar(
+            username = "",
             uri = null
         )
     }

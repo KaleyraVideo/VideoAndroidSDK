@@ -53,6 +53,10 @@
     <string name="kaleyra_call_action_enable_camera_description">Ativar câmera</string>
     <string name="kaleyra_call_action_disable_camera_description">Desativar câmera</string>
 
+    <string name="kaleyra_call_action_more">Mais</string>
+    <string name="kaleyra_call_drag_to_expand">Arraste para expandir</string>
+    <string name="kaleyra_call_answer">Participar</string>
+
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Escreva aqui &#8230;</string>
     <string name="kaleyra_chat_channel_loading">Carregando &#8230;</string>
@@ -260,5 +264,71 @@
     <string name="kaleyra_whiteboard_show_request_user_message">Você foi solicitado a abrir a whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitou fechar a whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">Você foi solicitado a fechar a whiteboard</string>
+
+    <!-- bottom sheet -->
+
+    <string name="kaleyra_call_sheet_answer">Entrar</string>
+    <string name="kaleyra_call_sheet_chat">Chat</string>
+    <string name="kaleyra_call_sheet_whiteboard">Quadro branco</string>
+    <string name="kaleyra_call_sheet_audio">Áudio</string>
+    <string name="kaleyra_call_sheet_file_share">Compartilhamento de arquivo</string>
+    <string name="kaleyra_call_sheet_screen_share">Compartilhamento de tela</string>
+    <string name="kaleyra_call_sheet_virtual_background">Plano de fundo virtual</string>
+    <string name="kaleyra_call_sheet_pin">Fixar</string>
+    <string name="kaleyra_call_sheet_unpin">Desafixar</string>
+    <string name="kaleyra_call_sheet_fullscreen_on">Tela cheia</string>
+    <string name="kaleyra_call_sheet_fullscreen_off">Sair</string>
+    <string name="kaleyra_call_sheet_flip_camera">Inverter câmera</string>
+    <string name="kaleyra_call_sheet_recording">Gravando</string>
+    <string name="kaleyra_call_sheet_cancel">Cancelar</string>
+    <string name="kaleyra_call_sheet_microphone">Microfone</string>
+    <string name="kaleyra_call_sheet_camera">Câmera</string>
+    <string name="kaleyra_call_sheet_on">Ligado</string>
+    <string name="kaleyra_call_sheet_off">Desligado</string>
+    <string name="kaleyra_call_sheet_hang_up">Desligar</string>
+    <string name="kaleyra_call_sheet_description_more_actions">Mostrar mais ações</string>
+    <string name="kaleyra_call_sheet_description_hide_actions">Ocultar ações</string>
+    <string name="kaleyra_call_sheet_description_enable_microphone">Ativar microfone</string>
+    <string name="kaleyra_call_sheet_description_disable_microphone">Desativar microfone</string>
+    <string name="kaleyra_call_sheet_description_enable_camera">Ativar câmera</string>
+    <string name="kaleyra_call_sheet_description_disable_camera">Desativar câmera</string>
+    <string name="kaleyra_call_sheet_description_stop_screen_share">Parar compartilhamento de tela</string>
+
+    <!-- streams -->
+    <string name="kaleyra_stream_screenshare_received">%s está compartilhando sua tela</string>
+    <string name="kaleyra_stream_pin">A transmissão está fixada</string>
+    <string name="kaleyra_stream_fullscreen">A transmissão está em tela cheia</string>
+    <string name="kaleyra_stream_mic_disabled">O microfone está desativado</string>
+    <string name="kaleyra_stream_muted_for_you">A transmissão está sem áudio para você</string>
+    <string name="kaleyra_stream_you">Você</string>
+    <string name="kaleyra_stream_other_participants">%d outros</string>
+    <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
+    <string name="kaleyra_stream_show_actions">Mostrar as ações da transmissão</string>
+    <string name="kaleyra_stream_dimmed">Transmissão não selecionada</string>
+
+    <!-- participant panel -->
+
+    <string name="kaleyra_participants_component_change_layout">Mudar layout</string>
+    <string name="kaleyra_participants_component_users_in_call">Usuários na chamada</string>
+    <string name="kaleyra_participants_component_users_invited">Também convidados</string>
+    <string name="kaleyra_participants_component_grid">Grade</string>
+    <string name="kaleyra_participants_component_pin">Fixar</string>
+    <string name="kaleyra_participants_component_pin_stream">Fixar transmissão</string>
+    <string name="kaleyra_participants_component_unpin_stream">Desafixar transmissão</string>
+    <string name="kaleyra_participants_component_mute_for_you">Silenciar para você</string>
+    <string name="kaleyra_participants_component_unmute_for_you">Ativar áudio para você</string>
+    <string name="kaleyra_participants_component_you">%s (Você)</string>
+    <string name="kaleyra_participants_component_admin">Administrador</string>
+    <string name="kaleyra_participants_component_screenshare">Compartilhamento de tela</string>
+    <string name="kaleyra_participants_component_participant">Participante</string>
+    <string name="kaleyra_participants_component_remove_from_call">Remover da chamada</string>
+    <string name="kaleyra_participants_component_disable_microphone">Desativar microfone</string>
+    <string name="kaleyra_participants_component_enable_microphone">Ativar microfone</string>
+    <string name="kaleyra_participants_component_show_more_actions">Mostrar mais ações</string>
+    <plurals name="kaleyra_participants_component_participants">
+        <item quantity="one">%d Participante</item>
+        <item quantity="other">%d Participantes</item>
+    </plurals>
+    <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
 
 </resources>

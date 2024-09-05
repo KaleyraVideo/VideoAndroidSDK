@@ -2,10 +2,13 @@ package com.kaleyra.video_sdk
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.compose.ui.test.onParent
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +16,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 // TODO add this as robolectric test
 class AvatarTest {
@@ -60,6 +62,22 @@ class AvatarTest {
                 color = Color.Black
             )
         }
+    }
+
+    @Test
+    fun testSize() {
+        val size = 40.dp
+        composeTestRule.setContent {
+            Avatar(
+                username = "username",
+                uri = null,
+                size = size,
+                color = Color.Black
+            )
+        }
+        val avatar = composeTestRule.onNodeWithText("U").onParent()
+        avatar.assertWidthIsEqualTo(size)
+        avatar.assertHeightIsEqualTo(size)
     }
 
 }

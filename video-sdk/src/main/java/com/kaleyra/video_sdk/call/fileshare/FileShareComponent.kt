@@ -63,7 +63,7 @@ import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import java.util.UUID
 
 /**
@@ -78,7 +78,7 @@ internal fun FileShareComponent(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit,
     isTesting: Boolean = false
 ) {
     val context = LocalContext.current
@@ -137,7 +137,7 @@ internal fun FileShareComponent(
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
     onBackPressed: (() -> Unit)? = null,
-    onUserMessageActionClick: (UserMessage.Action) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
@@ -212,7 +212,7 @@ internal fun FileShareComponent(
             }
 
             StackedUserMessageComponent(
-                onActionCLick = onUserMessageActionClick
+                onActionClick = onUserMessageActionClick
             )
 
             SnackbarHost(
@@ -239,7 +239,7 @@ internal fun FileShareComponent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareComponentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareComponent(
                 uiState = FileShareUiState(
@@ -258,7 +258,7 @@ internal fun FileShareComponentPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareComponentEmptyPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareComponent(
                 uiState = FileShareUiState(),

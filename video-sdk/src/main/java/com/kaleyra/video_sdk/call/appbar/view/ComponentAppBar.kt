@@ -20,12 +20,16 @@ package com.kaleyra.video_sdk.call.appbar.view
 
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,10 +46,12 @@ internal fun ComponentAppBar(
     modifier: Modifier = Modifier,
     title: String,
     onBackPressed: () -> Unit,
-    actions: @Composable (RowScope.() -> Unit)? = null,
+    actions: @Composable (RowScope.() -> Unit) = { Spacer(Modifier.width(56.dp)) },
+    scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
     scrollableState: ScrollableState? = null,
 ) {
     TopAppBar(
+        scrollBehavior = scrollBehavior,
         navigationIcon = {
             androidx.compose.material3.IconButton(
                 modifier = Modifier.padding(4.dp),
@@ -70,7 +76,7 @@ internal fun ComponentAppBar(
                 actions()
             }
         },
-        containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else MaterialTheme.colorScheme.surface,
+        containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = modifier
     )
 }

@@ -50,7 +50,7 @@ import com.kaleyra.video_sdk.chat.conversation.model.mock.mockConversationElemen
 import com.kaleyra.video_sdk.chat.conversation.view.ConversationContent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -171,7 +171,7 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun LoadingConversationComponentPreview() = KaleyraM3Theme {
+internal fun LoadingConversationComponentPreview() = KaleyraTheme {
     Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(),
@@ -186,7 +186,7 @@ internal fun LoadingConversationComponentPreview() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun EmptyConversationComponentPreview() = KaleyraM3Theme {
+internal fun EmptyConversationComponentPreview() = KaleyraTheme {
     Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = ImmutableList(listOf())),
@@ -198,7 +198,7 @@ internal fun EmptyConversationComponentPreview() = KaleyraM3Theme {
 @Preview(name = "Light Mode")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-internal fun ConversationComponentPreview() = KaleyraM3Theme {
+internal fun ConversationComponentPreview() = KaleyraTheme {
     Surface(color = MaterialTheme.colorScheme.surface) {
         ConversationComponent(
             conversationState = ConversationState(conversationItems = mockConversationElements),

@@ -75,19 +75,11 @@
             </intent-filter>
         </activity>
 
-        <!-- KaleyraVideoService configuration service -->
+        <!-- KaleyraVideoInitializer -->
 
-        <service
-            android:name=".DemoAppKaleyraVideoService"
-            android:exported="false">
-            <intent-filter>
-                <!--
-                    Do not modify this, the action value must be set to "kaleyra_video_sdk_configure"
-                    in order to let this service to be started from KaleyraVideoSDK
-                -->
-                <action android:name="kaleyra_video_sdk_configure" />
-            </intent-filter>
-        </service>
+        <meta-data
+            android:name="kaleyra_video_initializer"
+            android:value="com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoInitializer" />
 
         <!-- FCM Notification Service -->
 

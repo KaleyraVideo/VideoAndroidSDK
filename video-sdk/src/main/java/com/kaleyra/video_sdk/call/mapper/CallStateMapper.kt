@@ -59,7 +59,7 @@ internal object CallStateMapper {
                 state is Call.State.Disconnected.Ended.HungUp -> CallStateUi.Disconnected.Ended.HungUp
                 state is Call.State.Disconnected.Ended.Kicked -> {
                     val admin = participants.others.firstOrNull { it.userId == state.userId }
-                    val adminName = admin?.combinedDisplayName?.firstOrNull() ?: ""
+                    val adminName = admin?.combinedDisplayName?.firstOrNull() ?: admin?.userId ?: ""
                     CallStateUi.Disconnected.Ended.Kicked(adminName)
                 }
 

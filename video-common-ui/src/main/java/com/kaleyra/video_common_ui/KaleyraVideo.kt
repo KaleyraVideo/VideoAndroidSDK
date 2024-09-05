@@ -93,6 +93,7 @@ object KaleyraVideo {
          */
     val conference: ConferenceUI
         get() {
+            requestConfiguration()
             require(collaboration != null) { "configure the CollaborationUI to use the conference" }
             return _conference!!
         }
@@ -103,6 +104,7 @@ object KaleyraVideo {
          */
     val conversation: ConversationUI
         get() {
+            requestConfiguration()
             require(collaboration != null) { "configure the KaleyraVideo to use the conversation" }
             return _conversation!!
         }
@@ -192,6 +194,7 @@ object KaleyraVideo {
      */
     val state: StateFlow<State>
         get() {
+            requestConfiguration()
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the state" }
             return collaboration!!.state
         }
@@ -201,6 +204,7 @@ object KaleyraVideo {
      */
     val synchronization: StateFlow<Synchronization>
         get() {
+            requestConfiguration()
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the synchronization" }
             return collaboration!!.synchronization
         }
@@ -210,6 +214,7 @@ object KaleyraVideo {
      */
     val connectedUser: StateFlow<User?>
         get() {
+            requestConfiguration()
             require(collaboration != null) { "You need to configure the KaleyraVideo to get the connectedUser" }
             return collaboration!!.connectedUser
         }

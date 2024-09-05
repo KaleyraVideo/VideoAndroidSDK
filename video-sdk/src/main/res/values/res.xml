@@ -47,7 +47,10 @@
     <item name="ic_kaleyra_recording_dot_new" type="drawable">@drawable/kaleyra_f_rec</item>
 
     <!-- stream -->
+    <item name="ic_kaleyra_stream_fullscreen_action_on" type="drawable">@drawable/kaleyra_f_fullscreen_action_on</item>
+    <item name="ic_kaleyra_stream_fullscreen_action_off" type="drawable">@drawable/kaleyra_f_fullscreen_action_off</item>
     <item name="ic_kaleyra_stream_fullscreen_on" type="drawable">@drawable/kaleyra_f_fullscreen_on</item>
+    <item name="ic_kaleyra_stream_fullscreen_off" type="drawable">@drawable/kaleyra_f_fullscreen_off</item>
     <item name="ic_kaleyra_stream_pin" type="drawable">@drawable/kaleyra_f_pin</item>
     <item name="ic_kaleyra_stream_screenshare" type="drawable">@drawable/kaleyra_f_screen_share</item>
     <item name="ic_kaleyra_stream_audio_disabled" type="drawable">@drawable/kaleyra_f_mic_off</item>

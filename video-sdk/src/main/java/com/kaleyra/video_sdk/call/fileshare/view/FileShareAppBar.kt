@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,8 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FileShareAppBar(
     modifier: Modifier = Modifier,
@@ -49,7 +51,7 @@ internal fun FileShareAppBar(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareAppBarTest() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         FileShareAppBar(
             onBackPressed = { },
             lazyGridState = rememberLazyGridState()

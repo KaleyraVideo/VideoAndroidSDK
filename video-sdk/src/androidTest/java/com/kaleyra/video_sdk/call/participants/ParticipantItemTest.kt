@@ -6,15 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
-import com.kaleyra.video_sdk.call.streamnew.model.core.AudioUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -34,6 +36,8 @@ class ParticipantItemTest {
 
     private var amIAdmin by mutableStateOf(false)
 
+    private var pinLimitReached by mutableStateOf(false)
+
     private var streamId: String? = null
 
     private var isStreamMuted = false
@@ -49,9 +53,10 @@ class ParticipantItemTest {
         composeTestRule.setContent {
             ParticipantItem(
                 stream = stream,
-                pinned = pinned,
+                isPinned = pinned,
                 isAdminStream = isAdminStream,
                 amIAdmin = amIAdmin,
+                isPinLimitReached = pinLimitReached,
                 onMuteStreamClick = { streamId, value ->
                     this@ParticipantItemTest.streamId = streamId
                     isStreamMuted = value
@@ -75,6 +80,7 @@ class ParticipantItemTest {
     fun tearDown() {
         stream = streamUiMock
         pinned = false
+        pinLimitReached = false
         isAdminStream = false
         amIAdmin = false
         isMoreClicked = false
@@ -219,6 +225,60 @@ class ParticipantItemTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_show_more_actions)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+    }
+
+    @Test
+    fun localScreenShareStream_micButtonIsNotEnabled() {
+        stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true), video = VideoUi(id = "id", isEnabled = false, isScreenShare = true))
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun remoteScreenShareStream_muteForYouIsNotEnabled() {
+        stream = streamUiMock.copy(isMine = false, audio = AudioUi(id = "id", isEnabled = true), video = VideoUi(id = "id", isEnabled = false, isScreenShare = true))
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun localScreenShareStream_unpinButtonIsDisabled() {
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        pinned = true
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun pinLimitReached_pinButtonIsDisabled() {
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        pinLimitReached = true
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun pinLimitReached_unpinButtonIsEnabled() {
+        stream = streamUiMock.copy(video = VideoUi(id = "id", isEnabled = true))
+        pinned = true
+        pinLimitReached = true
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertHasClickAction()
+            .assertIsEnabled()
     }
 
     @Test

@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
@@ -35,7 +36,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 /**
@@ -54,13 +54,13 @@ internal fun CircularProgressIndicator(progress: Float, color: Color, size: Dp, 
             stroke = stroke
         )
     }
-    androidx.compose.material.CircularProgressIndicator(
-        progress = progress,
-        color = color,
-        strokeWidth = strokeWidth,
+    CircularProgressIndicator(
+        progress = { progress },
         modifier = Modifier
             .size(size)
-            .testTag(CircularProgressIndicatorTag)
+            .testTag(CircularProgressIndicatorTag),
+        color = color,
+        strokeWidth = strokeWidth,
     )
 }
 
@@ -84,7 +84,7 @@ private fun DrawScope.drawCircularBackground(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun CircularProgressIndicatorPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             CircularProgressIndicator(
                 progress = .6f,

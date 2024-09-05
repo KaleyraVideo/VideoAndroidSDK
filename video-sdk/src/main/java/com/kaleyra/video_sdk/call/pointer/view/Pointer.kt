@@ -62,7 +62,7 @@ internal fun TextPointer(
             modifier = Modifier
                 .onGloballyPositioned { onTextWidth(it.size.width) }
                 .graphicsLayer { alpha = textAlpha },
-            style = textStyle.shadow()
+            style = textStyle.shadow(color = MaterialTheme.colorScheme.surface)
         )
     }
 }

@@ -34,7 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 // Default slider thumb radius in the material library
 private val ThumbRadius = 10.dp
@@ -112,7 +112,7 @@ internal fun StarSlider(
 
 @Preview(showBackground = true)
 @Composable
-internal fun StarSliderPreview() = KaleyraM3Theme {
+internal fun StarSliderPreview() = KaleyraTheme {
     StarSlider(
         value = 3f,
         onValueChange = {},

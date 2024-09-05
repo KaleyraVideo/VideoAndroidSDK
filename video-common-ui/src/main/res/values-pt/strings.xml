@@ -15,7 +15,6 @@
   -->
 
 <resources>
-    <string name="kaleyra_day_time_pattern" translatable="false">%1$s, %2$s</string>
     <string name="kaleyra_today">hoje</string>
     <string name="kaleyra_yesterday">ontem</string>
     <string name="kaleyra_notification_answer">Responder</string>
@@ -52,8 +51,8 @@
     <string name="kaleyra_call_participant_removed_understood_message">Fechar</string>
     <!-- MUTE PARTICIPANT -->
     <plurals name="kaleyra_call_participant_muted_by_admin">
-        <item quantity="one">%s silenciou-te</item>
-        <item quantity="other">O administrador silenciou-te</item>
+        <item quantity="one">%s silenciou-te.\nToque no botão do microfone para ativar o som.</item>
+        <item quantity="other">O administrador silenciou-te.\nToque no botão do microfone para ativar o som.</item>
     </plurals>
     <string name="kaleyra_call_participant_utterance_muted_by_admin">Silenciado</string>
     <!-- TERMS AND CONDITIONS -->

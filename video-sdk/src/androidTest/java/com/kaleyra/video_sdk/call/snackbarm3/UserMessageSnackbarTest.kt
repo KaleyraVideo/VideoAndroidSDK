@@ -25,8 +25,8 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
-import com.kaleyra.video_sdk.common.snackbarm3.view.UserMessageSnackbarActionConfig
-import com.kaleyra.video_sdk.common.snackbarm3.view.UserMessageSnackbarM3
+import com.kaleyra.video_sdk.common.snackbar.view.UserMessageSnackbarActionConfig
+import com.kaleyra.video_sdk.common.snackbar.view.UserMessageSnackbarM3
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -62,7 +62,7 @@ class UserMessageSnackbarM3Test {
                 iconPainter =  painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
                 message = "title",
                 onDismissClick = { },
-                actionConfig = UserMessageSnackbarActionConfig(actionTextRef, { actionClicked = true })
+                actionConfig = UserMessageSnackbarActionConfig(actionTextRef, 0, { actionClicked = true })
             )
         }
         composeTestRule.onNodeWithText(actionLabel).performClick()

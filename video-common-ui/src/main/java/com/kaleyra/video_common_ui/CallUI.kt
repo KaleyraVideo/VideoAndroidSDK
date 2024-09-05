@@ -146,7 +146,8 @@ class CallUI(
                     OpenChat.Full,
                     ShowParticipants,
                     OpenWhiteboard.ViewOnly,
-                    OpenWhiteboard.Full
+                    OpenWhiteboard.Full,
+                    CameraEffects
                 )
             }
 
@@ -207,6 +208,12 @@ class CallUI(
          */
         @Parcelize
         data object ScreenShare : Action()
+
+        /**
+         * Camera Effects action
+         */
+        @Parcelize
+        data object CameraEffects : Action()
 
         /**
          * Audio switches displaying request

@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +38,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun WhiteboardAppBar(
@@ -60,6 +61,7 @@ internal fun WhiteboardAppBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WhiteboardAppBar(
     isFileSharingSupported: Boolean,
@@ -92,7 +94,7 @@ internal fun WhiteboardAppBar(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun WhiteboardAppBarTest() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         WhiteboardAppBar(
             isFileSharingSupported = true,
             onBackPressed = {},

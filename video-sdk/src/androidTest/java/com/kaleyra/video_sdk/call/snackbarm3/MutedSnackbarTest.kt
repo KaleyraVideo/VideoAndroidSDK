@@ -19,13 +19,10 @@ package com.kaleyra.video_sdk.call.snackbarm3
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbarm3.view.MutedSnackbarM3
-import org.junit.Assert
+import com.kaleyra.video_sdk.common.snackbar.view.MutedSnackbarM3
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,18 +36,8 @@ class MutedSnackbarM3Test {
     @Test
     fun testMutedSnackbar() {
         val adminDisplayName = "adminUsername"
-        composeTestRule.setContent { MutedSnackbarM3(adminDisplayName, {}) }
+        composeTestRule.setContent { MutedSnackbarM3(adminDisplayName) }
         val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_muted_by_admin, 1, adminDisplayName)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
-    }
-
-    @Test
-    fun testMutedSnackbarWithAdminNameDismissClicked() {
-        var dismissCLicked = false
-        val adminDisplayName = "adminUsername"
-        composeTestRule.setContent { MutedSnackbarM3(adminDisplayName, { dismissCLicked = true } ) }
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
-        composeTestRule.onNodeWithContentDescription(close).performClick()
-        Assert.assertEquals(true, dismissCLicked)
     }
 }

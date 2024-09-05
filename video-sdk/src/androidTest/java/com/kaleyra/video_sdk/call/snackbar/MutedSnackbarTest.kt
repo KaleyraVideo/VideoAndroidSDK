@@ -22,7 +22,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbar.MutedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.MutedSnackbar
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -32,7 +32,6 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideoService
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
@@ -51,8 +50,8 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermissio
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel
-import com.kaleyra.video_sdk.call.screennew.viewmodel.MainViewModel.Companion.NULL_CALL_TIMEOUT
+import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel.Companion.NULL_CALL_TIMEOUT
 import com.kaleyra.video_sdk.call.utils.CallExtensions
 import com.kaleyra.video_sdk.call.utils.CallExtensions.toMyCameraStream
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
@@ -99,7 +98,6 @@ class MainViewModelTest {
         mockkObject(CompanyThemeManager)
         mockkObject(CallStateMapper)
         mockkObject(InputMapper)
-        mockkObject(KaleyraVideoService.Companion)
         mockkObject(ConnectionServiceUtils)
         mockkObject(TelecomManagerExtensions)
         mockkObject(CallExtensions)
@@ -108,7 +106,6 @@ class MainViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.isUsbCameraWaitingPermission() } returns flowOf(false)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
-        coEvery { KaleyraVideoService.get() } returns mockk(relaxed = true)
     }
 
     @After
@@ -176,7 +173,7 @@ class MainViewModelTest {
     @Test
     fun `kaleyra video object not configured, request configuration called`() = runTest {
         every { KaleyraVideo.isConfigured } returns false
-        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializationProviderKt")
         coEvery { requestConfiguration() } returns mockk(relaxed = true)
 
         MainViewModel { Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
@@ -188,7 +185,7 @@ class MainViewModelTest {
     @Test
     fun `conversation state disconnected, requestConnect called`() = runTest {
         every { KaleyraVideo.conversation.state } returns MutableStateFlow(State.Disconnected)
-        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoServiceKt")
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializationProviderKt")
         coEvery { requestConnect() } returns mockk(relaxed = true)
 
         MainViewModel { Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }

@@ -21,9 +21,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.common.snackbar.RecordingEndedSnackbar
-import com.kaleyra.video_sdk.common.snackbar.RecordingErrorSnackbar
-import com.kaleyra.video_sdk.common.snackbar.RecordingStartedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingEndedSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingErrorSnackbar
+import com.kaleyra.video_sdk.common.snackbarlegacy.RecordingStartedSnackbar
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

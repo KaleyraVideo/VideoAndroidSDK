@@ -27,9 +27,9 @@ import com.kaleyra.video_sdk.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertLeftPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
-import com.kaleyra.video_sdk.call.screen.view.AdaptiveStreamLayout
-import com.kaleyra.video_sdk.call.screen.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.streamnew.utils.AdaptiveGridCalculator
+import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
+import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
+import com.kaleyra.video_sdk.call.stream.utils.AdaptiveGridCalculator
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject

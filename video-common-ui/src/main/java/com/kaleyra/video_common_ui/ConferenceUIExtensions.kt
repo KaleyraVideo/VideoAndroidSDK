@@ -25,13 +25,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal object ConferenceUIExtensions {
@@ -57,7 +57,10 @@ internal object ConferenceUIExtensions {
         call
             .onEach {
                 screenShareOverlayProducer?.dispose()
-                screenShareOverlayProducer = ScreenShareOverlayProducer(ContextRetainer.context as Application, coroutineScope)
+                screenShareOverlayProducer = ScreenShareOverlayProducer(
+                    ContextRetainer.context as Application,
+                    coroutineScope
+                )
                 screenShareOverlayProducer!!.bind(it)
             }
             .onCompletion {
@@ -75,15 +78,23 @@ internal object ConferenceUIExtensions {
             .launchIn(coroutineScope)
     }
 
-    fun ConferenceUI.configureCallServiceStart(activityClazz: Class<*>, logger: PriorityLogger?, coroutineScope: CoroutineScope) {
+    fun ConferenceUI.configureCallServiceStart(
+        activityClazz: Class<*>,
+        logger: PriorityLogger?,
+        coroutineScope: CoroutineScope
+    ) {
         call
             .onEach { call ->
                 if (call.state.value is Call.State.Disconnected.Ended) return@onEach
                 val context = ContextRetainer.context
                 when {
-                    !ConnectionServiceUtils.isConnectionServiceSupported || connectionServiceOption == ConnectionServiceOption.Disabled -> KaleyraCallService.start(logger)
+                    !ConnectionServiceUtils.isConnectionServiceSupported || connectionServiceOption == ConnectionServiceOption.Disabled -> KaleyraCallService.start(
+                        logger
+                    )
+
                     context.hasConnectionServicePermissions() -> {
-                        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+                        val telecomManager =
+                            context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                         telecomManager.addCall(call = call, logger)
                     }
 
@@ -93,42 +104,53 @@ internal object ConferenceUIExtensions {
             .launchIn(coroutineScope)
     }
 
-    private fun showProvisionalCallNotification(call: Call, callActivityClazz: Class<*>, coroutineScope: CoroutineScope) {
-        showCallNotification(call, callActivityClazz, coroutineScope)
-        call.state
-            .takeWhile { it !is Call.State.Disconnected.Ended }
-            .onCompletion { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
-            .launchIn(coroutineScope)
+    private fun showProvisionalCallNotification(
+        call: Call,
+        callActivityClazz: Class<*>,
+        coroutineScope: CoroutineScope
+    ) {
+        coroutineScope.launch {
+            showCallNotification(call, callActivityClazz)
+            call.state
+                .takeWhile { it !is Call.State.Disconnected.Ended }
+                .onCompletion { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
+                .launchIn(this)
+        }
     }
 
-    private fun showCallNotification(call: Call, callActivityClazz: Class<*>, coroutineScope: CoroutineScope) {
-        combine(call.state, call.participants) { state, participants ->
-            ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
+    private suspend fun showCallNotification(
+        call: Call,
+        callActivityClazz: Class<*>
+    ) {
+        val state = call.state.first()
+        val participants = call.participants.first()
 
-            val notification = when {
-                CallExtensions.isIncoming(state, participants) -> {
-                    CallNotificationProducer.buildIncomingCallNotification(
-                        participants,
-                        callActivityClazz,
-                        isCallServiceRunning = false,
-                        enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat())
-                }
+        if (state is Call.State.Disconnected.Ended) return
+        ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }
+            .toTypedArray())
 
-                CallExtensions.isOutgoing(state, participants) -> {
-                    CallNotificationProducer.buildOutgoingCallNotification(
-                        participants,
-                        callActivityClazz,
-                        isCallServiceRunning = false,
-                        enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat())
-                }
-
-                else -> return@combine
+        val notification = when {
+            CallExtensions.isIncoming(state, participants) -> {
+                CallNotificationProducer.buildIncomingCallNotification(
+                    participants,
+                    callActivityClazz,
+                    isCallServiceRunning = false,
+                    enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat()
+                )
             }
 
-            NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
+            CallExtensions.isOutgoing(state, participants) -> {
+                CallNotificationProducer.buildOutgoingCallNotification(
+                    participants,
+                    callActivityClazz,
+                    isCallServiceRunning = false,
+                    enableCallStyle = !DeviceUtils.isSmartGlass && ContextRetainer.context.canUseFullScreenIntentCompat()
+                )
+            }
+
+            else -> return
         }
-            .take(1)
-            .launchIn(coroutineScope)
+        NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
     }
 
     fun ConferenceUI.configureCallActivityShow(coroutineScope: CoroutineScope) {

@@ -34,8 +34,16 @@ android {
         unitTests {
             includeAndroidResources = true
             all {
+                jvmArgs "-Xmx8g"
+                setMaxHeapSize('8g')
                 maxParallelForks = Runtime.runtime.availableProcessors()
                 forkEvery = 100
+                testLogging {
+                    events "passed", "skipped", "failed", "standardOut", "standardError"
+                    outputs.upToDateWhen { false }
+                    showStandardStreams = true
+                }
+                systemProperty 'robolectric.logging.enabled', true
             }
         }
     }
@@ -44,7 +52,7 @@ android {
 dependencies {
 
     /** Platform **/
-    implementation platform('androidx.compose:compose-bom:2024.02.02')
+    implementation platform(catalog.androidxComposeBom)
     compileOnly 'androidx.compose.material:material'
     compileOnly 'androidx.compose.material3:material3'
     compileOnly 'androidx.compose.foundation:foundation'
@@ -53,7 +61,7 @@ dependencies {
     compileOnly 'androidx.lifecycle:lifecycle-viewmodel-compose'
     compileOnly 'androidx.lifecycle:lifecycle-runtime-compose'
     compileOnly 'androidx.compose.ui:ui-tooling'
-    implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.18.0'
+    api kaleyraCatalog.kaleyraMaterialColorUtilities
 
     api catalog.appcompat
     api catalog.androidXActivityCompose

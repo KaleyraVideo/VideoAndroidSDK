@@ -64,7 +64,7 @@ object ParticipantMapper {
         this.participants
             .flatMapLatest { participants ->
                 val others = participants.others
-                val map = mutableMapOf<String, String?>()
+                val map = mutableMapOf<String, String>()
 
                 if (others.isEmpty()) flowOf(listOf())
                 else others
@@ -75,8 +75,8 @@ object ParticipantMapper {
                     }
                     .merge()
                     .transform { (userId, displayName) ->
-                        map[userId] = displayName
-                        val values = map.values.toList().filterNotNull()
+                        map[userId] = displayName ?: userId
+                        val values = map.values.toList()
                         if (values.size == others.size) {
                             emit(values)
                         }
@@ -93,7 +93,7 @@ object ParticipantMapper {
         this.participants
             .flatMapLatest { participants ->
                 val others = participants.others
-                val map = mutableMapOf<String, Uri?>()
+                val map = mutableMapOf<String, Uri>()
 
                 if (others.isEmpty()) flowOf(listOf())
                 else others
@@ -104,8 +104,8 @@ object ParticipantMapper {
                     }
                     .merge()
                     .transform { (userId, displayImage) ->
-                        map[userId] = displayImage
-                        val values = map.values.toList().filterNotNull()
+                        map[userId] = displayImage ?: Uri.EMPTY
+                        val values = map.values.toList()
                         if (values.size == others.size) {
                             emit(values)
                         }

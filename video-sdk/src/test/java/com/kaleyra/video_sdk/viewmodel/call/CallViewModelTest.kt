@@ -46,11 +46,11 @@
 //import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 //import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 //import com.kaleyra.video_sdk.MainDispatcherRule
-//import com.kaleyra.video_sdk.call.callinfowidget.model.Logo
+//import com.kaleyra.video_sdk.call.appbar.model.Logo
 //import com.kaleyra.video_sdk.call.callinfowidget.model.WatermarkInfo
-//import com.kaleyra.video_sdk.call.recording.model.RecordingStateUi
-//import com.kaleyra.video_sdk.call.recording.model.RecordingTypeUi
-//import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+//import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
+//import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingTypeUi
+//import com.kaleyra.video_sdk.call.screennew.model.CallStateUi
 //import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel
 //import com.kaleyra.video_sdk.call.screen.viewmodel.CallViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 //import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel

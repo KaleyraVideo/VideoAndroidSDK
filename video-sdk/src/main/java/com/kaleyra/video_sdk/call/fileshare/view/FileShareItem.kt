@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
 import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
@@ -52,7 +51,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
@@ -63,11 +61,13 @@ import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.fileshare.model.mockDownloadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isArchiveMimeType
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isImageMimeType
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlin.math.roundToInt
 
 private const val FileMediaType = "MediaType"
@@ -93,7 +93,7 @@ internal fun FileShareItem(
             modifier = Modifier.padding(start = 6.dp)
         )
 
-        Spacer(Modifier.width(28.dp))
+        Spacer(Modifier.width(16.dp))
 
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -101,7 +101,7 @@ internal fun FileShareItem(
                     sharedFile = sharedFile,
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(8.dp))
                 ActionButton(
                     sharedFileState = sharedFile.state,
                     onActionClick = onActionClick
@@ -146,7 +146,7 @@ private fun FileTypeAndSize(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = if (fileSize != null) {
+            text = if (fileSize != null && fileSize >= 0L) {
                 Formatter.formatShortFileSize(LocalContext.current, fileSize)
             } else {
                 // The file size is NA when is Download && state != InProgress && state != Success
@@ -163,7 +163,6 @@ private fun SharedFileInfoAndProgress(
     sharedFile: SharedFileUi,
     modifier: Modifier = Modifier
 ) {
-    val contentColorAlpha70 = LocalContentColor.current.copy(alpha = .7f)
     Column(modifier = modifier) {
         val progress by animateFloatAsState(targetValue = when (sharedFile.state) {
             is SharedFileUi.State.InProgress -> sharedFile.state.progress
@@ -203,7 +202,7 @@ private fun SharedFileInfoAndProgress(
                 maxLines = 1,
                 fontSize = 12.sp,
                 overflow = TextOverflow.Ellipsis,
-                color = contentColorAlpha70,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
             Text(
@@ -216,7 +215,7 @@ private fun SharedFileInfoAndProgress(
                     else -> TimestampUtils.parseTime(sharedFile.time)
                 },
                 fontSize = 12.sp,
-                color = contentColorAlpha70
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -252,7 +251,7 @@ private fun ActionButton(
             ),
             tint = when (sharedFileState) {
                 is SharedFileUi.State.Error -> MaterialTheme.colorScheme.onError
-                is SharedFileUi.State.Success -> MaterialTheme.colorScheme.onPrimary
+                is SharedFileUi.State.Success -> MaterialTheme.colorScheme.onPrimaryContainer
                 is SharedFileUi.State.Available,
                 is SharedFileUi.State.Cancelled,
                 is SharedFileUi.State.InProgress,
@@ -305,43 +304,43 @@ private fun ErrorMessage(isMyMessage: Boolean) {
     )
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemInProgressPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile)
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemCancelledPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Cancelled))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemErrorPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Error))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemAvailablePreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Available))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemPendingPreview() {
     FileShareItemPreview(sharedFile = mockUploadSharedFile.copy(state = SharedFileUi.State.Pending))
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun FileShareItemSuccessPreview() {
     FileShareItemPreview(sharedFile = mockDownloadSharedFile.copy(state = SharedFileUi.State.Success(ImmutableUri(Uri.EMPTY))))
@@ -349,7 +348,7 @@ internal fun FileShareItemSuccessPreview() {
 
 @Composable
 private fun FileShareItemPreview(sharedFile: SharedFileUi) {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             FileShareItem(
                 sharedFile = sharedFile,

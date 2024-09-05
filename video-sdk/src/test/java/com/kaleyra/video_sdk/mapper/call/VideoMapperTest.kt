@@ -26,9 +26,9 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.InputMapper
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.streamnew.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
-import com.kaleyra.video_sdk.call.streamnew.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointerUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointersUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
@@ -79,7 +79,7 @@ class VideoMapperTest {
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         with(pointerMock1) {
             every { producer } returns mockk {
@@ -286,7 +286,7 @@ class VideoMapperTest {
         with(videoMock) {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
-            every { enabled } returns MutableStateFlow(Input.Enabled(true, true))
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID

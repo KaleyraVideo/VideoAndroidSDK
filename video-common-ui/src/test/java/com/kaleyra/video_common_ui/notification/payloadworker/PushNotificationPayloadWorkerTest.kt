@@ -12,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,15 +46,15 @@ class PushNotificationPayloadWorkerTest {
     @Test
     fun testPushPayloadWorkerCreated_kaleyraPushReceived_notificationManaged() = runTest {
         mockkStatic(::requestConfiguration)
-        coEvery { requestConfiguration() } returns true
-        coEvery { requestConnect(any()) } returns true
         mockkStatic(::requestConnect)
+        every { requestConfiguration() } returns true
+        coEvery { requestConnect(any()) } returns true
         val pushPayloadWorker = PushNotificationPayloadWorker(mockk(relaxed = true), mockk(relaxed = true))
 
         pushPayloadWorker.doWork()
         advanceUntilIdle()
 
-        coVerify(exactly = 1) { requestConfiguration() }
+        verify(exactly = 1) { requestConfiguration() }
         coVerify(exactly = 1) { requestConnect() }
     }
 }

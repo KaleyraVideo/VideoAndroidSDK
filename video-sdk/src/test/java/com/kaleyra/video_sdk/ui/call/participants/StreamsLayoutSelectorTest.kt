@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -14,6 +15,7 @@ import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +30,8 @@ class StreamsLayoutSelectorTest {
 
     private var streamsLayout by mutableStateOf(StreamsLayout.Grid)
 
+    private var enableGridLayout by mutableStateOf(true)
+
     private var layoutClicked: StreamsLayout? = null
 
     @Before
@@ -35,6 +39,7 @@ class StreamsLayoutSelectorTest {
         composeTestRule.setContent {
             StreamsLayoutSelector(
                 streamsLayout = streamsLayout,
+                enableGridLayout = enableGridLayout,
                 onLayoutClick = { layoutClicked = it }
             )
         }
@@ -43,6 +48,7 @@ class StreamsLayoutSelectorTest {
     @After
     fun tearDown() {
         streamsLayout = StreamsLayout.Grid
+        enableGridLayout = true
         layoutClicked = null
     }
 
@@ -61,11 +67,18 @@ class StreamsLayoutSelectorTest {
     }
 
     @Test
+    fun testEnableGridLayoutFalse() {
+        enableGridLayout = false
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
+        composeTestRule.onNodeWithText(text).assertHasClickAction().assertIsNotEnabled()
+    }
+
+    @Test
     fun testOnClickGridButton() {
         streamsLayout = StreamsLayout.Pin
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
         composeTestRule.onNodeWithText(text).performClick()
-        Assert.assertEquals(StreamsLayout.Grid, layoutClicked)
+        assertEquals(StreamsLayout.Grid, layoutClicked)
     }
 
     @Test
@@ -73,6 +86,6 @@ class StreamsLayoutSelectorTest {
         streamsLayout = StreamsLayout.Grid
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
         composeTestRule.onNodeWithText(text).performClick()
-        Assert.assertEquals(StreamsLayout.Pin, layoutClicked)
+        assertEquals(StreamsLayout.Pin, layoutClicked)
     }
 }

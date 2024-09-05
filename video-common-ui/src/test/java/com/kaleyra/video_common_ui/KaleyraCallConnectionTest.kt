@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.time.withTimeoutOrNull
 import kotlinx.coroutines.withTimeoutOrNull
@@ -417,6 +418,21 @@ class KaleyraCallConnectionTest {
             connection.availableAudioDevices.first()
         }
         assertEquals(null, result)
+        unmockkObject(CallAudioStateExtensions)
+    }
+
+    @Test
+    fun testAudioDevicesDoNotCrashWhenCallAudioStateIsNull() = runTest {
+        mockkObject(CallAudioStateExtensions)
+        val call = mockk<CallUI>(relaxed = true)
+        val activity = mockk<Activity>()
+        every { call.activityClazz } returns activity::class.java
+
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
+        every { connection.callAudioState } returns null
+
+        connection.onActivityResumed(activity)
+
         unmockkObject(CallAudioStateExtensions)
     }
 

@@ -21,17 +21,17 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
-import com.kaleyra.video_sdk.call.screennew.AudioAction
-import com.kaleyra.video_sdk.call.screennew.CallActionUI
-import com.kaleyra.video_sdk.call.screennew.CameraAction
-import com.kaleyra.video_sdk.call.screennew.ChatAction
-import com.kaleyra.video_sdk.call.screennew.FileShareAction
-import com.kaleyra.video_sdk.call.screennew.FlipCameraAction
-import com.kaleyra.video_sdk.call.screennew.HangUpAction
-import com.kaleyra.video_sdk.call.screennew.MicAction
-import com.kaleyra.video_sdk.call.screennew.ScreenShareAction
-import com.kaleyra.video_sdk.call.screennew.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.screennew.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -67,12 +67,12 @@ internal object CallActionsMapper {
             if (hasMicrophone) result += MicAction()
             if (hasCamera) result += CameraAction()
             if (switchCamera) result += FlipCameraAction()
-            if (chat) result += ChatAction()
-            if (whiteboard) result += WhiteboardAction()
+            if (hasVirtualBackground) result += VirtualBackgroundAction()
             if (audio) result += AudioAction()
             if (fileShare) result += FileShareAction()
             if (screenShare) result += ScreenShareAction()
-            if (hasVirtualBackground) result += VirtualBackgroundAction()
+            if (chat) result += ChatAction()
+            if (whiteboard) result += WhiteboardAction()
 
             result
         }.distinctUntilChanged()

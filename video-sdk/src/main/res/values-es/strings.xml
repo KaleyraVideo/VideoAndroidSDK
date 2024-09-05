@@ -25,7 +25,7 @@
     <string name="kaleyra_call_sheet_pin">Fijar</string>
     <string name="kaleyra_call_sheet_unpin">Desfijar</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Pantalla completa</string>
-    <string name="kaleyra_call_sheet_fullscreen_off">Reducir</string>
+    <string name="kaleyra_call_sheet_fullscreen_off">Salir</string>
     <string name="kaleyra_call_sheet_flip_camera">Voltear cámara</string>
     <string name="kaleyra_call_sheet_recording">Grabación</string>
     <string name="kaleyra_call_sheet_cancel">Cancelar</string>
@@ -40,6 +40,7 @@
     <string name="kaleyra_call_sheet_description_enable_camera">Habilitar cámara</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Desactivar cámara</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Dejar de compartir pantalla</string>
+    <string name="kaleyra_call_sheet_description_hide_actions">Ocultar acciones</string>
 
     <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
     <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
@@ -59,7 +60,6 @@
     <string name="kaleyra_participants_component_remove_from_call">Eliminar de la llamada</string>
     <string name="kaleyra_participants_component_disable_microphone">Desactivar micrófono</string>
     <string name="kaleyra_participants_component_enable_microphone">Habilitar micrófono</string>
-    <string name="kaleyra_participants_component_close">Cerrar el panel de participantes</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostrar más acciones</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participante</item>
@@ -126,6 +126,9 @@
     <string name="kaleyra_call_status_ended">Llamada finalizada</string>
     <string name="kaleyra_call_status_ringing">Llamando…</string>
     <string name="kaleyra_call_status_user_disconnected">La conexión a Internet se ha interrumpido.</string>
+    <string name="kaleyra_call_action_more">Más</string>
+    <string name="kaleyra_call_drag_to_expand">Arrastrar paraexpandir</string>
+    <string name="kaleyra_call_answer">Participar</string>
     <string name="kaleyra_cancel_message">No</string>
     <string name="kaleyra_chat_avatar_desc">Imagen del chat</string>
     <string name="kaleyra_chat_channel_loading">Cargando…</string>
@@ -265,5 +268,17 @@
     <string name="kaleyra_whiteboard_show_request_user_message">Se le ha pedido que abra la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitaron cerrar la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">Se le ha pedido que cierre la whiteboard</string>
+
+    <string name="kaleyra_stream_screenshare_received">%s está compartiendo su pantalla</string>
+    <string name="kaleyra_stream_pin">La transmisión está fijada</string>
+    <string name="kaleyra_stream_fullscreen">La transmisión está en pantalla completa</string>
+    <string name="kaleyra_stream_mic_disabled">El micrófono está desactivado</string>
+    <string name="kaleyra_stream_muted_for_you">La transmisión está silenciada para ti</string>
+    <string name="kaleyra_stream_you">Tú</string>
+    <string name="kaleyra_stream_other_participants">%d otros</string>
+    <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
+    <string name="kaleyra_stream_show_actions">Mostrar las acciones de la transmisión</string>
+    <string name="kaleyra_stream_dimmed">Transmisión no seleccionada</string>
+    <string name="kaleyra_call_sheet_drag_description">Arrastrar</string>
 
 </resources>

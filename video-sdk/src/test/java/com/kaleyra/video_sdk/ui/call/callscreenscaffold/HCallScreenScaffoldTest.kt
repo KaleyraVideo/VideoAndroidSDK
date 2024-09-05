@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +26,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.callscreenscaffold.CallScreenScaffoldDefaults
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.ui.performHorizontalSwipe
@@ -69,19 +70,6 @@ class HCallScreenScaffoldTest {
     }
 
     @Test
-    fun testAppBarIsAboveContent() {
-        val appBarText = "appBarText"
-        val contentText = "contentText"
-        composeTestRule.setCallScreenScaffold(
-            topAppBar = { Text(appBarText) },
-            content = { Text(contentText) }
-        )
-        val appBarTop = composeTestRule.onNodeWithText(appBarText).getBoundsInRoot().top
-        val contentTop = composeTestRule.onNodeWithText(contentText).getBoundsInRoot().top
-        Assert.assertEquals(appBarTop, contentTop)
-    }
-
-    @Test
     fun testPaddingValues() {
         val topBarText = "topBarText"
         val contentText = "contentText"
@@ -107,23 +95,28 @@ class HCallScreenScaffoldTest {
         val sheetRight = composeTestRule.onNodeWithTag(sheetContentTag).getBoundsInRoot().right
 
         val topPadding = paddingValues.calculateTopPadding()
-        val bottomPadding = paddingValues.calculateBottomPadding()
         val leftPadding = paddingValues.calculateLeftPadding(LayoutDirection.Ltr)
         val rightPadding = paddingValues.calculateRightPadding(LayoutDirection.Ltr)
         appBarTop.assertIsEqualTo(topPadding, "app bar top padding")
         appBarLeft.assertIsEqualTo(leftPadding, "app bar left padding")
-        contentLeft.assertIsEqualTo(leftPadding, "content left padding")
-        contentBottom.assertIsEqualTo(rootHeight - bottomPadding, "content bottom padding")
+        contentLeft.assertIsEqualTo(0.dp, "content left padding")
+        contentBottom.assertIsEqualTo(rootHeight, "content bottom padding")
         sheetRight.assertIsEqualTo(rootWidth - rightPadding, "sheet right padding")
     }
 
     @Test
     fun testContentPaddingValues() {
         val topBarHeight = 48.dp
+        val topBarPadding = 10.dp
         var paddingValues: PaddingValues? = null
         composeTestRule.setCallScreenScaffold(
             topAppBar = {
-                Spacer(Modifier.fillMaxWidth().height(topBarHeight))
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = topBarPadding)
+                        .height(topBarHeight)
+                )
             },
             paddingValues = PaddingValues(0.dp),
             content = { paddingValues = it }
@@ -134,7 +127,7 @@ class HCallScreenScaffoldTest {
 
         val topPadding = paddingValues!!.calculateTopPadding()
         val rightPadding = paddingValues!!.calculateRightPadding(LayoutDirection.Ltr)
-        topPadding.assertIsEqualTo(topBarHeight, "topPadding")
+        topPadding.assertIsEqualTo(topBarHeight + topBarPadding, "topPadding")
         rightPadding.assertIsEqualTo(sheetWidth, "rightPadding")
     }
 

@@ -31,7 +31,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.kaleyra.app_utilities.storage.LoginManager.getLoggedUser
-import com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoService
+import com.kaleyra.demo_video_sdk.DemoAppKaleyraVideoInitializer
 import com.kaleyra.demo_video_sdk.MainActivity
 import com.kaleyra.demo_video_sdk.R.drawable
 import com.kaleyra.demo_video_sdk.R.string
@@ -68,7 +68,7 @@ class MissedNotificationPayloadWorker(
             userDetailsRequest.add(caller)
             val callbackUsers = callbackUsers(loggedUser, missedCall)
             runBlocking {
-                val customUserDetailsProvider = DemoAppKaleyraVideoService.customUserDetailsProvider(context)
+                val customUserDetailsProvider = DemoAppKaleyraVideoInitializer.customUserDetailsProvider(context)
                 customUserDetailsProvider?.invoke(userDetailsRequest)?.getOrNull()?.forEach {
                     showMissedCallNotification(it, payload.hashCode(), callbackUsers)
                 } ?: userDetailsRequest.map { UserDetails(userId = it, name = it, image = Uri.EMPTY) }.forEach { showMissedCallNotification(it, payload.hashCode(), callbackUsers) }

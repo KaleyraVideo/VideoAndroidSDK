@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.common.button
 
+import IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.LocalContentColor
@@ -37,7 +38,7 @@ internal fun BackIconButton(
     IconButton(
         icon = icon,
         iconDescription = stringResource(id = R.string.kaleyra_back),
-        iconTint = iconTint,
+        enabledIconTint = iconTint,
         onClick = onClick,
         modifier = modifier
     )

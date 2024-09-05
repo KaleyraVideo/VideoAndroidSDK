@@ -71,18 +71,17 @@ internal object InputMapper {
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CAMERA_STREAM_ID } }
+            .flatMapLatest { it?.video ?: flowOf(null) }
+            .flatMapLatest { it?.enabled ?: flowOf(null) }
             .filterNotNull()
-            .flatMapLatest { it.video }
-            .filterNotNull()
-            .flatMapLatest { it.enabled }
-            .map { it.local }
+            .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 
     fun Call.isMyMicEnabled(): Flow<Boolean> =
         this.toCameraStreamAudio()
+            .flatMapLatest { it?.enabled ?: flowOf(null) }
             .filterNotNull()
-            .flatMapLatest { it.enabled }
-            .map { it.local }
+            .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 
     fun Call.isSharingScreen(): Flow<Boolean> =
@@ -112,5 +111,17 @@ internal object InputMapper {
             .map { inputs -> inputs.firstOrNull { it is Input.Video.Camera.Usb } }
             .flatMapLatest { it?.state ?: flowOf(null) }
             .map { it is Input.State.Closed.AwaitingPermission }
+
+    /**
+     * Utility function to get the camera usage restriction
+     * @receiver Flow<Call> the call flow
+     * @return Flow<Boolean> flow emitting if the local participant has the camera usage restriction
+     */
+    fun Call.hasCameraUsageRestriction(): Flow<Boolean> {
+        return this.toMe()
+            .map { it.restrictions }
+            .flatMapLatest { it.camera }
+            .map { it.usage }
+    }
 
 }

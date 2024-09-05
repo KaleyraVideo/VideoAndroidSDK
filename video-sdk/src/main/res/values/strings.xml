@@ -25,7 +25,7 @@
     <string name="kaleyra_call_sheet_pin">Pin</string>
     <string name="kaleyra_call_sheet_unpin">Unpin</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Fullscreen</string>
-    <string name="kaleyra_call_sheet_fullscreen_off">Minimize</string>
+    <string name="kaleyra_call_sheet_fullscreen_off">Exit</string>
     <string name="kaleyra_call_sheet_flip_camera">Flip cam</string>
     <string name="kaleyra_call_sheet_recording">Recording</string>
     <string name="kaleyra_call_sheet_cancel">Cancel</string>
@@ -54,7 +54,7 @@
     <string name="kaleyra_stream_other_participants">%d others</string>
     <string name="kaleyra_stream_show_participants">Show participants</string>
     <string name="kaleyra_stream_show_actions">Show the stream\'s actions</string>
-    <string name="kaleyra_stream_selected">Stream selected</string>
+    <string name="kaleyra_stream_dimmed">Stream not selected</string>
 
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>
@@ -72,10 +72,10 @@
     <string name="kaleyra_participants_component_remove_from_call">Remove from call</string>
     <string name="kaleyra_participants_component_disable_microphone">Disable microphone</string>
     <string name="kaleyra_participants_component_enable_microphone">Enable microphone</string>
-    <string name="kaleyra_participants_component_close">Close participants\' panel</string>
     <string name="kaleyra_participants_component_show_more_actions">Show more actions</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participant</item>
+        <item quantity="many">%d Participants</item>
         <item quantity="other">%d Participants</item>
     </plurals>
 
@@ -293,6 +293,7 @@
     <string name="kaleyra_feedback_thank_you">Thank you for your feedback!</string>
 
     <!-- RECORDING -->
+    <string name="kaleyra_rec" translatable="false">REC</string>
     <string name="kaleyra_recording_started">Recording started</string>
     <string name="kaleyra_recording_started_message">The call recording has started.</string>
     <string name="kaleyra_recording_stopped">Recording stopped</string>
@@ -326,5 +327,6 @@
     <string name="kaleyra_already_in_system_call_audio_routing_error">Unable to change audio output device while a system call is already ongoing.</string>
 
     <string name="kaleyra_waiting_for_other_participants">Waiting for other participants…</string>
+    <string name="kaleyra_call_sheet_drag_description">Drag</string>
 
 </resources>

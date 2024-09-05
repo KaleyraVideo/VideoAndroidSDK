@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.extensions
 
+import android.util.Log
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
@@ -146,7 +147,7 @@ internal object ModifierExtensions {
 
 
     @Stable
-    internal fun Modifier.pulse(durationMillis: Int = 1000): Modifier = composed {
+    internal fun Modifier.pulse(durationMillis: Int = 1000, enabled: Boolean = true): Modifier = composed {
         val infiniteTransition = rememberInfiniteTransition()
         val alpha by infiniteTransition.animateFloat(
             initialValue = 1f,
@@ -158,7 +159,7 @@ internal object ModifierExtensions {
             label = "pulse"
         )
         graphicsLayer {
-            this.alpha = alpha
+            if (enabled) this.alpha = alpha
         }
     }
 

@@ -21,7 +21,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
 
 private val FabSize = 56.dp
 private val FabIconPadding = 16.dp
@@ -75,7 +73,7 @@ internal fun FileShareFab(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareFabPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         FileShareFab(
             collapsed = false,
             onClick = { }
@@ -87,7 +85,7 @@ internal fun FileShareFabPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun FileShareFabCollapsedPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         FileShareFab(
             collapsed = true,
             onClick = { }

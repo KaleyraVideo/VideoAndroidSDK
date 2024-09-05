@@ -28,13 +28,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -150,7 +150,7 @@ internal fun TermsAndConditionsScreen(
             ) {
                 TextButton(
                     onClick = onDecline,
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onSurface),
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                     content = { Text(text = declineText, fontSize = 14.sp) }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -166,7 +166,7 @@ internal fun TermsAndConditionsScreen(
                         Text(text = acceptText, fontSize = 14.sp)
                     } else {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colors.onPrimary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp,
                             modifier = Modifier
                                 .size(18.dp)

@@ -10,7 +10,9 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
+import com.kaleyra.video_sdk.call.appbar.model.Logo
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
@@ -121,24 +123,70 @@ class CallAppBarViewModelTest {
     @Test
     fun testRecordingReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(true, viewModel.uiState.first().recording)
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
     }
 
     @Test
-    fun testRecordingUpdated() = runTest {
-        advanceUntilIdle()
+    fun testAutomaticRecordingStoppedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
             override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
         })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
         advanceUntilIdle()
-        Assert.assertEquals(false, viewModel.uiState.first().recording)
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Stopped, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testAutomaticRecordingStartedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(true, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Started, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testManualRecordingStoppedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(false, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Stopped, viewModel.uiState.first().recordingStateUi)
+    }
+
+    @Test
+    fun testManualRecordingStartedUpdated() = runTest {
+        recordingMock.emit(object : Call.Recording {
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+        })
+        viewModel = CallAppBarViewModel {
+            CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
+        }
+        advanceUntilIdle()
+        Assert.assertEquals(false, viewModel.uiState.first().automaticRecording)
+        Assert.assertEquals(RecordingStateUi.Started, viewModel.uiState.first().recordingStateUi)
     }
 
     @Test
     fun testCompanyLogoReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(com.kaleyra.video_sdk.call.callinfowidget.model.Logo(
+        Assert.assertEquals(
+            Logo(
             light = Uri.parse("https://www.example1.com"),
             dark = Uri.parse("https://www.example2.com")
         ), viewModel.uiState.first().logo)
@@ -151,7 +199,8 @@ class CallAppBarViewModelTest {
             day = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example3.com")),
             night = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example4.com"))))
         advanceUntilIdle()
-        Assert.assertEquals(com.kaleyra.video_sdk.call.callinfowidget.model.Logo(
+        Assert.assertEquals(
+            Logo(
             light = Uri.parse("https://www.example3.com"),
             dark = Uri.parse("https://www.example4.com")
         ), viewModel.uiState.first().logo)

@@ -61,7 +61,7 @@ internal class ChatParticipantsFragment : ParticipantsFragment() {
                     val sortedList = it.list.sortedBy { myUserId != it.userId }
                     val items = sortedList.map { part ->
                         val data =
-                            ParticipantItemData(part.userId, part.combinedDisplayName.first() ?: "")
+                            ParticipantItemData(part.userId, part.combinedDisplayName.first() ?: part.userId)
                         ParticipantItem(data)
                     }
                     FastAdapterDiffUtil[itemAdapter!!] =

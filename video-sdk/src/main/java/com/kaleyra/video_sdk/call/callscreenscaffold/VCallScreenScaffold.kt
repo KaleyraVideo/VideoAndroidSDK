@@ -35,16 +35,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetDefaults
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallBottomSheetNestedScrollConnection
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetState
-import com.kaleyra.video_sdk.call.bottomsheetnew.CallSheetValue
-import com.kaleyra.video_sdk.call.bottomsheetnew.rememberCallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
+import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetNestedScrollConnection
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
+import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -94,7 +96,7 @@ internal fun VCallScreenScaffold(
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.HDragHandle() },
     sheetCornerShape: RoundedCornerShape = CallBottomSheetDefaults.Shape,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
     contentColor: Color = contentColorFor(containerColor),
     paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
     content: @Composable (PaddingValues) -> Unit
@@ -135,16 +137,15 @@ internal fun VCallScreenScaffold(
         contentColor = contentColor
     ) {
         Box(Modifier.fillMaxSize()) {
-            Box(Modifier.padding(start = startPadding, top = topPadding, end = endPadding)) {
-                content(contentPaddingValues)
-                Box(
-                    modifier = Modifier
-                        .onSizeChanged {
-                            topAppBarPadding = with(density) { it.height.toDp() }
-                        },
-                    content = { topAppBar() }
-                )
-            }
+            content(contentPaddingValues)
+            Box(
+                modifier = Modifier
+                    .padding(start = startPadding, top = topPadding, end = endPadding)
+                    .onGloballyPositioned {
+                        topAppBarPadding = with(density) { it.boundsInRoot().bottom.toDp() }
+                    },
+                content = { topAppBar() }
+            )
             Scrim(
                 color = sheetScrimColor,
                 onDismissRequest = animateToDismiss,
@@ -170,7 +171,7 @@ internal fun VCallScreenScaffold(
                         .clip(sheetCornerShape),
                     sheetContent = {
                         Surface(
-                            color = MaterialTheme.colorScheme.surface,
+                            color = MaterialTheme.colorScheme.surfaceContainer,
                             tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier.anchoredDraggable(
                                 state = sheetState.anchoredDraggableState,
@@ -184,7 +185,7 @@ internal fun VCallScreenScaffold(
                     sheetDragContent = sheetDragHandle?.let { dragHandle ->
                         {
                             Surface(
-                                color = MaterialTheme.colorScheme.surface,
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                                 tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)

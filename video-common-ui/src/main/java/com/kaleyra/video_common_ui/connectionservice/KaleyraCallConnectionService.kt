@@ -157,7 +157,8 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
             val callee = if (participants.others.size > 1) {
                 resources.getString(R.string.kaleyra_notification_incoming_group_call)
             } else {
-                participants.others.firstOrNull()?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: ""
+                val other = participants.others.firstOrNull()
+                other?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: other?.userId ?: ""
             }
             createOrUpdateConnectionServiceContact(
                 this@KaleyraCallConnectionService,

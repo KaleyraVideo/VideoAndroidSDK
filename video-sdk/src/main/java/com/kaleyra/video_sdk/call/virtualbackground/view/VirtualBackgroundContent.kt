@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun VirtualBackgroundContent(
@@ -60,7 +60,7 @@ internal fun VirtualBackgroundContent(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun ScreenShareContentPreview() {
-    KaleyraM3Theme {
+    KaleyraTheme {
         Surface {
             VirtualBackgroundContent(
                 items = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Blur(id = "id"), VirtualBackgroundUi.Image(id = "id2"))),

@@ -64,7 +64,7 @@ internal class CallParticipantsFragment : ParticipantsFragment() {
                     val sortedList =
                         pair.first.sortedBy { pair.second.me?.userId != it.userId }
                     val items = sortedList.map { part ->
-                        val data = ParticipantItemData(part.userId, part.combinedDisplayName.first() ?: "")
+                        val data = ParticipantItemData(part.userId, part.combinedDisplayName.first() ?: part.userId)
                         ParticipantItem(data)
                     }
                     FastAdapterDiffUtil[itemAdapter!!] =

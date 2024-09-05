@@ -25,11 +25,12 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
-import com.kaleyra.video_sdk.theme.KaleyraM3Theme
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
 internal fun StreamsLayoutSelector(
     streamsLayout: StreamsLayout,
+    enableGridLayout: Boolean,
     onLayoutClick: (streamsLayout: StreamsLayout) -> Unit
 ) {
     Row(
@@ -41,8 +42,9 @@ internal fun StreamsLayoutSelector(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
-                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimary else it.onSurfaceVariant }
+                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimaryContainer else it.onSurfaceVariant }
             ),
+            enabled = enableGridLayout,
             modifier = Modifier
                 .weight(1f)
                 .highlightOnFocus(gridInteractionSource),
@@ -65,7 +67,7 @@ internal fun StreamsLayoutSelector(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant },
-                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimary else it.onSurfaceVariant }
+                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimaryContainer else it.onSurfaceVariant }
             ),
             modifier = Modifier
                 .weight(1f)
@@ -88,7 +90,7 @@ internal fun StreamsLayoutSelector(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 internal fun StreamsLayoutSelectorPreview() {
-    KaleyraM3Theme {
-        StreamsLayoutSelector(StreamsLayout.Grid, onLayoutClick = {})
+    KaleyraTheme {
+        StreamsLayoutSelector(StreamsLayout.Grid, true, onLayoutClick = {})
     }
 }
