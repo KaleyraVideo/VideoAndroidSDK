@@ -58,7 +58,6 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal const val TextFieldTag = "TextFieldTag"
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ChatUserInput(
     onTextChanged: () -> Unit,
@@ -79,7 +78,7 @@ internal fun ChatUserInput(
             modifier = Modifier
                 .focusGroup()
                 .highlightOnFocus(interactionSource)
-                .padding(start = 16.dp, bottom = 16.dp, top = 16.dp, end = 12.dp)
+                .padding(start = 16.dp, bottom = 14.dp, top = 16.dp, end = 12.dp)
         ) {
 
             ChatUserInputText(
@@ -94,10 +93,9 @@ internal fun ChatUserInput(
                 modifier = Modifier
                     .clearFocusOnKeyboardDismiss()
                     .weight(1.0f)
-                    .padding(bottom = 4.dp),
             )
 
-            Spacer(modifier = Modifier.size(6.dp))
+            Spacer(modifier = Modifier.size(12.dp))
 
             val buttonInteractionSource = remember { MutableInteractionSource() }
             FilledIconButton(
@@ -120,6 +118,7 @@ internal fun ChatUserInput(
                 interactionSource = buttonInteractionSource,
                 modifier = Modifier
                     .supportRtl()
+                    .size(44.dp)
                     .highlightOnFocus(buttonInteractionSource)
             )
         }

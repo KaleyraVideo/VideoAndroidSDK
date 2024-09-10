@@ -329,4 +329,5 @@
     <string name="kaleyra_waiting_for_other_participants">Waiting for other participants…</string>
     <string name="kaleyra_call_sheet_drag_description">Drag</string>
 
+    <string name="kaleyra_input_text_default_error">Input text error</string>
 </resources>

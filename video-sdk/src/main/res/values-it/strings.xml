@@ -329,5 +329,6 @@
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s ha richiesto di chiudere la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">È stato richeisto di chiudere la whiteboard</string>
     <string name="kaleyra_call_sheet_drag_description">Trascina</string>
+    <string name="kaleyra_input_text_default_error">Errore di input del testo</string>
 
 </resources>

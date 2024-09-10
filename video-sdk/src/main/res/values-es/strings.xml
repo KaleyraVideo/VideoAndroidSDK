@@ -280,5 +280,6 @@
     <string name="kaleyra_stream_show_actions">Mostrar las acciones de la transmisión</string>
     <string name="kaleyra_stream_dimmed">Transmisión no seleccionada</string>
     <string name="kaleyra_call_sheet_drag_description">Arrastrar</string>
+    <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
 
 </resources>

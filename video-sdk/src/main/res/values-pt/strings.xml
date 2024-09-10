@@ -330,5 +330,6 @@
         <item quantity="other">%d Participantes</item>
     </plurals>
     <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
+    <string name="kaleyra_input_text_default_error">Erro de entrada de texto</string>
 
 </resources>
