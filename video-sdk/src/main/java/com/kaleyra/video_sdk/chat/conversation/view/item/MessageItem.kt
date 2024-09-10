@@ -118,8 +118,8 @@ internal fun OtherMessageItem(
                     bottomStart = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius,
                     bottomEnd = BubbleCornerRadius
                 ),
-                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -151,7 +151,7 @@ internal fun MyMessageItem(
                 bottomEnd = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius
             ),
             backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

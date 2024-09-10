@@ -149,10 +149,10 @@ fun CollaborationTheme(
 internal data class KaleyraColors(
     val warning: Color = Color(0xFFFFD02B),
     val onWarning: Color = Color.White,
-    val hangUp: Color = Color(0xFFE11900),
-    val onHangUp: Color = Color.White,
-    val answer: Color = Color(0xFF1A7924),
-    val onAnswer: Color = Color.White
+    val negativeContainer: Color = Color(0xFFE11900),
+    val onNegativeContainer: Color = Color.White,
+    val positiveContainer: Color = Color(0xFF1A7924),
+    val onPositiveContainer: Color = Color.White
 )
 
 internal val LocalKaleyraColors = compositionLocalOf { KaleyraColors() }
@@ -167,10 +167,10 @@ internal fun lightKaleyraColors(
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
-    hangUp = hangUp,
-    onHangUp = onHangUp,
-    answer = answer,
-    onAnswer = onAnswer
+    negativeContainer = hangUp,
+    onNegativeContainer = onHangUp,
+    positiveContainer = answer,
+    onPositiveContainer = onAnswer
 )
 
 internal fun darkKaleyraColors(
@@ -183,10 +183,10 @@ internal fun darkKaleyraColors(
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
-    hangUp = hangUp,
-    onHangUp = onHangUp,
-    answer = answer,
-    onAnswer = onAnswer
+    negativeContainer = hangUp,
+    onNegativeContainer = onHangUp,
+    positiveContainer = answer,
+    onPositiveContainer = onAnswer
 )
 
 // TODO decide if this object will be used for a custom theme, or only some colors, so it's overkill

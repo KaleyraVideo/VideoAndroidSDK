@@ -64,7 +64,7 @@ internal fun ChatAppBar(
         },
         windowInsets = windowInsets,
         scrollBehavior = scrollBehavior,
-        containerColor = if (scrollState.canScrollForward) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) else MaterialTheme.colorScheme.surface,
+        containerColor = if (scrollState.canScrollForward) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surfaceContainerLowest,
         content = content,
         actions = { if (!isInCall) Actions(actions = actions) }
     )

@@ -69,6 +69,7 @@ internal fun ChatUserInput(
     var textState by remember { mutableStateOf(TextFieldValue()) }
 
     Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)

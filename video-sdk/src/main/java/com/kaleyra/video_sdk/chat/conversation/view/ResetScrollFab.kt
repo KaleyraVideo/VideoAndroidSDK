@@ -64,6 +64,7 @@ internal fun ResetScrollFab(
         SmallFloatingActionButton(
             onClick = onClick,
             modifier = Modifier.highlightOnFocus(interactionSource),
+            containerColor = MaterialTheme.colorScheme.inverseSurface,
             shape = CircleShape,
             interactionSource = interactionSource
         ) {
