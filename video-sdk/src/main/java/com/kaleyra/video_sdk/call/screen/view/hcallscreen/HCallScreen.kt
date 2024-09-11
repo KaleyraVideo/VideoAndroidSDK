@@ -197,7 +197,9 @@ internal fun HCallScreen(
 
             InputMessageHost(
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(bottom = 16.dp, end = 96.dp)
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
                     .align(Alignment.BottomCenter)
             )
 
