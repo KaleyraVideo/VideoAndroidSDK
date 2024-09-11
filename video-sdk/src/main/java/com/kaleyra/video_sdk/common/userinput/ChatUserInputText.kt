@@ -79,7 +79,7 @@ internal fun ChatUserInputText(
         OutlinedTextField(
             value = textFieldValue,
             shape = RoundedCornerShape(8.dp),
-            textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+            textStyle = MaterialTheme.typography.bodyMedium,
             onValueChange = { onTextChanged(it) },
             minHeight = 40.dp,
             colors = OutlinedTextFieldDefaults.colors().copy(

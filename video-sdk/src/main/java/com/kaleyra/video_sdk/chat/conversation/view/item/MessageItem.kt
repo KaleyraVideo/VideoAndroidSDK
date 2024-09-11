@@ -221,8 +221,7 @@ internal fun Bubble(
             ) {
                 Text(
                     text = messageTime,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
 
                 if (messageState != null) {
