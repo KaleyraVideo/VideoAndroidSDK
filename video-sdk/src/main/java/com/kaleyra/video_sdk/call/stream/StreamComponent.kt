@@ -149,27 +149,17 @@ internal fun StreamComponent(
             val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
             val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
 
-            // TODO check if this logic can be improved and revise tests
-            if (video?.view != null && video.isEnabled) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = if (video?.view != null && video.isEnabled) Modifier else modifier
+            ) {
                 Stream(
-                    streamView = video.view.preCallStreamViewSettings(),
-                    avatar = null,
+                    streamView = video?.view?.preCallStreamViewSettings(),
+                    avatar = avatar,
+                    avatarPlaceholder = avatarPlaceholder,
                     username = username,
-                    showStreamView = true
+                    showStreamView = video?.view != null && video.isEnabled
                 )
-            } else {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = modifier
-                ) {
-                    Stream(
-                        streamView = null,
-                        username = username,
-                        avatar = avatar,
-                        avatarPlaceholder = avatarPlaceholder,
-                        showStreamView = false
-                    )
-                }
             }
         } else {
             BoxWithConstraints(
