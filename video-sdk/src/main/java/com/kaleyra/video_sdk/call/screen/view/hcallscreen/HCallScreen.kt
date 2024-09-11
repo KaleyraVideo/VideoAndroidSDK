@@ -88,7 +88,7 @@ internal fun HCallScreen(
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
-                        .padding(14.dp)
+                        .padding(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 4.dp)
                 )
             }
         },

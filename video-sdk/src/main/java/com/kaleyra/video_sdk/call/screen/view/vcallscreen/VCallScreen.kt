@@ -138,7 +138,7 @@ internal fun VCallScreen(
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
                     modifier = Modifier
                         .animateContentSize()
-                        .padding(14.dp)
+                        .padding(top = 4.dp, end = 14.dp, bottom = 14.dp, start = 14.dp)
                 )
             }
         },
