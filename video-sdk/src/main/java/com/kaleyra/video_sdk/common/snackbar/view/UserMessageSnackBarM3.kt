@@ -136,7 +136,11 @@ internal fun UserMessageSnackbarM3(
                                     painter = painterResource(id = actionConfig.iconResource),
                                     contentDescription = actionDescription)
                             }
-                            Text(fontSize = 14.sp, text = actionDescription, color = backgroundColor)
+                            Text(
+                                text = actionDescription,
+                                color = backgroundColor,
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                     }
                 }
@@ -164,8 +168,7 @@ internal fun UserMessageSnackbarM3(
                                 .onGloballyPositioned { coordinates -> messageSize = IntSize(0, coordinates.size.height) }
                                 .padding(end = if (onDismissClick == null && actionConfig == null) 4.dp else 0.dp),
                             text = message,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodySmall,
                             onTextLayout = { textLayoutResult ->
                                 isMultilineMessage = textLayoutResult.lineCount > 1
                             })

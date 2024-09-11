@@ -276,6 +276,7 @@ internal fun ParticipantsComponent(
                         items(items = invited.value) { username ->
                             Text(
                                 text = username,
+                                style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }

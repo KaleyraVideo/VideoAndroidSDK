@@ -37,7 +37,8 @@ internal fun InputMessageHost(
         inputMessage = inputMessage.value,
         snackbarHostState = snackbarHostState,
         micMessage = micMessage,
-        cameraMessage = cameraMessage)
+        cameraMessage = cameraMessage
+    )
 }
 
 @Composable

@@ -197,7 +197,11 @@ internal fun Bubble(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
         modifier = Modifier
-            .widthIn(min = 0.dp, max = configuration.screenWidthDp.div(3).times(2).dp)
+            .widthIn(min = 0.dp,
+                max = configuration.screenWidthDp
+                    .div(3)
+                    .times(2).dp
+            )
             .testTag(BubbleTestTag)
     ) {
         Column(modifier = Modifier.padding(16.dp, 8.dp)) {
@@ -213,6 +217,8 @@ internal fun Bubble(
                 messageText = messageText,
                 textColor = contentColor
             )
+
+            Spacer(modifier = Modifier.height(2.dp))
 
             Row(
                 horizontalArrangement = Arrangement.End,

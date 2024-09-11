@@ -116,7 +116,7 @@ private fun InputMessageText(
     ) {
         Text(
             text = inputText,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Normal)
+            style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(

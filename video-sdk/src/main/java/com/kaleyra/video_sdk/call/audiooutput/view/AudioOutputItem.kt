@@ -60,17 +60,17 @@ internal fun AudioOutputItem(
         Column(verticalArrangement = Arrangement.Center) {
             Text(
                 text = titleFor(audioDevice),
-                fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleSmall,
                 color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
             )
             val subtitle = subtitleFor(audioDevice)
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    fontSize = 12.sp
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

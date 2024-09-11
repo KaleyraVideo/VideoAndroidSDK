@@ -130,9 +130,7 @@ fun CallInfoComponent(
             verticalArrangement = Arrangement.Center,
         ) {
             displayTitle?.let {
-                val titleTextStyle = LocalTextStyle.current.copy(
-                    fontSize = TextUnit(if (isPipMode) 14f else 28f, TextUnitType.Companion.Sp)
-                ).shadow(color = MaterialTheme.colorScheme.surface)
+                val titleTextStyle = (if (isPipMode) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge).shadow(color = MaterialTheme.colorScheme.surface)
                 EllipsizeText(
                     modifier = Modifier.testTag(CallInfoTitleTestTag),
                     text = it,
@@ -145,9 +143,7 @@ fun CallInfoComponent(
             }
 
             displaySubtitle?.let {
-                val subtitleTextStyle = LocalTextStyle.current.copy(
-                    fontSize = TextUnit(if (isPipMode) 12f else 14f, TextUnitType.Companion.Sp)
-                ).shadow(color = MaterialTheme.colorScheme.surface)
+                val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium).shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
                     modifier = Modifier.testTag(CallInfoSubtitleTestTag),
                     text = it,

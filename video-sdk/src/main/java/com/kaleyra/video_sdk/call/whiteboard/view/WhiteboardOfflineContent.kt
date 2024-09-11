@@ -69,12 +69,14 @@ internal fun WhiteboardOfflineContent(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = stringResource(id = R.string.kaleyra_error_title), color = MaterialTheme.colorScheme.onSurface
+            text = stringResource(id = R.string.kaleyra_error_title),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = stringResource(id = R.string.kaleyra_error_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 12.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

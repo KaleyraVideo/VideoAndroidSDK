@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.subfeaturelayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ internal fun SubFeatureLayout(
             Text(
                 text = title,
                 fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )
             IconButton(

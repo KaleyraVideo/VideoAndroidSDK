@@ -274,7 +274,7 @@ private fun CallActionLayout(
                         },
                     text = label,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -329,7 +329,7 @@ private fun ButtonLayout(
                         }
                     },
                 text = text,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -356,7 +356,7 @@ internal fun CallActionBadge(
                 modifier = Modifier.align(Alignment.Center),
                 text = text,
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelMedium.clearFontPadding()
+                style = MaterialTheme.typography.labelSmall.clearFontPadding()
             )
         }
     }
