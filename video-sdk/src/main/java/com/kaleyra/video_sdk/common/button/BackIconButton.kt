@@ -43,6 +43,7 @@ internal fun BackIconButton(
         iconDescription = stringResource(id = R.string.kaleyra_back),
         enabledIconTint = iconTint,
         iconSize = 28.dp,
+        supportRtl = true,
         onClick = onClick,
         modifier = modifier
     )
