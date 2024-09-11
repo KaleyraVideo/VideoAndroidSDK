@@ -52,9 +52,7 @@ class ConversationComponentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val myMessage = Message.MyMessage("idTest", "Mutable state item", "18:00", MutableStateFlow(
-        Message.State.Sending)
-    )
+    private val myMessage = Message.MyMessage("idTest", "Mutable state item", "18:00", MutableStateFlow(Message.State.Sending))
 
     private val otherMessage = Message.OtherMessage(
         "id4",
@@ -65,22 +63,21 @@ class ConversationComponentTest {
 
     private var onMessageScrolled = false
 
-    private var onResetScroll = false
-
     private var onApproachingTop = false
 
     @After
     fun tearDown() {
         onMessageScrolled = false
-        onResetScroll = false
         onApproachingTop = false
     }
 
     @Test
     fun emptyMessages_noMessagesDisplayed() {
         setContent(ConversationState(conversationItems = ImmutableList(emptyList())))
-        val noMessages = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages)
-        composeTestRule.onNodeWithText(noMessages).assertIsDisplayed()
+        val noMessagesTitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_title)
+        val noMessagesSubtitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_subtitle)
+        composeTestRule.onNodeWithText(noMessagesTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithText(noMessagesSubtitle).assertIsDisplayed()
     }
 
     @Test
@@ -92,12 +89,7 @@ class ConversationComponentTest {
 
     @Test
     fun userScrollsToTop_onApproachingTopInvoked() {
-        setContent(
-            ConversationState(conversationItems = ImmutableList(
-                mockConversationElements.value.plus(
-                    mockConversationElements.value))
-            )
-        )
+        setContent(ConversationState(conversationItems = ImmutableList(mockConversationElements.value.plus(mockConversationElements.value))))
         findConversation().performScrollUp()
         findConversation().performScrollUp()
         assert(onApproachingTop)
@@ -105,12 +97,7 @@ class ConversationComponentTest {
 
     @Test
     fun userScrollsUp_onMessageScrolledInvoked() {
-        setContent(
-            ConversationState(conversationItems = ImmutableList(
-                mockConversationElements.value.plus(
-                    mockConversationElements.value))
-            )
-        )
+        setContent(ConversationState(conversationItems = ImmutableList(mockConversationElements.value.plus(mockConversationElements.value))))
         findConversation().performScrollUp()
         assert(onMessageScrolled)
     }
@@ -140,21 +127,13 @@ class ConversationComponentTest {
 
     @Test
     fun isNotFetching_progressIndicatorNotDisplayed() {
-        setContent(
-            ConversationState(isFetching = false, conversationItems = ImmutableList(listOf(
-                ConversationItem.Message(myMessage)))
-            )
-        )
+        setContent(ConversationState(isFetching = false, conversationItems = ImmutableList(listOf(ConversationItem.Message(myMessage)))))
         findProgressIndicator().assertDoesNotExist()
     }
 
     @Test
     fun isFetching_progressIndicatorDisplayed() {
-        setContent(
-            ConversationState(isFetching = true, conversationItems = ImmutableList(listOf(
-                ConversationItem.Message(myMessage)))
-            )
-        )
+        setContent(ConversationState(isFetching = true, conversationItems = ImmutableList(listOf(ConversationItem.Message(myMessage)))))
         findProgressIndicator().assertIsDisplayed()
     }
 
@@ -182,9 +161,7 @@ class ConversationComponentTest {
             ConversationState(conversationItems = ImmutableList(listOf(ConversationItem.Message(otherMessage)))),
             participantsDetails = ImmutableMap(mapOf("userId4" to ChatParticipantDetails("otherUsername")))
         )
-        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(
-            ConversationContentPadding + OtherBubbleLeftSpacing
-        )
+        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(ConversationContentPadding + OtherBubbleLeftSpacing)
     }
 
     @Test
@@ -193,18 +170,18 @@ class ConversationComponentTest {
             ConversationState(conversationItems = ImmutableList(listOf(ConversationItem.Message(otherMessage, isLastChainMessage = true)))),
             participantsDetails = ImmutableMap(mapOf("userId4" to ChatParticipantDetails("username")))
         )
-        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(
-            ConversationContentPadding + MessageItemAvatarSize + OtherBubbleAvatarSpacing
-        )
+        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(ConversationContentPadding + MessageItemAvatarSize + OtherBubbleAvatarSpacing)
     }
 
     @Test
     fun participantDetailsNotProvided_otherUserMessage_bubbleIsNotSpaced() {
         setContent(ConversationState(conversationItems = ImmutableList(listOf(ConversationItem.Message(otherMessage, isLastChainMessage = true)))))
-        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(
-            ConversationContentPadding
-        )
+        composeTestRule.onNodeWithTag(BubbleTestTag).assertLeftPositionInRootIsEqualTo(ConversationContentPadding)
     }
+
+    private fun findResetScrollFab() = composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(
+        R.string.kaleyra_chat_scroll_to_last_message
+    ))
 
     private fun findConversation() = composeTestRule.onNodeWithTag(ConversationContentTag)
 
@@ -218,7 +195,7 @@ class ConversationComponentTest {
             participantsDetails = participantsDetails,
             onMessageScrolled = { onMessageScrolled = true },
             onApproachingTop = { onApproachingTop = true },
-            scrollState = rememberLazyListState()
         )
     }
+
 }

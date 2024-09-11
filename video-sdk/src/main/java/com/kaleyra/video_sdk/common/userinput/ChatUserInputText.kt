@@ -121,7 +121,7 @@ internal fun ChatUserInputText(
                 },
             interactionSource = interactionSource,
             maxLines = maxLines,
-            placeholder = { Text(text = placeHolderStringResource) }
+            placeholder = { Text(text = placeHolderStringResource, style = MaterialTheme.typography.bodyMedium) }
         )
     }
 }

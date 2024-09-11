@@ -136,7 +136,7 @@
     <string name="kaleyra_chat_msg_status_pending">Mensaje pendiente</string>
     <string name="kaleyra_chat_msg_status_seen">Mensaje visto</string>
     <string name="kaleyra_chat_msg_status_sent">Mensaje enviado</string>
-    <string name="kaleyra_chat_no_messages">Aún no hay mensajes…</string>
+    <string name="kaleyra_chat_no_messages_title">Aún no hay mensajes</string>
     <string name="kaleyra_chat_participants_online">%1$s en línea</string>
     <string name="kaleyra_chat_scroll_to_last_message">Desplazarse hasta el último mensaje</string>
     <string name="kaleyra_chat_send">Enviar mensaje</string>
@@ -154,7 +154,7 @@
     <string name="kaleyra_confirm_message">Sí</string>
     <string name="kaleyra_data_loss_confirm_message">¿Estás seguro/a?\nTodos los datos se perderán.</string>
     <string name="kaleyra_download">Guardar</string>
-    <string name="kaleyra_edit_text_input_placeholder">Escribe aquí…</string>
+    <string name="kaleyra_edit_text_input_placeholder">Escribe aquí</string>
     <string name="kaleyra_enter_fullscreen">Entrar en modo de pantalla completa</string>
     <string name="kaleyra_error_button_reload">Recargar</string>
     <string name="kaleyra_error_title">Se produjo un error</string>
@@ -281,5 +281,6 @@
     <string name="kaleyra_stream_dimmed">Transmisión no seleccionada</string>
     <string name="kaleyra_call_sheet_drag_description">Arrastrar</string>
     <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
+    <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
 
 </resources>

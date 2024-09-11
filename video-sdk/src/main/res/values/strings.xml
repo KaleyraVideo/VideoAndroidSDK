@@ -119,7 +119,7 @@
     <string name="kaleyra_call_drag_to_expand">Drag to expand</string>
 
     <!-- Chat -->
-    <string name="kaleyra_edit_text_input_placeholder">Type your message here &#8230;</string>
+    <string name="kaleyra_edit_text_input_placeholder">Type your message here</string>
     <string name="kaleyra_chat_channel_loading">Loading &#8230;</string>
     <string name="kaleyra_chat_user_status_online">online</string>
     <string name="kaleyra_chat_participants_online">%1$s online</string>
@@ -138,7 +138,8 @@
     <string name="kaleyra_chat_msg_status_sent">Message sent</string>
     <string name="kaleyra_chat_msg_status_seen">Message seen</string>
     <string name="kaleyra_chat_unread_messages">Unread messages</string>
-    <string name="kaleyra_chat_no_messages">No message yet&#8230;</string>
+    <string name="kaleyra_chat_no_messages_title">No message yet</string>
+    <string name="kaleyra_chat_no_messages_subtitle">Send a message to initiate communication</string>
     <string name="kaleyra_chat_avatar_desc">Chat image</string>
     <string name="kaleyra_chat_group_title">Group chat</string>
 

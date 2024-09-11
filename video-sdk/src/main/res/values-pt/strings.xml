@@ -58,7 +58,7 @@
     <string name="kaleyra_call_answer">Participar</string>
 
     <!-- Chat -->
-    <string name="kaleyra_edit_text_input_placeholder">Escreva aqui &#8230;</string>
+    <string name="kaleyra_edit_text_input_placeholder">Escreva aqui</string>
     <string name="kaleyra_chat_channel_loading">Carregando &#8230;</string>
     <string name="kaleyra_chat_user_status_online">online</string>
     <string name="kaleyra_chat_participants_online">%1$s online</string>
@@ -77,7 +77,7 @@
     <string name="kaleyra_chat_msg_status_sent">Mensagem enviada</string>
     <string name="kaleyra_chat_msg_status_seen">Mensagem vista</string>
     <string name="kaleyra_chat_unread_messages">Mensagens não lidas</string>
-    <string name="kaleyra_chat_no_messages">Ainda sem mensagens&#8230;</string>
+    <string name="kaleyra_chat_no_messages_title">Ainda sem mensagens</string>
     <string name="kaleyra_chat_avatar_desc">Imagem do chat</string>
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
@@ -331,5 +331,6 @@
     </plurals>
     <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
     <string name="kaleyra_input_text_default_error">Erro de entrada de texto</string>
+    <string name="kaleyra_chat_no_messages_subtitle">Envie uma mensagem para iniciar a comunicação</string>
 
 </resources>
