@@ -136,7 +136,7 @@ internal fun VCallScreen(
                     isLargeScreen = isLargeScreen,
                     inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
-                    contentPadding = PaddingValues(top = 4.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
+                    contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     modifier = Modifier.animateContentSize()
                 )
             }
