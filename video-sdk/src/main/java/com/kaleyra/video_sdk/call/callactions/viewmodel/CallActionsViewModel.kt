@@ -33,7 +33,6 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
@@ -66,6 +65,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -91,6 +91,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
+
+    private var lastFileShareCreationTime = MutableStateFlow(-1L)
 
     init {
         viewModelScope.launch {
@@ -223,6 +225,19 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             hasCameraUsageRestrictionFlow
                 .onEach { isUsageRestricted -> _uiState.update { it.copy(isCameraUsageRestricted = isUsageRestricted) } }
                 .launchIn(this)
+
+            combine(
+                uiState.map { it.actionList.value },
+                call.sharedFolder.files.map { files -> files.map { it.creationTime } },
+                lastFileShareCreationTime
+            ) { actionList, creationTimes, lastFileShareCreationTime ->
+                val count = creationTimes.count { it > lastFileShareCreationTime }
+                actionList.indexOfFirst { it is FileShareAction }.takeIf { it != -1 }?.let { index ->
+                    val action = (actionList[index] as FileShareAction).copy(notificationCount = count)
+                    val updatedActionList = actionList.toMutableList().also { it[index] = action }
+                    _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
+                }
+            }.launchIn(this)
         }
     }
 
@@ -334,6 +349,13 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             call.inputs.release(Inputs.Type.Screen)
             call.inputs.release(Inputs.Type.Application)
             stream != null
+        }
+    }
+
+    fun clearFileShareBadge() {
+        call.getValue()?.sharedFolder?.files?.value?.let { files ->
+            val maxCreationTime = files.maxOfOrNull { it.creationTime } ?: return
+            lastFileShareCreationTime.value = maxCreationTime
         }
     }
 

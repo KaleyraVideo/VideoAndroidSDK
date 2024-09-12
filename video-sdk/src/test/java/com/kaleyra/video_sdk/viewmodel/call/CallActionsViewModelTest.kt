@@ -26,6 +26,8 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConversationUI
@@ -1641,6 +1643,94 @@ class CallActionsViewModelTest {
     fun screenShareActive_stopScreenShareSuccess() {
         val screenShareVideoMock = spyk<Input.Video.Screen>()
         testTryStopScreenShare(screenShareVideoMock)
+    }
+
+    @Test
+    fun noFileShared_fileShareActionNotificationCountIsZero() = runTest {
+//        val file = mockk<SharedFile> {
+//            every { creationTime } returns 100L
+//        }
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns MutableStateFlow(setOf())
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val fileShareAction = viewModel.uiState.first().actionList.value[0]
+        assertEquals(FileShareAction(), fileShareAction)
+    }
+
+    @Test
+    fun nFilesShared_fileShareActionNotificationIsN() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns MutableStateFlow(setOf(file1, file2))
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val fileShareAction = viewModel.uiState.first().actionList.value[0]
+        assertEquals(FileShareAction(notificationCount = 2), fileShareAction)
+    }
+
+    @Test
+    fun testClearFileShareBadge() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val file3 = mockk<SharedFile> {
+            every { creationTime } returns 300L
+        }
+        val sharedFolderFlow = MutableStateFlow(setOf(file1, file2))
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns sharedFolderFlow
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(
+            FileShareAction(notificationCount = 2),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        viewModel.clearFileShareBadge()
+        runCurrent()
+
+        assertEquals(FileShareAction(), viewModel.uiState.first().actionList.value[0])
+
+        sharedFolderFlow.value = setOf(file1, file2, file3)
+        runCurrent()
+
+        assertEquals(FileShareAction(notificationCount = 1), viewModel.uiState.first().actionList.value[0])
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {

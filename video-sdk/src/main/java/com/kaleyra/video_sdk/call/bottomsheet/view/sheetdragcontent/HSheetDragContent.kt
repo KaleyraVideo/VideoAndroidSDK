@@ -18,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
-import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
@@ -111,7 +110,10 @@ internal fun HSheetDragContent(
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
-        onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
+        onFileShareClick = {
+            onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+            viewModel.clearFileShareBadge()
+        },
         onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
         onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
     )

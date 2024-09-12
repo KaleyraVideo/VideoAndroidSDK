@@ -81,7 +81,10 @@ internal fun VSheetContent(
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
-        onFileShareClick = { onModalSheetComponentRequest(ModalSheetComponent.FileShare) },
+        onFileShareClick = {
+            onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+            viewModel.clearFileShareBadge()
+        },
         onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
         onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,

@@ -325,6 +325,7 @@ class VSheetContentTest {
             .performClick()
 
         TestCase.assertEquals(ModalSheetComponent.FileShare, component)
+        verify(exactly = 1) { callActionsViewModel.clearFileShareBadge()  }
     }
 
     @Test
