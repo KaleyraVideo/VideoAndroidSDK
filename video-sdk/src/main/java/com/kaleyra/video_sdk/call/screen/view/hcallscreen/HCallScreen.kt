@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -86,9 +87,8 @@ internal fun HCallScreen(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 4.dp)
+                    contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 4.dp),
+                    modifier = Modifier.animateContentSize()
                 )
             }
         },

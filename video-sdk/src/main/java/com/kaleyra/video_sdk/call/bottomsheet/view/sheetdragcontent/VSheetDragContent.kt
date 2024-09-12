@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -40,7 +41,8 @@ internal fun VSheetDragContent(
     callActions: ImmutableList<CallActionUI>,
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier,
-    inputPermissions: InputPermissions = InputPermissions()
+    inputPermissions: InputPermissions = InputPermissions(),
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,6 +62,7 @@ internal fun VSheetDragContent(
         callActions = callActions,
         itemsPerColumn = itemsPerColumn,
         inputPermissions = inputPermissions,
+        contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
             val micPermission = inputPermissions.micPermission ?: return@lambda
@@ -99,7 +102,8 @@ internal fun VSheetDragContent(
     onWhiteboardClick: () -> Unit,
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
-    inputPermissions: InputPermissions = InputPermissions()
+    inputPermissions: InputPermissions = InputPermissions(),
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val chunkedActions = remember(callActions, itemsPerColumn) {
         callActions.value.chunked(itemsPerColumn, transform = { it.reversed() }).flatten()
@@ -109,6 +113,7 @@ internal fun VSheetDragContent(
         rows = GridCells.Fixed(itemsPerColumn),
         horizontalArrangement = Arrangement.spacedBy(VSheetDragHorizontalPadding),
         verticalArrangement = Arrangement.spacedBy(VSheetDragVerticalPadding),
+        contentPadding = contentPadding,
         modifier = modifier
     ) {
         items(key = { it.id }, items = chunkedActions) { callAction ->

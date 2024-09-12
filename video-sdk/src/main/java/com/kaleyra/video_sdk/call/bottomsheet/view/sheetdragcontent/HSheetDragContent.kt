@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -47,6 +48,7 @@ internal fun HSheetDragContent(
     callActions: ImmutableList<CallActionUI>,
     isLargeScreen: Boolean,
     inputPermissions: InputPermissions = InputPermissions(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -91,6 +93,7 @@ internal fun HSheetDragContent(
         callActions = callActions,
         itemsPerRow = itemsPerRow,
         inputPermissions = inputPermissions,
+        contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
             val micPermission = inputPermissions.micPermission ?: return@lambda
@@ -132,6 +135,7 @@ internal fun HSheetDragContent(
     itemsPerRow: Int = MaxHSheetDragItems,
     labels: Boolean = true,
     inputPermissions: InputPermissions = InputPermissions(),
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val shouldExtendLastButton = callActions.count() / itemsPerRow < 1
 
@@ -143,6 +147,7 @@ internal fun HSheetDragContent(
         columns = GridCells.Fixed(itemsPerRow),
         verticalArrangement = Arrangement.spacedBy(HSheetDragVerticalPadding),
         horizontalArrangement = Arrangement.spacedBy(HSheetDragHorizontalPadding),
+        contentPadding = contentPadding,
         modifier = modifier
     ) {
        itemsIndexed(
