@@ -31,6 +31,7 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
@@ -95,8 +96,6 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         get() = call.getValue()?.inputs?.availableInputs?.value
 
     private var lastFileShareCreationTime = MutableStateFlow(-1L)
-
-    private var lastChatMessageTime = MutableStateFlow(-1L)
 
     init {
         viewModelScope.launch {
@@ -229,6 +228,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 call.sharedFolder.files.map { files -> files.map { it.creationTime } },
                 lastFileShareCreationTime
             ) { actionList, creationTimes, lastFileShareCreationTime ->
+                if (FileShareVisibilityObserver.isDisplayed.value) {
+                    this@CallActionsViewModel.lastFileShareCreationTime.value = creationTimes.lastOrNull() ?: -1
+                    return@combine
+                }
                 val count = creationTimes.count { it > lastFileShareCreationTime }
                 updateAction<FileShareAction>(actionList) { action ->
                     action.copy(notificationCount = count)

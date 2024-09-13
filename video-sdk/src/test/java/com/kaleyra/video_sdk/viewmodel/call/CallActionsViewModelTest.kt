@@ -26,7 +26,6 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
-import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video_common_ui.CallUI
@@ -39,6 +38,7 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isCo
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
@@ -95,7 +95,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import okhttp3.internal.userAgent
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -126,6 +125,7 @@ class CallActionsViewModelTest {
         mockkObject(AudioOutputMapper)
         mockkObject(CallStateMapper)
         mockkObject(VirtualBackgroundViewModel)
+        mockkObject(FileShareVisibilityObserver)
 
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
@@ -144,6 +144,7 @@ class CallActionsViewModelTest {
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { conversationMock.create(any()) } returns Result.failure(Throwable())
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
     }
 
     @After
@@ -1691,6 +1692,54 @@ class CallActionsViewModelTest {
 
         val fileShareAction = viewModel.uiState.first().actionList.value[0]
         assertEquals(FileShareAction(notificationCount = 2), fileShareAction)
+    }
+
+    @Test
+    fun testFileShareActionNotificationCountWhenFileShareIsDisplayed() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val file3 = mockk<SharedFile> {
+            every { creationTime } returns 300L
+        }
+        val filesFlow = MutableStateFlow(setOf(file1))
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns filesFlow
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        filesFlow.value = setOf(file1, file2)
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+
+        filesFlow.value = setOf(file1, file2, file3)
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
     }
 
     @Test
