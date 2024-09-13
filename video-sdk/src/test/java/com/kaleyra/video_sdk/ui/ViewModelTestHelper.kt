@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 internal fun mockkSuccessfulConfiguration(
-    conference: ConferenceUI = mockk(),
-    conversation: ConversationUI = mockk(),
-    company: Company = mockk(),
-    connectedUser: StateFlow<User?> = MutableStateFlow(mockk()),
+    conference: ConferenceUI = mockk(relaxed = true),
+    conversation: ConversationUI = mockk(relaxed = true),
+    company: Company = mockk(relaxed = true),
+    connectedUser: StateFlow<User?> = MutableStateFlow(mockk(relaxed = true)),
 ): CollaborationViewModel.Configuration.Success {
     return CollaborationViewModel.Configuration.Success(
         conference = conference,
