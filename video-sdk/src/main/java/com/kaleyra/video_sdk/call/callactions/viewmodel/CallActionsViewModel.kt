@@ -238,6 +238,15 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
+            combine(
+                uiState.map { it.actionList.value },
+                call.whiteboard.notificationCount
+            ) { actionList, notificationCount ->
+                updateAction<WhiteboardAction>(actionList) { action ->
+                    action.copy(notificationCount = notificationCount)
+                }
+            }.launchIn(this)
+
             val chat = getChat(call)
             if (chat != null) {
                 combine(

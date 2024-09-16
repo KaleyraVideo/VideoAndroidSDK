@@ -28,6 +28,7 @@ import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.sharedfolder.SharedFolder
+import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.ConferenceUI
@@ -113,6 +114,8 @@ class CallActionsViewModelTest {
 
     private val conversationMock = mockk<ConversationUI>(relaxed = true)
 
+    private val whiteboardMock = mockk<Whiteboard>(relaxed = true)
+
     private val callMock = mockk<CallUI>(relaxed = true)
 
     @Before
@@ -141,10 +144,12 @@ class CallActionsViewModelTest {
         every { callMock.inputs.release(any()) } returns Unit
         every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(false)
         every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
+        every { callMock.whiteboard } returns whiteboardMock
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { conversationMock.create(any()) } returns Result.failure(Throwable())
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        every { whiteboardMock.notificationCount } returns MutableStateFlow(0)
     }
 
     @After
@@ -1819,6 +1824,24 @@ class CallActionsViewModelTest {
         runCurrent()
 
         assertEquals(ChatAction(notificationCount = 3), viewModel.uiState.first().actionList.value[0])
+    }
+
+    @Test
+    fun testWhiteboardActionBadgeCount() = runTest {
+        val unreadMessageCountFlow = MutableStateFlow(0)
+        every { whiteboardMock.notificationCount } returns unreadMessageCountFlow
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction()))
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(WhiteboardAction(), viewModel.uiState.first().actionList.value[0])
+
+        unreadMessageCountFlow.value = 3
+        runCurrent()
+
+        assertEquals(WhiteboardAction(notificationCount = 3), viewModel.uiState.first().actionList.value[0])
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
