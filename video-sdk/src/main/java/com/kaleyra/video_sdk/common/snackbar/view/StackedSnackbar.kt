@@ -64,8 +64,8 @@ internal fun StackedSnackbar(
                         AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                         AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                         AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
-                        is WhiteboardHideRequestMessage -> TODO()
-                        is WhiteboardShowRequestMessage -> TODO()
+                        is WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
+                        is WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
                     }
                 }
             )
