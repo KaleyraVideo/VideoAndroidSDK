@@ -41,7 +41,7 @@ internal fun StackedSnackbar(
             .then(modifier)
     ) {
 
-        items(items = snackbarData.value, key = { it.hashCode() }) {
+        items(items = snackbarData.value, key = { it.id }) {
             Box(
                 modifier = Modifier
                     .animateItemPlacement()
