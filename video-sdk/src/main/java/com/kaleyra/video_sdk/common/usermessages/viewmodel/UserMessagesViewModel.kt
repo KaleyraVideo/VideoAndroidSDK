@@ -40,24 +40,24 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
                     .onEach {
                         stackedSnackbarHostMessagesHandler.addUserMessage(it, true)
                     }
-                    .launchIn(viewModelScope)
+                    .launchIn(this@launch)
 
                 alertMessages
                     .onEach {
                         stackedSnackbarHostMessagesHandler.addAlertMessages(it)
                     }
-                    .launchIn(viewModelScope)
+                    .launchIn(this@launch)
             }
 
             with(stackedSnackbarHostMessagesHandler) {
                 userMessages
                     .onEach { newUserMessages ->
                         userMessageChannel.send(newUserMessages)
-                    }.launchIn(viewModelScope)
+                    }.launchIn(this@launch)
                 alertMessages
                     .onEach { newAlertMessages ->
                         _uiState.update { it.copy(alertMessages = ImmutableList(newAlertMessages)) }
-                    }.launchIn(viewModelScope)
+                    }.launchIn(this@launch)
             }
         }
     }
