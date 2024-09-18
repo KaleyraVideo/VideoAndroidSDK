@@ -52,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
 import com.kaleyra.video_sdk.R
@@ -258,7 +257,8 @@ private fun ActionButton(
                 is SharedFileUi.State.Pending -> onSurfaceAlpha50
             },
             modifier = Modifier
-                .size(32.dp)
+                .size(48.dp)
+                .padding(4.dp)
                 .border(
                     width = 2.dp,
                     color = when (sharedFileState) {
