@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import android.net.Uri
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
@@ -75,6 +76,7 @@ class StreamViewModelTest {
         mockkObject(CallStateMapper)
         mockkObject(VideoMapper)
         mockkObject(CallUserMessagesProvider)
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
 

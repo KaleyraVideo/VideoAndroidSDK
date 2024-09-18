@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
@@ -28,7 +29,7 @@ class StreamTest {
     fun setUp() {
         composeTestRule.setContent {
             Stream(
-                streamView = ImmutableView(View(composeTestRule.activity)),
+                streamView = ImmutableView(VideoStreamView(composeTestRule.activity)),
                 username = "username",
                 avatar = null,
                 showStreamView = showStreamView,

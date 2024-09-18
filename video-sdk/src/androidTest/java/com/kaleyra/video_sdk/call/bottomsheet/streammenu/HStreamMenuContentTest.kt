@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -33,7 +34,7 @@ class HStreamMenuContentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val streamUiState = MutableStateFlow(StreamUiState())
+    private val streamUiState = MutableStateFlow(StreamUiState(callPreferredType = Call.PreferredType.audioOnly()))
 
     private val streamViewModel = mockk<StreamViewModel>(relaxed = true) {
         every { uiState } returns streamUiState
@@ -55,7 +56,7 @@ class HStreamMenuContentTest {
     @Test
     fun testExitFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = stream)
+        streamUiState.value = StreamUiState(fullscreenStream = stream, callPreferredType = Call.PreferredType.audioOnly())
 
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -77,7 +78,7 @@ class HStreamMenuContentTest {
     @Test
     fun testEnterFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
+        streamUiState.value = StreamUiState(fullscreenStream = null, callPreferredType = Call.PreferredType.audioOnly())
         var fullscreen = false
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -100,7 +101,7 @@ class HStreamMenuContentTest {
     @Test
     fun fullScreeEntered_backPressed_menuDismissed() {
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
+        streamUiState.value = StreamUiState(fullscreenStream = null, callPreferredType = Call.PreferredType.audioOnly())
         var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -126,7 +127,7 @@ class HStreamMenuContentTest {
         every { streamViewModel.maxPinnedStreams } returns 2
 
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList(), callPreferredType = Call.PreferredType.audioOnly())
 
         var dismissed = false
         composeTestRule.setContent {
@@ -152,7 +153,7 @@ class HStreamMenuContentTest {
         every { streamViewModel.maxPinnedStreams } returns 2
 
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState()
+        streamUiState.value = StreamUiState(callPreferredType = Call.PreferredType.audioOnly())
 
         var dismissed = false
         composeTestRule.setContent {
@@ -178,7 +179,7 @@ class HStreamMenuContentTest {
         every { streamViewModel.maxPinnedStreams } returns 1
 
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList(), callPreferredType = Call.PreferredType.audioOnly())
 
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -200,7 +201,7 @@ class HStreamMenuContentTest {
         every { streamViewModel.maxPinnedStreams } returns 1
 
         val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList(), callPreferredType = Call.PreferredType.audioOnly())
 
         composeTestRule.setContent {
             HStreamMenuContent(

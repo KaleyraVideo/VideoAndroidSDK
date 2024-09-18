@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.stream.model.core
 
 import androidx.compose.runtime.Immutable
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
@@ -32,7 +33,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 @Immutable
 data class VideoUi(
     val id: String,
-    val view: ImmutableView? = null,
+    val view: ImmutableView<VideoStreamView>? = null,
     val isEnabled: Boolean = false,
     val isScreenShare: Boolean = false,
     val pointers: ImmutableList<PointerUi> = ImmutableList(emptyList())

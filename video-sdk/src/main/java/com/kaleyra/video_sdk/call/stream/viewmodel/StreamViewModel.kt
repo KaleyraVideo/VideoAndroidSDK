@@ -49,6 +49,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     init {
         viewModelScope.launch {
             val call = call.first()
+            _uiState.update { StreamUiState(callPreferredType = call.preferredType.value) }
 
             val callState = call.toCallStateUi()
             combine(
@@ -75,7 +76,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                     callState is CallStateUi.Disconnected.Ended
                 }
                 .takeWhile { !it }
-                .onCompletion { _uiState.update { StreamUiState() } }
+                .onCompletion { _uiState.update { StreamUiState(callPreferredType = call.preferredType.value) } }
                 .launchIn(this)
 
             val isPreCallState = callState
