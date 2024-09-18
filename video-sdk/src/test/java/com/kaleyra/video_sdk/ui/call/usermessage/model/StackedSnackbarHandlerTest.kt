@@ -7,12 +7,13 @@ import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class StackedStackbarHandlerTest {
+class StackedSnackbarHandlerTest {
 
     @Test
     fun testUserMessagePosted() = runTest {
@@ -61,6 +62,14 @@ class StackedStackbarHandlerTest {
         stackedSnackbarHostMessagesHandler.addUserMessage(UsbCameraMessage.Disconnected, false)
         stackedSnackbarHostMessagesHandler.addUserMessage(UsbCameraMessage.NotSupported, false)
         stackedSnackbarHostMessagesHandler.userMessages.first { it.size == 1 && it.contains(UsbCameraMessage.NotSupported) }
+    }
+
+    @Test
+    fun testWhiteboardRequestUserMessageReplaced() = runTest {
+        val stackedSnackbarHostMessagesHandler = StackedSnackbarHostMessagesHandler(scope = backgroundScope)
+        stackedSnackbarHostMessagesHandler.addUserMessage(WhiteboardRequestMessage.WhiteboardShowRequestMessage("user"), false)
+        stackedSnackbarHostMessagesHandler.addUserMessage(WhiteboardRequestMessage.WhiteboardHideRequestMessage("user"), false)
+        stackedSnackbarHostMessagesHandler.userMessages.first { it.size == 1 && it.firstOrNull { it is WhiteboardRequestMessage.WhiteboardShowRequestMessage } == null }
     }
 
     @Test

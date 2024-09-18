@@ -303,6 +303,9 @@ internal fun CallScreen(
                 onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
                 modalSheetState.expand()
                 CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
+                CallUserMessagesProvider.sendUserMessage(
+                    WhiteboardRequestMessage.WhiteboardShowRequestMessage(whiteboardRequest.username)
+                )
             }
 
             is WhiteboardRequest.Hide -> {
@@ -310,6 +313,9 @@ internal fun CallScreen(
                 onModalSheetComponentRequest(null)
                 modalSheetState.hide()
                 CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
+                CallUserMessagesProvider.sendUserMessage(
+                    WhiteboardRequestMessage.WhiteboardHideRequestMessage(whiteboardRequest.username)
+                )
             }
 
             else -> Unit
