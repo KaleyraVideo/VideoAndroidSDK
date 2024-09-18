@@ -78,7 +78,6 @@ internal fun UserMessageSnackbarM3(
 
     BoxWithConstraints(
         modifier = Modifier.alpha(if (displaySnackbar) 1f else 0f)
-            .padding(16.dp)
     ) {
         Row(modifier = Modifier.width(with(LocalDensity.current) {
             if (dismissButtonSize.width == 0 && actionsSize.width == 0 && contentSize.width == 0) {

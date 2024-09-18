@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
@@ -32,10 +34,12 @@ internal fun StackedSnackbar(
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .then(modifier)) {
+            .then(modifier)
+    ) {
 
         items(items = snackbarData.value, key = { it.hashCode() }) {
             Box(
@@ -69,6 +73,7 @@ internal fun StackedSnackbar(
                     }
                 }
             )
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

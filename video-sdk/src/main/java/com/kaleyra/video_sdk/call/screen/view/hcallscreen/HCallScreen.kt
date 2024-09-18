@@ -179,11 +179,7 @@ internal fun HCallScreen(
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
             )
 
-            Column(
-                modifier = Modifier
-                    .padding(top = top, end = 96.dp)
-                    .padding(vertical = 24.dp)
-            ) {
+            Column(Modifier.padding(top = top, end = 96.dp)) {
                 CallInfoComponent(
                     modifier = Modifier
                         .padding(vertical = 12.dp)

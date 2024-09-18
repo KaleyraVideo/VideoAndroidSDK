@@ -244,11 +244,7 @@ internal fun VCallScreen(
                     )
             )
 
-            Column(
-                modifier = Modifier
-                    .padding(top = top)
-                    .padding(vertical = 24.dp)
-            ) {
+            Column(Modifier.padding(top = top)) {
                 CallInfoComponent(Modifier.padding(vertical = 12.dp))
                 if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
