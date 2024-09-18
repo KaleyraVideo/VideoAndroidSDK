@@ -62,6 +62,7 @@ internal fun HCallScreen(
     modalSheetComponent: ModalSheetComponent?,
     inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -203,6 +204,7 @@ internal fun HCallScreen(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
+                onComponentDisplayed = onModalSheetComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick
             )

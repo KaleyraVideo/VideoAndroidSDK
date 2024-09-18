@@ -76,6 +76,7 @@ internal fun VCallScreen(
     modalSheetComponent: ModalSheetComponent?,
     inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -256,7 +257,8 @@ internal fun VCallScreen(
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
-                onUserMessageActionClick = onUserMessageActionClick
+                onUserMessageActionClick = onUserMessageActionClick,
+                onComponentDisplayed = onModalSheetComponentDisplayed,
             )
         }
     }
