@@ -59,10 +59,8 @@ internal interface ChatNotificationManager {
     /**
      * Build the chat notification
      *
-     * @param loggedUserId String Logged user id
-     * @param otherUserId String The other user id
-     * @param otherUserName String The other user name
-     * @param otherUserAvatar Uri The other user avatar
+     * @param myUserName String The other user name
+     * @param myAvatar Uri The other user avatar
      * @param chatId String? optional chat identifier
      * @param chatTitle String? optional chat title
      * @param messages List<ChatNotificationMessage> The list of messages
@@ -71,10 +69,9 @@ internal interface ChatNotificationManager {
      * @return Notification
      */
     suspend fun buildChatNotification(
-        loggedUserId: String,
-        otherUserId: String,
-        otherUserName: String,
-        otherUserAvatar: Uri,
+        myUserId: String,
+        myUserName: String,
+        myAvatar: Uri,
         chatId: String?,
         chatTitle: String?,
         messages: List<ChatNotificationMessage>,
@@ -84,11 +81,11 @@ internal interface ChatNotificationManager {
         val context = ContextRetainer.context
 
         val otherUserIds = messages.map { it.userId }.distinct()
-        val contentIntent = contentPendingIntent(context, activityClazz, loggedUserId, otherUserIds, chatId)
+        val contentIntent = contentPendingIntent(context, activityClazz, myUserId, otherUserIds, chatId)
         // Pending intent =
         //      API <24 (M and below): activity so the lock-screen presents the auth challenge.
         //      API 24+ (N and above): this should be a Service or BroadcastReceiver.
-        val replyIntent = replyPendingIntent(context, otherUserIds, chatId) ?: contentIntent
+        // val replyIntent = replyPendingIntent(context, otherUserIds, chatId) ?: contentIntent
 
         val builder = ChatNotification
             .Builder(
@@ -96,10 +93,9 @@ internal interface ChatNotificationManager {
                 DEFAULT_CHANNEL_ID,
                 context.resources.getString(R.string.kaleyra_notification_chat_channel_name)
             )
-            .userId(otherUserId)
-            .loggedUserId(loggedUserId)
-            .username(otherUserName)
-            .avatar(otherUserAvatar)
+            .myUserId(myUserId)
+            .myUsername(myUserName)
+            .myAvatar(myAvatar)
             .also { builder ->
                 chatTitle?.let { builder.contentTitle(it) }
             }
@@ -110,15 +106,15 @@ internal interface ChatNotificationManager {
 //            .markAsReadIntent(markAsReadIntent(context, otherUserId))
             .messages(messages)
 
-        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it,loggedUserId, otherUserIds, chatId)) }
+        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it, myUserId, otherUserIds, chatId)) }
         return builder.build()
     }
 
-    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
+    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, userIds, chatId)
 
-    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
+    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, userIds, chatId)
 
     private fun <T> createChatActivityPendingIntent(
         context: Context,

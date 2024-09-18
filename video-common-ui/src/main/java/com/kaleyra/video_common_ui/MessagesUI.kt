@@ -80,13 +80,14 @@ class MessagesUI(
         val me = chatUI.participants.value.me ?: return
 
         val notification = NotificationManager.buildChatNotification(
-            KaleyraVideo.connectedUser.value!!.userId,
             me.userId,
             me.combinedDisplayName.filterNotNull().firstOrNull() ?: me.userId,
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
             chatUI.id.takeIf { chatUI.participants.value.others.size > 1 },
-            "",
+            if (chatUI.participants.value.others.size > 1)
+                chatUI.participants.value.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() }.toSet().joinToString(", ")
+            else "",
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity
@@ -97,7 +98,7 @@ class MessagesUI(
 
     private suspend fun OtherMessage.toChatNotificationMessage(chatParticipants: ChatParticipants): ChatNotificationMessage {
         val otherParticipant = chatParticipants.others.find { it.userId == creator.userId }
-        return  ChatNotificationMessage(
+        return ChatNotificationMessage(
             creator.userId,
             otherParticipant?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: otherParticipant?.userId ?: " ",
             otherParticipant?.combinedDisplayImage?.filterNotNull()?.firstOrNull() ?: Uri.EMPTY,
