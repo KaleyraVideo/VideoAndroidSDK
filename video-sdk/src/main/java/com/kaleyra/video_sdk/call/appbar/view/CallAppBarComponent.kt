@@ -56,7 +56,6 @@ internal object CallAppBarDefaults {
 
     val Height = 40.dp
 
-    val Elevation = 2.dp
 }
 
 internal val RecordingDotTag = "RecordingDotTag"
