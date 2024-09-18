@@ -33,7 +33,6 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
@@ -317,8 +316,12 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         if (conversation == null || participants == null) return
         val companyId = company.getValue()?.id?.getValue()
         val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        if (otherParticipants.size > 1) return
-        conversation.chat(context = context, otherParticipants.first())
+        if (otherParticipants.size == 1) {
+            conversation.chat(context = context, otherParticipants.first())
+        } else {
+//            conversation.chat(context = context, otherParticipants, chatId = call.chatId)
+        }
+
     }
 
     // TODO remove code duplication in StreamViewModel
