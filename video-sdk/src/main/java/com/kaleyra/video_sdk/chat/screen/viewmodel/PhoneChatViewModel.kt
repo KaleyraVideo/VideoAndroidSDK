@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.chat.screen.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatViewModel
@@ -253,6 +254,7 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     private fun call(preferredType: Call.PreferredType) {
         val conference = conference.getValue() ?: return
+        if (conference.state.value !is State.Connected) return
         val chat = chat.getValue() ?: return
         val userId = chat.participants.value.others.map { it.userId }
         conference.call(userId) {
