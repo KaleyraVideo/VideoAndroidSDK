@@ -7,6 +7,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ internal fun CallScreenModalSheet(
     onAskInputPermissions: (Boolean) -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit,
     modifier: Modifier = Modifier,
+    onComponentDisplayed: (ModalSheetComponent?) -> Unit = {},
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
     val scope = rememberCoroutineScope()
@@ -92,6 +94,9 @@ internal fun CallScreenModalSheet(
                     onDismiss = onDismiss
                 )
             }
+            onComponentDisplayed(modalSheetComponent)
         }
+    } else {
+        onComponentDisplayed(null)
     }
 }
