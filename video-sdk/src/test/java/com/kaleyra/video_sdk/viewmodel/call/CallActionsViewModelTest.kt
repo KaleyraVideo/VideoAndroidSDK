@@ -1110,6 +1110,32 @@ class CallActionsViewModelTest {
     }
 
     @Test
+    fun tryEnableMicFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val inputs = mockk<Inputs>(relaxed = true)
+        val audio = mockk<Input.Audio>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+            every { tryEnable() } returns false
+        }
+        every { callMock.inputs } returns inputs
+        coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleMic(activity)
+        runCurrent()
+
+        coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
+        verify(exactly = 1) { audio.tryEnable() }
+        assertEquals(null, inputMessage)
+    }
+
+    @Test
     fun testToggleMicOff() = runTest {
         val activity = mockk<FragmentActivity>()
         val inputs = mockk<Inputs>(relaxed = true)
@@ -1133,6 +1159,32 @@ class CallActionsViewModelTest {
         coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
         verify(exactly = 1) { audio.tryDisable() }
         assertEquals(MicMessage.Disabled, inputMessage)
+    }
+    
+    @Test
+    fun tryDisableMicFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val inputs = mockk<Inputs>(relaxed = true)
+        val audio = mockk<Input.Audio>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { tryDisable() } returns false
+        }
+        every { callMock.inputs } returns inputs
+        coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleMic(activity)
+        runCurrent()
+
+        coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
+        verify(exactly = 1) { audio.tryDisable() }
+        assertEquals(null, inputMessage)
     }
 
     @Test
@@ -1174,6 +1226,47 @@ class CallActionsViewModelTest {
 
         verify(exactly = 1) { cameraVideo.tryEnable() }
         assertEquals(CameraMessage.Enabled, inputMessage)
+    }
+
+    @Test
+    fun tryEnableCameraFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val cameraRestriction = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        val contactRestrictions = mockk<Contact.Restrictions> {
+            every { camera } returns MutableStateFlow(cameraRestriction)
+        }
+        val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+            every { tryEnable() } returns false
+        }
+        val cameraStream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(cameraVideo)
+        }
+        val meParticipant = mockk<CallParticipant.Me> {
+            every { restrictions } returns contactRestrictions
+            every { streams } returns MutableStateFlow(listOf(cameraStream))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meParticipant
+        }
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleCamera(activity)
+        runCurrent()
+
+        verify(exactly = 1) { cameraVideo.tryEnable() }
+        assertEquals(null, inputMessage)
     }
 
     @Test
@@ -1314,6 +1407,46 @@ class CallActionsViewModelTest {
 
         verify(exactly = 1) { cameraVideo.tryDisable() }
         assertEquals(CameraMessage.Disabled, inputMessage)
+    }
+
+    @Test
+    fun tryDisableCameraFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val cameraRestriction = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        val contactRestrictions = mockk<Contact.Restrictions> {
+            every { camera } returns MutableStateFlow(cameraRestriction)
+        }
+        val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { tryDisable() } returns false
+        }
+        val cameraStream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(cameraVideo)
+        }
+        val meParticipant = mockk<CallParticipant.Me> {
+            every { restrictions } returns contactRestrictions
+            every { streams } returns MutableStateFlow(listOf(cameraStream))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meParticipant
+        }
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+        viewModel.toggleCamera(activity)
+        runCurrent()
+
+        verify(exactly = 1) { cameraVideo.tryDisable() }
+        assertEquals(null, inputMessage)
     }
 
     @Test
