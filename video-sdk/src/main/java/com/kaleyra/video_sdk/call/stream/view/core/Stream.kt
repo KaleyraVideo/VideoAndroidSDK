@@ -4,20 +4,23 @@ package com.kaleyra.video_sdk.call.stream.view.core
 
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
@@ -30,19 +33,13 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withTimeoutOrNull
 
 const val StreamViewTestTag = "StreamViewTestTag"
-internal const val RenderingTimeoutDurationMillis = 750L
-internal const val MinAvatarAppearanceDurationMillis = 1000L
-internal const val StreamViewHiddenAlpha = 0.01f
-internal const val StreamViewShownAlpha = 1f
-
+internal const val RenderingDebouceMillis = 1000L
 
 @Composable
 internal fun Stream(
@@ -52,88 +49,68 @@ internal fun Stream(
     showStreamView: Boolean,
     @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
     onClick: (() -> Unit)? = null,
-    fadeDuration: Int = LocalContext.current.resources.getInteger(android.R.integer.config_shortAnimTime)
+    avatarModifier: Modifier = Modifier
 ) {
-    val isVideoRendering = remember { mutableStateOf(false) }
-    val forceDisplayAvatar = remember { mutableStateOf(false) }
-    val displayVideo = remember { mutableStateOf(false) }
-    displayVideo.value = showStreamView
+    var forceDisplayAvatar by remember { mutableStateOf(false) }
 
-    if (showStreamView && streamView != null) {
-        AndroidView(
-            factory = {
-                streamView.value.apply {
-                    val parentView = parent as? ViewGroup
-                    parentView?.removeView(this)
-                    setOnClickListener { onClick?.invoke() }
-                    setAlphaForState(fadeDuration)
-                }
-            },
-            update = { view ->
-                val newLayoutParams = view.layoutParams
-                newLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                newLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                view.layoutParams = newLayoutParams
-                view.setAlphaForState(fadeDuration)
-            },
-            modifier = Modifier.testTag(StreamViewTestTag)
-        )
+    AnimatedContent(
+        targetState = !showStreamView || streamView == null || forceDisplayAvatar,
+        transitionSpec = {
+            fadeIn(animationSpec = tween()).togetherWith(ExitTransition.None)
+        },
+        label = "stream content"
+    ) { shouldDisplayAvatar ->
+        if (shouldDisplayAvatar) {
+            StreamAvatar(
+                username,
+                avatar,
+                avatarPlaceholder = avatarPlaceholder,
+                modifier = avatarModifier
+            )
+        }
+        else {
+            AndroidView(
+                factory = {
+                    streamView!!.value.apply {
+                        val parentView = parent as? ViewGroup
+                        parentView?.removeView(this)
+                        setOnClickListener { onClick?.invoke() }
+                    }
+                },
+                update = { view ->
+                    val newLayoutParams = view.layoutParams
+                    newLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                    newLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    view.layoutParams = newLayoutParams
+                },
+                modifier = Modifier.testTag(StreamViewTestTag)
+            )
 
-        LaunchedEffect(Unit) {
-            withTimeoutOrNull(RenderingTimeoutDurationMillis) {
-                with(streamView.value) {
-                    state.filterIsInstance<StreamView.State.Rendering>().first()
-                    isVideoRendering.value = true
-                    displayVideo.value = showStreamView
-                    streamView.value.setAlphaForState(fadeDuration)
-                }
+            LaunchedEffect(Unit) {
+                streamView!!.value.state
+                    .map { it is StreamView.State.Rendering }
+                    // This debounce is used for two purposes:
+                    // 1. If the view doesn't render within the timeout period, the avatar is displayed as a fallback.
+                    // 2. It also sets a minimum display time for the avatar if it was set as fallback for the previous case,
+                    // ensuring it remains visible for this duration even if the stream is rendered successfully.
+                    .debounce { if (it) 0 else RenderingDebouceMillis }
+                    .onEach { forceDisplayAvatar = !it }
+                    .launchIn(this)
             }
-
-            if (isVideoRendering.value) return@LaunchedEffect
-
-            isVideoRendering.value = false
-            displayVideo.value = false
-            forceDisplayAvatar.value = true
-
-            delay(MinAvatarAppearanceDurationMillis)
-
-            streamView.value.state.filterIsInstance<StreamView.State.Rendering>()
-                .onEach {
-                    isVideoRendering.value = true
-                    displayVideo.value = showStreamView
-                    forceDisplayAvatar.value = false
-                    streamView.value.setAlphaForState(fadeDuration)
-                }
-                .launchIn(this)
-                .invokeOnCompletion {
-                    displayVideo.value = false
-                    isVideoRendering.value = false
-                }
         }
     }
-
-    AnimatedVisibility(
-        visible = !displayVideo.value || streamView == null || forceDisplayAvatar.value,
-        enter = fadeIn(animationSpec = tween(durationMillis = fadeDuration, easing = LinearEasing)),
-        exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
-    ) {
-        StreamAvatar(username, avatar, avatarPlaceholder)
-    }
 }
-
-private fun VideoStreamView.setAlphaForState(fadeDuration: Int) =
-    if (state.value is StreamView.State.NotRendering) alpha = StreamViewHiddenAlpha
-    else animate().setDuration(fadeDuration.toLong()).alpha(StreamViewShownAlpha).start()
 
 @Composable
 fun StreamAvatar(
     username: String,
     avatar: ImmutableUri?,
+    modifier: Modifier = Modifier,
     @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
 ) {
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         val min = min(maxWidth, maxHeight)
         val size = (min / 2).coerceIn(48.dp, 96.dp)
