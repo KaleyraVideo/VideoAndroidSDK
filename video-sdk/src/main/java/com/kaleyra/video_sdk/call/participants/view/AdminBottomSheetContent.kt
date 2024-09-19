@@ -73,7 +73,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = pinnedTextFor(isStreamPinned),
+                text = pinnedTextFor(isStreamPinned, stream.username),
                 painter = pinnedPainterFor(isStreamPinned),
                 enabled = (!isPinLimitReached || isStreamPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
                 onClick = { onPinStreamClick(stream.id, !isStreamPinned)  }
@@ -85,7 +85,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = muteTextFor(stream.audio),
+                text = muteTextFor(stream.audio, stream.username),
                 painter = mutePainterFor(stream.audio),
                 enabled = stream.video == null || !stream.video.isScreenShare,
                 onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit }

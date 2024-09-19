@@ -139,7 +139,7 @@ class FileShareComponentTest {
     @Test
     fun emptyItems_fabTextDisplayed() {
         val iconDescription = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add_description)
-        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add).uppercase()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add)
         composeTestRule.onNodeWithContentDescription(iconDescription).assertIsDisplayed()
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -148,7 +148,7 @@ class FileShareComponentTest {
     fun atLeastOneItem_fabTextNotExist() {
         fileShareUiState = FileShareUiState(sharedFiles = ImmutableList(listOf(mockDownloadSharedFile)))
         val iconDescription = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add_description)
-        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add).uppercase()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add)
         composeTestRule.onNodeWithContentDescription(iconDescription).assertIsDisplayed()
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }

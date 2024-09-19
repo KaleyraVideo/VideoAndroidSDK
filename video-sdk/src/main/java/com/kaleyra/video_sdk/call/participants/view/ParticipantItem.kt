@@ -95,7 +95,7 @@ internal fun ParticipantItem(
                 content = {
                     Icon(
                         disableMicPainterFor(stream.audio),
-                        disableMicTextFor(stream.audio)
+                        disableMicTextFor(stream.audio, stream.username)
                     )
                 }
             )
@@ -112,7 +112,7 @@ internal fun ParticipantItem(
                     )
                     else Unit
                 },
-                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
+                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio, stream.username)) }
             )
         }
 
@@ -123,7 +123,7 @@ internal fun ParticipantItem(
                 modifier = Modifier.highlightOnFocus(interactionSource),
                 enabled = (!isPinLimitReached || isPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
                 onClick = { onPinStreamClick(stream.id, !isPinned) },
-                content = { Icon(pinnedPainterFor(isPinned), pinnedTextFor(isPinned)) }
+                content = { Icon(pinnedPainterFor(isPinned), pinnedTextFor(isPinned, stream.username)) }
             )
         } else {
             val interactionSource = remember { MutableInteractionSource() }
