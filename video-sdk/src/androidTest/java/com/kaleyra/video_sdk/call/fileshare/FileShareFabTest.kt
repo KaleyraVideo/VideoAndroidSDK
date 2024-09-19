@@ -62,7 +62,7 @@ class FileShareFabTest {
     @Test
     fun collapsedTrue_textNotExists() {
         collapsed = true
-        val add = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add).uppercase()
+        val add = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add)
         val addDescription = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add_description)
         composeTestRule.onNodeWithContentDescription(addDescription).assertIsDisplayed()
         composeTestRule.onNodeWithText(add).assertDoesNotExist()
@@ -71,7 +71,7 @@ class FileShareFabTest {
     @Test
     fun collapsedFalse_textDisplayed() {
         collapsed = false
-        val add = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add).uppercase()
+        val add = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add)
         val addDescription = composeTestRule.activity.getString(R.string.kaleyra_fileshare_add_description)
         composeTestRule.onNodeWithContentDescription(addDescription).assertIsDisplayed()
         composeTestRule.onNodeWithText(add).assertIsDisplayed()

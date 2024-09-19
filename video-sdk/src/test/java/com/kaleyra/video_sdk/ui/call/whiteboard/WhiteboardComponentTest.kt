@@ -38,8 +38,6 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import com.kaleyra.video_sdk.call.whiteboard.view.LinearProgressIndicatorTag
 import com.kaleyra.video_sdk.call.whiteboard.view.WhiteboardViewTag
-import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
