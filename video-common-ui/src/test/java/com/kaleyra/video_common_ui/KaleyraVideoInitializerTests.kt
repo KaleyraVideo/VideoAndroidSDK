@@ -16,7 +16,7 @@ import io.mockk.spyk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -146,7 +146,6 @@ class KaleyraVideoInitializerTests {
         }
         mockkStatic("com.kaleyra.video_common_ui.utils.ClassUtilsKt")
         every { instantiateClassWithEmptyConstructor<KaleyraVideoInitializer>(any()) } returns  kaleyraVideoInitializer
-        val classpath = "classPath"
         val metaDataMock = mockk<Bundle>(relaxed = true)
         every { metaDataMock.getString(KALEYRA_VIDEO_INITIALIZER) } returns null
         val applicationInfoMock = ApplicationInfo()
@@ -162,8 +161,11 @@ class KaleyraVideoInitializerTests {
         Assert.assertEquals(null, KaleyraVideoInitializationProvider.kaleyraVideoInitializer)
     }
 
-    @After
-    fun tearDown() {
-        unmockkAll()
+    companion object {
+        @JvmStatic
+        @AfterClass
+        fun tearDown() {
+            unmockkAll()
+        }
     }
 }
