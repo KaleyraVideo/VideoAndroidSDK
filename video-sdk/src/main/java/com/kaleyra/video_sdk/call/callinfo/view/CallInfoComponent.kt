@@ -105,6 +105,7 @@ fun CallInfoComponent(
 
         CallStateUi.Disconnected.Ended.Declined,
         CallStateUi.Disconnected.Ended.LineBusy,
+        CallStateUi.Disconnected.Ended.CurrentUserInAnotherCall,
         CallStateUi.Disconnected.Ended.Timeout,
         CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice,
 

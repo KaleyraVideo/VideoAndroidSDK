@@ -70,6 +70,7 @@ internal fun AudioOutputItem(
             if (subtitle != null) {
                 Text(
                     text = subtitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
