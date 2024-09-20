@@ -18,17 +18,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 class KaleyraVideoInitializerTests {
 
+    @Before
+    fun setup() {
+        mockkObject(KaleyraVideo)
+    }
+
     @Test
     fun testConfigurationRequested() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.isConfigured } returns false
         requestConfiguration()
         coVerify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
@@ -38,7 +43,6 @@ class KaleyraVideoInitializerTests {
     fun testKaleyraVideoAlreadyConfigured_configurationNotRequested() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.isConfigured } returns true
         requestConfiguration()
         coVerify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
@@ -48,7 +52,6 @@ class KaleyraVideoInitializerTests {
     fun testConnectRequested() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected)
         requestConnect("loggedUserId")
         coVerify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
@@ -58,7 +61,6 @@ class KaleyraVideoInitializerTests {
     fun testKaleyraVideoAlreadyConnected_connectNotRequested() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Connected)
         every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk {
             every { userId } returns "loggedUserId"
@@ -71,7 +73,6 @@ class KaleyraVideoInitializerTests {
     fun testKaleyraVideoAlreadyConnecting_connectNotRequested() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Connecting)
         every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk {
             every { userId } returns "loggedUserId"
@@ -84,7 +85,6 @@ class KaleyraVideoInitializerTests {
     fun testKaleyraVideoNotConnected_connectRequested_connectNotCalled() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected)
         val hasConnected = requestConnect("loggedUserId")
         Assert.assertEquals(false, hasConnected)
@@ -94,7 +94,6 @@ class KaleyraVideoInitializerTests {
     fun testConnectRequested_otherUserConnected_false() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected) andThen MutableStateFlow(State.Connected)
         every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk {
             every { userId } returns "loggedUserId2"
@@ -109,7 +108,6 @@ class KaleyraVideoInitializerTests {
     fun testConnectRequested_neverConnected_kaleyraVideoDisconnected() = runTest {
         val spyKaleyraVideoInitializer = spyk<KaleyraVideoInitializer>()
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
-        mockkObject(KaleyraVideo)
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected)
         every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
         val hasConnected = requestConnect("loggedUserId")
