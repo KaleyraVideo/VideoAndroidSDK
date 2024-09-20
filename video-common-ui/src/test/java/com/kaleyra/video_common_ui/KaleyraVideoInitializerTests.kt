@@ -7,7 +7,7 @@ import android.os.Bundle
 import com.kaleyra.video.State
 import com.kaleyra.video_common_ui.KaleyraVideoInitializationProvider.Companion.KALEYRA_VIDEO_INITIALIZER
 import com.kaleyra.video_common_ui.utils.instantiateClassWithEmptyConstructor
-import io.mockk.coVerify
+import io.mockk.verify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -20,8 +20,6 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 class KaleyraVideoInitializerTests {
 
@@ -36,7 +34,7 @@ class KaleyraVideoInitializerTests {
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
         every { KaleyraVideo.isConfigured } returns false
         requestConfiguration()
-        coVerify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
+        verify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
     }
 
     @Test
@@ -45,7 +43,7 @@ class KaleyraVideoInitializerTests {
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
         every { KaleyraVideo.isConfigured } returns true
         requestConfiguration()
-        coVerify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
+        verify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConfigure() }
     }
 
     @Test
@@ -54,7 +52,7 @@ class KaleyraVideoInitializerTests {
         KaleyraVideoInitializationProvider.kaleyraVideoInitializer = spyKaleyraVideoInitializer
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected)
         requestConnect("loggedUserId")
-        coVerify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
+        verify { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
     }
 
     @Test
@@ -66,7 +64,7 @@ class KaleyraVideoInitializerTests {
             every { userId } returns "loggedUserId"
         })
         requestConnect("loggedUserId")
-        coVerify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
+        verify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
     }
 
     @Test
@@ -78,7 +76,7 @@ class KaleyraVideoInitializerTests {
             every { userId } returns "loggedUserId"
         })
         requestConnect("loggedUserId")
-        coVerify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
+        verify(exactly = 0) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
     }
 
     @Test
@@ -99,9 +97,9 @@ class KaleyraVideoInitializerTests {
             every { userId } returns "loggedUserId2"
         })
         val hasConnected = requestConnect("loggedUserId")
-        coVerify(exactly = 1) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
+        verify(exactly = 1) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
         Assert.assertEquals(false, hasConnected)
-        coVerify(exactly = 1) { KaleyraVideo.disconnect() }
+        verify(exactly = 1) { KaleyraVideo.disconnect() }
     }
 
     @Test
@@ -111,9 +109,9 @@ class KaleyraVideoInitializerTests {
         every { KaleyraVideo.state } returns MutableStateFlow(State.Disconnected)
         every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
         val hasConnected = requestConnect("loggedUserId")
-        coVerify(exactly = 1) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
+        verify(exactly = 1) { spyKaleyraVideoInitializer.onRequestKaleyraVideoConnect() }
         Assert.assertEquals(false, hasConnected)
-        coVerify(exactly = 1) { KaleyraVideo.disconnect() }
+        verify(exactly = 1) { KaleyraVideo.disconnect() }
     }
 
     @Test
