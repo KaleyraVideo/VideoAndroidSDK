@@ -115,6 +115,7 @@
     <string name="kaleyra_ongoing_call_label">Toque para voltar para a chamada</string>
     <string name="kaleyra_call_left_alone">Estás sozinho</string>
     <string name="kaleyra_call_offline">Estás offline</string>
+    <string name="kaleyra_current_user_busy">Você está atualmente em outra chamada</string>
     <string name="kaleyra_error_button_reload">Recarregar</string>
     <string name="kaleyra_error_title">Ocorreu um erro</string>
     <string name="kaleyra_error_subtitle">Toque para recarregar</string>
@@ -332,5 +333,6 @@
     <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
     <string name="kaleyra_input_text_default_error">Erro de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envie uma mensagem para iniciar a comunicação</string>
+    <string name="kaleyra_call_failed">Chamada falhou</string>
 
 </resources>

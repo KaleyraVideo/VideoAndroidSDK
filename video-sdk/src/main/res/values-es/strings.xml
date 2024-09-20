@@ -156,6 +156,7 @@
     <string name="kaleyra_download">Guardar</string>
     <string name="kaleyra_edit_text_input_placeholder">Escribe aquí</string>
     <string name="kaleyra_enter_fullscreen">Entrar en modo de pantalla completa</string>
+    <string name="kaleyra_current_user_busy">Actualmente estás en otra llamada</string>
     <string name="kaleyra_error_button_reload">Recargar</string>
     <string name="kaleyra_error_title">Se produjo un error</string>
     <string name="kaleyra_error_subtitle">Por favor	toca para recargar</string>
@@ -282,5 +283,6 @@
     <string name="kaleyra_call_sheet_drag_description">Arrastrar</string>
     <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
+    <string name="kaleyra_call_failed">Llamada fallida</string>
 
 </resources>

@@ -178,6 +178,7 @@
     <string name="kaleyra_call_left_alone">Sei rimasto da solo</string>
     <string name="kaleyra_call_offline">Sei offline</string>
 
+    <string name="kaleyra_current_user_busy">Sei attualmente in un\'altra chiamata</string>
     <string name="kaleyra_error_button_reload">Riprova</string>
     <string name="kaleyra_error_title">Si è verificato un errore</string>
     <string name="kaleyra_error_subtitle">Per favore tocca per riprovare</string>
@@ -331,5 +332,6 @@
     <string name="kaleyra_call_sheet_drag_description">Trascina</string>
     <string name="kaleyra_input_text_default_error">Errore di input del testo</string>
     <string name="kaleyra_chat_no_messages_subtitle">Invia un messaggio per avviare la comunicazione</string>
+    <string name="kaleyra_call_failed">Chiamata non riuscita</string>
 
 </resources>
