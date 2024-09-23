@@ -382,6 +382,10 @@ class CallInfoViewModelTest {
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.HungUp.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Kicked("adminName").toTextRef(call))
-        Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Error.toTextRef(call))
+    }
+
+    @Test
+    fun testCallStateErrorCallFailedStateUi() {
+        Assert.assertEquals(TextRef.StringResource(R.string.kaleyra_call_failed), CallStateUi.Disconnected.Ended.Error.toTextRef(call))
     }
 }

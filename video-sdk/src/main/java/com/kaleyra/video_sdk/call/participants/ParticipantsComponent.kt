@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participants.view.AdminBottomSheetContent
 import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
@@ -183,6 +184,7 @@ internal fun ParticipantsComponent(
                 sheetState = sheetState,
                 shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
                 onDismissRequest = { bottomSheetStream = null },
+                dragHandle = { CallBottomSheetDefaults.HDragHandle() },
                 modifier = Modifier.testTag(AdminBottomSheetTag),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             ) {

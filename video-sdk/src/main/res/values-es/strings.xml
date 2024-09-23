@@ -49,17 +49,23 @@
     <string name="kaleyra_participants_component_users_invited">También Invitados</string>
     <string name="kaleyra_participants_component_grid">Rejilla</string>
     <string name="kaleyra_participants_component_pin">Pin</string>
-    <string name="kaleyra_participants_component_pin_stream">Fijar el stream de %s</string>
-    <string name="kaleyra_participants_component_unpin_stream">Desprender el stream de %s</string>
-    <string name="kaleyra_participants_component_mute_for_you">Mutear a %s</string>
-    <string name="kaleyra_participants_component_unmute_for_you">Desmutear a %s</string>
+    <string name="kaleyra_participants_component_pin_stream">Fijar el stream</string>
+    <string name="kaleyra_participants_component_unpin_stream">Desprender el stream</string>
+    <string name="kaleyra_participants_component_pin_stream_description">Fijar el stream de %s</string>
+    <string name="kaleyra_participants_component_unpin_stream_description">Desprender el stream de %s</string>
+    <string name="kaleyra_participants_component_mute_for_you">Mutear</string>
+    <string name="kaleyra_participants_component_unmute_for_you">Desmutear</string>
+    <string name="kaleyra_participants_component_mute_for_you_description">Mutear a %s</string>
+    <string name="kaleyra_participants_component_unmute_for_you_description">Desmutear a %s</string>
     <string name="kaleyra_participants_component_you">%s (Tú)</string>
     <string name="kaleyra_participants_component_admin">Administrador</string>
     <string name="kaleyra_participants_component_screenshare">Compartir pantalla</string>
     <string name="kaleyra_participants_component_participant">Partícipe</string>
     <string name="kaleyra_participants_component_remove_from_call">Eliminar de la llamada</string>
-    <string name="kaleyra_participants_component_disable_microphone">Desactivar el micrófono de %s</string>
-    <string name="kaleyra_participants_component_enable_microphone">Habilitar el micrófono de %s</string>
+    <string name="kaleyra_participants_component_disable_microphone">Desactivar el micrófono</string>
+    <string name="kaleyra_participants_component_enable_microphone">Habilitar el micrófono</string>
+    <string name="kaleyra_participants_component_disable_microphone_description">Desactivar el micrófono de %s</string>
+    <string name="kaleyra_participants_component_enable_microphone_description">Habilitar el micrófono de %s</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostrar más acciones</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participante</item>
@@ -156,6 +162,7 @@
     <string name="kaleyra_download">Guardar</string>
     <string name="kaleyra_edit_text_input_placeholder">Escribe aquí</string>
     <string name="kaleyra_enter_fullscreen">Entrar en modo de pantalla completa</string>
+    <string name="kaleyra_current_user_busy">Actualmente estás en otra llamada</string>
     <string name="kaleyra_error_button_reload">Recargar</string>
     <string name="kaleyra_error_title">Se produjo un error</string>
     <string name="kaleyra_error_subtitle">Por favor	toca para recargar</string>
@@ -282,5 +289,6 @@
     <string name="kaleyra_call_sheet_drag_description">Arrastrar</string>
     <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
+    <string name="kaleyra_call_failed">Llamada fallida</string>
 
 </resources>

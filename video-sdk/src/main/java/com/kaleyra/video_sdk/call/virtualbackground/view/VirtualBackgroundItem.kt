@@ -33,9 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable

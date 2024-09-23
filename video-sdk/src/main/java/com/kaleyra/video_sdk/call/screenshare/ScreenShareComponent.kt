@@ -93,7 +93,7 @@ internal fun ScreenShareComponent(
     modifier: Modifier = Modifier
 ) {
     SubFeatureLayout(
-        modifier = Modifier.padding(top = 16.dp).then(modifier),
+        modifier = Modifier.padding(top = 8.dp).then(modifier),
         title = stringResource(id = R.string.kaleyra_screenshare_picker_title),
         onCloseClick = onCloseClick,
     ) {

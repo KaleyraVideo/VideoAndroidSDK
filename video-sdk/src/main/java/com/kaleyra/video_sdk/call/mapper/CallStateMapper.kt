@@ -53,6 +53,7 @@ internal object CallStateMapper {
                 state is Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice
                 state is Call.State.Disconnected.Ended.Declined -> CallStateUi.Disconnected.Ended.Declined
                 state is Call.State.Disconnected.Ended.LineBusy -> CallStateUi.Disconnected.Ended.LineBusy
+                state is Call.State.Disconnected.Ended.CurrentUserInAnotherCall -> CallStateUi.Disconnected.Ended.CurrentUserInAnotherCall
                 state is Call.State.Disconnected.Ended.Timeout -> CallStateUi.Disconnected.Ended.Timeout
                 state is Call.State.Disconnected.Ended.Error.Server -> CallStateUi.Disconnected.Ended.Error.Server
                 state is Call.State.Disconnected.Ended.Error.Unknown -> CallStateUi.Disconnected.Ended.Error.Unknown

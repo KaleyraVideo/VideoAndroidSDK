@@ -70,7 +70,7 @@ internal fun VirtualBackgroundComponent(
     SubFeatureLayout(
         title = stringResource(id = R.string.kaleyra_virtual_background_picker_title),
         onCloseClick = onCloseClick,
-        modifier = Modifier.padding(top = 16.dp).then(modifier)
+        modifier = Modifier.padding(top = 8.dp).then(modifier)
     ) {
         VirtualBackgroundContent(
             items = uiState.backgroundList,

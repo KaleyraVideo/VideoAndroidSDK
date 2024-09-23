@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.call.audiooutput.view
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,7 +40,9 @@ internal fun AudioOutputContent(
     playingDeviceId: String?,
     onItemClick: (AudioDeviceUi) -> Unit,
 ) {
-    LazyColumn {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 16.dp))
+    {
         items(items = items.value.distinctBy { it.id }, key = { it.id }) {
             AudioOutputItem(
                 audioDevice = it,
@@ -51,7 +54,7 @@ internal fun AudioOutputContent(
                         onClick = { onItemClick(it) }
                     )
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .padding(horizontal = 24.dp,  vertical = 12.dp)
             )
         }
     }
