@@ -68,9 +68,7 @@ internal fun CallScreenModalSheet(
             onDismissRequest = onRequestDismiss,
             shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
             sheetState = sheetState,
-            dragHandle = {
-                CallBottomSheetDefaults.HDragHandle(Modifier.testTag(InputMessageDragHandleTag))
-            },
+            dragHandle = { CallBottomSheetDefaults.HDragHandle() },
             windowInsets = WindowInsets(0.dp),
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = modifier

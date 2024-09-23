@@ -40,7 +40,7 @@ internal fun AdminBottomSheetItem(
             contentColor = color,
             disabledContentColor = color.copy(alpha = .38f),
         ),
-        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
         modifier = modifier
     ) {
         Icon(

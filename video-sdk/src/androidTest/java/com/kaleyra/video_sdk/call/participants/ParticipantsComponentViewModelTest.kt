@@ -10,7 +10,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -23,9 +22,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -117,7 +114,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { participantsViewModel.muteStreamAudio(stream.id) }
@@ -137,7 +134,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { participantsViewModel.muteStreamAudio(stream.id) }
@@ -157,7 +154,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { participantsViewModel.toggleMic(any()) }
@@ -179,7 +176,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { streamViewModel.pin(stream.id) }
@@ -200,7 +197,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { streamViewModel.unpin(stream.id) }
@@ -226,7 +223,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream, stream1.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream1.username)
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertHasClickAction()
@@ -252,7 +249,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream, stream2.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream2.username)
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertHasClickAction()
