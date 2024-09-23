@@ -47,5 +47,6 @@ try:
         replace_regex("../" + module_name + "/src/main/assets/kaleyra_video_wrapper_info.txt",semver_regex, new_version)
     replace("../publish.gradle", current_version, new_version)
     set_output("TAG", "v" + new_version)
+    set_output("NEW_VERSION", new_version)
 except Exception as error:
     sys.exit("Did not update version" + error)
