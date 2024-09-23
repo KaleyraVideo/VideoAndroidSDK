@@ -46,7 +46,7 @@ internal fun SubFeatureLayout(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    Column(modifier, ) {
+    Column(modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -56,7 +56,6 @@ internal fun SubFeatureLayout(
         ) {
             Text(
                 text = title,
-                lineHeight = 24.sp,
                 fontWeight = FontWeight.Medium,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
