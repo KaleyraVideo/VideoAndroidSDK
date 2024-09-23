@@ -16,7 +16,6 @@ import io.mockk.spyk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Before
@@ -162,8 +161,11 @@ class KaleyraVideoInitializerTests {
         Assert.assertEquals(null, KaleyraVideoInitializationProvider.kaleyraVideoInitializer)
     }
 
-    @After
-    fun tearDown() {
-        unmockkAll()
+    companion object {
+        @JvmStatic
+        @AfterClass
+        fun tearDown() {
+            unmockkAll()
+        }
     }
 }
