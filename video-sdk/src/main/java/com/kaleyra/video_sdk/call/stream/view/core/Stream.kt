@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.togetherWith
@@ -14,10 +13,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +33,14 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 const val StreamViewTestTag = "StreamViewTestTag"
+private const val StreamViewAnimationDurationMillis = 150L
 internal const val RenderingDebouceMillis = 1000L
 
 @Composable
@@ -47,18 +49,22 @@ internal fun Stream(
     username: String,
     avatar: ImmutableUri?,
     showStreamView: Boolean,
+    modifier: Modifier = Modifier,
     @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
     onClick: (() -> Unit)? = null,
     avatarModifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
     var forceDisplayAvatar by remember { mutableStateOf(false) }
+    var isFirstComposition by remember { mutableStateOf(true) }
 
     AnimatedContent(
         targetState = !showStreamView || streamView == null || forceDisplayAvatar,
         transitionSpec = {
             fadeIn(animationSpec = tween()).togetherWith(ExitTransition.None)
         },
-        label = "stream content"
+        label = "stream content",
+        modifier = modifier
     ) { shouldDisplayAvatar ->
         if (shouldDisplayAvatar) {
             StreamAvatar(
@@ -67,14 +73,24 @@ internal fun Stream(
                 avatarPlaceholder = avatarPlaceholder,
                 modifier = avatarModifier
             )
-        }
-        else {
+        } else {
             AndroidView(
                 factory = {
                     streamView!!.value.apply {
                         val parentView = parent as? ViewGroup
                         parentView?.removeView(this)
                         setOnClickListener { onClick?.invoke() }
+                        // Animate the stream view with a fading effect if
+                        // the animated content is started with the android view.
+                        if (isFirstComposition) {
+                            alpha = 0f
+                            scope.launch {
+                                streamView.value.state.firstOrNull { it is StreamView.State.Rendering }
+                                animate()
+                                    .setDuration(StreamViewAnimationDurationMillis)
+                                    .alpha(1f)
+                            }
+                        }
                     }
                 },
                 update = { view ->
@@ -97,6 +113,9 @@ internal fun Stream(
                     .onEach { forceDisplayAvatar = !it }
                     .launchIn(this)
             }
+        }
+        LaunchedEffect(Unit) {
+            isFirstComposition = false
         }
     }
 }
