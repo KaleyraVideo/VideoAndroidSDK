@@ -43,7 +43,7 @@ class FileShareVisibilityObserver internal constructor(): BroadcastReceiver() {
         const val ACTION_FILE_SHARE_NOT_DISPLAYED = "com.kaleyra.video_common_ui.FILE_SHARE_NOT_DISPLAYED"
 
         private val _isDisplayed: MutableStateFlow<Boolean> = MutableStateFlow(false)
-        internal val isDisplayed: StateFlow<Boolean> = _isDisplayed
+        val isDisplayed: StateFlow<Boolean> = _isDisplayed
     }
 
     /**

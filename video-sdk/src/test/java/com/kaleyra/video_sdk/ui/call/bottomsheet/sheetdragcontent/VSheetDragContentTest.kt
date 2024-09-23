@@ -236,7 +236,7 @@ class VSheetDragContentTest {
     }
 
     @Test
-    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+    fun userClicksFileShare_clearFileShareBadgeAndRequestModalFileShare() {
         var component: ModalSheetComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
@@ -253,6 +253,7 @@ class VSheetDragContentTest {
             .performClick()
 
         assertEquals(ModalSheetComponent.FileShare, component)
+        verify(exactly = 1) { callActionsViewModel.clearFileShareBadge() }
     }
 
     @Test

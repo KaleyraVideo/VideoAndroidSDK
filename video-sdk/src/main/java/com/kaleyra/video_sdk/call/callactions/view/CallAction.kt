@@ -249,7 +249,10 @@ private fun CallActionLayout(
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
 ) {
-    Box(modifier.width(IntrinsicSize.Max)) {
+    Box(
+        modifier = modifier.width(IntrinsicSize.Max),
+        contentAlignment = Alignment.TopEnd
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -274,7 +277,7 @@ private fun CallActionLayout(
                         },
                     text = label,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -284,7 +287,6 @@ private fun CallActionLayout(
                 containerColor = badgeBackgroundColor,
                 contentColor = badgeContentColor,
                 modifier = modifier
-                    .align(Alignment.TopEnd)
                     .offset {
                         with(density) {
                             val offset = CallActionDefaults.BadgeOffset
@@ -329,7 +331,7 @@ private fun ButtonLayout(
                         }
                     },
                 text = text,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }

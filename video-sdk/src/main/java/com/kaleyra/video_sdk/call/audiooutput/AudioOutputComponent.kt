@@ -97,7 +97,7 @@ internal fun AudioOutputComponent(
     SubFeatureLayout(
         title = stringResource(id = R.string.kaleyra_audio_route_title),
         onCloseClick = onCloseClick,
-        modifier = Modifier.padding(top = 16.dp).then(modifier)
+        modifier = Modifier.padding(top = 8.dp).then(modifier)
     ) {
         AudioOutputContent(
             items = uiState.audioDeviceList,

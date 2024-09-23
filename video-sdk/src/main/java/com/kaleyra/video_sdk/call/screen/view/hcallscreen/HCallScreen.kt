@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -61,6 +62,7 @@ internal fun HCallScreen(
     modalSheetComponent: ModalSheetComponent?,
     inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -86,9 +88,8 @@ internal fun HCallScreen(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(14.dp)
+                    contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 8.dp),
+                    modifier = Modifier.animateContentSize()
                 )
             }
         },
@@ -179,11 +180,7 @@ internal fun HCallScreen(
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
             )
 
-            Column(
-                modifier = Modifier
-                    .padding(top = top, end = 96.dp)
-                    .padding(vertical = 24.dp)
-            ) {
+            Column(Modifier.padding(top = top, end = 96.dp)) {
                 CallInfoComponent(
                     modifier = Modifier
                         .padding(vertical = 12.dp)
@@ -197,7 +194,9 @@ internal fun HCallScreen(
 
             InputMessageHost(
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(bottom = 16.dp, end = 96.dp)
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
                     .align(Alignment.BottomCenter)
             )
 
@@ -205,6 +204,7 @@ internal fun HCallScreen(
                 modalSheetComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
+                onComponentDisplayed = onModalSheetComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick
             )

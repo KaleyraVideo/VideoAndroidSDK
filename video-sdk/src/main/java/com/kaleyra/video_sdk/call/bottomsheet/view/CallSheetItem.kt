@@ -61,8 +61,9 @@ internal fun CallSheetItem(
             val shouldShowPermissionWarning = with(inputPermissions.micPermission) { this != null && !status.isGranted && status.shouldShowRationale }
             val shouldShowPermissionError = inputPermissions.wasMicPermissionAsked && with(inputPermissions.micPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
 
+            val shouldToggleAction = shouldShowPermissionWarning || shouldShowPermissionError || ca.state == InputCallAction.State.Warning || ca.state == InputCallAction.State.Error
             MicAction(
-                checked = ca.isToggled,
+                checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
@@ -74,8 +75,9 @@ internal fun CallSheetItem(
             val shouldShowPermissionWarning = with(inputPermissions.cameraPermission) { this != null && !status.isGranted && status.shouldShowRationale }
             val shouldShowPermissionError = inputPermissions.wasCameraPermissionAsked && with(inputPermissions.cameraPermission) { this != null && !status.isGranted && !status.shouldShowRationale }
 
+            val shouldToggleAction = shouldShowPermissionWarning || shouldShowPermissionError || ca.state == InputCallAction.State.Warning || ca.state == InputCallAction.State.Error
             CameraAction(
-                checked = ca.isToggled,
+                checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,

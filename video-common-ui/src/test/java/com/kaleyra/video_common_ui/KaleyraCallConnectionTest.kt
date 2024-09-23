@@ -284,6 +284,18 @@ class KaleyraCallConnectionTest {
     }
 
     @Test
+    fun callStateCurrentUserInAnotherCall_connectionSetToBusy() = runTest(UnconfinedTestDispatcher()) {
+        every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.CurrentUserInAnotherCall)
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
+        connection.syncStateWithCall()
+        verify(exactly = 1) {
+            connection.setDisconnected(withArg {
+                assertEquals(it.code, DisconnectCause.BUSY)
+            })
+        }
+    }
+
+    @Test
     fun callStateDeclined_connectionSetToRemote() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Disconnected.Ended.Declined)
         val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))

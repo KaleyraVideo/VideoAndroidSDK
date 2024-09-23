@@ -42,7 +42,7 @@ fun ScreenShareItem(
         Text(
             text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
@@ -58,7 +58,7 @@ fun ScreenShareItem(
             Text(
                 text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.labelLarge
             )
         }
     }

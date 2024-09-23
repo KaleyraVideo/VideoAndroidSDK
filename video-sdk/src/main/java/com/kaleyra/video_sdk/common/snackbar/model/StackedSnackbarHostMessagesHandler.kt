@@ -10,6 +10,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -55,6 +56,7 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
                 is RecordingMessage -> this.removeIf { it is RecordingMessage }
                 is AudioConnectionFailureMessage -> this.removeIf { it is AudioConnectionFailureMessage }
                 is UsbCameraMessage -> this.removeIf { it is UsbCameraMessage }
+                is WhiteboardRequestMessage -> this.removeIf { it is WhiteboardRequestMessage }
                 else -> Unit
             }
 

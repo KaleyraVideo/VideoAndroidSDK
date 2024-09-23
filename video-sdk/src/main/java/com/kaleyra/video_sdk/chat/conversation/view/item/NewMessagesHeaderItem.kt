@@ -54,8 +54,7 @@ internal fun NewMessagesHeaderItem(modifier: Modifier = Modifier) {
                 .width(IntrinsicSize.Max)
                 .then(modifier),
             text = stringResource(id = R.string.kaleyra_chat_unread_messages),
-            fontSize = MaterialTheme.typography.labelMedium.fontSize,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

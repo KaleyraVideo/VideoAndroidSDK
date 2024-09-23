@@ -63,8 +63,12 @@
     <string name="kaleyra_participants_component_pin">Pin</string>
     <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
     <string name="kaleyra_participants_component_unpin_stream">Unpin stream</string>
+    <string name="kaleyra_participants_component_pin_stream_description">Pin %s\'s stream</string>
+    <string name="kaleyra_participants_component_unpin_stream_description">Unpin %s\'s stream</string>
     <string name="kaleyra_participants_component_mute_for_you">Mute for you</string>
     <string name="kaleyra_participants_component_unmute_for_you">Unmute for you</string>
+    <string name="kaleyra_participants_component_mute_for_you_description">Mute %s for you</string>
+    <string name="kaleyra_participants_component_unmute_for_you_description">Unmute %s for you</string>
     <string name="kaleyra_participants_component_you">%s (You)</string>
     <string name="kaleyra_participants_component_admin">Admin</string>
     <string name="kaleyra_participants_component_screenshare">Screen share</string>
@@ -72,6 +76,8 @@
     <string name="kaleyra_participants_component_remove_from_call">Remove from call</string>
     <string name="kaleyra_participants_component_disable_microphone">Disable microphone</string>
     <string name="kaleyra_participants_component_enable_microphone">Enable microphone</string>
+    <string name="kaleyra_participants_component_disable_microphone_description">Disable %s\'s microphone</string>
+    <string name="kaleyra_participants_component_enable_microphone_description">Enable %s\'s microphone</string>
     <string name="kaleyra_participants_component_show_more_actions">Show more actions</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Participant</item>
@@ -119,7 +125,7 @@
     <string name="kaleyra_call_drag_to_expand">Drag to expand</string>
 
     <!-- Chat -->
-    <string name="kaleyra_edit_text_input_placeholder">Type your message here &#8230;</string>
+    <string name="kaleyra_edit_text_input_placeholder">Type your message here</string>
     <string name="kaleyra_chat_channel_loading">Loading &#8230;</string>
     <string name="kaleyra_chat_user_status_online">online</string>
     <string name="kaleyra_chat_participants_online">%1$s online</string>
@@ -138,7 +144,8 @@
     <string name="kaleyra_chat_msg_status_sent">Message sent</string>
     <string name="kaleyra_chat_msg_status_seen">Message seen</string>
     <string name="kaleyra_chat_unread_messages">Unread messages</string>
-    <string name="kaleyra_chat_no_messages">No message yet&#8230;</string>
+    <string name="kaleyra_chat_no_messages_title">No message yet</string>
+    <string name="kaleyra_chat_no_messages_subtitle">Send a message to initiate communication</string>
     <string name="kaleyra_chat_avatar_desc">Chat image</string>
     <string name="kaleyra_chat_group_title">Group chat</string>
 
@@ -175,9 +182,11 @@
     <string name="kaleyra_data_loss_confirm_message">Are you sure?\nAll data will be lost.</string>
     <string name="kaleyra_call_hangup">Hangup</string>
     <string name="kaleyra_call_answer">Participate</string>
+    <string name="kaleyra_call_failed">Call failed</string>
     <string name="kaleyra_ongoing_call_label">Tap to go back to call</string>
     <string name="kaleyra_call_left_alone">You are left alone</string>
     <string name="kaleyra_call_offline">You are offline</string>
+    <string name="kaleyra_current_user_busy">You are currently in another call</string>
     <string name="kaleyra_error_button_reload">Reload</string>
     <string name="kaleyra_error_title">An error occurred</string>
     <string name="kaleyra_error_subtitle">Please tap to reload</string>
@@ -329,4 +338,5 @@
     <string name="kaleyra_waiting_for_other_participants">Waiting for other participants…</string>
     <string name="kaleyra_call_sheet_drag_description">Drag</string>
 
+    <string name="kaleyra_input_text_default_error">Input text error</string>
 </resources>

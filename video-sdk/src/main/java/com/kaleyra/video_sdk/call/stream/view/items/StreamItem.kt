@@ -132,7 +132,7 @@ private fun UserLabel(
                 text = username,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelSmall
             )
         }
     }

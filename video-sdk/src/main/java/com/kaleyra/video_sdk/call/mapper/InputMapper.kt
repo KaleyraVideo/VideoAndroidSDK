@@ -71,16 +71,17 @@ internal object InputMapper {
         this.toMe()
             .flatMapLatest { it.streams }
             .map { streams -> streams.firstOrNull { stream -> stream.id == CAMERA_STREAM_ID } }
-            .flatMapLatest { it?.video ?: flowOf(null) }
-            .flatMapLatest { it?.enabled ?: flowOf(null) }
             .filterNotNull()
+            .flatMapLatest { it.video }
+            .filterNotNull()
+            .flatMapLatest { it.enabled }
             .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 
     fun Call.isMyMicEnabled(): Flow<Boolean> =
         this.toCameraStreamAudio()
-            .flatMapLatest { it?.enabled ?: flowOf(null) }
             .filterNotNull()
+            .flatMapLatest { it.enabled }
             .map { it.isAtLeastLocallyEnabled() }
             .distinctUntilChanged()
 

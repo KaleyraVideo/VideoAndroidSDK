@@ -45,7 +45,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class ConversationComponentTest {
 
     @get:Rule
@@ -73,8 +72,10 @@ class ConversationComponentTest {
     @Test
     fun emptyMessages_noMessagesDisplayed() {
         setContent(ConversationState(conversationItems = ImmutableList(emptyList())))
-        val noMessages = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages)
-        composeTestRule.onNodeWithText(noMessages).assertIsDisplayed()
+        val noMessagesTitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_title)
+        val noMessagesSubtitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_subtitle)
+        composeTestRule.onNodeWithText(noMessagesTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithText(noMessagesSubtitle).assertIsDisplayed()
     }
 
     @Test

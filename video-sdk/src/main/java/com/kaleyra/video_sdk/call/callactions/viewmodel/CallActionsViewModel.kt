@@ -25,11 +25,13 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
@@ -66,6 +68,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -91,6 +94,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
+
+    private var lastFileShareCreationTime = MutableStateFlow(-1L)
 
     init {
         viewModelScope.launch {
@@ -184,36 +189,30 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             uiState
                 .map { it.actionList.value }
                 .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) } ) { actionList, state ->
-                    actionList.indexOfFirst { it is MicAction }.takeIf { it != -1 }?.let { index ->
-                        val inputState = when (state) {
-                            is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
-                            is Input.State.Closed.Error -> InputCallAction.State.Error
-                            else -> InputCallAction.State.Ok
-                        }
-                        val action = (actionList[index] as MicAction).copy(state = inputState)
-                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
-                        _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
+                    val inputState = when (state) {
+                        is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
+                        is Input.State.Closed.Error -> InputCallAction.State.Error
+                        else -> InputCallAction.State.Ok
                     }
-                }
-                .launchIn(this)
+                    updateAction<MicAction>(actionList) { action ->
+                        action.copy(state = inputState)
+                    }
+                }.launchIn(this)
 
             combine(
                 uiState.map { it.actionList.value },
                 call.toCameraVideoInput().flatMapLatest { it?.state ?: flowOf(null) },
                 hasCameraUsageRestrictionFlow
             ) { actionList, state, cameraUsage ->
-                    actionList.indexOfFirst { it is CameraAction }.takeIf { it != -1 }?.let { index ->
-                        val inputState = when {
-                            state is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
-                            state is Input.State.Closed.Error || cameraUsage -> InputCallAction.State.Error
-                            else -> InputCallAction.State.Ok
-                        }
-                        val action = (actionList[index] as CameraAction).copy(state = inputState)
-                        val updatedActionList = actionList.toMutableList().also { it[index] = action }
-                        _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
-                    }
+                val inputState = when {
+                    state is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
+                    state is Input.State.Closed.Error || cameraUsage -> InputCallAction.State.Error
+                    else -> InputCallAction.State.Ok
                 }
-                .launchIn(this)
+                updateAction<CameraAction>(actionList) { action ->
+                    action.copy(state = inputState)
+                }
+            }.launchIn(this)
 
             call
                 .toCallStateUi()
@@ -223,6 +222,42 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             hasCameraUsageRestrictionFlow
                 .onEach { isUsageRestricted -> _uiState.update { it.copy(isCameraUsageRestricted = isUsageRestricted) } }
                 .launchIn(this)
+
+            combine(
+                uiState.map { it.actionList.value },
+                call.sharedFolder.files.map { files -> files.map { it.creationTime } },
+                lastFileShareCreationTime
+            ) { actionList, creationTimes, lastFileShareCreationTime ->
+                if (FileShareVisibilityObserver.isDisplayed.value) {
+                    this@CallActionsViewModel.lastFileShareCreationTime.value = creationTimes.lastOrNull() ?: -1
+                    return@combine
+                }
+                val count = creationTimes.count { it > lastFileShareCreationTime }
+                updateAction<FileShareAction>(actionList) { action ->
+                    action.copy(notificationCount = count)
+                }
+            }.launchIn(this)
+
+            combine(
+                uiState.map { it.actionList.value },
+                call.whiteboard.notificationCount
+            ) { actionList, notificationCount ->
+                updateAction<WhiteboardAction>(actionList) { action ->
+                    action.copy(notificationCount = notificationCount)
+                }
+            }.launchIn(this)
+
+            val chat = getChat(call)
+            if (chat != null) {
+                combine(
+                    uiState.map { it.actionList.value },
+                    chat.unreadMessagesCount
+                ) { actionList, unreadMessagesCount ->
+                    updateAction<ChatAction>(actionList) { action ->
+                        action.copy(notificationCount = unreadMessagesCount)
+                    }
+                }.launchIn(this)
+            }
         }
     }
 
@@ -334,6 +369,33 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             call.inputs.release(Inputs.Type.Screen)
             call.inputs.release(Inputs.Type.Application)
             stream != null
+        }
+    }
+
+    fun clearFileShareBadge() {
+        call.getValue()?.sharedFolder?.files?.value?.let { files ->
+            val maxCreationTime = files.maxOfOrNull { it.creationTime } ?: return
+            lastFileShareCreationTime.value = maxCreationTime
+        }
+    }
+
+    private fun getChat(call: Call): Chat? {
+        val companyId = company.getValue()?.id?.getValue()
+        val participants = call.participants.value
+        val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
+        return otherParticipants.firstOrNull()?.let { others ->
+            conversation.getValue()?.create(others)?.getOrNull()
+        }
+    }
+
+    private inline fun <reified T> updateAction(
+        actionList: List<CallActionUI>,
+        transform: (T) -> CallActionUI
+    ) {
+        actionList.indexOfFirst { it::class == T::class }.takeIf { it != -1 }?.let { index ->
+            val action = transform( (actionList[index] as T))
+            val updatedActionList = actionList.toMutableList().also { it[index] = action }
+            _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
         }
     }
 

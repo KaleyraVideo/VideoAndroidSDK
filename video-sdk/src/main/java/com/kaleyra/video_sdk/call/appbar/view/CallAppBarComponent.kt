@@ -56,7 +56,6 @@ internal object CallAppBarDefaults {
 
     val Height = 40.dp
 
-    val Elevation = 2.dp
 }
 
 internal val RecordingDotTag = "RecordingDotTag"
@@ -121,7 +120,8 @@ internal fun CallAppBarComponent(
                                 recording = automaticRecording ||
                                     recordingStateUi == RecordingStateUi.Started,
                                 pulseRecording = false,
-                                title = stringResource(id = R.string.kaleyra_rec))
+                                title = stringResource(id = R.string.kaleyra_rec)
+                            )
 
                     else -> Title(
                         recording = automaticRecording ||
@@ -137,8 +137,7 @@ internal fun CallAppBarComponent(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BackIconButton(
-                    modifier = Modifier.size(32.dp),
-                    icon = painterResource(id = R.drawable.ic_kaleyra_arrow_back_new),
+                    modifier = Modifier.size(40.dp),
                     iconTint = LocalContentColor.current,
                     onClick = onBackPressed
                 )
@@ -176,7 +175,7 @@ private fun Title(recording: Boolean, pulseRecording: Boolean, title: String) {
         }
         Text(
             text = title,
-            style = typography.titleSmall.copy(
+            style = typography.labelLarge.copy(
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false
                 )
@@ -201,7 +200,7 @@ private fun CallParticipantsButton(
         ) {
             Text(
                 text = "$participantCount",
-                style = typography.titleSmall.copy(
+                style = typography.labelLarge.copy(
                     platformStyle = PlatformTextStyle(
                         includeFontPadding = false
                     )

@@ -32,8 +32,8 @@ internal fun AnswerAction(
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_answer),
         contentDescription = text,
         buttonText = text,
-        buttonColor = KaleyraTheme.colors.answer,
-        buttonContentColor = KaleyraTheme.colors.onAnswer,
+        buttonColor = KaleyraTheme.colors.positiveContainer,
+        buttonContentColor = KaleyraTheme.colors.onPositiveContainer,
         onClick = onClick
     )
 }

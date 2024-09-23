@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -38,7 +40,7 @@ internal fun AdminBottomSheetItem(
             contentColor = color,
             disabledContentColor = color.copy(alpha = .38f),
         ),
-        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
         modifier = modifier
     ) {
         Icon(
@@ -47,6 +49,11 @@ internal fun AdminBottomSheetItem(
             contentDescription = null
         )
         Spacer(modifier = Modifier.width(26.dp))
-        Text(text, modifier = Modifier.weight(1f))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
     }
 }

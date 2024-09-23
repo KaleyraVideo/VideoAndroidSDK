@@ -118,8 +118,8 @@ internal fun OtherMessageItem(
                     bottomStart = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius,
                     bottomEnd = BubbleCornerRadius
                 ),
-                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -151,7 +151,7 @@ internal fun MyMessageItem(
                 bottomEnd = if (isLastChainMessage) BubbleNoCornerRadius else BubbleCornerRadius
             ),
             backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -197,7 +197,11 @@ internal fun Bubble(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
         modifier = Modifier
-            .widthIn(min = 0.dp, max = configuration.screenWidthDp.div(3).times(2).dp)
+            .widthIn(min = 0.dp,
+                max = configuration.screenWidthDp
+                    .div(3)
+                    .times(2).dp
+            )
             .testTag(BubbleTestTag)
     ) {
         Column(modifier = Modifier.padding(16.dp, 8.dp)) {
@@ -214,6 +218,8 @@ internal fun Bubble(
                 textColor = contentColor
             )
 
+            Spacer(modifier = Modifier.height(2.dp))
+
             Row(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
@@ -221,8 +227,7 @@ internal fun Bubble(
             ) {
                 Text(
                     text = messageTime,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
 
                 if (messageState != null) {

@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
@@ -64,6 +65,7 @@ internal fun ResetScrollFab(
         SmallFloatingActionButton(
             onClick = onClick,
             modifier = Modifier.highlightOnFocus(interactionSource),
+            containerColor = MaterialTheme.colorScheme.inverseSurface,
             shape = CircleShape,
             interactionSource = interactionSource
         ) {
@@ -74,8 +76,8 @@ internal fun ResetScrollFab(
                 if (counter > 0) {
                     Text(
                         text = "$counter",
-                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
-                        style = MaterialTheme.typography.labelMedium
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
                 Icon(

@@ -20,6 +20,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -156,14 +157,18 @@ internal fun LoadingMessagesLabel(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.kaleyra_chat_no_messages),
-            style = MaterialTheme.typography.bodyMedium,
+            text = stringResource(id = R.string.kaleyra_chat_no_messages_title),
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(
+            text = stringResource(id = R.string.kaleyra_chat_no_messages_subtitle),
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

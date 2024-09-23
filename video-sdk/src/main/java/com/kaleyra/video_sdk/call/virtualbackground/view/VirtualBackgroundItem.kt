@@ -33,9 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -62,10 +61,10 @@ internal fun VirtualBackgroundItem(
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = textFor(background),
-            fontSize = 14.sp,
             maxLines = 1,
             color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
         )
     }
 }

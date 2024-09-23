@@ -60,17 +60,23 @@
     <string name="kaleyra_participants_component_users_invited">Altri Invitati</string>
     <string name="kaleyra_participants_component_grid">Griglia</string>
     <string name="kaleyra_participants_component_pin">Pin</string>
-    <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
-    <string name="kaleyra_participants_component_unpin_stream">Rimuovi pin stream</string>
-    <string name="kaleyra_participants_component_mute_for_you">Disattiva l\'audio per te</string>
-    <string name="kaleyra_participants_component_unmute_for_you">Riattiva l\'audio per te</string>
+    <string name="kaleyra_participants_component_pin_stream">Fissa lo stream</string>
+    <string name="kaleyra_participants_component_unpin_stream">Togli lo stream</string>
+    <string name="kaleyra_participants_component_pin_stream_description">Fissa lo stream di %s</string>
+    <string name="kaleyra_participants_component_unpin_stream_description">Togli lo stream di %s</string>
+    <string name="kaleyra_participants_component_mute_for_you">Silenzia</string>
+    <string name="kaleyra_participants_component_unmute_for_you">Riattiva l\'audio</string>
+    <string name="kaleyra_participants_component_mute_for_you_description">Silenzia %s</string>
+    <string name="kaleyra_participants_component_unmute_for_you_description">Riattiva l\'audio di %s</string>
     <string name="kaleyra_participants_component_you">%s (Tu)</string>
     <string name="kaleyra_participants_component_admin">Amministratore</string>
     <string name="kaleyra_participants_component_screenshare">Condivisione schermo</string>
     <string name="kaleyra_participants_component_participant">Partecipante</string>
     <string name="kaleyra_participants_component_remove_from_call">Rimuovi dalla chiamata</string>
-    <string name="kaleyra_participants_component_disable_microphone">Disabilita microfono</string>
-    <string name="kaleyra_participants_component_enable_microphone">Abilita microfono</string>
+    <string name="kaleyra_participants_component_disable_microphone">Disabilita il microfono</string>
+    <string name="kaleyra_participants_component_enable_microphone">Abilita il microfono</string>
+    <string name="kaleyra_participants_component_disable_microphone_description">Disabilita il microfono di %s</string>
+    <string name="kaleyra_participants_component_enable_microphone_description">Abilita il microfono di %s</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostra più azioni</string>
     <plurals name="kaleyra_participants_component_participants">
         <item quantity="one">%d Partecipante</item>
@@ -120,7 +126,7 @@
     <string name="kaleyra_call_drag_to_expand">Trascina per espandere</string>
 
     <!-- Chat -->
-    <string name="kaleyra_edit_text_input_placeholder">Scrivi qui il tuo messaggio &#8230;</string>
+    <string name="kaleyra_edit_text_input_placeholder">Scrivi qui il tuo messaggio</string>
     <string name="kaleyra_chat_channel_loading">Caricamento &#8230;</string>
     <string name="kaleyra_chat_user_status_online">in linea</string>
     <string name="kaleyra_chat_participants_online">%1$s in linea</string>
@@ -140,7 +146,7 @@
     <string name="kaleyra_chat_msg_status_sent">Messaggio inviato</string>
     <string name="kaleyra_chat_msg_status_seen">Messaggio letto</string>
     <string name="kaleyra_chat_unread_messages">Messaggi non letti</string>
-    <string name="kaleyra_chat_no_messages">Nessun messaggio&#8230;</string>
+    <string name="kaleyra_chat_no_messages_title">Nessun messaggio</string>
     <string name="kaleyra_chat_avatar_desc">Immagine della chat</string>
     <string name="kaleyra_chat_group_title">Chat di gruppo</string>
 
@@ -178,6 +184,7 @@
     <string name="kaleyra_call_left_alone">Sei rimasto da solo</string>
     <string name="kaleyra_call_offline">Sei offline</string>
 
+    <string name="kaleyra_current_user_busy">Sei attualmente in un\'altra chiamata</string>
     <string name="kaleyra_error_button_reload">Riprova</string>
     <string name="kaleyra_error_title">Si è verificato un errore</string>
     <string name="kaleyra_error_subtitle">Per favore tocca per riprovare</string>
@@ -329,5 +336,8 @@
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s ha richiesto di chiudere la whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_user_message">È stato richeisto di chiudere la whiteboard</string>
     <string name="kaleyra_call_sheet_drag_description">Trascina</string>
+    <string name="kaleyra_input_text_default_error">Errore di input del testo</string>
+    <string name="kaleyra_chat_no_messages_subtitle">Invia un messaggio per avviare la comunicazione</string>
+    <string name="kaleyra_call_failed">Chiamata non riuscita</string>
 
 </resources>

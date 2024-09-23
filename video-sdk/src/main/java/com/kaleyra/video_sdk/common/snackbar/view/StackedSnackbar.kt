@@ -2,7 +2,10 @@ package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
@@ -19,8 +23,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -32,12 +35,14 @@ internal fun StackedSnackbar(
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .then(modifier)) {
+            .then(modifier)
+    ) {
 
-        items(items = snackbarData.value, key = { it.hashCode() }) {
+        items(items = snackbarData.value, key = { it.id }) {
             Box(
                 modifier = Modifier
                     .animateItemPlacement()
@@ -64,11 +69,12 @@ internal fun StackedSnackbar(
                         AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                         AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                         AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
-                        is WhiteboardHideRequestMessage -> TODO()
-                        is WhiteboardShowRequestMessage -> TODO()
+                        is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
+                        is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
                     }
                 }
             )
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

@@ -16,11 +16,12 @@
 
 package com.kaleyra.video_sdk.call.whiteboard.view
 
+import IconButton
 import android.content.res.Configuration
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,25 +57,28 @@ internal fun WhiteboardOfflineContent(
                 animation = tween(500, easing = LinearEasing)
             )
         )
-        IconButton(onClick = onReloadClick) {
-            Icon(painter = painterResource(id = R.drawable.ic_kaleyra_reload),
-                contentDescription = stringResource(id = R.string.kaleyra_error_button_reload),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .size(96.dp)
-                    .padding(2.dp)
-                    .graphicsLayer {
-                        rotationZ = if (loading) rotation else 0f
-                    })
-        }
+        IconButton(
+            icon = painterResource(id = R.drawable.ic_kaleyra_reload),
+            iconDescription = stringResource(id = R.string.kaleyra_error_button_reload),
+            enabledIconTint = MaterialTheme.colorScheme.onSurface,
+            iconSize = 96.dp,
+            onClick = onReloadClick,
+            indication = rememberRipple(bounded = false, radius = 48.dp),
+            modifier = Modifier
+                .graphicsLayer {
+                    rotationZ = if (loading) rotation else 0f
+                }
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = stringResource(id = R.string.kaleyra_error_title), color = MaterialTheme.colorScheme.onSurface
+            text = stringResource(id = R.string.kaleyra_error_title),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = stringResource(id = R.string.kaleyra_error_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 12.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

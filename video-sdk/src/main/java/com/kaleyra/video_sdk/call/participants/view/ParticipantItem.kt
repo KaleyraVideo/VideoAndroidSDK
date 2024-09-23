@@ -76,7 +76,7 @@ internal fun ParticipantItem(
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
@@ -95,7 +95,7 @@ internal fun ParticipantItem(
                 content = {
                     Icon(
                         disableMicPainterFor(stream.audio),
-                        disableMicTextFor(stream.audio)
+                        disableContentDescriptionFor(stream.audio, stream.username)
                     )
                 }
             )
@@ -112,7 +112,7 @@ internal fun ParticipantItem(
                     )
                     else Unit
                 },
-                content = { Icon(mutePainterFor(stream.audio), muteTextFor(stream.audio)) }
+                content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.username)) }
             )
         }
 
@@ -123,7 +123,7 @@ internal fun ParticipantItem(
                 modifier = Modifier.highlightOnFocus(interactionSource),
                 enabled = (!isPinLimitReached || isPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
                 onClick = { onPinStreamClick(stream.id, !isPinned) },
-                content = { Icon(pinnedPainterFor(isPinned), pinnedTextFor(isPinned)) }
+                content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
             )
         } else {
             val interactionSource = remember { MutableInteractionSource() }
