@@ -23,7 +23,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-Common-UI
-        run: ./gradlew :video-common-ui:testDebugUnitTest
+        run: ./gradlew :video-common-ui:build
 
   build_video_sdk:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-SDK
-        run: ./gradlew :video-sdk:testDebugUnitTest
+        run: ./gradlew :video-sdk:build
 
   build_glasses_sdk:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-Glasses-SDK
-        run: ./gradlew :video-glasses-sdk:testDebugUnitTest
+        run: ./gradlew :video-glasses-sdk:build
 
   build_app:
     runs-on: ubuntu-latest

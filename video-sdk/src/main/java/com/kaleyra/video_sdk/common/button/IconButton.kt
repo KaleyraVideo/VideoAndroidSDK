@@ -32,7 +32,7 @@ internal fun IconButton(
     enabled: Boolean = true,
     supportRtl: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    indication: Indication? = rememberRipple(bounded = false, radius = IconSize),
+    indication: Indication? = rememberRipple(bounded = false, radius = iconSize),
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

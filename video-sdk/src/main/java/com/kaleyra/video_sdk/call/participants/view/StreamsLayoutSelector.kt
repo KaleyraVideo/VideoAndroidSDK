@@ -57,7 +57,11 @@ internal fun StreamsLayoutSelector(
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_component_grid), fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.kaleyra_participants_component_grid),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
 
         Spacer(Modifier.width(14.dp))
@@ -81,7 +85,11 @@ internal fun StreamsLayoutSelector(
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.kaleyra_participants_component_pin), fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.kaleyra_participants_component_pin),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }

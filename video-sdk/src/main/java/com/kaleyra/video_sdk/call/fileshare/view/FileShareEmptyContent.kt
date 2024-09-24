@@ -58,13 +58,14 @@ fun FileShareEmptyContent(modifier: Modifier = Modifier) {
         )
         Text(
             text = stringResource(id = R.string.kaleyra_no_file_shared),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
         )
         Text(
             text = stringResource(id = R.string.kaleyra_click_to_share_file),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 12.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

@@ -72,8 +72,8 @@ internal fun ChatAppBarContent(
                 EllipsizeText(
                     text = subtitle,
                     fontFamily = KaleyraFontFamily.default,
-                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight!!,
+                    fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                    fontWeight = MaterialTheme.typography.bodySmall.fontWeight!!,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.testTag(SubtitleTag),
                     ellipsize = Ellipsize.Marquee

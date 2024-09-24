@@ -21,6 +21,16 @@ import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
+import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
@@ -34,18 +44,8 @@ import com.kaleyra.video_sdk.call.kicked.viewmodel.KickedMessageViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
-import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
-import com.kaleyra.video_sdk.call.screen.model.MainUiState
-import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
+import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -60,8 +60,7 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.findBackButton
@@ -584,7 +583,7 @@ class CallScreenTest {
         )
         composeTestRule.waitForIdle()
         verify(exactly = 1) {
-            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardShowRequestMessage> {
+            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardRequestMessage.WhiteboardShowRequestMessage> {
                 assertEquals("username", it.username)
             })
         }
@@ -640,7 +639,7 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
 
         verify(exactly = 1) {
-            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardHideRequestMessage> {
+            CallUserMessagesProvider.sendUserMessage(withArg<WhiteboardRequestMessage.WhiteboardHideRequestMessage> {
                 assertEquals("username", it.username)
             })
         }

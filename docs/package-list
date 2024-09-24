@@ -72,6 +72,7 @@ com.kaleyra.video_sdk.common.snackbar.model
 com.kaleyra.video_sdk.common.snackbar.view
 com.kaleyra.video_sdk.common.text
 com.kaleyra.video_sdk.common.uistate
+com.kaleyra.video_sdk.common.userinput
 com.kaleyra.video_sdk.common.usermessages.model
 com.kaleyra.video_sdk.common.usermessages.provider
 com.kaleyra.video_sdk.common.usermessages.view

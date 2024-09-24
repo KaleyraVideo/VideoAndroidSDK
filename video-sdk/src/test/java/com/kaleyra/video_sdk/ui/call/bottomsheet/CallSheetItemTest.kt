@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -1309,7 +1310,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1339,7 +1343,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1368,7 +1375,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1397,7 +1407,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1428,7 +1441,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1458,7 +1474,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1487,7 +1506,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1509,7 +1531,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1531,7 +1556,10 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 
     @Test
@@ -1553,6 +1581,9 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
+        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
         composeTestRule.onNodeWithText("!").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(description).assertIsOn()
     }
 }

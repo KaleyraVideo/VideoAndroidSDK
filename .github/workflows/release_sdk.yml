@@ -64,7 +64,8 @@ jobs:
       - name: Update app version
         run: ./gradlew autoIncrementVersionCode
       - name: Update app sdk dependency
-        run: sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ inputs.specific_release_version || inputs.release_version }}'"/g' ./app/build.gradle
+        run:
+          sed -i 's/kaleyraVideoSdkVersion = "[0-9]*\.[0-9]*\.[0-9]*-*\w*"/kaleyraVideoSdkVersion = "'${{ inputs.specific_release_version || steps.output_tag.outputs.NEW_VERSION }}'"/g' ./app/build.gradle
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: Update sdk version"

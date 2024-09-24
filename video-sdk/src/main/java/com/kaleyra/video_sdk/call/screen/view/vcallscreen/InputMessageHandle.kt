@@ -13,15 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 
 internal const val InputMessageDragHandleTag = "InputMessageDragHandleTag"
 
 @Composable
-internal fun InputMessageHandle() {
+internal fun InputMessageHandle(
+    viewModel: CallActionsViewModel = viewModel(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val showHandle by remember {
         derivedStateOf { snackbarHostState.currentSnackbarData == null }
@@ -36,6 +41,7 @@ internal fun InputMessageHandle() {
             CallBottomSheetDefaults.HDragHandle(Modifier.testTag(InputMessageDragHandleTag))
         }
         InputMessageHost(
+            viewModel = viewModel,
             snackbarHostState = snackbarHostState,
             micMessage = { enabled -> MicMessageText(enabled) },
             cameraMessage = { enabled -> CameraMessageText(enabled) },

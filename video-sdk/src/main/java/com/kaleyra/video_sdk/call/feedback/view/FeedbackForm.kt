@@ -99,8 +99,7 @@ internal fun FeedbackForm(
                 text = stringResource(id = R.string.kaleyra_feedback_evaluate_call),
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                lineHeight = 22.sp,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
@@ -108,7 +107,7 @@ internal fun FeedbackForm(
         if (!isEditTextFocused) Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -146,9 +145,7 @@ internal fun FeedbackForm(
                 isEditTextFocused -> 4
                 else -> 1
             },
-            textStyle = TextStyle(
-                fontSize = 14.sp
-            )
+            textStyle = MaterialTheme.typography.bodyMedium
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -160,15 +157,13 @@ internal fun FeedbackForm(
                 onClick = { onDismiss() },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(end = 16.dp),
+                    .padding(end = 12.dp),
                 content = {
                     Text(
                         text = stringResource(id = R.string.kaleyra_action_cancel),
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.labelLarge
                     )
                 },
             )
@@ -179,7 +174,7 @@ internal fun FeedbackForm(
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_feedback_vote),
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold
                 )
             }

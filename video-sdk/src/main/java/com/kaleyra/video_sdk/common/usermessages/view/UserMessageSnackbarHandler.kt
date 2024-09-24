@@ -47,8 +47,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filterNotNull
 
@@ -81,8 +80,8 @@ internal fun UserMessageSnackbarHandler(
                     message = when (it) {
                         is MutedMessage -> it.admin ?: ""
                         is UsbCameraMessage.Connected -> it.name
-                        is WhiteboardShowRequestMessage -> it.username ?: ""
-                        is WhiteboardHideRequestMessage -> it.username ?: ""
+                        is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> it.username ?: ""
+                        is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> it.username ?: ""
                         else -> ""
                     },
                     actionLabel = when (it) {
@@ -96,8 +95,8 @@ internal fun UserMessageSnackbarHandler(
                         is AudioConnectionFailureMessage.Generic -> AudioOutputGenericFailure
                         is AudioConnectionFailureMessage.InSystemCall -> AudioOutputInSystemCallFailure
                         is MutedMessage -> MutedByAdmin
-                        is WhiteboardShowRequestMessage -> WhiteboardShowRequest
-                        is WhiteboardHideRequestMessage -> WhiteboardHideRequest
+                        is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardShowRequest
+                        is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardHideRequest
                         else -> null
                     }
                 )

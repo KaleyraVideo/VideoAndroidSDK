@@ -21,6 +21,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,8 +62,9 @@ internal fun FileShareFab(
             if (!collapsed) {
                 Spacer(Modifier.width(FabIconPadding))
                 Text(
-                    text = stringResource(id = R.string.kaleyra_fileshare_add).uppercase(),
-                    fontWeight = FontWeight.Bold
+                    text = stringResource(id = R.string.kaleyra_fileshare_add),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }

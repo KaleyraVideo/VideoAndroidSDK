@@ -89,7 +89,7 @@ class KaleyraCallConnection private constructor(val call: CallUI, val coroutineS
                         setConnectionDisconnected(DisconnectCause.OTHER)
                     }
 
-                    Call.State.Disconnected.Ended.LineBusy -> setConnectionDisconnected(DisconnectCause.BUSY)
+                    Call.State.Disconnected.Ended.LineBusy, Call.State.Disconnected.Ended.CurrentUserInAnotherCall -> setConnectionDisconnected(DisconnectCause.BUSY)
                     Call.State.Disconnected.Ended.Declined, is Call.State.Disconnected.Ended.HungUp -> setConnectionDisconnected(DisconnectCause.REMOTE)
                     is Call.State.Disconnected.Ended.Error -> setConnectionDisconnected(DisconnectCause.ERROR)
                     Call.State.Disconnected.Ended, Call.State.Disconnected.Ended.Timeout, is Call.State.Disconnected.Ended.Kicked -> setConnectionDisconnected(DisconnectCause.OTHER)

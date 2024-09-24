@@ -16,7 +16,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -34,7 +34,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.kaleyra.video_common_ui.CallUI
@@ -49,8 +48,8 @@ import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
 import com.kaleyra.video_sdk.call.pip.PipScreen
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
-import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -59,12 +58,12 @@ import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
 import com.kaleyra.video_sdk.call.utils.ContactsPermissions
 import com.kaleyra.video_sdk.call.utils.RecordAudioPermission
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardHideRequestMessage
-import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardShowRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.CollaborationTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 internal const val PipScreenTestTag = "PipScreenTestTag"
@@ -276,9 +275,14 @@ internal fun CallScreen(
         }
     }
 
-    var modalSheetComponent: ModalSheetComponent? by remember { mutableStateOf(null) }
+    var modalSheetComponentRequested: ModalSheetComponent? by remember { mutableStateOf(null) }
     val onModalSheetComponentRequest = remember {
-        { component: ModalSheetComponent? -> modalSheetComponent = component }
+        { component: ModalSheetComponent? -> modalSheetComponentRequested = component }
+    }
+
+    var modalSheetComponentDisplayed: ModalSheetComponent? by remember { mutableStateOf(null) }
+    val onModalSheetComponentDisplayed = remember {
+        { component: ModalSheetComponent? -> modalSheetComponentDisplayed = component }
     }
 
     var selectedStreamId by remember { mutableStateOf<String?>(null) }
@@ -286,30 +290,34 @@ internal fun CallScreen(
         { streamId: String? -> selectedStreamId = streamId }
     }
 
-    FileShareVisibilityObserver(modalSheetComponent, onFileShareVisibility)
+    FileShareVisibilityObserver(modalSheetComponentRequested, onFileShareVisibility)
 
-    WhiteboardVisibilityObserver(modalSheetComponent, onWhiteboardVisibility)
+    WhiteboardVisibilityObserver(modalSheetComponentRequested, onWhiteboardVisibility)
 
     if (shouldShowFileShareComponent) {
         LaunchedEffect(Unit) {
-            modalSheetComponent = ModalSheetComponent.FileShare
+            modalSheetComponentRequested = ModalSheetComponent.FileShare
         }
     }
 
     LaunchedEffect(whiteboardRequest) {
         when (whiteboardRequest) {
             is WhiteboardRequest.Show -> {
-                if (modalSheetComponent == ModalSheetComponent.Whiteboard) return@LaunchedEffect
+                if (modalSheetComponentRequested == ModalSheetComponent.Whiteboard) return@LaunchedEffect
                 onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
-                modalSheetState.expand()
-                CallUserMessagesProvider.sendUserMessage(WhiteboardShowRequestMessage(whiteboardRequest.username))
+                snapshotFlow { modalSheetComponentDisplayed }.firstOrNull { it == ModalSheetComponent.Whiteboard }
+                CallUserMessagesProvider.sendUserMessage(
+                    WhiteboardRequestMessage.WhiteboardShowRequestMessage(whiteboardRequest.username)
+                )
             }
 
             is WhiteboardRequest.Hide -> {
-                if (modalSheetComponent != ModalSheetComponent.Whiteboard) return@LaunchedEffect
+                if (modalSheetComponentRequested != ModalSheetComponent.Whiteboard) return@LaunchedEffect
                 onModalSheetComponentRequest(null)
-                modalSheetState.hide()
-                CallUserMessagesProvider.sendUserMessage(WhiteboardHideRequestMessage(whiteboardRequest.username))
+                snapshotFlow { modalSheetComponentDisplayed }.firstOrNull { it != ModalSheetComponent.Whiteboard }
+                CallUserMessagesProvider.sendUserMessage(
+                    WhiteboardRequestMessage.WhiteboardHideRequestMessage(whiteboardRequest.username)
+                )
             }
 
             else -> Unit
@@ -335,12 +343,13 @@ internal fun CallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
-                modalSheetComponent = modalSheetComponent,
+                modalSheetComponent = modalSheetComponentRequested,
                 inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(HCallScreenTestTag)
@@ -350,12 +359,13 @@ internal fun CallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
-                modalSheetComponent = modalSheetComponent,
+                modalSheetComponent = modalSheetComponentRequested,
                 inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(VCallScreenTestTag)

@@ -76,6 +76,7 @@ internal fun VCallScreen(
     modalSheetComponent: ModalSheetComponent?,
     inputPermissions: InputPermissions,
     onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -136,9 +137,8 @@ internal fun VCallScreen(
                     isLargeScreen = isLargeScreen,
                     inputPermissions = inputPermissions,
                     onModalSheetComponentRequest = onModalSheetComponentRequest,
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(14.dp)
+                    contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
+                    modifier = Modifier.animateContentSize()
                 )
             }
         },
@@ -245,11 +245,7 @@ internal fun VCallScreen(
                     )
             )
 
-            Column(
-                modifier = Modifier
-                    .padding(top = top)
-                    .padding(vertical = 24.dp)
-            ) {
+            Column(Modifier.padding(top = top)) {
                 CallInfoComponent(Modifier.padding(vertical = 12.dp))
                 if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
@@ -261,7 +257,8 @@ internal fun VCallScreen(
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
-                onUserMessageActionClick = onUserMessageActionClick
+                onUserMessageActionClick = onUserMessageActionClick,
+                onComponentDisplayed = onModalSheetComponentDisplayed,
             )
         }
     }

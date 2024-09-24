@@ -41,14 +41,14 @@ internal fun TopAppBar(
     content: @Composable (RowScope.() -> Unit)? = null,
     actions: @Composable (RowScope.() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
-    containerColor: Color? = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.material3.TopAppBar(
         modifier = modifier.focusGroup(),
         title = { },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = containerColor!!),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = containerColor),
         windowInsets = windowInsets,
         scrollBehavior = scrollBehavior,
         actions = {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -42,16 +41,16 @@ internal fun AdminBottomSheetContent(
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
     onKickParticipantClick: (streamId: String) -> Unit
 ) {
-    LazyColumn(contentPadding = PaddingValues(bottom = 52.dp)) {
+    LazyColumn( contentPadding = PaddingValues(vertical = 16.dp)) {
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 27.dp, vertical = 12.dp)
+                modifier = Modifier.padding(horizontal = 24.dp)
             ) {
                 Avatar(
                     username = stream.username,
+                    size = 40.dp,
                     uri = stream.avatar,
-                    modifier = Modifier.size(34.dp)
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
@@ -65,7 +64,7 @@ internal fun AdminBottomSheetContent(
         }
 
         item {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(24.dp))
         }
 
         item {
@@ -73,7 +72,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = pinnedTextFor(isStreamPinned),
+                text = pinnedTextFor(isStreamPinned, stream.username),
                 painter = pinnedPainterFor(isStreamPinned),
                 enabled = (!isPinLimitReached || isStreamPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
                 onClick = { onPinStreamClick(stream.id, !isStreamPinned)  }
@@ -85,7 +84,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = muteTextFor(stream.audio),
+                text = muteTextFor(stream.audio, stream.username),
                 painter = mutePainterFor(stream.audio),
                 enabled = stream.video == null || !stream.video.isScreenShare,
                 onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit }

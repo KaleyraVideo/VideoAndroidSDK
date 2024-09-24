@@ -52,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_common_ui.utils.TimestampUtils
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
 import com.kaleyra.video_sdk.R
@@ -152,7 +151,7 @@ private fun FileTypeAndSize(
                 // The file size is NA when is Download && state != InProgress && state != Success
                 stringResource(id = R.string.kaleyra_fileshare_na)
             },
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.labelSmall,
             color = contentColorAlpha70
         )
     }
@@ -173,7 +172,7 @@ private fun SharedFileInfoAndProgress(
         EllipsizeText(
             text = sharedFile.name,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 14.sp,
+            fontSize = MaterialTheme.typography.titleSmall.fontSize,
             fontWeight = FontWeight.Bold,
             ellipsize = Ellipsize.Middle
         )
@@ -200,7 +199,7 @@ private fun SharedFileInfoAndProgress(
             Text(
                 text = if (sharedFile.isMine) stringResource(id = R.string.kaleyra_fileshare_you) else sharedFile.sender,
                 maxLines = 1,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
@@ -214,7 +213,7 @@ private fun SharedFileInfoAndProgress(
 
                     else -> TimestampUtils.parseTime(sharedFile.time)
                 },
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -258,7 +257,8 @@ private fun ActionButton(
                 is SharedFileUi.State.Pending -> onSurfaceAlpha50
             },
             modifier = Modifier
-                .size(32.dp)
+                .size(48.dp)
+                .padding(4.dp)
                 .border(
                     width = 2.dp,
                     color = when (sharedFileState) {
@@ -300,7 +300,7 @@ private fun ErrorMessage(isMyMessage: Boolean) {
             id = if (isMyMessage) R.string.kaleyra_fileshare_upload_error else R.string.kaleyra_fileshare_download_error
         ),
         color = MaterialTheme.colorScheme.error,
-        fontSize = 12.sp
+        style = MaterialTheme.typography.labelSmall
     )
 }
 

@@ -57,8 +57,7 @@ internal fun DayHeaderItem(timestamp: Long, modifier: Modifier = Modifier) {
         Text(
             modifier = Modifier.padding(horizontal = DayHeaderItemInternalHorizontalPadding),
             text = text,
-            fontSize = MaterialTheme.typography.labelMedium.fontSize,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

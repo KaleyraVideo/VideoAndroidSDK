@@ -104,6 +104,11 @@ sealed class CallStateUi {
             data object LineBusy : Ended()
 
             /**
+             * Current User In Another Call Call State Ui
+             */
+            data object CurrentUserInAnotherCall: Ended()
+
+            /**
              * Timeout Call State Ui
              */
             data object Timeout : Ended()

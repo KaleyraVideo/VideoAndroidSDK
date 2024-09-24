@@ -26,7 +26,11 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SharedFolder
+import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
@@ -35,6 +39,7 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isCo
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
@@ -107,6 +112,10 @@ class CallActionsViewModelTest {
 
     private val conferenceMock = mockk<ConferenceUI>()
 
+    private val conversationMock = mockk<ConversationUI>(relaxed = true)
+
+    private val whiteboardMock = mockk<Whiteboard>(relaxed = true)
+
     private val callMock = mockk<CallUI>(relaxed = true)
 
     @Before
@@ -119,6 +128,7 @@ class CallActionsViewModelTest {
         mockkObject(AudioOutputMapper)
         mockkObject(CallStateMapper)
         mockkObject(VirtualBackgroundViewModel)
+        mockkObject(FileShareVisibilityObserver)
 
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
@@ -133,8 +143,13 @@ class CallActionsViewModelTest {
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         every { callMock.inputs.release(any()) } returns Unit
         every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(false)
+        every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
+        every { callMock.whiteboard } returns whiteboardMock
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
+        every { conversationMock.create(any()) } returns Result.failure(Throwable())
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        every { whiteboardMock.notificationCount } returns MutableStateFlow(0)
     }
 
     @After
@@ -1095,6 +1110,32 @@ class CallActionsViewModelTest {
     }
 
     @Test
+    fun tryEnableMicFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val inputs = mockk<Inputs>(relaxed = true)
+        val audio = mockk<Input.Audio>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+            every { tryEnable() } returns false
+        }
+        every { callMock.inputs } returns inputs
+        coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleMic(activity)
+        runCurrent()
+
+        coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
+        verify(exactly = 1) { audio.tryEnable() }
+        assertEquals(null, inputMessage)
+    }
+
+    @Test
     fun testToggleMicOff() = runTest {
         val activity = mockk<FragmentActivity>()
         val inputs = mockk<Inputs>(relaxed = true)
@@ -1119,6 +1160,32 @@ class CallActionsViewModelTest {
         verify(exactly = 1) { audio.tryDisable() }
         assertEquals(MicMessage.Disabled, inputMessage)
     }
+    
+    @Test
+    fun tryDisableMicFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val inputs = mockk<Inputs>(relaxed = true)
+        val audio = mockk<Input.Audio>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { tryDisable() } returns false
+        }
+        every { callMock.inputs } returns inputs
+        coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleMic(activity)
+        runCurrent()
+
+        coVerify(exactly = 1) { inputs.request(activity, Inputs.Type.Microphone) }
+        verify(exactly = 1) { audio.tryDisable() }
+        assertEquals(null, inputMessage)
+    }
 
     @Test
     fun testToggleCameraOn() = runTest {
@@ -1141,7 +1208,7 @@ class CallActionsViewModelTest {
             every { restrictions } returns contactRestrictions
             every { streams } returns MutableStateFlow(listOf(cameraStream))
         }
-        val participants = mockk<CallParticipants> {
+        val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meParticipant
         }
         every { callMock.participants } returns MutableStateFlow(participants)
@@ -1159,6 +1226,47 @@ class CallActionsViewModelTest {
 
         verify(exactly = 1) { cameraVideo.tryEnable() }
         assertEquals(CameraMessage.Enabled, inputMessage)
+    }
+
+    @Test
+    fun tryEnableCameraFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val cameraRestriction = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        val contactRestrictions = mockk<Contact.Restrictions> {
+            every { camera } returns MutableStateFlow(cameraRestriction)
+        }
+        val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+            every { tryEnable() } returns false
+        }
+        val cameraStream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(cameraVideo)
+        }
+        val meParticipant = mockk<CallParticipant.Me> {
+            every { restrictions } returns contactRestrictions
+            every { streams } returns MutableStateFlow(listOf(cameraStream))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meParticipant
+        }
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel.toggleCamera(activity)
+        runCurrent()
+
+        verify(exactly = 1) { cameraVideo.tryEnable() }
+        assertEquals(null, inputMessage)
     }
 
     @Test
@@ -1184,7 +1292,7 @@ class CallActionsViewModelTest {
             every { restrictions } returns contactRestrictions
             every { streams } returns MutableStateFlow(listOf(cameraStream))
         }
-        val participants = mockk<CallParticipants> {
+        val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meParticipant
         }
         val inputs = mockk<Inputs> {
@@ -1234,7 +1342,7 @@ class CallActionsViewModelTest {
             every { restrictions } returns contactRestrictions
             every { streams } returns MutableStateFlow(listOf(cameraStream))
         }
-        val participants = mockk<CallParticipants> {
+        val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meParticipant
         }
         val inputs = mockk<Inputs> {
@@ -1282,7 +1390,7 @@ class CallActionsViewModelTest {
             every { restrictions } returns contactRestrictions
             every { streams } returns MutableStateFlow(listOf(cameraStream))
         }
-        val participants = mockk<CallParticipants> {
+        val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meParticipant
         }
         every { callMock.participants } returns MutableStateFlow(participants)
@@ -1299,6 +1407,46 @@ class CallActionsViewModelTest {
 
         verify(exactly = 1) { cameraVideo.tryDisable() }
         assertEquals(CameraMessage.Disabled, inputMessage)
+    }
+
+    @Test
+    fun tryDisableCameraFails_inputMessageNotSent() = runTest {
+        val activity = mockk<FragmentActivity>()
+        val cameraRestriction = mockk<Contact.Restrictions.Restriction.Camera> {
+            every { usage } returns false
+        }
+        val contactRestrictions = mockk<Contact.Restrictions> {
+            every { camera } returns MutableStateFlow(cameraRestriction)
+        }
+        val cameraVideo = mockk<Input.Video.Camera.Internal>(relaxed = true) {
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { tryDisable() } returns false
+        }
+        val cameraStream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(cameraVideo)
+        }
+        val meParticipant = mockk<CallParticipant.Me> {
+            every { restrictions } returns contactRestrictions
+            every { streams } returns MutableStateFlow(listOf(cameraStream))
+        }
+        val participants = mockk<CallParticipants>(relaxed = true) {
+            every { me } returns meParticipant
+        }
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
+
+        var inputMessage: InputMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+        viewModel.toggleCamera(activity)
+        runCurrent()
+
+        verify(exactly = 1) { cameraVideo.tryDisable() }
+        assertEquals(null, inputMessage)
     }
 
     @Test
@@ -1322,7 +1470,7 @@ class CallActionsViewModelTest {
             every { restrictions } returns contactRestrictions
             every { streams } returns MutableStateFlow(listOf(cameraStream))
         }
-        val participants = mockk<CallParticipants> {
+        val participants = mockk<CallParticipants>(relaxed = true) {
             every { me } returns meParticipant
         }
         every { callMock.participants } returns MutableStateFlow(participants)
@@ -1406,7 +1554,6 @@ class CallActionsViewModelTest {
 
     @Test
     fun oneToOne_showChatSuccessful() = runTest {
-        val conversationMock = mockk<ConversationUI>(relaxed = true)
         val companyMock = mockk<Company>(relaxed = true) {
             every { id } returns MutableStateFlow("companyId")
         }
@@ -1440,7 +1587,6 @@ class CallActionsViewModelTest {
 
     @Test
     fun oneToOneWithCompanyParticipant_showChatSuccessful() = runTest {
-        val conversationMock = mockk<ConversationUI>(relaxed = true)
         val companyMock = mockk<Company>(relaxed = true) {
             every { id } returns MutableStateFlow("companyId")
         }
@@ -1477,7 +1623,6 @@ class CallActionsViewModelTest {
 
     @Test
     fun groupCall_showChatFails() = runTest {
-        val conversationMock = mockk<ConversationUI>(relaxed = true)
         val companyMock = mockk<Company>(relaxed = true) {
             every { id } returns MutableStateFlow("companyId")
         }
@@ -1641,6 +1786,195 @@ class CallActionsViewModelTest {
     fun screenShareActive_stopScreenShareSuccess() {
         val screenShareVideoMock = spyk<Input.Video.Screen>()
         testTryStopScreenShare(screenShareVideoMock)
+    }
+
+    @Test
+    fun noFileShared_fileShareActionNotificationCountIsZero() = runTest {
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns MutableStateFlow(setOf())
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val fileShareAction = viewModel.uiState.first().actionList.value[0]
+        assertEquals(FileShareAction(), fileShareAction)
+    }
+
+    @Test
+    fun nFilesShared_fileShareActionNotificationIsN() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns MutableStateFlow(setOf(file1, file2))
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        val fileShareAction = viewModel.uiState.first().actionList.value[0]
+        assertEquals(FileShareAction(notificationCount = 2), fileShareAction)
+    }
+
+    @Test
+    fun testFileShareActionNotificationCountWhenFileShareIsDisplayed() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val file3 = mockk<SharedFile> {
+            every { creationTime } returns 300L
+        }
+        val filesFlow = MutableStateFlow(setOf(file1))
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns filesFlow
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        filesFlow.value = setOf(file1, file2)
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+
+        filesFlow.value = setOf(file1, file2, file3)
+
+        assertEquals(
+            FileShareAction(notificationCount = 1),
+            viewModel.uiState.first().actionList.value[0]
+        )
+    }
+
+    @Test
+    fun testClearFileShareBadge() = runTest {
+        val file1 = mockk<SharedFile> {
+            every { creationTime } returns 100L
+        }
+        val file2 = mockk<SharedFile> {
+            every { creationTime } returns 200L
+        }
+        val file3 = mockk<SharedFile> {
+            every { creationTime } returns 300L
+        }
+        val sharedFolderFlow = MutableStateFlow(setOf(file1, file2))
+        val sharedFolderMock = mockk<SharedFolder> {
+            every { files } returns sharedFolderFlow
+        }
+        with(callMock) {
+            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { sharedFolder } returns sharedFolderMock
+        }
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(
+            FileShareAction(notificationCount = 2),
+            viewModel.uiState.first().actionList.value[0]
+        )
+
+        viewModel.clearFileShareBadge()
+        runCurrent()
+
+        assertEquals(FileShareAction(), viewModel.uiState.first().actionList.value[0])
+
+        sharedFolderFlow.value = setOf(file1, file2, file3)
+        runCurrent()
+
+        assertEquals(FileShareAction(notificationCount = 1), viewModel.uiState.first().actionList.value[0])
+    }
+
+    @Test
+    fun testChatActionBadgeCount() = runTest {
+        val unreadMessageCountFlow = MutableStateFlow(0)
+        val chatMock = mockk<ChatUI> {
+            every { unreadMessagesCount } returns unreadMessageCountFlow
+        }
+        val companyMock = mockk<Company>(relaxed = true) {
+            every { id } returns MutableStateFlow("companyId")
+        }
+        val otherParticipant = mockk<CallParticipant> {
+            every { userId } returns "otherUserId"
+        }
+        val companyParticipant = mockk<CallParticipant> {
+            every { userId } returns "companyId"
+        }
+        val participantsMock = mockk<CallParticipants> {
+            every { others } returns listOf(otherParticipant, companyParticipant)
+        }
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ChatAction()))
+        every { callMock.participants } returns MutableStateFlow(participantsMock)
+        every { conversationMock.create(any()) } returns Result.success(chatMock)
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(
+                conference = conferenceMock,
+                conversation = conversationMock,
+                company = companyMock
+            )
+        })
+        advanceUntilIdle()
+
+        assertEquals(ChatAction(), viewModel.uiState.first().actionList.value[0])
+
+        unreadMessageCountFlow.value = 3
+        runCurrent()
+
+        assertEquals(ChatAction(notificationCount = 3), viewModel.uiState.first().actionList.value[0])
+    }
+
+    @Test
+    fun testWhiteboardActionBadgeCount() = runTest {
+        val unreadMessageCountFlow = MutableStateFlow(0)
+        every { whiteboardMock.notificationCount } returns unreadMessageCountFlow
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction()))
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(WhiteboardAction(), viewModel.uiState.first().actionList.value[0])
+
+        unreadMessageCountFlow.value = 3
+        runCurrent()
+
+        assertEquals(WhiteboardAction(notificationCount = 3), viewModel.uiState.first().actionList.value[0])
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {

@@ -419,12 +419,15 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetAudio_audioComponentIsDisplayed() {
+        var componentDisplayed: ModalSheetComponent? = null
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Audio,
+            onModalSheetComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        assertEquals(ModalSheetComponent.Audio, componentDisplayed)
     }
 
     @Test
@@ -448,23 +451,29 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
+        var componentDisplayed: ModalSheetComponent? = null
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.FileShare,
+            onModalSheetComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        assertEquals(ModalSheetComponent.FileShare, componentDisplayed)
     }
 
     @Test
     fun testModalSheetParticipants_participantsComponentIsDisplayed() {
+        var componentDisplayed: ModalSheetComponent? = null
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Participants,
+            onModalSheetComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        assertEquals(ModalSheetComponent.Participants, componentDisplayed)
     }
 
     @Test
@@ -489,12 +498,15 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetWhiteboard_whiteboardComponentIsDisplayed() {
+        var componentDisplayed: ModalSheetComponent? = null
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.Whiteboard,
+            onModalSheetComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        assertEquals(ModalSheetComponent.Whiteboard, componentDisplayed)
     }
 
     @Test
@@ -520,13 +532,16 @@ class HCallScreenTest {
 
     @Test
     fun testModalSheetVirtualBackground_virtualBackgroundComponentIsDisplayed() {
+        var componentDisplayed: ModalSheetComponent? = null
         composeTestRule.setUpHCallScreen(
             modalSheetComponent = ModalSheetComponent.VirtualBackground,
+            onModalSheetComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        assertEquals(ModalSheetComponent.VirtualBackground, componentDisplayed)
     }
 
     @Test
@@ -1252,6 +1267,7 @@ class HCallScreenTest {
         onStreamSelected: (String?) -> Unit = {},
         modalSheetComponent: ModalSheetComponent? = null,
         onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
+        onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit = { },
         onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
         inputPermissions: InputPermissions = InputPermissions()
@@ -1267,6 +1283,7 @@ class HCallScreenTest {
                 inputPermissions = inputPermissions,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onModalSheetComponentRequest = onModalSheetComponentChange,
+                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )

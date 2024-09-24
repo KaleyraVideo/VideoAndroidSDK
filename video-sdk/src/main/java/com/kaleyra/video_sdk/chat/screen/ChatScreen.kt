@@ -46,13 +46,12 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -77,7 +76,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
@@ -177,8 +175,8 @@ internal fun ChatScreen(
 
     val chatUserInputContainerColor: Color by animateColorAsState(
         targetValue =
-        if (scrollState.canScrollBackward) MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-        else MaterialTheme.colorScheme.surface,
+        if (scrollState.canScrollBackward) MaterialTheme.colorScheme.outline.copy(.16f)
+        else MaterialTheme.colorScheme.surfaceContainerLowest,
         label = "chatUserInputContainerColor",
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
     )
@@ -191,6 +189,7 @@ internal fun ChatScreen(
         )
     ) {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -303,7 +302,7 @@ internal fun ChatScreen(
                         .testTag(ConversationComponentTag)
                 )
 
-                Divider(color = chatUserInputContainerColor)
+                HorizontalDivider(color = chatUserInputContainerColor)
 
                 ChatUserInput(
                     modifier = Modifier
@@ -351,7 +350,7 @@ internal fun OngoingCallLabel(onClick: () -> Unit) {
             .fillMaxWidth()
             .background(
                 shape = RectangleShape,
-                color = colorResource(id = R.color.kaleyra_color_answer_button)
+                color = KaleyraTheme.colors.positiveContainer
             )
             .highlightOnFocus(interactionSource)
             .padding(horizontal = 16.dp, vertical = 8.dp)
