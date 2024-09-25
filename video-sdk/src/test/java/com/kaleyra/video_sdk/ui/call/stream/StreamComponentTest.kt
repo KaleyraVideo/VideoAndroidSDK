@@ -14,11 +14,14 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -456,9 +459,16 @@ class StreamComponentTest {
 
     @Test
     fun previewIsStartingWithVideoTrueAndVideoIsNotNull_videoIsDisplayed() {
-        streamUiState = StreamUiState(
-            preview = StreamPreview(username = "mario", video = VideoUi(id = "videoId"), isStartingWithVideo = true),
-        )
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.runOnMainSync {
+            streamUiState = StreamUiState(
+                preview = StreamPreview(
+                    username = "mario",
+                    video = VideoUi(id = "videoId", view = ImmutableView(VideoStreamView(instrumentation.context))),
+                    isStartingWithVideo = true
+                )
+            )
+        }
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("M").assertIsDisplayed()

@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.stream
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -141,7 +142,7 @@ internal fun StreamComponent(
     Box(contentAlignment = Alignment.Center) {
         if (uiState.preview != null) {
             val video = uiState.preview.video
-            if (video != null || !uiState.preview.isStartingWithVideo) {
+            if (video?.view != null || !uiState.preview.isStartingWithVideo) {
                 val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
                 val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
                 val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
