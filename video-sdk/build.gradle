@@ -80,6 +80,7 @@ dependencies {
     testImplementation catalog.mockkAndroid
     testImplementation catalog.androidxComposeUiTooling
     testImplementation catalog.androidxComposeUiTestManifest
+    testImplementation catalog.kotlinReflect
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore
@@ -88,6 +89,7 @@ dependencies {
     androidTestImplementation catalog.androidxTestEspressoIntents
     androidTestImplementation catalog.androidxComposeUiTooling
     androidTestImplementation catalog.androidxComposeUiTestManifest
+    androidTestImplementation catalog.kotlinReflect
 
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo
