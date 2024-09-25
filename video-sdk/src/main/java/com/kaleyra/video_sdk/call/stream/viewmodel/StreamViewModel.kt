@@ -49,7 +49,6 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     init {
         viewModelScope.launch {
             val call = call.first()
-            _uiState.update { StreamUiState(callPreferredType = call.preferredType.value) }
 
             val callState = call.toCallStateUi()
             combine(
@@ -76,7 +75,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                     callState is CallStateUi.Disconnected.Ended
                 }
                 .takeWhile { !it }
-                .onCompletion { _uiState.update { StreamUiState(callPreferredType = call.preferredType.value) } }
+                .onCompletion { _uiState.update { StreamUiState() } }
                 .launchIn(this)
 
             val isPreCallState = callState
@@ -84,9 +83,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 .distinctUntilChanged()
             combine(
                 isPreCallState,
-                call.toMyCameraVideoUi()
-            ) { state, video -> state to video }
-                .onEach { (isPreCallState, video) ->
+                call.toMyCameraVideoUi(),
+                call.preferredType
+            ) { state, video, preferredType -> Triple(state, video, preferredType) }
+                .onEach { (isPreCallState, video, preferredType) ->
                     if (!isPreCallState) return@onEach
                     val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
                     val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
@@ -97,12 +97,13 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                                 isGroupCall = isGroupCall,
                                 video = video,
                                 username = otherUsername,
-                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) }
+                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) },
+                                isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
                             )
                         )
                     }
                 }
-                .takeWhile { (isPreCallState, _) -> isPreCallState }
+                .takeWhile { (isPreCallState, _, _) -> isPreCallState }
                 .onCompletion {
                     // wait for at least another participant's stream to be added before setting the preview to null
                     uiState.first { it.streams.value.size > 1 }

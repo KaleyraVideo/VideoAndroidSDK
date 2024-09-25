@@ -9,5 +9,6 @@ internal data class StreamPreview(
     val isGroupCall: Boolean = false,
     val video: VideoUi? = null,
     val username: String? = null,
-    val avatar: ImmutableUri? = null
+    val avatar: ImmutableUri? = null,
+    val isStartingWithVideo: Boolean = false
 )

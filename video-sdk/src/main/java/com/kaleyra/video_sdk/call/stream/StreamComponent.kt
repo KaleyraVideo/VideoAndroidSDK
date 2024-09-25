@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -131,34 +130,31 @@ internal fun StreamComponent(
     onMoreParticipantClick: () -> Unit,
     modifier: Modifier = Modifier,
     maxFeaturedStreams: Int = remember(windowSizeClass) {
-        StreamComponentDefaults.maxFeaturedStreams(
-            windowSizeClass
-        )
+        StreamComponentDefaults.maxFeaturedStreams(windowSizeClass)
     },
     maxThumbnailStreams: Int = StreamComponentDefaults.MaxThumbnailStreams,
     thumbnailsArrangement: ThumbnailsArrangement = remember(windowSizeClass) {
-        StreamComponentDefaults.thumbnailsArrangementFor(
-            windowSizeClass
-        )
+        StreamComponentDefaults.thumbnailsArrangementFor(windowSizeClass)
     },
     maxThumbnailSize: Dp = StreamComponentDefaults.MaxThumbnailSize,
 ) {
     Box(contentAlignment = Alignment.Center) {
         if (uiState.preview != null) {
             val video = uiState.preview.video
-            if (video?.view == null && (uiState.callPreferredType == null || uiState.callPreferredType.isVideoEnabled())) return@Box
-            val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
-            val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
-            val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
+            if (video != null || !uiState.preview.isStartingWithVideo) {
+                val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
+                val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
+                val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
 
-            Stream(
-                streamView = video?.view?.preCallStreamViewSettings(),
-                avatar = avatar,
-                avatarPlaceholder = avatarPlaceholder,
-                username = username,
-                showStreamView = video?.view != null && video.isEnabled,
-                avatarModifier = modifier
-            )
+                Stream(
+                    streamView = video?.view?.preCallStreamViewSettings(),
+                    avatar = avatar,
+                    avatarPlaceholder = avatarPlaceholder,
+                    username = username,
+                    showStreamView = video?.view != null && video.isEnabled,
+                    avatarModifier = modifier
+                )
+            }
         } else {
             BoxWithConstraints(
                 contentAlignment = Alignment.Center,
@@ -349,7 +345,7 @@ internal fun StreamComponentPreview() {
     KaleyraTheme {
         Surface {
             StreamComponent(
-                uiState = StreamUiState(streams = previewStreams, callPreferredType = Call.PreferredType.audioOnly()),
+                uiState = StreamUiState(streams = previewStreams),
                 windowSizeClass = currentWindowAdaptiveInfo(),
                 selectedStreamId = null,
                 onStreamClick = {},
@@ -367,7 +363,6 @@ internal fun StreamComponentPinPreview() {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(
-                    callPreferredType = Call.PreferredType.audioOnly(),
                     streams = previewStreams,
                     pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
                 ),

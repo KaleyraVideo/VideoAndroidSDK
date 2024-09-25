@@ -421,13 +421,43 @@ class StreamComponentTest {
     }
 
     @Test
-    fun previewIsGroupCallTrue_avatarLetterIsNotDisplayed() {
+    fun previewIsGroupCallTrue_avatarIsNotDisplayed() {
         streamUiState = StreamUiState(
             preview = StreamPreview(isGroupCall = true, username = "mario"),
         )
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "mario", video = null, isStartingWithVideo = true),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoFalse_avatarIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "mario", isStartingWithVideo = false),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertIsDisplayed()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoTrueAndVideoIsNotNull_videoIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "mario", video = VideoUi(id = "videoId"), isStartingWithVideo = true),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertIsDisplayed()
     }
 
     fun defaultStreamUi(
