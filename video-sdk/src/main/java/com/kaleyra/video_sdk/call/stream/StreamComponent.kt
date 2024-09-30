@@ -34,6 +34,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
@@ -52,7 +53,9 @@ import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasMediumWidth
 import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -369,6 +372,28 @@ internal fun StreamComponentPinPreview() {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(
+                    streams = previewStreams,
+                    pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
+                ),
+                windowSizeClass = currentWindowAdaptiveInfo(),
+                selectedStreamId = null,
+                onStreamClick = {},
+                onStopScreenShareClick = {},
+                onMoreParticipantClick = {}
+            )
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun StreamComponentPreCallPreview() {
+    KaleyraTheme {
+        Surface {
+            StreamComponent(
+                uiState = StreamUiState(
+                    preview = StreamPreview(),
                     streams = previewStreams,
                     pinnedStreams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
                 ),
