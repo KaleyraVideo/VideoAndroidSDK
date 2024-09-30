@@ -42,6 +42,8 @@ class WhiteboardAppBarTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private var embeddedComponent by mutableStateOf(false)
+
     private var isFileSharingSupported by mutableStateOf(true)
 
     private var isBackPressed = false
@@ -54,7 +56,8 @@ class WhiteboardAppBarTest {
             WhiteboardAppBar(
                 isFileSharingSupported = isFileSharingSupported,
                 onBackPressed = { isBackPressed = true },
-                onUploadClick = { isUploadClicked = true }
+                onUploadClick = { isUploadClicked = true },
+                embeddedComponent = embeddedComponent
             )
         }
     }
@@ -64,6 +67,7 @@ class WhiteboardAppBarTest {
         isFileSharingSupported = true
         isBackPressed = false
         isUploadClicked = false
+        embeddedComponent = false
     }
 
     @Test
@@ -101,5 +105,14 @@ class WhiteboardAppBarTest {
     fun fileShareTextDisplayed() {
         val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(whiteboard).assertIsDisplayed()
+    }
+
+    @Test
+    fun embeddedComponentUserClickClose_backPressedInvoked() {
+        embeddedComponent = true
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(close).performClick()
+        assert(isBackPressed)
     }
 }
