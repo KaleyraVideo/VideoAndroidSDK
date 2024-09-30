@@ -19,12 +19,12 @@ internal fun ParticipantsTopAppBar(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    embeddedComponent: Boolean = false
+    isLargeScreen: Boolean = false
 ) {
     ComponentAppBar(
         modifier = modifier,
         onBackPressed = onBackPressed,
-        embeddedComponent = embeddedComponent,
+        isLargeScreen = isLargeScreen,
         title = pluralStringResource(id = R.plurals.kaleyra_participants_component_participants, count = participantsCount, participantsCount),
         scrollBehavior = scrollBehavior
     )
@@ -42,8 +42,8 @@ internal fun ParticipantsTopAppBarPreview() {
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun ParticipantsTopAppBarEmbeddePreview() {
+internal fun ParticipantsTopAppBarLargeScreenPreview() {
     KaleyraTheme {
-        ParticipantsTopAppBar(participantsCount = 3, onBackPressed = {}, embeddedComponent = true)
+        ParticipantsTopAppBar(participantsCount = 3, onBackPressed = {}, isLargeScreen = true)
     }
 }

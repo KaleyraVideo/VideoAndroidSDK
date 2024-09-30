@@ -37,7 +37,7 @@ class ParticipantsTopAppBarTest {
             ParticipantsTopAppBar(
                 participantsCount = participantsCount,
                 onBackPressed = { isCloseClicked = true },
-                embeddedComponent = embeddedComponent
+                isLargeScreen = embeddedComponent
             )
         }
     }
@@ -68,7 +68,7 @@ class ParticipantsTopAppBarTest {
     }
 
     @Test
-    fun embeddedComponentUserClickClose_backPressedInvoked() {
+    fun userClickCloseOnLargeScreen_backPressedInvoked() {
         embeddedComponent = true
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()

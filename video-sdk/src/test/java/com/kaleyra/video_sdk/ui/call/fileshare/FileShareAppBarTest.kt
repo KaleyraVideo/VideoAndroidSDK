@@ -41,7 +41,7 @@ class FileShareAppBarTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var embeddedComponent by mutableStateOf(false)
+    private var isLargeScreen by mutableStateOf(false)
 
     private var isBackPressed = false
 
@@ -51,14 +51,14 @@ class FileShareAppBarTest {
             FileShareAppBar(
                 onBackPressed = { isBackPressed = true },
                 lazyGridState = rememberLazyGridState(),
-                embeddedComponent = embeddedComponent
+                isLargeScreen = isLargeScreen
             )
         }
     }
 
     @After
     fun tearDown() {
-        embeddedComponent = false
+        isLargeScreen = false
         isBackPressed = false
     }
 
@@ -77,8 +77,8 @@ class FileShareAppBarTest {
     }
 
     @Test
-    fun embeddedComponentUserClickClose_backPressedInvoked() {
-        embeddedComponent = true
+    fun userClickCloseOnLargeScreen_backPressedInvoked() {
+        isLargeScreen = true
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()

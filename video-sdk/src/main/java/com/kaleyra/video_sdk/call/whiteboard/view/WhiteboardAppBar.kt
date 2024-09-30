@@ -39,12 +39,12 @@ internal fun WhiteboardAppBar(
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
     modifier: Modifier = Modifier,
-    embeddedComponent: Boolean = false
+    isLargeScreen: Boolean = false
 ) {
     ComponentAppBar(
         modifier = modifier,
         onBackPressed = onBackPressed,
-        embeddedComponent = embeddedComponent,
+        isLargeScreen = isLargeScreen,
         title = stringResource(id = R.string.kaleyra_whiteboard),
         actions = {
             if (isFileSharingSupported) {
@@ -79,13 +79,13 @@ internal fun WhiteboardAppBarTest() {
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun WhiteboardAppBarEmbeddedTest() {
+internal fun WhiteboardAppBarLargeScreenTest() {
     KaleyraTheme {
         WhiteboardAppBar(
             isFileSharingSupported = true,
             onBackPressed = {},
             onUploadClick = {},
-            embeddedComponent = true
+            isLargeScreen = true
         )
     }
 }

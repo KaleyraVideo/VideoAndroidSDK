@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -79,7 +78,8 @@ internal fun FileShareComponent(
     ),
     onDismiss: () -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit,
-    isTesting: Boolean = false
+    isTesting: Boolean = false,
+    isLargeScreen: Boolean = false
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()
@@ -124,7 +124,8 @@ internal fun FileShareComponent(
         onShareCancel = viewModel::cancel,
         modifier = modifier,
         onUserMessageActionClick = onUserMessageActionClick,
-        onBackPressed = onDismiss
+        onBackPressed = onDismiss,
+        isLargeScreen = isLargeScreen
     )
 }
 
@@ -142,7 +143,8 @@ internal fun FileShareComponent(
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
     modifier: Modifier = Modifier,
-    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    isLargeScreen: Boolean = false
 ) {
     val context = LocalContext.current
 
@@ -180,12 +182,12 @@ internal fun FileShareComponent(
 
     val lazyGridState = rememberLazyGridState()
 
-    Column(
-        modifier = modifier
-            .statusBarsPadding()
-            .fillMaxSize()
-    ) {
-        FileShareAppBar(onBackPressed = { onBackPressed?.invoke() }, lazyGridState = lazyGridState)
+    Column(modifier.fillMaxSize()) {
+        FileShareAppBar(
+            onBackPressed = { onBackPressed?.invoke() },
+            lazyGridState = lazyGridState,
+            isLargeScreen = isLargeScreen
+        )
         Box(
             modifier = Modifier
                 .weight(1f)

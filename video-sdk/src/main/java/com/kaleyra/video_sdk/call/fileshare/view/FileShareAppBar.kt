@@ -37,14 +37,14 @@ internal fun FileShareAppBar(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     lazyGridState: LazyGridState,
-    embeddedComponent: Boolean = false
+    isLargeScreen: Boolean = false
 ) {
     ComponentAppBar(
         onBackPressed = onBackPressed,
         title = stringResource(id = R.string.kaleyra_fileshare),
         actions = { Spacer(Modifier.width(56.dp)) },
         scrollableState = lazyGridState,
-        embeddedComponent = embeddedComponent,
+        isLargeScreen = isLargeScreen,
         modifier = modifier
     )
 }
@@ -64,12 +64,12 @@ internal fun FileShareAppBarTest() {
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun FileShareAppBarEmbeddedTest() {
+internal fun FileShareAppBarLargeScreenTest() {
     KaleyraTheme {
         FileShareAppBar(
             onBackPressed = { },
             lazyGridState = rememberLazyGridState(),
-            embeddedComponent = true
+            isLargeScreen = true
         )
     }
 }

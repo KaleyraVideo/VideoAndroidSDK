@@ -66,7 +66,8 @@ internal fun ParticipantsComponent(
     streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isLargeScreen: Boolean = false
 ) {
     val activity = LocalContext.current.findActivity()
     val participantsUiState by participantsViewModel.uiState.collectAsStateWithLifecycle()
@@ -132,6 +133,7 @@ internal fun ParticipantsComponent(
         } ,
         onKickParticipantClick = {},
         onCloseClick = onDismiss,
+        isLargeScreen = isLargeScreen,
         modifier = modifier
     )
 }
@@ -153,7 +155,8 @@ internal fun ParticipantsComponent(
     onPinStreamClick: (streamId: String, pin: Boolean) -> Unit,
     onKickParticipantClick: (streamId: String) -> Unit,
     onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLargeScreen: Boolean = false
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -162,7 +165,8 @@ internal fun ParticipantsComponent(
             ParticipantsTopAppBar(
                 participantsCount = streams.count(),
                 scrollBehavior = scrollBehavior,
-                onBackPressed = onCloseClick
+                onBackPressed = onCloseClick,
+                isLargeScreen = isLargeScreen
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest

@@ -49,18 +49,18 @@ internal fun ComponentAppBar(
     actions: @Composable (RowScope.() -> Unit) = { Spacer(Modifier.width(56.dp)) },
     scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
     scrollableState: ScrollableState? = null,
-    embeddedComponent: Boolean = false,
+    isLargeScreen: Boolean = false,
 ) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
-        windowInsets = if (embeddedComponent) WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) else TopAppBarDefaults.windowInsets,
+        windowInsets = if (isLargeScreen) WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) else TopAppBarDefaults.windowInsets,
         navigationIcon = {
             androidx.compose.material3.IconButton(
                 modifier = Modifier.padding(4.dp),
                 onClick = onBackPressed,
             ) {
                 Icon(
-                    painter = if (embeddedComponent) painterResource(id = R.drawable.ic_kaleyra_back_right) else painterResource(id = R.drawable.ic_kaleyra_back_down),
+                    painter = if (isLargeScreen) painterResource(id = R.drawable.ic_kaleyra_back_right) else painterResource(id = R.drawable.ic_kaleyra_back_down),
                     contentDescription = stringResource(id = R.string.kaleyra_close)
                 )
             }

@@ -54,7 +54,8 @@ internal fun WhiteboardComponent(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit,
+    isLargeScreen: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -69,7 +70,8 @@ internal fun WhiteboardComponent(
         onReloadClick = viewModel::onReloadClick,
         onBackPressed = onDismiss,
         onUploadClick = { launcher.launch("image/*") },
-        onUserMessageActionClick = onUserMessageActionClick
+        onUserMessageActionClick = onUserMessageActionClick,
+        isLargeScreen = isLargeScreen
     )
 }
 
@@ -81,7 +83,8 @@ internal fun WhiteboardComponent(
     onReloadClick: () -> Unit,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit,
+    isLargeScreen: Boolean = false
 ) {
     DisposableEffect(Unit) {
         onDispose(onWhiteboardClosed)
@@ -92,6 +95,7 @@ internal fun WhiteboardComponent(
             WhiteboardAppBar(
                 isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
                 onBackPressed = onBackPressed,
+                isLargeScreen = isLargeScreen,
                 onUploadClick = { onUploadClick() },
                 modifier = modifier
             )
