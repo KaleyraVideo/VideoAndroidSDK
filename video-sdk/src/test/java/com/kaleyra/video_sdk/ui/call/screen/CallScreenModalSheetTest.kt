@@ -477,4 +477,99 @@ class CallScreenModalSheetTest {
         assertEquals(true, clicked)
     }
 
+    @Test
+    fun audioComponent_dragHandleIsDisplayed() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.Audio,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertIsDisplayed()
+    }
+
+    @Test
+    fun screenShareComponent_dragHandleIsDisplayed() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareComponent_dragHandleDoesNotExists() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.FileShare,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertDoesNotExist()
+    }
+
+    @Test
+    fun whiteboardComponent_dragHandleDoesNotExists() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.Whiteboard,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertDoesNotExist()
+    }
+
+    @Test
+    fun virtualBackgroundComponent_dragHandleIsDisplayed() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.VirtualBackground,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertIsDisplayed()
+    }
+
+    @Test
+    fun participantsComponent_dragHandleDoesNotExists() {
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modalSheetComponent = ModalSheetComponent.Participants,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = { },
+                onAskInputPermissions = { },
+                onUserMessageActionClick = { }
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription(drag).assertDoesNotExist()
+    }
 }
