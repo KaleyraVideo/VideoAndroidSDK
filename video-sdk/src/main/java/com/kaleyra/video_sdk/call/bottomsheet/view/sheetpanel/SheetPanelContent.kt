@@ -14,25 +14,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
+import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -42,8 +39,6 @@ internal fun SheetPanelContent(
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val activity = LocalContext.current.findActivity()
-
     SheetPanelContent(
         modifier = modifier,
         callActions = callActions,
@@ -57,7 +52,7 @@ internal fun SheetPanelContent(
 
                     is FlipCameraAction -> viewModel.switchCamera()
                     is AudioAction -> onModalSheetComponentRequest(ModalSheetComponent.Audio)
-                    is ChatAction -> activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) })
+                    is ChatAction -> onModalSheetComponentRequest(ModalSheetComponent.Chat)
                     is FileShareAction -> onModalSheetComponentRequest(ModalSheetComponent.FileShare)
                     is WhiteboardAction -> onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
                     is VirtualBackgroundAction -> onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground)

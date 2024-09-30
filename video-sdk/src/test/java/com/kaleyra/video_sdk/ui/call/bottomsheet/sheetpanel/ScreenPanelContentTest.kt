@@ -77,13 +77,13 @@ class ScreenPanelContentTest {
     }
 
     @Test
-    fun userClicksChat_showChatInvoked() {
-        mockkObject(ActivityExtensions)
+    fun userClicksChat_onModalSheetComponentRequestChat() {
+        var component: ModalSheetComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ChatAction())),
-                onModalSheetComponentRequest = {}
+                onModalSheetComponentRequest = { component = it }
             )
         }
 
@@ -93,9 +93,7 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { callActionsViewModel.showChat(any()) }
-        verify(exactly = 1) { composeTestRule.activity.unlockDevice(any()) }
-        unmockkObject(ActivityExtensions)
+        assertEquals(ModalSheetComponent.Chat, component)
     }
 
     @Test
