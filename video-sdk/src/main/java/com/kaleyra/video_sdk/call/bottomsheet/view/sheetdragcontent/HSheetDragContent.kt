@@ -109,7 +109,12 @@ internal fun HSheetDragContent(
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
-        onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
+        onChatClick = remember(viewModel, isLargeScreen) {
+            {
+                if (isLargeScreen) onModalSheetComponentRequest(ModalSheetComponent.Chat)
+                else activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) })
+            }
+        },
         onFileShareClick = {
             onModalSheetComponentRequest(ModalSheetComponent.FileShare)
             viewModel.clearFileShareBadge()

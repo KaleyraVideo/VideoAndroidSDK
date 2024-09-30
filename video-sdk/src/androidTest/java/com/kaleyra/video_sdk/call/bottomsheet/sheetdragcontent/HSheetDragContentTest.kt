@@ -334,6 +334,27 @@ class HSheetDragContentTest {
     }
 
     @Test
+    fun userClicksChatOnLargeScreen_onModalSheetComponentRequestChat() {
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ChatAction())),
+                isLargeScreen = true,
+                onModalSheetComponentRequest = { component = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModalSheetComponent.Chat, component)
+    }
+
+    @Test
     fun userClicksFlipCamera_switchCameraInvoked() {
         composeTestRule.setContent {
             HSheetDragContent(
