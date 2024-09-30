@@ -2,6 +2,9 @@ package com.kaleyra.video_sdk.ui.call.participants
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -25,6 +28,8 @@ class ParticipantsTopAppBarTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private var embeddedComponent by mutableStateOf(false)
+
     private val participantsCount = 3
 
     private var isCloseClicked = false
@@ -34,7 +39,8 @@ class ParticipantsTopAppBarTest {
         composeTestRule.setContent {
             ParticipantsTopAppBar(
                 participantsCount = participantsCount,
-                onBackPressed = { isCloseClicked = true }
+                onBackPressed = { isCloseClicked = true },
+                embeddedComponent = embeddedComponent
             )
         }
     }
@@ -61,6 +67,15 @@ class ParticipantsTopAppBarTest {
     fun testOnCloseClick() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_close)
         composeTestRule.onNodeWithContentDescription(text).performClick()
+        assertEquals(true, isCloseClicked)
+    }
+
+    @Test
+    fun embeddedComponentUserClickClose_backPressedInvoked() {
+        embeddedComponent = true
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(close).performClick()
         assertEquals(true, isCloseClicked)
     }
 }
