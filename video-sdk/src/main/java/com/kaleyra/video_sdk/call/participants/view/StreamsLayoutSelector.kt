@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.participants.view
 import android.content.res.Configuration
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +50,7 @@ internal fun StreamsLayoutSelector(
                 .weight(1f)
                 .highlightOnFocus(gridInteractionSource),
             interactionSource = gridInteractionSource,
+            contentPadding = PaddingValues(0.dp),
             onClick = { onLayoutClick(StreamsLayout.Grid) }
         ) {
             Icon(
@@ -77,6 +79,7 @@ internal fun StreamsLayoutSelector(
                 .weight(1f)
                 .highlightOnFocus(pinInteractionSource),
             interactionSource = pinInteractionSource,
+            contentPadding = PaddingValues(0.dp),
             onClick = { onLayoutClick(StreamsLayout.Pin) }
         ) {
             Icon(
