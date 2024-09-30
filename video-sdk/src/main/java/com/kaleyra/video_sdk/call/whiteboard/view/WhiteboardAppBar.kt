@@ -16,50 +16,21 @@
 
 package com.kaleyra.video_sdk.call.whiteboard.view
 
-import android.content.res.Configuration
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video.whiteboard.WhiteboardView
-import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
-import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-
-@Composable
-internal fun WhiteboardAppBar(
-    viewModel: WhiteboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
-    ),
-    onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) viewModel.uploadMediaFile(uri)
-    }
-
-    WhiteboardAppBar(
-        isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isLoading && !uiState.isOffline,
-        onBackPressed = onBackPressed,
-        onUploadClick = { launcher.launch("image/*") },
-        modifier = modifier
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,11 +38,13 @@ internal fun WhiteboardAppBar(
     isFileSharingSupported: Boolean,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    embeddedComponent: Boolean = false
 ) {
     ComponentAppBar(
         modifier = modifier,
         onBackPressed = onBackPressed,
+        embeddedComponent = embeddedComponent,
         title = stringResource(id = R.string.kaleyra_whiteboard),
         actions = {
             if (isFileSharingSupported) {
@@ -90,8 +63,8 @@ internal fun WhiteboardAppBar(
     )
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun WhiteboardAppBarTest() {
     KaleyraTheme {
@@ -99,6 +72,20 @@ internal fun WhiteboardAppBarTest() {
             isFileSharingSupported = true,
             onBackPressed = {},
             onUploadClick = {}
+        )
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun WhiteboardAppBarEmbeddedTest() {
+    KaleyraTheme {
+        WhiteboardAppBar(
+            isFileSharingSupported = true,
+            onBackPressed = {},
+            onUploadClick = {},
+            embeddedComponent = true
         )
     }
 }
