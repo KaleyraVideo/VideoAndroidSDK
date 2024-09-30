@@ -205,6 +205,14 @@ class ChatScreenTest {
         composeTestRule.onNodeWithText(title).assertDoesNotExist()
     }
 
+    @Test
+    fun chatEmbedded_ongoingCallLabelIsNotDisplayed() {
+        embedded = true
+        val ongoingCall = composeTestRule.activity.getString(R.string.kaleyra_ongoing_call_label)
+        uiState.update { it.copy(isInCall = true) }
+        composeTestRule.onNodeWithText(ongoingCall).assertDoesNotExist()
+    }
+
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)
 
     private fun findResetScrollFab() = composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(
