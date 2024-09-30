@@ -275,6 +275,30 @@ class HSheetContentTest {
     }
 
     @Test
+    fun userClicksChatOnLargeScreen_onModalSheetComponentRequestChat() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ChatAction()).toImmutableList())
+        var component: ModalSheetComponent? = null
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = true,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModalSheetComponentRequest = { component = it },
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        TestCase.assertEquals(ModalSheetComponent.Chat, component)
+    }
+
+    @Test
     fun userClicksFlipCamera_switchCameraInvoked() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(FlipCameraAction()).toImmutableList())
         composeTestRule.setContent {
@@ -971,7 +995,7 @@ class HSheetContentTest {
     }
 
     @Test
-    fun testonMoreToggle() {
+    fun testOnMoreToggle() {
         var isMoreClicked = false
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)

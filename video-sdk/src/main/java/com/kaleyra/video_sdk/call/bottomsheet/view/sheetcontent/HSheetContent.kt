@@ -48,7 +48,7 @@ internal fun HSheetContent(
     onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
-    inputPermissions: InputPermissions = InputPermissions(),
+    inputPermissions: InputPermissions = InputPermissions()
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -82,7 +82,12 @@ internal fun HSheetContent(
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
-        onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
+        onChatClick = remember(viewModel, isLargeScreen) {
+            {
+                if (isLargeScreen) onModalSheetComponentRequest(ModalSheetComponent.Chat)
+                else activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) })
+            }
+        },
         onFileShareClick = {
             onModalSheetComponentRequest(ModalSheetComponent.FileShare)
             viewModel.clearFileShareBadge()
