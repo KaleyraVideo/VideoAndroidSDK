@@ -21,9 +21,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
@@ -43,9 +48,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class ChatScreenTest {
 
     @get:Rule
@@ -61,6 +64,8 @@ class ChatScreenTest {
     )
 
     private var userMessage by mutableStateOf<UserMessage?>(null)
+
+    private var embedded by mutableStateOf(false)
 
     private var onBackPressed = false
 
@@ -88,7 +93,8 @@ class ChatScreenTest {
                 onFetchMessages = { onFetchMessages = true },
                 onShowCall = { onShowCall = true },
                 onSendMessage = { onSendMessage = true },
-                onTyping = { onTyping = true }
+                onTyping = { onTyping = true },
+                embedded = embedded
             )
         }
     }
@@ -109,6 +115,7 @@ class ChatScreenTest {
         onSendMessage = false
         onTyping = false
         userMessage = null
+        embedded = false
     }
 
     @Test
@@ -174,6 +181,28 @@ class ChatScreenTest {
         userMessage = RecordingMessage.Started
         val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    }
+
+    @Test
+    fun chatEmbedded_topAppBarIsNotDisplayed() {
+        embedded = true
+        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        composeTestRule.onNodeWithContentDescription(back).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatNotEmbedded_topAppBarIsDisplayed() {
+        embedded = false
+        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        composeTestRule.onNodeWithContentDescription(back).assertIsDisplayed()
+    }
+
+    @Test
+    fun chatEmbedded_userMessageSnackbarIsNotDisplayed() {
+        embedded = true
+        userMessage = RecordingMessage.Started
+        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
+        composeTestRule.onNodeWithText(title).assertDoesNotExist()
     }
 
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)

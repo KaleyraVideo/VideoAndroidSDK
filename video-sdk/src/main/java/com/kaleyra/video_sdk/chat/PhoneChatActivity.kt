@@ -29,7 +29,6 @@ import androidx.core.view.WindowCompat
 import com.kaleyra.video_common_ui.ChatActivity
 import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToLaunchingActivity
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_sdk.call.utils.Android12ChatActivityTasksFixService
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
