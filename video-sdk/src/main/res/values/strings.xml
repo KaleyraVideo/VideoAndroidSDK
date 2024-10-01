@@ -148,6 +148,7 @@
     <string name="kaleyra_chat_no_messages_subtitle">Send a message to initiate communication</string>
     <string name="kaleyra_chat_avatar_desc">Chat image</string>
     <string name="kaleyra_chat_group_title">Group chat</string>
+    <string name="kaleyra_chat_title">Chat</string>
 
     <!-- Call -->
     <string name="kaleyra_call_show_buttons">Show buttons</string>

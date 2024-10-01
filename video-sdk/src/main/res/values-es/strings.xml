@@ -125,6 +125,7 @@
     <string name="kaleyra_call_info_recording">Esta llamada será grabada</string>
     <string name="kaleyra_call_left_alone">Quedaste solo/a</string>
     <string name="kaleyra_call_offline">Estás fuera de línea</string>
+    <string name="kaleyra_chat_title">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botones</string>
     <string name="kaleyra_call_status_answered_on_other_device">Has respondido en otro dispositivo.</string>
     <string name="kaleyra_call_status_connecting">Conectando…</string>

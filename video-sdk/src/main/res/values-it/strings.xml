@@ -151,6 +151,7 @@
     <string name="kaleyra_chat_group_title">Chat di gruppo</string>
 
     <!-- Call -->
+    <string name="kaleyra_chat_title">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostra tasti</string>
     <string name="kaleyra_close">Chiudi</string>
     <string name="kaleyra_call_status_connecting">Connessione in corso &#8230;</string>
