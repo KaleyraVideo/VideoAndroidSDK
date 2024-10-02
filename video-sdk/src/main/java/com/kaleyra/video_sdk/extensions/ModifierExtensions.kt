@@ -216,7 +216,7 @@ internal object ModifierExtensions {
 
     @OptIn(ExperimentalComposeUiApi::class)
     internal fun Modifier.animateConstraints(
-        animationSpec: AnimationSpec<IntSize> = spring()
+        animationSpec: AnimationSpec<IntSize> = tween()
     ) = composed {
         var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
         var targetSize: IntSize by remember { mutableStateOf(IntSize.Zero) }
@@ -246,7 +246,7 @@ internal object ModifierExtensions {
 
     internal fun Modifier.animatePlacement(
         initialOffset: IntOffset = IntOffset.Zero,
-        animationSpec: AnimationSpec<IntOffset> = spring(stiffness = Spring.StiffnessMediumLow)
+        animationSpec: AnimationSpec<IntOffset> = spring(stiffness = Spring.StiffnessLow)
     ): Modifier = composed {
         val scope = rememberCoroutineScope()
         var animatable: Animatable<IntOffset, AnimationVector2D>? by remember { mutableStateOf(null) }
