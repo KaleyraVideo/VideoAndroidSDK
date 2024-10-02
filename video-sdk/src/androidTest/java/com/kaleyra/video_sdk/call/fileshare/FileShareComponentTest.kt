@@ -20,6 +20,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -56,7 +57,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class FileShareComponentTest {
 
     @get:Rule
@@ -69,6 +69,8 @@ class FileShareComponentTest {
     private var showCancelledFileSnackBar by mutableStateOf(false)
 
     private var showFileSizeLimitAlertDialog by mutableStateOf(false)
+
+    private var largeScreen by mutableStateOf(false)
 
     private var openFailure: Boolean = false
 
@@ -85,15 +87,16 @@ class FileShareComponentTest {
         composeTestRule.setContent {
             FileShareComponent(
                 uiState = fileShareUiState,
+                userMessageComponent = { Text("User message") },
                 showUnableToOpenFileSnackBar = showUnableToOpenFileSnackBar,
                 showCancelledFileSnackBar = showCancelledFileSnackBar,
                 onFileOpenFailure = { openFailure = true },
                 onAlertDialogDismiss = { alertDialogDismissed = true },
-                onUserMessageActionClick = {},
                 onUpload = { uploadUri = it },
                 onDownload = { downloadId = it },
                 onShareCancel = { cancelId = it },
-                snackBarHostState = SnackbarHostState()
+                snackBarHostState = SnackbarHostState(),
+                isLargeScreen = largeScreen
             )
         }
     }
@@ -272,5 +275,17 @@ class FileShareComponentTest {
         val ok = composeTestRule.activity.getString(R.string.kaleyra_button_ok)
         composeTestRule.onNodeWithText(ok).performClick()
         assertEquals(true, alertDialogDismissed)
+    }
+
+    @Test
+    fun smallScreen_userMessageComponentIsDisplayed() {
+        largeScreen = false
+        composeTestRule.onNodeWithText("User message").assertIsDisplayed()
+    }
+
+    @Test
+    fun largeScreen_userMessageComponentDoesNotExists() {
+        largeScreen = true
+        composeTestRule.onNodeWithText("User message").assertDoesNotExist()
     }
 }

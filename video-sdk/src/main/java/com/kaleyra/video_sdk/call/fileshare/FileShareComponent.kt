@@ -77,7 +77,7 @@ internal fun FileShareComponent(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit,
+    onUserMessageActionClick: (UserMessage) -> Unit = { },
     isTesting: Boolean = false,
     isLargeScreen: Boolean = false
 ) {
@@ -108,6 +108,9 @@ internal fun FileShareComponent(
 
     FileShareComponent(
         uiState = uiState,
+        userMessageComponent = {
+            StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+        },
         showUnableToOpenFileSnackBar = showUnableToOpenFileSnackBar,
         showCancelledFileSnackBar = showCancelledFileSnackBar,
         onFileOpenFailure = { doesFileExists ->
@@ -123,7 +126,6 @@ internal fun FileShareComponent(
         onDownload = viewModel::download,
         onShareCancel = viewModel::cancel,
         modifier = modifier,
-        onUserMessageActionClick = onUserMessageActionClick,
         onBackPressed = onDismiss,
         isLargeScreen = isLargeScreen
     )
@@ -132,13 +134,13 @@ internal fun FileShareComponent(
 @Composable
 internal fun FileShareComponent(
     uiState: FileShareUiState,
+    userMessageComponent: @Composable () -> Unit = { },
     showUnableToOpenFileSnackBar: Boolean = false,
     showCancelledFileSnackBar: Boolean = false,
     onFileOpenFailure: ((doesFileExists: Boolean) -> Unit)? = null,
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
     onBackPressed: (() -> Unit)? = null,
-    onUserMessageActionClick: (UserMessage) -> Unit,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
@@ -213,9 +215,9 @@ internal fun FileShareComponent(
                 )
             }
 
-            StackedUserMessageComponent(
-                onActionClick = onUserMessageActionClick
-            )
+            if (!isLargeScreen) {
+                userMessageComponent()
+            }
 
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -248,7 +250,6 @@ internal fun FileShareComponentPreview() {
                     sharedFiles = ImmutableList((0..20).map { mockUploadSharedFile.copy(id = UUID.randomUUID().toString()) })
                 ),
                 onUpload = {},
-                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )
@@ -265,7 +266,6 @@ internal fun FileShareComponentEmptyPreview() {
             FileShareComponent(
                 uiState = FileShareUiState(),
                 onUpload = {},
-                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )

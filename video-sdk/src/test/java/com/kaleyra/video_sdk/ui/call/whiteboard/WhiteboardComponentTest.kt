@@ -20,6 +20,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,12 +50,15 @@ import org.robolectric.RobolectricTestRunner
 @OptIn(ExperimentalMaterial3Api::class)
 @RunWith(RobolectricTestRunner::class)
 class WhiteboardComponentTest {
+
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     private var showWhiteboardComponent by mutableStateOf(true)
 
     private var uiState by mutableStateOf(WhiteboardUiState())
+
+    private var largeScreen by mutableStateOf(false)
 
     private lateinit var sheetState: SheetState
 
@@ -77,11 +81,12 @@ class WhiteboardComponentTest {
             if (showWhiteboardComponent) {
                 WhiteboardComponent(
                     uiState = uiState,
+                    userMessageComponent = { Text("User message") },
                     onReloadClick = { isReloadClicked = true },
                     onWhiteboardClosed = { isWhiteboardClosed = true },
                     onBackPressed = { isBackPressed = true },
                     onUploadClick = { isUploadClicked = true },
-                    onUserMessageActionClick = {}
+                    isLargeScreen = largeScreen
                 )
             }
         }
@@ -110,7 +115,6 @@ class WhiteboardComponentTest {
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
     }
-
 
     @Test
     fun whiteboardViewNull_whiteboardViewDoesNotExist() {
@@ -232,6 +236,18 @@ class WhiteboardComponentTest {
         showWhiteboardComponent = false
         composeTestRule.waitForIdle()
         assertEquals(true, isWhiteboardClosed)
+    }
+
+    @Test
+    fun smallScreen_userMessageComponentIsDisplayed() {
+        largeScreen = false
+        composeTestRule.onNodeWithText("User message").assertIsDisplayed()
+    }
+
+    @Test
+    fun largeScreen_userMessageComponentDoesNotExists() {
+        largeScreen = true
+        composeTestRule.onNodeWithText("User message").assertDoesNotExist()
     }
 
 }
