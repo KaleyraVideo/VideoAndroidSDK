@@ -309,6 +309,26 @@ class CallScreenTest {
     }
 
     @Test
+    fun userClicksTwiceFileShareAction_fileShareComponentIsClosed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen()
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        val fileShareButton = composeTestRule.onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+        fileShareButton.performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+
+        fileShareButton.performClick()
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
     fun userClicksAudioAction_audioComponentDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(AudioAction()).toImmutableList()
@@ -366,6 +386,26 @@ class CallScreenTest {
     }
 
     @Test
+    fun userClicksTwiceWhiteboardAction_whiteboardComponentIsClosed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(WhiteboardAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen()
+
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        val whiteboardButton = composeTestRule.onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+        whiteboardButton.performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+
+        whiteboardButton.performClick()
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
     fun userClicksVirtualBackgroundAction_virtualBackgroundComponentDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(VirtualBackgroundAction()).toImmutableList()
@@ -388,14 +428,29 @@ class CallScreenTest {
     fun userClicksParticipantsButton_participantsComponentDisplayed() {
         composeTestRule.setUpCallScreen()
 
-        val virtualBgText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
         composeTestRule
-            .onNodeWithContentDescription(virtualBgText, useUnmergedTree = true)
+            .onNodeWithContentDescription(participantsText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksTwiceParticipantsButton_participantsComponentIsClosed() {
+        composeTestRule.setUpCallScreen()
+
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val participantsButton = composeTestRule.onNodeWithContentDescription(participantsText, useUnmergedTree = true)
+        participantsButton.performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+
+        participantsButton.performClick()
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 
     @Test

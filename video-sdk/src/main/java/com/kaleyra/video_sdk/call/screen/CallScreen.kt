@@ -277,7 +277,7 @@ internal fun CallScreen(
 
     var modalSheetComponentRequested: ModalSheetComponent? by remember { mutableStateOf(null) }
     val onModalSheetComponentRequest = remember {
-        { component: ModalSheetComponent? -> modalSheetComponentRequested = component }
+        { component: ModalSheetComponent? -> modalSheetComponentRequested = component?.takeIf { modalSheetComponentRequested != it } }
     }
 
     var modalSheetComponentDisplayed: ModalSheetComponent? by remember { mutableStateOf(null) }
