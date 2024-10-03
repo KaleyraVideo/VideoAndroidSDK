@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -35,6 +36,8 @@ internal enum class ModalSheetComponent {
     Participants,
     Chat
 }
+
+internal val CallScreenModalSheetTag = "CallScreenModalSheetTag"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +72,7 @@ internal fun CallScreenModalSheet(
             dragHandle = (@Composable { CallBottomSheetDefaults.HDragHandle() }).takeIf { !isFullScreenComponent(modalSheetComponent) },
             windowInsets = WindowInsets(0.dp),
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-            modifier = modifier
+            modifier = modifier.testTag(CallScreenModalSheetTag)
         ) {
             when (modalSheetComponent) {
                 ModalSheetComponent.Audio -> AudioOutputComponent(onDismiss = onDismiss)

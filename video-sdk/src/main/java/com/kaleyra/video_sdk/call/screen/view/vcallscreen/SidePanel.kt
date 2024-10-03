@@ -20,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
@@ -28,10 +27,10 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 
-private val SideBarBorderWidth = 1.dp
-private val SideBarShape = RoundedCornerShape(size = 8.dp)
+internal val SideBarBorderWidth = 1.dp
+internal val SideBarSpacing = 4.dp
+internal val SideBarShape = RoundedCornerShape(size = 8.dp)
 
 @Composable
 internal fun SidePanel(
@@ -42,7 +41,7 @@ internal fun SidePanel(
 ) {
     Box(
         modifier = modifier
-            .padding(4.dp)
+            .padding(SideBarSpacing)
             .border(
                 width = SideBarBorderWidth,
                 color = MaterialTheme.colorScheme.surfaceVariant,

@@ -67,6 +67,8 @@ internal const val MaxFeaturedStreamsExpanded = 15
 internal const val MaxPinnedStreamsCompact = 2
 internal const val MaxPinnedStreamsExpanded = 6
 
+internal val StreamItemSpacing = 4.dp
+
 internal object StreamComponentDefaults {
 
     const val MaxThumbnailStreams = 3
@@ -190,10 +192,9 @@ internal fun StreamComponent(
 
                 val isNonDisplayedParticipantsDataEmpty = nonDisplayedParticipantsData.isEmpty()
 
-                val itemPadding = 4.dp
                 val itemModifier = Modifier
                     .fillMaxSize()
-                    .padding(itemPadding)
+                    .padding(StreamItemSpacing)
                     .let { modifier ->
                         // Disable animation for preview
                         if (!LocalInspectionMode.current) {
