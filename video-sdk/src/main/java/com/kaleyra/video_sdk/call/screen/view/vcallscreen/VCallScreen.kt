@@ -128,7 +128,10 @@ internal fun VCallScreen(
                     content = {
                         SheetPanelContent(
                             callActions = sheetDragActions,
-                            onModalSheetComponentRequest = onModalSheetComponentRequest,
+                            onModalSheetComponentRequest = {
+                                onModalSheetComponentRequest(it)
+                                showSheetPanelContent = false
+                            },
                             modifier = Modifier.testTag(PanelTestTag)
                         )
                     }

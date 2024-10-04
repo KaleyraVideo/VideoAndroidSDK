@@ -1719,6 +1719,23 @@ class VCallScreenTest {
         verify(exactly = 1) { streamViewModel.pin("streamId", prepend = true, force = true) }
     }
 
+    @Test
+    fun userClicksOnSheetPanelItem_sheetPanelIsDismissed() {
+        val actions = allActions.filterNot { it is ChatAction }.take(LargeScreenMaxActions)
+        composeTestRule.setUpVCallScreen(configuration = largeScreenConfiguration)
+        callActionsUiState.value = CallActionsUiState(
+            actionList = (actions + ChatAction()).toImmutableList()
+        )
+
+        val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
+        composeTestRule.onNodeWithContentDescription(moreText, useUnmergedTree = true).performClick()
+
+        val audioText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule.onAllNodesWithText(audioText, useUnmergedTree = true)[0].performClick()
+
+        composeTestRule.onNodeWithTag(PanelTestTag).assertDoesNotExist()
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
