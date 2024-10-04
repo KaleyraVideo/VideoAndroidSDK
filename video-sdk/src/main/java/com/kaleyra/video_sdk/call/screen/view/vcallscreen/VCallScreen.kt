@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -239,17 +241,7 @@ internal fun VCallScreen(
             BoxWithConstraints {
                 val constraints = constraints
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .navigationBarsPadding()
-                        .padding(
-                            start = 4.dp,
-                            top = top,
-                            end = 4.dp,
-                            bottom = 108.dp
-                        )
-                ) {
+                Row {
                     val sidePanelHeight = remember(modalSheetComponent) {
                         if (modalSheetComponent == ModalSheetComponent.Whiteboard) 4f else 1f
                     }
@@ -261,10 +253,18 @@ internal fun VCallScreen(
                             selectedStreamId = selectedStreamId,
                             onStreamClick = { stream -> onStreamSelected(stream.id) },
                             onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .navigationBarsPadding()
+                                .padding(
+                                    start = 4.dp,
+                                    top = top,
+                                    end = 4.dp,
+                                    bottom = 108.dp
+                                )
                         )
 
-                        Column {
+                        Column(Modifier.padding(top = top)) {
                             CallInfoComponent(Modifier.padding(top = 56.dp, bottom = 16.dp))
                             if (isLargeScreen || (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard)) {
                                 StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
