@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
@@ -158,13 +162,11 @@ internal fun ParticipantsComponent(
     modifier: Modifier = Modifier,
     isLargeScreen: Boolean = false
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier,
         topBar = {
             ParticipantsTopAppBar(
                 participantsCount = streams.count(),
-                scrollBehavior = scrollBehavior,
                 onBackPressed = onCloseClick,
                 isLargeScreen = isLargeScreen
             )
@@ -213,35 +215,39 @@ internal fun ParticipantsComponent(
         }
 
         Column(Modifier.fillMaxSize()) {
+            val layoutDirection = LocalLayoutDirection.current
+            val start = contentPadding.calculateStartPadding(layoutDirection)
+            val top = contentPadding.calculateTopPadding()
+            val end = contentPadding.calculateEndPadding(layoutDirection)
+            val bottom = contentPadding.calculateBottomPadding()
+
+            Column(
+                modifier = Modifier
+                    .padding(start = start, top = top, end = end)
+                    .padding(horizontal = 38.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                StreamsLayoutSelector(
+                    streamsLayout = streamsLayout,
+                    enableGridLayout = enableGridLayout,
+                    onLayoutClick = onLayoutClick
+                )
+                Spacer(Modifier.height(16.dp))
+            }
             Box(Modifier.weight(1f)) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(contentPadding),
+                        .padding(start = start, end = end, bottom = bottom),
                     contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
-                            fontWeight = FontWeight.SemiBold,
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    item {
-                        StreamsLayoutSelector(
-                            streamsLayout = streamsLayout,
-                            enableGridLayout = enableGridLayout,
-                            onLayoutClick = onLayoutClick
-                        )
-                    }
-
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                    }
-
                     item {
                         Text(
                             text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
