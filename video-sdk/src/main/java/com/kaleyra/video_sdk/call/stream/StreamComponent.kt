@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.stream
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -135,35 +136,29 @@ internal fun StreamComponent(
     onMoreParticipantClick: () -> Unit,
     modifier: Modifier = Modifier,
     maxFeaturedStreams: Int = remember(windowSizeClass) {
-        StreamComponentDefaults.maxFeaturedStreams(
-            windowSizeClass
-        )
+        StreamComponentDefaults.maxFeaturedStreams(windowSizeClass)
     },
     maxThumbnailStreams: Int = StreamComponentDefaults.MaxThumbnailStreams,
     thumbnailsArrangement: ThumbnailsArrangement = remember(windowSizeClass) {
-        StreamComponentDefaults.thumbnailsArrangementFor(
-            windowSizeClass
-        )
+        StreamComponentDefaults.thumbnailsArrangementFor(windowSizeClass)
     },
     maxThumbnailSize: Dp = StreamComponentDefaults.MaxThumbnailSize,
 ) {
     Box(contentAlignment = Alignment.Center) {
         if (uiState.preview != null) {
             val video = uiState.preview.video
-            val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
-            val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
-            val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
+            if (video?.view != null || !uiState.preview.isStartingWithVideo) {
+                val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
+                val avatarPlaceholder = if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
+                val username = if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
 
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = if (video?.view != null && video.isEnabled) Modifier else modifier
-            ) {
                 Stream(
                     streamView = video?.view?.preCallStreamViewSettings(),
                     avatar = avatar,
                     avatarPlaceholder = avatarPlaceholder,
                     username = username,
-                    showStreamView = video?.view != null && video.isEnabled
+                    showStreamView = video?.view != null && video.isEnabled,
+                    avatarModifier = modifier
                 )
             }
         } else {

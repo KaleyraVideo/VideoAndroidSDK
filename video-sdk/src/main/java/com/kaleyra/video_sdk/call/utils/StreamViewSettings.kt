@@ -22,7 +22,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 
 internal object StreamViewSettings {
 
-    internal fun ImmutableView.defaultStreamViewSettings(): ImmutableView {
+    internal fun ImmutableView<VideoStreamView>.defaultStreamViewSettings(): ImmutableView<VideoStreamView> {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = true
@@ -31,7 +31,7 @@ internal object StreamViewSettings {
         return this
     }
 
-    internal fun ImmutableView.preCallStreamViewSettings(): ImmutableView {
+    internal fun ImmutableView<VideoStreamView>.preCallStreamViewSettings(): ImmutableView<VideoStreamView> {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = true
@@ -40,7 +40,7 @@ internal object StreamViewSettings {
         return this
     }
 
-    internal fun ImmutableView.pipSettings(): ImmutableView {
+    internal fun ImmutableView<VideoStreamView>.pipSettings(): ImmutableView<VideoStreamView> {
         val view = value
         if (view is VideoStreamView) {
             view.zoomGesturesEnabled.value = false

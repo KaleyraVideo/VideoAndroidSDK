@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
@@ -195,7 +196,7 @@ internal fun StreamItemPreview() {
                 stream = StreamUi(
                     id = "id",
                     username = "Viola J. Allen",
-                    video = VideoUi(id = "id", view = ImmutableView(View(LocalContext.current))),
+                    video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current))),
                     audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true),
                 ),
                 fullscreen = true,

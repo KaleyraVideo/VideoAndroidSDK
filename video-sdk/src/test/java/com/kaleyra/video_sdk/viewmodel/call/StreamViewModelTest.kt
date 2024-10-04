@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import android.net.Uri
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
@@ -93,6 +94,7 @@ class StreamViewModelTest {
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
@@ -117,6 +119,7 @@ class StreamViewModelTest {
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
@@ -141,6 +144,7 @@ class StreamViewModelTest {
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
@@ -150,7 +154,8 @@ class StreamViewModelTest {
             isGroupCall = true,
             video = video,
             username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            avatar = ImmutableUri(uriMock),
+            isStartingWithVideo = false
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -164,6 +169,7 @@ class StreamViewModelTest {
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf())
             every { toOtherDisplayImages() } returns flowOf(listOf())
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
@@ -171,9 +177,7 @@ class StreamViewModelTest {
 
         val expected = StreamPreview(
             isGroupCall = true,
-            video = video,
-            username = null,
-            avatar = null
+            video = video
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -192,6 +196,7 @@ class StreamViewModelTest {
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
             every { toStreamsUi() } returns streams
             every { toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
@@ -201,7 +206,8 @@ class StreamViewModelTest {
             isGroupCall = true,
             video = video,
             username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            avatar = ImmutableUri(uriMock),
+            isStartingWithVideo = false
         )
         assertEquals(expected, viewModel.uiState.first().preview)
 
@@ -216,6 +222,42 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         assertEquals(null, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview is starting with video true if preferred type has video and is enabled`() = runTest {
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
+            every { toMyCameraVideoUi() } returns flowOf(null)
+            every { isGroupCall(any()) } returns flowOf(false)
+            every { toOtherDisplayNames() } returns flowOf(listOf())
+            every { toOtherDisplayImages() } returns flowOf(listOf())
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(isStartingWithVideo = true)
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview is starting with video false if preferred type has video and is enabled is false`() = runTest {
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
+            every { toMyCameraVideoUi() } returns flowOf(null)
+            every { isGroupCall(any()) } returns flowOf(false)
+            every { toOtherDisplayNames() } returns flowOf(listOf())
+            every { toOtherDisplayImages() } returns flowOf(listOf())
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
+        }
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val expected = StreamPreview(isStartingWithVideo = false)
+        assertEquals(expected, viewModel.uiState.first().preview)
     }
 
     @Test
@@ -314,6 +356,7 @@ class StreamViewModelTest {
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
             every { toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
             every { toStreamsUi() } returns MutableStateFlow(listOf())
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
