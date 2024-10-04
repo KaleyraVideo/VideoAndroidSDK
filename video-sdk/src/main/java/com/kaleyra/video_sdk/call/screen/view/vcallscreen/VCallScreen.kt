@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -64,6 +62,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 
@@ -240,6 +239,7 @@ internal fun VCallScreen(
 
             BoxWithConstraints {
                 val constraints = constraints
+                val contentPadding = PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
 
                 Row {
                     val sidePanelHeight = remember(modalSheetComponent) {
@@ -256,12 +256,7 @@ internal fun VCallScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .navigationBarsPadding()
-                                .padding(
-                                    start = 4.dp,
-                                    top = top,
-                                    end = 4.dp,
-                                    bottom = 108.dp
-                                )
+                                .padding(contentPadding)
                         )
 
                         Column(Modifier.padding(top = top)) {
@@ -279,8 +274,10 @@ internal fun VCallScreen(
                             onSideBarComponentDisplayed = onModalSheetComponentDisplayed,
                             modifier = Modifier
                                 .weight(sidePanelHeight)
+                                .navigationBarsPadding()
+                                .padding(contentPadding)
                                 .animateConstraints()
-                                .animatePlacement(IntOffset(constraints.maxWidth, 0))
+                                .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
                         )
                     }
                 }

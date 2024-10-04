@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_sdk.call.bottomsheet.toPixel
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 
 internal object TextStyleExtensions {
 

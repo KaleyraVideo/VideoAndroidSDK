@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.bottomsheet
 
-import android.content.res.Resources
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -25,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 
 internal object AnchoredDraggableCallSheetDefaults {
 
@@ -98,9 +98,6 @@ object CallBottomSheetDefaults {
 }
 
 private val DragHandlePadding = 8.dp
-
-internal val Dp.toPixel: Float
-    get() = value * Resources.getSystem().displayMetrics.density
 
 @Composable
 internal fun rememberCallSheetState(
