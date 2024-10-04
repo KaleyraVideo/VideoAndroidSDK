@@ -26,11 +26,12 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.mapToSharedFileUi
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.mapToSharedFileUiState
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toSharedFilesUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -39,7 +40,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -362,5 +362,27 @@ class FileShareMapperTest {
         val state = SharedFile.State.InProgress(400L)
         val result = state.mapToSharedFileUiState(800L)
         assertEquals(SharedFileUi.State.InProgress(.5f), result)
+    }
+
+    @Test
+    fun emptySet_toOtherFilesCreationTimes_emptyMappedList() = runTest {
+        every { sharedFolderMock.files } returns MutableStateFlow(setOf())
+
+        val result = callMock.toOtherFilesCreationTimes().first()
+        assertEquals(listOf<Long>(), result)
+    }
+
+    @Test
+    fun notEmptySet_toOtherFilesCreationTimes_mappedList() = runTest {
+        val sharedFileMock3 = mockk<SharedFile>(relaxed = true)
+        with(sharedFileMock3) {
+            every { size } returns 3456L
+            every { sender } returns meMock
+        }
+        every { sharedFolderMock.files } returns MutableStateFlow(setOf(sharedFileMock1, sharedFileMock2, sharedFileMock3))
+
+        val result = callMock.toOtherFilesCreationTimes().first()
+        val expected = listOf(sharedFileMock1.creationTime, sharedFileMock2.creationTime)
+        assertEquals(expected, result)
     }
 }
