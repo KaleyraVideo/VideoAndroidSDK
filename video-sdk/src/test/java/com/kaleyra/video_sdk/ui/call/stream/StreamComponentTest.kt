@@ -464,7 +464,10 @@ class StreamComponentTest {
             streamUiState = StreamUiState(
                 preview = StreamPreview(
                     username = "mario",
-                    video = VideoUi(id = "videoId", view = ImmutableView(VideoStreamView(instrumentation.context))),
+                    video = VideoUi(
+                        id = "videoId",
+                        view = ImmutableView(VideoStreamView(instrumentation.context))
+                    ),
                     isStartingWithVideo = true
                 )
             )
@@ -472,6 +475,22 @@ class StreamComponentTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("M").assertIsDisplayed()
+    }
+
+    fun participantItemIsAddedAfterwards_onClickBehaviourIsSetCorrectly() {
+        val stream1 = defaultStreamUi()
+        val stream2 = defaultStreamUi()
+        val stream3 = defaultStreamUi()
+        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
+        composeTestRule.waitForIdle()
+
+        maxFeaturedStreams = 2
+        composeTestRule.waitForIdle()
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule.onNodeWithText(otherText).performClick()
+
+        assertEquals(true, moreParticipantClicked)
     }
 
     fun defaultStreamUi(
