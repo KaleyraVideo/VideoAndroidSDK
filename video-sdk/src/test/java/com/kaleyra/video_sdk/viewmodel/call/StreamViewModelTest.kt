@@ -616,6 +616,26 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun tryPinSameStreamMultipleTime_secondPinFails() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        val isPinned = viewModel.pin(streamMock1.id)
+
+        assertEquals(true, isPinned)
+        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+
+        val isPinned2 = viewModel.pin(streamMock1.id)
+
+        assertEquals(false, isPinned2)
+        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+    }
+
+    @Test
     fun testPinOverMaxPinnedStreams() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
         every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
