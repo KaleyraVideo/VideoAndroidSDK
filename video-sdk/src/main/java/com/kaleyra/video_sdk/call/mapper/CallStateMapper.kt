@@ -75,7 +75,7 @@ internal object CallStateMapper {
         (participants.creator() == null || participants.me == participants.creator()) && state is Call.State.Connecting
 
     private fun isRingingLocally(state: Call.State, participants: CallParticipants) =
-            participants.me != participants.creator() && (state == Call.State.Disconnected || state is Call.State.Connecting)
+        participants.creator().let { it != null && it != participants.me } && (state == Call.State.Disconnected || state is Call.State.Connecting)
 
     private fun isRingingRemotely(state: Call.State, areOtherParticipantsRinging: Boolean) =
         (state == Call.State.Disconnected || state is Call.State.Connecting) && areOtherParticipantsRinging
