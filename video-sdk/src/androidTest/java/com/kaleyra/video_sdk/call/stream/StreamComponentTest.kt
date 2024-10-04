@@ -23,6 +23,8 @@ import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -428,6 +430,23 @@ class StreamComponentTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
+    @Test
+    fun participantItemIsAddedAfterwards_onClickBehaviourIsSetCorrectly() {
+        val stream1 = defaultStreamUi()
+        val stream2 = defaultStreamUi()
+        val stream3 = defaultStreamUi()
+        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
+        composeTestRule.waitForIdle()
+
+        maxFeaturedStreams = 2
+        composeTestRule.waitForIdle()
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule.onNodeWithText(otherText).performClick()
+
+        assertEquals(true, moreParticipantClicked)
     }
 
     fun defaultStreamUi(

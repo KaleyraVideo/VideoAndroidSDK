@@ -130,15 +130,11 @@ internal fun StreamComponent(
     onMoreParticipantClick: () -> Unit,
     modifier: Modifier = Modifier,
     maxFeaturedStreams: Int = remember(windowSizeClass) {
-        StreamComponentDefaults.maxFeaturedStreams(
-            windowSizeClass
-        )
+        StreamComponentDefaults.maxFeaturedStreams(windowSizeClass)
     },
     maxThumbnailStreams: Int = StreamComponentDefaults.MaxThumbnailStreams,
     thumbnailsArrangement: ThumbnailsArrangement = remember(windowSizeClass) {
-        StreamComponentDefaults.thumbnailsArrangementFor(
-            windowSizeClass
-        )
+        StreamComponentDefaults.thumbnailsArrangementFor(windowSizeClass)
     },
     maxThumbnailSize: Dp = StreamComponentDefaults.MaxThumbnailSize,
 ) {
@@ -213,7 +209,7 @@ internal fun StreamComponent(
                             val displayAsMoreParticipantsItem =
                                 !isNonDisplayedParticipantsDataEmpty && !streamItemState.isFullscreen && index == streamsToDisplay.size - 1
 
-                            val onClick = remember {
+                            val onClick = remember(streamItemState, displayAsMoreParticipantsItem, onStreamClick) {
                                 onClick@ {
                                     if (streamItemState.isLocalScreenShare) return@onClick
                                     if (displayAsMoreParticipantsItem) onMoreParticipantClick()
