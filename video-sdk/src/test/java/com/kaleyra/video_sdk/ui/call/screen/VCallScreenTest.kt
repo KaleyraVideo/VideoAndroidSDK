@@ -185,8 +185,7 @@ class VCallScreenTest {
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create<CallActionsViewModel>(any(), any()) } returns callViewModel
         }
-
-
+        
         every { StreamViewModel.provideFactory(any()) } returns mockk {
             every { create<StreamViewModel>(any(), any()) } returns streamViewModel
         }

@@ -65,6 +65,8 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -267,7 +269,7 @@ internal fun VCallScreen(
                         }
                     }
 
-                    if (isLargeScreen && modalSheetComponent != null) {
+                    if (isLargeScreen && modalSheetComponent!= null && isModalSheetComponentSideBarSupported(modalSheetComponent)) {
                         SidePanel(
                             modalSheetComponent = modalSheetComponent,
                             onDismiss = { onModalSheetComponentRequest(null) },
@@ -285,7 +287,7 @@ internal fun VCallScreen(
 
             CallScreenModalSheet(
                 modalSheetComponent = modalSheetComponent.takeIf {
-                    !isLargeScreen || it == ModalSheetComponent.Audio || it == ModalSheetComponent.ScreenShare || it == ModalSheetComponent.VirtualBackground
+                    !isLargeScreen || !isModalSheetComponentSideBarSupported(modalSheetComponent)
                 },
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
@@ -294,6 +296,12 @@ internal fun VCallScreen(
                 onComponentDisplayed = onModalSheetComponentDisplayed,
             )
         }
+    }
+}
+
+private fun isModalSheetComponentSideBarSupported(modalSheetComponent: ModalSheetComponent?): Boolean {
+    return modalSheetComponent.let {
+       it == ModalSheetComponent.Chat || it == ModalSheetComponent.FileShare || it == ModalSheetComponent.Whiteboard || it == ModalSheetComponent.Participants
     }
 }
 
