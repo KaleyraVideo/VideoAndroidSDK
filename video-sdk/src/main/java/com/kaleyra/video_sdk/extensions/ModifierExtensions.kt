@@ -118,35 +118,6 @@ internal object ModifierExtensions {
         }
 
     @Stable
-    internal fun Modifier.fadeBelowOfRootBottomBound(): Modifier =
-        composed {
-            val navigationBarsPadding = with(LocalDensity.current) {
-                WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().toPx()
-            }
-            var alpha by remember { mutableStateOf(0f) }
-            this
-                .onGloballyPositioned { layoutCoordinates ->
-                    val rootHeight = layoutCoordinates.findRoot().size.height
-                    val boundsInRoot = layoutCoordinates.boundsInRoot()
-                    val height = layoutCoordinates.size.height.toFloat()
-                    val out = (boundsInRoot.bottom - rootHeight + navigationBarsPadding).coerceIn(0f, height)
-                    alpha = (1 - out / height).takeIf { it > FadeVisibilityThreshold } ?: 0f
-                }
-                .graphicsLayer {
-                    this.alpha = alpha
-                }
-        }
-
-    @Stable
-    internal fun Modifier.horizontalSystemBarsPadding(): Modifier =
-        composed { windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)) }
-
-    @Stable
-    internal fun Modifier.horizontalCutoutPadding(): Modifier =
-        composed { windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal)) }
-
-
-    @Stable
     internal fun Modifier.pulse(durationMillis: Int = 1000, enabled: Boolean = true): Modifier = composed {
         val infiniteTransition = rememberInfiniteTransition()
         val alpha by infiniteTransition.animateFloat(
@@ -160,33 +131,6 @@ internal object ModifierExtensions {
         )
         graphicsLayer {
             if (enabled) this.alpha = alpha
-        }
-    }
-
-    internal fun Modifier.verticalGradientScrim(
-        color: Color,
-        @FloatRange(from = 0.0, to = 1.0) startYPercentage: Float = 0f,
-        @FloatRange(from = 0.0, to = 1.0) endYPercentage: Float = 1f
-    ): Modifier = composed {
-        val colors = remember(color) {
-            listOf(color.copy(alpha = 0f), color)
-        }
-
-        val brush = remember(colors, startYPercentage, endYPercentage) {
-            Brush.verticalGradient(
-                colors = if (startYPercentage < endYPercentage) colors else colors.reversed(),
-            )
-        }
-
-        drawBehind {
-            val topLeft = Offset(0f, size.height * min(startYPercentage, endYPercentage))
-            val bottomRight = Offset(size.width, size.height * max(startYPercentage, endYPercentage))
-
-            drawRect(
-                topLeft = topLeft,
-                size = Rect(topLeft, bottomRight).size,
-                brush = brush
-            )
         }
     }
 
