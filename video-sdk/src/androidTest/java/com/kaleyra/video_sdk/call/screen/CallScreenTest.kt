@@ -79,6 +79,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 class CallScreenTest {
 
@@ -165,53 +166,50 @@ class CallScreenTest {
         mockkObject(UserMessagesViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallActionsViewModel>(any(), any()) } returns callViewModel
+            every { create(any<KClass<CallActionsViewModel>>(), any()) } returns callViewModel
         }
 
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns streamViewModel
+            every { create(any<KClass<StreamViewModel>>(), any()) } returns streamViewModel
         }
         every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
-            every { create<AudioOutputViewModel>(any(), any()) } returns audioOutputViewModel
+            every { create(any<KClass<AudioOutputViewModel>>(), any()) } returns audioOutputViewModel
         }
         every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
-            every { create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
+            every { create(any<KClass<ScreenShareViewModel>>(), any()) } returns screenShareViewModel
         }
         every { FileShareViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<FileShareViewModel>(any(), any()) } returns fileShareViewModel
+            every { create(any<KClass<FileShareViewModel>>(), any()) } returns fileShareViewModel
         }
         every { WhiteboardViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<WhiteboardViewModel>(any(), any()) } returns whiteboardViewModel
+            every { create(any<KClass<WhiteboardViewModel>>(), any()) } returns whiteboardViewModel
         }
         every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
             every {
-                create<VirtualBackgroundViewModel>(
-                    any(),
-                    any()
-                )
+                create(any<KClass<VirtualBackgroundViewModel>>(), any())
             } returns virtualBackgroundViewModel
         }
         every { CallInfoViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallInfoViewModel>(any(), any()) } returns callInfoViewModel
+            every { create(any<KClass<CallInfoViewModel>>(), any()) } returns callInfoViewModel
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallAppBarViewModel>(any(), any()) } returns callAppBarViewModel
+            every { create(any<KClass<CallAppBarViewModel>>(), any()) } returns callAppBarViewModel
         }
         every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
-            every { create<ParticipantsViewModel>(any(), any()) } returns mockk(relaxed = true) {
+            every { create(any<KClass<ParticipantsViewModel>>(), any()) } returns mockk(relaxed = true) {
                 every { uiState } returns MutableStateFlow(ParticipantsUiState())
             }
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<UserMessagesViewModel>(any(), any()) } returns userMessagesViewModel
+            every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns userMessagesViewModel
         }
         every { FeedbackViewModel.provideFactory(any()) } returns mockk {
-            every { create<FeedbackViewModel>(any(), any()) } returns mockk(relaxed = true) {
+            every { create(any<KClass<FeedbackViewModel>>(), any()) } returns mockk(relaxed = true) {
                 every { uiState } returns MutableStateFlow(FeedbackUiState.Hidden)
             }
         }
         every { KickedMessageViewModel.provideFactory(any()) } returns mockk {
-            every { create<KickedMessageViewModel>(any(), any()) } returns mockk(relaxed = true) {
+            every { create(any<KClass<KickedMessageViewModel>>(), any()) } returns mockk(relaxed = true) {
                 every { uiState } returns MutableStateFlow(KickedMessageUiState.Hidden)
             }
         }

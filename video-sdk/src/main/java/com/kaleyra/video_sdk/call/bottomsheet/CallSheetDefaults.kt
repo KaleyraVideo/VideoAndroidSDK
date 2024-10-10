@@ -2,9 +2,10 @@ package com.kaleyra.video_sdk.call.bottomsheet
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.gestures.animateToWithDecay
 import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,9 @@ import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 
 internal object AnchoredDraggableCallSheetDefaults {
 
-    val AnimationSpec = TweenSpec<Float>(easing = LinearOutSlowInEasing)
+    val SnapAnimationSpec = TweenSpec<Float>(easing = LinearOutSlowInEasing)
+
+    val DecayAnimationSpec = exponentialDecay<Float>(frictionMultiplier = 100f)
 
     val VelocityThreshold: () -> Float = { 125.dp.toPixel }
 
@@ -128,18 +131,18 @@ class CallSheetState(
     fun requireOffset(): Float = anchoredDraggableState.requireOffset()
 
     suspend fun expand() {
-        animateTo(CallSheetValue.Expanded)
+        animateToWithDecay(CallSheetValue.Expanded)
     }
 
     suspend fun collapse() {
-        animateTo(CallSheetValue.Collapsed)
+        animateToWithDecay(CallSheetValue.Collapsed)
     }
 
-    internal suspend fun animateTo(
+    internal suspend fun animateToWithDecay(
         targetValue: CallSheetValue,
         velocity: Float = anchoredDraggableState.lastVelocity
     ) {
-        anchoredDraggableState.animateTo(targetValue, velocity)
+        anchoredDraggableState.animateToWithDecay(targetValue, velocity)
     }
 
     internal suspend fun snapTo(targetValue: CallSheetValue) {
@@ -154,7 +157,8 @@ class CallSheetState(
         initialValue = initialValue,
         positionalThreshold = AnchoredDraggableCallSheetDefaults.PositionalThreshold,
         velocityThreshold = AnchoredDraggableCallSheetDefaults.VelocityThreshold,
-        animationSpec = AnchoredDraggableCallSheetDefaults.AnimationSpec,
+        snapAnimationSpec = AnchoredDraggableCallSheetDefaults.SnapAnimationSpec,
+        decayAnimationSpec = AnchoredDraggableCallSheetDefaults.DecayAnimationSpec,
         confirmValueChange = confirmValueChange
     )
 

@@ -28,6 +28,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 class PipScreenTest {
 
@@ -41,17 +42,17 @@ class PipScreenTest {
         mockkObject(CallInfoViewModel)
 
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
+            every { create<StreamViewModel>(any()) } returns mockk<StreamViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StreamUiState())
             }
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallAppBarViewModel>(any(), any()) } returns mockk<CallAppBarViewModel>(relaxed = true) {
+            every { create<CallAppBarViewModel>(any()) } returns mockk<CallAppBarViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(CallAppBarUiState(automaticRecording = true))
             }
         }
         every { CallInfoViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallInfoViewModel>(any(), any()) } returns mockk<CallInfoViewModel>(relaxed = true) {
+            every { create<CallInfoViewModel>(any()) } returns mockk<CallInfoViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
             }
         }

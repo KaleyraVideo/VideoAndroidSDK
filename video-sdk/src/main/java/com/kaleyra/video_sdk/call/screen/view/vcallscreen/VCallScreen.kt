@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -29,7 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.IntOffset
@@ -65,8 +68,6 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -239,48 +240,64 @@ internal fun VCallScreen(
                 }
             }
 
-            BoxWithConstraints {
-                val constraints = constraints
-                val contentPadding = PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
+            LookaheadScope {
+                BoxWithConstraints {
+                    val constraints = constraints
+                    val contentPadding =
+                        PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
 
-                Row {
-                    val sidePanelHeight = remember(modalSheetComponent) {
-                        if (modalSheetComponent == ModalSheetComponent.Whiteboard) 4f else 1f
-                    }
+                    Row {
+                        val sidePanelWeight = remember(modalSheetComponent) {
+                            if (modalSheetComponent == ModalSheetComponent.Whiteboard) 4f else 1f
+                        }
 
-                    Box(Modifier.weight(2f)) {
-                        StreamComponent(
-                            viewModel = streamViewModel,
-                            windowSizeClass = windowSizeClass,
-                            selectedStreamId = selectedStreamId,
-                            onStreamClick = { stream -> onStreamSelected(stream.id) },
-                            onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .navigationBarsPadding()
-                                .padding(contentPadding)
-                        )
+                                .weight(2f)
+                                .clipToBounds()
+                        ) {
+                            StreamComponent(
+                                viewModel = streamViewModel,
+                                windowSizeClass = windowSizeClass,
+                                selectedStreamId = selectedStreamId,
+                                onStreamClick = { stream -> onStreamSelected(stream.id) },
+                                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding()
+                                    .padding(contentPadding)
+                            )
 
-                        Column(Modifier.padding(top = top)) {
-                            CallInfoComponent(Modifier.padding(top = 56.dp, bottom = 16.dp))
-                            if (isLargeScreen || (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard)) {
-                                StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = top)
+                                    .animateConstraints()
+                                    .animatePlacement(this@LookaheadScope)
+                            ) {
+                                CallInfoComponent(
+                                    modifier = Modifier
+                                        .padding(top = 56.dp, bottom = 16.dp)
+                                        .animateConstraints()
+                                        .animatePlacement(this@LookaheadScope)
+                                )
+                                if (isLargeScreen || (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard)) {
+                                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                                }
                             }
                         }
-                    }
 
-                    if (isLargeScreen && modalSheetComponent!= null && isModalSheetComponentSideBarSupported(modalSheetComponent)) {
-                        SidePanel(
-                            modalSheetComponent = modalSheetComponent,
-                            onDismiss = { onModalSheetComponentRequest(null) },
-                            onSideBarComponentDisplayed = onModalSheetComponentDisplayed,
-                            modifier = Modifier
-                                .weight(sidePanelHeight)
-                                .navigationBarsPadding()
-                                .padding(contentPadding)
-                                .animateConstraints()
-                                .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
-                        )
+                        if (isLargeScreen && modalSheetComponent != null && isModalSheetComponentSideBarSupported(modalSheetComponent)) {
+                            SidePanel(
+                                modalSheetComponent = modalSheetComponent,
+                                onDismiss = { onModalSheetComponentRequest(null) },
+                                onSideBarComponentDisplayed = onModalSheetComponentDisplayed,
+                                modifier = Modifier
+                                    .weight(sidePanelWeight)
+                                    .navigationBarsPadding()
+                                    .padding(contentPadding)
+                                    .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
+                            )
+                        }
                     }
                 }
             }

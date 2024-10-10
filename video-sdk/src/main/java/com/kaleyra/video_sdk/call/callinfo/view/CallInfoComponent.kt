@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.callinfo.view
 
+import android.view.View.TEXT_ALIGNMENT_CENTER
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -124,32 +126,36 @@ fun CallInfoComponent(
 
     if (callInfoUiState.callStateUi != null && (!displayTitle.isNullOrEmpty() || !displaySubtitle.isNullOrEmpty())) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(modifier),
+            modifier = Modifier.then(modifier),
             horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            displayTitle?.let {
+            displayTitle?.takeIf { it.isNotEmpty() }?.let {
                 val titleTextStyle = (if (isPipMode) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge).shadow(color = MaterialTheme.colorScheme.surface)
                 EllipsizeText(
-                    modifier = Modifier.testTag(CallInfoTitleTestTag),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(CallInfoTitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = titleTextStyle.fontSize,
+                    textAlignment = TEXT_ALIGNMENT_CENTER,
                     fontWeight = FontWeight.Bold,
                     ellipsize = Ellipsize.Marquee,
                     shadow = titleTextStyle.shadow
                 )
             }
 
-            displaySubtitle?.let {
+            displaySubtitle?.takeIf { it.isNotEmpty() }?.let {
                 val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium).shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
-                    modifier = Modifier.testTag(CallInfoSubtitleTestTag),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(CallInfoSubtitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = subtitleTextStyle.fontSize,
+                    textAlign = TextAlign.Center,
                     maxLines = 1,
                     style = subtitleTextStyle
                 )

@@ -44,6 +44,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class)
 class CallScreenModalSheetTest {
@@ -63,47 +64,42 @@ class CallScreenModalSheetTest {
         mockkObject(UserMessagesViewModel)
 
         every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
-            every { create<AudioOutputViewModel>(any(), any()) } returns mockk<AudioOutputViewModel>(relaxed = true) {
+            every { create(any<KClass<AudioOutputViewModel>>(), any()) } returns mockk<AudioOutputViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(AudioOutputUiState())
             }
         }
         every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
-            every { create<ScreenShareViewModel>(any(), any()) } returns mockk<ScreenShareViewModel>(relaxed = true) {
+            every { create(any<KClass<ScreenShareViewModel>>(), any()) } returns mockk<ScreenShareViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(ScreenShareUiState())
             }
         }
         every { FileShareViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<FileShareViewModel>(any(), any()) } returns mockk<FileShareViewModel>(relaxed = true) {
+            every { create(any<KClass<FileShareViewModel>>(), any()) } returns mockk<FileShareViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(FileShareUiState())
             }
         }
         every { WhiteboardViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<WhiteboardViewModel>(any(), any()) } returns mockk<WhiteboardViewModel>(relaxed = true) {
+            every { create(any<KClass<WhiteboardViewModel>>(), any()) } returns mockk<WhiteboardViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(WhiteboardUiState())
             }
         }
         every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
-            every { create<VirtualBackgroundViewModel>(any(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
+            every { create(any<KClass<VirtualBackgroundViewModel>>(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
             }
         }
         every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
-            every { create<ParticipantsViewModel>(any(), any()) } returns mockk<ParticipantsViewModel>(relaxed = true) {
+            every { create(any<KClass<ParticipantsViewModel>>(), any()) } returns mockk<ParticipantsViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(ParticipantsUiState())
             }
         }
-        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
-            every { create<VirtualBackgroundViewModel>(any(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
-                every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
-            }
-        }
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
+            every { create(any<KClass<StreamViewModel>>(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StreamUiState())
             }
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create<UserMessagesViewModel>(any(), any()) } returns mockk<UserMessagesViewModel>(relaxed = true) {
+            every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns mockk<UserMessagesViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
                 every { userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("streamId", "username"))))
             }

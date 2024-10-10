@@ -52,7 +52,7 @@ android {
 dependencies {
 
     /** Platform **/
-    implementation platform(catalog.androidxComposeBom)
+    implementation platform("androidx.compose:compose-bom:2024.09.03")
     compileOnly 'androidx.compose.material:material'
     compileOnly 'androidx.compose.material3:material3'
     compileOnly 'androidx.compose.foundation:foundation'
@@ -76,16 +76,17 @@ dependencies {
     implementation catalog.androidxConstraintLayout
 
     /** Testing **/
-    testImplementation catalog.junit
     testImplementation catalog.mockkAndroid
-    testImplementation catalog.robolectric
+    testImplementation "org.robolectric:robolectric:4.13"
+    testImplementation "junit:junit:4.13.2"
+//    testImplementation catalog.robolectric
+//    testImplementation catalog.junit
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
     testImplementation catalog.javaAssist
     testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
-    testImplementation platform(catalog.androidxComposeBom)
     testImplementation 'androidx.compose.material3:material3'
 
     androidTestImplementation catalog.mockkAndroid

@@ -40,6 +40,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 class ScreenShareComponentTest {
 
@@ -54,7 +55,7 @@ class ScreenShareComponentTest {
     fun setUp() {
         mockkObject(ScreenShareViewModel)
         every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
-            every { create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
+            every { create(any<KClass<ScreenShareViewModel>>(), any()) } returns screenShareViewModel
         }
         every { screenShareViewModel.uiState } returns screenShareUiState
     }

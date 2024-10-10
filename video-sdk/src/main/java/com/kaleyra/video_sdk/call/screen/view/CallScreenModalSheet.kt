@@ -70,7 +70,7 @@ internal fun CallScreenModalSheet(
             shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
             sheetState = sheetState,
             dragHandle = (@Composable { CallBottomSheetDefaults.HDragHandle() }).takeIf { !isFullScreenComponent(modalSheetComponent) },
-            windowInsets = WindowInsets(0.dp),
+            contentWindowInsets = { WindowInsets(0.dp) },
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = modifier.testTag(CallScreenModalSheetTag)
         ) {

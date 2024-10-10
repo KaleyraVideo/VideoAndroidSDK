@@ -113,7 +113,7 @@ class FileShareItemTest {
 
     @Test
     fun mediaFileType_mediaFileIconDisplayed() {
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("jpeg", "image/jpeg")
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("jpeg", "image/jpeg")
         val uri = Uri.parse("file.jpeg")
         sharedFile = mockUploadSharedFile.copy(uri = ImmutableUri(uri))
         val media = composeTestRule.activity.getString(R.string.kaleyra_fileshare_media)
@@ -131,7 +131,7 @@ class FileShareItemTest {
 
     @Test
     fun archiveFileType_archiveFileIconDisplayed() {
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("zip", "application/zip")
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("zip", "application/zip")
         val uri = Uri.parse("file.zip")
         sharedFile = mockUploadSharedFile.copy(uri = ImmutableUri(uri))
         val archive = composeTestRule.activity.getString(R.string.kaleyra_fileshare_archive)

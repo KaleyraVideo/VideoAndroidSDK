@@ -29,6 +29,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 class SidePanelTest {
 
@@ -64,10 +65,10 @@ class SidePanelTest {
         }
 
         every { MainViewModel.provideFactory(any()) } returns mockk {
-            every { create<MainViewModel>(any(), any()) } returns mainViewModel
+            every { create(any<KClass<MainViewModel>>(), any()) } returns mainViewModel
         }
         every { PhoneChatViewModel.provideFactory(any()) } returns mockk {
-            every { create<PhoneChatViewModel>(any(), any()) } returns chatViewModel
+            every { create(any<KClass<PhoneChatViewModel>>(), any()) } returns chatViewModel
         }
 
         composeTestRule.setContent {

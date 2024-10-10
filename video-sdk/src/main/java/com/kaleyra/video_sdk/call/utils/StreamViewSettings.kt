@@ -24,28 +24,22 @@ internal object StreamViewSettings {
 
     internal fun ImmutableView<VideoStreamView>.defaultStreamViewSettings(): ImmutableView<VideoStreamView> {
         val view = value
-        if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = true
-            view.scaleType.value = StreamView.ScaleType.Fill(.2f)
-        }
+        view.zoomGesturesEnabled.value = true
+        view.scaleType.value = StreamView.ScaleType.Fill(.2f)
         return this
     }
 
     internal fun ImmutableView<VideoStreamView>.preCallStreamViewSettings(): ImmutableView<VideoStreamView> {
         val view = value
-        if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = true
-            view.scaleType.value = StreamView.ScaleType.Fill(1f)
-        }
+        view.zoomGesturesEnabled.value = true
+        view.scaleType.value = StreamView.ScaleType.Fill(1f)
         return this
     }
 
     internal fun ImmutableView<VideoStreamView>.pipSettings(): ImmutableView<VideoStreamView> {
         val view = value
-        if (view is VideoStreamView) {
-            view.zoomGesturesEnabled.value = false
-            view.scaleType.value = StreamView.ScaleType.Fit
-        }
+        view.zoomGesturesEnabled.value = false
+        view.scaleType.value = StreamView.ScaleType.Fit
         return this
     }
 }
