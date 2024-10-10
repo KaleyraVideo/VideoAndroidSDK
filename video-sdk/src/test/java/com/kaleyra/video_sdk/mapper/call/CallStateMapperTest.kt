@@ -188,6 +188,14 @@ class CallStateMapperTest {
     }
 
     @Test
+    fun stateDisconnectedEnded_connectedUserNull_toCallStateUi_callStateEnded() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
+        val result = callMock.toCallStateUi()
+        Assert.assertEquals(CallStateUi.Disconnected.Ended, result.first())
+    }
+
+    @Test
     fun stateServerError_toCallStateUi_callStateErrorServer() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended.Error.Server())
         val result = callMock.toCallStateUi()
