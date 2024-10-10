@@ -145,7 +145,7 @@ fun CallInfoComponent(
             displaySubtitle?.let {
                 val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium).shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
-                    modifier = Modifier.testTag(CallInfoSubtitleTestTag).semantics { contentDescription = it },
+                    modifier = Modifier.testTag(CallInfoSubtitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = subtitleTextStyle.fontSize,
