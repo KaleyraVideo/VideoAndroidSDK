@@ -60,7 +60,7 @@ dependencies {
     implementation catalog.androidxActivity
     implementation catalog.androidxComposeConstraintLayout
     coreLibraryDesugaring catalog.desugar
-    implementation platform("androidx.compose:compose-bom:2024.09.03")
+    implementation platform(catalog.androidxComposeBom)
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.compose.material3:material3-window-size-class'
     implementation 'androidx.compose.foundation:foundation'
@@ -72,10 +72,8 @@ dependencies {
 
     /*** Testing ***/
     testImplementation kaleyraCatalog.kaleyraVideo
-//    testImplementation catalog.robolectric
-//    testImplementation catalog.junit
-    testImplementation "org.robolectric:robolectric:4.13"
-    testImplementation "junit:junit:4.13.2"
+    testImplementation catalog.robolectric
+    testImplementation catalog.junit
     testImplementation catalog.androidxTestEspressoIntents
     testImplementation catalog.coroutinesTest
     testImplementation catalog.mockkAndroid
