@@ -107,11 +107,8 @@ internal fun Stream(
             streamView.value.state
                 .map { it is StreamView.State.Rendering }
                 .onEach { isRendering = it }
-                // This debounce is used for two purposes:
-                // 1. If the view doesn't render within the timeout period, the avatar is displayed as a fallback.
-                // 2. It also sets a minimum display time for the avatar if it was set as fallback for the previous case,
-                // ensuring it remains visible for this duration even if the stream is rendered successfully.
-                .debounce(RenderingDebouceMillis)
+                // If the view doesn't render within the timeout period, the avatar is displayed as a fallback.
+                .debounce { if (it) 0 else RenderingDebouceMillis }
                 .onEach { forceDisplayAvatar = !it }
                 .launchIn(this)
         }
