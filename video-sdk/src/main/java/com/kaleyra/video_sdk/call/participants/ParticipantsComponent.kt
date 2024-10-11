@@ -112,6 +112,7 @@ internal fun ParticipantsComponent(
         amIAdmin = participantsUiState.isLocalParticipantAdmin,
         enableGridLayout = !isLocalScreenShareEnabled,
         isPinLimitReached = isPinLimitReached,
+        participantsCount = participantsUiState.participantCount,
         onLayoutClick = remember(streamViewModel, firstStreamNotMine) {
             { layout ->
                 if (layout == StreamsLayout.Grid) streamViewModel.unpinAll()
@@ -153,6 +154,7 @@ internal fun ParticipantsComponent(
     amIAdmin: Boolean,
     enableGridLayout: Boolean,
     isPinLimitReached: Boolean,
+    participantsCount: Int,
     onLayoutClick: (layout: StreamsLayout) -> Unit,
     onMuteStreamClick: (streamId: String, mute: Boolean) -> Unit,
     onDisableMicClick: (streamId: String, disable: Boolean) -> Unit,
@@ -166,7 +168,7 @@ internal fun ParticipantsComponent(
         modifier = modifier,
         topBar = {
             ParticipantsTopAppBar(
-                participantsCount = streams.count(),
+                participantsCount = participantsCount,
                 onBackPressed = onCloseClick,
                 isLargeScreen = isLargeScreen
             )
@@ -319,6 +321,7 @@ internal fun ParticipantsComponentPreview() {
             pinnedStreamsIds = ImmutableList(),
             enableGridLayout = true,
             isPinLimitReached = false,
+            participantsCount = 2,
             invited = ImmutableList(
                 listOf(
                     "Mario Rossi",
