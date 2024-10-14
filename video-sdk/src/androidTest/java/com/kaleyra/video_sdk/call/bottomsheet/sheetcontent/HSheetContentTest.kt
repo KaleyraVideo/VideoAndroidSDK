@@ -42,7 +42,7 @@ import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
 import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
@@ -82,7 +82,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = { overflowedActions = it },
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 modifier = Modifier.width(300.dp)
             )
         }
@@ -101,7 +101,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -124,7 +124,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -151,7 +151,7 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -178,7 +178,7 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -205,7 +205,7 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -232,7 +232,7 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -256,7 +256,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -272,9 +272,9 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksChatOnLargeScreen_onModalSheetComponentRequestChat() {
+    fun userClicksChatOnLargeScreen_onModularComponentRequestChat() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ChatAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -282,7 +282,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -292,7 +292,7 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Chat, component)
+        TestCase.assertEquals(ModularComponent.Chat, component)
     }
 
     @Test
@@ -305,7 +305,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -319,9 +319,9 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksAudio_onModalSheetComponentRequestAudio() {
+    fun userClicksAudio_onModularComponentRequestAudio() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(AudioAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -329,7 +329,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -339,13 +339,13 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Audio, component)
+        TestCase.assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
-    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+    fun userClicksFileShare_onModularComponentRequestFileShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(FileShareAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -353,7 +353,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -363,14 +363,14 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.FileShare, component)
+        TestCase.assertEquals(ModularComponent.FileShare, component)
         verify(exactly = 1) { callActionsViewModel.clearFileShareBadge()  }
     }
 
     @Test
-    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
+    fun userClicksWhiteboard_onModularComponentRequestWhiteboard() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(WhiteboardAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -378,7 +378,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -388,13 +388,13 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Whiteboard, component)
+        TestCase.assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
+    fun userClicksVirtualBackground_onModularComponentRequestVirtualBackground() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(VirtualBackgroundAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -402,7 +402,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -412,7 +412,7 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.VirtualBackground, component)
+        TestCase.assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
@@ -426,7 +426,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -440,10 +440,10 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+    fun userClicksScreenShareWhenNotEnabled_onModularComponentRequestScreenShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns false
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -451,7 +451,7 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -461,7 +461,7 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.ScreenShare, component)
+        TestCase.assertEquals(ModularComponent.ScreenShare, component)
     }
     
     @Test
