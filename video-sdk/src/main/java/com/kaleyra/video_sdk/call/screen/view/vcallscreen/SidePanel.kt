@@ -30,7 +30,7 @@ import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 
 internal val SideBarBorderWidth = 1.dp
-internal val SideBarSpacing = 4.dp
+internal val SidePanelPadding = 4.dp
 internal val SideBarShape = RoundedCornerShape(size = 8.dp)
 
 internal val SidePanelTag = "SidePanelTag"
@@ -44,7 +44,7 @@ internal fun SidePanel(
 ) {
     Box(
         modifier = modifier
-            .padding(SideBarSpacing)
+            .padding(SidePanelPadding)
             .border(
                 width = SideBarBorderWidth,
                 color = MaterialTheme.colorScheme.surfaceVariant,

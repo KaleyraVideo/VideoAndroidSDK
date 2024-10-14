@@ -250,7 +250,6 @@ internal fun VCallScreen(
             LookaheadScope {
                 BoxWithConstraints {
                     val constraints = constraints
-                    val contentPadding = PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
 
                     Row {
                         val sidePanelWeight = remember(sidePanelComponent) {
@@ -271,7 +270,12 @@ internal fun VCallScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .navigationBarsPadding()
-                                    .padding(contentPadding)
+                                    .padding(
+                                        start = 4.dp,
+                                        top = top,
+                                        end = if (sidePanelComponent != null) 0.dp else 4.dp,
+                                        bottom = 108.dp
+                                    )
                             )
 
                             Column(
@@ -300,7 +304,12 @@ internal fun VCallScreen(
                                 modifier = Modifier
                                     .weight(sidePanelWeight)
                                     .navigationBarsPadding()
-                                    .padding(contentPadding)
+                                    .padding(
+                                        start = 0.dp,
+                                        top = top,
+                                        end = 4.dp,
+                                        bottom = 108.dp
+                                    )
                                     .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
                             )
                         }
