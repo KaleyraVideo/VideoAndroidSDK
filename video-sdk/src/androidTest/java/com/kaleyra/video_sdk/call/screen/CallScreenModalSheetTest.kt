@@ -20,7 +20,7 @@ import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -113,10 +113,10 @@ class CallScreenModalSheetTest {
 
     @Test
     fun audioSheetComponent_audioComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Audio,
+                modularComponent = ModularComponent.Audio,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -126,15 +126,15 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.Audio)
+        assertEquals(componentDisplayed, ModularComponent.Audio)
     }
 
     @Test
     fun screenShareSheetComponent_screenShareComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                modularComponent = ModularComponent.ScreenShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -144,15 +144,15 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.ScreenShare)
+        assertEquals(componentDisplayed, ModularComponent.ScreenShare)
     }
 
     @Test
     fun fileShareSheetComponent_fileShareComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.FileShare,
+                modularComponent = ModularComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -162,15 +162,15 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.FileShare)
+        assertEquals(componentDisplayed, ModularComponent.FileShare)
     }
 
     @Test
     fun whiteboardSheetComponent_whiteboardComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Whiteboard,
+                modularComponent = ModularComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -180,15 +180,15 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.Whiteboard)
+        assertEquals(componentDisplayed, ModularComponent.Whiteboard)
     }
 
     @Test
     fun virtualBackgroundSheetComponent_virtualBackgroundComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.VirtualBackground,
+                modularComponent = ModularComponent.VirtualBackground,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -198,15 +198,15 @@ class CallScreenModalSheetTest {
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.VirtualBackground)
+        assertEquals(componentDisplayed, ModularComponent.VirtualBackground)
     }
 
     @Test
     fun participantsSheetComponent_participantsComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Participants,
+                modularComponent = ModularComponent.Participants,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
@@ -216,7 +216,7 @@ class CallScreenModalSheetTest {
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
-        assertEquals(componentDisplayed, ModalSheetComponent.Participants)
+        assertEquals(componentDisplayed, ModularComponent.Participants)
     }
 
     @Test
@@ -226,7 +226,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Audio,
+                modularComponent = ModularComponent.Audio,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -252,7 +252,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                modularComponent = ModularComponent.ScreenShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -278,7 +278,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.FileShare,
+                modularComponent = ModularComponent.FileShare,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -302,7 +302,7 @@ class CallScreenModalSheetTest {
         var arePermissionAsked = false
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                modularComponent = ModularComponent.ScreenShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { arePermissionAsked = it },
@@ -323,7 +323,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Whiteboard,
+                modularComponent = ModularComponent.Whiteboard,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -349,7 +349,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.VirtualBackground,
+                modularComponent = ModularComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -375,7 +375,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Participants,
+                modularComponent = ModularComponent.Participants,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
@@ -404,7 +404,7 @@ class CallScreenModalSheetTest {
         composeTestRule.setContent {
             sheetState = rememberModalBottomSheetState()
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.VirtualBackground,
+                modularComponent = ModularComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onUserMessageActionClick = {},
@@ -429,7 +429,7 @@ class CallScreenModalSheetTest {
         var clicked = false
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Whiteboard,
+                modularComponent = ModularComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = {},
@@ -452,7 +452,7 @@ class CallScreenModalSheetTest {
         var clicked = false
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.FileShare,
+                modularComponent = ModularComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = {},
@@ -475,7 +475,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Audio,
+                modularComponent = ModularComponent.Audio,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
@@ -491,7 +491,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.ScreenShare,
+                modularComponent = ModularComponent.ScreenShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
@@ -507,7 +507,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.FileShare,
+                modularComponent = ModularComponent.FileShare,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
@@ -523,7 +523,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Whiteboard,
+                modularComponent = ModularComponent.Whiteboard,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
@@ -539,7 +539,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.VirtualBackground,
+                modularComponent = ModularComponent.VirtualBackground,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
@@ -555,7 +555,7 @@ class CallScreenModalSheetTest {
         val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
         composeTestRule.setContent {
             CallScreenModalSheet(
-                modalSheetComponent = ModalSheetComponent.Participants,
+                modularComponent = ModularComponent.Participants,
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
