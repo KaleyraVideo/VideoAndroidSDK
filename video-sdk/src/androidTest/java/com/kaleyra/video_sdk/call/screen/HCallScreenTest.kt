@@ -16,7 +16,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -47,7 +46,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -377,9 +376,9 @@ class HCallScreenTest {
 
     @Test
     fun testSheetActions_screenShareToggleOn() {
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
@@ -392,15 +391,15 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToAudio() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActions_onModularComponentChangeToAudio() {
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = null,
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(AudioAction()).toImmutableList()
@@ -412,28 +411,28 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
     fun testModalSheetAudio_audioComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Audio,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modularComponent = ModularComponent.Audio,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Audio, componentDisplayed)
+        assertEquals(ModularComponent.Audio, componentDisplayed)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToFileShare() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActions_onModularComponentChangeToFileShare() {
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = null,
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FileShareAction()).toImmutableList()
@@ -444,42 +443,42 @@ class HCallScreenTest {
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
     fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.FileShare,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modularComponent = ModularComponent.FileShare,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.FileShare, componentDisplayed)
+        assertEquals(ModularComponent.FileShare, componentDisplayed)
     }
 
     @Test
     fun testModalSheetParticipants_participantsComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Participants,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modularComponent = ModularComponent.Participants,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Participants, componentDisplayed)
+        assertEquals(ModularComponent.Participants, componentDisplayed)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToWhiteboard() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActions_onModularComponentChangeToWhiteboard() {
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = null,
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(WhiteboardAction()).toImmutableList()
@@ -491,28 +490,28 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
     fun testModalSheetWhiteboard_whiteboardComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Whiteboard,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modularComponent = ModularComponent.Whiteboard,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Whiteboard, componentDisplayed)
+        assertEquals(ModularComponent.Whiteboard, componentDisplayed)
     }
 
     @Test
     fun testSheetActions_virtualBackgroundComponentIsDisplayed() {
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = null,
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(VirtualBackgroundAction()).toImmutableList()
@@ -525,21 +524,21 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
     fun testModalSheetVirtualBackground_virtualBackgroundComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.VirtualBackground,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modularComponent = ModularComponent.VirtualBackground,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.VirtualBackground, componentDisplayed)
+        assertEquals(ModularComponent.VirtualBackground, componentDisplayed)
     }
 
     @Test
@@ -742,11 +741,11 @@ class HCallScreenTest {
     @Test
     fun testSheetDragActions_screenShareToggleOn() {
         val actions = allActions.filterNot { it is ScreenShareAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ScreenShareAction(isToggled = false)).toImmutableList()
@@ -761,17 +760,17 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-       assertEquals(ModalSheetComponent.ScreenShare, component)
+       assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
     fun testSheetDragActions_audioComponentIsDisplayed() {
         val actions = (allActions - AudioAction()).take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + AudioAction()).toImmutableList()
@@ -785,17 +784,17 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
     fun testSheetDragActions_fileShareComponentIsDisplayed() {
         val actions = (allActions - FileShareAction()).take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + FileShareAction()).toImmutableList()
@@ -810,17 +809,17 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
-    fun testSheetDragActions_onModalSheetComponentChangeToWhiteboard() {
+    fun testSheetDragActions_onModularComponentChangeToWhiteboard() {
         val actions = allActions.filterNot { it is WhiteboardAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + WhiteboardAction()).toImmutableList()
@@ -835,17 +834,17 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
     fun testSheetDragActions_virtualBackgroundComponentChange() {
         val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + VirtualBackgroundAction()).toImmutableList()
@@ -860,15 +859,15 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
-    fun audioModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Audio
+    fun audioModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.Audio
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Audio,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.Audio,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -883,11 +882,11 @@ class HCallScreenTest {
     }
 
     @Test
-    fun screenShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.ScreenShare
+    fun screenShareModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.ScreenShare
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.ScreenShare,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.ScreenShare,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -902,11 +901,11 @@ class HCallScreenTest {
     }
 
     @Test
-    fun fileShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.FileShare
+    fun fileShareModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.FileShare
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.FileShare,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.FileShare,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -921,11 +920,11 @@ class HCallScreenTest {
     }
 
     @Test
-    fun whiteboardModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Whiteboard
+    fun whiteboardModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.Whiteboard
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Whiteboard,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.Whiteboard,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -940,11 +939,11 @@ class HCallScreenTest {
     }
 
     @Test
-    fun virtualBgModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.VirtualBackground
+    fun virtualBgModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.VirtualBackground
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.VirtualBackground,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.VirtualBackground,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -959,11 +958,11 @@ class HCallScreenTest {
     }
 
     @Test
-    fun participantsModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Participants
+    fun participantsModularComponent_closeInvokeModularComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.Participants
         composeTestRule.setUpHCallScreen(
-            modalSheetComponent = ModalSheetComponent.Participants,
-            onModalSheetComponentChange = { component = it }
+            modularComponent = ModularComponent.Participants,
+            onModularComponentChange = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1150,16 +1149,16 @@ class HCallScreenTest {
     }
 
     @Test
-    fun userClicksMoreParticipantsStream_onModalSheetComponentChangeToParticipants() {
+    fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = (1..MaxFeaturedStreamsCompact + 1).map { index ->
             StreamUi(id = "streamId$index", username = "username$index" )
         }
         streamUiState.value = StreamUiState(streams = streams.toImmutableList())
 
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
 
         val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
@@ -1167,20 +1166,20 @@ class HCallScreenTest {
             .onNodeWithText(otherText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
-        assertEquals(ModalSheetComponent.Participants, component)
+        assertEquals(ModularComponent.Participants, component)
     }
 
     @Test
-    fun userClicksParticipantsButton_onModalSheetComponentChangeToParticipants() {
-        var component: ModalSheetComponent? = null
+    fun userClicksParticipantsButton_onModularComponentChangeToParticipants() {
+        var component: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
-            onModalSheetComponentChange = { component = it }
+            onModularComponentChange = { component = it }
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
-        assertEquals(ModalSheetComponent.Participants, component)
+        assertEquals(ModularComponent.Participants, component)
     }
 
     @Test
@@ -1216,7 +1215,7 @@ class HCallScreenTest {
         val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
         every { userMessagesViewModel.userMessage } returns userMessageFlow
 
-        composeTestRule.setUpHCallScreen(modalSheetComponent = ModalSheetComponent.Whiteboard)
+        composeTestRule.setUpHCallScreen(modularComponent = ModularComponent.Whiteboard)
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
@@ -1239,7 +1238,7 @@ class HCallScreenTest {
         val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
         every { userMessagesViewModel.userMessage } returns userMessageFlow
 
-        composeTestRule.setUpHCallScreen(modalSheetComponent = ModalSheetComponent.FileShare)
+        composeTestRule.setUpHCallScreen(modularComponent = ModularComponent.FileShare)
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
@@ -1263,9 +1262,9 @@ class HCallScreenTest {
         onChangeSheetState: (Boolean) -> Unit = {},
         selectedStreamId: String? = null,
         onStreamSelected: (String?) -> Unit = {},
-        modalSheetComponent: ModalSheetComponent? = null,
-        onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
-        onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit = { },
+        modularComponent: ModularComponent? = null,
+        onModularComponentChange: (ModularComponent?) -> Unit = { },
+        onModularComponentDisplayed: (ModularComponent?) -> Unit = { },
         onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
         inputPermissions: InputPermissions = InputPermissions()
@@ -1274,14 +1273,14 @@ class HCallScreenTest {
             HCallScreen(
                 windowSizeClass = WindowSizeClassUtil.currentWindowAdaptiveInfo(configuration),
                 sheetState = sheetState,
-                modalSheetComponent = modalSheetComponent,
+                modalSheetComponent = modularComponent,
                 onChangeSheetState = onChangeSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 inputPermissions = inputPermissions,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                onModalSheetComponentRequest = onModalSheetComponentChange,
-                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
+                onModalSheetComponentRequest = onModularComponentChange,
+                onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )

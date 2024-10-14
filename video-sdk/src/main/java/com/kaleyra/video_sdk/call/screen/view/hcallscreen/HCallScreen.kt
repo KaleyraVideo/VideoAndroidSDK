@@ -41,7 +41,7 @@ import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -59,10 +59,10 @@ internal fun HCallScreen(
     onChangeSheetState: (Boolean) -> Unit,
     selectedStreamId: String?,
     onStreamSelected: (String?) -> Unit,
-    modalSheetComponent: ModalSheetComponent?,
+    modalSheetComponent: ModularComponent?,
     inputPermissions: InputPermissions,
-    onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
-    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentRequest: (ModularComponent?) -> Unit,
+    onModularComponentDisplayed: (ModularComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -77,7 +77,7 @@ internal fun HCallScreen(
         paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, right = 8.dp),
         topAppBar = {
             CallAppBarComponent(
-                onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                onParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -87,7 +87,7 @@ internal fun HCallScreen(
                 VSheetDragContent(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
-                    onModalSheetComponentRequest = onModalSheetComponentRequest,
+                    onModularComponentRequest = onModalSheetComponentRequest,
                     contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 8.dp),
                     modifier = Modifier.animateContentSize()
                 )
@@ -110,7 +110,7 @@ internal fun HCallScreen(
                             isMoreToggled = isSheetExpanded,
                             inputPermissions = inputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
-                            onModalSheetComponentRequest = onModalSheetComponentRequest,
+                            onModularComponentRequest = onModalSheetComponentRequest,
                             onMoreToggle = onChangeSheetState,
                             modifier = Modifier
                                 .padding(
@@ -166,7 +166,7 @@ internal fun HCallScreen(
                 windowSizeClass = windowSizeClass,
                 selectedStreamId = selectedStreamId,
                 onStreamClick = { stream -> onStreamSelected(stream.id) },
-                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding()
@@ -187,7 +187,7 @@ internal fun HCallScreen(
                         .navigationBarsPadding()
                         .displayCutoutPadding()
                 )
-                if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
+                if (modalSheetComponent != ModularComponent.FileShare && modalSheetComponent != ModularComponent.Whiteboard) {
                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
                 }
             }
@@ -201,10 +201,10 @@ internal fun HCallScreen(
             )
 
             CallScreenModalSheet(
-                modalSheetComponent = modalSheetComponent,
+                modularComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
-                onComponentDisplayed = onModalSheetComponentDisplayed,
+                onComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick
             )
