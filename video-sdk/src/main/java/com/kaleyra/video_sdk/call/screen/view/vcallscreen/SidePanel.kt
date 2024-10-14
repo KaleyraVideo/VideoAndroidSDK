@@ -22,7 +22,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
@@ -34,9 +34,9 @@ internal val SideBarShape = RoundedCornerShape(size = 8.dp)
 
 @Composable
 internal fun SidePanel(
-    modalSheetComponent: ModalSheetComponent,
+    modularComponent: ModularComponent,
     onDismiss: () -> Unit,
-    onSideBarComponentDisplayed: (ModalSheetComponent?) -> Unit,
+    onComponentDisplayed: (ModularComponent?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -50,34 +50,34 @@ internal fun SidePanel(
     ) {
 
         AnimatedContent(
-            targetState = modalSheetComponent,
+            targetState = modularComponent,
             label = "side panel content"
         ) { target ->
             when (target) {
 
-                ModalSheetComponent.FileShare -> FileShareComponent(
+                ModularComponent.FileShare -> FileShareComponent(
                     onDismiss = onDismiss,
                     isLargeScreen = true
                 )
 
-                ModalSheetComponent.Whiteboard -> WhiteboardComponent(
+                ModularComponent.Whiteboard -> WhiteboardComponent(
                     onDismiss = onDismiss,
                     isLargeScreen = true
                 )
 
-                ModalSheetComponent.Participants -> ParticipantsComponent(
+                ModularComponent.Participants -> ParticipantsComponent(
                     onDismiss = onDismiss,
                     isLargeScreen = true
                 )
 
-                ModalSheetComponent.Chat -> ChatComponent(
+                ModularComponent.Chat -> ChatComponent(
                     onBackPressed = onDismiss,
                     onChatConfigurationFailure = onDismiss
                 )
 
                 else -> Unit
             }
-            onSideBarComponentDisplayed(modalSheetComponent)
+            onComponentDisplayed(modularComponent)
         }
     }
 }

@@ -12,7 +12,7 @@ import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanel
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
@@ -36,11 +36,11 @@ class SidePanelTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var component by mutableStateOf(ModalSheetComponent.Audio)
+    private var component by mutableStateOf(ModularComponent.Audio)
 
     private var onDismissed = false
 
-    private var sideBarComponentDisplayed: ModalSheetComponent? = null
+    private var sideBarComponentDisplayed: ModularComponent? = null
 
     private val mainViewModel = mockk<MainViewModel>(relaxed = true)
 
@@ -73,9 +73,9 @@ class SidePanelTest {
 
         composeTestRule.setContent {
             SidePanel(
-                modalSheetComponent = component,
+                modularComponent = component,
                 onDismiss = { onDismissed = true },
-                onSideBarComponentDisplayed = { sideBarComponentDisplayed = it }
+                onComponentDisplayed = { sideBarComponentDisplayed = it }
             )
         }
     }
@@ -83,42 +83,42 @@ class SidePanelTest {
     @After
     fun tearDown() {
         unmockkAll()
-        component = ModalSheetComponent.Audio
+        component = ModularComponent.Audio
         sideBarComponentDisplayed = null
         onDismissed = false
     }
 
     @Test
     fun fileShareComponent_fileShareComponentIsDisplayed() {
-        component = ModalSheetComponent.FileShare
+        component = ModularComponent.FileShare
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(sideBarComponentDisplayed, ModalSheetComponent.FileShare)
+        assertEquals(sideBarComponentDisplayed, ModularComponent.FileShare)
     }
 
     @Test
     fun whiteboardComponent_whiteboardComponentIsDisplayed() {
-        component = ModalSheetComponent.Whiteboard
+        component = ModularComponent.Whiteboard
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(sideBarComponentDisplayed, ModalSheetComponent.Whiteboard)
+        assertEquals(sideBarComponentDisplayed, ModularComponent.Whiteboard)
     }
 
     @Test
     fun participantsComponent_participantsComponentIsDisplayed() {
-        component = ModalSheetComponent.Participants
+        component = ModularComponent.Participants
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(sideBarComponentDisplayed, ModalSheetComponent.Participants)
+        assertEquals(sideBarComponentDisplayed, ModularComponent.Participants)
     }
 
     @Test
     fun chatComponent_chatComponentIsDisplayed() {
-        component = ModalSheetComponent.Chat
+        component = ModularComponent.Chat
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
-        assertEquals(sideBarComponentDisplayed, ModalSheetComponent.Chat)
+        assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
         coVerify(exactly = 1) {
             chatViewModel.setChat("loggedId", "otherId")
         }
@@ -126,7 +126,7 @@ class SidePanelTest {
 
     @Test
     fun chatComponentAndLoggedUserIdIsNull_onDismissInvoked() {
-        component = ModalSheetComponent.Chat
+        component = ModularComponent.Chat
         every { chatViewModel.getLoggedUserId() } returns null
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
@@ -140,7 +140,7 @@ class SidePanelTest {
 
     @Test
     fun chatComponentAndOtherUserIdIsNull_onDismissInvoked() {
-        component = ModalSheetComponent.Chat
+        component = ModularComponent.Chat
         every { mainViewModel.getOtherUserId() } returns null
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
