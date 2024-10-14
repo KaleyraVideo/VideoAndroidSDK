@@ -28,7 +28,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -36,7 +36,7 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 internal fun SheetPanelContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
-    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
+    onModularComponentRequest: (ModularComponent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     SheetPanelContent(
@@ -46,16 +46,16 @@ internal fun SheetPanelContent(
             { callAction ->
                 when (callAction) {
                     is ScreenShareAction -> {
-                        if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(
-                            ModalSheetComponent.ScreenShare)
+                        if (!viewModel.tryStopScreenShare()) onModularComponentRequest(
+                            ModularComponent.ScreenShare)
                     }
 
                     is FlipCameraAction -> viewModel.switchCamera()
-                    is AudioAction -> onModalSheetComponentRequest(ModalSheetComponent.Audio)
-                    is ChatAction -> onModalSheetComponentRequest(ModalSheetComponent.Chat)
-                    is FileShareAction -> onModalSheetComponentRequest(ModalSheetComponent.FileShare)
-                    is WhiteboardAction -> onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
-                    is VirtualBackgroundAction -> onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground)
+                    is AudioAction -> onModularComponentRequest(ModularComponent.Audio)
+                    is ChatAction -> onModularComponentRequest(ModularComponent.Chat)
+                    is FileShareAction -> onModularComponentRequest(ModularComponent.FileShare)
+                    is WhiteboardAction -> onModularComponentRequest(ModularComponent.Whiteboard)
+                    is VirtualBackgroundAction -> onModularComponentRequest(ModularComponent.VirtualBackground)
                 }
             }
         }

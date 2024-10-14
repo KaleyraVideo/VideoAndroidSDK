@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.bottomsheet.sheetpanel
+package com.kaleyra.video_sdk.ui.call.bottomsheet.sheetpanel
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -24,8 +24,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
-import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
@@ -35,15 +33,13 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,8 +47,11 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class ScreenPanelContentTest {
+@RunWith(RobolectricTestRunner::class)
+class SheetPanelContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -74,13 +73,13 @@ class ScreenPanelContentTest {
     }
 
     @Test
-    fun userClicksChat_onModalSheetComponentRequestChat() {
-        var component: ModalSheetComponent? = null
+    fun userClicksChat_onModularComponentRequestChat() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ChatAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -90,7 +89,7 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Chat, component)
+        assertEquals(ModularComponent.Chat, component)
     }
 
     @Test
@@ -99,7 +98,7 @@ class ScreenPanelContentTest {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FlipCameraAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -113,13 +112,13 @@ class ScreenPanelContentTest {
     }
 
     @Test
-    fun userClicksAudio_onModalSheetComponentRequestAudio() {
-        var component: ModalSheetComponent? = null
+    fun userClicksAudio_onModularComponentRequestAudio() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(AudioAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -129,17 +128,17 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
-    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
-        var component: ModalSheetComponent? = null
+    fun userClicksFileShare_onModularComponentRequestFileShare() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FileShareAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -149,17 +148,17 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
-    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
-        var component: ModalSheetComponent? = null
+    fun userClicksWhiteboard_onModularComponentRequestWhiteboard() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(WhiteboardAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -169,17 +168,17 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
-        var component: ModalSheetComponent? = null
+    fun userClicksVirtualBackground_onModularComponentRequestVirtualBackground() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -189,7 +188,7 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
@@ -199,7 +198,7 @@ class ScreenPanelContentTest {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -213,14 +212,14 @@ class ScreenPanelContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+    fun userClicksScreenShareWhenNotEnabled_onModularComponentRequestScreenShare() {
         every { callActionsViewModel.tryStopScreenShare() } returns false
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -230,7 +229,7 @@ class ScreenPanelContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
