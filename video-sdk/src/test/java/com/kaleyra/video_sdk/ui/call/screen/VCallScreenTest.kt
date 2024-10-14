@@ -53,7 +53,7 @@ import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.PanelTestTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
@@ -380,11 +380,11 @@ class VCallScreenTest {
     }
 
     @Test
-    fun testSheetActionsOnLargeScreen_chatComponentIsDisplayed() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActionsOnLargeScreen_sidePanelChatComponentIsDisplayed() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it}
+            onSidePanelComponentRequest = { component = it}
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(ChatAction()).toImmutableList()
@@ -397,7 +397,7 @@ class VCallScreenTest {
             .performClick()
 
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
-        assertEquals(ModalSheetComponent.Chat, component)
+        assertEquals(ModularComponent.Chat, component)
     }
 
     @Test
@@ -419,9 +419,9 @@ class VCallScreenTest {
 
     @Test
     fun testSheetActions_screenShareToggleOn() {
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
@@ -434,15 +434,15 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToAudio() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActions_onModularComponentChangeToAudio() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(AudioAction()).toImmutableList()
@@ -454,29 +454,29 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
     fun testModalSheetAudio_audioComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Audio,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modalSheetComponent = ModularComponent.Audio,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Audio, componentDisplayed)
+        assertEquals(ModularComponent.Audio, componentDisplayed)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToFileShare() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActionsOnSmallScreen_onModalSheetComponentChangeToFileShare() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FileShareAction()).toImmutableList()
@@ -487,44 +487,63 @@ class VCallScreenTest {
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
-    fun testModalSheetFileShareOnSmallScreen_fileShareComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testSheetActionsOnLargeScreen_onSidePanelComponentChangeToFileShare() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.FileShare,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            configuration = largeScreenConfiguration,
+            modalSheetComponent = null,
+            onSidePanelComponentRequest = { component = it }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(ModularComponent.FileShare, component)
+    }
+
+    @Test
+    fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModularComponent.FileShare,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.FileShare, componentDisplayed)
+        assertEquals(ModularComponent.FileShare, componentDisplayed)
     }
 
     @Test
-    fun testModalSheetFileShareOnLargeScreen_fileShareComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testSidePanelFileShare_fileShareComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            configuration = largeScreenConfiguration,
-            modalSheetComponent = ModalSheetComponent.FileShare,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            sidePanelComponent = ModularComponent.FileShare,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
-        assertEquals(ModalSheetComponent.FileShare, componentDisplayed)
+        assertEquals(ModularComponent.FileShare, componentDisplayed)
     }
 
     @Test
-    fun testSheetActions_onModalSheetComponentChangeToWhiteboard() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActionsOnSmallScreen_onModalSheetComponentChangeToWhiteboard() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(WhiteboardAction()).toImmutableList()
@@ -536,44 +555,64 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun testModalSheetWhiteboardOnSmallScreen_whiteboardComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testSheetActionsOnLargeScreen_onSidePanelComponentChangeToWhiteboard() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Whiteboard,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            configuration = largeScreenConfiguration,
+            modalSheetComponent = null,
+            onSidePanelComponentRequest = { component = it }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(WhiteboardAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModularComponent.Whiteboard, component)
+    }
+
+    @Test
+    fun testModalSheetWhiteboard_whiteboardComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModularComponent.Whiteboard,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Whiteboard, componentDisplayed)
+        assertEquals(ModularComponent.Whiteboard, componentDisplayed)
     }
 
     @Test
-    fun testModalSheetWhiteboardOnLargeScreen_whiteboardComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testSidePanelWhiteboard_whiteboardComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            configuration = largeScreenConfiguration,
-            modalSheetComponent = ModalSheetComponent.Whiteboard,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            sidePanelComponent = ModularComponent.Whiteboard,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
-        assertEquals(ModalSheetComponent.Whiteboard, componentDisplayed)
+        assertEquals(ModularComponent.Whiteboard, componentDisplayed)
     }
 
     @Test
-    fun testSheetActions_virtualBackgroundComponentIsDisplayed() {
-        var component: ModalSheetComponent? = null
+    fun testSheetActions_onModalSheetComponentChangeToVirtualBackground() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             modalSheetComponent = null,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(VirtualBackgroundAction()).toImmutableList()
@@ -586,52 +625,51 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
     fun testModalSheetVirtualBackground_virtualBackgroundComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.VirtualBackground,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modalSheetComponent = ModularComponent.VirtualBackground,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.VirtualBackground, componentDisplayed)
+        assertEquals(ModularComponent.VirtualBackground, componentDisplayed)
     }
 
     @Test
-    fun testModalSheetParticipantsOnSmallScreen_participantsComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testModalSheetParticipants_participantsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Participants,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            modalSheetComponent = ModularComponent.Participants,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
-        assertEquals(ModalSheetComponent.Participants, componentDisplayed)
+        assertEquals(ModularComponent.Participants, componentDisplayed)
     }
 
     @Test
-    fun testModalSheetParticipantsOnLargeScreen_participantsComponentIsDisplayed() {
-        var componentDisplayed: ModalSheetComponent? = null
+    fun testSidePanelParticipants_participantsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            configuration = largeScreenConfiguration,
-            modalSheetComponent = ModalSheetComponent.Participants,
-            onModalSheetComponentDisplayed = { componentDisplayed = it }
+            sidePanelComponent = ModularComponent.Participants,
+            onModularComponentDisplayed = { componentDisplayed = it }
         )
 
         val componentTitle =
             composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
-        assertEquals(ModalSheetComponent.Participants, componentDisplayed)
+        assertEquals(ModularComponent.Participants, componentDisplayed)
     }
 
     @Test
@@ -877,9 +915,9 @@ class VCallScreenTest {
     }
 
     @Test
-    fun testSheetDragActionsOnLargeScreen_chatComponentIsDisplayed() {
+    fun testSheetDragActionsOnLargeScreen_sidePanelChatComponentIsDisplayed() {
         val actions = allActions.filterNot { it is ChatAction }.take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ChatAction()).toImmutableList(),
             isRinging = true
@@ -887,7 +925,7 @@ class VCallScreenTest {
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onSidePanelComponentRequest = { component = it }
         )
 
         val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
@@ -898,7 +936,7 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Chat, component)
+        assertEquals(ModularComponent.Chat, component)
     }
 
     @Test
@@ -927,11 +965,11 @@ class VCallScreenTest {
     @Test
     fun testSheetDragActions_screenShareToggleOn() {
         val actions = allActions.filterNot { it is ScreenShareAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ScreenShareAction(isToggled = false)).toImmutableList()
@@ -946,17 +984,17 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
     fun testSheetDragActions_audioComponentIsDisplayed() {
         val actions = (allActions - AudioAction()).take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + AudioAction()).toImmutableList()
@@ -970,17 +1008,17 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
-    fun testSheetDragActions_fileShareComponentIsDisplayed() {
+    fun testSheetDragActionsOnSmallScreen_modalSheetFileShareComponentIsDisplayed() {
         val actions = (allActions - FileShareAction()).take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + FileShareAction()).toImmutableList()
@@ -995,17 +1033,43 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
-    fun testSheetDragActions_onModalSheetComponentChangeToWhiteboard() {
+    fun testSheetDragActionsOnLargeScreen_sidePanelFileShareComponentIsDisplayed() {
+        val actions = (allActions - FileShareAction()).take(LargeScreenMaxActions)
+        var component: ModularComponent? = null
+        callActionsUiState.value = CallActionsUiState(
+            isRinging = true,
+            actionList = (actions + FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen(
+            sheetState = CallSheetState(CallSheetValue.Expanded),
+            configuration = largeScreenConfiguration,
+            onSidePanelComponentRequest = { component = it }
+        )
+
+        val fileShareText =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModularComponent.FileShare, component)
+    }
+
+    @Test
+    fun testSheetDragActionsOnSmallScreen_modalSheetWhiteboardComponentIsDisplayed() {
         val actions = allActions.filterNot { it is WhiteboardAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + WhiteboardAction()).toImmutableList()
@@ -1020,17 +1084,43 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
+    }
+
+    @Test
+    fun testSheetDragActionsOnLargeScreen_sidePanelWhiteboardComponentIsDisplayed() {
+        val actions = allActions.filterNot { it is WhiteboardAction }.take(LargeScreenMaxActions)
+        var component: ModularComponent? = null
+        callActionsUiState.value = CallActionsUiState(
+            isRinging = true,
+            actionList = (actions + WhiteboardAction()).toImmutableList()
+        )
+        composeTestRule.setUpVCallScreen(
+            sheetState = CallSheetState(CallSheetValue.Expanded),
+            configuration = largeScreenConfiguration,
+            onSidePanelComponentRequest = { component = it }
+        )
+
+        val whiteboardText =
+            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
     fun testSheetDragActions_virtualBackgroundComponentChange() {
         val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(CompactScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + VirtualBackgroundAction()).toImmutableList()
@@ -1045,7 +1135,7 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
@@ -1077,10 +1167,10 @@ class VCallScreenTest {
     @Test
     fun testSheetPanelActions_audioComponentIsDisplayed() {
         val actions = allActions.filterNot { it is AudioAction }.take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + AudioAction()).toImmutableList()
@@ -1101,16 +1191,16 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
     fun testSheetPanelActions_chatComponentIsDisplayed() {
         val actions = (allActions - ChatAction()).take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onSidePanelComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ChatAction()).toImmutableList(),
@@ -1131,7 +1221,7 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Chat, component)
+        assertEquals(ModularComponent.Chat, component)
     }
 
     @Test
@@ -1165,10 +1255,10 @@ class VCallScreenTest {
     @Test
     fun testSheetPanelActions_screenShareToggleOn() {
         val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ScreenShareAction()).toImmutableList(),
@@ -1189,16 +1279,16 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
     fun testSheetPanelActions_fileShareComponentIsDisplayed() {
         val actions = (allActions - FileShareAction()).take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onSidePanelComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + FileShareAction()).toImmutableList()
@@ -1220,16 +1310,16 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
     }
 
     @Test
     fun testSheetPanelActions_whiteboardComponentIsDisplayed() {
         val actions = (allActions - WhiteboardAction()).take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onSidePanelComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + WhiteboardAction()).toImmutableList()
@@ -1251,16 +1341,16 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
     fun testSheetPanelActions_virtualBackgroundComponentIsDisplayed() {
         val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(LargeScreenMaxActions)
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + VirtualBackgroundAction()).toImmutableList()
@@ -1282,15 +1372,15 @@ class VCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
     fun audioModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Audio
+        var component: ModularComponent? = ModularComponent.Audio
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Audio,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.Audio,
+            onModalSheetComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1306,10 +1396,10 @@ class VCallScreenTest {
 
     @Test
     fun screenShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.ScreenShare
+        var component: ModularComponent? = ModularComponent.ScreenShare
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.ScreenShare,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.ScreenShare,
+            onModalSheetComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1325,10 +1415,29 @@ class VCallScreenTest {
 
     @Test
     fun fileShareModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.FileShare
+        var component: ModularComponent? = ModularComponent.FileShare
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.FileShare,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.FileShare,
+            onModalSheetComponentRequest = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun fileShareSidePanelComponent_closeInvokeSidePanelComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.FileShare
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.FileShare,
+            onSidePanelComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1344,10 +1453,29 @@ class VCallScreenTest {
 
     @Test
     fun whiteboardModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Whiteboard
+        var component: ModularComponent? = ModularComponent.Whiteboard
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Whiteboard,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.Whiteboard,
+            onModalSheetComponentRequest = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun whiteboardSidePanelComponent_closeInvokeSidePanelComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.Whiteboard
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.Whiteboard,
+            onSidePanelComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1363,10 +1491,10 @@ class VCallScreenTest {
 
     @Test
     fun virtualBgModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.VirtualBackground
+        var component: ModularComponent? = ModularComponent.VirtualBackground
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.VirtualBackground,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.VirtualBackground,
+            onModalSheetComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1382,10 +1510,29 @@ class VCallScreenTest {
 
     @Test
     fun participantsModalSheetComponent_closeInvokeModalSheetComponentChangeToNull() {
-        var component: ModalSheetComponent? = ModalSheetComponent.Participants
+        var component: ModularComponent? = ModularComponent.Participants
         composeTestRule.setUpVCallScreen(
-            modalSheetComponent = ModalSheetComponent.Participants,
-            onModalSheetComponentChange = { component = it }
+            modalSheetComponent = ModularComponent.Participants,
+            onModalSheetComponentRequest = { component = it }
+        )
+
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule
+            .onNodeWithContentDescription(closeText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun participantsSidePanelComponent_closeInvokeSidePanelComponentChangeToNull() {
+        var component: ModularComponent? = ModularComponent.Participants
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.Participants,
+            onSidePanelComponentRequest = { component = it }
         )
 
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
@@ -1582,16 +1729,16 @@ class VCallScreenTest {
     }
 
     @Test
-    fun userClicksMoreParticipantsStream_onModalSheetComponentChangeToParticipants() {
+    fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = (1..MaxFeaturedStreamsCompact + 1).map { index ->
             StreamUi(id = "streamId$index", username = "username$index" )
         }
         streamUiState.value = StreamUiState(streams = streams.toImmutableList())
 
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = compactScreenConfiguration,
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
 
         val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
@@ -1599,20 +1746,20 @@ class VCallScreenTest {
             .onNodeWithText(otherText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
-        assertEquals(ModalSheetComponent.Participants, component)
+        assertEquals(ModularComponent.Participants, component)
     }
 
     @Test
-    fun userClicksParticipantsButton_onModalSheetComponentChangeToParticipants() {
-        var component: ModalSheetComponent? = null
+    fun userClicksParticipantsButton_onModularComponentChangeToParticipants() {
+        var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
-            onModalSheetComponentChange = { component = it }
+            onModalSheetComponentRequest = { component = it }
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
-        assertEquals(ModalSheetComponent.Participants, component)
+        assertEquals(ModularComponent.Participants, component)
     }
 
     @Test
@@ -1627,11 +1774,11 @@ class VCallScreenTest {
     }
 
     @Test
-    fun userMessageIsNotDisplayedOnFileShareComponentIfLargeScreen() {
+    fun userMessageIsNotDisplayedOnSidePanelFileShareComponent() {
         every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(RecordingMessage.Started)))
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            modalSheetComponent = ModalSheetComponent.FileShare
+            sidePanelComponent = ModularComponent.FileShare
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
@@ -1645,11 +1792,11 @@ class VCallScreenTest {
     }
 
     @Test
-    fun userMessageIsNotDisplayedOnWhiteboardComponentIfLargeScreen() {
+    fun userMessageIsNotDisplayedOnSidePanelWhiteboardComponent() {
         every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(RecordingMessage.Started)))
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
-            modalSheetComponent = ModalSheetComponent.Whiteboard
+            sidePanelComponent = ModularComponent.Whiteboard
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
@@ -1682,7 +1829,7 @@ class VCallScreenTest {
         val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
         every { userMessagesViewModel.userMessage } returns userMessageFlow
 
-        composeTestRule.setUpVCallScreen(modalSheetComponent = ModalSheetComponent.Whiteboard)
+        composeTestRule.setUpVCallScreen(modalSheetComponent = ModularComponent.Whiteboard)
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
@@ -1705,7 +1852,7 @@ class VCallScreenTest {
         val userMessageFlow = MutableStateFlow(ImmutableList<UserMessage>())
         every { userMessagesViewModel.userMessage } returns userMessageFlow
 
-        composeTestRule.setUpVCallScreen(modalSheetComponent = ModalSheetComponent.FileShare)
+        composeTestRule.setUpVCallScreen(modalSheetComponent = ModularComponent.FileShare)
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
@@ -1746,9 +1893,11 @@ class VCallScreenTest {
         onChangeSheetState: (Boolean) -> Unit = {},
         selectedStreamId: String? = null,
         onStreamSelected: (String?) -> Unit = {},
-        modalSheetComponent: ModalSheetComponent? = null,
-        onModalSheetComponentChange: (ModalSheetComponent?) -> Unit = { },
-        onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit = { },
+        modalSheetComponent: ModularComponent? = null,
+        sidePanelComponent: ModularComponent? = null,
+        onModalSheetComponentRequest: (ModularComponent?) -> Unit = { },
+        onSidePanelComponentRequest: (ModularComponent?) -> Unit = { },
+        onModularComponentDisplayed: (ModularComponent?) -> Unit = { },
         onAskInputPermissions: (Boolean) -> Unit = {},
         onBackPressed: () -> Unit = { },
         inputPermissions: InputPermissions = InputPermissions()
@@ -1758,13 +1907,15 @@ class VCallScreenTest {
                 windowSizeClass = WindowSizeClassUtil.currentWindowAdaptiveInfo(configuration),
                 sheetState = sheetState,
                 modalSheetComponent = modalSheetComponent,
+                sidePanelComponent = sidePanelComponent,
                 onChangeSheetState = onChangeSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 inputPermissions = inputPermissions,
                 modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                onModalSheetComponentRequest = onModalSheetComponentChange,
-                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
+                onModalSheetComponentRequest = onModalSheetComponentRequest,
+                onSidePanelComponentRequest = onSidePanelComponentRequest,
+                onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
             )

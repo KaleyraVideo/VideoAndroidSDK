@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -57,8 +56,8 @@ import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -82,10 +81,12 @@ internal fun VCallScreen(
     onChangeSheetState: (Boolean) -> Unit,
     selectedStreamId: String?,
     onStreamSelected: (String?) -> Unit,
-    modalSheetComponent: ModalSheetComponent?,
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
     inputPermissions: InputPermissions,
-    onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
-    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentRequest: (ModularComponent?) -> Unit,
+    onSidePanelComponentRequest: (ModularComponent?) -> Unit,
+    onModularComponentDisplayed: (ModularComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -112,13 +113,18 @@ internal fun VCallScreen(
         }
     }
 
+    val onSideBarSheetComponentRequest: (ModularComponent?) -> Unit = { component ->
+        if (isLargeScreen && isSidePanelSupported(component)) onSidePanelComponentRequest(component)
+        else onModalSheetComponentRequest(component)
+    }
+
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, bottom = 8.dp),
         topAppBar = {
             CallAppBarComponent(
-                onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -132,8 +138,8 @@ internal fun VCallScreen(
                     content = {
                         SheetPanelContent(
                             callActions = sheetDragActions,
-                            onModalSheetComponentRequest = {
-                                onModalSheetComponentRequest(it)
+                            onModularComponentRequest = { component ->
+                                onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
                             modifier = Modifier.testTag(PanelTestTag)
@@ -148,7 +154,7 @@ internal fun VCallScreen(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
                     inputPermissions = inputPermissions,
-                    onModalSheetComponentRequest = onModalSheetComponentRequest,
+                    onModularComponentRequest = onSideBarSheetComponentRequest ,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     modifier = Modifier.animateContentSize()
                 )
@@ -179,7 +185,7 @@ internal fun VCallScreen(
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 inputPermissions = inputPermissions,
                                 onActionsOverflow = { sheetDragActions = it },
-                                onModalSheetComponentRequest = onModalSheetComponentRequest,
+                                onModularComponentRequest = onSideBarSheetComponentRequest,
                                 onMoreToggle = { isSheetCollapsed ->
                                     if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
@@ -243,12 +249,11 @@ internal fun VCallScreen(
             LookaheadScope {
                 BoxWithConstraints {
                     val constraints = constraints
-                    val contentPadding =
-                        PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
+                    val contentPadding = PaddingValues(start = 4.dp, top = top, end = 4.dp, bottom = 108.dp)
 
                     Row {
-                        val sidePanelWeight = remember(modalSheetComponent) {
-                            if (modalSheetComponent == ModalSheetComponent.Whiteboard) 4f else 1f
+                        val sidePanelWeight = remember(sidePanelComponent) {
+                            if (sidePanelComponent == ModularComponent.Whiteboard) 4f else 1f
                         }
 
                         Box(
@@ -261,7 +266,7 @@ internal fun VCallScreen(
                                 windowSizeClass = windowSizeClass,
                                 selectedStreamId = selectedStreamId,
                                 onStreamClick = { stream -> onStreamSelected(stream.id) },
-                                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                                onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .navigationBarsPadding()
@@ -280,17 +285,17 @@ internal fun VCallScreen(
                                         .animateConstraints()
                                         .animatePlacement(this@LookaheadScope)
                                 )
-                                if (isLargeScreen || (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard)) {
+                                if (modalSheetComponent != ModularComponent.FileShare && modalSheetComponent != ModularComponent.Whiteboard) {
                                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
                                 }
                             }
                         }
 
-                        if (isLargeScreen && modalSheetComponent != null && isModalSheetComponentSideBarSupported(modalSheetComponent)) {
+                        sidePanelComponent?.let { component ->
                             SidePanel(
-                                modalSheetComponent = modalSheetComponent,
-                                onDismiss = { onModalSheetComponentRequest(null) },
-                                onSideBarComponentDisplayed = onModalSheetComponentDisplayed,
+                                modularComponent = component,
+                                onDismiss = { onSidePanelComponentRequest(null) },
+                                onComponentDisplayed = onModularComponentDisplayed,
                                 modifier = Modifier
                                     .weight(sidePanelWeight)
                                     .navigationBarsPadding()
@@ -303,22 +308,20 @@ internal fun VCallScreen(
             }
 
             CallScreenModalSheet(
-                modalSheetComponent = modalSheetComponent.takeIf {
-                    !isLargeScreen || !isModalSheetComponentSideBarSupported(modalSheetComponent)
-                },
+                modularComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick,
-                onComponentDisplayed = onModalSheetComponentDisplayed,
+                onComponentDisplayed = onModularComponentDisplayed,
             )
         }
     }
 }
 
-private fun isModalSheetComponentSideBarSupported(modalSheetComponent: ModalSheetComponent?): Boolean {
-    return modalSheetComponent.let {
-       it == ModalSheetComponent.Chat || it == ModalSheetComponent.FileShare || it == ModalSheetComponent.Whiteboard || it == ModalSheetComponent.Participants
+private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
+    return modularComponent.let {
+       it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
     }
 }
 
