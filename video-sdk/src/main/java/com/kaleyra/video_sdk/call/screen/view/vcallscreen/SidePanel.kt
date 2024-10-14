@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +33,8 @@ internal val SideBarBorderWidth = 1.dp
 internal val SideBarSpacing = 4.dp
 internal val SideBarShape = RoundedCornerShape(size = 8.dp)
 
+internal val SidePanelTag = "SidePanelTag"
+
 @Composable
 internal fun SidePanel(
     modularComponent: ModularComponent,
@@ -47,6 +50,7 @@ internal fun SidePanel(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = SideBarShape
             )
+            .testTag(SidePanelTag)
     ) {
 
         AnimatedContent(

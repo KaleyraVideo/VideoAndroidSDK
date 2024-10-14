@@ -67,6 +67,7 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -97,7 +98,7 @@ internal fun VCallScreen(
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+    val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId, isRinging) {

@@ -50,10 +50,13 @@ import com.kaleyra.video_sdk.call.screen.PipScreenTestTag
 import com.kaleyra.video_sdk.call.screen.VCallScreenTestTag
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
+import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsCompact
+import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsExpanded
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -85,8 +88,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.reflect.KClass
 
+@Config(qualifiers = "w480dp-h840dp")
 @RunWith(RobolectricTestRunner::class)
 class CallScreenTest {
 
@@ -96,6 +101,11 @@ class CallScreenTest {
     private val compactScreenConfiguration = Configuration().apply {
         screenWidthDp = 480
         screenHeightDp = 600
+    }
+
+    private val largeScreenConfiguration = Configuration().apply {
+        screenWidthDp = 600
+        screenHeightDp = 900
     }
 
     private val callActionsUiState = MutableStateFlow(CallActionsUiState())
@@ -291,7 +301,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun userClicksFileShareAction_fileShareComponentDisplayed() {
+    fun userClicksFileShareActionOnSmallScreen_fileShareModalSheetIsDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FileShareAction()).toImmutableList()
         )
@@ -307,14 +317,37 @@ class CallScreenTest {
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun userClicksTwiceFileShareAction_fileShareComponentIsClosed() {
+    fun userClicksFileShareActionOnLargeScreen_fileShareSidePanelIsDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FileShareAction()).toImmutableList()
         )
-        composeTestRule.setUpCallScreen()
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksTwiceFileShareAction_fileShareSidePanelIsClosed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
 
         val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
         // Check the button contained in the draggable part of the bottom sheet is displayed
@@ -323,10 +356,12 @@ class CallScreenTest {
         fileShareButton.performClick()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
 
         fileShareButton.performClick()
-        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
@@ -368,7 +403,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun userClicksWhiteboardAction_whiteboardComponentDisplayed() {
+    fun userClicksWhiteboardActionOnSmallScreen_whiteboardModalSheetIsDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(WhiteboardAction()).toImmutableList()
         )
@@ -384,14 +419,37 @@ class CallScreenTest {
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun userClicksTwiceWhiteboardAction_whiteboardComponentIsClosed() {
+    fun userClicksWhiteboardActionOnLargeScreen_whiteboardSidePanelIsDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(WhiteboardAction()).toImmutableList()
         )
-        composeTestRule.setUpCallScreen()
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksTwiceWhiteboardAction_whiteboardSidePanelIsClosed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(WhiteboardAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
 
         val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
         // Check the button contained in the draggable part of the bottom sheet is displayed
@@ -400,10 +458,12 @@ class CallScreenTest {
         whiteboardButton.performClick()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
 
         whiteboardButton.performClick()
-        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
@@ -426,7 +486,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun userClicksParticipantsButton_participantsComponentDisplayed() {
+    fun userClicksParticipantsButtonOnSmallScreen_participantsModalSheetIsDisplayed() {
         composeTestRule.setUpCallScreen()
 
         val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
@@ -437,25 +497,46 @@ class CallScreenTest {
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun userClicksTwiceParticipantsButton_participantsComponentIsClosed() {
-        composeTestRule.setUpCallScreen()
+    fun userClicksParticipantsButtonOnLargeScreen_participantsSidePanelIsDisplayed() {
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        composeTestRule
+            .onNodeWithContentDescription(participantsText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksTwiceParticipantsButton_participantsSidePanelIsClosed() {
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
 
         val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
         val participantsButton = composeTestRule.onNodeWithContentDescription(participantsText, useUnmergedTree = true)
         participantsButton.performClick()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+
 
         participantsButton.performClick()
-        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun userClicksMoreParticipantsStream_participantsComponentDisplayed() {
+    fun userClicksMoreParticipantsStreamOnSmallScreen_participantsModalSheetDisplayed() {
         val streams = (1..MaxFeaturedStreamsCompact + 1).map { index ->
             StreamUi(id = "streamId$index", username = "username$index" )
         }
@@ -470,6 +551,26 @@ class CallScreenTest {
             .performClick()
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksMoreParticipantsStreamOnLargeScreen_participantsSidePanelDisplayed() {
+        val streams = (1..MaxFeaturedStreamsExpanded + 1).map { index ->
+            StreamUi(id = "streamId$index", username = "username$index" )
+        }
+        streamUiState.value = StreamUiState(streams = streams.toImmutableList())
+
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule
+            .onNodeWithText(otherText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
@@ -493,7 +594,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun mediumHeight_horizontalCallScreenIsDisplayed() {
+    fun mediumHeight_verticalCallScreenIsDisplayed() {
         callActionsUiState.update {
             it.copy(actionList = allActions.toImmutableList())
         }
@@ -559,7 +660,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun shouldShowFileShareComponentTrue_fileShareComponentDisplayed() {
+    fun shouldShowFileShareComponentTrueOnSmallScreen_fileShareModalSheetDisplayed() {
         val shouldShowFileShareComponent = mutableStateOf(false)
         composeTestRule.setUpCallScreen(
             shouldShowFileShareComponent = shouldShowFileShareComponent
@@ -571,10 +672,28 @@ class CallScreenTest {
         shouldShowFileShareComponent.value = true
 
         composeTestRule.onNodeWithText(fileShareTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
     }
 
     @Test
-    fun fileShareComponentIsDisplayed_onFileShareVisibilityInvoked() {
+    fun shouldShowFileShareComponentTrueOnLargeScreen_fileShareSidePanelDisplayed() {
+        val shouldShowFileShareComponent = mutableStateOf(false)
+        composeTestRule.setUpCallScreen(
+            configuration = largeScreenConfiguration,
+            shouldShowFileShareComponent = shouldShowFileShareComponent
+        )
+
+        val fileShareTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(fileShareTitle).assertDoesNotExist()
+
+        shouldShowFileShareComponent.value = true
+
+        composeTestRule.onNodeWithText(fileShareTitle, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareModalSheetComponentIsDisplayed_onFileShareVisibilityInvoked() {
         var isFileShareDisplayed = false
         callActionsUiState.update {
             it.copy(actionList = listOf(FileShareAction()).toImmutableList())
@@ -592,10 +711,34 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
 
         assertEquals(true, isFileShareDisplayed)
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
     }
 
     @Test
-    fun whiteboardComponentIsDisplayed_onWhiteboardVisibilityInvoked() {
+    fun fileShareSidePanelComponentIsDisplayed_onFileShareVisibilityInvoked() {
+        var isFileShareDisplayed = false
+        callActionsUiState.update {
+            it.copy(actionList = listOf(FileShareAction()).toImmutableList())
+        }
+        composeTestRule.setUpCallScreen(
+            configuration = largeScreenConfiguration,
+            onFileShareVisibility = { isFileShareDisplayed = it }
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, isFileShareDisplayed)
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun whiteboardModalsSheetDisplayed_onWhiteboardVisibilityInvoked() {
         var isWhiteboardDisplayed = false
         callActionsUiState.update {
             it.copy(actionList = listOf(WhiteboardAction()).toImmutableList())
@@ -613,6 +756,30 @@ class CallScreenTest {
         composeTestRule.waitForIdle()
 
         assertEquals(true, isWhiteboardDisplayed)
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun whiteboardSidePanelDisplayed_onWhiteboardVisibilityInvoked() {
+        var isWhiteboardDisplayed = false
+        callActionsUiState.update {
+            it.copy(actionList = listOf(WhiteboardAction()).toImmutableList())
+        }
+        composeTestRule.setUpCallScreen(
+            configuration = largeScreenConfiguration,
+            onWhiteboardVisibility = { isWhiteboardDisplayed = it }
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, isWhiteboardDisplayed)
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
@@ -627,7 +794,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun showWhiteboardRequestReceived_whiteboardDisplayed() {
+    fun showWhiteboardRequestReceivedOnSmallScreen_whiteboardModalSheetDisplayed() {
         val whiteboardRequest = mutableStateOf(WhiteboardRequest.Show("username"))
         composeTestRule.setUpCallScreen(
             whiteboardRequest = whiteboardRequest
@@ -635,6 +802,20 @@ class CallScreenTest {
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun showWhiteboardRequestReceivedOnLargeScreen_whiteboardSidePanelDisplayed() {
+        val whiteboardRequest = mutableStateOf(WhiteboardRequest.Show("username"))
+        composeTestRule.setUpCallScreen(
+            configuration = largeScreenConfiguration,
+            whiteboardRequest = whiteboardRequest
+        )
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
@@ -653,7 +834,7 @@ class CallScreenTest {
     }
 
     @Test
-    fun hideWhiteboardRequestReceived_whiteboardNotDisplayed() {
+    fun hideWhiteboardRequestReceivedOnSmallScreen_whiteboardNotDisplayed() {
         callActionsUiState.update {
             it.copy(actionList = listOf(WhiteboardAction()).toImmutableList())
         }
@@ -670,10 +851,39 @@ class CallScreenTest {
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
 
         whiteboardRequest.value = WhiteboardRequest.Hide("username")
 
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun hideWhiteboardRequestReceivedOnLargeScreen_whiteboardNotDisplayed() {
+        callActionsUiState.update {
+            it.copy(actionList = listOf(WhiteboardAction()).toImmutableList())
+        }
+        val whiteboardRequest = mutableStateOf<WhiteboardRequest?>(null)
+        composeTestRule.setUpCallScreen(
+            configuration = largeScreenConfiguration,
+            whiteboardRequest = whiteboardRequest
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+
+        whiteboardRequest.value = WhiteboardRequest.Hide("username")
+
+        composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
