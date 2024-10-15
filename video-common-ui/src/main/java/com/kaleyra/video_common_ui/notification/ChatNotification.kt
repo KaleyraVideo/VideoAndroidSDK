@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.KaleyraVideo.conversation
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.HostAppInfo
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -63,7 +64,7 @@ internal class ChatNotification {
      * @property myUserId The logged user id
      * @property myUsername The local user name
      * @property myAvatar The local user avatar
-     * @property contentTitle The notification title
+     * @property contentTitle String? The notification title if any
      * @property messages The message list
      * @property isGroupChat True if it's a group chat notification. False otherwise
      * @property contentIntent The pending intent to be executed when the user tap on the notification
@@ -79,7 +80,7 @@ internal class ChatNotification {
         var myUsername: String = "",
         var myUserId: String = "",
         var myAvatar: Uri = Uri.EMPTY,
-        var contentTitle: String = "",
+        var contentTitle: String? = null,
         var messages: List<ChatNotificationMessage> = listOf(),
         var isGroupChat: Boolean = false,
         var contentIntent: PendingIntent? = null,
@@ -227,8 +228,13 @@ internal class ChatNotification {
             val applicationIcon =
                 context.applicationContext.packageManager.getApplicationIcon(HostAppInfo.name)
 
+            val newMessagesText = ContextRetainer.context.resources.getQuantityString(R.plurals.kaleyra_new_messages, messageCount, messageCount)
+
             val builder =
                 NotificationCompat.Builder(context.applicationContext, channelId)
+                    .setContentTitle(this@Builder.contentTitle ?: messages.firstOrNull()?.displayName)
+                    .setContentText(if (messages.size == 1) messages.first().text else newMessagesText)
+                    .setNumber(messageCount)
                     .setStyle(messagingStyle)
                     .setSmallIcon(R.drawable.ic_kaleyra_chat)
                     .setLargeIcon(applicationIcon.toBitmap())
@@ -237,16 +243,22 @@ internal class ChatNotification {
                     // devices and all Wear devices. If you have more than one notification and
                     // you prefer a different summary notification, set a group key and create a
                     // summary notification via
-                    .setGroupSummary(true)
                     .setGroup(channelId)
+                    .setGroupSummary(isGroupChat)
+                    .also {
+                        if (isGroupChat) {
+                            it.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY);
+                        }
+                    }
                     .setAutoCancel(true)
+                    .setShowWhen(true)
+                    .setWhen(System.currentTimeMillis())
                     // Number of new notifications for API <24 (M and below) devices.
-                    .setSubText("$messageCount")
-                    .setCategory(Notification.CATEGORY_MESSAGE)
+                    .setSubText(newMessagesText)
+                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setNumber(messageCount)
-
 
             contentIntent?.also { builder.setContentIntent(it) }
             replyIntent?.also { builder.addAction(createReplyAction(context, it)) }

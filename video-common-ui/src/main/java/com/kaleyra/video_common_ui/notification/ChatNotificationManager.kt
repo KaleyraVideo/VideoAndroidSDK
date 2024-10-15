@@ -62,6 +62,7 @@ internal interface ChatNotificationManager {
      * @param myUserName String The other user name
      * @param myAvatar Uri The other user avatar
      * @param chatId String? optional chat identifier
+     * @param isGroup Boolean determines if the chat is a group chat
      * @param chatTitle String? optional chat title
      * @param messages List<ChatNotificationMessage> The list of messages
      * @param activityClazz Class<*> The chat activity Class<*>
@@ -73,6 +74,7 @@ internal interface ChatNotificationManager {
         myUserName: String,
         myAvatar: Uri,
         chatId: String?,
+        isGroup: Boolean,
         chatTitle: String?,
         messages: List<ChatNotificationMessage>,
         activityClazz: Class<*>,
@@ -99,7 +101,7 @@ internal interface ChatNotificationManager {
             .also { builder ->
                 chatTitle?.let { builder.contentTitle(it) }
             }
-            .isGroupChat(true) // Always true because of a notification ui bug
+            .isGroupChat(isGroup) // Always true because of a notification ui bug
 //            .isGroupChat(messages.map { it.userId }.distinct().count() > 1)
             .contentIntent(contentIntent)
 //            .replyIntent(replyIntent)

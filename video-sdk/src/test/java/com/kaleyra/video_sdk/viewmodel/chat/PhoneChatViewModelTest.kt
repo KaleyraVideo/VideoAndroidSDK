@@ -120,7 +120,8 @@ class PhoneChatViewModelTest {
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         with(conversationMock) {
             every { chats } returns MutableStateFlow(listOf(chatMock))
-            every { create(any()) } returns Result.success(chatMock)
+            every { create(any<String>()) } returns Result.success(chatMock)
+            every { create(any<List<String>>(), any<String>()) } returns Result.success(chatMock)
         }
         with(messagesUIMock) {
             every { list } returns listOf(otherTodayUnreadMessage, otherTodayReadMessage)
@@ -145,6 +146,8 @@ class PhoneChatViewModelTest {
             every { combinedDisplayImage } returns flowOf(otherUri2)
         }
         with(chatMock) {
+            every { id } returns "chatId"
+            every { isGroup } returns true
             every { messages } returns messagesFlow
             every { unreadMessagesCount } returns MutableStateFlow(5)
             every { participants } returns chatParticipantsFlow
@@ -164,7 +167,9 @@ class PhoneChatViewModelTest {
                 connectedUserFlow
             )
         })
-        TestScope().launch { viewModel.setChat("userId", "loggedUserId") }
+        TestScope().launch {
+            viewModel.setChat("userId", "chatId")
+        }
     }
 
     @Test
@@ -174,8 +179,8 @@ class PhoneChatViewModelTest {
         val actual = uiState?.participantsState
         assertEquals(null, actual)
         advanceUntilIdle()
-        val newUiState = viewModel.uiState.first() as ChatUiState.Group
-        val newActual = newUiState.participantsState
+        val newUiState = viewModel.uiState.first() as? ChatUiState.Group
+        val newActual = newUiState?.participantsState
         val newExpected = ChatParticipantsState(online = ImmutableList(listOf("otherDisplayName", "otherDisplayName2")))
         assertEquals(newExpected, newActual)
     }
@@ -202,6 +207,7 @@ class PhoneChatViewModelTest {
     @Test
     fun testChatUiState_oneToOneChat_recipientDetailsUpdates() = runTest {
         chatParticipantsFlow.value = oneToOneChatParticipantsFlow
+        every { chatMock.isGroup } returns false
         val uiState = viewModel.uiState.first() as ChatUiState.OneToOne
         val actual = uiState.recipientDetails
         val expected = ChatParticipantDetails()

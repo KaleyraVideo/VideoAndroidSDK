@@ -84,10 +84,15 @@ class MessagesUI(
             me.combinedDisplayName.filterNotNull().firstOrNull() ?: me.userId,
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
-            chatUI.id.takeIf { chatUI.participants.value.others.size > 1 },
-            if (chatUI.participants.value.others.size > 1)
-                chatUI.participants.value.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() }.toSet().joinToString(", ")
-            else "",
+            chatUI.id,
+            chatUI.isGroup,
+            if (chatUI.isGroup) {
+              when {
+                  chatUI.name.isNullOrBlank() ->
+                      chatUI.participants.value.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() }.toSet().joinToString(", ")
+                  else -> chatUI.name
+              }
+            } else "",
             messages,
             chatActivityClazz,
             chatCustomNotificationActivity

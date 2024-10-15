@@ -21,7 +21,9 @@ import com.kaleyra.video.State
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * ChatViewModel representation of the chat view model
@@ -59,30 +61,51 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
     /**
      * Set the current one-to-one chat by passing the other participant's userId
      * @param loggedUserId String optional logged user identification if the user has already connected or is connecting
-     * @param userIds List<String> the other participant's userIds
      * @param chatId String? optional chat id associated with the chat to be set
      * @return ChatUI? the retrieved ChatUI if available
      */
-    suspend fun setChat(loggedUserId: String?, userIds: List<String>, chatId: String? = null): ChatUI? {
+    suspend fun setChat(loggedUserId: String?, chatId: String): ChatUI? {
+        println("chatviewmodel set chat")
+
         val conversation = conversation.first()
 
+        println("chatviewmodel got conversation")
+
         if (!KaleyraVideo.isConfigured) {
+            println("chatviewmodel conversation not configured")
             val hasConfigured = requestConfiguration()
             if (!hasConfigured) return null
         }
 
+        println("chatviewmodel conversation is configured")
+
         if (KaleyraVideo.conversation.state.value is State.Disconnected) {
+            println("chatviewmodel conversation is not connected")
             requestConnect(loggedUserId)
         }
 
-        val chat = when (userIds.size) {
-            1 -> conversation.create(userIds.first()).getOrNull() ?: return null
-            else -> {
-                chatId ?: return null
-                conversation.create(userIds, chatId).getOrNull() ?: return null
-            }
+        println("chatviewmodel conversation is connected")
+
+        val chat = withTimeoutOrNull(3000L) {
+            println("chatviewmodel waiting for chat $chatId")
+
+            println("chatviewmodel available chats are ${
+                conversation.chats.replayCache.firstOrNull()?.map { it.id }?.joinToString("\n")
+            }")
+
+            conversation.chats.first { it.firstOrNull { it.id == chatId } != null }
+
+            val chat = conversation.chats.replayCache.first().first { it.id == chatId }
+
+            println("chatviewmodel got chat $chatId")
+
+            _chat.tryEmit(chat)
+
+            println("chatviewmodel chat emitted: $chat")
+
+            return@withTimeoutOrNull chat
         }
-        _chat.tryEmit(chat)
+        println("chatviewmodel chat is: $chat")
         return chat
     }
 }

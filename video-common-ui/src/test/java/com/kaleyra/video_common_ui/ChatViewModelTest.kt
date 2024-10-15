@@ -24,6 +24,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,7 +48,9 @@ class ChatViewModelTest {
 
     private val call = mockk<CallUI>()
 
-    private val chat = mockk<ChatUI>(relaxed = true)
+    private val chat = mockk<ChatUI>(relaxed = true) {
+        every { id } returns "chatId"
+    }
 
     @Before
     fun setUp() {
@@ -57,8 +60,8 @@ class ChatViewModelTest {
             every { state } returns MutableStateFlow(State.Connected)
         }
         viewModel = ChatViewModel { CollaborationViewModel.Configuration.Success(conference, conversation, mockk(), MutableStateFlow(mockk())) }
-        every { conversation.create(any()) } returns Result.success(chat)
-//        every { conversation.create(any(), any()) } returns Result.success(chat)
+        every { conversation.create(any<String>()) } returns Result.success(chat)
+        every { conversation.chats } returns MutableSharedFlow<List<ChatUI>>(replay = 1).apply { tryEmit(listOf(chat)) }
         every { conference.call } returns MutableStateFlow(call)
     }
 
@@ -70,21 +73,15 @@ class ChatViewModelTest {
     @Test
     fun setChatUser_getChatInstance() = runTest {
         advanceUntilIdle()
-        assertEquals(viewModel.setChat("loggedUserId", "user"), viewModel.chat.first())
+        assertEquals(viewModel.setChat("loggedUserId", "chatId"), viewModel.chat.first())
     }
-
-//    @Test
-//    fun setGroupChatUser_getChatInstance() = runTest {
-//        advanceUntilIdle()
-//        assertEquals(viewModel.setChat(listOf("user1", "user2"), "chatId"), viewModel.chat.first())
-//    }
 
     @Test
     fun getMessages_getMessagesInstance() = runTest {
         advanceUntilIdle()
         val messages = mockk<MessagesUI>()
         every { chat.messages } returns MutableStateFlow(messages)
-        viewModel.setChat("loggedUserId", "")
+        viewModel.setChat("loggedUserId", "chatId")
         assertEquals(viewModel.messages.first(), messages)
     }
 
@@ -93,7 +90,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val actions = setOf(ChatUI.Action.ShowParticipants)
         every { chat.actions } returns MutableStateFlow(actions)
-        viewModel.setChat("loggedUserId", "")
+        viewModel.setChat("loggedUserId", "chatId")
         assertEquals(viewModel.actions.first(), actions)
     }
 
@@ -102,7 +99,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val participants = mockk<ChatParticipants>()
         every { chat.participants } returns MutableStateFlow(participants)
-        viewModel.setChat("loggedUserId", "")
+        viewModel.setChat("loggedUserId", "chatId")
         assertEquals(viewModel.participants.first(), participants)
     }
 

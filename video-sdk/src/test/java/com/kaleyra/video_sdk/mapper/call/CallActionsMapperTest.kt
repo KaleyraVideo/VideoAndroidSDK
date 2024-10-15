@@ -176,7 +176,7 @@ class CallActionsMapperTest {
         every { callMock.isGroupCall(any()) } returns flowOf(true)
         val result = callMock.toCallActions(flowOf("companyId"))
         val actual = result.first()
-        assertEquals(listOf<CallActionUI>(), actual)
+        assertEquals(listOf<CallActionUI>(ChatAction()), actual)
     }
 
     @Test

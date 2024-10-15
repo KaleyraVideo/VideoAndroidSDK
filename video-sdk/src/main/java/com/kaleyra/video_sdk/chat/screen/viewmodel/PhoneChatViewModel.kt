@@ -36,7 +36,6 @@ import com.kaleyra.video_sdk.chat.mapper.ChatActionsMapper.mapToChatActions
 import com.kaleyra.video_sdk.chat.mapper.ConversationStateMapper.toConnectionState
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.findFirstUnreadMessageId
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.mapToConversationItems
-import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.isGroupChat
 import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.toOtherParticipantsState
 import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.toParticipantsDetails
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
@@ -119,8 +118,14 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     init {
         viewModelScope.launch {
-            val isGroupChat = participants.first().isGroupChat()
-            viewModelState.update { it.copy(isGroupChat = isGroupChat) }
+            val chat = chat.first()
+            val isGroupChat = chat.isGroup && chat.participants.value.others.size > 1
+            viewModelState.update {
+                it.copy(
+                    isGroupChat = isGroupChat,
+                    chatName = chat.name ?: ""
+                )
+            }
 
             if (isGroupChat) {
                 // TODO bind the chat name and chat image when the mtm chats will be available
@@ -184,6 +189,13 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
         viewModelScope.launch {
             val chat = chat.first()
+
+            chat.name?.let { chatName ->
+                viewModelState.update {
+                    it.copy(chatName = chatName)
+                }
+            }
+
             findFirstUnreadMessageId(chat.messages.first(), chat::fetch).also {
                 firstUnreadMessageId.value = it
             }

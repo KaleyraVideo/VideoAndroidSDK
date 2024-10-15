@@ -26,6 +26,8 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conversation.Chat
+import com.kaleyra.video_common_ui.ChatUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
@@ -35,6 +37,7 @@ import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObs
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
@@ -67,12 +70,15 @@ import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -95,6 +101,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         get() = call.getValue()?.inputs?.availableInputs?.value
 
     private var lastFileShareCreationTime = MutableStateFlow(-1L)
+
+    private val chat: MutableSharedFlow<Chat> = MutableSharedFlow(replay = 1)
 
     init {
         viewModelScope.launch {
@@ -246,8 +254,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
-            val chat = getChat(call)
+            val conversation = conversation.getValue()
+            val chatId = call.chatId.first()
+            val chat: Chat? =
+                conversation!!.chats.replayCache.firstOrNull()?.firstOrNull { it.serverId.replayCache.firstOrNull() == call.chatId.replayCache.firstOrNull() }
+                    ?: kotlin.runCatching { conversation.find(chatId).await().getOrNull() }.getOrNull()
+
             if (chat != null) {
+                this@CallActionsViewModel.chat.emit(chat)
                 combine(
                     uiState.map { it.actionList.value },
                     chat.unreadMessagesCount
@@ -345,18 +359,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun showChat(context: Context) {
-        val conversation = conversation.getValue()
-        val call = call.getValue()
-        val participants = call?.participants?.getValue()
-        if (conversation == null || participants == null) return
-        val companyId = company.getValue()?.id?.getValue()
-        val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        if (otherParticipants.size == 1) {
-            conversation.chat(context = context, otherParticipants.first())
-        } else {
-//            conversation.chat(context = context, otherParticipants, chatId = call.chatId)
+        val conversation = conversation.getValue() ?: return
+        viewModelScope.launch {
+            val chat = chat.first()
+            conversation.show(context, chat)
         }
-
     }
 
     // TODO remove code duplication in StreamViewModel
@@ -379,15 +386,6 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         call.getValue()?.sharedFolder?.files?.value?.let { files ->
             val maxCreationTime = files.maxOfOrNull { it.creationTime } ?: return
             lastFileShareCreationTime.value = maxCreationTime
-        }
-    }
-
-    private fun getChat(call: Call): Chat? {
-        val companyId = company.getValue()?.id?.getValue()
-        val participants = call.participants.value
-        val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        return otherParticipants.firstOrNull()?.let { others ->
-            conversation.getValue()?.create(others)?.getOrNull()
         }
     }
 

@@ -339,5 +339,6 @@
     <string name="kaleyra_input_text_default_error">Errore di input del testo</string>
     <string name="kaleyra_chat_no_messages_subtitle">Invia un messaggio per avviare la comunicazione</string>
     <string name="kaleyra_call_failed">Chiamata non riuscita</string>
+    <string name="kaleyra_chat_participants_is_online">è in linea</string>
 
 </resources>

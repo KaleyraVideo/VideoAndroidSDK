@@ -340,5 +340,6 @@
     <string name="kaleyra_input_text_default_error">Erro de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envie uma mensagem para iniciar a comunicação</string>
     <string name="kaleyra_call_failed">Chamada falhou</string>
+    <string name="kaleyra_chat_participants_is_online">está online</string>
 
 </resources>
