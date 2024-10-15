@@ -42,6 +42,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     override fun initialState() = StreamUiState()
 
     var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
+        set(value) {
+            if (value < 1) throw IllegalArgumentException("max pinned streams must be at least 1")
+            field = value
+        }
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
@@ -121,24 +125,38 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     }
 
     fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
-        val streams = uiState.value.streams.value
+        val uiState = uiState.value
+        val streams = uiState.streams.value
         val stream = streams.find { it.id == streamId } ?: return false
-        val canPinStream = uiState.value.pinnedStreams.let { pinnedStreams ->
-            pinnedStreams.count() >= maxPinnedStreams || pinnedStreams.value.find { it.id == streamId } != null
-        }
-        if (canPinStream && !force) return false
 
-        val pinnedStreams = if (canPinStream) {
-            val pinnedStreams = uiState.value.pinnedStreams.value.toMutableList()
-            if (prepend) pinnedStreams.removeFirstOrNull() else pinnedStreams.removeLastOrNull()
-            pinnedStreams
-        } else uiState.value.pinnedStreams.value
+        val pinnedStreams = uiState.pinnedStreams.value
+        if (pinnedStreams.any { it.id == streamId } || (pinnedStreams.count() >= maxPinnedStreams && !force)) {
+            return false
+        }
+
+        val localScreenShare = pinnedStreams.firstOrNull { it.isMine && it.video?.isScreenShare == true }
+        val otherPinnedStreams = pinnedStreams - localScreenShare
+        val maxStreamsLimit = maxPinnedStreams - if (localScreenShare != null) 1 else 0
+
+        var isStreamAdded = false
+        val newPinnedStreams = buildList {
+            add(localScreenShare)
+            if (maxStreamsLimit > 0) {
+                if (prepend) {
+                    add(stream)
+                    addAll(otherPinnedStreams.takeLast(maxStreamsLimit - 1))
+                } else {
+                    addAll(otherPinnedStreams.take(maxStreamsLimit - 1))
+                    add(stream)
+                }
+                isStreamAdded = true
+            }
+        }.filterNotNull()
 
         _uiState.update {
-            val newPinnedStreams = if (prepend) listOf(stream) + pinnedStreams else pinnedStreams + stream
             it.copy(pinnedStreams = newPinnedStreams.toImmutableList())
         }
-        return true
+        return isStreamAdded
     }
 
     fun unpin(streamId: String) {
