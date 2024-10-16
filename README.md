@@ -20,10 +20,15 @@
 
 **Kaleyra Video Android SDK** makes it easy to add video conference and chat communication to mobile apps.
 
-## Phone UI
-<img src="img/img0.png"/>
 
-## Glass UI
+## Phone
+<img src="img/phone.png"/>
+
+## Tablet
+<img src="img/tablet.png"/>
+
+
+## Glass
 <img src="img/glass_1.png" width="360"/><img src="img/glass_2.png" width="360"/><img src="img/glass_3.png" width="360"/><img src="img/glass_4.png" width="360"/>
 
 # Requirements
