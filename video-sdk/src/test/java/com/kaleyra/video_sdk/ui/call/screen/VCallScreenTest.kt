@@ -885,7 +885,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(flipText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(flipText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -907,7 +907,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(chatText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(chatText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -955,7 +955,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(screenShareText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -980,7 +980,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(screenShareText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -1004,7 +1004,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(audioText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(audioText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -1029,7 +1029,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(fileShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -1080,7 +1080,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(whiteboardText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -1131,7 +1131,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(virtualBgText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(virtualBgText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
