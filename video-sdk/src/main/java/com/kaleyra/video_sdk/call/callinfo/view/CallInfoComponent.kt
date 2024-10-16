@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.callinfo.view
 
 import android.view.View.TEXT_ALIGNMENT_CENTER
+import android.view.View.TEXT_ALIGNMENT_VIEW_START
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -124,7 +125,6 @@ fun CallInfoComponent(
     if (callInfoUiState.callStateUi != null && (!displayTitle.isNullOrEmpty() || !displaySubtitle.isNullOrEmpty())) {
         Column(
             modifier = Modifier.then(modifier),
-            horizontalAlignment = if (isPipMode) Alignment.Start else Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
             displayTitle?.takeIf { it.isNotEmpty() }?.let {
@@ -136,7 +136,7 @@ fun CallInfoComponent(
                     text = it,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = titleTextStyle.fontSize,
-                    textAlignment = TEXT_ALIGNMENT_CENTER,
+                    textAlignment = if (isPipMode) TEXT_ALIGNMENT_VIEW_START else TEXT_ALIGNMENT_CENTER,
                     fontWeight = FontWeight.Bold,
                     ellipsize = Ellipsize.Marquee,
                     shadow = titleTextStyle.shadow
@@ -152,7 +152,7 @@ fun CallInfoComponent(
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = subtitleTextStyle.fontSize,
-                    textAlign = TextAlign.Center,
+                    textAlign = if (isPipMode) TextAlign.Start else TextAlign.Center,
                     maxLines = 1,
                     style = subtitleTextStyle
                 )
