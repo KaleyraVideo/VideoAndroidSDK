@@ -100,7 +100,7 @@ internal fun HCallScreen(
                 label = "sheet content"
             ) { currentlySelectedStreamId ->
                 if (currentlySelectedStreamId == null) {
-                    Box(Modifier.animateContentSize()) {
+                    Box {
                         val isSheetExpanded by remember(sheetState) {
                             derivedStateOf {
                                 sheetState.targetValue == CallSheetValue.Expanded

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -168,13 +168,20 @@ internal fun VCallScreen(
                 label = "sheet content"
             ) { currentlySelectedStreamId ->
                 if (currentlySelectedStreamId == null) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(
+                            start = 14.dp,
+                            top = if (!hasSheetDragContent) 14.dp else 5.dp,
+                            end = 14.dp,
+                            bottom = 14.dp
+                        )
+                    ) {
                         if (isLargeScreen && !isRinging) {
                             LargeScreenInputMessageHost()
                         }
 
-                        Box(Modifier.animateContentSize()) {
+                        Box {
                             val isSheetExpanded by remember(sheetState) {
                                 derivedStateOf {
                                     sheetState.targetValue == CallSheetValue.Expanded
@@ -192,12 +199,7 @@ internal fun VCallScreen(
                                     else showSheetPanelContent = !showSheetPanelContent
                                 },
                                 modifier = Modifier
-                                    .padding(
-                                        start = 14.dp,
-                                        top = if (!hasSheetDragContent) 14.dp else 5.dp,
-                                        end = 14.dp,
-                                        bottom = 14.dp
-                                    )
+
                             )
                         }
                     }
@@ -340,7 +342,6 @@ private fun LargeScreenInputMessageHost() {
     Box(
         modifier = Modifier
             .width(250.dp)
-            .padding(top = 6.dp)
             .animateContentSize(),
         contentAlignment = Alignment.Center,
     ) {
