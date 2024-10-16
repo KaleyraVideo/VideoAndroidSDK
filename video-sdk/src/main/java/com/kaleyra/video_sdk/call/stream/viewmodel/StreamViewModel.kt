@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -88,10 +88,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             combine(
                 isPreCallState,
                 call.toMyCameraVideoUi(),
+                call.toMyCameraStreamAudioUi(),
                 call.preferredType
-            ) { state, video, preferredType -> Triple(state, video, preferredType) }
-                .onEach { (isPreCallState, video, preferredType) ->
-                    if (!isPreCallState) return@onEach
+            ) { isPreCallState, video, audio, preferredType ->
+                if (isPreCallState) {
                     val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
                     val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
                     val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
@@ -100,6 +100,7 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                             preview = StreamPreview(
                                 isGroupCall = isGroupCall,
                                 video = video,
+                                audio = audio,
                                 username = otherUsername,
                                 avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) },
                                 isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
@@ -107,7 +108,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                         )
                     }
                 }
-                .takeWhile { (isPreCallState, _, _) -> isPreCallState }
+                isPreCallState
+            }
+                .takeWhile { it }
                 .onCompletion {
                     // wait for at least another participant's stream to be added before setting the preview to null
                     uiState.first { it.streams.value.size > 1 }

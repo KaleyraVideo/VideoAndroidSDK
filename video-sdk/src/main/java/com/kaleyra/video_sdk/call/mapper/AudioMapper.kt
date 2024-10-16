@@ -1,6 +1,8 @@
 package com.kaleyra.video_sdk.call.mapper
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,4 +38,9 @@ internal object AudioMapper {
                 emit(it)
             }
         }.distinctUntilChanged()
+
+    fun Call.toMyCameraStreamAudioUi(): Flow<AudioUi?> =
+        this
+            .toMyCameraStream()
+            .flatMapLatest { it.audio.mapToAudioUi() }
 }

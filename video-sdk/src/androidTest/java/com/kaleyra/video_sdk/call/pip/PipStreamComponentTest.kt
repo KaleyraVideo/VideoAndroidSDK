@@ -292,6 +292,39 @@ class PipStreamComponentTest {
     }
 
     @Test
+    fun previewStreamAudioMuted_micMutedIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = AudioUi(id = "audioId", isEnabled = false))
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertIsDisplayed()
+    }
+
+    @Test
+    fun previewStreamAudioNull_micMutedIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = null)
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertIsDisplayed()
+    }
+
+    @Test
+    fun previewStreamAudioEnabled_micMutedDoesNotExist() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = AudioUi(id = "audioId", isEnabled = true))
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertDoesNotExist()
+    }
+
+    @Test
     fun localScreenSharePinnedStream_streamIsNotDisplayed() {
         val stream = defaultStreamUi(id = "id1", username = "username1")
         val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))

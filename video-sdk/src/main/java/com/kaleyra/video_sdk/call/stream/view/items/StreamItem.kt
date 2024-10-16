@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
-import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -63,7 +62,7 @@ internal fun StreamItem(
             )
         }
 
-        StatusIcons(
+        StreamStatusIcons(
             streamAudioUi = stream.audio,
             fullscreen = fullscreen,
             mine = stream.isMine,
@@ -84,7 +83,7 @@ internal fun StreamItem(
 }
 
 @Composable
-private fun StatusIcons(
+internal fun StreamStatusIcons(
     streamAudioUi: AudioUi?,
     fullscreen: Boolean,
     mine: Boolean,

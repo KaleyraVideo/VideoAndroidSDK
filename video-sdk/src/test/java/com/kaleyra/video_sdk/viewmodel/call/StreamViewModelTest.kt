@@ -10,6 +10,8 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.mapper.AudioMapper
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
@@ -22,6 +24,7 @@ import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
+import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -75,6 +78,7 @@ class StreamViewModelTest {
         mockkObject(StreamMapper)
         mockkObject(CallStateMapper)
         mockkObject(VideoMapper)
+        mockkObject(AudioMapper)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
     }
@@ -87,10 +91,12 @@ class StreamViewModelTest {
     @Test
     fun `stream preview set on call ringing`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         val uriMock = mockk<Uri>(relaxed = true)
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
@@ -103,6 +109,7 @@ class StreamViewModelTest {
         val expected = StreamPreview(
             isGroupCall = true,
             video = video,
+            audio = audio,
             username = "displayName",
             avatar = ImmutableUri(uriMock)
         )
@@ -112,10 +119,12 @@ class StreamViewModelTest {
     @Test
     fun `stream preview set on call dialing`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         val uriMock = mockk<Uri>(relaxed = true)
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
@@ -128,6 +137,7 @@ class StreamViewModelTest {
         val expected = StreamPreview(
             isGroupCall = true,
             video = video,
+            audio = audio,
             username = "displayName",
             avatar = ImmutableUri(uriMock)
         )
@@ -137,10 +147,12 @@ class StreamViewModelTest {
     @Test
     fun `stream preview set on call ringing remotely`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         val uriMock = mockk<Uri>(relaxed = true)
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
@@ -153,6 +165,7 @@ class StreamViewModelTest {
         val expected = StreamPreview(
             isGroupCall = true,
             video = video,
+            audio = audio,
             username = "displayName",
             avatar = ImmutableUri(uriMock),
             isStartingWithVideo = false
@@ -163,9 +176,11 @@ class StreamViewModelTest {
     @Test
     fun `handle empty list for other display names and images`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf())
             every { toOtherDisplayImages() } returns flowOf(listOf())
@@ -177,7 +192,8 @@ class StreamViewModelTest {
 
         val expected = StreamPreview(
             isGroupCall = true,
-            video = video
+            video = video,
+            audio = audio
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -185,12 +201,14 @@ class StreamViewModelTest {
     @Test
     fun `stream preview reset to null after pre call state is ended and streams count is more than 1`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         val uriMock = mockk<Uri>(relaxed = true)
         val callState = MutableStateFlow<CallStateUi>(CallStateUi.RingingRemotely)
         val streams = MutableStateFlow(listOf(streamMock1))
         with(callMock) {
             every { toCallStateUi() } returns callState
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
@@ -205,6 +223,7 @@ class StreamViewModelTest {
         val expected = StreamPreview(
             isGroupCall = true,
             video = video,
+            audio = audio,
             username = "displayName",
             avatar = ImmutableUri(uriMock),
             isStartingWithVideo = false
@@ -229,6 +248,7 @@ class StreamViewModelTest {
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(null)
+            every { toMyCameraStreamAudioUi() } returns flowOf(null)
             every { isGroupCall(any()) } returns flowOf(false)
             every { toOtherDisplayNames() } returns flowOf(listOf())
             every { toOtherDisplayImages() } returns flowOf(listOf())
@@ -247,6 +267,7 @@ class StreamViewModelTest {
         with(callMock) {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(null)
+            every { toMyCameraStreamAudioUi() } returns flowOf(null)
             every { isGroupCall(any()) } returns flowOf(false)
             every { toOtherDisplayNames() } returns flowOf(listOf())
             every { toOtherDisplayImages() } returns flowOf(listOf())
@@ -346,11 +367,13 @@ class StreamViewModelTest {
     @Test
     fun `test stream preview cleaned on call ended`() = runTest {
         val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
         val uriMock = mockk<Uri>(relaxed = true)
         val callState = MutableStateFlow<CallStateUi>(CallStateUi.Dialing)
         with(callMock) {
             every { toCallStateUi() } returns callState
             every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
             every { isGroupCall(any()) } returns flowOf(true)
             every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
             every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
@@ -365,6 +388,7 @@ class StreamViewModelTest {
         val expected = StreamPreview(
             isGroupCall = true,
             video = video,
+            audio = audio,
             username = "displayName",
             avatar = ImmutableUri(uriMock)
         )
