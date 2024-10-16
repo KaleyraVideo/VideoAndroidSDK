@@ -27,6 +27,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_utils.ContextRetainer
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -79,6 +80,7 @@ class FileShareNotificationProducerTest {
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
+        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
         every { ContextRetainer.context } returns contextMock
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)
