@@ -80,7 +80,7 @@ class FileShareNotificationProducerTest {
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
-        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
+        coEvery { ContactDetailsManager.refreshContactDetails(*anyVararg()) } returns Unit
         every { ContextRetainer.context } returns contextMock
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)

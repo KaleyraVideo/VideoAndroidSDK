@@ -25,6 +25,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -98,18 +99,17 @@ internal object ConferenceUIExtensions {
                         telecomManager.addCall(call = call, logger)
                     }
 
-                    else -> showProvisionalCallNotification(call, activityClazz, coroutineScope)
+                    else -> showProvisionalCallNotification(call, activityClazz)
                 }
             }
             .launchIn(coroutineScope)
     }
 
-    private fun showProvisionalCallNotification(
+    private suspend fun showProvisionalCallNotification(
         call: Call,
-        callActivityClazz: Class<*>,
-        coroutineScope: CoroutineScope
+        callActivityClazz: Class<*>
     ) {
-        coroutineScope.launch {
+        coroutineScope {
             showCallNotification(call, callActivityClazz)
             call.state
                 .takeWhile { it !is Call.State.Disconnected.Ended }
@@ -126,8 +126,7 @@ internal object ConferenceUIExtensions {
         val participants = call.participants.first()
 
         if (state is Call.State.Disconnected.Ended) return
-        ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }
-            .toTypedArray())
+        ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
 
         val notification = when {
             CallExtensions.isIncoming(state, participants) -> {
