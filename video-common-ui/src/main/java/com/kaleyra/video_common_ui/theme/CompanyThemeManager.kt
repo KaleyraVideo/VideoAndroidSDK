@@ -39,12 +39,11 @@ object CompanyThemeManager {
         flow {
             uiTheme?.let { emit(it) }
             map { theme ->
-                // TODO add remote colors fallback
                 uiTheme?.copy(
-                    day = CompanyUI.Theme.Style(logo = uiTheme.day.logo ?: theme.day.logo, colors = uiTheme.day.colors),
-                    night = CompanyUI.Theme.Style(logo = uiTheme.night.logo ?: theme.night.logo, colors = uiTheme.night.colors)
-                ) ?: // TODO add remote colors
-                CompanyUI.Theme(day = CompanyUI.Theme.Style(logo = theme.day.logo), night = CompanyUI.Theme.Style(logo = theme.night.logo))
+                    day = CompanyUI.Theme.Style(logo = uiTheme.day.logo ?: theme.day.logo, colors = uiTheme.day.colors ?: theme.day.colors),
+                    night = CompanyUI.Theme.Style(logo = uiTheme.night.logo ?: theme.night.logo, colors = uiTheme.night.colors ?: theme.night.colors)
+                ) ?:
+                CompanyUI.Theme(day = CompanyUI.Theme.Style(logo = theme.day.logo, colors = theme.day.colors), night = CompanyUI.Theme.Style(logo = theme.night.logo, colors = theme.night.colors))
             }.collect(this)
         }
 }

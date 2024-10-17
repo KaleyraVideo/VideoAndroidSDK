@@ -36,6 +36,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kaleyra.material_color_utilities.hct.Hct
 import com.kaleyra.material_color_utilities.scheme.SchemeFidelity
 import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
+import com.kaleyra.video.Company
 import com.kaleyra.video_common_ui.CompanyUI.Theme
 
 /**
@@ -67,12 +68,12 @@ fun CollaborationTheme(
 
     val seed = if (isDarkTheme) {
         when(darkColors) {
-            is Theme.Colors.Seed -> darkColors.color
+            is Company.Theme.Style.Colors.Seed -> darkColors.color
             else -> kaleyra_m3_seed.toArgb()
         }
     } else {
         when(lightColors) {
-            is Theme.Colors.Seed -> lightColors.color
+            is Company.Theme.Style.Colors.Seed -> lightColors.color
             else -> kaleyra_m3_seed.toArgb()
         }
     }
@@ -205,8 +206,8 @@ internal object KaleyraTheme {
 @Composable
 fun KaleyraTheme(content: @Composable (isDarkTheme: Boolean) -> Unit) {
     val theme = Theme(
-        day = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb())),
-        night = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb()))
+        day = Theme.Style(colors = Company.Theme.Style.Colors.Seed(color = kaleyra_m3_seed.toArgb())),
+        night = Theme.Style(colors = Company.Theme.Style.Colors.Seed(color = kaleyra_m3_seed.toArgb()))
     )
     CollaborationTheme(theme = theme, content = content)
 }

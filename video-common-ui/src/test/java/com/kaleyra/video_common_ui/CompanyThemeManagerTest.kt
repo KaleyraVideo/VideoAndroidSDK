@@ -27,7 +27,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
@@ -45,18 +44,21 @@ class CompanyThemeManagerTest {
     private val company = mockk<Company>()
     private val theme = mockk<Company.Theme>()
 
-    private val dayLogo = mockk<Uri>()
-    private val nightLogo = mockk<Uri>()
+    private val remoteDayLogo = mockk<Uri>()
+    private val remoteNightLogo = mockk<Uri>()
 
-    private val dayStyle = Style(logo = dayLogo, colors = mockk())
-    private val nightStyle = Style(logo = nightLogo, colors = mockk())
+    private val remoteDayColors =  Company.Theme.Style.Colors.Seed(Color.Red.toArgb())
+    private val remoteNightColors =  Company.Theme.Style.Colors.Seed(Color.Blue.toArgb())
+
+    private val remoteDayStyle = Style(logo = remoteDayLogo, colors = remoteDayColors)
+    private val remoteNightStyle = Style(logo = remoteNightLogo, colors = remoteNightColors)
 
     @Before
     fun setUp() {
         mockkObject(KaleyraVideo)
         every { company.theme } returns MutableStateFlow(theme)
-        every { theme.day } returns dayStyle
-        every { theme.night } returns nightStyle
+        every { theme.day } returns remoteDayStyle
+        every { theme.night } returns remoteNightStyle
     }
 
     @After
@@ -68,17 +70,22 @@ class CompanyThemeManagerTest {
     fun `remote company details`() = runTest {
         every { KaleyraVideo.theme } returns null
         val defaultTheme = CompanyUI.Theme()
-        val expected = CompanyUI.Theme(day = defaultTheme.day.copy(logo = dayLogo), night = defaultTheme.night.copy(logo = nightLogo))
+        val expected = CompanyUI.Theme(
+            day = defaultTheme.day.copy(logo = remoteDayLogo, colors = remoteDayColors),
+            night = defaultTheme.night.copy(logo = remoteNightLogo, colors = remoteNightColors)
+        )
         assertEquals(expected, company.combinedTheme.first())
     }
 
     @Test
     fun `set local company details`() = runTest {
+        val dayLogo = mockk<Uri>()
+        val nightLogo = mockk<Uri>()
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-            day = Style(logo = dayLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())),
-            night = Style(logo = nightLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb()))
+            day = Style(logo = dayLogo, colors = Company.Theme.Style.Colors.Seed(color = Color.Red.toArgb())),
+            night = Style(logo = nightLogo, colors = Company.Theme.Style.Colors.Seed(color = Color.Yellow.toArgb()))
         )
         every { KaleyraVideo.theme } returns companyUITheme
         assertEquals(companyUITheme, company.combinedTheme.first())
@@ -88,23 +95,33 @@ class CompanyThemeManagerTest {
     fun `theme uses remote logo if local logo is not defined`() = runTest {
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
-            defaultStyle = CompanyUI.Theme.DefaultStyle.System
+            defaultStyle = CompanyUI.Theme.DefaultStyle.System,
+            day = Style(logo = null, colors = Company.Theme.Style.Colors.Seed(color = Color.Red.toArgb())),
+            night = Style(logo = null, colors = Company.Theme.Style.Colors.Seed(color = Color.Yellow.toArgb()))
         )
         every { KaleyraVideo.theme } returns companyUITheme
         val expected = companyUITheme.copy(
-            day = companyUITheme.day.copy(logo = dayStyle.logo),
-            night = companyUITheme.night.copy(logo = nightStyle.logo)
+            day = companyUITheme.day.copy(logo = remoteDayStyle.logo, colors = Company.Theme.Style.Colors.Seed(color = Color.Red.toArgb())),
+            night = companyUITheme.night.copy(logo = remoteNightStyle.logo, colors = Company.Theme.Style.Colors.Seed(color = Color.Yellow.toArgb()))
         )
         assertEquals(expected, company.combinedTheme.drop(1).first())
     }
 
     @Test
-    fun `theme uses local logo if remote logo is not defined`() = runTest {
+    fun `theme uses remote colors if local colors are not defined`() = runTest {
+        val dayLogo = mockk<Uri>()
+        val nightLogo = mockk<Uri>()
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
-            defaultStyle = CompanyUI.Theme.DefaultStyle.System
+            defaultStyle = CompanyUI.Theme.DefaultStyle.System,
+            day = Style(logo = dayLogo, colors = null),
+            night = Style(logo = nightLogo, colors = null)
         )
         every { KaleyraVideo.theme } returns companyUITheme
-        assertEquals(companyUITheme, company.combinedTheme.first())
+        val expected = companyUITheme.copy(
+            day = companyUITheme.day.copy(logo = dayLogo, colors = remoteDayColors),
+            night = companyUITheme.night.copy(logo = nightLogo, colors = remoteNightColors)
+        )
+        assertEquals(expected, company.combinedTheme.drop(1).first())
     }
 }

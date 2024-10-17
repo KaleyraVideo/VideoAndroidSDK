@@ -71,21 +71,7 @@ class CompanyUI(company: Company) : Company by company {
          * @property colors Colors? optional colors of the company
          * @constructor
          */
-        data class Style(override val logo: Uri? = null, val colors: Colors? = null) : Company.Theme.Style
-
-        /**
-         * Colors representations
-         */
-        sealed class Colors {
-
-            /**
-             * Theme colors representation from seed color
-             * @property color Int seed color used to generate a consistent theme based on this color
-             *
-             * @constructor
-             */
-            data class Seed(@ColorInt val color: Int) : Colors()
-        }
+        data class Style(override val logo: Uri? = null, override val colors: Company.Theme.Style.Colors? = null) : Company.Theme.Style
     }
 }
 
