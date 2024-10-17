@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.participants.view
 import android.content.res.Configuration
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
@@ -49,6 +51,7 @@ internal fun StreamsLayoutSelector(
                 .weight(1f)
                 .highlightOnFocus(gridInteractionSource),
             interactionSource = gridInteractionSource,
+            contentPadding = PaddingValues(8.dp),
             onClick = { onLayoutClick(StreamsLayout.Grid) }
         ) {
             Icon(
@@ -60,7 +63,9 @@ internal fun StreamsLayoutSelector(
             Text(
                 text = stringResource(R.string.kaleyra_participants_component_grid),
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -77,6 +82,7 @@ internal fun StreamsLayoutSelector(
                 .weight(1f)
                 .highlightOnFocus(pinInteractionSource),
             interactionSource = pinInteractionSource,
+            contentPadding = PaddingValues(8.dp),
             onClick = { onLayoutClick(StreamsLayout.Pin) }
         ) {
             Icon(
@@ -88,7 +94,8 @@ internal fun StreamsLayoutSelector(
             Text(
                 text = stringResource(R.string.kaleyra_participants_component_pin),
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1
             )
         }
     }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,9 +29,10 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
         viewModelScope.launch {
             val call = call.first()
 
+            val inCallParticipantsFlow = call.toInCallParticipants()
             combine(
                 call.participants,
-                call.toInCallParticipants()
+                inCallParticipantsFlow
             ) { participants, inCallParticipants ->
                 val invitedUsers = (listOfNotNull(participants.me) + participants.others - inCallParticipants.toSet())
                 val invitedNames = invitedUsers.map { user -> user.combinedDisplayName.firstOrNull() ?: user.userId }
@@ -38,6 +40,11 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
                     it.copy(invitedParticipants = invitedNames.toImmutableList())
                 }
             }.launchIn(this)
+
+            inCallParticipantsFlow
+                .onEach { inCallParticipants ->
+                    _uiState.update { uiState -> uiState.copy(participantCount = inCallParticipants.size) }
+                }.launchIn(this)
         }
     }
 

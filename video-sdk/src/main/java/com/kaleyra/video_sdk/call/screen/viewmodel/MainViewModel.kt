@@ -197,6 +197,15 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
         }
     }
 
+    fun getOtherUserId(): String? {
+        val call = call.getValue()
+        val participants = call?.participants?.getValue()
+        val companyId = company.getValue()?.id?.getValue()
+        val otherParticipants = participants?.others?.filter { it.userId != companyId }?.map { it.userId }
+        return if (otherParticipants == null || otherParticipants.size > 1) null
+        else otherParticipants.first()
+    }
+
     fun setOnCallEnded(block: suspend (hasFeedback: Boolean, hasErrorOccurred: Boolean, hasBeenKicked: Boolean) -> Unit) {
         viewModelScope.launch {
             onCallEnded.emit(block)

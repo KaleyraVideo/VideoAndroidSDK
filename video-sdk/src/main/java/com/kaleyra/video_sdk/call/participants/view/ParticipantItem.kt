@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-internal val ParticipantItemAvatarSize = 28.dp
+internal val ParticipantItemAvatarSize = 40.dp
 
 @Composable
 internal fun ParticipantItem(
@@ -51,7 +51,7 @@ internal fun ParticipantItem(
         Avatar(
             username = stream.username,
             uri = stream.avatar,
-            modifier = Modifier.size(ParticipantItemAvatarSize)
+            size = ParticipantItemAvatarSize
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {

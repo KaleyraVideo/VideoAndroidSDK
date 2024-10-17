@@ -82,6 +82,7 @@
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
     <!-- Chamada -->
+    <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botões</string>
     <string name="kaleyra_close">Fechar</string>
     <string name="kaleyra_call_status_connecting">A conectar …</string>

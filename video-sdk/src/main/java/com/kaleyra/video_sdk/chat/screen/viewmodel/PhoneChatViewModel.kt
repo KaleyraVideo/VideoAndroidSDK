@@ -230,6 +230,8 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         call.show()
     }
 
+    fun getLoggedUserId(): String? = connectedUser.getValue()?.userId
+
     private fun updateUnreadMessagesCount(count: Int) {
         viewModelState.update {
             val conversationState = it.conversationState.copy(unreadMessagesCount = count)

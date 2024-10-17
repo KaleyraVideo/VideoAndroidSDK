@@ -27,6 +27,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 class HStreamMenuContentTest {
 
@@ -43,7 +44,7 @@ class HStreamMenuContentTest {
     fun setUp() {
         mockkObject(StreamViewModel)
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns streamViewModel
+            every { create(any<KClass<StreamViewModel>>(), any()) } returns streamViewModel
         }
     }
 

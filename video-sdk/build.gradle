@@ -74,21 +74,22 @@ dependencies {
     testImplementation kaleyraCatalog.kaleyraVideo
     testImplementation catalog.robolectric
     testImplementation catalog.junit
-    testImplementation catalog.androidxComposeUiTestJunit4
     testImplementation catalog.androidxTestEspressoIntents
     testImplementation catalog.coroutinesTest
     testImplementation catalog.mockkAndroid
-    testImplementation catalog.androidxComposeUiTooling
-    testImplementation catalog.androidxComposeUiTestManifest
-    testImplementation kaleyraCatalog.kaleyraVideo
+    testImplementation catalog.kotlinReflect
+    testImplementation "androidx.compose.ui:ui-test-junit4"
+    testImplementation "androidx.compose.ui:ui-tooling"
+    testImplementation "androidx.compose.ui:ui-test-manifest"
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore
-    androidTestImplementation catalog.androidxComposeUiTestJunit4
     androidTestImplementation catalog.mockkAndroid
     androidTestImplementation catalog.androidxTestEspressoIntents
-    androidTestImplementation catalog.androidxComposeUiTooling
-    androidTestImplementation catalog.androidxComposeUiTestManifest
+    androidTestImplementation catalog.kotlinReflect
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4"
+    androidTestImplementation "androidx.compose.ui:ui-tooling"
+    androidTestImplementation "androidx.compose.ui:ui-test-manifest"
 
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo

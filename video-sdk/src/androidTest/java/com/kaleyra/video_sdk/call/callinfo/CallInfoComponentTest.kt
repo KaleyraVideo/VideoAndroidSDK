@@ -10,7 +10,6 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
@@ -24,9 +23,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class CallInfoComponentTest {
 
     @get:Rule
@@ -413,90 +410,102 @@ class CallInfoComponentTest {
     fun callUiStateError_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test
     fun callUiStateError_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test
     fun callUiStateErrorServer_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error.Server
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test
     fun callUiStateErrorServer_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error.Server
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test
     fun callUiStateErrorUnknown_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error.Unknown
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test
     fun callUiStateErrorUnknown_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
         val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
-            displayState = null,
+            displayState = TextRef.StringResource(R.string.kaleyra_call_failed),
             callStateUi = CallStateUi.Disconnected.Ended.Error.Unknown
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
     @Test

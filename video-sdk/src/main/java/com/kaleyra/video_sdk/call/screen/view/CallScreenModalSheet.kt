@@ -7,8 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -21,33 +19,25 @@ import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
-import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.launch
 
-@Immutable
-internal enum class ModalSheetComponent {
-    Audio,
-    ScreenShare,
-    FileShare,
-    Whiteboard,
-    VirtualBackground,
-    Participants
-}
+internal val CallScreenModalSheetTag = "CallScreenModalSheetTag"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CallScreenModalSheet(
-    modalSheetComponent: ModalSheetComponent?,
+    modularComponent: ModularComponent?,
     sheetState: SheetState,
     onRequestDismiss: () -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit,
     modifier: Modifier = Modifier,
-    onComponentDisplayed: (ModalSheetComponent?) -> Unit = {},
+    onComponentDisplayed: (ModularComponent?) -> Unit = {},
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
     val scope = rememberCoroutineScope()
@@ -63,45 +53,51 @@ internal fun CallScreenModalSheet(
         }
     }
 
-    if (modalSheetComponent != null) {
+    if (modularComponent != null) {
         ModalBottomSheet(
             onDismissRequest = onRequestDismiss,
             shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
             sheetState = sheetState,
-            dragHandle = { CallBottomSheetDefaults.HDragHandle() },
-            windowInsets = WindowInsets(0.dp),
+            dragHandle = (@Composable { CallBottomSheetDefaults.HDragHandle() }).takeIf { !isFullScreenComponent(modularComponent) },
+            contentWindowInsets = { WindowInsets(0.dp) },
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-            modifier = modifier
+            modifier = modifier.testTag(CallScreenModalSheetTag)
         ) {
-            when (modalSheetComponent) {
-                ModalSheetComponent.Audio -> AudioOutputComponent(onDismiss = onDismiss)
+            when (modularComponent) {
+                ModularComponent.Audio -> AudioOutputComponent(onDismiss = onDismiss)
 
-                ModalSheetComponent.ScreenShare -> ScreenShareComponent(
+                ModularComponent.ScreenShare -> ScreenShareComponent(
                     onDismiss = onDismiss,
                     onAskInputPermissions = onAskInputPermissions
                 )
 
-                ModalSheetComponent.FileShare -> FileShareComponent(
+                ModularComponent.FileShare -> FileShareComponent(
                     onDismiss = onDismiss,
                     onUserMessageActionClick = onUserMessageActionClick,
                 )
 
-                ModalSheetComponent.Whiteboard -> WhiteboardComponent(
+                ModularComponent.Whiteboard -> WhiteboardComponent(
                     onDismiss = onDismiss,
                     onUserMessageActionClick = onUserMessageActionClick
                 )
 
-                ModalSheetComponent.VirtualBackground -> VirtualBackgroundComponent(
+                ModularComponent.VirtualBackground -> VirtualBackgroundComponent(
                     onDismiss = onDismiss
                 )
 
-                ModalSheetComponent.Participants -> ParticipantsComponent(
+                ModularComponent.Participants -> ParticipantsComponent(
                     onDismiss = onDismiss
                 )
+
+                ModularComponent.Chat -> Unit
             }
-            onComponentDisplayed(modalSheetComponent)
+            onComponentDisplayed(modularComponent)
         }
     } else {
         onComponentDisplayed(null)
     }
+}
+
+private fun isFullScreenComponent(component: ModularComponent): Boolean {
+    return component == ModularComponent.FileShare || component == ModularComponent.Participants || component == ModularComponent.Whiteboard
 }

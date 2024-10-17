@@ -31,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.reflect.KClass
 
 @RunWith(RobolectricTestRunner::class)
 class PipScreenTest {
@@ -45,17 +46,17 @@ class PipScreenTest {
         mockkObject(CallInfoViewModel)
 
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
+            every { create(any<KClass<StreamViewModel>>(), any()) } returns mockk<StreamViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StreamUiState())
             }
         }
         every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallAppBarViewModel>(any(), any()) } returns mockk<CallAppBarViewModel>(relaxed = true) {
+            every { create(any<KClass<CallAppBarViewModel>>(), any()) } returns mockk<CallAppBarViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(CallAppBarUiState(automaticRecording = true))
             }
         }
         every { CallInfoViewModel.provideFactory(any()) } returns mockk {
-            every { create<CallInfoViewModel>(any(), any()) } returns mockk<CallInfoViewModel>(relaxed = true) {
+            every { create(any<KClass<CallInfoViewModel>>(), any()) } returns mockk<CallInfoViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
             }
         }

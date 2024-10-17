@@ -33,10 +33,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -45,12 +43,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -108,7 +105,8 @@ internal const val ConversationComponentTag = "ConversationComponentTag"
 @Composable
 internal fun ChatScreen(
     onBackPressed: () -> Unit,
-    viewModel: PhoneChatViewModel
+    viewModel: PhoneChatViewModel,
+    embedded: Boolean = false
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -125,6 +123,7 @@ internal fun ChatScreen(
             uiState = uiState,
             userMessage = userMessage,
             onBackPressed = onBackPressed,
+            embedded = embedded,
             onMessageScrolled = viewModel::onMessageScrolled,
             onResetMessagesScroll = viewModel::onAllMessagesScrolled,
             onFetchMessages = viewModel::fetchMessages,
@@ -146,7 +145,8 @@ internal fun ChatScreen(
     onFetchMessages: () -> Unit,
     onShowCall: () -> Unit,
     onSendMessage: (String) -> Unit,
-    onTyping: () -> Unit
+    onTyping: () -> Unit,
+    embedded: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
     val topBarRef = remember { FocusRequester() }
@@ -209,7 +209,7 @@ internal fun ChatScreen(
                         else -> false
                     }
                 },
-            topBar = {
+            topBar = (@Composable {
                 Column(
                     Modifier
                         .focusRequester(topBarRef)
@@ -222,12 +222,7 @@ internal fun ChatScreen(
                     }
 
                     val topAppBarInsets =
-                        if (!uiState.isInCall) TopAppBarDefaults.windowInsets else WindowInsets(
-                            0,
-                            0,
-                            0,
-                            0
-                        )
+                        if (!uiState.isInCall) TopAppBarDefaults.windowInsets else WindowInsets(0, 0, 0, 0)
                     when (uiState) {
                         is ChatUiState.OneToOne -> {
                             OneToOneAppBar(
@@ -259,8 +254,8 @@ internal fun ChatScreen(
                         }
                     }
                 }
-            },
-            snackbarHost = {
+            }).takeIf { !embedded } ?: {},
+            snackbarHost = (@Composable {
                 UserMessageSnackbarHandler(
                     modifier = Modifier
                         .fillMaxSize()
@@ -269,7 +264,7 @@ internal fun ChatScreen(
                         },
                     userMessage = userMessage
                 )
-            },
+            }).takeIf { !embedded } ?: {},
             floatingActionButton = {
                 ResetScrollFab(
                     modifier = Modifier
@@ -282,10 +277,7 @@ internal fun ChatScreen(
                     enabled = scrollToBottomFabEnabled
                 )
             },
-            contentWindowInsets = ScaffoldDefaults
-                .contentWindowInsets
-                .exclude(WindowInsets.navigationBars)
-                .exclude(WindowInsets.ime),
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { paddingValues ->
             Column(
                 modifier = Modifier.padding(paddingValues)
@@ -310,7 +302,7 @@ internal fun ChatScreen(
                             fabPadding = it.boundsInRoot().height
                         }
                         .navigationBarsPadding()
-                        .imePadding(),
+                        .let { if (!embedded) it.imePadding() else it },
                     onTextChanged = onTyping,
                     onMessageSent = onMessageSent,
                     onDirectionLeft = topBarRef::requestFocus

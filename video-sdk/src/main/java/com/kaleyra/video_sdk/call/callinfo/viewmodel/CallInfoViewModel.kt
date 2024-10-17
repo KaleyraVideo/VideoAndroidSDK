@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.callinfo.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
@@ -13,6 +14,7 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,10 +41,9 @@ class CallInfoViewModel(configure: suspend () -> Configuration) : BaseViewModel<
                 if (hasBeenConnectingOnce) return@onEach
                 hasBeenConnectingOnce = true
             }
-            val ongoingCall = this@CallInfoViewModel.call.getValue()
             val callStateUi = combinedFlows.first
             val displayNames = combinedFlows.second
-            val displayState = callStateUi.toTextRef(ongoingCall)
+            val displayState = callStateUi.toTextRef(call)
             _uiState.update { it.copy(callStateUi = callStateUi, displayNames = ImmutableList(displayNames), displayState = displayState) }
         }.launchIn(viewModelScope)
     }
@@ -71,7 +72,9 @@ internal fun CallStateUi.toTextRef(call: CallUI?): TextRef? {
         CallStateUi.Disconnected.Ended.LineBusy -> TextRef.StringResource(R.string.kaleyra_call_status_ended_line_busy)
         CallStateUi.Disconnected.Ended.CurrentUserInAnotherCall -> TextRef.StringResource(R.string.kaleyra_current_user_busy)
         CallStateUi.Disconnected.Ended.Timeout -> TextRef.PluralResource(R.plurals.kaleyra_call_status_no_answer, call.participants.value.others.size)
-        CallStateUi.Disconnected.Ended.Error -> TextRef.StringResource(R.string.kaleyra_call_failed)
+        CallStateUi.Disconnected.Ended.Error,
+        CallStateUi.Disconnected.Ended.Error.Server,
+        CallStateUi.Disconnected.Ended.Error.Unknown -> TextRef.StringResource(R.string.kaleyra_call_failed)
         else -> null
     }
 }

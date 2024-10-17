@@ -35,8 +35,8 @@
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_hang_up">Aggancia</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostra più azioni</string>
-    <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
-    <string name="kaleyra_call_sheet_description_disable_microphone">Disable microphone</string>
+    <string name="kaleyra_call_sheet_description_enable_microphone">Abilita microfono</string>
+    <string name="kaleyra_call_sheet_description_disable_microphone">Disabilita microfono</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Abilita camera</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Disabilita camera</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Ferma condivisione schermo</string>
@@ -151,6 +151,7 @@
     <string name="kaleyra_chat_group_title">Chat di gruppo</string>
 
     <!-- Call -->
+    <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostra tasti</string>
     <string name="kaleyra_close">Chiudi</string>
     <string name="kaleyra_call_status_connecting">Connessione in corso &#8230;</string>

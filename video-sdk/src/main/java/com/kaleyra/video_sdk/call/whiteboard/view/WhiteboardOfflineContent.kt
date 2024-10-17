@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -63,7 +64,7 @@ internal fun WhiteboardOfflineContent(
             enabledIconTint = MaterialTheme.colorScheme.onSurface,
             iconSize = 96.dp,
             onClick = onReloadClick,
-            indication = rememberRipple(bounded = false, radius = 48.dp),
+            indication = ripple(bounded = false, radius = 48.dp),
             modifier = Modifier
                 .graphicsLayer {
                     rotationZ = if (loading) rotation else 0f

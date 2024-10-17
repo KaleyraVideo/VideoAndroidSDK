@@ -29,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.reflect.KClass
 
 @RunWith(RobolectricTestRunner::class)
 class HStreamMenuContentTest {
@@ -46,7 +47,7 @@ class HStreamMenuContentTest {
     fun setUp() {
         mockkObject(StreamViewModel)
         every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create<StreamViewModel>(any(), any()) } returns streamViewModel
+            every { create(any<KClass<StreamViewModel>>(), any()) } returns streamViewModel
         }
     }
 

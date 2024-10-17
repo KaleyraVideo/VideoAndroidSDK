@@ -1,17 +1,24 @@
 package com.kaleyra.video_sdk.mapper.call
 
-import androidx.compose.runtime.MutableState
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Stream
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.mapper.InputMapper
+import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -73,5 +80,99 @@ class AudioMapperTest {
         val new = flow.mapToAudioUi().first()
         val newExpected = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false)
         Assert.assertEquals(newExpected, new)
+    }
+
+    @Test
+    fun cameraStreamAudioEnabled_toMyCameraAudioUi_cameraAudioUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val audioMock = mockk<Input.Audio>(relaxed = true)
+        with(audioMock) {
+            every { id } returns "audioId"
+            every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { audio } returns MutableStateFlow(audioMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraStreamAudioUi().first()
+        val expected = AudioUi("audioId", isEnabled = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamAudioDisabled_toMyCameraAudioUi_cameraAudioUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val audioMock = mockk<Input.Audio>(relaxed = true)
+        with(audioMock) {
+            every { id } returns "audioId"
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { audio } returns MutableStateFlow(audioMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraStreamAudioUi().first()
+        val expected = AudioUi("audioId", isEnabled = false, isMutedForYou = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamAudioEnabledLocally_toMyCameraAudioUi_cameraAudioUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val audioMock = mockk<Input.Audio>(relaxed = true)
+        with(audioMock) {
+            every { id } returns "audioId"
+            every { enabled } returns MutableStateFlow(Input.Enabled.Local)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { audio } returns MutableStateFlow(audioMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraStreamAudioUi().first()
+        val expected = AudioUi("audioId", isEnabled = false, isMutedForYou = false)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamAudioEnabledRemotely_toMyCameraAudioUi_cameraAudioUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val audioMock = mockk<Input.Audio>(relaxed = true)
+        with(audioMock) {
+            every { id } returns "audioId"
+            every { enabled } returns MutableStateFlow(Input.Enabled.Remote)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { audio } returns MutableStateFlow(audioMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraStreamAudioUi().first()
+        val expected = AudioUi("audioId", isEnabled = true, isMutedForYou = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamAudioNull_toMyCameraAudioUi_null() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { audio } returns MutableStateFlow(null)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraStreamAudioUi().first()
+        Assert.assertEquals(null, actual)
+        unmockkObject(InputMapper)
     }
 }

@@ -120,6 +120,32 @@ class ParticipantsViewModelTest {
     }
 
     @Test
+    fun noInCallParticipants_participantsCountStateIsZero() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+
+
+        val viewModel = spyk(ParticipantsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(0, viewModel.uiState.first().participantCount)
+    }
+
+    @Test
+    fun inCallParticipants_participantsCountStateIsUpdated() = runTest {
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(otherMock1, otherMock2))
+
+
+        val viewModel = spyk(ParticipantsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock)
+        })
+        advanceUntilIdle()
+
+        assertEquals(2, viewModel.uiState.first().participantCount)
+    }
+
+    @Test
     fun testToggleMicOn() = runTest {
         val activity = mockk<FragmentActivity>()
         val inputs = mockk<Inputs>(relaxed = true)

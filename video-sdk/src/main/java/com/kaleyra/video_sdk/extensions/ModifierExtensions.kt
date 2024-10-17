@@ -16,11 +16,12 @@
 
 package com.kaleyra.video_sdk.extensions
 
-import android.util.Log
-import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector2D
+import androidx.compose.animation.core.DeferredTargetAnimation
+import androidx.compose.animation.core.ExperimentalAnimatableApi
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
@@ -34,15 +35,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -51,18 +45,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -70,12 +59,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.InputMode
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.intermediateLayout
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.layout.approachLayout
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -86,16 +73,12 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
-import com.kaleyra.video_sdk.call.utils.LayoutCoordinatesExtensions.findRoot
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.max
 import kotlin.math.min
 
 private val FocusHighlightStroke = 2.dp
 private val FocusHighlightColor = Color.Red
-
-private const val FadeVisibilityThreshold = 0.15
 
 internal object ModifierExtensions {
 
@@ -110,7 +93,10 @@ internal object ModifierExtensions {
         this.composed {
             val inputModeManager = LocalInputModeManager.current
             val isFocused = interactionSource.collectIsFocusedAsState().value
-            val enableHighlight = remember(inputModeManager, isFocused) { derivedStateOf { inputModeManager.inputMode != InputMode.Touch && isFocused }.value }
+            val enableHighlight = remember(
+                inputModeManager,
+                isFocused
+            ) { derivedStateOf { inputModeManager.inputMode != InputMode.Touch && isFocused }.value }
             border(
                 width = if (enableHighlight) FocusHighlightStroke else 0.dp,
                 color = if (enableHighlight) FocusHighlightColor else Color.Transparent
@@ -118,77 +104,22 @@ internal object ModifierExtensions {
         }
 
     @Stable
-    internal fun Modifier.fadeBelowOfRootBottomBound(): Modifier =
+    internal fun Modifier.pulse(durationMillis: Int = 1000, enabled: Boolean = true): Modifier =
         composed {
-            val navigationBarsPadding = with(LocalDensity.current) {
-                WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().toPx()
+            val infiniteTransition = rememberInfiniteTransition()
+            val alpha by infiniteTransition.animateFloat(
+                initialValue = 1f,
+                targetValue = 0f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "pulse"
+            )
+            graphicsLayer {
+                if (enabled) this.alpha = alpha
             }
-            var alpha by remember { mutableStateOf(0f) }
-            this
-                .onGloballyPositioned { layoutCoordinates ->
-                    val rootHeight = layoutCoordinates.findRoot().size.height
-                    val boundsInRoot = layoutCoordinates.boundsInRoot()
-                    val height = layoutCoordinates.size.height.toFloat()
-                    val out = (boundsInRoot.bottom - rootHeight + navigationBarsPadding).coerceIn(0f, height)
-                    alpha = (1 - out / height).takeIf { it > FadeVisibilityThreshold } ?: 0f
-                }
-                .graphicsLayer {
-                    this.alpha = alpha
-                }
         }
-
-    @Stable
-    internal fun Modifier.horizontalSystemBarsPadding(): Modifier =
-        composed { windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)) }
-
-    @Stable
-    internal fun Modifier.horizontalCutoutPadding(): Modifier =
-        composed { windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal)) }
-
-
-    @Stable
-    internal fun Modifier.pulse(durationMillis: Int = 1000, enabled: Boolean = true): Modifier = composed {
-        val infiniteTransition = rememberInfiniteTransition()
-        val alpha by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 0f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "pulse"
-        )
-        graphicsLayer {
-            if (enabled) this.alpha = alpha
-        }
-    }
-
-    internal fun Modifier.verticalGradientScrim(
-        color: Color,
-        @FloatRange(from = 0.0, to = 1.0) startYPercentage: Float = 0f,
-        @FloatRange(from = 0.0, to = 1.0) endYPercentage: Float = 1f
-    ): Modifier = composed {
-        val colors = remember(color) {
-            listOf(color.copy(alpha = 0f), color)
-        }
-
-        val brush = remember(colors, startYPercentage, endYPercentage) {
-            Brush.verticalGradient(
-                colors = if (startYPercentage < endYPercentage) colors else colors.reversed(),
-            )
-        }
-
-        drawBehind {
-            val topLeft = Offset(0f, size.height * min(startYPercentage, endYPercentage))
-            val bottomRight = Offset(size.width, size.height * max(startYPercentage, endYPercentage))
-
-            drawRect(
-                topLeft = topLeft,
-                size = Rect(topLeft, bottomRight).size,
-                brush = brush
-            )
-        }
-    }
 
     @OptIn(ExperimentalLayoutApi::class)
     internal fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
@@ -214,39 +145,101 @@ internal object ModifierExtensions {
         }
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
+    /**
+     * It's animating the constraints update on the element.
+     *
+     * @receiver Modifier
+     * @param animationSpec FiniteAnimationSpec<IntSize>
+     * @return Modifier
+     */
+    @OptIn(ExperimentalAnimatableApi::class)
     internal fun Modifier.animateConstraints(
-        animationSpec: AnimationSpec<IntSize> = spring()
+        animationSpec: FiniteAnimationSpec<IntSize> = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        )
     ) = composed {
-        var animatable: Animatable<IntSize, AnimationVector2D>? by remember { mutableStateOf(null) }
-        var targetSize: IntSize by remember { mutableStateOf(IntSize.Zero) }
-
-        LaunchedEffect(Unit) {
-            snapshotFlow { targetSize }.collect { target ->
-                val anim = animatable ?: Animatable(target, IntSize.VectorConverter).also {
-                    animatable = it
-                }
-                if (anim.targetValue != target) {
-                    launch { anim.animateTo(target, animationSpec) }
-                }
+        val coroutineScope = rememberCoroutineScope()
+        val sizeAnimation = remember { DeferredTargetAnimation(IntSize.VectorConverter) }
+        this.approachLayout(
+            isMeasurementApproachInProgress = { lookaheadSize ->
+                sizeAnimation.updateTarget(lookaheadSize, coroutineScope)
+                !sizeAnimation.isIdle
             }
-        }
-
-        this@composed.intermediateLayout { measurable, _ ->
-            targetSize = lookaheadSize
-            val (width, height) = animatable?.value ?: lookaheadSize
-            val constraints = Constraints.fixed(width, height)
-
-            val placeable = measurable.measure(constraints)
+        ) { measurable, _ ->
+            val (width, height) = sizeAnimation.updateTarget(lookaheadSize, coroutineScope, animationSpec)
+            val animatedConstraints = Constraints.fixed(width, height)
+            val placeable = measurable.measure(animatedConstraints)
             layout(placeable.width, placeable.height) {
                 placeable.place(0, 0)
             }
         }
     }
 
+    /**
+     * Animate the placement using the lookahead scope.
+     * It's animating the placement from the current
+     * position of the element to its future position.
+     *
+     * @receiver Modifier
+     * @param lookaheadScope LookaheadScope
+     * @param animationSpec FiniteAnimationSpec<IntOffset>
+     * @return Modifier
+     */
+    @OptIn(ExperimentalAnimatableApi::class)
+    internal fun Modifier.animatePlacement(
+        lookaheadScope: LookaheadScope,
+        animationSpec: FiniteAnimationSpec<IntOffset> = spring()
+    ) = composed {
+        val coroutineScope = rememberCoroutineScope()
+        val offsetAnimation = remember { DeferredTargetAnimation(IntOffset.VectorConverter)  }
+        this.approachLayout(
+            isMeasurementApproachInProgress = { false },
+            isPlacementApproachInProgress = { lookaheadCoordinates ->
+                val target = with(lookaheadScope) {
+                    lookaheadScopeCoordinates.localLookaheadPositionOf(lookaheadCoordinates).round()
+                }
+                offsetAnimation.updateTarget(target, coroutineScope)
+                !offsetAnimation.isIdle
+            }
+        ) { measurable, constraints ->
+            val placeable = measurable.measure(constraints)
+            layout(placeable.width, placeable.height) {
+                val coordinates = coordinates
+                if (coordinates != null) {
+                    // Calculates the target offset within the lookaheadScope
+                    val target: IntOffset = with(lookaheadScope) {
+                        lookaheadScopeCoordinates.localLookaheadPositionOf(coordinates).round()
+                    }
+                    // Uses the target offset to start an offset animation
+                    val animatedOffset = offsetAnimation.updateTarget(target, coroutineScope, animationSpec)
+                    // Calculates the current offset within the given LookaheadScope
+                    val placementOffset = with(lookaheadScope) {
+                        lookaheadScopeCoordinates.localPositionOf(coordinates, Offset.Zero).round()
+                    }
+                    // Calculates the delta between animated position in scope and current
+                    // position in scope, and places the child at the delta offset. This puts
+                    // the child layout at the animated position.
+                    val (x, y) = animatedOffset - placementOffset
+                    placeable.place(x, y)
+                } else {
+                    placeable.place(0, 0)
+                }
+            }
+        }
+    }
+
+    /**
+     * Animate the placement of an element starting from an initial offset
+     *
+     * @receiver Modifier
+     * @param initialOffset IntOffset
+     * @param animationSpec AnimationSpec<IntOffset>
+     * @return Modifier
+     */
     internal fun Modifier.animatePlacement(
         initialOffset: IntOffset = IntOffset.Zero,
-        animationSpec: AnimationSpec<IntOffset> = spring(stiffness = Spring.StiffnessMediumLow)
+        animationSpec: AnimationSpec<IntOffset> = spring()
     ): Modifier = composed {
         val scope = rememberCoroutineScope()
         var animatable: Animatable<IntOffset, AnimationVector2D>? by remember { mutableStateOf(null) }

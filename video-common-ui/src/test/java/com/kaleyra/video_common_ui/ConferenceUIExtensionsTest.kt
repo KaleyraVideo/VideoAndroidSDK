@@ -116,7 +116,7 @@ class ConferenceUIExtensionsTest {
         coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any(), any()) } returns outgoingNotificationMock
         every { NotificationManager.notify(any(), any()) } returns Unit
         every { NotificationManager.cancel(any()) } returns Unit
-        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
+        coEvery { ContactDetailsManager.refreshContactDetails(*anyVararg()) } returns Unit
     }
 
     @After

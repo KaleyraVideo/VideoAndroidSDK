@@ -377,8 +377,6 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateNotShownStates_toCallStateUi() {
-        Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Error.Server.toTextRef(call))
-        Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Error.Unknown.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.HungUp.toTextRef(call))
         Assert.assertEquals(null, CallStateUi.Disconnected.Ended.Kicked("adminName").toTextRef(call))

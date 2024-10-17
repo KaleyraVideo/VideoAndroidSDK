@@ -76,16 +76,15 @@ dependencies {
     implementation catalog.androidxConstraintLayout
 
     /** Testing **/
-    testImplementation catalog.junit
     testImplementation catalog.mockkAndroid
     testImplementation catalog.robolectric
+    testImplementation catalog.junit
     testImplementation catalog.coroutines
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
     testImplementation catalog.javaAssist
     testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
-    testImplementation platform(catalog.androidxComposeBom)
     testImplementation 'androidx.compose.material3:material3'
 
     androidTestImplementation catalog.mockkAndroid

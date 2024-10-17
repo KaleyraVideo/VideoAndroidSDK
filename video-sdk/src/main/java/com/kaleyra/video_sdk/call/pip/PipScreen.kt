@@ -23,7 +23,7 @@ internal fun PipScreen(
             onPipAspectRatio = onPipAspectRatio
         )
 
-        Column(Modifier.padding(8.dp)) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             PipRecordingComponent(
                 viewModel = androidx.lifecycle.viewmodel.compose.viewModel(
                     factory = CallAppBarViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)

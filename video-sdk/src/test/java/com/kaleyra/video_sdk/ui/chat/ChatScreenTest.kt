@@ -62,6 +62,8 @@ class ChatScreenTest {
 
     private var userMessage by mutableStateOf<UserMessage?>(null)
 
+    private var embedded by mutableStateOf(false)
+
     private var onBackPressed = false
 
     private var onMessageScrolled = false
@@ -88,7 +90,8 @@ class ChatScreenTest {
                 onFetchMessages = { onFetchMessages = true },
                 onShowCall = { onShowCall = true },
                 onSendMessage = { onSendMessage = true },
-                onTyping = { onTyping = true }
+                onTyping = { onTyping = true },
+                embedded = embedded
             )
         }
     }
@@ -109,6 +112,7 @@ class ChatScreenTest {
         onSendMessage = false
         onTyping = false
         userMessage = null
+        embedded = false
     }
 
     @Test
@@ -131,6 +135,13 @@ class ChatScreenTest {
         findMessages().performScrollUp()
         findMessages().performScrollUp()
         assert(onFetchMessages)
+    }
+
+    @Test
+    fun userScrollsUp_fabAppears() {
+        findResetScrollFab().assertDoesNotExist()
+        findConversation().performScrollUp()
+        findResetScrollFab().assertIsDisplayed()
     }
 
     @Test
@@ -170,10 +181,33 @@ class ChatScreenTest {
     }
 
     @Test
-    fun userScrollsUp_fabAppears() {
-        findResetScrollFab().assertDoesNotExist()
-        findConversation().performScrollUp()
-        findResetScrollFab().assertIsDisplayed()
+    fun chatEmbedded_topAppBarIsNotDisplayed() {
+        embedded = true
+        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        composeTestRule.onNodeWithContentDescription(back).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatNotEmbedded_topAppBarIsDisplayed() {
+        embedded = false
+        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        composeTestRule.onNodeWithContentDescription(back).assertIsDisplayed()
+    }
+
+    @Test
+    fun chatEmbedded_userMessageSnackbarIsNotDisplayed() {
+        embedded = true
+        userMessage = RecordingMessage.Started
+        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
+        composeTestRule.onNodeWithText(title).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatEmbedded_ongoingCallLabelIsNotDisplayed() {
+        embedded = true
+        val ongoingCall = composeTestRule.activity.getString(R.string.kaleyra_ongoing_call_label)
+        uiState.update { it.copy(isInCall = true) }
+        composeTestRule.onNodeWithText(ongoingCall).assertDoesNotExist()
     }
 
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)

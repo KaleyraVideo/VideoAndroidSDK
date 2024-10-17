@@ -53,6 +53,7 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
@@ -225,7 +226,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             combine(
                 uiState.map { it.actionList.value },
-                call.sharedFolder.files.map { files -> files.map { it.creationTime } },
+                call.toOtherFilesCreationTimes(),
                 lastFileShareCreationTime
             ) { actionList, creationTimes, lastFileShareCreationTime ->
                 if (FileShareVisibilityObserver.isDisplayed.value) {
@@ -373,8 +374,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun clearFileShareBadge() {
-        call.getValue()?.sharedFolder?.files?.value?.let { files ->
-            val maxCreationTime = files.maxOfOrNull { it.creationTime } ?: return
+        viewModelScope.launch {
+            val call = call.getValue()
+            val creationTimes = call?.toOtherFilesCreationTimes()?.first()
+            val maxCreationTime = creationTimes?.maxOrNull() ?: return@launch
             lastFileShareCreationTime.value = maxCreationTime
         }
     }

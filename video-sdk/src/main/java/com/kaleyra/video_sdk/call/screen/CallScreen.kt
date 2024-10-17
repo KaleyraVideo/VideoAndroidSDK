@@ -17,6 +17,7 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,7 @@ import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
 import com.kaleyra.video_sdk.call.pip.PipScreen
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
@@ -62,6 +63,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.CollaborationTheme
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -262,6 +264,8 @@ internal fun CallScreen(
     isInPipMode: Boolean = false
 ) {
     val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+    val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
+
     val scope = rememberCoroutineScope()
 
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -275,14 +279,19 @@ internal fun CallScreen(
         }
     }
 
-    var modalSheetComponentRequested: ModalSheetComponent? by remember { mutableStateOf(null) }
-    val onModalSheetComponentRequest = remember {
-        { component: ModalSheetComponent? -> modalSheetComponentRequested = component }
+    val modalSheetComponent: MutableState<ModularComponent?> = remember { mutableStateOf(null) }
+    val onModalSheetComponentRequest = remember(modalSheetComponent) {
+        { component: ModularComponent? -> modalSheetComponent.value  = component }
     }
 
-    var modalSheetComponentDisplayed: ModalSheetComponent? by remember { mutableStateOf(null) }
-    val onModalSheetComponentDisplayed = remember {
-        { component: ModalSheetComponent? -> modalSheetComponentDisplayed = component }
+    val sidePanelComponent: MutableState<ModularComponent?> = remember(isLargeScreen) { mutableStateOf(null) }
+    val onSidePanelComponentRequest = remember(sidePanelComponent) {
+        { component: ModularComponent? -> sidePanelComponent.value = component.takeIf { it != sidePanelComponent.value } }
+    }
+
+    val lastModularComponentDisplayed: MutableState<ModularComponent?> = remember { mutableStateOf(null) }
+    val onModularComponentDisplayed = remember(lastModularComponentDisplayed) {
+        { component: ModularComponent? -> lastModularComponentDisplayed.value = component }
     }
 
     var selectedStreamId by remember { mutableStateOf<String?>(null) }
@@ -290,31 +299,42 @@ internal fun CallScreen(
         { streamId: String? -> selectedStreamId = streamId }
     }
 
-    FileShareVisibilityObserver(modalSheetComponentRequested, onFileShareVisibility)
+    FileShareVisibilityObserver(
+        modalSheetComponent = modalSheetComponent.value,
+        sidePanelComponent = sidePanelComponent.value,
+        onFileShareVisibility
+    )
 
-    WhiteboardVisibilityObserver(modalSheetComponentRequested, onWhiteboardVisibility)
+    WhiteboardVisibilityObserver(
+        modalSheetComponent = modalSheetComponent.value,
+        sidePanelComponent = sidePanelComponent.value,
+        onWhiteboardVisibility
+    )
 
     if (shouldShowFileShareComponent) {
         LaunchedEffect(Unit) {
-            modalSheetComponentRequested = ModalSheetComponent.FileShare
+            if (!isLargeScreen) onModalSheetComponentRequest(ModularComponent.FileShare)
+            else onSidePanelComponentRequest(ModularComponent.FileShare)
         }
     }
 
     LaunchedEffect(whiteboardRequest) {
         when (whiteboardRequest) {
             is WhiteboardRequest.Show -> {
-                if (modalSheetComponentRequested == ModalSheetComponent.Whiteboard) return@LaunchedEffect
-                onModalSheetComponentRequest(ModalSheetComponent.Whiteboard)
-                snapshotFlow { modalSheetComponentDisplayed }.firstOrNull { it == ModalSheetComponent.Whiteboard }
+                val targetComponent = if (isLargeScreen) sidePanelComponent else modalSheetComponent
+                if (targetComponent.value == ModularComponent.Whiteboard)  return@LaunchedEffect
+                if (isLargeScreen) onSidePanelComponentRequest(ModularComponent.Whiteboard) else onModalSheetComponentRequest(ModularComponent.Whiteboard)
+                snapshotFlow { lastModularComponentDisplayed.value }.firstOrNull { it == ModularComponent.Whiteboard }
                 CallUserMessagesProvider.sendUserMessage(
                     WhiteboardRequestMessage.WhiteboardShowRequestMessage(whiteboardRequest.username)
                 )
             }
 
             is WhiteboardRequest.Hide -> {
-                if (modalSheetComponentRequested != ModalSheetComponent.Whiteboard) return@LaunchedEffect
-                onModalSheetComponentRequest(null)
-                snapshotFlow { modalSheetComponentDisplayed }.firstOrNull { it != ModalSheetComponent.Whiteboard }
+                val targetComponent = if (isLargeScreen) sidePanelComponent else modalSheetComponent
+                if (targetComponent.value != ModularComponent.Whiteboard) return@LaunchedEffect
+                if (isLargeScreen) onSidePanelComponentRequest(null) else onModalSheetComponentRequest(null)
+                snapshotFlow { lastModularComponentDisplayed.value }.firstOrNull { it != ModularComponent.Whiteboard }
                 CallUserMessagesProvider.sendUserMessage(
                     WhiteboardRequestMessage.WhiteboardHideRequestMessage(whiteboardRequest.username)
                 )
@@ -343,13 +363,13 @@ internal fun CallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
-                modalSheetComponent = modalSheetComponentRequested,
+                modalSheetComponent = modalSheetComponent.value,
                 inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
-                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
+                onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(HCallScreenTestTag)
@@ -359,13 +379,15 @@ internal fun CallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = callSheetState,
                 modalSheetState = modalSheetState,
-                modalSheetComponent = modalSheetComponentRequested,
+                modalSheetComponent = modalSheetComponent.value,
+                sidePanelComponent = sidePanelComponent.value,
                 inputPermissions = inputPermissions,
                 onChangeSheetState = onChangeCallSheetState,
                 selectedStreamId = selectedStreamId,
                 onStreamSelected = onStreamSelected,
                 onModalSheetComponentRequest = onModalSheetComponentRequest,
-                onModalSheetComponentDisplayed = onModalSheetComponentDisplayed,
+                onSidePanelComponentRequest = onSidePanelComponentRequest,
+                onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 modifier = modifier.testTag(VCallScreenTestTag)
@@ -380,10 +402,11 @@ internal fun CallScreen(
 
 @Composable
 internal fun FileShareVisibilityObserver(
-    modalSheetComponent: ModalSheetComponent?,
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
     onFileShareVisibility: (Boolean) -> Unit,
 ) {
-    val isFileShareComponent = modalSheetComponent == ModalSheetComponent.FileShare
+    val isFileShareComponent = modalSheetComponent == ModularComponent.FileShare || sidePanelComponent == ModularComponent.FileShare
     LaunchedEffect(isFileShareComponent) {
         onFileShareVisibility(isFileShareComponent)
     }
@@ -391,10 +414,11 @@ internal fun FileShareVisibilityObserver(
 
 @Composable
 internal fun WhiteboardVisibilityObserver(
-    modalSheetComponent: ModalSheetComponent?,
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
     onWhiteboardVisibility: (Boolean) -> Unit,
 ) {
-    val isWhiteboardComponent = modalSheetComponent == ModalSheetComponent.Whiteboard
+    val isWhiteboardComponent = modalSheetComponent == ModularComponent.Whiteboard || sidePanelComponent == ModularComponent.Whiteboard
     LaunchedEffect(isWhiteboardComponent) {
         onWhiteboardVisibility(isWhiteboardComponent)
     }

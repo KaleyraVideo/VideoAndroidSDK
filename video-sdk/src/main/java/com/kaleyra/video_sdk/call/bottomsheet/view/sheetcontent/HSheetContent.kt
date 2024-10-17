@@ -28,7 +28,7 @@ import com.kaleyra.video_sdk.call.callactions.view.AnswerActionMultiplier
 import com.kaleyra.video_sdk.call.callactions.view.MoreAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.row.ReversibleRow
@@ -45,10 +45,10 @@ internal fun HSheetContent(
     isMoreToggled: Boolean,
     onMoreToggle: (Boolean) -> Unit,
     onActionsOverflow: (overflowedActions: ImmutableList<CallActionUI>) -> Unit,
-    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
+    onModularComponentRequest: (ModularComponent) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
-    inputPermissions: InputPermissions = InputPermissions(),
+    inputPermissions: InputPermissions = InputPermissions()
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -78,17 +78,22 @@ internal fun HSheetContent(
             else cameraPermission.launchPermissionRequest()
         } },
         onScreenShareToggle = remember(viewModel) {
-            { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
+            { if (!viewModel.tryStopScreenShare()) onModularComponentRequest(ModularComponent.ScreenShare) }
         },
         onFlipCameraClick = viewModel::switchCamera,
-        onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
-        onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
+        onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
+        onChatClick = remember(viewModel, isLargeScreen) {
+            {
+                if (isLargeScreen) onModularComponentRequest(ModularComponent.Chat)
+                else activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) })
+            }
+        },
         onFileShareClick = {
-            onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+            onModularComponentRequest(ModularComponent.FileShare)
             viewModel.clearFileShareBadge()
         },
-        onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
-        onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) },
+        onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
         modifier = modifier
     )

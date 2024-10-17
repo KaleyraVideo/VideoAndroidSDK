@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,7 +33,7 @@ internal fun IconButton(
     enabled: Boolean = true,
     supportRtl: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    indication: Indication? = rememberRipple(bounded = false, radius = iconSize),
+    indication: Indication? = ripple(bounded = false, radius = iconSize),
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

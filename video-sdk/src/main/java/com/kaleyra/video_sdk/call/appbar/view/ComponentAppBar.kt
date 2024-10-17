@@ -21,6 +21,7 @@ package com.kaleyra.video_sdk.call.appbar.view
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.topappbar.TopAppBar
@@ -48,16 +50,18 @@ internal fun ComponentAppBar(
     actions: @Composable (RowScope.() -> Unit) = { Spacer(Modifier.width(56.dp)) },
     scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
     scrollableState: ScrollableState? = null,
+    isLargeScreen: Boolean = false,
 ) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
+        windowInsets = if (isLargeScreen) WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) else TopAppBarDefaults.windowInsets,
         navigationIcon = {
             androidx.compose.material3.IconButton(
                 modifier = Modifier.padding(4.dp),
                 onClick = onBackPressed,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_kaleyra_back_down),
+                    painter = if (isLargeScreen) painterResource(id = R.drawable.ic_kaleyra_back_right) else painterResource(id = R.drawable.ic_kaleyra_back_down),
                     contentDescription = stringResource(id = R.string.kaleyra_close)
                 )
             }
@@ -68,14 +72,12 @@ internal fun ComponentAppBar(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        actions = {
-            if (actions != null) {
-                actions()
-            }
-        },
+        actions = actions,
         containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = modifier
     )

@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
@@ -691,5 +692,45 @@ class MainViewModelTest {
         val actual = viewModel.whiteboardRequest.first()
         assertEquals(true, actual is WhiteboardRequest.Hide)
         assertEquals("displayName1", actual.username)
+    }
+
+    @Test
+    fun oneToOneCall_getOtherUserIdIsSuccessful() = runTest {
+        val participant = mockk<CallParticipant> {
+            every { userId } returns "participantId"
+        }
+        val companyParticipant = mockk<CallParticipant> {
+            every { userId } returns "companyId"
+        }
+        val participants = mockk<CallParticipants> {
+            every { others } returns listOf(participant, companyParticipant)
+        }
+        val company = mockk<Company>(relaxed = true)
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { company.id } returns MutableStateFlow("companyId")
+        val viewModel = MainViewModel { Success(conferenceMock, mockk(), company, MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        val actual = viewModel.getOtherUserId()
+        assertEquals(participant.userId, actual)
+    }
+
+    @Test
+    fun groupCall_getOtherUserIdIsNull() = runTest {
+        val participant1 = mockk<CallParticipant> {
+            every { userId } returns "participantId1"
+        }
+        val participant2 = mockk<CallParticipant> {
+            every { userId } returns "participantId2"
+        }
+        val participants = mockk<CallParticipants> {
+            every { others } returns listOf(participant1, participant2)
+        }
+        val company = mockk<Company>(relaxed = true)
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { company.id } returns MutableStateFlow("companyId")
+        val viewModel = MainViewModel { Success(conferenceMock, mockk(), company, MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        val actual = viewModel.getOtherUserId()
+        assertEquals(null, actual)
     }
 }

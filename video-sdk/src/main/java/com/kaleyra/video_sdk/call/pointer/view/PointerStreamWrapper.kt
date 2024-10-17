@@ -42,7 +42,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 @Composable
 internal fun PointerStreamWrapper(
     modifier: Modifier = Modifier,
-    streamView: ImmutableView?,
+    streamView: ImmutableView<VideoStreamView>?,
     pointerList: ImmutableList<PointerUi>?,
     stream: @Composable (hasPointers: Boolean) -> Unit
 ) {
@@ -73,7 +73,7 @@ internal fun IntSize.toDpSize() = with(LocalDensity.current) {
 }
 
 @Composable
-private fun getSize(view: ImmutableView?): State<IntSize> {
+private fun getSize(view: ImmutableView<VideoStreamView>?): State<IntSize> {
     val view = view?.value as? VideoStreamView
     val defaultValue = IntSize(0,0)
     val fallback = remember { mutableStateOf(defaultValue) }
@@ -81,7 +81,7 @@ private fun getSize(view: ImmutableView?): State<IntSize> {
 }
 
 @Composable
-private fun getTranslation(view: ImmutableView?): State<FloatArray> {
+private fun getTranslation(view: ImmutableView<VideoStreamView>?): State<FloatArray> {
     val view = view?.value as? VideoStreamView
     val defaultValue = floatArrayOf(0f, 0f)
     val fallback = remember { mutableStateOf(defaultValue) }
@@ -89,7 +89,7 @@ private fun getTranslation(view: ImmutableView?): State<FloatArray> {
 }
 
 @Composable
-private fun getScale(view: ImmutableView?): State<FloatArray> {
+private fun getScale(view: ImmutableView<VideoStreamView>?): State<FloatArray> {
     val view = view?.value as? VideoStreamView
     val defaultValue = floatArrayOf(1f, 1f)
     val fallback = remember { mutableStateOf(defaultValue) }

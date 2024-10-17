@@ -279,7 +279,7 @@ class VideoMapperTest {
     }
 
     @Test
-    fun cameraStreamVideo_toMyCameraVideoUi_cameraVideoUi() = runTest {
+    fun cameraStreamVideoEnabled_toMyCameraVideoUi_cameraVideoUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
@@ -287,6 +287,69 @@ class VideoMapperTest {
             every { id } returns "videoId"
             every { view } returns MutableStateFlow(viewMock)
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoDisabled_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = false)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoEnabledLocally_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.Local)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = false)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoEnabledRemotely_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.Remote)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID

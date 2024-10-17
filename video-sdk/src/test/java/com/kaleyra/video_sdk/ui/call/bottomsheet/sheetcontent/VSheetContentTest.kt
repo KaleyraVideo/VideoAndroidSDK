@@ -31,7 +31,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -77,7 +77,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = { overflowedActions = it },
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 modifier = Modifier.height(300.dp)
             )
         }
@@ -95,7 +95,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -117,7 +117,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -143,7 +143,7 @@ class VSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -169,7 +169,7 @@ class VSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -195,7 +195,7 @@ class VSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -221,7 +221,7 @@ class VSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -244,7 +244,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -268,7 +268,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -282,16 +282,16 @@ class VSheetContentTest {
     }
 
     @Test
-    fun userClicksAudio_onModalSheetComponentRequestAudio() {
+    fun userClicksAudio_onModularComponentRequestAudio() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(AudioAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -301,20 +301,20 @@ class VSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Audio, component)
+        TestCase.assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
-    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+    fun userClicksFileShare_onModularComponentRequestFileShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(FileShareAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -324,21 +324,21 @@ class VSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.FileShare, component)
+        TestCase.assertEquals(ModularComponent.FileShare, component)
         verify(exactly = 1) { callActionsViewModel.clearFileShareBadge()  }
     }
 
     @Test
-    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
+    fun userClicksWhiteboard_onModularComponentRequestWhiteboard() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(WhiteboardAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -348,20 +348,20 @@ class VSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Whiteboard, component)
+        TestCase.assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
+    fun userClicksVirtualBackground_onModularComponentRequestVirtualBackground() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(VirtualBackgroundAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -371,7 +371,7 @@ class VSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.VirtualBackground, component)
+        TestCase.assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
@@ -384,7 +384,7 @@ class VSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
             )
         }
 
@@ -398,17 +398,17 @@ class VSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+    fun userClicksScreenShareWhenNotEnabled_onModularComponentRequestScreenShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns false
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetContent(
                 viewModel = callActionsViewModel,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
             )
         }
 
@@ -418,7 +418,7 @@ class VSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.ScreenShare, component)
+        TestCase.assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test

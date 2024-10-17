@@ -35,7 +35,7 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
@@ -66,7 +66,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(HangUpAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -88,7 +88,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(MicAction())),
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 inputPermissions = InputPermissions(micPermission = micPermission)
             )
         }
@@ -111,7 +111,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(MicAction())),
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 inputPermissions = InputPermissions(micPermission = micPermission)
             )
         }
@@ -134,7 +134,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(CameraAction())),
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission)
             )
         }
@@ -157,7 +157,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(CameraAction())),
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission)
             )
         }
@@ -178,7 +178,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ChatAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -199,7 +199,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FlipCameraAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -213,13 +213,13 @@ class VSheetDragContentTest {
     }
 
     @Test
-    fun userClicksAudio_onModalSheetComponentRequestAudio() {
-        var component: ModalSheetComponent? = null
+    fun userClicksAudio_onModularComponentRequestAudio() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(AudioAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -229,17 +229,17 @@ class VSheetDragContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Audio, component)
+        assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
     fun userClicksFileShare_clearFileShareBadgeAndRequestModalFileShare() {
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(FileShareAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -249,18 +249,18 @@ class VSheetDragContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.FileShare, component)
+        assertEquals(ModularComponent.FileShare, component)
         verify(exactly = 1) { callActionsViewModel.clearFileShareBadge() }
     }
 
     @Test
-    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
-        var component: ModalSheetComponent? = null
+    fun userClicksWhiteboard_onModularComponentRequestWhiteboard() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(WhiteboardAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -270,17 +270,17 @@ class VSheetDragContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.Whiteboard, component)
+        assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
-        var component: ModalSheetComponent? = null
+    fun userClicksVirtualBackground_onModularComponentRequestVirtualBackground() {
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -290,7 +290,7 @@ class VSheetDragContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.VirtualBackground, component)
+        assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
@@ -300,7 +300,7 @@ class VSheetDragContentTest {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModalSheetComponentRequest = {}
+                onModularComponentRequest = {}
             )
         }
 
@@ -314,14 +314,14 @@ class VSheetDragContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
+    fun userClicksScreenShareWhenNotEnabled_onModularComponentRequestScreenShare() {
         every { callActionsViewModel.tryStopScreenShare() } returns false
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModalSheetComponentRequest = { component = it }
+                onModularComponentRequest = { component = it }
             )
         }
 
@@ -331,7 +331,7 @@ class VSheetDragContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(ModalSheetComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
     
     @Test

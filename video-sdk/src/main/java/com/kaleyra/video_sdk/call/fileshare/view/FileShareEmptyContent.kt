@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -34,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -45,7 +43,7 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 fun FileShareEmptyContent(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.padding(start = 48.dp, bottom = 56.dp, end = 48.dp),
+        modifier = modifier.padding(start = 48.dp, bottom = 112.dp, end = 48.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

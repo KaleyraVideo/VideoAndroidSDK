@@ -7,8 +7,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -16,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -27,9 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -51,14 +56,18 @@ import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -73,10 +82,12 @@ internal fun VCallScreen(
     onChangeSheetState: (Boolean) -> Unit,
     selectedStreamId: String?,
     onStreamSelected: (String?) -> Unit,
-    modalSheetComponent: ModalSheetComponent?,
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
     inputPermissions: InputPermissions,
-    onModalSheetComponentRequest: (ModalSheetComponent?) -> Unit,
-    onModalSheetComponentDisplayed: (ModalSheetComponent?) -> Unit,
+    onModalSheetComponentRequest: (ModularComponent?) -> Unit,
+    onSidePanelComponentRequest: (ModularComponent?) -> Unit,
+    onModularComponentDisplayed: (ModularComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -87,7 +98,7 @@ internal fun VCallScreen(
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
-    val isLargeScreen = windowSizeClass.widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+    val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId, isRinging) {
@@ -103,13 +114,18 @@ internal fun VCallScreen(
         }
     }
 
+    val onSideBarSheetComponentRequest: (ModularComponent?) -> Unit = { component ->
+        if (isLargeScreen && isSidePanelSupported(component)) onSidePanelComponentRequest(component)
+        else onModalSheetComponentRequest(component)
+    }
+
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, bottom = 8.dp),
         topAppBar = {
             CallAppBarComponent(
-                onParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
+                onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -123,7 +139,10 @@ internal fun VCallScreen(
                     content = {
                         SheetPanelContent(
                             callActions = sheetDragActions,
-                            onModalSheetComponentRequest = onModalSheetComponentRequest,
+                            onModularComponentRequest = { component ->
+                                onSideBarSheetComponentRequest(component)
+                                showSheetPanelContent = false
+                            },
                             modifier = Modifier.testTag(PanelTestTag)
                         )
                     }
@@ -136,7 +155,7 @@ internal fun VCallScreen(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
                     inputPermissions = inputPermissions,
-                    onModalSheetComponentRequest = onModalSheetComponentRequest,
+                    onModularComponentRequest = onSideBarSheetComponentRequest ,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     modifier = Modifier.animateContentSize()
                 )
@@ -149,13 +168,20 @@ internal fun VCallScreen(
                 label = "sheet content"
             ) { currentlySelectedStreamId ->
                 if (currentlySelectedStreamId == null) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(
+                            start = 14.dp,
+                            top = if (!hasSheetDragContent) 14.dp else 5.dp,
+                            end = 14.dp,
+                            bottom = 14.dp
+                        )
+                    ) {
                         if (isLargeScreen && !isRinging) {
                             LargeScreenInputMessageHost()
                         }
 
-                        Box(Modifier.animateContentSize()) {
+                        Box {
                             val isSheetExpanded by remember(sheetState) {
                                 derivedStateOf {
                                     sheetState.targetValue == CallSheetValue.Expanded
@@ -167,18 +193,13 @@ internal fun VCallScreen(
                                 maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                                 inputPermissions = inputPermissions,
                                 onActionsOverflow = { sheetDragActions = it },
-                                onModalSheetComponentRequest = onModalSheetComponentRequest,
+                                onModularComponentRequest = onSideBarSheetComponentRequest,
                                 onMoreToggle = { isSheetCollapsed ->
                                     if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
                                 },
                                 modifier = Modifier
-                                    .padding(
-                                        start = 14.dp,
-                                        top = if (!hasSheetDragContent) 14.dp else 5.dp,
-                                        end = 14.dp,
-                                        bottom = 14.dp
-                                    )
+
                             )
                         }
                     }
@@ -228,39 +249,91 @@ internal fun VCallScreen(
                 }
             }
 
-            StreamComponent(
-                viewModel = streamViewModel,
-                windowSizeClass = windowSizeClass,
-                selectedStreamId = selectedStreamId,
-                onStreamClick = { stream -> onStreamSelected(stream.id) },
-                onMoreParticipantClick = { onModalSheetComponentRequest(ModalSheetComponent.Participants) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding()
-                    .padding(
-                        start = 4.dp,
-                        top = top,
-                        end = 4.dp,
-                        bottom = 108.dp
-                    )
-            )
+            LookaheadScope {
+                BoxWithConstraints {
+                    val constraints = constraints
 
-            Column(Modifier.padding(top = top)) {
-                CallInfoComponent(Modifier.padding(vertical = 12.dp))
-                if (modalSheetComponent != ModalSheetComponent.FileShare && modalSheetComponent != ModalSheetComponent.Whiteboard) {
-                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                    Row {
+                        val sidePanelWeight = remember(sidePanelComponent) {
+                            if (sidePanelComponent == ModularComponent.Whiteboard) 4f else 1f
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(2f)
+                                .clipToBounds()
+                        ) {
+                            StreamComponent(
+                                viewModel = streamViewModel,
+                                windowSizeClass = windowSizeClass,
+                                selectedStreamId = selectedStreamId,
+                                onStreamClick = { stream -> onStreamSelected(stream.id) },
+                                onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding()
+                                    .padding(
+                                        start = 4.dp,
+                                        top = top,
+                                        end = if (sidePanelComponent != null) 0.dp else 4.dp,
+                                        bottom = 108.dp
+                                    )
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = top)
+                                    .animateConstraints()
+                                    .animatePlacement(this@LookaheadScope)
+                            ) {
+                                CallInfoComponent(
+                                    modifier = Modifier
+                                        .padding(top = 56.dp, bottom = 16.dp)
+                                        .animateConstraints()
+                                        .animatePlacement(this@LookaheadScope)
+                                )
+                                if (modalSheetComponent != ModularComponent.FileShare && modalSheetComponent != ModularComponent.Whiteboard) {
+                                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                                }
+                            }
+                        }
+
+                        sidePanelComponent?.let { component ->
+                            SidePanel(
+                                modularComponent = component,
+                                onDismiss = { onSidePanelComponentRequest(null) },
+                                onComponentDisplayed = onModularComponentDisplayed,
+                                modifier = Modifier
+                                    .weight(sidePanelWeight)
+                                    .navigationBarsPadding()
+                                    .padding(
+                                        start = 0.dp,
+                                        top = top,
+                                        end = 4.dp,
+                                        bottom = 108.dp
+                                    )
+                                    .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
+                            )
+                        }
+                    }
                 }
             }
 
             CallScreenModalSheet(
-                modalSheetComponent = modalSheetComponent,
+                modularComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick,
-                onComponentDisplayed = onModalSheetComponentDisplayed,
+                onComponentDisplayed = onModularComponentDisplayed,
             )
         }
+    }
+}
+
+private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
+    return modularComponent.let {
+       it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
     }
 }
 
@@ -269,7 +342,6 @@ private fun LargeScreenInputMessageHost() {
     Box(
         modifier = Modifier
             .width(250.dp)
-            .padding(top = 6.dp)
             .animateContentSize(),
         contentAlignment = Alignment.Center,
     ) {

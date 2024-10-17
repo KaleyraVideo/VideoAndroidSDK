@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
@@ -71,13 +72,13 @@ class StreamItemTest {
 
     @Test
     fun videoNotEnabled_avatarIsDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(View(composeTestRule.activity)), isEnabled = false))
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
         composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertIsDisplayed()
     }
 
     @Test
     fun videoEnabled_avatarIsNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(View(composeTestRule.activity)), isEnabled = true))
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = true))
         composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertDoesNotExist()
     }
 

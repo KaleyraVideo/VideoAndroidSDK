@@ -378,6 +378,17 @@ class PhoneChatViewModelTest {
         verify { callMock.show() }
     }
 
+    @Test
+    fun testGetLoggedUserId() = runTest {
+        val user = mockk<User> {
+            every { userId } returns "customUserId"
+        }
+        connectedUserFlow.value = user
+        advanceUntilIdle()
+        val userId = viewModel.getLoggedUserId()
+        assertEquals(user.userId, userId)
+    }
+
     private suspend fun areChatParticipantDetailsEquals(expected: ChatParticipantDetails,  actual: ChatParticipantDetails) {
         assertEquals(expected.username, actual.username)
         assertEquals(expected.image, actual.image)

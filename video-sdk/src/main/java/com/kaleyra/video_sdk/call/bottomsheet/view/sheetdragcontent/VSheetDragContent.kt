@@ -24,7 +24,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
@@ -39,7 +39,7 @@ private const val MaxVSheetDragItems = 5
 internal fun VSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
-    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
+    onModularComponentRequest: (ModularComponent) -> Unit,
     modifier: Modifier = Modifier,
     inputPermissions: InputPermissions = InputPermissions(),
     contentPadding: PaddingValues = PaddingValues(0.dp)
@@ -75,17 +75,17 @@ internal fun VSheetDragContent(
             else cameraPermission.launchPermissionRequest()
         } },
         onScreenShareToggle = remember(viewModel) {
-            { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
+            { if (!viewModel.tryStopScreenShare()) onModularComponentRequest(ModularComponent.ScreenShare) }
         },
         onFlipCameraClick = viewModel::switchCamera,
-        onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
+        onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
         onFileShareClick = {
-            onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+            onModularComponentRequest(ModularComponent.FileShare)
             viewModel.clearFileShareBadge()
         },
-        onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
-        onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
+        onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) }
     )
 }
 

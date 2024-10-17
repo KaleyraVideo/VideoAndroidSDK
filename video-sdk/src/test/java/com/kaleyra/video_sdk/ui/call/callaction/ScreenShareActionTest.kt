@@ -51,7 +51,7 @@ class ScreenShareActionTest {
     }
 
     @Test
-    fun testButtonTextIsDisplayedOnWideWidth() {
+    fun testScreenShareTextIsDisplayedOnWideWidth() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
@@ -61,7 +61,19 @@ class ScreenShareActionTest {
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
 
+    @Test
+    fun testStopScreenShareTextIsDisplayedOnWideWidth() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        composeTestRule.setContent {
+            ScreenShareAction(
+                modifier = Modifier.width(200.dp),
+                onCheckedChange = {},
+                checked = true
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

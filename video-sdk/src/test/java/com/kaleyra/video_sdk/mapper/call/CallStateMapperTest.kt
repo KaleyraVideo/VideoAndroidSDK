@@ -138,6 +138,14 @@ class CallStateMapperTest {
     }
 
     @Test
+    fun stateConnectingAndCallCreatorIsNull_toCallStateUi_callStateDialing() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callParticipantsMock.creator() } returns null
+        val result = callMock.toCallStateUi()
+        Assert.assertEquals(CallStateUi.Dialing, result.first())
+    }
+
+    @Test
     fun stateConnectingAndIAmCallCreatorAndOtherIsRinging_toCallStateUi_callStateRingingRemotely() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
         every { callParticipantsMock.creator() } returns callParticipantsMock.me
@@ -188,6 +196,14 @@ class CallStateMapperTest {
     }
 
     @Test
+    fun stateDisconnectedEnded_connectedUserNull_toCallStateUi_callStateEnded() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(null)
+        val result = callMock.toCallStateUi()
+        Assert.assertEquals(CallStateUi.Disconnected.Ended, result.first())
+    }
+
+    @Test
     fun stateServerError_toCallStateUi_callStateErrorServer() = runTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended.Error.Server())
         val result = callMock.toCallStateUi()
@@ -233,6 +249,14 @@ class CallStateMapperTest {
         every { callParticipantsMock.creator() } returns mockk()
         val result = callMock.toCallStateUi()
         Assert.assertEquals(CallStateUi.Ringing, result.first())
+    }
+
+    @Test
+    fun stateDisconnectedAndCallCreatorNull_toCallStateUi_callStateDisconnected() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected)
+        every { callParticipantsMock.creator() } returns null
+        val result = callMock.toCallStateUi()
+        Assert.assertEquals(CallStateUi.Disconnected, result.first())
     }
 
     @Test
