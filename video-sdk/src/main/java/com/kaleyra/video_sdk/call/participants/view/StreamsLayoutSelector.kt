@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -40,11 +41,12 @@ internal fun StreamsLayoutSelector(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val gridInteractionSource = remember { MutableInteractionSource() }
+        val containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant }
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant },
-                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.onPrimaryContainer else it.onSurfaceVariant }
+                containerColor = containerColor,
+                contentColor = contentColorFor(backgroundColor = containerColor)
             ),
             enabled = enableGridLayout,
             modifier = Modifier
