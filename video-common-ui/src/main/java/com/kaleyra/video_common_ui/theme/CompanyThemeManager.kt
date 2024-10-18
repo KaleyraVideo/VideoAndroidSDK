@@ -19,7 +19,6 @@ package com.kaleyra.video_common_ui.theme
 import com.kaleyra.video.Company
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.KaleyraVideo.theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -39,11 +38,23 @@ object CompanyThemeManager {
         flow {
             uiTheme?.let { emit(it) }
             map { theme ->
-                uiTheme?.copy(
-                    day = CompanyUI.Theme.Style(logo = uiTheme.day.logo ?: theme.day.logo, colors = uiTheme.day.colors ?: theme.day.colors),
-                    night = CompanyUI.Theme.Style(logo = uiTheme.night.logo ?: theme.night.logo, colors = uiTheme.night.colors ?: theme.night.colors)
-                ) ?:
-                CompanyUI.Theme(day = CompanyUI.Theme.Style(logo = theme.day.logo, colors = theme.day.colors), night = CompanyUI.Theme.Style(logo = theme.night.logo, colors = theme.night.colors))
+                val combinedTheme = uiTheme ?: CompanyUI.Theme()
+                combinedTheme.copy(
+                    day = CompanyUI.Theme.Style(
+                        logo = combinedTheme.day.logo ?: theme.day.logo,
+                        colors = combinedTheme.day.colors ?: theme.day.colors?.mapToCompanyUIColors()
+                    ),
+                    night = CompanyUI.Theme.Style(
+                        logo = combinedTheme.night.logo ?: theme.night.logo,
+                        colors = combinedTheme.night.colors ?: theme.night.colors?.mapToCompanyUIColors()
+                    )
+                )
             }.collect(this)
         }
+
+    private fun Company.Theme.Style.Colors.mapToCompanyUIColors(): CompanyUI.Theme.Colors? {
+        return takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }?.let { colors ->
+            CompanyUI.Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+        }
+    }
 }
