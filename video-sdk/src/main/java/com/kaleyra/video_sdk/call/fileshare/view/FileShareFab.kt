@@ -46,6 +46,7 @@ internal fun FileShareFab(
 ) {
     FloatingActionButton(
         modifier = modifier.sizeIn(minWidth = FabSize, minHeight = FabSize),
+        containerColor = MaterialTheme.colorScheme.primary,
         onClick = onClick
     ) {
         val padding = if (collapsed) 0.dp else FabPadding
