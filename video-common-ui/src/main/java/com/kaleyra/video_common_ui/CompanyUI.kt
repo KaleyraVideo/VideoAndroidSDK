@@ -20,14 +20,36 @@ import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.compose.ui.text.font.FontFamily
 import com.kaleyra.video.Company
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 
 /**
  * UI representation of a Company
  * @constructor
  */
-class CompanyUI(company: Company) : Company by company {
+class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) : Company by company {
+
+    override val theme: SharedFlow<Theme> = company.theme.map {
+        Theme(
+            day = Theme.Style(
+                logo = it.day.logo,
+                colors = it.day.colors.takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }?.let { colors ->
+                    Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+                }
+            ),
+            night = Theme.Style(
+                logo = it.night.logo,
+                colors = it.night.colors.takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }?.let { colors ->
+                    Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+                }
+            ),
+        )
+    }.shareIn(coroutineScope, SharingStarted.Eagerly, 1)
 
     /**
      * Company associated theme
@@ -42,7 +64,7 @@ class CompanyUI(company: Company) : Company by company {
         val defaultStyle: DefaultStyle = DefaultStyle.System,
         override val day: Style = Style(),
         override val night: Style = Style()
-    ) : Company.Theme {
+    ): Company.Theme {
 
         /**
          * Default Style representation
@@ -71,7 +93,21 @@ class CompanyUI(company: Company) : Company by company {
          * @property colors Colors? optional colors of the company
          * @constructor
          */
-        data class Style(override val logo: Uri? = null, override val colors: Company.Theme.Style.Colors? = null) : Company.Theme.Style
+        data class Style(override val logo: Uri? = null, override val colors: Colors? = null): Company.Theme.Style
+
+        /**
+         * Colors representations
+         */
+        sealed class Colors: Company.Theme.Style.Colors {
+
+            /**
+             * Theme colors representation from seed color
+             * @property color Int seed color used to generate a consistent theme based on this color
+             *
+             * @constructor
+             */
+            data class Seed(@ColorInt val color: Int) : Colors()
+        }
     }
 }
 
