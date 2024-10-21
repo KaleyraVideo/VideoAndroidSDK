@@ -47,32 +47,32 @@ fun CollaborationTheme(
     val systemUiController = rememberSystemUiController()
     val isSystemDarkTheme = isSystemInDarkTheme()
     val schemeGenerator = remember { CompanySchemeGenerator() }
-    val companyColorScheme = remember(theme, isSystemDarkTheme) {
-        schemeGenerator.getColorScheme(theme, isSystemDarkTheme)
+    val companyScheme = remember(theme, isSystemDarkTheme) {
+        schemeGenerator.getCompanyScheme(theme, isSystemDarkTheme)
     }
 
     val kaleyraColors = when {
-        companyColorScheme.isDark -> darkKaleyraColors()
+        companyScheme.isDark -> darkKaleyraColors()
         else -> lightKaleyraColors()
     }
 
     SideEffect {
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
-            darkIcons = !lightStatusBarIcons && !companyColorScheme.isDark
+            darkIcons = !lightStatusBarIcons && !companyScheme.isDark
         )
         systemUiController.setNavigationBarColor(
             color = Color.Transparent,
-            darkIcons = !companyColorScheme.isDark,
+            darkIcons = !companyScheme.isDark,
             navigationBarContrastEnforced = false
         )
     }
 
     CompositionLocalProvider(value = LocalKaleyraColors provides kaleyraColors) {
         MaterialTheme(
-            colorScheme = companyColorScheme.scheme,
+            colorScheme = companyScheme.scheme,
             typography = typography,
-            content = { content(companyColorScheme.isDark) }
+            content = { content(companyScheme.isDark) }
         )
     }
 }

@@ -1,5 +1,7 @@
 package com.kaleyra.video_sdk.theme
 
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.material_color_utilities.hct.Hct
@@ -13,7 +15,7 @@ import org.junit.Test
 class CompanySchemeGeneratorTest {
 
     @Test
-    fun noSeedColor_generateLightSchemeMonochrome() {
+    fun noSeedColor_generateLightMonochromeCompanyScheme() {
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Day,
             day = CompanyUI.Theme.Style(
@@ -23,7 +25,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(Color.White.toArgb()), false, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, false)
+        val companyScheme = generator.getCompanyScheme(theme, false)
 
         assertEquals(false, companyScheme.isDark)
         assertEquals(Color(monochromeScheme.primary), companyScheme.scheme.primary)
@@ -66,7 +68,7 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun noSeedColor_generateDarkSchemeMonochrome() {
+    fun noSeedColor_generateDarkMonochromeCompanyScheme() {
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Night,
             night = CompanyUI.Theme.Style(
@@ -76,7 +78,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(Color.White.toArgb()), true, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, false)
+        val companyScheme = generator.getCompanyScheme(theme, false)
 
         assertEquals(true, companyScheme.isDark)
         assertEquals(Color(monochromeScheme.primary), companyScheme.scheme.primary)
@@ -119,7 +121,227 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun seedColorWithDayDefaultStyle_generateLightSchemeFidelity() {
+    fun colorSchemeWithDayDefaultStyle_generateCompanyScheme() {
+        val colorScheme = lightColorScheme()
+        val theme = CompanyUI.Theme(
+            defaultStyle = CompanyUI.Theme.DefaultStyle.Day,
+            day = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(colorScheme)
+            )
+        )
+
+        val generator = CompanySchemeGenerator()
+        val companyScheme = generator.getCompanyScheme(theme, true)
+
+        assertEquals(false, companyScheme.isDark)
+        assertEquals(colorScheme.primary, companyScheme.scheme.primary)
+        assertEquals(colorScheme.onPrimary, companyScheme.scheme.onPrimary)
+        assertEquals(colorScheme.primaryContainer, companyScheme.scheme.primaryContainer)
+        assertEquals(colorScheme.onPrimaryContainer, companyScheme.scheme.onPrimaryContainer)
+        assertEquals(colorScheme.inversePrimary, companyScheme.scheme.inversePrimary)
+        assertEquals(colorScheme.secondary, companyScheme.scheme.secondary)
+        assertEquals(colorScheme.onSecondary, companyScheme.scheme.onSecondary)
+        assertEquals(colorScheme.secondaryContainer, companyScheme.scheme.secondaryContainer)
+        assertEquals(colorScheme.onSecondaryContainer, companyScheme.scheme.onSecondaryContainer)
+        assertEquals(colorScheme.tertiary, companyScheme.scheme.tertiary)
+        assertEquals(colorScheme.onTertiary, companyScheme.scheme.onTertiary)
+        assertEquals(colorScheme.tertiaryContainer, companyScheme.scheme.tertiaryContainer)
+        assertEquals(colorScheme.onTertiaryContainer, companyScheme.scheme.onTertiaryContainer)
+        assertEquals(colorScheme.background, companyScheme.scheme.background)
+        assertEquals(colorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(colorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(colorScheme.surface, companyScheme.scheme.surface)
+        assertEquals(colorScheme.onSurface, companyScheme.scheme.onSurface)
+        assertEquals(colorScheme.surfaceVariant, companyScheme.scheme.surfaceVariant)
+        assertEquals(colorScheme.onSurfaceVariant, companyScheme.scheme.onSurfaceVariant)
+        assertEquals(colorScheme.surfaceTint, companyScheme.scheme.surfaceTint)
+        assertEquals(colorScheme.inverseSurface, companyScheme.scheme.inverseSurface)
+        assertEquals(colorScheme.inverseOnSurface, companyScheme.scheme.inverseOnSurface)
+        assertEquals(colorScheme.error, companyScheme.scheme.error)
+        assertEquals(colorScheme.onError, companyScheme.scheme.onError)
+        assertEquals(colorScheme.errorContainer, companyScheme.scheme.errorContainer)
+        assertEquals(colorScheme.onErrorContainer, companyScheme.scheme.onErrorContainer)
+        assertEquals(colorScheme.outline, companyScheme.scheme.outline)
+        assertEquals(colorScheme.outlineVariant, companyScheme.scheme.outlineVariant)
+        assertEquals(colorScheme.scrim, companyScheme.scheme.scrim)
+        assertEquals(colorScheme.surfaceBright, companyScheme.scheme.surfaceBright)
+        assertEquals(colorScheme.surfaceContainer, companyScheme.scheme.surfaceContainer)
+        assertEquals(colorScheme.surfaceContainerHigh, companyScheme.scheme.surfaceContainerHigh)
+        assertEquals(colorScheme.surfaceContainerHighest, companyScheme.scheme.surfaceContainerHighest)
+        assertEquals(colorScheme.surfaceContainerLow, companyScheme.scheme.surfaceContainerLow)
+        assertEquals(colorScheme.surfaceContainerLowest, companyScheme.scheme.surfaceContainerLowest)
+        assertEquals(colorScheme.surfaceDim, companyScheme.scheme.surfaceDim)
+    }
+
+    @Test
+    fun colorSchemeWithNightDefaultStyle_generateCompanyScheme() {
+        val colorScheme = darkColorScheme()
+        val theme = CompanyUI.Theme(
+            defaultStyle = CompanyUI.Theme.DefaultStyle.Night,
+            night = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(colorScheme)
+            )
+        )
+
+        val generator = CompanySchemeGenerator()
+        val companyScheme = generator.getCompanyScheme(theme, false)
+
+        assertEquals(true, companyScheme.isDark)
+        assertEquals(colorScheme.primary, companyScheme.scheme.primary)
+        assertEquals(colorScheme.onPrimary, companyScheme.scheme.onPrimary)
+        assertEquals(colorScheme.primaryContainer, companyScheme.scheme.primaryContainer)
+        assertEquals(colorScheme.onPrimaryContainer, companyScheme.scheme.onPrimaryContainer)
+        assertEquals(colorScheme.inversePrimary, companyScheme.scheme.inversePrimary)
+        assertEquals(colorScheme.secondary, companyScheme.scheme.secondary)
+        assertEquals(colorScheme.onSecondary, companyScheme.scheme.onSecondary)
+        assertEquals(colorScheme.secondaryContainer, companyScheme.scheme.secondaryContainer)
+        assertEquals(colorScheme.onSecondaryContainer, companyScheme.scheme.onSecondaryContainer)
+        assertEquals(colorScheme.tertiary, companyScheme.scheme.tertiary)
+        assertEquals(colorScheme.onTertiary, companyScheme.scheme.onTertiary)
+        assertEquals(colorScheme.tertiaryContainer, companyScheme.scheme.tertiaryContainer)
+        assertEquals(colorScheme.onTertiaryContainer, companyScheme.scheme.onTertiaryContainer)
+        assertEquals(colorScheme.background, companyScheme.scheme.background)
+        assertEquals(colorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(colorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(colorScheme.surface, companyScheme.scheme.surface)
+        assertEquals(colorScheme.onSurface, companyScheme.scheme.onSurface)
+        assertEquals(colorScheme.surfaceVariant, companyScheme.scheme.surfaceVariant)
+        assertEquals(colorScheme.onSurfaceVariant, companyScheme.scheme.onSurfaceVariant)
+        assertEquals(colorScheme.surfaceTint, companyScheme.scheme.surfaceTint)
+        assertEquals(colorScheme.inverseSurface, companyScheme.scheme.inverseSurface)
+        assertEquals(colorScheme.inverseOnSurface, companyScheme.scheme.inverseOnSurface)
+        assertEquals(colorScheme.error, companyScheme.scheme.error)
+        assertEquals(colorScheme.onError, companyScheme.scheme.onError)
+        assertEquals(colorScheme.errorContainer, companyScheme.scheme.errorContainer)
+        assertEquals(colorScheme.onErrorContainer, companyScheme.scheme.onErrorContainer)
+        assertEquals(colorScheme.outline, companyScheme.scheme.outline)
+        assertEquals(colorScheme.outlineVariant, companyScheme.scheme.outlineVariant)
+        assertEquals(colorScheme.scrim, companyScheme.scheme.scrim)
+        assertEquals(colorScheme.surfaceBright, companyScheme.scheme.surfaceBright)
+        assertEquals(colorScheme.surfaceContainer, companyScheme.scheme.surfaceContainer)
+        assertEquals(colorScheme.surfaceContainerHigh, companyScheme.scheme.surfaceContainerHigh)
+        assertEquals(colorScheme.surfaceContainerHighest, companyScheme.scheme.surfaceContainerHighest)
+        assertEquals(colorScheme.surfaceContainerLow, companyScheme.scheme.surfaceContainerLow)
+        assertEquals(colorScheme.surfaceContainerLowest, companyScheme.scheme.surfaceContainerLowest)
+        assertEquals(colorScheme.surfaceDim, companyScheme.scheme.surfaceDim)
+    }
+
+    @Test
+    fun colorSchemeWithSystemLightTheme_generateLightCompanyScheme() {
+        val dayColorScheme = lightColorScheme()
+        val nightColorScheme = darkColorScheme()
+        val theme = CompanyUI.Theme(
+            defaultStyle = CompanyUI.Theme.DefaultStyle.System,
+            day = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(dayColorScheme)
+            ),
+            night = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(nightColorScheme)
+            ),
+        )
+
+        val generator = CompanySchemeGenerator()
+        val companyScheme = generator.getCompanyScheme(theme, false)
+
+        assertEquals(false, companyScheme.isDark)
+        assertEquals(dayColorScheme.primary, companyScheme.scheme.primary)
+        assertEquals(dayColorScheme.onPrimary, companyScheme.scheme.onPrimary)
+        assertEquals(dayColorScheme.primaryContainer, companyScheme.scheme.primaryContainer)
+        assertEquals(dayColorScheme.onPrimaryContainer, companyScheme.scheme.onPrimaryContainer)
+        assertEquals(dayColorScheme.inversePrimary, companyScheme.scheme.inversePrimary)
+        assertEquals(dayColorScheme.secondary, companyScheme.scheme.secondary)
+        assertEquals(dayColorScheme.onSecondary, companyScheme.scheme.onSecondary)
+        assertEquals(dayColorScheme.secondaryContainer, companyScheme.scheme.secondaryContainer)
+        assertEquals(dayColorScheme.onSecondaryContainer, companyScheme.scheme.onSecondaryContainer)
+        assertEquals(dayColorScheme.tertiary, companyScheme.scheme.tertiary)
+        assertEquals(dayColorScheme.onTertiary, companyScheme.scheme.onTertiary)
+        assertEquals(dayColorScheme.tertiaryContainer, companyScheme.scheme.tertiaryContainer)
+        assertEquals(dayColorScheme.onTertiaryContainer, companyScheme.scheme.onTertiaryContainer)
+        assertEquals(dayColorScheme.background, companyScheme.scheme.background)
+        assertEquals(dayColorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(dayColorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(dayColorScheme.surface, companyScheme.scheme.surface)
+        assertEquals(dayColorScheme.onSurface, companyScheme.scheme.onSurface)
+        assertEquals(dayColorScheme.surfaceVariant, companyScheme.scheme.surfaceVariant)
+        assertEquals(dayColorScheme.onSurfaceVariant, companyScheme.scheme.onSurfaceVariant)
+        assertEquals(dayColorScheme.surfaceTint, companyScheme.scheme.surfaceTint)
+        assertEquals(dayColorScheme.inverseSurface, companyScheme.scheme.inverseSurface)
+        assertEquals(dayColorScheme.inverseOnSurface, companyScheme.scheme.inverseOnSurface)
+        assertEquals(dayColorScheme.error, companyScheme.scheme.error)
+        assertEquals(dayColorScheme.onError, companyScheme.scheme.onError)
+        assertEquals(dayColorScheme.errorContainer, companyScheme.scheme.errorContainer)
+        assertEquals(dayColorScheme.onErrorContainer, companyScheme.scheme.onErrorContainer)
+        assertEquals(dayColorScheme.outline, companyScheme.scheme.outline)
+        assertEquals(dayColorScheme.outlineVariant, companyScheme.scheme.outlineVariant)
+        assertEquals(dayColorScheme.scrim, companyScheme.scheme.scrim)
+        assertEquals(dayColorScheme.surfaceBright, companyScheme.scheme.surfaceBright)
+        assertEquals(dayColorScheme.surfaceContainer, companyScheme.scheme.surfaceContainer)
+        assertEquals(dayColorScheme.surfaceContainerHigh, companyScheme.scheme.surfaceContainerHigh)
+        assertEquals(dayColorScheme.surfaceContainerHighest, companyScheme.scheme.surfaceContainerHighest)
+        assertEquals(dayColorScheme.surfaceContainerLow, companyScheme.scheme.surfaceContainerLow)
+        assertEquals(dayColorScheme.surfaceContainerLowest, companyScheme.scheme.surfaceContainerLowest)
+        assertEquals(dayColorScheme.surfaceDim, companyScheme.scheme.surfaceDim)
+    }
+
+    @Test
+    fun colorSchemeWithSystemDarkTheme_generateDarkCompanyScheme() {
+        val dayColorScheme = lightColorScheme()
+        val nightColorScheme = darkColorScheme()
+        val theme = CompanyUI.Theme(
+            defaultStyle = CompanyUI.Theme.DefaultStyle.System,
+            day = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(dayColorScheme)
+            ),
+            night = CompanyUI.Theme.Style(
+                colors = CompanyUI.Theme.Colors.Scheme(nightColorScheme)
+            ),
+        )
+
+        val generator = CompanySchemeGenerator()
+        val companyScheme = generator.getCompanyScheme(theme, true)
+
+        assertEquals(true, companyScheme.isDark)
+        assertEquals(nightColorScheme.primary, companyScheme.scheme.primary)
+        assertEquals(nightColorScheme.onPrimary, companyScheme.scheme.onPrimary)
+        assertEquals(nightColorScheme.primaryContainer, companyScheme.scheme.primaryContainer)
+        assertEquals(nightColorScheme.onPrimaryContainer, companyScheme.scheme.onPrimaryContainer)
+        assertEquals(nightColorScheme.inversePrimary, companyScheme.scheme.inversePrimary)
+        assertEquals(nightColorScheme.secondary, companyScheme.scheme.secondary)
+        assertEquals(nightColorScheme.onSecondary, companyScheme.scheme.onSecondary)
+        assertEquals(nightColorScheme.secondaryContainer, companyScheme.scheme.secondaryContainer)
+        assertEquals(nightColorScheme.onSecondaryContainer, companyScheme.scheme.onSecondaryContainer)
+        assertEquals(nightColorScheme.tertiary, companyScheme.scheme.tertiary)
+        assertEquals(nightColorScheme.onTertiary, companyScheme.scheme.onTertiary)
+        assertEquals(nightColorScheme.tertiaryContainer, companyScheme.scheme.tertiaryContainer)
+        assertEquals(nightColorScheme.onTertiaryContainer, companyScheme.scheme.onTertiaryContainer)
+        assertEquals(nightColorScheme.background, companyScheme.scheme.background)
+        assertEquals(nightColorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(nightColorScheme.onBackground, companyScheme.scheme.onBackground)
+        assertEquals(nightColorScheme.surface, companyScheme.scheme.surface)
+        assertEquals(nightColorScheme.onSurface, companyScheme.scheme.onSurface)
+        assertEquals(nightColorScheme.surfaceVariant, companyScheme.scheme.surfaceVariant)
+        assertEquals(nightColorScheme.onSurfaceVariant, companyScheme.scheme.onSurfaceVariant)
+        assertEquals(nightColorScheme.surfaceTint, companyScheme.scheme.surfaceTint)
+        assertEquals(nightColorScheme.inverseSurface, companyScheme.scheme.inverseSurface)
+        assertEquals(nightColorScheme.inverseOnSurface, companyScheme.scheme.inverseOnSurface)
+        assertEquals(nightColorScheme.error, companyScheme.scheme.error)
+        assertEquals(nightColorScheme.onError, companyScheme.scheme.onError)
+        assertEquals(nightColorScheme.errorContainer, companyScheme.scheme.errorContainer)
+        assertEquals(nightColorScheme.onErrorContainer, companyScheme.scheme.onErrorContainer)
+        assertEquals(nightColorScheme.outline, companyScheme.scheme.outline)
+        assertEquals(nightColorScheme.outlineVariant, companyScheme.scheme.outlineVariant)
+        assertEquals(nightColorScheme.scrim, companyScheme.scheme.scrim)
+        assertEquals(nightColorScheme.surfaceBright, companyScheme.scheme.surfaceBright)
+        assertEquals(nightColorScheme.surfaceContainer, companyScheme.scheme.surfaceContainer)
+        assertEquals(nightColorScheme.surfaceContainerHigh, companyScheme.scheme.surfaceContainerHigh)
+        assertEquals(nightColorScheme.surfaceContainerHighest, companyScheme.scheme.surfaceContainerHighest)
+        assertEquals(nightColorScheme.surfaceContainerLow, companyScheme.scheme.surfaceContainerLow)
+        assertEquals(nightColorScheme.surfaceContainerLowest, companyScheme.scheme.surfaceContainerLowest)
+        assertEquals(nightColorScheme.surfaceDim, companyScheme.scheme.surfaceDim)
+    }
+
+    @Test
+    fun seedColorWithDayDefaultStyle_generateLightCompanyScheme() {
         val seed = Color.Red
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Day,
@@ -131,7 +353,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed.toArgb()), false, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, false)
+        val companyScheme = generator.getCompanyScheme(theme, false)
 
         assertEquals(false, companyScheme.isDark)
         assertEquals(seed, companyScheme.scheme.primary)
@@ -174,7 +396,7 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun seedColorWithNightDefaultStyle_generateDarkSchemeFidelity() {
+    fun seedColorWithNightDefaultStyle_generateDarkCompanyScheme() {
         val seed = Color.Blue
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Night,
@@ -186,7 +408,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed.toArgb()), true, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, false)
+        val companyScheme = generator.getCompanyScheme(theme, false)
 
         assertEquals(true, companyScheme.isDark)
         assertEquals(seed, companyScheme.scheme.primary)
@@ -229,7 +451,7 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun seedColorWithSystemLightTheme_generateLightSchemeFidelity() {
+    fun seedColorWithSystemLightTheme_generateLightCompanyScheme() {
         val daySeed = Color.Red
         val nightSeed = Color.Blue
         val theme = CompanyUI.Theme(
@@ -245,7 +467,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(daySeed.toArgb()), false, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, false)
+        val companyScheme = generator.getCompanyScheme(theme, false)
 
         assertEquals(false, companyScheme.isDark)
         assertEquals(daySeed, companyScheme.scheme.primary)
@@ -288,7 +510,7 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun seedColorWithSystemDarkTheme_generateDarkSchemeFidelity() {
+    fun seedColorWithSystemDarkTheme_generateDarkCompanyScheme() {
         val daySeed = Color.Red
         val nightSeed = Color.Blue
         val theme = CompanyUI.Theme(
@@ -304,7 +526,7 @@ class CompanySchemeGeneratorTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(nightSeed.toArgb()), true, .0)
 
         val generator = CompanySchemeGenerator()
-        val companyScheme = generator.getColorScheme(theme, true)
+        val companyScheme = generator.getCompanyScheme(theme, true)
 
         assertEquals(true, companyScheme.isDark)
         assertEquals(nightSeed, companyScheme.scheme.primary)
