@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -59,6 +58,7 @@ import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.stream.StreamComponent
+import com.kaleyra.video_sdk.call.stream.StreamItemSpacing
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
@@ -72,6 +72,9 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 internal val PanelTestTag = "PanelTestTag"
 
 internal val StreamMenuContentTestTag = "StreamMenuContentTestTag"
+
+private val BottomSheetHeight = 76.dp
+private val BottomSheetWithHandleHeight = 87.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -98,10 +101,10 @@ internal fun VCallScreen(
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
-    val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
+    val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isAtLeastMediumWidth() }
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
-    val hasSheetDragContent by remember(isLargeScreen, selectedStreamId, isRinging) {
+    val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) {
         derivedStateOf { (!isLargeScreen || isRinging) && selectedStreamId == null && sheetDragActions.value.isNotEmpty() }
     }
     var showSheetPanelContent by remember(isLargeScreen) { mutableStateOf(false) }
@@ -119,15 +122,16 @@ internal fun VCallScreen(
         else onModalSheetComponentRequest(component)
     }
 
+    val contentSpacing =  if (isLargeScreen) 16.dp else 8.dp
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, bottom = 8.dp),
+        paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = contentSpacing)
             )
         },
         sheetPanelContent = if (!isRinging && isLargeScreen) {
@@ -197,9 +201,7 @@ internal fun VCallScreen(
                                 onMoreToggle = { isSheetCollapsed ->
                                     if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                     else showSheetPanelContent = !showSheetPanelContent
-                                },
-                                modifier = Modifier
-
+                                }
                             )
                         }
                     }
@@ -215,7 +217,11 @@ internal fun VCallScreen(
         },
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
-        val top = paddingValues.calculateTopPadding() + 4.dp
+        val streamItemSpacing = StreamItemSpacing
+        val bottomSheetExpectedHeight = remember(hasSheetDragContent) { if (hasSheetDragContent) BottomSheetWithHandleHeight else BottomSheetHeight }
+        val topPadding = remember(paddingValues, contentSpacing) { paddingValues.calculateTopPadding() + contentSpacing - streamItemSpacing }
+        val bottomPadding = remember(bottomSheetExpectedHeight, contentSpacing) { bottomSheetExpectedHeight + contentSpacing * 2 - streamItemSpacing }
+        val horizontalPadding = remember(contentSpacing) { contentSpacing - streamItemSpacing }
 
         Box(
             modifier = Modifier
@@ -273,16 +279,17 @@ internal fun VCallScreen(
                                     .fillMaxSize()
                                     .navigationBarsPadding()
                                     .padding(
-                                        start = 4.dp,
-                                        top = top,
-                                        end = if (sidePanelComponent != null) 0.dp else 4.dp,
-                                        bottom = 108.dp
+                                        start = horizontalPadding,
+                                        top = topPadding,
+                                        end = if (sidePanelComponent != null) 0.dp else horizontalPadding,
+                                        bottom = bottomPadding
                                     )
                             )
 
+
                             Column(
                                 modifier = Modifier
-                                    .padding(top = top)
+                                    .padding(top = topPadding)
                                     .animateConstraints()
                                     .animatePlacement(this@LookaheadScope)
                             ) {
@@ -308,9 +315,9 @@ internal fun VCallScreen(
                                     .navigationBarsPadding()
                                     .padding(
                                         start = 0.dp,
-                                        top = top,
-                                        end = 4.dp,
-                                        bottom = 108.dp
+                                        top = topPadding,
+                                        end = horizontalPadding,
+                                        bottom = bottomPadding
                                     )
                                     .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
                             )
