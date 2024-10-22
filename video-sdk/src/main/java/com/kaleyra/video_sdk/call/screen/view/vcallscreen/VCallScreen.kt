@@ -319,7 +319,7 @@ internal fun VCallScreen(
                                         end = horizontalPadding,
                                         bottom = bottomPadding
                                     )
-                                    .animatePlacement(IntOffset(constraints.maxWidth, top.toPixel.toInt()))
+                                    .animatePlacement(IntOffset(constraints.maxWidth, topPadding.toPixel.toInt()))
                             )
                         }
                     }
