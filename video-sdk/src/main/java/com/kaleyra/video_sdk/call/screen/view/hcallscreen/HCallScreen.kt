@@ -158,7 +158,7 @@ internal fun HCallScreen(
                         .padding(start = 12.dp, bottom = 12.dp)
                         .height(80.dp)
                         .width(142.dp),
-                    alignment = Alignment.CenterStart
+                    alignment = Alignment.BottomStart
                 )
         },
         sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
