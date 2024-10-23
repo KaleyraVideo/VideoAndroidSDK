@@ -50,9 +50,6 @@ abstract class MultiDexApplication : MultiDexApplication() {
         LeakCanaryManager.enableLeakCanary(ConfigurationPrefsManager.getConfiguration(this).useLeakCanary)
 
         // Debug tools
-        initFlipper()
-
-        // Debug tools
         registerDevicePushToken()
 
         // Vector assets Resources NotFoundException on Samsung device
@@ -62,16 +59,6 @@ abstract class MultiDexApplication : MultiDexApplication() {
     }
 
     abstract fun create();
-
-    /***************************************Flipper**************************************************
-     * Using Flipper to debug app in a easy way
-     *
-     * For more information visit:
-     * https://github.com/facebook/flipper
-     */
-    private fun initFlipper() {
-        FlipperManager.enable(this)
-    }
 
     /*********************************Firebase Cloud Messaging**************************************
      * Using Firebase Cloud Messaging as push notification sample implementation.

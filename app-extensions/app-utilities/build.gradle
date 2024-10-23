@@ -76,6 +76,7 @@ dependencies {
     api sampleAppCatalog.androidxFragment
     api sampleAppCatalog.androidxMultidex
     api sampleAppCatalog.material
+    implementation catalog.androidxStartupRuntime
 
     /*** UI ***/
     api sampleAppCatalog.androidxRecyclerview
