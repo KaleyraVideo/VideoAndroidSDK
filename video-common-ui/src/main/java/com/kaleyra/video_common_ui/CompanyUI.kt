@@ -155,7 +155,7 @@ class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScop
              * @property surfaceDim Int
              * @constructor
              */
-            data class Scheme(
+            data class Palette(
                 val primary: Int,
                 val onPrimary: Int,
                 val primaryContainer: Int,

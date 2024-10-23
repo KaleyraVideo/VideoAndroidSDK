@@ -23,7 +23,7 @@ internal class CompanySchemeGenerator {
     private fun createCompanyScheme(theme: CompanyUI.Theme, isDarkTheme: Boolean): CompanyScheme {
         val colors = if (isDarkTheme) theme.night.colors else theme.day.colors
         return when (colors) {
-            is CompanyUI.Theme.Colors.Scheme -> {
+            is CompanyUI.Theme.Colors.Palette -> {
                 CompanyScheme(
                     isDark = isDarkTheme,
                     scheme = ColorScheme(

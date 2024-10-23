@@ -121,12 +121,12 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun colorSchemeWithDayDefaultStyle_generateCompanyScheme() {
+    fun colorPaletteWithDayDefaultStyle_generateCompanyScheme() {
         val colorScheme = lightColorScheme()
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Day,
             day = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(colorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(colorScheme)
             )
         )
 
@@ -174,12 +174,12 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun colorSchemeWithNightDefaultStyle_generateCompanyScheme() {
+    fun colorPaletteWithNightDefaultStyle_generateCompanyScheme() {
         val colorScheme = darkColorScheme()
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.Night,
             night = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(colorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(colorScheme)
             )
         )
 
@@ -227,16 +227,16 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun colorSchemeWithSystemLightTheme_generateLightCompanyScheme() {
+    fun colorPaletteWithSystemLightTheme_generateLightCompanyScheme() {
         val dayColorScheme = lightColorScheme()
         val nightColorScheme = darkColorScheme()
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
             day = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(dayColorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(dayColorScheme)
             ),
             night = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(nightColorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(nightColorScheme)
             ),
         )
 
@@ -284,16 +284,16 @@ class CompanySchemeGeneratorTest {
     }
 
     @Test
-    fun colorSchemeWithSystemDarkTheme_generateDarkCompanyScheme() {
+    fun colorPaletteWithSystemDarkTheme_generateDarkCompanyScheme() {
         val dayColorScheme = lightColorScheme()
         val nightColorScheme = darkColorScheme()
         val theme = CompanyUI.Theme(
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
             day = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(dayColorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(dayColorScheme)
             ),
             night = CompanyUI.Theme.Style(
-                colors = CompanyUI.Theme.Colors.Scheme(nightColorScheme)
+                colors = CompanyUI.Theme.Colors.Palette(nightColorScheme)
             ),
         )
 
