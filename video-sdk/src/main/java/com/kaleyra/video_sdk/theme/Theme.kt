@@ -82,6 +82,7 @@ fun CollaborationTheme(
         else -> lightKaleyraColors()
     }
 
+
     val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed), isDarkTheme, .0)
     val fidelityScheme = SchemeFidelity(Hct.fromInt(seed), isDarkTheme, .0)
 

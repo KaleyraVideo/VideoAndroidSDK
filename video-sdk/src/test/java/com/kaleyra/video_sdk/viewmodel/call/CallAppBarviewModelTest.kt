@@ -1,5 +1,8 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
@@ -10,7 +13,6 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.appbar.model.Logo
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_utils.ContextRetainer
@@ -65,9 +67,22 @@ class CallAppBarViewModelTest {
     private val elapsedMock: MutableStateFlow<Long> = MutableStateFlow(10L)
 
     private val inCallParticipantsMock: MutableStateFlow<List<CallParticipant>> = MutableStateFlow(listOf(participantMeMock, participantMock1, participantMock2))
+
+    private val packageName = "packageName"
+
+    private val appIconRef = 678
+
+    private val mockkContext: Context = mockk<Context>(relaxed = true)
+
+    private val packageManager: PackageManager = mockk<PackageManager>(relaxed = true)
+
     @Before
     fun setup() {
         mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns mockkContext
+        every { mockkContext.packageName } returns packageName
+        every { mockkContext.packageManager } returns packageManager
+        every { packageManager.getApplicationInfo(packageName, 0) } returns ApplicationInfo().apply { icon = appIconRef }
         mockkObject(CallStateMapper)
         mockkObject(com.kaleyra.video_common_ui.mapper.ParticipantMapper)
         with(callMock) {
@@ -183,26 +198,8 @@ class CallAppBarViewModelTest {
     }
 
     @Test
-    fun testCompanyLogoReceived() = runTest {
+    fun testAppIconReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(
-            Logo(
-            light = Uri.parse("https://www.example1.com"),
-            dark = Uri.parse("https://www.example2.com")
-        ), viewModel.uiState.first().logo)
-    }
-
-    @Test
-    fun testCompanyLogoUpdated() = runTest {
-        advanceUntilIdle()
-        companyThemeMock.emit(CompanyUI.Theme(
-            day = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example3.com")),
-            night = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example4.com"))))
-        advanceUntilIdle()
-        Assert.assertEquals(
-            Logo(
-            light = Uri.parse("https://www.example3.com"),
-            dark = Uri.parse("https://www.example4.com")
-        ), viewModel.uiState.first().logo)
+        Assert.assertEquals(Uri.parse("android.resource://$packageName/$appIconRef"), viewModel.uiState.first().appIconUri)
     }
 }

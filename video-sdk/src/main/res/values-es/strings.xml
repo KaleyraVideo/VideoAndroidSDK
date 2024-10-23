@@ -291,5 +291,6 @@
     <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
     <string name="kaleyra_call_failed">Llamada fallida</string>
+    <string name="kaleyra_app_icon">Icono de la aplicación</string>
 
 </resources>

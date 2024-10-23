@@ -6,13 +6,16 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -37,6 +40,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
@@ -49,12 +53,16 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.HSheetContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel.SheetPanelContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
+import com.kaleyra.video_sdk.call.brandlogo.model.hasLogo
+import com.kaleyra.video_sdk.call.brandlogo.view.BrandLogoComponent
+import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
@@ -67,6 +75,7 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 
 internal val PanelTestTag = "PanelTestTag"
@@ -92,13 +101,14 @@ internal fun VCallScreen(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val callActionsViewModel: CallActionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+    val callActionsViewModel: CallActionsViewModel = viewModel(
         factory = CallActionsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
     )
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
     val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
+    val isLargeScreenLandscape = windowSizeClass.isAtLeastExpandedWidth()
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId, isRinging) {
@@ -118,6 +128,14 @@ internal fun VCallScreen(
         if (isLargeScreen && isSidePanelSupported(component)) onSidePanelComponentRequest(component)
         else onModalSheetComponentRequest(component)
     }
+
+    var hasConnectedCallOnce by remember { mutableStateOf(false) }
+    val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val isDarkTheme = isSystemInDarkTheme()
+    val brandLogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()
+    hasConnectedCallOnce = hasConnectedCallOnce || brandLogoUiState.callStateUi == CallStateUi.Connected
+
+    val hasLogo = brandLogoUiState.hasLogo(isDarkTheme)
 
     VCallScreenScaffold(
         modifier = modifier,
@@ -155,11 +173,24 @@ internal fun VCallScreen(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
                     inputPermissions = inputPermissions,
-                    onModularComponentRequest = onSideBarSheetComponentRequest ,
+                    onModularComponentRequest = onSideBarSheetComponentRequest,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     modifier = Modifier.animateContentSize()
                 )
             }
+        },
+        brandLogo = {
+            if (windowSizeClass.isAtLeastExpandedWidth()
+                || windowSizeClass.isAtLeastMediumWidth()
+                && with(brandLogoUiState.callStateUi) {
+                    this is CallStateUi.Connected
+                        || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
+                        || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
+                }
+            ) BrandLogoComponent(
+                modifier = Modifier.fillMaxSize(),
+                alignment = Alignment.CenterStart
+            )
         },
         sheetContent = {
             AnimatedContent(
@@ -237,13 +268,16 @@ internal fun VCallScreen(
                 }
                 .clearAndSetSemantics {}
         ) {
-            val streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+            val streamViewModel: StreamViewModel = viewModel(
                 factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
             )
             val onUserMessageActionClick = remember(streamViewModel) {
                 { message: UserMessage ->
                     when (message) {
-                        is PinScreenshareMessage -> { streamViewModel.pin(message.streamId, prepend = true, force = true); Unit }
+                        is PinScreenshareMessage -> {
+                            streamViewModel.pin(message.streamId, prepend = true, force = true); Unit
+                        }
+
                         else -> Unit
                     }
                 }
@@ -280,15 +314,26 @@ internal fun VCallScreen(
                                     )
                             )
 
+                            val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
+
                             Column(
                                 modifier = Modifier
                                     .padding(top = top)
                                     .animateConstraints()
                                     .animatePlacement(this@LookaheadScope)
                             ) {
+                                if (displayBrandLogo) {
+                                    Spacer(modifier = Modifier.height(if (isLargeScreen) 48.dp else 24.dp))
+                                    BrandLogoComponent(
+                                        modifier = Modifier
+                                            .height(if (isLargeScreen) 96.dp else 48.dp)
+                                            .fillMaxWidth()
+                                    )
+                                }
+
                                 CallInfoComponent(
                                     modifier = Modifier
-                                        .padding(top = 56.dp, bottom = 16.dp)
+                                        .padding(top = if (displayBrandLogo && hasLogo) 24.dp else 56.dp, bottom = 16.dp)
                                         .animateConstraints()
                                         .animatePlacement(this@LookaheadScope)
                                 )
@@ -331,9 +376,19 @@ internal fun VCallScreen(
     }
 }
 
+internal fun shouldDisplayBrandLogo(callStateUi: CallStateUi, hasConnectedCallOnce: Boolean) = with(callStateUi) {
+    this is CallStateUi.Disconnected.Companion
+        || this is CallStateUi.Connecting
+        || this is CallStateUi.Ringing
+        || this is CallStateUi.Dialing
+        || this is CallStateUi.RingingRemotely
+        || !hasConnectedCallOnce
+}
+
+
 private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
     return modularComponent.let {
-       it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
+        it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
     }
 }
 

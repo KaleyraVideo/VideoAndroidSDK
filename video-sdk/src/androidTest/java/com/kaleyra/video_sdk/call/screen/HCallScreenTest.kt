@@ -1,10 +1,12 @@
 package com.kaleyra.video_sdk.call.screen
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -43,6 +45,9 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
+import com.kaleyra.video_sdk.call.brandlogo.model.Logo
+import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
@@ -74,6 +79,7 @@ import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -89,6 +95,11 @@ class HCallScreenTest {
     private val compactScreenConfiguration = Configuration().apply {
         screenWidthDp = 480
         screenHeightDp = 600
+    }
+
+    private val compactScreenLandscapeConfiguration = Configuration().apply {
+        screenWidthDp = 600
+        screenHeightDp = 480
     }
 
     private val callActionsUiState = MutableStateFlow(CallActionsUiState())
@@ -135,6 +146,12 @@ class HCallScreenTest {
         every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
     }
 
+    private val companyLogo = Logo(light = Uri.parse("https://www.example.com/light.png"), dark = Uri.parse("https://www.example.com/dark.png"))
+    private val brandLogoUiState = MutableStateFlow(BrandLogoState())
+    private val brandLogoViewModel = mockk<BrandLogoViewModel>(relaxed = true) {
+        every { uiState } returns brandLogoUiState
+    }
+
     private val allActions = listOf(
         HangUpAction(),
         FlipCameraAction(),
@@ -161,6 +178,7 @@ class HCallScreenTest {
         mockkObject(CallAppBarViewModel)
         mockkObject(ParticipantsViewModel)
         mockkObject(UserMessagesViewModel)
+        mockkObject(BrandLogoViewModel)
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<CallActionsViewModel>>(), any()) } returns callViewModel
@@ -199,6 +217,10 @@ class HCallScreenTest {
         }
         every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
             every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns userMessagesViewModel
+        }
+
+        every { BrandLogoViewModel.provideFactory(any()) } returns mockk {
+            every { create(any<KClass<BrandLogoViewModel>>(), any()) } returns brandLogoViewModel
         }
     }
 
@@ -1254,6 +1276,142 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
         verify(exactly = 1) { streamViewModel.pin("streamId", prepend = true, force = true) }
+    }
+
+
+    @Test
+    fun compactLandscapeDevice_companyLogoSet_callDisconnected_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnected.Companion, logo = companyLogo))
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactLandscapeDevice_companyLogoSet_callEndedNeverConnected_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connecting, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnected.Ended, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactLandscapeDevice_companyLogoSet_callDisconnectingNeverConnected_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connecting, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnecting, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactLandscapeDevice_companyLogoSet_callConnected_brandLogoNotDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun compactLandscapeDevice_companyLogoSet_callReconnecting_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Reconnecting, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactLandscapeDevice_companyLogoNotSet_brandLogoNotDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState())
+        composeTestRule.setUpHCallScreen(configuration = compactScreenLandscapeConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo).assertDoesNotExist()
+    }
+
+    @Test
+    fun compactDevice_companyLogoSet_brandLogoDisplayed() = runTest {
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnected.Companion, logo = companyLogo))
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactDevice_companyLogoSet_callEndedNeverConnected_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connecting, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnected.Ended, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactDevice_companyLogoSet_callDisconnectingNeverConnected_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connecting, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Disconnecting, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactDevice_companyLogoSet_callConnected_brandLogoDisplayed() = runTest {
+        val logo = Logo(light = Uri.parse("https://www.example.com/light.png"), dark = Uri.parse("https://www.example.com/dark.png"))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = logo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun compactDevice_companyLogoSet_callReconnecting_brandLogoDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = companyLogo))
+        brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Reconnecting, logo = companyLogo))
+
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun compactDevice_companyLogoNotSet_brandLogoNotDisplayed() = runTest {
+        brandLogoUiState.emit(BrandLogoState())
+        composeTestRule.setUpHCallScreen(configuration = compactScreenConfiguration)
+        composeTestRule.waitForIdle()
+
+        val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
+        composeTestRule.onNodeWithContentDescription(companyLogo).assertDoesNotExist()
     }
 
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpHCallScreen(

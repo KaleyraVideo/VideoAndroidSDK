@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -60,6 +61,7 @@ internal fun HCallScreenScaffold(
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable RowScope.() -> Unit,
     sheetDragContent: @Composable RowScope.() -> Unit,
+    brandLogo: @Composable BoxScope.() -> Unit,
     sheetState: CallSheetState = rememberCallSheetState(),
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.VDragHandle() },
@@ -186,6 +188,7 @@ internal fun HCallScreenScaffold(
                     }
                 }
             )
+            brandLogo()
         }
     }
 }

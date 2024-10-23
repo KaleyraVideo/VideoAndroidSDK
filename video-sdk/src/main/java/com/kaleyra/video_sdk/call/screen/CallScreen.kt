@@ -73,7 +73,7 @@ internal const val VCallScreenTestTag = "VCallScreenTestTag"
 internal const val HCallScreenTestTag = "HCallScreenTestTag"
 
 internal const val CompactScreenMaxActions = 5
-internal const val LargeScreenMaxActions = 8
+internal const val LargeScreenMaxActions = 7
 
 private const val ActivityFinishDelay = 1100L
 private const val ActivityFinishErrorDelay = 1500L
