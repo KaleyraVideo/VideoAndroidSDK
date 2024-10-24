@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.brandlogo.view
 
 import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -188,7 +188,7 @@ internal fun VCallScreen(
                         || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
                 }
             ) BrandLogoComponent(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth().height(46.dp).align(Alignment.Center),
                 alignment = Alignment.CenterStart
             )
         },
