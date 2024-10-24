@@ -41,12 +41,12 @@ internal fun StreamsLayoutSelector(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val gridInteractionSource = remember { MutableInteractionSource() }
-        val containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant }
+        val gridContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant }
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = containerColor,
-                contentColor = contentColorFor(backgroundColor = containerColor)
+                containerColor = gridContainerColor,
+                contentColor = contentColorFor(backgroundColor = gridContainerColor)
             ),
             enabled = enableGridLayout,
             modifier = Modifier
@@ -73,11 +73,12 @@ internal fun StreamsLayoutSelector(
         Spacer(Modifier.width(14.dp))
 
         val pinInteractionSource = remember { MutableInteractionSource() }
+        val pinContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant }
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant },
-                contentColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.onPrimaryContainer else it.onSurfaceVariant }
+                containerColor = pinContainerColor,
+                contentColor = contentColorFor(backgroundColor = pinContainerColor)
             ),
             modifier = Modifier
                 .weight(1f)
