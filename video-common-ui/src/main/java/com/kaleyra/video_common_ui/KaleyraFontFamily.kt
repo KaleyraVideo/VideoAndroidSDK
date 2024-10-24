@@ -32,6 +32,6 @@ object KaleyraFontFamily {
     val default = FontFamily(
         Font(R.font.kaleyra_font_regular, FontWeight.Normal),
         Font(R.font.kaleyra_font_medium, FontWeight.Medium),
-        Font(R.font.kaleyra_font_bold, FontWeight.Bold),
+        Font(R.font.kaleyra_font_semi_bold, FontWeight.SemiBold),
     )
 }

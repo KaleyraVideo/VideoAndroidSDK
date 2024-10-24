@@ -27,8 +27,8 @@
         app:fontWeight="500" />
 
     <!-- bold -->
-    <font app:font="@font/kaleyra_font_bold"
+    <font app:font="@font/kaleyra_font_semi_bold"
         app:fontStyle="normal"
-        app:fontWeight="700" />
+        app:fontWeight="600" />
 
 </font-family>
