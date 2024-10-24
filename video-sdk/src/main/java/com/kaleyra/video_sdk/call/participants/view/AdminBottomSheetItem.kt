@@ -52,7 +52,6 @@ internal fun AdminBottomSheetItem(
         Text(
             text = text,
             style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
         )
     }

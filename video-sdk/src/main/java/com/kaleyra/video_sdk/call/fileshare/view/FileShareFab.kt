@@ -64,7 +64,6 @@ internal fun FileShareFab(
                 Spacer(Modifier.width(FabIconPadding))
                 Text(
                     text = stringResource(id = R.string.kaleyra_fileshare_add),
-                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelLarge
                 )
             }

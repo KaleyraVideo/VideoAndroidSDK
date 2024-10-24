@@ -71,7 +71,6 @@ internal fun ComponentAppBar(
                 text = title,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()

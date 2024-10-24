@@ -137,7 +137,7 @@ fun CallInfoComponent(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = titleTextStyle.fontSize,
                     textAlignment = if (isPipMode) TEXT_ALIGNMENT_VIEW_START else TEXT_ALIGNMENT_CENTER,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = titleTextStyle.fontWeight ?: FontWeight.Normal,
                     ellipsize = Ellipsize.Marquee,
                     shadow = titleTextStyle.shadow
                 )
@@ -151,7 +151,6 @@ fun CallInfoComponent(
                         .testTag(CallInfoSubtitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = subtitleTextStyle.fontSize,
                     textAlign = if (isPipMode) TextAlign.Start else TextAlign.Center,
                     maxLines = 1,
                     style = subtitleTextStyle

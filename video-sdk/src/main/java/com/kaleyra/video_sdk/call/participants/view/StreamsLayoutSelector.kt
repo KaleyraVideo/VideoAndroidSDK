@@ -64,7 +64,6 @@ internal fun StreamsLayoutSelector(
             Spacer(Modifier.width(12.dp))
             Text(
                 text = stringResource(R.string.kaleyra_participants_component_grid),
-                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -95,7 +94,6 @@ internal fun StreamsLayoutSelector(
             Spacer(Modifier.width(12.dp))
             Text(
                 text = stringResource(R.string.kaleyra_participants_component_pin),
-                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1
             )
