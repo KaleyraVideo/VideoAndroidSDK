@@ -184,24 +184,13 @@ data class Theme(
         var surfaceContainerLowest: ColorResource,
     ) {
         /**
-         * Creates a new [Palette] instance using a single seed color for both light and dark themes.
+         * Creates a new [Palette] instance using a single [ColorResource] as a seed for both light and dark themes.
          *
-         * @param seed The seed color in ARGB format.
+         * @param seed The [ColorResource] containing light and dark seed colors.
          */
-        constructor(seed: Int) : this(
-            ColorSchemeFactory.createLightColorScheme(seed),
-            ColorSchemeFactory.createDarkColorScheme(seed)
-        )
-
-        /**
-         * Creates a new [Palette] instance using separate seed colors for light and dark themes.
-         *
-         * @param lightSeed The seed color for the light theme in ARGB format.
-         * @param darkSeed The seed color for the dark theme in ARGB format.
-         */
-        internal constructor(lightSeed: Int, darkSeed: Int) : this(
-            ColorSchemeFactory.createLightColorScheme(lightSeed),
-            ColorSchemeFactory.createDarkColorScheme(darkSeed)
+        constructor(seed: ColorResource) : this(
+            ColorSchemeFactory.createLightColorScheme(seed.light),
+            ColorSchemeFactory.createDarkColorScheme(seed.dark)
         )
 
         /**

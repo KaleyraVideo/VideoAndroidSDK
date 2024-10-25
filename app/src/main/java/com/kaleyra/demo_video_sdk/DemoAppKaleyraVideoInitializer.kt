@@ -34,6 +34,7 @@ import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.theme.Theme
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
@@ -50,9 +51,9 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(applicationContext)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
-                val seed = Color(0xFF2A638A).toArgb()
+                val colorResourceSeed = ColorResource(Color(0xFF2A638A).toArgb())
                 KaleyraVideo.theme = Theme(
-                    palette = Theme.Palette(seed = seed),
+                    palette = Theme.Palette(seed = colorResourceSeed),
                     typography = Theme.Typography(fontFamily = KaleyraFontFamily.default),
                     config = Theme.Config(style = Theme.Config.Style.System)
                 )
