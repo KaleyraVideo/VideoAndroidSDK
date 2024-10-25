@@ -29,13 +29,11 @@ import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvi
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.termsandconditions.TermsAndConditionsRequester
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.utils.CORE_UI
 import com.kaleyra.video_common_ui.utils.extensions.CoroutineExtensions.launchBlocking
 import com.kaleyra.video_utils.ContextRetainer
-import com.kaleyra.video_utils.cached
-import com.kaleyra.video_utils.getValue
 import com.kaleyra.video_utils.logging.PriorityLogger
-import com.kaleyra.video_utils.setValue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +52,8 @@ import java.util.concurrent.Executors
  * Kaleyra Video Android SDK facade
  */
 object KaleyraVideo {
+
+    interface Theme
 
     @get:Synchronized
         /**
@@ -131,7 +131,7 @@ object KaleyraVideo {
         /**
          * Optional theme setup that will be used on the UI layer
          */
-    var theme: CompanyUI.Theme? = null
+    var theme: Theme? = null
 
     @get:Synchronized
     @set:Synchronized
