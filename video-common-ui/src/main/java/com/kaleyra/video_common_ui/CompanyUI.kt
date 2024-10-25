@@ -18,8 +18,6 @@ package com.kaleyra.video_common_ui
 
 import android.net.Uri
 import androidx.annotation.ColorInt
-import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import com.kaleyra.video.Company
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +32,7 @@ import kotlinx.coroutines.flow.shareIn
  * UI representation of a Company
  * @constructor
  */
+@Deprecated("This class is deprecated. It will be removed in a future release")
 class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) :
     Company by company {
 
@@ -64,31 +63,39 @@ class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScop
      * @property night Style Night mode style
      * @constructor
      */
+    @Deprecated(
+        message = "This class is deprecated. It will be removed in a future release. Use com.kaleyra.video_common_ui.theme.Theme instead.",
+        replaceWith = ReplaceWith("com.kaleyra.video_common_ui.theme.Theme")
+    )
     data class Theme(
         val fontFamily: FontFamily = KaleyraFontFamily.default,
         val defaultStyle: DefaultStyle = DefaultStyle.System,
         override val day: Style = Style(),
         override val night: Style = Style(),
-    ) : Company.Theme {
+    ) : Company.Theme, KaleyraVideo.Theme {
 
         /**
          * Default Style representation
          */
+        @Deprecated("This class is deprecated. It will be removed in a future release")
         sealed class DefaultStyle {
 
             /**
              * Day style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object Day : DefaultStyle()
 
             /**
              * Night style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object Night : DefaultStyle()
 
             /**
              * Style based on operating system selected style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object System : DefaultStyle()
         }
 
@@ -98,12 +105,14 @@ class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScop
          * @property colors Colors? optional colors of the company
          * @constructor
          */
+        @Deprecated("This class is deprecated. It will be removed in a future release")
         data class Style(override val logo: Uri? = null, override val colors: Colors? = null) :
             Company.Theme.Style
 
         /**
          * Colors representations
          */
+        @Deprecated("This class is deprecated. It will be removed in a future release")
         sealed class Colors : Company.Theme.Style.Colors {
 
             /**
@@ -112,126 +121,8 @@ class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScop
              *
              * @constructor
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data class Seed(@ColorInt val color: Int) : Colors()
-
-            /**
-             * Theme colors representation using material colors
-             *
-             * @property primary Int
-             * @property onPrimary Int
-             * @property primaryContainer Int
-             * @property onPrimaryContainer Int
-             * @property inversePrimary Int
-             * @property secondary Int
-             * @property onSecondary Int
-             * @property secondaryContainer Int
-             * @property onSecondaryContainer Int
-             * @property tertiary Int
-             * @property onTertiary Int
-             * @property tertiaryContainer Int
-             * @property onTertiaryContainer Int
-             * @property background Int
-             * @property onBackground Int
-             * @property surface Int
-             * @property onSurface Int
-             * @property surfaceVariant Int
-             * @property onSurfaceVariant Int
-             * @property surfaceTint Int
-             * @property inverseSurface Int
-             * @property inverseOnSurface Int
-             * @property error Int
-             * @property onError Int
-             * @property errorContainer Int
-             * @property onErrorContainer Int
-             * @property outline Int
-             * @property outlineVariant Int
-             * @property scrim Int
-             * @property surfaceBright Int
-             * @property surfaceContainer Int
-             * @property surfaceContainerHigh Int
-             * @property surfaceContainerHighest Int
-             * @property surfaceContainerLow Int
-             * @property surfaceContainerLowest Int
-             * @property surfaceDim Int
-             * @constructor
-             */
-            data class Palette(
-                val primary: Int,
-                val onPrimary: Int,
-                val primaryContainer: Int,
-                val onPrimaryContainer: Int,
-                val inversePrimary: Int,
-                val secondary: Int,
-                val onSecondary: Int,
-                val secondaryContainer: Int,
-                val onSecondaryContainer: Int,
-                val tertiary: Int,
-                val onTertiary: Int,
-                val tertiaryContainer: Int,
-                val onTertiaryContainer: Int,
-                val background: Int,
-                val onBackground: Int,
-                val surface: Int,
-                val onSurface: Int,
-                val surfaceVariant: Int,
-                val onSurfaceVariant: Int,
-                val surfaceTint: Int,
-                val inverseSurface: Int,
-                val inverseOnSurface: Int,
-                val error: Int,
-                val onError: Int,
-                val errorContainer: Int,
-                val onErrorContainer: Int,
-                val outline: Int,
-                val outlineVariant: Int,
-                val scrim: Int,
-                val surfaceBright: Int,
-                val surfaceContainer: Int,
-                val surfaceContainerHigh: Int,
-                val surfaceContainerHighest: Int,
-                val surfaceContainerLow: Int,
-                val surfaceContainerLowest: Int,
-                val surfaceDim: Int,
-            ) : Colors() {
-                constructor(colorScheme: ColorScheme) : this(
-                    colorScheme.primary.toArgb(),
-                    colorScheme.onPrimary.toArgb(),
-                    colorScheme.primaryContainer.toArgb(),
-                    colorScheme.onPrimaryContainer.toArgb(),
-                    colorScheme.inversePrimary.toArgb(),
-                    colorScheme.secondary.toArgb(),
-                    colorScheme.onSecondary.toArgb(),
-                    colorScheme.secondaryContainer.toArgb(),
-                    colorScheme.onSecondaryContainer.toArgb(),
-                    colorScheme.tertiary.toArgb(),
-                    colorScheme.onTertiary.toArgb(),
-                    colorScheme.tertiaryContainer.toArgb(),
-                    colorScheme.onTertiaryContainer.toArgb(),
-                    colorScheme.background.toArgb(),
-                    colorScheme.onBackground.toArgb(),
-                    colorScheme.surface.toArgb(),
-                    colorScheme.onSurface.toArgb(),
-                    colorScheme.surfaceVariant.toArgb(),
-                    colorScheme.onSurfaceVariant.toArgb(),
-                    colorScheme.surfaceTint.toArgb(),
-                    colorScheme.inverseSurface.toArgb(),
-                    colorScheme.inverseOnSurface.toArgb(),
-                    colorScheme.error.toArgb(),
-                    colorScheme.onError.toArgb(),
-                    colorScheme.errorContainer.toArgb(),
-                    colorScheme.onErrorContainer.toArgb(),
-                    colorScheme.outline.toArgb(),
-                    colorScheme.outlineVariant.toArgb(),
-                    colorScheme.scrim.toArgb(),
-                    colorScheme.surfaceBright.toArgb(),
-                    colorScheme.surfaceContainer.toArgb(),
-                    colorScheme.surfaceContainerHigh.toArgb(),
-                    colorScheme.surfaceContainerHighest.toArgb(),
-                    colorScheme.surfaceContainerLow.toArgb(),
-                    colorScheme.surfaceContainerLowest.toArgb(),
-                    colorScheme.surfaceDim.toArgb()
-                )
-            }
         }
     }
 }
