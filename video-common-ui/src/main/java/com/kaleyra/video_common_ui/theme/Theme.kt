@@ -121,7 +121,8 @@ data class Theme(
         /**
          * The logo resource
          */
-        val resource = compact
+        val resource
+            get() = compact
 
         /**
          * Creates a new [Logo] instance.
