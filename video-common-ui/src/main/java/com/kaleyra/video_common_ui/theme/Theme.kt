@@ -12,7 +12,7 @@ import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
 
 /**
- * Represents a theme configuration for the application.
+ * Represents a theme configuration for [KaleyraVideo].
  *
  * This data class encapsulates various aspects of the theme, including:
  * - **logo:** The logo resources for the theme.
@@ -184,7 +184,9 @@ data class Theme(
         var surfaceContainerLowest: ColorResource,
     ) {
         /**
-         * Creates a new [Palette] instance using a single [ColorResource] as a seed for both light and dark themes.
+         * Creates a new [Palette] instance using a single[ColorResource] as a seed for both light and dark themes.
+         *
+         * Note: The alpha channel from the provided seed color is ignored when generating the color schemes.
          *
          * @param seed The [ColorResource] containing light and dark seed colors.
          */
@@ -193,6 +195,7 @@ data class Theme(
             ColorSchemeFactory.createDarkColorScheme(seed.dark)
         )
 
+        // TODO add test
         /**
          * Creates a new [Palette] instance using pre-generated [ColorScheme] objects for light and dark themes.
          *
@@ -261,8 +264,8 @@ data class Theme(
                 darkColorScheme.surfaceContainerLow.toArgb()
             ),
             ColorResource(
-                lightColorScheme.surfaceContainerLow.toArgb(),
-                darkColorScheme.surfaceContainerLow.toArgb()
+                lightColorScheme.surfaceContainerLowest.toArgb(),
+                darkColorScheme.surfaceContainerLowest.toArgb()
             )
         )
     }
