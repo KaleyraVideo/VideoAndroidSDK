@@ -31,12 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.kaleyra.video_common_ui.theme.KaleyraPaletteSeed
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toDarkColorScheme
 import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toLightColorScheme
-
-internal val KaleyraPaletteSeed = Color(0xFF2A638A).toArgb()
 
 /**
  * Composable function to generate the Collaboration M3 Theme

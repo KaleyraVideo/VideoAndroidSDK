@@ -16,12 +16,19 @@
 
 package com.kaleyra.video_common_ui.theme
 
+import android.net.Uri
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.video.Company
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
+import com.kaleyra.video_common_ui.theme.resource.URIResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+
+val KaleyraPaletteSeed = Color(0xFF2A638A).toArgb()
 
 /**
  * Utility functions for the Company Theme
@@ -31,30 +38,62 @@ object CompanyThemeManager {
     /**
      * Mapper function to convert Company to a flow containing its CompanyUI.Theme representation
      */
-    val Company.combinedTheme: Flow<CompanyUI.Theme>
+    val Company.combinedTheme: Flow<Theme>
         get() = theme.mapToUI(uiTheme = KaleyraVideo.theme)
 
-    private fun Flow<Company.Theme>.mapToUI(uiTheme: CompanyUI.Theme?): Flow<CompanyUI.Theme> =
+    private fun Flow<Company.Theme>.mapToUI(uiTheme: KaleyraVideo.Theme?): Flow<Theme> =
         flow {
-            uiTheme?.let { emit(it) }
-            map { theme ->
-                val combinedTheme = uiTheme ?: CompanyUI.Theme()
-                combinedTheme.copy(
-                    day = CompanyUI.Theme.Style(
-                        logo = combinedTheme.day.logo ?: theme.day.logo,
-                        colors = combinedTheme.day.colors ?: theme.day.colors?.mapToCompanyUIColors()
-                    ),
-                    night = CompanyUI.Theme.Style(
-                        logo = combinedTheme.night.logo ?: theme.night.logo,
-                        colors = combinedTheme.night.colors ?: theme.night.colors?.mapToCompanyUIColors()
-                    )
-                )
+            uiTheme?.let { emit(mapToCombinedTheme(it)) }
+            mapNotNull { theme ->
+                val lightLogo = theme.day.logo ?: Uri.EMPTY
+                val darkLogo = theme.night.logo ?: Uri.EMPTY
+                val uriResource = URIResource(lightLogo, darkLogo)
+
+                val lightSeed = (theme.day.colors as? Company.Theme.Style.Colors.Seed)?.color ?: KaleyraPaletteSeed
+                val darkSeed = (theme.night.colors as? Company.Theme.Style.Colors.Seed)?.color ?: KaleyraPaletteSeed
+                val colorResource = ColorResource(lightSeed, darkSeed)
+
+                mapToCombinedTheme(uiTheme, uriResource, colorResource)
             }.collect(this)
         }
 
-    private fun Company.Theme.Style.Colors.mapToCompanyUIColors(): CompanyUI.Theme.Colors? {
-        return takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }?.let { colors ->
-            CompanyUI.Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+    private fun mapToCombinedTheme(
+        uiTheme: KaleyraVideo.Theme?,
+        remoteURIResource: URIResource = URIResource(Uri.EMPTY, Uri.EMPTY),
+        remoteColorResource: ColorResource = ColorResource(KaleyraPaletteSeed),
+    ): Theme {
+        return when (uiTheme) {
+            is CompanyUI.Theme -> {
+                val lightLogo = uiTheme.day.logo ?: remoteURIResource.light
+                val darkLogo = uiTheme.night.logo ?: remoteURIResource.dark
+                val logo = Theme.Logo(URIResource(lightLogo, darkLogo))
+
+                val lightSeed = (uiTheme.day.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource.light
+                val darkSeed = (uiTheme.night.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource.dark
+                val palette = Theme.Palette(ColorResource(lightSeed, darkSeed))
+
+                val typography = Theme.Typography(uiTheme.fontFamily)
+                val config = Theme.Config(
+                    style = when (uiTheme.defaultStyle) {
+                        CompanyUI.Theme.DefaultStyle.System -> Theme.Config.Style.System
+                        CompanyUI.Theme.DefaultStyle.Day -> Theme.Config.Style.Light
+                        CompanyUI.Theme.DefaultStyle.Night -> Theme.Config.Style.Dark
+                    }
+                )
+
+                Theme(logo, palette, typography, config)
+            }
+
+            is Theme -> {
+                Theme(
+                    logo = uiTheme.logo ?: Theme.Logo(remoteURIResource),
+                    palette = uiTheme.palette ?: Theme.Palette(remoteColorResource),
+                    typography = uiTheme.typography,
+                    config = uiTheme.config
+                )
+            }
+
+            else -> Theme(Theme.Logo(remoteURIResource), Theme.Palette(remoteColorResource))
         }
     }
 }
