@@ -1,4 +1,4 @@
-package com.kaleyra.video_common_ui.theme
+package com.kaleyra.video_common_ui.theme.factory
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
@@ -61,7 +61,7 @@ internal object ColorSchemeFactory {
         fidelityScheme: SchemeFidelity,
         monochromeScheme: SchemeMonochrome,
     ): ColorScheme {
-        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 0)
+        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 255)
         val hctSeed = Hct.fromInt(fidelitySeed)
         val onFidelitySeed = Hct.from(hctSeed.hue, hctSeed.chroma, DynamicColor.foregroundTone(hctSeed.tone, 7.0)).toInt()
         return ColorScheme(

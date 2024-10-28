@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.material_color_utilities.hct.Hct
 import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
-import com.kaleyra.video_common_ui.theme.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toDarkColorScheme

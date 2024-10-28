@@ -1,13 +1,10 @@
 package com.kaleyra.video_common_ui.theme
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
-import com.kaleyra.material_color_utilities.hct.Hct
-import com.kaleyra.material_color_utilities.scheme.SchemeFidelity
-import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.theme.factory.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
 

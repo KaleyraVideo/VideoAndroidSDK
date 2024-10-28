@@ -1,4 +1,4 @@
-package com.kaleyra.video_common_ui.theme
+package com.kaleyra.video_common_ui.theme.factory
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -153,7 +153,7 @@ class ColorSchemeFactoryTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(Color.White.toArgb()), false, .0)
         val fidelityScheme = SchemeFidelity(Hct.fromInt(seed), false, .0)
 
-        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 0)
+        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 255)
         val hctSeed = Hct.fromInt(fidelitySeed)
         val onSeed =  Hct.from(hctSeed.hue, hctSeed.chroma, DynamicColor.foregroundTone(hctSeed.tone, 7.0)).toInt()
 
@@ -252,7 +252,7 @@ class ColorSchemeFactoryTest {
         val monochromeScheme = SchemeMonochrome(Hct.fromInt(Color.White.toArgb()), true, .0)
         val fidelityScheme = SchemeFidelity(Hct.fromInt(seed), true, .0)
 
-        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 0)
+        val fidelitySeed = ColorUtils.setAlphaComponent(seed, 255)
         val hctSeed = Hct.fromInt(fidelitySeed)
         val onSeed =  Hct.from(hctSeed.hue, hctSeed.chroma, DynamicColor.foregroundTone(hctSeed.tone, 7.0)).toInt()
 

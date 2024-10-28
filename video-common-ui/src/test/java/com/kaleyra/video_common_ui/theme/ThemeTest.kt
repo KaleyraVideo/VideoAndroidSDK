@@ -5,6 +5,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
+import com.kaleyra.video_common_ui.theme.factory.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
 import io.mockk.mockk

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui
+package com.kaleyra.video_common_ui.theme
 
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import com.kaleyra.video.Company
+import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.CompanyUI.Theme.Style
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import io.mockk.every
 import io.mockk.mockk
@@ -78,8 +80,14 @@ class CompanyThemeManagerTest {
         every { KaleyraVideo.theme } returns null
         val defaultTheme = CompanyUI.Theme()
         val expected = CompanyUI.Theme(
-            day = defaultTheme.day.copy(logo = remoteDayLogo, colors = CompanyUI.Theme.Colors.Seed(remoteDayColors.color)),
-            night = defaultTheme.night.copy(logo = remoteNightLogo, colors = CompanyUI.Theme.Colors.Seed(remoteNightColors.color))
+            day = defaultTheme.day.copy(
+                logo = remoteDayLogo,
+                colors = CompanyUI.Theme.Colors.Seed(remoteDayColors.color)
+            ),
+            night = defaultTheme.night.copy(
+                logo = remoteNightLogo,
+                colors = CompanyUI.Theme.Colors.Seed(remoteNightColors.color)
+            )
         )
         assertEquals(expected, company.combinedTheme.first())
     }
@@ -91,8 +99,14 @@ class CompanyThemeManagerTest {
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-            day = Style(logo = dayLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())),
-            night = Style(logo = nightLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb()))
+            day = Style(
+                logo = dayLogo,
+                colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())
+            ),
+            night = Style(
+                logo = nightLogo,
+                colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb())
+            )
         )
         every { KaleyraVideo.theme } returns companyUITheme
         assertEquals(companyUITheme, company.combinedTheme.first())
@@ -103,13 +117,25 @@ class CompanyThemeManagerTest {
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-            day = Style(logo = null, colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())),
-            night = Style(logo = null, colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb()))
+            day = Style(
+                logo = null,
+                colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())
+            ),
+            night = Style(
+                logo = null,
+                colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb())
+            )
         )
         every { KaleyraVideo.theme } returns companyUITheme
         val expected = companyUITheme.copy(
-            day = companyUITheme.day.copy(logo = remoteDayStyle.logo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Red.toArgb())),
-            night = companyUITheme.night.copy(logo = remoteNightStyle.logo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Yellow.toArgb()))
+            day = companyUITheme.day.copy(logo = remoteDayStyle.logo, colors = CompanyUI.Theme.Colors.Seed(
+                color = Color.Red.toArgb()
+            )
+            ),
+            night = companyUITheme.night.copy(logo = remoteNightStyle.logo, colors = CompanyUI.Theme.Colors.Seed(
+                color = Color.Yellow.toArgb()
+            )
+            )
         )
         assertEquals(expected, company.combinedTheme.drop(1).first())
     }
@@ -126,8 +152,14 @@ class CompanyThemeManagerTest {
         )
         every { KaleyraVideo.theme } returns companyUITheme
         val expected = companyUITheme.copy(
-            day = companyUITheme.day.copy(logo = dayLogo, colors = CompanyUI.Theme.Colors.Seed(remoteDayColors.color)),
-            night = companyUITheme.night.copy(logo = nightLogo, colors = CompanyUI.Theme.Colors.Seed(remoteNightColors.color))
+            day = companyUITheme.day.copy(logo = dayLogo, colors = CompanyUI.Theme.Colors.Seed(
+                remoteDayColors.color
+            )
+            ),
+            night = companyUITheme.night.copy(logo = nightLogo, colors = CompanyUI.Theme.Colors.Seed(
+                remoteNightColors.color
+            )
+            )
         )
         assertEquals(expected, company.combinedTheme.drop(1).first())
     }

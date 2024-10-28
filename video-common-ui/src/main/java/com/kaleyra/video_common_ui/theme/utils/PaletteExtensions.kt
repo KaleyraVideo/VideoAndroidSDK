@@ -2,7 +2,7 @@ package com.kaleyra.video_common_ui.theme.utils
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
-import com.kaleyra.video_common_ui.theme.ColorSchemeFactory
+import com.kaleyra.video_common_ui.theme.factory.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.Theme
 
 /**
