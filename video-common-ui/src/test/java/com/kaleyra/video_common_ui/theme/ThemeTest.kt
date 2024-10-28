@@ -50,9 +50,8 @@ class ThemeTest {
         val uriResource = URIResource(mockk<Uri>(), mockk<Uri>())
 
         val logo = Theme.Logo(uriResource)
-        assertEquals(uriResource, logo.resource)
-        assertEquals(uriResource, logo.compact)
-        assertEquals(uriResource, logo.extended)
+        assertEquals(uriResource, logo.image)
+        assertEquals(uriResource, logo.largeImage)
     }
 
     @Test

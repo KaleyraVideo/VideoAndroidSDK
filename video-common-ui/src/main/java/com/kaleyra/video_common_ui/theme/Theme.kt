@@ -112,14 +112,9 @@ data class Theme(
      * Represents the logo resources for the theme.
      */
     class Logo private constructor(
-        internal val compact: URIResource,
-        internal val extended: URIResource,
+        val image: URIResource,
+        internal val largeImage: URIResource,
     ) {
-        /**
-         * The logo resource
-         */
-        val resource
-            get() = compact
 
         /**
          * Creates a new [Logo] instance.
@@ -134,20 +129,20 @@ data class Theme(
 
             other as Logo
 
-            if (compact != other.compact) return false
-            if (extended != other.extended) return false
+            if (image != other.image) return false
+            if (largeImage != other.largeImage) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            var result = compact.hashCode()
-            result = 31 * result + extended.hashCode()
+            var result = image.hashCode()
+            result = 31 * result + largeImage.hashCode()
             return result
         }
 
         override fun toString(): String {
-            return "Logo(compact=$compact, extended=$extended)"
+            return "Logo(compact=$image, extended=$largeImage)"
         }
     }
 

@@ -70,7 +70,7 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
 
             company.first().combinedTheme.onEach { companyTheme ->
                 _uiState.update { uiState ->
-                    uiState.copy(logo = Logo(companyTheme.logo?.resource?.light, companyTheme.logo?.resource?.dark))
+                    uiState.copy(logo = Logo(companyTheme.logo?.image?.light, companyTheme.logo?.image?.dark))
                 }
             }.launchIn(this)
         }
