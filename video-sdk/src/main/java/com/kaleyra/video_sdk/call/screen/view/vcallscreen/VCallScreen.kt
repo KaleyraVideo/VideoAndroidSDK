@@ -280,12 +280,7 @@ internal fun VCallScreen(
                                     )
                             )
 
-                            Column(
-                                modifier = Modifier
-                                    .padding(top = top)
-                                    .animateConstraints()
-                                    .animatePlacement(this@LookaheadScope)
-                            ) {
+                            Column(Modifier.padding(top = top)) {
                                 CallInfoComponent(
                                     modifier = Modifier
                                         .padding(top = 56.dp, bottom = 16.dp)
