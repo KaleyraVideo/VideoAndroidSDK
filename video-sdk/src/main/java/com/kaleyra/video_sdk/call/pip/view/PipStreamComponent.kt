@@ -97,6 +97,7 @@ internal fun PipStreamComponent(
 
             StreamStatusIcons(
                 uiState.preview.audio,
+                uiState.preview.video,
                 fullscreen = false,
                 mine = true,
                 modifier = Modifier

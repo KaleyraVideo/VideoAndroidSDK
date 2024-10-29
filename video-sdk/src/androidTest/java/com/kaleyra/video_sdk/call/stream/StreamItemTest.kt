@@ -7,10 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import com.kaleyra.video.conference.VideoStreamView
@@ -19,9 +21,11 @@ import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
+import com.kaleyra.video_sdk.call.stream.view.items.ZoomIconTestTag
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -227,5 +231,77 @@ class StreamItemTest {
             .assertIsDisplayed()
             .assertBottomPositionInRootIsEqualTo(parentBottom)
             .assertLeftPositionInRootIsEqualTo(parentLeft)
+    }
+
+    @Test
+    fun videoNotPresent_zoomIconNotDisplayed() {
+        stream = stream.copy(video = null)
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun videoDisabled_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevelFit_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevelFill_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fill, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel2x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`2x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("2x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 2x").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel3x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("3x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 3x").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel4x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`4x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("4x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 4x").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel5x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`5x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("5x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 5x").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel6x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`6x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("6x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 6x").assertIsDisplayed()
+    }
+
+    @Test
+    fun videoPresent_zoomLevel7x_zoomIconNotDisplayed() {
+        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`7x`, isEnabled = true))
+        composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithText("7x").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Zoom 7x").assertIsDisplayed()
     }
 }

@@ -19,6 +19,7 @@ package com.kaleyra.video_common_ui.mapper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

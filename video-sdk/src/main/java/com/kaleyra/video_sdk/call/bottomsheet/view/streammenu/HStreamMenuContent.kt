@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.streammenu
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
@@ -22,6 +23,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout
 import com.kaleyra.video_sdk.call.callactions.view.CancelAction
 import com.kaleyra.video_sdk.call.callactions.view.FullscreenAction
 import com.kaleyra.video_sdk.call.callactions.view.PinAction
+import com.kaleyra.video_sdk.call.callactions.view.ZoomAction
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
@@ -60,6 +62,7 @@ internal fun HStreamMenuContent(
 
     HStreamMenuContent(
         isFullscreen = uiState.fullscreenStream?.id == selectedStreamId,
+        hasVideo = uiState.streams.value.firstOrNull { it.id == selectedStreamId }?.video?.isEnabled == true,
         isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         isPinLimitReached = isPinLimitReached,
         onCancelClick = onDismiss,
@@ -69,6 +72,7 @@ internal fun HStreamMenuContent(
             else viewModel.pin(selectedStreamId)
             onDismiss()
         },
+        onZoomClick = { viewModel.zoom(selectedStreamId) },
         modifier = modifier
     )
 }
@@ -76,11 +80,13 @@ internal fun HStreamMenuContent(
 @Composable
 internal fun HStreamMenuContent(
     isFullscreen: Boolean,
+    hasVideo: Boolean,
     isPinned: Boolean,
     isPinLimitReached: Boolean,
     onCancelClick: () -> Unit,
     onFullscreenClick: (Boolean) -> Unit,
     onPinClick: (Boolean) -> Unit,
+    onZoomClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier.padding(14.dp)) {
@@ -98,6 +104,10 @@ internal fun HStreamMenuContent(
             )
             Spacer(modifier = Modifier.width(SheetItemsSpacing))
         }
+        if (hasVideo) {
+            ZoomAction(onClick = onZoomClick)
+            Spacer(modifier = Modifier.width(SheetItemsSpacing))
+        }
         FullscreenAction(
             label = true,
             fullscreen = isFullscreen,
@@ -112,7 +122,7 @@ internal fun HStreamMenuContent(
 internal fun HStreamMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            HStreamMenuContent(false, false, false, {}, {}, {})
+            HStreamMenuContent(false, true, false, false, {}, {}, {}, {})
         }
     }
 }
@@ -123,7 +133,7 @@ internal fun HStreamMenuContentPreview() {
 internal fun HStreamFullscreenMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            HStreamMenuContent(true, false, false, {}, {}, {})
+            HStreamMenuContent(true, true, false, false, {}, {}, {}, {})
         }
     }
 }
@@ -134,7 +144,7 @@ internal fun HStreamFullscreenMenuContentPreview() {
 internal fun HStreamPinLimitMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            HStreamMenuContent(false, false, true, {}, {}, {})
+            HStreamMenuContent(false, true, false, true, {}, {}, {}, {})
         }
     }
 }
