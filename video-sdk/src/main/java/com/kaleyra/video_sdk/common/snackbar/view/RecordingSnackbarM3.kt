@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.common.snackbar.view
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
@@ -61,7 +62,7 @@ fun RecordingErrorSnackbarM3(
 @Composable
 internal fun RecordingStartedSnackbarPreviewM3() {
     KaleyraTheme {
-        RecordingStartedSnackbarM3({})
+        RecordingStartedSnackbarM3(onDismissClick =  {})
     }
 }
 
@@ -71,7 +72,7 @@ internal fun RecordingStartedSnackbarPreviewM3() {
 @Composable
 internal fun RecordingStoppedSnackbarPreviewM3() {
     KaleyraTheme {
-        RecordingEndedSnackbarM3({})
+        RecordingEndedSnackbarM3(onDismissClick = {})
     }
 }
 

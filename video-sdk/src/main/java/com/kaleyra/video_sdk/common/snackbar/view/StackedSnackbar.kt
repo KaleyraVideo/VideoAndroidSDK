@@ -1,13 +1,8 @@
 package com.kaleyra.video_sdk.common.snackbar.view
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -25,7 +20,6 @@ import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun StackedSnackbar(
     snackbarData: ImmutableList<UserMessage>,
@@ -36,46 +30,34 @@ internal fun StackedSnackbar(
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .then(modifier)
+        modifier = Modifier.then(modifier)
     ) {
-
         items(items = snackbarData.value, key = { it.id }) {
-            Box(
-                modifier = Modifier
-                    .animateItemPlacement()
-                    .wrapContentSize(),
-                content = {
-                    val userMessage = it
-                    val dismiss = { onDismissClick(userMessage) }
-                    when (userMessage) {
-                        is RecordingMessage.Started -> RecordingStartedSnackbarM3(onDismissClick = dismiss)
-                        is RecordingMessage.Stopped -> RecordingEndedSnackbarM3(onDismissClick = dismiss)
-                        is RecordingMessage.Failed -> RecordingErrorSnackbarM3(onDismissClick = dismiss)
-                        is UsbCameraMessage.Connected -> UsbConnectedSnackbarM3(userMessage.name, onDismissClick = dismiss)
-                        is UsbCameraMessage.Disconnected -> UsbDisconnectedSnackbarM3(onDismissClick = dismiss)
-                        is UsbCameraMessage.NotSupported -> UsbNotSupportedSnackbarM3(onDismissClick = dismiss)
-                        is CameraRestrictionMessage -> CameraRestrictionSnackbarM3(onDismissClick = dismiss)
-                        is AudioConnectionFailureMessage.Generic -> AudioOutputGenericFailureSnackbarM3(onDismissClick = dismiss)
-                        is AudioConnectionFailureMessage.InSystemCall -> AudioOutputInSystemCallFailureSnackbarM3(onDismissClick = dismiss)
-                        is MutedMessage -> MutedSnackbarM3(userMessage.admin)
-                        is PinScreenshareMessage -> PinScreenshareSnackbarM3(userDisplayName = userMessage.userDisplayName, onPinClicked = {
-                            dismiss()
-                            onActionClick(userMessage)
-                        })
+            val userMessage = it
+            val dismiss = { onDismissClick(userMessage) }
+            when (userMessage) {
+                is RecordingMessage.Started -> RecordingStartedSnackbarM3(onDismissClick = dismiss)
+                is RecordingMessage.Stopped -> RecordingEndedSnackbarM3(onDismissClick = dismiss)
+                is RecordingMessage.Failed -> RecordingErrorSnackbarM3(onDismissClick = dismiss)
+                is UsbCameraMessage.Connected -> UsbConnectedSnackbarM3(userMessage.name, onDismissClick = dismiss)
+                is UsbCameraMessage.Disconnected -> UsbDisconnectedSnackbarM3(onDismissClick = dismiss)
+                is UsbCameraMessage.NotSupported -> UsbNotSupportedSnackbarM3(onDismissClick = dismiss)
+                is CameraRestrictionMessage -> CameraRestrictionSnackbarM3(onDismissClick = dismiss)
+                is AudioConnectionFailureMessage.Generic -> AudioOutputGenericFailureSnackbarM3(onDismissClick = dismiss)
+                is AudioConnectionFailureMessage.InSystemCall -> AudioOutputInSystemCallFailureSnackbarM3(onDismissClick = dismiss)
+                is MutedMessage -> MutedSnackbarM3(userMessage.admin)
+                is PinScreenshareMessage -> PinScreenshareSnackbarM3(userDisplayName = userMessage.userDisplayName, onPinClicked = {
+                    dismiss()
+                    onActionClick(userMessage)
+                })
 
-                        AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
-                        AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
-                        AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
-                        is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
-                        is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
-                    }
-                }
-            )
+                AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
+                AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
+                AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
+                is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
+                is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
+            }
             Spacer(Modifier.height(16.dp))
         }
     }
 }
-
