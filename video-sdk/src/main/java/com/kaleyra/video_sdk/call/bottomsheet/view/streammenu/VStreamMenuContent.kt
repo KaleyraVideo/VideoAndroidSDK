@@ -105,7 +105,7 @@ internal fun VStreamMenuContent(
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
         }
         if (hasVideo) {
-            ZoomAction(onClick = onZoomClick)
+            ZoomAction(onClick = onZoomClick, label = false)
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
         }
         FullscreenAction(
