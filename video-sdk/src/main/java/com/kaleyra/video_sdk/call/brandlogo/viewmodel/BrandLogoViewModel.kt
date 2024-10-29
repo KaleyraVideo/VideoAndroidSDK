@@ -27,8 +27,9 @@ class BrandLogoViewModel(configure: suspend () -> Configuration) : BaseViewModel
                     val theme = it.first
                     val callStateUi = it.second
                     _uiState.update { uiState ->
+                        val image = theme.logo?.image
                         uiState.copy(
-                            logo = Logo(theme.day.logo, theme.night.logo),
+                            logo = Logo(image?.light, image?.dark),
                             callStateUi = callStateUi
                         )
                     }
