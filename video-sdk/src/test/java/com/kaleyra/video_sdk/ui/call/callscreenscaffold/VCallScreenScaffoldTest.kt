@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.callscreenscaffold
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -275,12 +276,29 @@ class VCallScreenScaffoldTest {
         assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
+    @Test
+    fun testBrandLogoComposableCalled() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            sheetState = sheetState,
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
-        content: @Composable (PaddingValues) -> Unit = {}
+        content: @Composable (PaddingValues) -> Unit = {},
+        brandLogo: @Composable (BoxScope) -> Unit = {},
     ) {
         setContent {
             VCallScreenScaffold(
@@ -311,6 +329,7 @@ class VCallScreenScaffoldTest {
                     )
                 },
                 paddingValues = paddingValues,
+                brandLogo = brandLogo,
                 content = content
             )
         }

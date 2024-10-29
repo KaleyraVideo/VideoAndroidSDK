@@ -206,6 +206,7 @@
     <string name="kaleyra_back">Back</string>
     <string name="kaleyra_avatar">User avatar</string>
     <string name="kaleyra_company_logo">Company logo</string>
+    <string name="kaleyra_app_icon">App icon</string>
 
     <string name="kaleyra_move_to_featured_streams">Move to featured streams</string>
     <string name="kaleyra_tap_to_answer">tap to answer</string>

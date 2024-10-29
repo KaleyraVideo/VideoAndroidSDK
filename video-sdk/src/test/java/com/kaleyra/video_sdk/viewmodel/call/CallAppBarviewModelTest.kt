@@ -1,27 +1,24 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
-import com.kaleyra.video.Company
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel
+import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
-import com.kaleyra.video_common_ui.theme.CompanyThemeManager
-import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
-import com.kaleyra.video_common_ui.theme.Theme
-import com.kaleyra.video_common_ui.theme.resource.URIResource
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.appbar.model.Logo
-import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
+import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -50,7 +46,7 @@ class CallAppBarViewModelTest {
 
     private val conference = mockk<ConferenceUI>()
 
-    private val companyMock = mockk<Company>()
+    private val companyMock = mockk<CompanyUI>()
 
     private val participantMeMock = mockk<CallParticipant.Me>()
 
@@ -58,10 +54,9 @@ class CallAppBarViewModelTest {
 
     private val participantMock2 = mockk<CallParticipant>()
 
-    private val companyThemeMock = MutableStateFlow(
-        Theme(logo = Theme.Logo(
-            URIResource(light = Uri.parse("https://www.example1.com"), dark = Uri.parse("https://www.example2.com"))
-        ))
+    private val companyThemeMock = MutableStateFlow(CompanyUI.Theme(
+        day = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example1.com")),
+        night = CompanyUI.Theme.Style(logo = Uri.parse("https://www.example2.com")))
     )
 
     private val recordingMock: MutableStateFlow<Call.Recording> = MutableStateFlow(object : Call.Recording {
@@ -72,11 +67,23 @@ class CallAppBarViewModelTest {
     private val elapsedMock: MutableStateFlow<Long> = MutableStateFlow(10L)
 
     private val inCallParticipantsMock: MutableStateFlow<List<CallParticipant>> = MutableStateFlow(listOf(participantMeMock, participantMock1, participantMock2))
+
+    private val packageName = "packageName"
+
+    private val appIconRef = 678
+
+    private val mockkContext: Context = mockk<Context>(relaxed = true)
+
+    private val packageManager: PackageManager = mockk<PackageManager>(relaxed = true)
+
     @Before
     fun setup() {
         mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns mockkContext
+        every { mockkContext.packageName } returns packageName
+        every { mockkContext.packageManager } returns packageManager
+        every { packageManager.getApplicationInfo(packageName, 0) } returns ApplicationInfo().apply { icon = appIconRef }
         mockkObject(CallStateMapper)
-        mockkObject(CompanyThemeManager)
         mockkObject(com.kaleyra.video_common_ui.mapper.ParticipantMapper)
         with(callMock) {
             every { toInCallParticipants() } returns inCallParticipantsMock
@@ -92,16 +99,11 @@ class CallAppBarViewModelTest {
                 tryEmit(callMock)
             }
         }
-        every { companyMock.combinedTheme } returns companyThemeMock
+        every { companyMock.theme } returns companyThemeMock
 
         viewModel = CallAppBarViewModel {
             CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
         }
-    }
-
-    @After
-    fun tearDown() {
-        unmockkAll()
     }
 
     @Test
@@ -196,30 +198,8 @@ class CallAppBarViewModelTest {
     }
 
     @Test
-    fun testCompanyLogoReceived() = runTest {
+    fun testAppIconReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(
-            Logo(
-                light = Uri.parse("https://www.example1.com"),
-                dark = Uri.parse("https://www.example2.com")
-            ),
-            viewModel.uiState.first().logo
-        )
-    }
-
-    @Test
-    fun testCompanyLogoUpdated() = runTest {
-        advanceUntilIdle()
-        companyThemeMock.emit(
-            Theme(logo = Theme.Logo(
-                URIResource(light = Uri.parse("https://www.example3.com"), dark = Uri.parse("https://www.example4.com"))
-            ))
-        )
-        advanceUntilIdle()
-        Assert.assertEquals(
-            Logo(
-            light = Uri.parse("https://www.example3.com"),
-            dark = Uri.parse("https://www.example4.com")
-        ), viewModel.uiState.first().logo)
+        Assert.assertEquals(Uri.parse("android.resource://$packageName/$appIconRef"), viewModel.uiState.first().appIconUri)
     }
 }

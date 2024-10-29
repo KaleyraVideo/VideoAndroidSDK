@@ -15,7 +15,6 @@ import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.CallAppBarComponent
 import com.kaleyra.video_sdk.call.appbar.view.RecordingDotTag
-import com.kaleyra.video_sdk.call.appbar.model.Logo
 import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import org.junit.After
@@ -31,7 +30,7 @@ class CallAppBarComponentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var logo by mutableStateOf(Logo(light = Uri.EMPTY, dark = Uri.EMPTY))
+    private var logo by mutableStateOf(Uri.EMPTY)
 
     private var recording by mutableStateOf(false)
 
@@ -51,7 +50,7 @@ class CallAppBarComponentTest {
     fun setUp() {
         composeTestRule.setContent {
             CallAppBarComponent(
-                logo = logo,
+                appIcon = logo,
                 title = title,
                 automaticRecording = recording,
                 recordingStateUi = recordingStateUi,
@@ -64,7 +63,7 @@ class CallAppBarComponentTest {
 
     @After
     fun tearDown() {
-        logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY)
+        logo = Uri.EMPTY
         recording = false
         isBackPressed = false
         isParticipantButtonClicked = false
@@ -80,9 +79,8 @@ class CallAppBarComponentTest {
 
     @Test
     fun testLogoIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
-        val uri = Uri.parse("com.kaleyra.collaboration_suite_phone_ui.test.R.drawable.kaleyra_logo")
-        logo = Logo(uri, uri)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_app_icon)
+        logo = Uri.parse("com.kaleyra.collaboration_suite_phone_ui.test.R.drawable.kaleyra_logo")
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 

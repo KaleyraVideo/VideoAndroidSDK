@@ -1,10 +1,12 @@
 package com.kaleyra.video_sdk.call.callscreenscaffold
 
+import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,12 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
@@ -90,6 +98,7 @@ internal fun VCallScreenScaffold(
     modifier: Modifier = Modifier,
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable ColumnScope.() -> Unit,
+    brandLogo: @Composable BoxScope.() -> Unit,
     sheetPanelContent: @Composable (ColumnScope.() -> Unit)? = null,
     sheetDragContent: @Composable ColumnScope.() -> Unit,
     sheetState: CallSheetState = rememberCallSheetState(),
@@ -125,6 +134,10 @@ internal fun VCallScreenScaffold(
         derivedStateOf { PaddingValues(start = startPadding, top = topAppBarPadding, end = endPadding, bottom = bottomSheetPadding) }
     }
 
+    var dragHandleHeight by remember { mutableIntStateOf(0) }
+    var sheetContentPosition by remember { mutableStateOf(Size(0f, 0f)) }
+    var brandLogoPosition by remember { mutableStateOf(Size(0f, 0f)) }
+
     if (sheetPanelContent != null) {
         LaunchedEffect(Unit) {
             sheetState.collapse()
@@ -151,6 +164,20 @@ internal fun VCallScreenScaffold(
                 onDismissRequest = animateToDismiss,
                 visible = sheetState.targetValue == CallSheetValue.Expanded
             )
+
+            Box(
+                modifier = Modifier
+                    .width(with(density) { sheetContentPosition.width.toDp() })
+                    .height(with(density) { sheetContentPosition.height.toDp() + dragHandleHeight.toDp() })
+                    .padding(horizontal = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) 32.dp else 16.dp)
+                    .graphicsLayer {
+                        translationX = 0f
+                        translationY = brandLogoPosition.height - dragHandleHeight
+                    }
+            ) {
+                brandLogo()
+            }
+
             Column(Modifier.align(Alignment.BottomCenter)) {
                 if (sheetPanelContent != null) {
                     Column(
@@ -173,11 +200,16 @@ internal fun VCallScreenScaffold(
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
                             tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
-                            modifier = Modifier.anchoredDraggable(
-                                state = sheetState.anchoredDraggableState,
-                                orientation = dragOrientation,
-                                enabled = sheetDragHandle != null
-                            )
+                            modifier = Modifier
+                                .anchoredDraggable(
+                                    state = sheetState.anchoredDraggableState,
+                                    orientation = dragOrientation,
+                                    enabled = sheetDragHandle != null
+                                )
+                                .onGloballyPositioned {
+                                    brandLogoPosition = Size(0f, it.positionInRoot().y)
+                                    sheetContentPosition = Size(it.positionInRoot().x, maxOf(sheetContentPosition.height, it.size.height.toFloat()))
+                                }
                         ) {
                             Column(content = sheetContent)
                         }
@@ -214,6 +246,9 @@ internal fun VCallScreenScaffold(
                                                     coroutineScope = scope,
                                                     onDismiss = animateToDismiss
                                                 )
+                                                .onGloballyPositioned {
+                                                    dragHandleHeight = maxOf(dragHandleHeight, it.size.height)
+                                                }
                                         ) {
                                             dragHandle()
                                         }
@@ -233,7 +268,7 @@ internal fun VCallScreenScaffold(
                                 }
                             )
                         }
-                    }
+                    } ?: let { dragHandleHeight = 0; null }
                 )
             }
         }

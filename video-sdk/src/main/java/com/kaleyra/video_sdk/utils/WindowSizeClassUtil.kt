@@ -21,4 +21,8 @@ internal object WindowSizeClassUtil {
     fun WindowSizeClass.isAtLeastMediumWidth(): Boolean {
         return widthSizeClass in setOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
     }
+
+    fun WindowSizeClass.isAtLeastExpandedWidth(): Boolean {
+        return widthSizeClass in setOf(WindowWidthSizeClass.Expanded)
+    }
 }
