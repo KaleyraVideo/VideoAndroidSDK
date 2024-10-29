@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -165,7 +166,7 @@ internal fun VCallScreenScaffold(
                 visible = sheetState.targetValue == CallSheetValue.Expanded
             )
 
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .width(with(density) { sheetContentPosition.width.toDp() })
                     .height(with(density) { sheetContentPosition.height.toDp() + dragHandleHeight.toDp() })
@@ -175,7 +176,9 @@ internal fun VCallScreenScaffold(
                         translationY = brandLogoPosition.height - dragHandleHeight
                     }
             ) {
-                brandLogo()
+                with (density) {
+                    if (constraints.maxWidth.toDp() >= 40.dp && constraints.maxHeight.toDp() >= 40.dp ) brandLogo()
+                }
             }
 
             Column(Modifier.align(Alignment.BottomCenter)) {
