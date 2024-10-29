@@ -151,7 +151,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         // in case the MainActivity has been shown by an action of missed call notification
         handleMissedCall(intent)
         binding!!.ongoingCallLabel.setOnClickListener { v: View? ->
-            lifecycleScope.launch { KaleyraVideo.conference.call.first().setDisplayMode(CallUI.DisplayMode.Foreground) }
+            lifecycleScope.launch {
+                with(KaleyraVideo.conference.call.first()) {
+                    if (!setDisplayMode(CallUI.DisplayMode.Foreground)) this.show()
+                }
+            }
         }
         val selectedUsersAdapter = FastAdapter.with(selectedUsersItemAdapter)
         val selectExtension = selectedUsersAdapter.getOrCreateExtension(SelectExtension::class.java)
@@ -171,8 +175,8 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         KaleyraVideo.state.filter { it is Disconnected.Error }.onEach { showErrorDialog(it.toString()) }.launchIn(lifecycleScope)
 
         KaleyraVideo.conference.call.flatMapLatest { it.state }.onEach {
-            if (it is Call.State.Disconnected) hideOngoingCallLabel()
-            if (it is Call.State.Connecting) showOngoingCallLabel()
+            if (it is Call.State.Disconnected.Ended) hideOngoingCallLabel()
+            if (it is Call.State.Disconnected.Companion || it is Call.State.Connecting) showOngoingCallLabel()
         }.launchIn(lifecycleScope)
 
         KaleyraVideo.conference.call
