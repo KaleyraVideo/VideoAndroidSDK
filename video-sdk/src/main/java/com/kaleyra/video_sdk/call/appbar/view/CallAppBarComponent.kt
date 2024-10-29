@@ -49,7 +49,6 @@ import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.theme.typography
 
 @Stable
 internal object CallAppBarDefaults {
@@ -175,7 +174,7 @@ private fun Title(recording: Boolean, pulseRecording: Boolean, title: String) {
         }
         Text(
             text = title,
-            style = typography.labelLarge.copy(
+            style = MaterialTheme.typography.labelLarge.copy(
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false
                 )
@@ -200,7 +199,7 @@ private fun CallParticipantsButton(
         ) {
             Text(
                 text = "$participantCount",
-                style = typography.labelLarge.copy(
+                style = MaterialTheme.typography.labelLarge.copy(
                     platformStyle = PlatformTextStyle(
                         includeFontPadding = false
                     )

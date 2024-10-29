@@ -8,8 +8,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
@@ -63,7 +63,7 @@ class SidePanelTest {
         with(chatViewModel) {
             every { uiState } returns MutableStateFlow(ChatUiState.OneToOne())
             every { getLoggedUserId() } returns "loggedId"
-            every { theme } returns MutableStateFlow(CompanyUI.Theme())
+            every { theme } returns MutableStateFlow(Theme())
 
         }
 

@@ -64,7 +64,7 @@ internal fun AudioOutputItem(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleSmall,
                 color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
             )
             val subtitle = subtitleFor(audioDevice)
             if (subtitle != null) {

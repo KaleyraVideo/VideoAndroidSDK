@@ -69,7 +69,8 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
                         strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth
                     )
                     Text(
-                        text = stringResource(id = R.string.kaleyra_file_upload_percentage, (progressValue * 100).roundToInt()), fontSize = 12.sp
+                        text = stringResource(id = R.string.kaleyra_file_upload_percentage, (progressValue * 100).roundToInt()),
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
@@ -77,11 +78,11 @@ internal fun WhiteboardUploadCard(upload: WhiteboardUploadUi) {
             Column {
                 Text(
                     text = stringResource(id = if (error) R.string.kaleyra_whiteboard_error_title else R.string.kaleyra_whiteboard_uploading_file),
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = stringResource(id = if (error) R.string.kaleyra_whiteboard_error_subtitle else R.string.kaleyra_whiteboard_compressing),
-                    fontSize = 12.sp
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

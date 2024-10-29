@@ -52,6 +52,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.termsandconditions.model.TermsAndConditionsUiState
 import com.kaleyra.video_sdk.termsandconditions.viewmodel.TermsAndConditionsViewModel
@@ -120,8 +122,7 @@ internal fun TermsAndConditionsScreen(
 
             Text(
                 text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(titleRef) {
@@ -130,7 +131,7 @@ internal fun TermsAndConditionsScreen(
             )
             Text(
                 text = message,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .constrainAs(messageRef) {
@@ -151,7 +152,7 @@ internal fun TermsAndConditionsScreen(
                 TextButton(
                     onClick = onDecline,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
-                    content = { Text(text = declineText, fontSize = 14.sp) }
+                    content = { Text(text = declineText, style = MaterialTheme.typography.labelLarge) }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 var loading by remember { mutableStateOf(false) }
@@ -163,7 +164,7 @@ internal fun TermsAndConditionsScreen(
                     modifier = Modifier.animateContentSize()
                 ) {
                     if (!loading) {
-                        Text(text = acceptText, fontSize = 14.sp)
+                        Text(text = acceptText, style = MaterialTheme.typography.labelLarge)
                     } else {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -180,8 +181,8 @@ internal fun TermsAndConditionsScreen(
 
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@DayModePreview
+@NightModePreview
 @Composable
 internal fun TermsAndConditionsScreenPreview() {
     TermsAndConditionsTheme {

@@ -58,7 +58,6 @@ internal fun ScreenShareItem(
         Text(
             text = textFor(screenShareTarget),
             style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Medium
         )
     }
 }
