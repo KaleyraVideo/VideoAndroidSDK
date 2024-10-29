@@ -111,19 +111,19 @@ internal fun VCallScreenScaffold(
         { scope.launch { sheetState.settle(it) } }
     }
 
-    val density = LocalDensity.current
-    var sheetDragContentHeight by remember { mutableStateOf(0.dp) }
-    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
-    var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val contentPaddingValues by remember {
-        derivedStateOf { PaddingValues(top = topAppBarPadding, bottom = bottomSheetPadding) }
-    }
-
     val layoutDirection = LocalLayoutDirection.current
     val topPadding = paddingValues.calculateTopPadding()
     val bottomPadding = paddingValues.calculateBottomPadding()
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
+
+    val density = LocalDensity.current
+    var sheetDragContentHeight by remember { mutableStateOf(0.dp) }
+    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
+    var topAppBarPadding by remember { mutableStateOf(0.dp) }
+    val contentPaddingValues by remember(startPadding, endPadding) {
+        derivedStateOf { PaddingValues(start = startPadding, top = topAppBarPadding, end = endPadding, bottom = bottomSheetPadding) }
+    }
 
     if (sheetPanelContent != null) {
         LaunchedEffect(Unit) {

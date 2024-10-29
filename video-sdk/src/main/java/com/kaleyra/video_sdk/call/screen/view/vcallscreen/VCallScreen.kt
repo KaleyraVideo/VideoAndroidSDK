@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.IntOffset
@@ -72,9 +73,6 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 internal val PanelTestTag = "PanelTestTag"
 
 internal val StreamMenuContentTestTag = "StreamMenuContentTestTag"
-
-private val BottomSheetHeight = 76.dp
-private val BottomSheetWithHandleHeight = 87.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -126,6 +124,7 @@ internal fun VCallScreen(
     VCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
+        // Avoid applying horizontal padding here to prevent it from affecting the bottom sheet.
         paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing),
         topAppBar = {
             CallAppBarComponent(
@@ -217,11 +216,12 @@ internal fun VCallScreen(
         },
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
-        val streamItemSpacing = StreamItemSpacing
-        val bottomSheetExpectedHeight = remember(hasSheetDragContent) { if (hasSheetDragContent) BottomSheetWithHandleHeight else BottomSheetHeight }
-        val topPadding = remember(paddingValues, contentSpacing) { paddingValues.calculateTopPadding() + contentSpacing - streamItemSpacing }
-        val bottomPadding = remember(bottomSheetExpectedHeight, contentSpacing) { bottomSheetExpectedHeight + contentSpacing * 2 - streamItemSpacing }
-        val horizontalPadding = remember(contentSpacing) { contentSpacing - streamItemSpacing }
+        val streamLayoutPadding = contentSpacing - StreamItemSpacing
+        val layoutDirection = LocalLayoutDirection.current
+        val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) + streamLayoutPadding
+        val topPadding = paddingValues.calculateTopPadding() + streamLayoutPadding
+        val bottomPadding = paddingValues.calculateBottomPadding() + streamLayoutPadding
+        val rightPadding = paddingValues.calculateRightPadding(layoutDirection) + streamLayoutPadding
 
         Box(
             modifier = Modifier
@@ -277,11 +277,10 @@ internal fun VCallScreen(
                                 onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .navigationBarsPadding()
                                     .padding(
-                                        start = horizontalPadding,
+                                        start = leftPadding,
                                         top = topPadding,
-                                        end = if (sidePanelComponent != null) 0.dp else horizontalPadding,
+                                        end = if (sidePanelComponent != null) 0.dp else rightPadding,
                                         bottom = bottomPadding
                                     )
                             )
@@ -316,7 +315,7 @@ internal fun VCallScreen(
                                     .padding(
                                         start = 0.dp,
                                         top = topPadding,
-                                        end = horizontalPadding,
+                                        end = rightPadding,
                                         bottom = bottomPadding
                                     )
                                     .animatePlacement(IntOffset(constraints.maxWidth, topPadding.toPixel.toInt()))

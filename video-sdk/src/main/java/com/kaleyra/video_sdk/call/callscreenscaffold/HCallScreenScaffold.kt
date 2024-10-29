@@ -79,19 +79,20 @@ internal fun HCallScreenScaffold(
         { scope.launch { sheetState.settle(it) } }
     }
 
-    val density = LocalDensity.current
-    var sheetDragContentWidth by remember { mutableStateOf(0.dp) }
-    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
-    var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val contentPaddingValues by remember {
-        derivedStateOf { PaddingValues(top = topAppBarPadding, end = bottomSheetPadding) }
-    }
-
     val layoutDirection = LocalLayoutDirection.current
     val topPadding = paddingValues.calculateTopPadding()
     val bottomPadding = paddingValues.calculateBottomPadding()
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
+
+    val density = LocalDensity.current
+    var sheetDragContentWidth by remember { mutableStateOf(0.dp) }
+    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
+    var topAppBarPadding by remember { mutableStateOf(0.dp) }
+    val contentPaddingValues by remember(startPadding, bottomPadding) {
+        derivedStateOf { PaddingValues(start = startPadding, top = topAppBarPadding, end = bottomSheetPadding, bottom = bottomPadding) }
+    }
+
     Surface(
         modifier = modifier,
         color = containerColor,

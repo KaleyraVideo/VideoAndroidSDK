@@ -40,10 +40,11 @@ import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.stream.StreamComponent
+import com.kaleyra.video_sdk.call.stream.StreamItemSpacing
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
@@ -71,15 +72,16 @@ internal fun HCallScreen(
     val hasSheetDragContent by remember(selectedStreamId) { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
     var isInFullscreenMode by remember { mutableStateOf(false) }
 
+    val contentSpacing = 8.dp
     HCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(top = 8.dp, right = 8.dp),
+        paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing, left = contentSpacing, right = contentSpacing),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(end = contentSpacing)
             )
         },
         sheetDragContent = {
@@ -134,9 +136,10 @@ internal fun HCallScreen(
         sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
         val layoutDirection = LocalLayoutDirection.current
-        val top = paddingValues.calculateTopPadding()
-        val left = paddingValues.calculateLeftPadding(layoutDirection)
-        val bottom = paddingValues.calculateBottomPadding()
+        val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) - StreamItemSpacing
+        val topPadding = paddingValues.calculateTopPadding() + contentSpacing - StreamItemSpacing
+        val bottomPadding = paddingValues.calculateBottomPadding() - StreamItemSpacing
+        val rightPadding = paddingValues.calculateRightPadding(layoutDirection) + contentSpacing - StreamItemSpacing
 
         val streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
             factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
@@ -169,18 +172,15 @@ internal fun HCallScreen(
                 onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
-                    .displayCutoutPadding()
                     .padding(
-                        start = left,
-                        top = top,
-                        end = 104.dp,
-                        bottom = bottom,
+                        start = leftPadding,
+                        top = topPadding,
+                        end = rightPadding,
+                        bottom = bottomPadding,
                     )
-                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
             )
 
-            Column(Modifier.padding(top = top, end = 96.dp)) {
+            Column(Modifier.padding(top = topPadding, end = rightPadding)) {
                 CallInfoComponent(
                     modifier = Modifier
                         .padding(vertical = 12.dp)
@@ -194,7 +194,7 @@ internal fun HCallScreen(
 
             InputMessageHost(
                 modifier = Modifier
-                    .padding(bottom = 16.dp, end = 96.dp)
+                    .padding(bottom = 16.dp, end = rightPadding)
                     .navigationBarsPadding()
                     .displayCutoutPadding()
                     .align(Alignment.BottomCenter)
