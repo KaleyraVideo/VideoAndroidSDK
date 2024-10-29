@@ -6,6 +6,8 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.conference.StreamView
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
@@ -25,6 +27,7 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -589,7 +592,7 @@ class StreamViewModelTest {
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = true)
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock1, streamMock2) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1, streamMock2), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -606,7 +609,7 @@ class StreamViewModelTest {
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = false)
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock2, streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock2, streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -624,7 +627,7 @@ class StreamViewModelTest {
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = false, force = true)
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock2, streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock2, streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -642,7 +645,7 @@ class StreamViewModelTest {
 
         val isPinned = viewModel.pin(streamMock1.id, prepend = true, force = true)
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock1, streamMock3) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1, streamMock3), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -657,12 +660,12 @@ class StreamViewModelTest {
         val isPinned = viewModel.pin(streamMock1.id)
 
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
 
         val isPinned2 = viewModel.pin(streamMock1.id)
 
         assertEquals(false, isPinned2)
-        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -677,12 +680,12 @@ class StreamViewModelTest {
         val isPinned = viewModel.pin(streamMock1.id)
 
         assertEquals(true, isPinned)
-        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
 
         val isPinned2 = viewModel.pin(streamMock1.id, force = true)
 
         assertEquals(false, isPinned2)
-        assertEquals(listOf(streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(streamMock1), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -699,12 +702,12 @@ class StreamViewModelTest {
         viewModel.maxPinnedStreams = 2
         viewModel.pin(streamMock1.id)
 
-        assertEquals(listOf(localScreenShareMock, streamMock1) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(localScreenShareMock, streamMock1), viewModel.uiState.value.pinnedStreams.value)
 
         val isPinned = viewModel.pin(streamMock2.id, prepend = true, force = true)
 
         assertEquals(true, isPinned)
-        assertEquals(listOf(localScreenShareMock, streamMock2) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(localScreenShareMock, streamMock2), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -722,7 +725,7 @@ class StreamViewModelTest {
         val isPinned = viewModel.pin(streamMock1.id, prepend = true, force = true)
 
         assertEquals(false, isPinned)
-        assertEquals(listOf(localScreenShareMock) , viewModel.uiState.value.pinnedStreams.value)
+        assertEquals(listOf(localScreenShareMock), viewModel.uiState.value.pinnedStreams.value)
     }
 
     @Test
@@ -1069,6 +1072,48 @@ class StreamViewModelTest {
         val screenShareVideoMock = spyk<Input.Video.Application>()
         testTryStopScreenShare(screenShareVideoMock)
         verify(exactly = 1) { screenShareVideoMock.tryDisable() }
+    }
+
+    @Test
+    fun zoomCalledOnViewModel_zoomCalledOnVideoStreamView() = runTest {
+        val videoStreamView = mockk<VideoStreamView>(relaxed = true) {
+            every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
+        }
+        val videoMock = StreamUi(
+            id = "streamId", username = "username",
+            video = VideoUi(id = "videoId", view = ImmutableView(videoStreamView), isEnabled = true))
+        val streams = MutableStateFlow(listOf(videoMock))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.zoom("streamId")
+
+        verify { videoStreamView.zoom() }
+    }
+
+    @Test
+    fun zoomCalledOnViewModel_streamIdNotPresent_zoomNotCalledOnVideoStreamView() = runTest {
+        val videoStreamView = mockk<VideoStreamView>(relaxed = true) {
+            every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
+        }
+        val videoMock = StreamUi(
+            id = "streamId", username = "username",
+            video = VideoUi(id = "videoId", view = ImmutableView(videoStreamView), isEnabled = true))
+        val streams = MutableStateFlow(listOf(videoMock))
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
+        every { callMock.toCallStateUi() } returns MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns streams
+
+        val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }
+        advanceUntilIdle()
+
+        viewModel.zoom("streamId2")
+
+        verify(exactly = 0) { videoStreamView.zoom() }
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {

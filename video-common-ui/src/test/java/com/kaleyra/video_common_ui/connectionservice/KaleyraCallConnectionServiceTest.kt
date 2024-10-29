@@ -16,6 +16,7 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.R
@@ -48,6 +49,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
@@ -235,6 +237,15 @@ class KaleyraCallConnectionServiceTest {
         runCurrent()
 
         assertEquals(service!!.getForegroundServiceType(false, false, false), service!!.foregroundServiceType)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testConnectionServiceAlwaysDisabledOnSmartGlass() {
+        val conferenceUI = ConferenceUI(mockk(relaxed = true), Class.forName("androidx.appcompat.app.AppCompatActivity"), isSmartGlass = true)
+        Assert.assertEquals(ConnectionServiceOption.Disabled, conferenceUI.connectionServiceOption)
+        conferenceUI.connectionServiceOption = ConnectionServiceOption.Enforced
+        Assert.assertEquals(ConnectionServiceOption.Disabled, conferenceUI.connectionServiceOption)
     }
 
     @Test

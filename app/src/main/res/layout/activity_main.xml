@@ -28,7 +28,7 @@
             android:id="@+id/ongoing_call_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/holo_green_light"
+            android:backgroundTint="@color/ongoingCallLabel"
             android:clickable="true"
             android:contentDescription="@string/ongoing_call_description"
             android:focusable="true"

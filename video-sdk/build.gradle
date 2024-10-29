@@ -71,7 +71,8 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
 
     /*** Testing ***/
-    testImplementation kaleyraCatalog.kaleyraVideo
+//    testImplementation kaleyraCatalog.kaleyraVideo
+    testImplementation project(":video")
     testImplementation catalog.robolectric
     testImplementation catalog.junit
     testImplementation catalog.androidxTestEspressoIntents
@@ -92,8 +93,11 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-manifest"
 
     /** Kaleyra **/
-    api kaleyraCatalog.kaleyraVideo
-    implementation kaleyraCatalog.kaleyraVideoExtensionAudio
+//    api kaleyraCatalog.kaleyraVideo
+//    implementation kaleyraCatalog.kaleyraVideoExtensionAudio
+
+    api project(":video")
+    implementation project(":video-extension-audio")
 
     def isPublishing = project.hasProperty("isPublishing")
     if (isPublishing) api "com.kaleyra:video-common-ui:$moduleVersion"
