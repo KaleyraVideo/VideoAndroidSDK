@@ -87,6 +87,8 @@ object KaleyraVideo {
     private var _conference: ConferenceUI? = null
     private var _conversation: ConversationUI? = null
 
+    private var isGlassesSdk = false
+
     @get:Synchronized
         /**
          * Conference module
@@ -166,7 +168,11 @@ object KaleyraVideo {
 
         if (isConfigured) return false
 
-        val activityConfiguration = PhoneActivityClazzProvider.getActivityClazzConfiguration() ?: GlassActivityClazzProvider.getActivityClazzConfiguration()
+        val activityConfiguration =
+            PhoneActivityClazzProvider.getActivityClazzConfiguration()
+                ?: GlassActivityClazzProvider.getActivityClazzConfiguration().also {
+                    isGlassesSdk = true
+                }
         if (activityConfiguration != null) {
             callActivityClazz = activityConfiguration.callClazz
             chatActivityClazz = activityConfiguration.chatClazz
@@ -180,7 +186,7 @@ object KaleyraVideo {
         Collaboration.create(configuration).apply {
             collaboration = this
         }
-        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger)
+        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger, isGlassesSdk)
         _conversation = ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz)
 
         termsAndConditionsActivityClazz?.also {

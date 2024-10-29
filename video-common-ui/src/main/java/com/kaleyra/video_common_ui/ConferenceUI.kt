@@ -44,6 +44,7 @@ class ConferenceUI(
     private val conference: Conference,
     private val callActivityClazz: Class<*>,
     private val logger: PriorityLogger? = null,
+    private val isSmartGlass: Boolean = false,
 ) : Conference by conference {
 
     private val backgroundDispatcher = newFixedThreadPoolContext(100, "Conference dispatcher")
@@ -64,7 +65,11 @@ class ConferenceUI(
     /**
      * The connection service option enabled by default
      */
-    var connectionServiceOption: ConnectionServiceOption = ConnectionServiceOption.Enabled
+    var connectionServiceOption: ConnectionServiceOption = if (!isSmartGlass) ConnectionServiceOption.Enabled else ConnectionServiceOption.Disabled
+        set(value) {
+            if (isSmartGlass) return
+            else field = value
+        }
 
     init {
         configureCallServiceStart(callActivityClazz, logger, conferenceDispatcher)
@@ -76,6 +81,7 @@ class ConferenceUI(
     internal fun dispose() {
         conferenceDispatcher.cancel()
     }
+
     /**
      * Call
      *
