@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -65,6 +66,8 @@ internal object VCallScreenScaffoldDefaults {
     val SheetPanelContentPadding = 8.dp
 
     val SheetElevation = 2.dp
+
+    val BrandLogoHeight = 40.dp
 }
 
 // Parameters
@@ -169,15 +172,15 @@ internal fun VCallScreenScaffold(
             BoxWithConstraints(
                 modifier = Modifier
                     .width(with(density) { sheetContentPosition.width.toDp() })
-                    .height(with(density) { sheetContentPosition.height.toDp() + dragHandleHeight.toDp() })
+                    .height(VCallScreenScaffoldDefaults.BrandLogoHeight)
                     .padding(horizontal = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) 32.dp else 16.dp)
                     .graphicsLayer {
                         translationX = 0f
-                        translationY = brandLogoPosition.height - dragHandleHeight
+                        translationY = brandLogoPosition.height - (VCallScreenScaffoldDefaults.BrandLogoHeight.toPx() + 16.dp.toPx())
                     }
             ) {
                 with (density) {
-                    if (constraints.maxWidth.toDp() >= 40.dp && constraints.maxHeight.toDp() >= 40.dp ) brandLogo()
+                    if (constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight ) brandLogo()
                 }
             }
 
@@ -210,7 +213,7 @@ internal fun VCallScreenScaffold(
                                     enabled = sheetDragHandle != null
                                 )
                                 .onGloballyPositioned {
-                                    brandLogoPosition = Size(0f, it.positionInRoot().y)
+                                    brandLogoPosition = Size(0f, it.positionInRoot().y + it.size.height)
                                     sheetContentPosition = Size(it.positionInRoot().x, maxOf(sheetContentPosition.height, it.size.height.toFloat()))
                                 }
                         ) {
