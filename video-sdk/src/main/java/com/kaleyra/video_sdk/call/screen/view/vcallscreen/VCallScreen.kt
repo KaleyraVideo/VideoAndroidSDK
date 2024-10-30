@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -79,6 +79,7 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
+import kotlin.math.roundToInt
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -192,49 +193,49 @@ internal fun VCallScreen(
                         || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
                 }
             ) BrandLogoComponent(
-                modifier = Modifier.fillMaxWidth().height(46.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(46.dp)
+                    .align(Alignment.Center),
                 alignment = Alignment.CenterStart
             )
         },
         sheetContent = {
+            val isSheetExpanded by remember(sheetState) {
+                derivedStateOf {
+                    sheetState.targetValue == CallSheetValue.Expanded
+                }
+            }
+
             AnimatedContent(
                 targetState = selectedStreamId,
                 contentAlignment = Alignment.Center,
                 label = "sheet content"
             ) { currentlySelectedStreamId ->
                 if (currentlySelectedStreamId == null) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(
-                            start = 14.dp,
-                            top = if (!hasSheetDragContent) 14.dp else 5.dp,
-                            end = 14.dp,
-                            bottom = 14.dp
-                        )
-                    ) {
-                        if (isLargeScreen && !isRinging) {
-                            LargeScreenInputMessageHost()
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (!hasSheetDragContent) {
+                            LargeScreenInputMessageHost(Modifier.offset(y = 3.dp))
                         }
 
-                        Box {
-                            val isSheetExpanded by remember(sheetState) {
-                                derivedStateOf {
-                                    sheetState.targetValue == CallSheetValue.Expanded
-                                }
-                            }
-                            HSheetContent(
-                                isLargeScreen = isLargeScreen,
-                                isMoreToggled = isSheetExpanded || showSheetPanelContent,
-                                maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
-                                inputPermissions = inputPermissions,
-                                onActionsOverflow = { sheetDragActions = it },
-                                onModularComponentRequest = onSideBarSheetComponentRequest,
-                                onMoreToggle = { isSheetCollapsed ->
-                                    if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
-                                    else showSheetPanelContent = !showSheetPanelContent
-                                }
+                        HSheetContent(
+                            isLargeScreen = isLargeScreen,
+                            isMoreToggled = isSheetExpanded || showSheetPanelContent,
+                            maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
+                            inputPermissions = inputPermissions,
+                            onActionsOverflow = { sheetDragActions = it },
+                            onModularComponentRequest = onSideBarSheetComponentRequest,
+                            onMoreToggle = { isSheetCollapsed ->
+                                if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
+                                else showSheetPanelContent = !showSheetPanelContent
+                            },
+                            modifier = Modifier.padding(
+                                start = 14.dp,
+                                top = if (!hasSheetDragContent) 14.dp else 5.dp,
+                                end = 14.dp,
+                                bottom = 14.dp
                             )
-                        }
+                        )
                     }
                 } else {
                     HStreamMenuContent(
@@ -334,7 +335,10 @@ internal fun VCallScreen(
                                 
                                 CallInfoComponent(
                                     modifier = Modifier
-                                        .padding(top = if (displayBrandLogo && hasLogo) 24.dp else 56.dp, bottom = 16.dp)
+                                        .padding(
+                                            top = if (displayBrandLogo && hasLogo) 24.dp else 56.dp,
+                                            bottom = 16.dp
+                                        )
                                         .animateConstraints()
                                         .animatePlacement(this@LookaheadScope)
                                 )
@@ -351,14 +355,18 @@ internal fun VCallScreen(
                                 onComponentDisplayed = onModularComponentDisplayed,
                                 modifier = Modifier
                                     .weight(sidePanelWeight)
-                                    .navigationBarsPadding()
                                     .padding(
                                         start = 0.dp,
                                         top = topPadding,
                                         end = rightPadding,
                                         bottom = bottomPadding
                                     )
-                                    .animatePlacement(IntOffset(constraints.maxWidth, topPadding.toPixel.toInt()))
+                                    .animatePlacement(
+                                        IntOffset(
+                                            constraints.maxWidth,
+                                            topPadding.toPixel.toInt()
+                                        )
+                                    )
                             )
                         }
                     }
@@ -394,16 +402,17 @@ private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
 }
 
 @Composable
-private fun LargeScreenInputMessageHost() {
+private fun LargeScreenInputMessageHost(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(250.dp)
             .animateContentSize(),
         contentAlignment = Alignment.Center,
     ) {
+        val messageModifier = Modifier.padding(top = 3.dp)
         InputMessageHost(
-            micMessage = { enabled -> MicMessageText(enabled) },
-            cameraMessage = { enabled -> CameraMessageText(enabled) }
+            micMessage = { enabled -> MicMessageText(enabled, messageModifier) },
+            cameraMessage = { enabled -> CameraMessageText(enabled, messageModifier) }
         )
     }
 }

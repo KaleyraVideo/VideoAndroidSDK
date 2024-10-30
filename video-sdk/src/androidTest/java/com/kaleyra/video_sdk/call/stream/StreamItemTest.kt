@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.stream
 
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +18,6 @@ import androidx.compose.ui.test.onParent
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
-import com.kaleyra.video_sdk.assertTopPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
