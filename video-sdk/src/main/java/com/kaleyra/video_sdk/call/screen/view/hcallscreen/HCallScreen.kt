@@ -41,11 +41,11 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessag
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.VSheetContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.VSheetDragContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
-import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
-import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.brandlogo.model.hasLogo
 import com.kaleyra.video_sdk.call.brandlogo.view.BrandLogoComponent
 import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
+import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
+import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
@@ -60,6 +60,10 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+
+private val CallSheetEstimatedWidth = 76.dp
+private val CallSheetEstimatedWidthWithHandle = 87.dp
+private val StreamMenuEstimatedWidth = CallSheetEstimatedWidth
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -169,9 +173,13 @@ internal fun HCallScreen(
         val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) - StreamItemSpacing
         val topPadding = paddingValues.calculateTopPadding() + contentSpacing - StreamItemSpacing
         val bottomPadding = paddingValues.calculateBottomPadding() - StreamItemSpacing
-        val rightPadding = paddingValues.calculateRightPadding(layoutDirection) + contentSpacing - StreamItemSpacing
+        val rightPadding = contentSpacing + StreamItemSpacing + when {
+            selectedStreamId != null -> StreamMenuEstimatedWidth
+            hasSheetDragContent -> CallSheetEstimatedWidthWithHandle
+            else -> CallSheetEstimatedWidth
+        }
 
-        val streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        val streamViewModel: StreamViewModel = viewModel(
             factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
         )
         val onUserMessageActionClick = remember(streamViewModel) {
@@ -205,6 +213,7 @@ internal fun HCallScreen(
                 onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
+                    .navigationBarsPadding()
                     .padding(
                         start = leftPadding,
                         top = topPadding,
