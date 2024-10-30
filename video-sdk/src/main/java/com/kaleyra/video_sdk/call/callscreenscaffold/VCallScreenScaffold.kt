@@ -65,8 +65,6 @@ internal object VCallScreenScaffoldDefaults {
 
     val SheetPanelContentPadding = 8.dp
 
-    val SheetElevation = 2.dp
-
     val BrandLogoHeight = 40.dp
 }
 
@@ -205,7 +203,6 @@ internal fun VCallScreenScaffold(
                     sheetContent = {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
-                            tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier
                                 .anchoredDraggable(
                                     state = sheetState.anchoredDraggableState,
@@ -224,7 +221,6 @@ internal fun VCallScreenScaffold(
                         {
                             Surface(
                                 color = MaterialTheme.colorScheme.surfaceContainer,
-                                tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)
                                     .anchoredDraggable(

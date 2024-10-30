@@ -48,12 +48,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@Stable
-internal object HCallScreenScaffoldDefaults {
-
-    val SheetElevation = 2.dp
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HCallScreenScaffold(
@@ -127,7 +121,6 @@ internal fun HCallScreenScaffold(
                 sheetContent = {
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceContainer,
-                        tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                         modifier = Modifier.anchoredDraggable(
                             state = sheetState.anchoredDraggableState,
                             orientation = dragOrientation,
@@ -140,7 +133,6 @@ internal fun HCallScreenScaffold(
                     {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
-                            tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier
                                 .dragHorizontalOffset(sheetState)
                                 .anchoredDraggable(
