@@ -10,7 +10,7 @@ import com.kaleyra.app_utilities.FlipperManager
  * For more information visit:
  * https://github.com/facebook/flipper
  */
-object FlipperInitializer: Initializer<Unit> {
+class FlipperInitializer: Initializer<Unit> {
     override fun create(context: Context) {
         FlipperManager.enable(context)
     }
