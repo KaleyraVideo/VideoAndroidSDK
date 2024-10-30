@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.common.usermessages.provider
 
+import android.util.Log
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIAlone
@@ -56,7 +57,7 @@ object CallUserMessagesProvider {
 
     private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
 
-    private val _alertMessages: MutableStateFlow<List<AlertMessage>> = MutableStateFlow(listOf())
+    private val _alertMessages: MutableStateFlow<Set<AlertMessage>> = MutableStateFlow(emptySet())
 
     /**
      * User messages flow
@@ -66,7 +67,7 @@ object CallUserMessagesProvider {
     /**
      * Alert messages flow
      */
-    val alertMessages: StateFlow<List<AlertMessage>> = _alertMessages
+    val alertMessages: StateFlow<Set<AlertMessage>> = _alertMessages
 
     /**
      * Starts the call User Message Provider
@@ -101,6 +102,7 @@ object CallUserMessagesProvider {
      * Dispose User Message Provider
      */
     fun dispose() {
+        _alertMessages.value = setOf()
         coroutineScope?.cancel()
         coroutineScope = null
     }
@@ -126,40 +128,38 @@ object CallUserMessagesProvider {
         call.toAudioConnectionFailureMessage().onEach { send(it) }.launchIn(scope)
     }
 
-    private fun MutableStateFlow<List<AlertMessage>>.sendWaitingForOtherParticipantsEvent(call: CallUI, scope: CoroutineScope) {
+    private fun MutableStateFlow<Set<AlertMessage>>.sendWaitingForOtherParticipantsEvent(call: CallUI, scope: CoroutineScope) {
         call.amIWaitingOthers().onEach { amIwaitingForOtherParticipants ->
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (amIwaitingForOtherParticipants) plus(AlertMessage.WaitingForOtherParticipantsMessage)
-                    else minus(AlertMessage.WaitingForOtherParticipantsMessage)
-                }
-            )
+//            emit(
+//                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
+//                    if (amIwaitingForOtherParticipants) plus(AlertMessage.WaitingForOtherParticipantsMessage)
+//                    else minus(AlertMessage.WaitingForOtherParticipantsMessage)
+//                }
+//            )
         }.launchIn(scope)
     }
 
-    private fun MutableStateFlow<List<AlertMessage>>.sendLeftAloneEvents(call: CallUI, scope: CoroutineScope) {
+    private fun MutableStateFlow<Set<AlertMessage>>.sendLeftAloneEvents(call: CallUI, scope: CoroutineScope) {
         call.amIAlone().onEach { amIAlone ->
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (amIAlone) plus(AlertMessage.LeftAloneMessage)
-                    else minus(AlertMessage.LeftAloneMessage)
-                }
-            )
+            Log.e("CallUser", "$amIAlone")
+            val mutableList = value.toMutableSet()
+            val newList = if (amIAlone) mutableList.plus(AlertMessage.LeftAloneMessage) else mutableList.minus(AlertMessage.LeftAloneMessage)
+            value = newList
         }.launchIn(scope)
     }
 
 
-    private fun MutableStateFlow<List<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
+    private fun MutableStateFlow<Set<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
         call.recording.combine(call.toCallStateUi()) { recording, callStateUi ->
             recording to callStateUi
         }.filter { it.first.type is Call.Recording.Type.OnConnect }.onEach {
             val callStateUi = it.second
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (callStateUi is CallStateUi.Connecting) plus(AlertMessage.AutomaticRecordingMessage)
-                    else minus(AlertMessage.AutomaticRecordingMessage)
-                }
-            )
+//            emit(
+//                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
+//                    if (callStateUi is CallStateUi.Connecting) plus(AlertMessage.AutomaticRecordingMessage)
+//                    else minus(AlertMessage.AutomaticRecordingMessage)
+//                }
+//            )
         }.launchIn(scope)
     }
 }
