@@ -455,6 +455,23 @@ class StreamViewModelTest {
         assertEquals(streams, new)
     }
 
+    @Test
+    fun `test my streams is placed after the others`() = runTest {
+        val myStreamMock1 = streamMock1.copy(isMine = true)
+        val myStreamMock2 = streamMock2.copy(isMine = true)
+        val streams = listOf(myStreamMock1, streamMock2, myStreamMock2, streamMock3)
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1))
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connected)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+
+        val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
+        advanceUntilIdle()
+
+        val result = viewModel.uiState.first().streams.value
+        val expected = listOf(streamMock2, streamMock3, myStreamMock1, myStreamMock2)
+        assertEquals(expected, result)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun setMaxPinnedStreamsToLessThanOne_illegalArgumentExceptionThrown() {
         val viewModel = StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) }

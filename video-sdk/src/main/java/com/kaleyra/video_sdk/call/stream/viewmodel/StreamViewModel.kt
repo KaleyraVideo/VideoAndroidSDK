@@ -65,9 +65,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 }
                 .mapLatest { (_, streams, callState) ->
                     val updatedStreams = when {
-                        streams == uiState.value.streams.value -> uiState.value.streams
-                        else -> streams.toImmutableList()
-                    }
+                        streams == uiState.value.streams.value -> uiState.value.streams.value
+                        else -> streams
+                    }.sortedBy { it.isMine }.toImmutableList()
 
                     _uiState.update {
                         it.copy(
