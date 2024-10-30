@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
+import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -108,10 +109,10 @@ class StreamItemTest {
     }
 
     @Test
-    fun streamAudioNull_muteIconIsDisplayed() {
+    fun streamAudioNull_muteIconDoesNotExists() {
         stream = stream.copy(audio = null)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
     }
 
     @Test
@@ -180,7 +181,7 @@ class StreamItemTest {
     @Test
     fun testBottomEndStatusIconsAlignment() {
         statusIconsAlignment = Alignment.BottomEnd
-        stream = stream.copy(audio = null)
+        stream = stream.copy(audio = AudioUi(id = "audioId"))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
         val parentBottom = fullscreenNode.onParent().getBoundsInRoot().bottom - StreamItemPadding
@@ -194,7 +195,7 @@ class StreamItemTest {
     @Test
     fun testTopEndStatusIconsAlignment() {
         statusIconsAlignment = Alignment.TopEnd
-        stream = stream.copy(audio = null)
+        stream = stream.copy(audio = AudioUi(id = "audioId"))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
         val parentTop = fullscreenNode.onParent().getBoundsInRoot().top + StreamItemPadding
@@ -208,7 +209,7 @@ class StreamItemTest {
     @Test
     fun testTopStartStatusIconsAlignment() {
         statusIconsAlignment = Alignment.TopStart
-        stream = stream.copy(audio = null)
+        stream = stream.copy(audio = AudioUi(id = "audioId"))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
         val parentTop = fullscreenNode.onParent().getBoundsInRoot().top + StreamItemPadding
@@ -222,7 +223,7 @@ class StreamItemTest {
     @Test
     fun testBottomStartStatusIconsAlignment() {
         statusIconsAlignment = Alignment.BottomStart
-        stream = stream.copy(audio = null)
+        stream = stream.copy(audio = AudioUi(id = "audioId"))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         val fullscreenNode = composeTestRule.onNodeWithContentDescription(text).onParent()
         val parentBottom = fullscreenNode.onParent().getBoundsInRoot().bottom - StreamItemPadding

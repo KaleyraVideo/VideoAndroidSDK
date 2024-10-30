@@ -106,7 +106,7 @@ internal fun StreamStatusIcons(
             ZoomIcon(text = it)
         }
         when {
-            streamAudioUi == null -> MicDisabledIcon()
+            streamAudioUi == null -> Unit
             streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
             !streamAudioUi.isEnabled -> MicDisabledIcon()
         }
