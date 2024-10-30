@@ -38,13 +38,14 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
             internalRemoveUserMessage(removedAlertMessage)
         }
 
-        if (messages.isEmpty()) return@launch
-
         _alertMessages = _alertMessages ?: mutableListOf()
 
         messages.map { alertMessage ->
             if (!_alertMessages!!.contains(alertMessage)) _alertMessages!!.add(alertMessage)
         }
+
+        if (messages.isEmpty()) _alertMessages!!.clear()
+
         updateUserMessages()
     }
 

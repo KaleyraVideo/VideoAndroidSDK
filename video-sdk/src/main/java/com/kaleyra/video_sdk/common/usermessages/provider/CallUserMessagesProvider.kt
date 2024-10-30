@@ -130,36 +130,32 @@ object CallUserMessagesProvider {
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendWaitingForOtherParticipantsEvent(call: CallUI, scope: CoroutineScope) {
         call.amIWaitingOthers().onEach { amIwaitingForOtherParticipants ->
-//            emit(
-//                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-//                    if (amIwaitingForOtherParticipants) plus(AlertMessage.WaitingForOtherParticipantsMessage)
-//                    else minus(AlertMessage.WaitingForOtherParticipantsMessage)
-//                }
-//            )
+            val mutableList = value.toMutableSet()
+            val newList = if (amIwaitingForOtherParticipants) mutableList.plus(AlertMessage.WaitingForOtherParticipantsMessage) else mutableList.minus(AlertMessage.WaitingForOtherParticipantsMessage)
+            value = newList
         }.launchIn(scope)
     }
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendLeftAloneEvents(call: CallUI, scope: CoroutineScope) {
-        call.amIAlone().onEach { amIAlone ->
-            Log.e("CallUser", "$amIAlone")
+        call.amIAlone().dropWhile { it }.combine(call.toCallStateUi()) { recording, callStateUi ->
+            recording to callStateUi
+        }.onEach {
+            val amIAlone = it.first && it.second !is CallStateUi.Disconnected.Ended
             val mutableList = value.toMutableSet()
             val newList = if (amIAlone) mutableList.plus(AlertMessage.LeftAloneMessage) else mutableList.minus(AlertMessage.LeftAloneMessage)
             value = newList
         }.launchIn(scope)
     }
 
-
     private fun MutableStateFlow<Set<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
         call.recording.combine(call.toCallStateUi()) { recording, callStateUi ->
             recording to callStateUi
         }.filter { it.first.type is Call.Recording.Type.OnConnect }.onEach {
             val callStateUi = it.second
-//            emit(
-//                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-//                    if (callStateUi is CallStateUi.Connecting) plus(AlertMessage.AutomaticRecordingMessage)
-//                    else minus(AlertMessage.AutomaticRecordingMessage)
-//                }
-//            )
+
+            val mutableList = value.toMutableSet()
+            val newList = if (callStateUi is CallStateUi.Connecting) mutableList.plus(AlertMessage.AutomaticRecordingMessage) else mutableList.minus(AlertMessage.AutomaticRecordingMessage)
+            value = newList
         }.launchIn(scope)
     }
 }
