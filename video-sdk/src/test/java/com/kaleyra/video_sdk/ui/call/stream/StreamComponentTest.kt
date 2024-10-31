@@ -332,7 +332,7 @@ class StreamComponentTest {
     }
 
     @Test
-    fun streamAudioNull_micDisabledIconIsDisplayed() {
+    fun streamAudioNull_micDisabledIconDoesNotExits() {
         val stream1 = defaultStreamUi(username = "mario", audio = null)
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -342,7 +342,7 @@ class StreamComponentTest {
 
         val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
     }
 
     @Test

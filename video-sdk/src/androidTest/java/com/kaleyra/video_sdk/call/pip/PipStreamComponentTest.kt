@@ -254,7 +254,7 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun streamAudioNull_micDisabledIconIsDisplayed() {
+    fun streamAudioNull_micDisabledIconDoesNotExists() {
         val stream1 = defaultStreamUi(username = "mario", audio = null)
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -264,7 +264,7 @@ class PipStreamComponentTest {
 
         val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
     }
 
     @Test
@@ -321,14 +321,14 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun previewStreamAudioNull_micMutedIsDisplayed() {
+    fun previewStreamAudioNull_micMutedDoesNotExists() {
         streamUiState = StreamUiState(
             preview = StreamPreview(audio = null)
         )
         composeTestRule.waitForIdle()
 
         val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
-        composeTestRule.onNodeWithContentDescription(muted).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(muted).assertDoesNotExist()
     }
 
     @Test
