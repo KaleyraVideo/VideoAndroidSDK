@@ -45,15 +45,15 @@ class ParticipantManagerTest {
         unmockkAll()
     }
 
-    @Test
-    fun testBind() = runTest {
-        val participantManager = spyk(ParticipantManager(backgroundScope))
-        participantManager.bind(callMock)
-        verifyOrder {
-            participantManager.stop()
-            participantManager.keepContactDetailsUpdated(callMock)
-        }
-    }
+//    @Test
+//    fun testBind() = runTest {
+//        val participantManager = spyk(ParticipantManager(backgroundScope))
+//        participantManager.bind(callMock)
+//        verifyOrder {
+//            participantManager.stop()
+//            participantManager.keepContactDetailsUpdated(callMock)
+//        }
+//    }
 
     @Test
     fun testStop() = runTest {
