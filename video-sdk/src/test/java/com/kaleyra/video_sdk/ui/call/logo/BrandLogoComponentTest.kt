@@ -110,4 +110,14 @@ class BrandLogoComponentTest {
     fun callStateUiNeverBeenConnected_shouldNotDisplayBrandLogo() {
         Assert.assertEquals(false, shouldDisplayBrandLogo(CallStateUi.Disconnected.Ended, true))
     }
+
+    @Test
+    fun callStateUiConnectingAndAlreadyConnectedOnce_shouldNotDisplayBrandLogo() {
+        Assert.assertEquals(false, shouldDisplayBrandLogo(CallStateUi.Connecting, true))
+    }
+
+    @Test
+    fun callStateUiReconnectingAndAlreadyConnectedOnce_shouldNotDisplayBrandLogo() {
+        Assert.assertEquals(false, shouldDisplayBrandLogo(CallStateUi.Reconnecting, true))
+    }
 }

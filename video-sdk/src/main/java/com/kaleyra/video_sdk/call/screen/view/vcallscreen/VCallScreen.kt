@@ -392,7 +392,7 @@ internal fun VCallScreen(
 
 internal fun shouldDisplayBrandLogo(callStateUi: CallStateUi, hasConnectedCallOnce: Boolean) = with(callStateUi) {
     this is CallStateUi.Disconnected.Companion
-        || this is CallStateUi.Connecting
+        || (this is CallStateUi.Connecting && !hasConnectedCallOnce)
         || this is CallStateUi.Ringing
         || this is CallStateUi.Dialing
         || this is CallStateUi.RingingRemotely
