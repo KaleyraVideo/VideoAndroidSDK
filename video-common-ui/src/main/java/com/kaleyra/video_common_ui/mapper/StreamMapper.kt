@@ -113,10 +113,9 @@ object StreamMapper {
     fun Call.amIWaitingOthers(): Flow<Boolean> =
         combine(
             state,
-            amIAlone(),
-            toInCallParticipants()
-        ) { callState, amIAlone, inCallParticipants ->
-            callState is Call.State.Connected && amIAlone && inCallParticipants.size == 1
+            amIAlone()
+        ) { callState, amIAlone ->
+            callState is Call.State.Connected && amIAlone
         }.distinctUntilChanged()
 
     internal fun Flow<List<Stream>>.mapStreamsToVideos(): Flow<List<Input.Video?>> {

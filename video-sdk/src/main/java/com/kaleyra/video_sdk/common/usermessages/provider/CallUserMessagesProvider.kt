@@ -47,7 +47,6 @@ import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -159,29 +158,21 @@ object CallUserMessagesProvider {
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendWaitingForOtherParticipantsEvents(call: CallUI, scope: CoroutineScope) {
         call.state
-            .filter { it == Call.State.Connected }
+            .filter { it is Call.State.Connected }
             .onEach {
-
                 call
                     .amIWaitingOthers()
-                    .combine(call.doOthersHaveStreams()) { amIWaitingOthers, doOthersHaveStreams ->
-                        amIWaitingOthers to doOthersHaveStreams
-                    }
-                    .takeWhile { (_, doOthersHaveStreams) ->
-                        !doOthersHaveStreams
-                    }
-                    .debounce { (amIWaitingOthers, _) ->
-                        if (amIWaitingOthers) AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
+                    .debounce { amIWaitingOthers -> if (amIWaitingOthers) AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
                     .onEach {
                         val mutableList = value.toMutableSet()
-                        val newList = if (it.first) mutableList.plus(AlertMessage.WaitingForOtherParticipantsMessage) else mutableList.minus(AlertMessage.WaitingForOtherParticipantsMessage)
+                        val newList = if (it) mutableList.plus(AlertMessage.WaitingForOtherParticipantsMessage) else mutableList.minus(AlertMessage.WaitingForOtherParticipantsMessage)
                         value = newList
                     }
+                    .takeWhile { it }
                     .onCompletion {
                         value = value.toMutableSet().minus(AlertMessage.WaitingForOtherParticipantsMessage)
                     }
                     .launchIn(scope)
-
             }.launchIn(scope)
     }
 
