@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+@file:OptIn(FlowPreview::class)
+
 package com.kaleyra.video_sdk.common.usermessages.provider
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.mapper.StreamMapper.amIAlone
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
+import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toAudioConnectionFailureMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
@@ -32,31 +34,40 @@ import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import java.util.concurrent.Executors
 
 /**
  * Call User Messages Provider
  */
 object CallUserMessagesProvider {
 
+    private const val AM_I_LEFT_ALONE_DEBOUNCE_MILLIS = 5000L
+    private const val AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS = 3000L
+
     private var coroutineScope: CoroutineScope? = null
 
     private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
 
-    private val _alertMessages: MutableStateFlow<List<AlertMessage>> = MutableStateFlow(listOf())
+    private val _alertMessages: MutableStateFlow<Set<AlertMessage>> = MutableStateFlow(emptySet())
 
     /**
      * User messages flow
@@ -66,14 +77,14 @@ object CallUserMessagesProvider {
     /**
      * Alert messages flow
      */
-    val alertMessages: StateFlow<List<AlertMessage>> = _alertMessages
+    val alertMessages: StateFlow<Set<AlertMessage>> = _alertMessages
 
     /**
      * Starts the call User Message Provider
      * @param call Flow<CallUI> the call flow
      * @param scope CoroutineScope optional coroutine scope in which to execute the observing
      */
-    fun start(call: CallUI, scope: CoroutineScope = MainScope() + CoroutineName("CallUserMessagesProvider")) {
+    fun start(call: CallUI, scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()) + CoroutineName("CallUserMessagesProvider")) {
         if (coroutineScope != null) dispose()
         coroutineScope = scope
 
@@ -83,8 +94,8 @@ object CallUserMessagesProvider {
         userMessageChannel.sendFailedAudioOutputEvents(call, scope)
 
         _alertMessages.sendAutomaticRecordingAlertEvents(call, scope)
-        _alertMessages.sendLeftAloneEvents(call, scope)
-        _alertMessages.sendWaitingForOtherParticipantsEvent(call, scope)
+        _alertMessages.sendAmIAloneEvents(call, scope)
+        _alertMessages.sendWaitingForOtherParticipantsEvents(call, scope)
     }
 
     /**
@@ -101,6 +112,7 @@ object CallUserMessagesProvider {
      * Dispose User Message Provider
      */
     fun dispose() {
+        _alertMessages.value = setOf()
         coroutineScope?.cancel()
         coroutineScope = null
     }
@@ -126,40 +138,53 @@ object CallUserMessagesProvider {
         call.toAudioConnectionFailureMessage().onEach { send(it) }.launchIn(scope)
     }
 
-    private fun MutableStateFlow<List<AlertMessage>>.sendWaitingForOtherParticipantsEvent(call: CallUI, scope: CoroutineScope) {
-        call.amIWaitingOthers().onEach { amIwaitingForOtherParticipants ->
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (amIwaitingForOtherParticipants) plus(AlertMessage.WaitingForOtherParticipantsMessage)
-                    else minus(AlertMessage.WaitingForOtherParticipantsMessage)
-                }
-            )
-        }.launchIn(scope)
+    private fun MutableStateFlow<Set<AlertMessage>>.sendAmIAloneEvents(call: CallUI, scope: CoroutineScope) {
+        call.toCallStateUi()
+            .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
+            .filterNot { it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Dialing }
+            .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
+            .dropWhile { !it }
+            .debounce { doOthersHaveStreams -> if (!doOthersHaveStreams) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
+            .onEach { doOthersHaveStreams ->
+                val mutableList = value.toMutableSet()
+                val newList = if (!doOthersHaveStreams) mutableList.plus(AlertMessage.LeftAloneMessage) else mutableList.minus(AlertMessage.LeftAloneMessage)
+                value = newList
+            }
+            .onCompletion {
+                value = value.toMutableSet().minus(AlertMessage.LeftAloneMessage)
+            }
+            .launchIn(scope)
     }
 
-    private fun MutableStateFlow<List<AlertMessage>>.sendLeftAloneEvents(call: CallUI, scope: CoroutineScope) {
-        call.amIAlone().onEach { amIAlone ->
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (amIAlone) plus(AlertMessage.LeftAloneMessage)
-                    else minus(AlertMessage.LeftAloneMessage)
-                }
-            )
-        }.launchIn(scope)
+    private fun MutableStateFlow<Set<AlertMessage>>.sendWaitingForOtherParticipantsEvents(call: CallUI, scope: CoroutineScope) {
+        call.state
+            .filter { it is Call.State.Connected }
+            .onEach {
+                call
+                    .amIWaitingOthers()
+                    .debounce { amIWaitingOthers -> if (amIWaitingOthers) AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS else 0L }
+                    .onEach {
+                        val mutableList = value.toMutableSet()
+                        val newList = if (it) mutableList.plus(AlertMessage.WaitingForOtherParticipantsMessage) else mutableList.minus(AlertMessage.WaitingForOtherParticipantsMessage)
+                        value = newList
+                    }
+                    .takeWhile { it }
+                    .onCompletion {
+                        value = value.toMutableSet().minus(AlertMessage.WaitingForOtherParticipantsMessage)
+                    }
+                    .launchIn(scope)
+            }.launchIn(scope)
     }
 
-
-    private fun MutableStateFlow<List<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
+    private fun MutableStateFlow<Set<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
         call.recording.combine(call.toCallStateUi()) { recording, callStateUi ->
             recording to callStateUi
         }.filter { it.first.type is Call.Recording.Type.OnConnect }.onEach {
             val callStateUi = it.second
-            emit(
-                mutableListOf(*_alertMessages.value.toTypedArray()).apply {
-                    if (callStateUi is CallStateUi.Connecting) plus(AlertMessage.AutomaticRecordingMessage)
-                    else minus(AlertMessage.AutomaticRecordingMessage)
-                }
-            )
+
+            val mutableList = value.toMutableSet()
+            val newList = if (callStateUi is CallStateUi.Connecting) mutableList.plus(AlertMessage.AutomaticRecordingMessage) else mutableList.minus(AlertMessage.AutomaticRecordingMessage)
+            value = newList
         }.launchIn(scope)
     }
 }

@@ -40,14 +40,14 @@ class RecordingSnackbarM3Test {
 
     @Test
     fun testRecordingStartedSnackbar() {
-        composeTestRule.setContent { RecordingStartedSnackbarM3({}) }
+        composeTestRule.setContent { RecordingStartedSnackbarM3(onDismissClick = {}) }
         val message = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
         composeTestRule.onNodeWithText(message).assertIsDisplayed()
     }
 
     @Test
     fun testRecordingEndedSnackbar() {
-        composeTestRule.setContent { RecordingEndedSnackbarM3({}) }
+        composeTestRule.setContent { RecordingEndedSnackbarM3(onDismissClick = {}) }
         val message = composeTestRule.activity.getString(R.string.kaleyra_recording_stopped_message)
         composeTestRule.onNodeWithText(message).assertIsDisplayed()
     }
@@ -62,7 +62,7 @@ class RecordingSnackbarM3Test {
     @Test
     fun testRecordingStartedSnackbarDismissClicked() {
         var dismissClicked = false
-        composeTestRule.setContent { RecordingStartedSnackbarM3({ dismissClicked = true }) }
+        composeTestRule.setContent { RecordingStartedSnackbarM3(onDismissClick = { dismissClicked = true }) }
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)
@@ -71,7 +71,7 @@ class RecordingSnackbarM3Test {
     @Test
     fun testRecordingEndedSnackbarDismissClicked() {
         var dismissClicked = false
-        composeTestRule.setContent { RecordingEndedSnackbarM3({ dismissClicked = true }) }
+        composeTestRule.setContent { RecordingEndedSnackbarM3(onDismissClick = { dismissClicked = true }) }
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)

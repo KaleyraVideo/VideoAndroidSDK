@@ -173,7 +173,7 @@ private fun SharedFileInfoAndProgress(
             text = sharedFile.name,
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = MaterialTheme.typography.titleSmall.fontSize,
-            fontWeight = FontWeight.Bold,
+            fontWeight = MaterialTheme.typography.titleSmall.fontWeight ?: FontWeight.Normal,
             ellipsize = Ellipsize.Middle
         )
 

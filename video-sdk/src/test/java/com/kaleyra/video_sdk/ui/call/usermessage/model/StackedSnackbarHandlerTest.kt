@@ -75,11 +75,29 @@ class StackedSnackbarHandlerTest {
     @Test
     fun testAlertMessagesAdded() = runTest {
         val stackedSnackbarHostMessagesHandler = StackedSnackbarHostMessagesHandler(scope = backgroundScope)
-        stackedSnackbarHostMessagesHandler.addAlertMessages(listOf(AlertMessage.WaitingForOtherParticipantsMessage, AlertMessage.AutomaticRecordingMessage))
+        stackedSnackbarHostMessagesHandler.addAlertMessages(setOf(AlertMessage.WaitingForOtherParticipantsMessage, AlertMessage.AutomaticRecordingMessage))
         stackedSnackbarHostMessagesHandler.alertMessages.first {
             it.size == 2
                 && it.contains(AlertMessage.WaitingForOtherParticipantsMessage)
                 && it.contains(AlertMessage.AutomaticRecordingMessage)
         }
+    }
+
+    @Test
+    fun testAlertMessageRemoved() = runTest {
+        val stackedSnackbarHostMessagesHandler = StackedSnackbarHostMessagesHandler(scope = backgroundScope)
+        stackedSnackbarHostMessagesHandler.addAlertMessages(setOf(AlertMessage.WaitingForOtherParticipantsMessage))
+        stackedSnackbarHostMessagesHandler.alertMessages.first { it.size == 1 }
+        stackedSnackbarHostMessagesHandler.removeUserMessage(AlertMessage.WaitingForOtherParticipantsMessage)
+        stackedSnackbarHostMessagesHandler.alertMessages.first { it.size == 0 }
+    }
+
+    @Test
+    fun testAlertMessagesRemovedByAddingEmptyList() = runTest {
+        val stackedSnackbarHostMessagesHandler = StackedSnackbarHostMessagesHandler(scope = backgroundScope)
+        stackedSnackbarHostMessagesHandler.addAlertMessages(setOf(AlertMessage.WaitingForOtherParticipantsMessage))
+        stackedSnackbarHostMessagesHandler.alertMessages.first { it.size == 1 }
+        stackedSnackbarHostMessagesHandler.addAlertMessages(setOf())
+        stackedSnackbarHostMessagesHandler.alertMessages.first { it.size == 0 }
     }
 }

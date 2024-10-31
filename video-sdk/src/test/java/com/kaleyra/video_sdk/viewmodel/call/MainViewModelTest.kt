@@ -28,7 +28,6 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
@@ -43,6 +42,7 @@ import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -116,14 +116,14 @@ class MainViewModelTest {
 
     @Test
     fun testTheme() = runTest {
-        val themeMock = mockk<CompanyUI.Theme>()
+        val theme = Theme()
         val companyMock = mockk<Company>()
-        every { companyMock.combinedTheme } returns flowOf(themeMock)
+        every { companyMock.combinedTheme } returns flowOf(theme)
 
         val viewModel = MainViewModel { Success(conferenceMock, mockk(), companyMock, MutableStateFlow(mockk())) }
         advanceUntilIdle()
 
-        assertEquals(themeMock, viewModel.theme.first())
+        assertEquals(theme, viewModel.theme.first())
     }
 
     @Test

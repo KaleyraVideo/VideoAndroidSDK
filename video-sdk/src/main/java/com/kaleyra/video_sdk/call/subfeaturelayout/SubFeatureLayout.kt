@@ -56,7 +56,6 @@ internal fun SubFeatureLayout(
         ) {
             Text(
                 text = title,
-                fontWeight = FontWeight.Medium,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )

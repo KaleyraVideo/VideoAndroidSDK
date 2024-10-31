@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -47,12 +48,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@Stable
-internal object HCallScreenScaffoldDefaults {
-
-    val SheetElevation = 2.dp
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HCallScreenScaffold(
@@ -60,6 +55,7 @@ internal fun HCallScreenScaffold(
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable RowScope.() -> Unit,
     sheetDragContent: @Composable RowScope.() -> Unit,
+    brandLogo: @Composable BoxScope.() -> Unit,
     sheetState: CallSheetState = rememberCallSheetState(),
     sheetScrimColor: Color = CallBottomSheetDefaults.ScrimColor,
     sheetDragHandle: @Composable (() -> Unit)? = { CallBottomSheetDefaults.VDragHandle() },
@@ -79,19 +75,20 @@ internal fun HCallScreenScaffold(
         { scope.launch { sheetState.settle(it) } }
     }
 
-    val density = LocalDensity.current
-    var sheetDragContentWidth by remember { mutableStateOf(0.dp) }
-    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
-    var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val contentPaddingValues by remember {
-        derivedStateOf { PaddingValues(top = topAppBarPadding, end = bottomSheetPadding) }
-    }
-
     val layoutDirection = LocalLayoutDirection.current
     val topPadding = paddingValues.calculateTopPadding()
     val bottomPadding = paddingValues.calculateBottomPadding()
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
+
+    val density = LocalDensity.current
+    var sheetDragContentWidth by remember { mutableStateOf(0.dp) }
+    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
+    var topAppBarPadding by remember { mutableStateOf(0.dp) }
+    val contentPaddingValues by remember(startPadding, bottomPadding) {
+        derivedStateOf { PaddingValues(start = startPadding, top = topAppBarPadding, end = bottomSheetPadding, bottom = bottomPadding) }
+    }
+
     Surface(
         modifier = modifier,
         color = containerColor,
@@ -124,7 +121,6 @@ internal fun HCallScreenScaffold(
                 sheetContent = {
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceContainer,
-                        tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                         modifier = Modifier.anchoredDraggable(
                             state = sheetState.anchoredDraggableState,
                             orientation = dragOrientation,
@@ -137,7 +133,6 @@ internal fun HCallScreenScaffold(
                     {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
-                            tonalElevation = HCallScreenScaffoldDefaults.SheetElevation,
                             modifier = Modifier
                                 .dragHorizontalOffset(sheetState)
                                 .anchoredDraggable(
@@ -186,6 +181,7 @@ internal fun HCallScreenScaffold(
                     }
                 }
             )
+            brandLogo()
         }
     }
 }

@@ -76,7 +76,7 @@ internal fun PipStreamComponent(
     }
 
     val nonDisplayedParticipantsData = remember(uiState, streamsToDisplay) {
-        val nonDisplayedStreams = uiState.streams.value.filter { !it.isMine } - streamsToDisplay.toSet()
+        val nonDisplayedStreams = uiState.streams.value.filterNot { it.isMine && it.video?.isScreenShare == true } - streamsToDisplay.toSet()
         nonDisplayedStreams.map { NonDisplayedParticipantData(it.id, it.username, it.avatar) }.toImmutableList()
     }
 
@@ -97,6 +97,7 @@ internal fun PipStreamComponent(
 
             StreamStatusIcons(
                 uiState.preview.audio,
+                uiState.preview.video,
                 fullscreen = false,
                 mine = true,
                 modifier = Modifier
@@ -146,14 +147,14 @@ internal fun PipStreamComponent(
 }
 
 private fun streamsToDisplayFor(uiState: StreamUiState): List<StreamUi> {
-    val streams = uiState.streams.value
+    val streams = uiState.streams.value.filterNot { it.isMine && it.video?.isScreenShare == true }
     val pinnedStreams = uiState.pinnedStreams.value.filterNot { it.isMine && it.video?.isScreenShare == true }
     val fullscreenStream = uiState.fullscreenStream
 
     return when {
         fullscreenStream != null -> listOf(fullscreenStream)
         pinnedStreams.isNotEmpty() -> pinnedStreams.take(2)
-        else -> streams.filter { !it.isMine }.take(2)
+        else -> streams.take(2)
     }
 }
 

@@ -65,9 +65,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 }
                 .mapLatest { (_, streams, callState) ->
                     val updatedStreams = when {
-                        streams == uiState.value.streams.value -> uiState.value.streams
-                        else -> streams.toImmutableList()
-                    }
+                        streams == uiState.value.streams.value -> uiState.value.streams.value
+                        else -> streams
+                    }.sortedBy { it.isMine }.toImmutableList()
 
                     _uiState.update {
                         it.copy(
@@ -176,6 +176,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         _uiState.update { it.copy(pinnedStreams = ImmutableList()) }
     }
 
+    fun zoom(streamId: String) =
+        uiState.value.streams.value.firstOrNull { it.id == streamId }
+            ?.video?.view?.value?.zoom()
+
+
     // TODO remove code duplication in CallActionsViewModel
     fun tryStopScreenShare(): Boolean {
         val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.isAtLeastLocallyEnabled() }
@@ -186,10 +191,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             val streams = me?.streams?.value
             val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
-            val hasStopped = when(input) {
+            val hasStopped = when (input) {
                 is Input.Video.Screen -> true.also {
                     input.dispose()
                 }
+
                 is Input.Video.Application -> input.tryDisable()
                 else -> false
             }

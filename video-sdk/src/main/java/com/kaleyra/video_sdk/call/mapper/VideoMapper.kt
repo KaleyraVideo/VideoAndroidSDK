@@ -18,8 +18,10 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
+import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.pointer.model.PointerUi
@@ -44,6 +46,7 @@ internal object VideoMapper {
                 VideoUi(
                     video.id,
                     video.view.value?.let { ImmutableView(it) },
+                    video.view.value?.zoomLevel?.value?.toZoomLevelUi(),
                     video.enabled.value.isAtLeastRemotelyEnabled(),
                     video.isScreenShare(),
                     ImmutableList(emptyList())
@@ -52,15 +55,16 @@ internal object VideoMapper {
             emit(initialValue)
 
             val flow = this@mapToVideoUi.filterIsInstance<Input.Video>()
-            combine(
+            FlowUtils.combine(
                 flow.map { it.id },
                 flow.flatMapLatest { it.view }.map { it?.let { ImmutableView(it) } },
+                flow.flatMapLatest { it.view }.flatMapLatest { it?.zoomLevel ?: flowOf<StreamView.ZoomLevel>() },
                 flow.flatMapLatest { it.enabled },
                 flow.map { it.isScreenShare() },
                 flow.mapToPointersUi()
-            ) { id, view, enabled, isScreenShare, pointers ->
+            ) { id, view, zoomLevel, enabled, isScreenShare, pointers ->
                 val pointerList = ImmutableList(if (view != null && enabled.isAtLeastRemotelyEnabled()) pointers else emptyList())
-                VideoUi(id, view, enabled.isAtLeastRemotelyEnabled(), isScreenShare, pointerList)
+                VideoUi(id, view, zoomLevel.toZoomLevelUi(), enabled.isAtLeastRemotelyEnabled(), isScreenShare, pointerList)
             }.collect {
                 emit(it)
             }
@@ -101,4 +105,24 @@ internal object VideoMapper {
 
     private fun Input.Video.isScreenShare() = this is Input.Video.Application || this is Input.Video.Screen
 
+    fun StreamView.ZoomLevel.toZoomLevelUi(): VideoUi.ZoomLevelUi = when (this) {
+        StreamView.ZoomLevel.`2x` -> VideoUi.ZoomLevelUi.`2x`
+        StreamView.ZoomLevel.`3x` -> VideoUi.ZoomLevelUi.`3x`
+        StreamView.ZoomLevel.`4x` -> VideoUi.ZoomLevelUi.`4x`
+        StreamView.ZoomLevel.`5x` -> VideoUi.ZoomLevelUi.`5x`
+        StreamView.ZoomLevel.`6x` -> VideoUi.ZoomLevelUi.`6x`
+        StreamView.ZoomLevel.`7x` -> VideoUi.ZoomLevelUi.`7x`
+        StreamView.ZoomLevel.Fill -> VideoUi.ZoomLevelUi.Fill
+        StreamView.ZoomLevel.Fit -> VideoUi.ZoomLevelUi.Fit
+    }
+
+    fun VideoUi.ZoomLevelUi.prettyPrint() = when (this) {
+        VideoUi.ZoomLevelUi.`2x` -> "2x"
+        VideoUi.ZoomLevelUi.`3x` -> "3x"
+        VideoUi.ZoomLevelUi.`4x` -> "4x"
+        VideoUi.ZoomLevelUi.`5x` -> "5x"
+        VideoUi.ZoomLevelUi.`6x` -> "6x"
+        VideoUi.ZoomLevelUi.`7x` -> "7x"
+        else -> ""
+    }
 }

@@ -357,7 +357,6 @@ internal fun CallActionBadge(
             Text(
                 modifier = Modifier.align(Alignment.Center),
                 text = text,
-                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.labelMedium.clearFontPadding()
             )
         }

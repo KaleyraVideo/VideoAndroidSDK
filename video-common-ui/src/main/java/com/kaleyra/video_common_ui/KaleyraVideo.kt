@@ -29,13 +29,11 @@ import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvi
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.termsandconditions.TermsAndConditionsRequester
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.utils.CORE_UI
 import com.kaleyra.video_common_ui.utils.extensions.CoroutineExtensions.launchBlocking
 import com.kaleyra.video_utils.ContextRetainer
-import com.kaleyra.video_utils.cached
-import com.kaleyra.video_utils.getValue
 import com.kaleyra.video_utils.logging.PriorityLogger
-import com.kaleyra.video_utils.setValue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +52,8 @@ import java.util.concurrent.Executors
  * Kaleyra Video Android SDK facade
  */
 object KaleyraVideo {
+
+    interface Theme
 
     @get:Synchronized
         /**
@@ -86,6 +86,8 @@ object KaleyraVideo {
     private var logger: PriorityLogger? = null
     private var _conference: ConferenceUI? = null
     private var _conversation: ConversationUI? = null
+
+    private var isGlassesSdk = false
 
     @get:Synchronized
         /**
@@ -131,7 +133,7 @@ object KaleyraVideo {
         /**
          * Optional theme setup that will be used on the UI layer
          */
-    var theme: CompanyUI.Theme? = null
+    var theme: Theme? = null
 
     @get:Synchronized
     @set:Synchronized
@@ -166,7 +168,11 @@ object KaleyraVideo {
 
         if (isConfigured) return false
 
-        val activityConfiguration = PhoneActivityClazzProvider.getActivityClazzConfiguration() ?: GlassActivityClazzProvider.getActivityClazzConfiguration()
+        val activityConfiguration =
+            PhoneActivityClazzProvider.getActivityClazzConfiguration()
+                ?: GlassActivityClazzProvider.getActivityClazzConfiguration().also {
+                    isGlassesSdk = true
+                }
         if (activityConfiguration != null) {
             callActivityClazz = activityConfiguration.callClazz
             chatActivityClazz = activityConfiguration.chatClazz
@@ -180,7 +186,7 @@ object KaleyraVideo {
         Collaboration.create(configuration).apply {
             collaboration = this
         }
-        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger)
+        _conference = ConferenceUI(collaboration!!.conference, callActivityClazz, logger, isGlassesSdk)
         _conversation = ConversationUI(collaboration!!.conversation, chatActivityClazz, chatNotificationActivityClazz)
 
         termsAndConditionsActivityClazz?.also {

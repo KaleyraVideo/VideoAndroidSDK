@@ -17,8 +17,8 @@
 package com.kaleyra.video_sdk.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -27,16 +27,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.kaleyra.material_color_utilities.hct.Hct
-import com.kaleyra.material_color_utilities.scheme.SchemeFidelity
-import com.kaleyra.material_color_utilities.scheme.SchemeMonochrome
-import com.kaleyra.video_common_ui.CompanyUI.Theme
+import com.kaleyra.video_common_ui.theme.KaleyraPaletteSeed
+import com.kaleyra.video_common_ui.theme.Theme
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
+import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toDarkColorScheme
+import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toLightColorScheme
 
 /**
  * Composable function to generate the Collaboration M3 Theme
@@ -51,78 +49,30 @@ fun CollaborationTheme(
     content: @Composable (isDarkTheme: Boolean) -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-
-    val lightColors = theme.day.colors
-    val darkColors = theme.night.colors
     val isSystemDarkTheme = isSystemInDarkTheme()
-    val isDarkTheme by remember(theme) {
-        derivedStateOf {
-            when (theme.defaultStyle) {
-                Theme.DefaultStyle.Day -> false
-                Theme.DefaultStyle.Night -> true
-                else -> isSystemDarkTheme
-            }
+
+    val isDarkTheme = remember(theme) {
+        when (theme.config.style) {
+            Theme.Config.Style.Light -> false
+            Theme.Config.Style.Dark -> true
+            else -> isSystemDarkTheme
         }
     }
 
-    val seed = if (isDarkTheme) {
-        when(darkColors) {
-            is Theme.Colors.Seed -> darkColors.color
-            else -> kaleyra_m3_seed.toArgb()
-        }
-    } else {
-        when(lightColors) {
-            is Theme.Colors.Seed -> lightColors.color
-            else -> kaleyra_m3_seed.toArgb()
+    val palette = theme.palette ?: Theme.Palette(ColorResource(KaleyraPaletteSeed))
+    val colorScheme = remember(theme) {
+        when {
+            isDarkTheme -> palette.toDarkColorScheme()
+            else -> palette.toLightColorScheme()
         }
     }
+
+    val typography = (theme.typography ?: kaleyraTypography).typography
 
     val kaleyraColors = when {
         isDarkTheme -> darkKaleyraColors()
         else -> lightKaleyraColors()
     }
-
-    val monochromeScheme = SchemeMonochrome(Hct.fromInt(seed), isDarkTheme, .0)
-    val fidelityScheme = SchemeFidelity(Hct.fromInt(seed), isDarkTheme, .0)
-
-    val scheme = ColorScheme(
-        primary = Color(fidelityScheme.primary),
-        onPrimary = Color(fidelityScheme.onPrimary),
-        primaryContainer = Color(fidelityScheme.primaryContainer),
-        onPrimaryContainer = Color(fidelityScheme.onPrimaryContainer),
-        inversePrimary = Color(fidelityScheme.inversePrimary),
-        secondary = Color(fidelityScheme.secondary),
-        onSecondary = Color(fidelityScheme.onSecondary),
-        secondaryContainer = Color(fidelityScheme.secondaryContainer),
-        onSecondaryContainer = Color(fidelityScheme.onSecondaryContainer),
-        tertiary = Color(fidelityScheme.tertiary),
-        onTertiary = Color(fidelityScheme.onTertiary),
-        tertiaryContainer = Color(fidelityScheme.tertiaryContainer),
-        onTertiaryContainer = Color(fidelityScheme.onTertiaryContainer),
-        background = Color(monochromeScheme.background),
-        onBackground = Color(monochromeScheme.onBackground),
-        surface = Color(monochromeScheme.surface),
-        onSurface = Color(monochromeScheme.onSurface),
-        surfaceVariant = Color(monochromeScheme.surfaceVariant),
-        onSurfaceVariant = Color(monochromeScheme.onSurfaceVariant),
-        surfaceTint = Color(monochromeScheme.surfaceTint),
-        inverseSurface = Color(monochromeScheme.inverseSurface),
-        inverseOnSurface = Color(monochromeScheme.inverseOnSurface),
-        error = Color(fidelityScheme.error),
-        onError = Color(fidelityScheme.onError),
-        errorContainer = Color(fidelityScheme.errorContainer),
-        onErrorContainer = Color(fidelityScheme.onErrorContainer),
-        outline = Color(monochromeScheme.outline),
-        outlineVariant = Color(monochromeScheme.outlineVariant),
-        scrim = Color(monochromeScheme.scrim),
-        surfaceBright = Color(monochromeScheme.surfaceBright),
-        surfaceContainer = Color(monochromeScheme.surfaceContainer),
-        surfaceContainerHigh = Color(monochromeScheme.surfaceContainerHigh),
-        surfaceContainerHighest = Color(monochromeScheme.surfaceContainerHighest),
-        surfaceContainerLow = Color(monochromeScheme.surfaceContainerLow),
-        surfaceContainerLowest = Color(monochromeScheme.surfaceContainerLowest),
-        surfaceDim = Color(monochromeScheme.surfaceDim),
-    )
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -138,7 +88,7 @@ fun CollaborationTheme(
 
     CompositionLocalProvider(value = LocalKaleyraColors provides kaleyraColors) {
         MaterialTheme(
-            colorScheme = scheme,
+            colorScheme = colorScheme,
             typography = typography,
             content = { content(isDarkTheme) }
         )
@@ -160,36 +110,35 @@ internal val LocalKaleyraColors = compositionLocalOf { KaleyraColors() }
 internal fun lightKaleyraColors(
     warning: Color = Color(0xFFFFD02B),
     onWarning: Color = Color.White,
-    hangUp: Color = Color(0xFFE11900),
-    onHangUp: Color = Color.White,
-    answer: Color = Color(0xFF1A7924),
-    onAnswer: Color = Color.White
+    negativeContainer: Color = Color(0xFFE11900),
+    onNegativeContainer: Color = Color.White,
+    positiveContainer: Color = Color(0xFF1A7924),
+    onPositiveContainer: Color = Color.White
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
-    negativeContainer = hangUp,
-    onNegativeContainer = onHangUp,
-    positiveContainer = answer,
-    onPositiveContainer = onAnswer
+    negativeContainer = negativeContainer,
+    onNegativeContainer = onNegativeContainer,
+    positiveContainer = positiveContainer,
+    onPositiveContainer = onPositiveContainer
 )
 
 internal fun darkKaleyraColors(
     warning: Color = Color(0xFFFFD02B),
     onWarning: Color = Color.White,
-    hangUp: Color = Color(0xFFAE1300),
-    onHangUp: Color = Color.White,
-    answer: Color = Color(0xFF1A7924),
-    onAnswer: Color = Color.White
+    negativeContainer: Color = Color(0xFFAE1300),
+    onNegativeContainer: Color = Color.White,
+    positiveContainer: Color = Color(0xFF1A7924),
+    onPositiveContainer: Color = Color.White
 ) = KaleyraColors(
     warning = warning,
     onWarning = onWarning,
-    negativeContainer = hangUp,
-    onNegativeContainer = onHangUp,
-    positiveContainer = answer,
-    onPositiveContainer = onAnswer
+    negativeContainer = negativeContainer,
+    onNegativeContainer = onNegativeContainer,
+    positiveContainer = positiveContainer,
+    onPositiveContainer = onPositiveContainer
 )
 
-// TODO decide if this object will be used for a custom theme, or only some colors, so it's overkill
 internal object KaleyraTheme {
 
     val colors: KaleyraColors
@@ -204,11 +153,7 @@ internal object KaleyraTheme {
  */
 @Composable
 fun KaleyraTheme(content: @Composable (isDarkTheme: Boolean) -> Unit) {
-    val theme = Theme(
-        day = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb())),
-        night = Theme.Style(colors = Theme.Colors.Seed(color = kaleyra_m3_seed.toArgb()))
-    )
-    CollaborationTheme(theme = theme, content = content)
+    CollaborationTheme(theme = Theme(), content = content)
 }
 
 private val TermsDarkColorScheme = darkColorScheme(
@@ -242,7 +187,7 @@ fun TermsAndConditionsTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = typography,
+        typography = Typography(),
         content = content
     )
 }

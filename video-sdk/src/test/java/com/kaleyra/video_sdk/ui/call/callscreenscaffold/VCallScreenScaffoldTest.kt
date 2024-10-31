@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.callscreenscaffold
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class VCallScreenScaffoldTest {
@@ -275,12 +278,43 @@ class VCallScreenScaffoldTest {
         assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
+    @Test
+    @Config(qualifiers = "w480dp-h840dp")
+    fun testBrandLogoComposableCalled() {
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
+    @Test
+    @Config(qualifiers = "w100dp-h200dp")
+    fun testBrandLogoComposableNotCalledOnSmallScreen() {
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(false, hasCalledBrandLogo)
+    }
+
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
-        content: @Composable (PaddingValues) -> Unit = {}
+        content: @Composable (PaddingValues) -> Unit = {},
+        brandLogo: @Composable (BoxScope) -> Unit = {},
     ) {
         setContent {
             VCallScreenScaffold(
@@ -311,6 +345,7 @@ class VCallScreenScaffoldTest {
                     )
                 },
                 paddingValues = paddingValues,
+                brandLogo = brandLogo,
                 content = content
             )
         }

@@ -86,7 +86,7 @@ class StreamMapperTest {
 
     private val streamUi1 = StreamUi(
         id = "streamId1",
-        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
+        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
         avatar = ImmutableUri(uriMock)
@@ -94,7 +94,7 @@ class StreamMapperTest {
 
     private val streamUi2 = StreamUi(
         id = "streamId2",
-        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
+        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
         avatar = ImmutableUri(uriMock)
@@ -102,7 +102,7 @@ class StreamMapperTest {
 
     private val streamUi3 = StreamUi(
         id = "streamId3",
-        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
+        video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
         avatar = ImmutableUri(uriMock)
@@ -110,7 +110,7 @@ class StreamMapperTest {
 
     private val myStreamUi1 = StreamUi(
         id = "myStreamId",
-        video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), isEnabled = true),
+        video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "myDisplayName",
         avatar = ImmutableUri(uriMock),
@@ -119,7 +119,7 @@ class StreamMapperTest {
 
     private val myStreamUi2 = StreamUi(
         id = "myStreamId2",
-        video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), isEnabled = true),
+        video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "myDisplayName",
         avatar = ImmutableUri(uriMock),
@@ -191,6 +191,9 @@ class StreamMapperTest {
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+        }
+        with(viewMock) {
+            every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
         }
     }
 
@@ -509,7 +512,7 @@ class StreamMapperTest {
         }
         val modifiedStreamUi = StreamUi(
             id = "modifiedStreamId",
-            video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
+            video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true),
             username = "displayName",
             avatar = ImmutableUri(uriMock)
@@ -535,6 +538,7 @@ class StreamMapperTest {
                 video = VideoUi(
                     id = "videoId2",
                     view =  ImmutableView(viewMock),
+                    zoomLevelUi = VideoUi.ZoomLevelUi.Fit,
                     isEnabled = false
                 )
             ),
@@ -553,7 +557,7 @@ class StreamMapperTest {
         }
         val modifiedStreamUi = StreamUi(
             id = "modifiedStreamId",
-            video = VideoUi(id = "videoId", view = ImmutableView(viewMock), isEnabled = true),
+            video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false),
             username = "displayName",
             avatar = ImmutableUri(uriMock)
@@ -673,5 +677,4 @@ class StreamMapperTest {
         val actual = result.first()
         Assert.assertEquals(false, actual)
     }
-
 }

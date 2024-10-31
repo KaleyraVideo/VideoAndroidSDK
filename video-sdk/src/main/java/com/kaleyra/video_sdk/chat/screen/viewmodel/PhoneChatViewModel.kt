@@ -24,6 +24,7 @@ import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatViewModel
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantsState
@@ -49,6 +50,7 @@ import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -109,9 +111,9 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         .map(PhoneChatViewModelState::toUiState)
         .stateIn(viewModelScope, SharingStarted.Eagerly, viewModelState.value.toUiState())
 
-    val theme = company
+    val theme: StateFlow<Theme> = company
         .flatMapLatest { it.combinedTheme }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Theme())
 
     override val userMessage: Flow<UserMessage>
         get() = CallUserMessagesProvider.userMessage

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.appbar.model
+package com.kaleyra.video_sdk.call.brandlogo.model
 
 import android.net.Uri
 import androidx.compose.runtime.Immutable

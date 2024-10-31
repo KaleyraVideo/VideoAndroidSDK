@@ -155,7 +155,7 @@ internal object ModifierExtensions {
     @OptIn(ExperimentalAnimatableApi::class)
     internal fun Modifier.animateConstraints(
         animationSpec: FiniteAnimationSpec<IntSize> = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
+            dampingRatio = Spring.DampingRatioNoBouncy,
             stiffness = Spring.StiffnessMediumLow
         )
     ) = composed {

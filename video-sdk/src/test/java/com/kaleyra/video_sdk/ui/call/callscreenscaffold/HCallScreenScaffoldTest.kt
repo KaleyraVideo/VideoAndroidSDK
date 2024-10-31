@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.callscreenscaffold
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,6 +33,7 @@ import com.kaleyra.video_sdk.call.callscreenscaffold.CallScreenScaffoldDefaults
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
 import com.kaleyra.video_sdk.ui.performHorizontalSwipe
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -235,11 +237,28 @@ class HCallScreenScaffoldTest {
         sheetHeight.assertIsEqualTo(sheetContentHeight + sheetDragContentHeight + sheetHandleHeight, "sheet width")
     }
 
+    @Test
+    fun testBrandLogoComposableCalled() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            sheetState = sheetState,
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
-        content: @Composable (PaddingValues) -> Unit = {}
+        content: @Composable (PaddingValues) -> Unit = {},
+        brandLogo: @Composable (BoxScope) -> Unit = {},
     ) {
         setContent {
             HCallScreenScaffold(
@@ -269,7 +288,8 @@ class HCallScreenScaffoldTest {
                     )
                 },
                 paddingValues = paddingValues,
-                content = content
+                content = content,
+                brandLogo = brandLogo,
             )
         }
     }

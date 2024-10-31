@@ -98,6 +98,7 @@ private fun Avatars(
                         Avatar(
                             username = username,
                             uri = uri,
+                            size = avatarSize,
                             modifier = Modifier
                                 // Using drawWithContent modifier to get better result than using border modifier
                                 .drawWithContent {
@@ -108,7 +109,6 @@ private fun Avatars(
                                     )
                                     drawContent()
                                 }
-                                .size(avatarSize)
                         )
                     }
                 }

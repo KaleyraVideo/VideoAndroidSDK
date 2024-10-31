@@ -230,7 +230,6 @@ internal fun ParticipantsComponent(
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
-                    fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -253,7 +252,6 @@ internal fun ParticipantsComponent(
                     item {
                         Text(
                             text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
-                            fontWeight = FontWeight.SemiBold,
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -280,7 +278,6 @@ internal fun ParticipantsComponent(
 
                         item {
                             Text(
-                                fontWeight = FontWeight.SemiBold,
                                 text = stringResource(R.string.kaleyra_participants_component_users_invited),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.fillMaxWidth()
