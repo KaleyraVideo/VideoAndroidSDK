@@ -23,9 +23,10 @@ class KaleyraVideoFacadeTest {
 
     @Before
     fun setup() {
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializationProviderKt")
         mockkStatic(::requestConfiguration)
-        mockkStatic(Executors::class)
         mockkStatic("kotlinx.coroutines.ExecutorsKt")
+        mockkStatic(Executors::class)
         every { Executors.newSingleThreadExecutor() } returns mockk {
             every { this@mockk.asCoroutineDispatcher() } returns object : ExecutorCoroutineDispatcher() {
                 override val executor: Executor = Executor { }
@@ -55,36 +56,28 @@ class KaleyraVideoFacadeTest {
 
     @Test
     fun conversationUI_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(mockk(relaxed = true))
         KaleyraVideo.conversation
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationState_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(mockk(relaxed = true))
         KaleyraVideo.state
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationSynchronization_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(mockk(relaxed = true))
         KaleyraVideo.synchronization
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationConnectedUser_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(mockk(relaxed = true))
         KaleyraVideo.connectedUser
         verify { requestConfiguration() }
     }
