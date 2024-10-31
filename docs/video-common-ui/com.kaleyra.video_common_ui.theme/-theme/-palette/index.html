@@ -1,0 +1,468 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Palette</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../index.html">
+                            VideoAndroidSDK
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-common-ui:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="video-common-ui::com.kaleyra.video_common_ui.theme/Theme.Palette///PointingToDeclaration//-943617535">
+  <div class="breadcrumbs"><a href="../../../index.html">video-common-ui</a><span class="delimiter">/</span><a href="../../index.html">com.kaleyra.video_common_ui.theme</a><span class="delimiter">/</span><a href="../index.html">Theme</a><span class="delimiter">/</span><span class="current">Palette</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Palette</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Palette</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>primary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onPrimary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>secondary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onSecondary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>secondaryContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onSecondaryContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onSurfaceVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceTint<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>inverseSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>inverseOnSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>error<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>onError<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>outline<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>outlineVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceContainerHigh<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceContainerHighest<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceContainerLow<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>surfaceContainerLowest<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">Represents the color palette for the theme.</p><p class="paragraph">This data class holds color resources for various UI elements in both light and dark themes.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1603410283%2FConstructors%2F-943617535" anchor-label="Palette" id="1603410283%2FConstructors%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-palette.html"><span><span>Palette</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1603410283%2FConstructors%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seed<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a new <a href="index.html">Palette</a> instance using a single<a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a> as a seed for both light and dark themes.</p></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lightColorScheme<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a><span class="token punctuation">, </span></span><span class="parameter ">darkColorScheme<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a new <a href="index.html">Palette</a> instance using pre-generated <a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a> objects for light and dark themes.</p></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">primary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onPrimary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">secondary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onSecondary<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">secondaryContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onSecondaryContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onSurfaceVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceTint<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">inverseSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">inverseOnSurface<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">error<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">onError<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">outline<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">outlineVariant<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceContainer<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceContainerHigh<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceContainerHighest<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceContainerLow<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a><span class="token punctuation">, </span></span><span class="parameter ">surfaceContainerLowest<span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="920496832%2FProperties%2F-943617535" anchor-label="error" id="920496832%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="error.html"><span><span>error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="920496832%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="error.html">error</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-990519276%2FProperties%2F-943617535" anchor-label="inverseOnSurface" id="-990519276%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inverse-on-surface.html"><span>inverse</span><wbr><span>On</span><wbr><span><span>Surface</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-990519276%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="inverse-on-surface.html">inverseOnSurface</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-841654443%2FProperties%2F-943617535" anchor-label="inverseSurface" id="-841654443%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inverse-surface.html"><span>inverse</span><wbr><span><span>Surface</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-841654443%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="inverse-surface.html">inverseSurface</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="372907455%2FProperties%2F-943617535" anchor-label="onError" id="372907455%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-error.html"><span>on</span><wbr><span><span>Error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="372907455%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-error.html">onError</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1892996229%2FProperties%2F-943617535" anchor-label="onPrimary" id="1892996229%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-primary.html"><span>on</span><wbr><span><span>Primary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1892996229%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-primary.html">onPrimary</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1962550573%2FProperties%2F-943617535" anchor-label="onSecondary" id="-1962550573%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-secondary.html"><span>on</span><wbr><span><span>Secondary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1962550573%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-secondary.html">onSecondary</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="484284454%2FProperties%2F-943617535" anchor-label="onSecondaryContainer" id="484284454%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-secondary-container.html"><span>on</span><wbr><span>Secondary</span><wbr><span><span>Container</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="484284454%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-secondary-container.html">onSecondaryContainer</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1404552134%2FProperties%2F-943617535" anchor-label="onSurface" id="-1404552134%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-surface.html"><span>on</span><wbr><span><span>Surface</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1404552134%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-surface.html">onSurface</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2037114917%2FProperties%2F-943617535" anchor-label="onSurfaceVariant" id="-2037114917%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-surface-variant.html"><span>on</span><wbr><span>Surface</span><wbr><span><span>Variant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2037114917%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="on-surface-variant.html">onSurfaceVariant</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="129512198%2FProperties%2F-943617535" anchor-label="outline" id="129512198%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="outline.html"><span><span>outline</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="129512198%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="outline.html">outline</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1758667663%2FProperties%2F-943617535" anchor-label="outlineVariant" id="1758667663%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="outline-variant.html"><span>outline</span><wbr><span><span>Variant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1758667663%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="outline-variant.html">outlineVariant</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-154589882%2FProperties%2F-943617535" anchor-label="primary" id="-154589882%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="primary.html"><span><span>primary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-154589882%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="primary.html">primary</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1697185620%2FProperties%2F-943617535" anchor-label="secondary" id="1697185620%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="secondary.html"><span><span>secondary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1697185620%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="secondary.html">secondary</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1728378053%2FProperties%2F-943617535" anchor-label="secondaryContainer" id="1728378053%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="secondary-container.html"><span>secondary</span><wbr><span><span>Container</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1728378053%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="secondary-container.html">secondaryContainer</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="842829051%2FProperties%2F-943617535" anchor-label="surface" id="842829051%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface.html"><span><span>surface</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="842829051%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface.html">surface</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1854460670%2FProperties%2F-943617535" anchor-label="surfaceContainer" id="1854460670%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-container.html"><span>surface</span><wbr><span><span>Container</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1854460670%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-container.html">surfaceContainer</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2080970492%2FProperties%2F-943617535" anchor-label="surfaceContainerHigh" id="2080970492%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-container-high.html"><span>surface</span><wbr><span>Container</span><wbr><span><span>High</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2080970492%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-container-high.html">surfaceContainerHigh</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="449187160%2FProperties%2F-943617535" anchor-label="surfaceContainerHighest" id="449187160%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-container-highest.html"><span>surface</span><wbr><span>Container</span><wbr><span><span>Highest</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="449187160%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-container-highest.html">surfaceContainerHighest</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1791248344%2FProperties%2F-943617535" anchor-label="surfaceContainerLow" id="-1791248344%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-container-low.html"><span>surface</span><wbr><span>Container</span><wbr><span><span>Low</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1791248344%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-container-low.html">surfaceContainerLow</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1704447148%2FProperties%2F-943617535" anchor-label="surfaceContainerLowest" id="1704447148%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-container-lowest.html"><span>surface</span><wbr><span>Container</span><wbr><span><span>Lowest</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1704447148%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-container-lowest.html">surfaceContainerLowest</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="38509376%2FProperties%2F-943617535" anchor-label="surfaceTint" id="38509376%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-tint.html"><span>surface</span><wbr><span><span>Tint</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="38509376%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-tint.html">surfaceTint</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-722953222%2FProperties%2F-943617535" anchor-label="surfaceVariant" id="-722953222%2FProperties%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-variant.html"><span>surface</span><wbr><span><span>Variant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-722953222%2FProperties%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="surface-variant.html">surfaceVariant</a><span class="token operator">: </span><a href="../../../com.kaleyra.video_common_ui.theme.resource/-color-resource/index.html">ColorResource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="375199852%2FFunctions%2F-943617535" anchor-label="toDarkColorScheme" id="375199852%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../../com.kaleyra.video_common_ui.theme.utils/-palette-extensions/to-dark-color-scheme.html"><span>to</span><wbr><span>Dark</span><wbr><span>Color</span><wbr><span><span>Scheme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="375199852%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html">Theme.Palette</a><span class="token punctuation">.</span><a href="../../../com.kaleyra.video_common_ui.theme.utils/-palette-extensions/to-dark-color-scheme.html"><span class="token function">toDarkColorScheme</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a></div><div class="brief "><p class="paragraph">Converts a <a href="index.html">Theme.Palette</a> to a dark <a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-321834912%2FFunctions%2F-943617535" anchor-label="toLightColorScheme" id="-321834912%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../../com.kaleyra.video_common_ui.theme.utils/-palette-extensions/to-light-color-scheme.html"><span>to</span><wbr><span>Light</span><wbr><span>Color</span><wbr><span><span>Scheme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-321834912%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html">Theme.Palette</a><span class="token punctuation">.</span><a href="../../../com.kaleyra.video_common_ui.theme.utils/-palette-extensions/to-light-color-scheme.html"><span class="token function">toLightColorScheme</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a></div><div class="brief "><p class="paragraph">Converts a <a href="index.html">Theme.Palette</a> to a light <a href="https://developer.android.com/reference/kotlin/androidx/compose/material3/ColorScheme.html">ColorScheme</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

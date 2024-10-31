@@ -13,7 +13,7 @@ plugins {
 apply from: 'versions.gradle'
 apply from: '../scripts/apply_dependencies.gradle'
 
-def kaleyraVideoSdkVersion = "4.0.3"
+def kaleyraVideoSdkVersion = "4.1.0"
 
 android {
     namespace "com.kaleyra.demo_video_sdk"
