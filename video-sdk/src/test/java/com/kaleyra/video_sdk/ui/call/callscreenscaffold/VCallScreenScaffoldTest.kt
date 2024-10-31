@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class VCallScreenScaffoldTest {
@@ -277,11 +279,10 @@ class VCallScreenScaffoldTest {
     }
 
     @Test
+    @Config(qualifiers = "w480dp-h840dp")
     fun testBrandLogoComposableCalled() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
         var hasCalledBrandLogo = false
         composeTestRule.setCallScreenScaffold(
-            sheetState = sheetState,
             brandLogo = {
                 hasCalledBrandLogo = true
             }
@@ -290,6 +291,21 @@ class VCallScreenScaffoldTest {
         composeTestRule.waitForIdle()
 
         assertEquals(true, hasCalledBrandLogo)
+    }
+
+    @Test
+    @Config(qualifiers = "w100dp-h200dp")
+    fun testBrandLogoComposableNotCalledOnSmallScreen() {
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(false, hasCalledBrandLogo)
     }
 
     private fun ComposeContentTestRule.setCallScreenScaffold(
