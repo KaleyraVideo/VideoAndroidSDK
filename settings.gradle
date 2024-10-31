@@ -19,15 +19,11 @@ include ':app',
         ':app-design',
         ':video-common-ui',
         ':video-sdk',
-        ':video-glasses-sdk',
-        ':video',
-        ':video-extension-audio'
+        ':video-glasses-sdk'
 
 project(':app-utilities').projectDir = file('app-extensions/app-utilities')
 project(':app-configuration').projectDir = file('app-extensions/app-configuration')
 project(':app-design').projectDir = file('app-extensions/app-design')
-project(':video').projectDir = file('../bandyer-android-collaborationcenter/video')
-project(':video-extension-audio').projectDir = file('../bandyer-android-collaborationcenter/video-extension-audio')
 
 dependencyResolutionManagement {
     repositories {
@@ -39,7 +35,7 @@ dependencyResolutionManagement {
         maven { url 'https://maven.bandyer.com/releases' }
     }
 
-    def catalogVersion = "2024.10.01"
+    def catalogVersion = "2024.10.02"
 
     versionCatalogs {
         create("kaleyraCatalog") {
