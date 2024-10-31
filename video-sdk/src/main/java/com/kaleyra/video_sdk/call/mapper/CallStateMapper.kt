@@ -17,6 +17,7 @@ package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.areOtherParticipantsRinging
@@ -35,7 +36,7 @@ internal object CallStateMapper {
             .map { it is Call.State.Connected }
             .distinctUntilChanged()
 
-    fun Call.toCallStateUi(): Flow<CallStateUi> {
+    fun CallUI.toCallStateUi(): Flow<CallStateUi> {
         return combine(
             state,
             participants,
@@ -46,7 +47,7 @@ internal object CallStateMapper {
                 state !is Call.State.Disconnected.Ended
                     && KaleyraVideo.connectedUser.value == null
                     || (state is Call.State.Connected && !doAnyOfMyStreamsIsLive) -> CallStateUi.Connecting
-                isRingingLocally(state, participants) -> CallStateUi.Ringing
+                isRingingLocally(state, participants, isLink) -> CallStateUi.Ringing
                 isRingingRemotely(state, areOtherParticipantsRinging) -> CallStateUi.RingingRemotely
                 isDialing(state, participants) -> CallStateUi.Dialing
                 state is Call.State.Connected -> CallStateUi.Connected
@@ -76,8 +77,8 @@ internal object CallStateMapper {
     private fun isDialing(state: Call.State, participants: CallParticipants): Boolean =
         (participants.creator() == null || participants.me == participants.creator()) && state is Call.State.Connecting
 
-    private fun isRingingLocally(state: Call.State, participants: CallParticipants) =
-        participants.creator().let { it != null && it != participants.me } && (state == Call.State.Disconnected || state is Call.State.Connecting)
+    private fun isRingingLocally(state: Call.State, participants: CallParticipants, isLink: Boolean) =
+        !isLink && participants.creator().let { it != null && it != participants.me } && (state == Call.State.Disconnected || state is Call.State.Connecting)
 
     private fun isRingingRemotely(state: Call.State, areOtherParticipantsRinging: Boolean) =
         (state == Call.State.Disconnected || state is Call.State.Connecting) && areOtherParticipantsRinging
