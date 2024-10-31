@@ -34,7 +34,7 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
     val alertMessages: StateFlow<Set<AlertMessage>> = _alertMessagesFlow
 
     fun addAlertMessages(messages: Set<AlertMessage>) = scope.launch {
-        _alertMessages?.filter { alertMessage -> messages.contains(alertMessage) }?.forEach { removedAlertMessage ->
+        _alertMessages?.filter { alertMessage -> !messages.contains(alertMessage) }?.forEach { removedAlertMessage ->
             internalRemoveUserMessage(removedAlertMessage)
         }
 
