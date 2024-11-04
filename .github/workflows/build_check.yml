@@ -54,7 +54,7 @@ jobs:
 
   build_video_sdk:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    needs: build_common
+    needs: [ determine-runner-integration, build_common ]
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 17
@@ -74,7 +74,7 @@ jobs:
 
   build_glasses_sdk:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    needs: build_common
+    needs: [ determine-runner-integration, build_common ]
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 17
@@ -94,7 +94,7 @@ jobs:
 
   build_app:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    needs: [ build_video_sdk, build_glasses_sdk ]
+    needs: [ determine-runner-integration, build_video_sdk, build_glasses_sdk ]
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 17
