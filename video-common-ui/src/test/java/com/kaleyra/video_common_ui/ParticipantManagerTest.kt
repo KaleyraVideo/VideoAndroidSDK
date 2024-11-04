@@ -5,6 +5,7 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -38,6 +39,7 @@ class ParticipantManagerTest {
         every { participantsMock.list } returns listOf(participantMock1, participantMock2)
         every { participantMock1.userId } returns "userId1"
         every { participantMock2.userId } returns "userId2"
+        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
     }
 
     @After
