@@ -29,8 +29,6 @@ jobs:
         with:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
-          # This correlates to the number of free runners that must exist when the API queries.
-          # Increasing this can help in case you have lots of actions querying at the same time for a race condition between the time you query the runner and when the runner actually takes the job it will execute.
           min-available-runners: 2
           github-token: ${{steps.generate_token.outputs.token}}
   
