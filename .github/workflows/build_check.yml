@@ -29,7 +29,7 @@ jobs:
         with:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
-          min-available-runners: 2
+          min-available-runners: 1
           github-token: ${{steps.generate_token.outputs.token}}
   
   build_common:
