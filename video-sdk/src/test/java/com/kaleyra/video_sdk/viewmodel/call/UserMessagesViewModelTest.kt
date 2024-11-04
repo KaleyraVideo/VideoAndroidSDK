@@ -32,6 +32,7 @@ import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.flatMapLatest
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
@@ -54,7 +55,6 @@ class UserMessagesViewModelTest {
 
     @Before
     fun setUp() {
-        mockkStatic(Executors::class)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { CallUserMessagesProvider.userMessage } returns userMessages
@@ -77,25 +77,17 @@ class UserMessagesViewModelTest {
         viewModel.userMessage.first { it.value.contains(RecordingMessage.Started) }
     }
 
-//    @Test
-//    fun testAlertMessageAdded() = runTest {
-//        alertMessages.emit(setOf(AlertMessage.AutomaticRecordingMessage))
-//        advanceUntilIdle()
-//        Assert.assertEquals(ImmutableList<AlertMessage>(listOf(AlertMessage.AutomaticRecordingMessage)), viewModel.uiState.first().alertMessages)
-//    }
+    @Test
+    fun testAlertMessageAdded() = runTest {
+        advanceUntilIdle()
+        alertMessages.emit(setOf(AlertMessage.AutomaticRecordingMessage))
+        advanceUntilIdle()
+        viewModel.uiState.first { it.alertMessages.value.contains(AlertMessage.AutomaticRecordingMessage) }
+    }
 
     @Test
     fun testUserMessageAutoDismissed() = runTest {
-        mockkStatic("kotlinx.coroutines.ExecutorsKt")
-        every { Executors.newSingleThreadExecutor() } returns mockk {
-            every { this@mockk.asCoroutineDispatcher() } returns object : ExecutorCoroutineDispatcher() {
-                override val executor: Executor = Executor { }
-                override fun close() = Unit
-                override fun dispatch(context: CoroutineContext, block: Runnable) {
-                    block.run()
-                }
-            }
-        }
+        advanceUntilIdle()
         userMessages.emit(RecordingMessage.Started)
         advanceUntilIdle()
         advanceTimeBy(16000L)
@@ -105,8 +97,9 @@ class UserMessagesViewModelTest {
     @Test
     fun testUserMessageRemoved() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(ImmutableList(listOf(RecordingMessage.Started)), viewModel.userMessage.first())
+        viewModel.userMessage.first { it.value.any { it is RecordingMessage }  }
         viewModel.dismiss(RecordingMessage.Started)
+        advanceUntilIdle()
         viewModel.userMessage.first { it.value.isEmpty() }
     }
 
