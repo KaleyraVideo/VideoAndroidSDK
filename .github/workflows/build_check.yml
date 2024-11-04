@@ -7,11 +7,36 @@ on:
       - main
   pull_request:
     branches:
-      - main
+      - main      
 
 jobs:
-  build_common:
+  
+  determine-runner-integration:
+    name: Determine which runner to use for integration tests
     runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.set-runner.outputs.runner }}
+    steps:
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Determine which runner to use
+        id: set-runner
+        uses: benjaminmichaelis/get-soonest-available-runner@v1.1.0
+        with:
+          primary-runner: "self-hosted"
+          fallback-runner: "ubuntu-latest"
+          # This correlates to the number of free runners that must exist when the API queries.
+          # Increasing this can help in case you have lots of actions querying at the same time for a race condition between the time you query the runner and when the runner actually takes the job it will execute.
+          min-available-runners: 2
+          github-token: ${{steps.generate_token.outputs.token}}
+  
+  build_common:
+    needs: determine-runner-integration
+    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 17
@@ -28,7 +53,7 @@ jobs:
         run: ./gradlew :video-common-ui:build
 
   build_video_sdk:
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: build_common
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +71,7 @@ jobs:
         run: ./gradlew :video-sdk:build
 
   build_glasses_sdk:
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: build_common
     steps:
       - uses: actions/checkout@v2
@@ -64,7 +89,7 @@ jobs:
         run: ./gradlew :video-glasses-sdk:build
 
   build_app:
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: [ build_video_sdk, build_glasses_sdk ]
     steps:
       - uses: actions/checkout@v2
