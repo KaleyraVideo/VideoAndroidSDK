@@ -43,6 +43,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: add python dependency
         run: python3 -m pip install semver boto3
       - name: Grant execute permission for gradlew
@@ -61,6 +63,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: add python dependency
         run: python3 -m pip install semver boto3
       - name: Grant execute permission for gradlew
@@ -79,6 +83,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: add python dependency
         run: python3 -m pip install semver boto3
       - name: Grant execute permission for gradlew
@@ -97,6 +103,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: add python dependency
         run: python3 -m pip install semver boto3
       - name: Grant execute permission for gradlew
