@@ -62,9 +62,10 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     config = Theme.Config(style = Theme.Config.Style.System)
                 )
             }
-            val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-            KaleyraVideo.conference.callActions = callConfiguration.actions.mapToCallUIActions()
+
             KaleyraVideo.conference.call.onEach {
+                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
+                it.actions.emit(callConfiguration.actions.mapToCallUIActions())
                 it.withFeedback = callConfiguration.options.feedbackEnabled
                 if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
             }.launchIn(MainScope())
