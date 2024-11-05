@@ -405,4 +405,11 @@ object ContextExtensions {
             .filter { it.topActivity!!.packageName == ContextRetainer.context.packageName }
             .all { it.topActivity!!.className.contains(currentActivityName) }
     }
+
+    fun Context.hasOpsPermission(permission: String) = with(getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            unsafeCheckOpNoThrow(permission, android.os.Process.myUid(), packageName) == AppOpsManager.MODE_ALLOWED
+        else
+            checkOpNoThrow(permission, android.os.Process.myUid(), packageName) == AppOpsManager.MODE_ALLOWED
+    }
 }
