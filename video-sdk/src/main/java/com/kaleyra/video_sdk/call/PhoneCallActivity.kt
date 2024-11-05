@@ -24,7 +24,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -46,6 +45,7 @@ import com.kaleyra.video_common_ui.notification.CallNotificationExtra
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
+import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.isPictureInPictureModeSupported
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOff
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.turnScreenOn
@@ -103,7 +103,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntentAction(intent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isPipSupported) {
             updatePipParams()?.let { setPictureInPictureParams(it) }
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -166,12 +166,8 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
         isInPipMode.value = isInPictureInPictureMode
     }
 
-    private val isPipSupported by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) packageManager.hasSystemFeature(
-            PackageManager.FEATURE_PICTURE_IN_PICTURE
-        )
-        else false
-    }
+    private val isPipSupported
+        get() = isPictureInPictureModeSupported()
 
     private fun enterPipModeIfSupported() {
         when {
