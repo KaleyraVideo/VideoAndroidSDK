@@ -41,6 +41,8 @@
     <string name="kaleyra_call_sheet_description_disable_camera">Disabilita camera</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Ferma condivisione schermo</string>
 
+    <string name="kaleyra_call_sheet_description_mic_warning">Avviso microfono</string>
+    <string name="kaleyra_call_sheet_description_mic_error">"Errore del microfono "</string>
     <string name="kaleyra_stream_screenshare_message">Gli altri partecipanti stanno vedendo il tuo schermo</string>
     <string name="kaleyra_stream_screenshare_action">Interrompi condivisione</string>
 
@@ -341,5 +343,7 @@
     <string name="kaleyra_chat_no_messages_subtitle">Invia un messaggio per avviare la comunicazione</string>
     <string name="kaleyra_call_failed">Chiamata non riuscita</string>
     <string name="kaleyra_app_icon">Icona dell\'app</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Avviso fotocamera</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Errore della fotocamera</string>
 
 </resources>

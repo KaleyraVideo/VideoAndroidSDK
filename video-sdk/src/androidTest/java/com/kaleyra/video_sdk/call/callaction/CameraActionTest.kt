@@ -51,7 +51,7 @@ class CameraActionTest {
 
     @Test
     fun testWarningBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_warning)
         composeTestRule.setContent {
             CameraAction(
                 onCheckedChange = {},
@@ -59,12 +59,12 @@ class CameraActionTest {
                 warning = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test
     fun testErrorBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_error)
         composeTestRule.setContent {
             CameraAction(
                 onCheckedChange = {},
@@ -72,7 +72,7 @@ class CameraActionTest {
                 error = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test

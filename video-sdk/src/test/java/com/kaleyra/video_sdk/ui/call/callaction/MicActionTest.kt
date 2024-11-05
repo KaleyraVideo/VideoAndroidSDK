@@ -54,7 +54,7 @@ class MicActionTest {
 
     @Test
     fun testWarningBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_warning)
         composeTestRule.setContent {
             MicAction(
                 onCheckedChange = {},
@@ -62,12 +62,12 @@ class MicActionTest {
                 warning = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test
     fun testErrorBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_error)
         composeTestRule.setContent {
             MicAction(
                 onCheckedChange = {},
@@ -75,7 +75,7 @@ class MicActionTest {
                 error = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test

@@ -42,6 +42,10 @@
     <string name="kaleyra_call_sheet_description_enable_camera">Enable camera</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Disable camera</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Stop screen share</string>
+    <string name="kaleyra_call_sheet_description_mic_warning">Microphone warning</string>
+    <string name="kaleyra_call_sheet_description_mic_error">Microphone error</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Camera warning</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Camera error</string>
 
     <string name="kaleyra_stream_screenshare_message">Meeting attendees are seeing your screen</string>
     <string name="kaleyra_stream_screenshare_action">Stop Screen Sharing</string>
