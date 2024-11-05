@@ -54,7 +54,7 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
                 val colorResourceSeed = ColorResource(Color(0xFF2A638A).toArgb())
                 val appConfiguration = ConfigurationPrefsManager.getConfiguration(applicationContext)
-                val logoUri = appConfiguration.logoUrl?.let { Uri.parse(it) } ?: Uri.EMPTY
+                val logoUri = getUriFromString(appConfiguration.logoUrl) ?: Uri.EMPTY
                 KaleyraVideo.theme = Theme(
                     logo = Theme.Logo(URIResource(logoUri, logoUri)),
                     palette = Theme.Palette(seed = colorResourceSeed),
