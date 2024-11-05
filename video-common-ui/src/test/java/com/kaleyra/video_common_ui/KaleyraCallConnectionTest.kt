@@ -36,6 +36,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.time.withTimeoutOrNull
 import kotlinx.coroutines.withTimeoutOrNull
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -393,6 +394,39 @@ class KaleyraCallConnectionTest {
         assertEquals(audioOutput, connection.currentAudioDevice.first())
         assertEquals(availableAudioOutputs, connection.availableAudioDevices.first())
         unmockkObject(CallAudioStateExtensions)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
+    fun testMutedApi34() = runTest {
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
+        val initialRoute = ROUTE_EARPIECE
+        val mockkCallAudioState = mockk<CallAudioState>(relaxed = true) {
+            every { isMuted } returns false
+            every { route } returns initialRoute
+        }
+        every { connection.callAudioState } returns mockkCallAudioState
+        connection.onMuteStateChanged(true)
+        advanceUntilIdle()
+        Assert.assertEquals(true, connection.currentAudioDevice.first() is AudioOutputDevice.None)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
+    fun testUnMuteApi34() = runTest {
+        val connection = spyk(KaleyraCallConnection.create(requestMock, callMock, backgroundScope))
+        val unMutedRoute = ROUTE_EARPIECE
+        val mockkCallAudioState = mockk<CallAudioState>(relaxed = true) {
+            every { isMuted } returns false
+            every { route } returns unMutedRoute
+        }
+        every { connection.callAudioState } returns mockkCallAudioState
+        connection.onMuteStateChanged(true)
+        advanceUntilIdle()
+        connection.onMuteStateChanged(false)
+        advanceUntilIdle()
+        val currentAudioDevice = connection.currentAudioDevice.first { it is AudioOutputDevice.Earpiece }
+        Assert.assertEquals(true, currentAudioDevice is AudioOutputDevice.Earpiece)
     }
 
     @Test

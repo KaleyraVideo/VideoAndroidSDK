@@ -192,6 +192,15 @@ class KaleyraCallConnection private constructor(val call: CallUI, val coroutineS
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    override fun onMuteStateChanged(isMuted: Boolean) {
+        super.onMuteStateChanged(isMuted)
+        coroutineScope.launch {
+            if (isMuted) _currentAudioDevice.emit(AudioOutputDevice.None())
+            else onCallAudioStateChanged(callAudioState)
+        }
+    }
+
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
 
     override fun onActivityStarted(activity: Activity) = Unit
