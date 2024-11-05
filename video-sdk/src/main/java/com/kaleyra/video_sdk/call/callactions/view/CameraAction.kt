@@ -11,15 +11,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-// TODO add label
 @Composable
 internal fun CameraAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    label: Boolean = false,
     enabled: Boolean = true,
     warning: Boolean = false,
-    error: Boolean = false
+    error: Boolean = false,
 ) {
     CallToggleAction(
         modifier = modifier,
@@ -28,6 +28,7 @@ internal fun CameraAction(
         checked = checked,
         onCheckedChange = onCheckedChange,
         enabled = enabled,
+        label = if (label) stringResource(R.string.kaleyra_call_sheet_camera) else null,
         badgePainter = when {
             warning -> painterResource(R.drawable.ic_kaleyra_call_sheet_warning)
             error -> painterResource(R.drawable.ic_kaleyra_call_sheet_error)

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.callactions.view.CameraAction
 import com.kaleyra.video_sdk.call.callactions.view.MicAction
 import org.junit.Assert
 import org.junit.Rule
@@ -50,6 +51,19 @@ class MicActionTest {
         composeTestRule.onNodeWithContentDescription(descr).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(descr).performClick()
         Assert.assertEquals(false, checked)
+    }
+
+    @Test
+    fun testLabelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        composeTestRule.setContent {
+            MicAction(
+                label = true,
+                checked = false,
+                onCheckedChange = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
