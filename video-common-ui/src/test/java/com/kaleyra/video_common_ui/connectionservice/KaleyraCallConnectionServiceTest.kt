@@ -30,6 +30,7 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResu
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.BaseLogger
 import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.every
@@ -108,7 +109,10 @@ class KaleyraCallConnectionServiceTest {
         mockkObject(ContactDetailsManager)
         mockkObject(KaleyraCallConnection)
         mockkObject(KaleyraVideo)
+        mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns mockk(relaxed = true)
         every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any()) } returns Unit
+        every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any(), any()) } returns Unit
         every { anyConstructed<CallForegroundServiceWorker>().dispose() } returns Unit
         every { ContactsController.createOrUpdateConnectionServiceContact(any(), any(), any()) } returns Unit
         every { ContactsController.deleteConnectionServiceContact(any(), any()) } returns Unit
@@ -299,7 +303,8 @@ class KaleyraCallConnectionServiceTest {
             verify(exactly = 1) {
                 anyConstructed<CallForegroundServiceWorker>().bind(
                     service!!,
-                    callMock
+                    callMock,
+                    connectionMock
                 )
             }
             verify(exactly = 1) {
@@ -327,7 +332,8 @@ class KaleyraCallConnectionServiceTest {
             verify(exactly = 1) {
                 anyConstructed<CallForegroundServiceWorker>().bind(
                     service!!,
-                    callMock
+                    callMock,
+                    connectionMock
                 )
             }
             verify(exactly = 1) {

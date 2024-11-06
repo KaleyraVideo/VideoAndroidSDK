@@ -31,13 +31,16 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
 
     companion object {
 
-        fun start() = with(ContextRetainer.context) {
+        internal var connection: KaleyraCallConnection? = null
+
+        fun start(connection: KaleyraCallConnection? = null) = with(ContextRetainer.context) {
             val intent = Intent(this, ProximityService::class.java)
             startService(intent)
-            Unit
+            this@Companion.connection = connection
         }
 
         fun stop() = with(ContextRetainer.context) {
+            connection = null
             stopService(Intent(this, ProximityService::class.java))
         }
     }
@@ -117,6 +120,7 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         proximityDelegate = CallProximityDelegate<LifecycleService>(
             lifecycleContext = this,
             call = call,
+            connection = connection,
             disableProximity = { proximityCallActivity?.disableProximity ?: false },
         ).apply { bind() }
     }
