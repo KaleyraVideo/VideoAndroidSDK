@@ -28,6 +28,7 @@ import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -42,16 +43,9 @@ class TermsAndConditionsViewModelTest {
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var viewModel: TermsAndConditionsViewModel
-
     private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
     private val conversationMock = mockk<ConversationUI>(relaxed = true)
-
-    @Before
-    fun setUp() {
-        viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
-    }
 
     @After
     fun tearDown() {
@@ -59,7 +53,10 @@ class TermsAndConditionsViewModelTest {
     }
 
     @Test
-    fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest {
+    fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest(UnconfinedTestDispatcher()) {
+        every { conferenceMock.state } returns MutableStateFlow(State.Connecting)
+        every { conversationMock.state } returns MutableStateFlow(State.Connecting)
+        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
         val actual = viewModel.uiState.first()
         assertEquals(false, actual.isConnected)
         every { conferenceMock.state } returns MutableStateFlow(State.Connected)
@@ -70,7 +67,10 @@ class TermsAndConditionsViewModelTest {
     }
 
     @Test
-    fun testDecline() = runTest {
+    fun testDecline() = runTest(UnconfinedTestDispatcher()) {
+        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
+        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
         viewModel.decline()
         val actual = viewModel.uiState.first()
         assertEquals(true, actual.isDeclined)
