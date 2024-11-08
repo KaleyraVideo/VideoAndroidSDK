@@ -18,18 +18,18 @@ package com.kaleyra.video_common_ui
 
 import com.bandyer.android_audiosession.model.AudioOutputDevice
 import com.bandyer.android_audiosession.session.AudioCallSessionInstance
-import com.kaleyra.video_common_ui.proximity.AudioProximityDelegateImpl
+import com.kaleyra.video_common_ui.proximity.AudioCallSessionAudioProximityDelegate
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-internal class AudioProximityDelegateTest {
+internal class AudioCallSessionAudioProximityDelegateTest {
 
     private val audioCallSessionMock = mockk<AudioCallSessionInstance>(relaxed = true)
 
-    private val audioProximityDelegate = AudioProximityDelegateImpl(audioCallSessionMock)
+    private val audioProximityDelegate = AudioCallSessionAudioProximityDelegate(audioCallSessionMock)
 
     @Before
     fun setUp() {

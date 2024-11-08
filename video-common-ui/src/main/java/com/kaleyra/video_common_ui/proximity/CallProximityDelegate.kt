@@ -32,7 +32,7 @@ internal class CallProximityDelegate<T>(
     private val disableProximity: () -> Boolean,
     private val wakeLockProximityDelegate: WakeLockProximityDelegate = WakeLockProximityDelegateImpl(lifecycleContext.applicationContext as Application, call),
     private val cameraProximityDelegate: CameraProximityDelegate = CameraProximityDelegateImpl(call),
-    private val audioProximityDelegate: AudioProximityDelegate = AudioProximityDelegateImpl(connection = connection, audioCallSession = if (connection == null) AudioCallSession.getInstance() else null)
+    private val audioProximityDelegate: AudioProximityDelegate = connection?.let { ConnectionAudioProximityDelegate(it) } ?: AudioCallSessionAudioProximityDelegate(AudioCallSession.getInstance())
 ) : ProximitySensorListener where T : ContextWrapper, T : LifecycleOwner {
 
     var sensor: ProximitySensor? = null
