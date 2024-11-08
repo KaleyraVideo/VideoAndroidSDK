@@ -67,12 +67,11 @@ class CallParticipantMutedTextToSpeechNotifierTest {
     }
 
     @Test
-    fun `test participant muted utterance`() = runTest {
+    fun `test participant muted utterance`() = runTest(UnconfinedTestDispatcher()) {
         every { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) } returns "text"
 
         notifier.start(backgroundScope)
 
-        runCurrent()
         verify(exactly = 1) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
     }
