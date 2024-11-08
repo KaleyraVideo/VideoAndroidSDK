@@ -21,18 +21,16 @@ import android.content.ContextWrapper
 import androidx.lifecycle.LifecycleOwner
 import com.bandyer.android_audiosession.session.AudioCallSession
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import com.kaleyra.video_utils.proximity_listener.ProximitySensorListener
 
 internal class CallProximityDelegate<T>(
     private val lifecycleContext: T,
     private val call: CallUI,
-    private val connection: KaleyraCallConnection? = null,
     private val disableProximity: () -> Boolean,
     private val wakeLockProximityDelegate: WakeLockProximityDelegate = WakeLockProximityDelegateImpl(lifecycleContext.applicationContext as Application, call),
     private val cameraProximityDelegate: CameraProximityDelegate = CameraProximityDelegateImpl(call),
-    private val audioProximityDelegate: AudioProximityDelegate = connection?.let { ConnectionAudioProximityDelegate(it) } ?: AudioCallSessionAudioProximityDelegate(AudioCallSession.getInstance())
+    private val audioProximityDelegate: AudioProximityDelegate = AudioCallSessionAudioProximityDelegate(AudioCallSession.getInstance())
 ) : ProximitySensorListener where T : ContextWrapper, T : LifecycleOwner {
 
     var sensor: ProximitySensor? = null

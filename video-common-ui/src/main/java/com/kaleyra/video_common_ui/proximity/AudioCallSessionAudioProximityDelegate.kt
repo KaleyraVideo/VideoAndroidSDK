@@ -13,7 +13,8 @@ internal class AudioCallSessionAudioProximityDelegate(val audioCallSession: Audi
         wasLoudspeakerActive = audioCallSession.currentAudioOutputDevice is AudioOutputDevice.Loudspeaker
         if (wasLoudspeakerActive) {
             audioCallSession.tryEnableDevice(AudioOutputDevice.Earpiece())
-        }    }
+        }
+    }
 
     @SuppressLint("NewApi")
     override fun tryRestoreToLoudspeaker() {

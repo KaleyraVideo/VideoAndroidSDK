@@ -6,10 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.bandyer.android_audiosession.session.AudioCallSession
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.onCallReady
+import com.kaleyra.video_common_ui.proximity.AudioCallSessionAudioProximityDelegate
 import com.kaleyra.video_common_ui.proximity.CallProximityDelegate
+import com.kaleyra.video_common_ui.proximity.ConnectionAudioProximityDelegate
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeechNotifier
@@ -120,8 +123,9 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
         proximityDelegate = CallProximityDelegate<LifecycleService>(
             lifecycleContext = this,
             call = call,
-            connection = connection,
             disableProximity = { proximityCallActivity?.disableProximity ?: false },
+            audioProximityDelegate = connection?.let { ConnectionAudioProximityDelegate(it) }
+                ?: AudioCallSessionAudioProximityDelegate(AudioCallSession.getInstance())
         ).apply { bind() }
     }
 
