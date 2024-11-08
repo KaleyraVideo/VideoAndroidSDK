@@ -13,11 +13,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -253,8 +259,10 @@ internal fun VCallScreen(
         },
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->
+        val cutoutPaddingValues = WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal).asPaddingValues()
         val streamComponentPadding = contentSpacing - StreamItemSpacing
         val layoutDirection = LocalLayoutDirection.current
+
         val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) + streamComponentPadding
         val topPadding = paddingValues.calculateTopPadding() + streamComponentPadding
         val bottomPadding = contentSpacing + streamComponentPadding + when {
@@ -322,6 +330,7 @@ internal fun VCallScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .navigationBarsPadding()
+                                    .padding(cutoutPaddingValues)
                                     .padding(
                                         start = leftPadding,
                                         top = topPadding,
@@ -365,6 +374,7 @@ internal fun VCallScreen(
                                 modifier = Modifier
                                     .weight(sidePanelWeight)
                                     .navigationBarsPadding()
+                                    .displayCutoutPadding()
                                     .padding(
                                         start = 0.dp,
                                         top = topPadding,

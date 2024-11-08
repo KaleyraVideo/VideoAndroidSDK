@@ -79,6 +79,7 @@ internal fun UserMessageSnackbarM3(
             Text(
                 color = contentColor,
                 modifier = Modifier
+                    .weight(1f, fill = false)
                     .padding(top = 4.dp, bottom = 4.dp, start = if (actionConfig != null) 16.dp else 8.dp, end = if (onDismissClick == null && actionConfig == null) 16.dp else 8.dp)
                     .align(Alignment.CenterVertically),
                 text = message,
@@ -116,6 +117,7 @@ internal fun UserMessageSnackbarM3(
                         contentDescription = actionDescription)
                 }
                 Text(
+                    maxLines = 1,
                     text = actionDescription,
                     color = backgroundColor,
                     style = MaterialTheme.typography.labelLarge
@@ -151,7 +153,7 @@ internal fun UserMessageErrorSnackbarM3(message: String, onDismissClick: () -> U
 @DayModePreview
 @NightModePreview
 @Composable
-fun UserMessageInfoSnackbarPreview() = KaleyraTheme {
+fun UserMessageInfoSnackbarPreviewLongText() = KaleyraTheme {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,12 +161,32 @@ fun UserMessageInfoSnackbarPreview() = KaleyraTheme {
         horizontalArrangement = Arrangement.Center) {
         UserMessageSnackbarM3(
             iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
-            message = "Info!!!",
+            message = "very very very very very very very very very very long info",
             actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), R.drawable.ic_kaleyra_stream_pin, {}),
             onDismissClick = {},
             backgroundColor = MaterialTheme.colorScheme.inverseSurface)
     }
 }
+
+
+@DayModePreview
+@NightModePreview
+@Composable
+fun UserMessageInfoSnackbarPreviewShortText() = KaleyraTheme {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface),
+        horizontalArrangement = Arrangement.Center) {
+        UserMessageSnackbarM3(
+            iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
+            message = "info",
+            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), R.drawable.ic_kaleyra_stream_pin, {}),
+            onDismissClick = {},
+            backgroundColor = MaterialTheme.colorScheme.inverseSurface)
+    }
+}
+
 
 @DayModePreview
 @NightModePreview
@@ -193,7 +215,7 @@ fun UserMessageErrorSnackbarPreview() = KaleyraTheme {
             .background(color = MaterialTheme.colorScheme.surface),
         horizontalArrangement = Arrangement.Center) {
         UserMessageErrorSnackbarM3(
-            message = "Info with very very very very very very very very very very very very very very very very very very very very very very long text",
+            message = "Info with short text",
             onDismissClick = {}
         )
     }

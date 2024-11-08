@@ -82,16 +82,16 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 .onCompletion { _uiState.update { StreamUiState() } }
                 .launchIn(this)
 
-            val isPreCallState = callState
-                .map { state -> state == CallStateUi.Ringing || state == CallStateUi.Dialing || state == CallStateUi.RingingRemotely }
+            val shouldShowStreamPreviewFlow = callState
+                .map { state -> state == CallStateUi.Ringing || state == CallStateUi.Dialing || state == CallStateUi.RingingRemotely || state == CallStateUi.Reconnecting }
                 .distinctUntilChanged()
             combine(
-                isPreCallState,
+                shouldShowStreamPreviewFlow,
                 call.toMyCameraVideoUi(),
                 call.toMyCameraStreamAudioUi(),
                 call.preferredType
-            ) { isPreCallState, video, audio, preferredType ->
-                if (isPreCallState) {
+            ) { shouldShowStreamPreview, video, audio, preferredType ->
+                if (shouldShowStreamPreview) {
                     val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
                     val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
                     val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
@@ -107,16 +107,12 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                             )
                         )
                     }
-                }
-                isPreCallState
-            }
-                .takeWhile { it }
-                .onCompletion {
+                } else {
                     // wait for at least another participant's stream to be added before setting the preview to null
                     uiState.first { it.streams.value.size > 1 }
                     _uiState.update { it.copy(preview = null) }
                 }
-                .launchIn(this)
+            }.launchIn(this)
         }
     }
 

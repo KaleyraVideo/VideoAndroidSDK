@@ -148,7 +148,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
             logger = logger,
             coroutineScope
         )
-        callForegroundServiceWorker.bind(this, call)
+        callForegroundServiceWorker.bind(this, call, connection)
     }
 
     private fun createOrUpdateConnectionContact(connection: KaleyraCallConnection, call: Call) {

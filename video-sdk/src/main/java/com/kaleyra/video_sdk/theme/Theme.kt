@@ -97,8 +97,8 @@ fun CollaborationTheme(
 
 @Immutable
 internal data class KaleyraColors(
-    val warning: Color = Color(0xFFFFD02B),
-    val onWarning: Color = Color.White,
+    val warning: Color = Color(0xFFF8D155),
+    val onWarning: Color = Color(0xFF4E3D00),
     val negativeContainer: Color = Color(0xFFE11900),
     val onNegativeContainer: Color = Color.White,
     val positiveContainer: Color = Color(0xFF1A7924),
@@ -108,8 +108,8 @@ internal data class KaleyraColors(
 internal val LocalKaleyraColors = compositionLocalOf { KaleyraColors() }
 
 internal fun lightKaleyraColors(
-    warning: Color = Color(0xFFFFD02B),
-    onWarning: Color = Color.White,
+    warning: Color = Color(0xFFF8D155),
+    onWarning: Color = Color(0xFF4E3D00),
     negativeContainer: Color = Color(0xFFE11900),
     onNegativeContainer: Color = Color.White,
     positiveContainer: Color = Color(0xFF1A7924),

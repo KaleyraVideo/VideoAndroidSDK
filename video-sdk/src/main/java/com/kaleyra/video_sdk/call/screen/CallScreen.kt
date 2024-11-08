@@ -141,17 +141,11 @@ internal fun CallScreen(
     }
     // code executed when pressing the back button in the call ui
     // the system back gesture or system back button are handled using the BackHandler composable
-    val streamViewModel = viewModel<StreamViewModel>(factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
-    val streamUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
     val onBackPressed by remember(finishActivity, enterPip) {
         derivedStateOf {
             {
                 when {
                     uiState.isCallEnded -> finishActivity()
-                    streamUiState.fullscreenStream != null -> {
-                        streamViewModel.fullscreen(null)
-                        streamViewModel.unpinAll()
-                    }
                     else -> enterPip()
                 }
             }

@@ -42,6 +42,8 @@
     <string name="kaleyra_call_sheet_description_stop_screen_share">Dejar de compartir pantalla</string>
     <string name="kaleyra_call_sheet_description_hide_actions">Ocultar acciones</string>
 
+    <string name="kaleyra_call_sheet_description_mic_warning">Advertencia del micrófono</string>
+    <string name="kaleyra_call_sheet_description_mic_error">Error del micrófono</string>
     <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
     <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
@@ -292,5 +294,7 @@
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
     <string name="kaleyra_call_failed">Llamada fallida</string>
     <string name="kaleyra_app_icon">Icono de la aplicación</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>
 
 </resources>

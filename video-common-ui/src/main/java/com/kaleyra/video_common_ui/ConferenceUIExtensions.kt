@@ -2,7 +2,9 @@ package com.kaleyra.video_common_ui
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.telecom.TelecomManager
+import androidx.core.app.NotificationManagerCompat
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
@@ -17,6 +19,7 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsA
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.shouldEnableCallSounds
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
@@ -47,7 +50,10 @@ internal object ConferenceUIExtensions {
                     .takeWhile { it !is Call.State.Disconnected.Ended }
                     .onCompletion { soundScope?.cancel() }
                     .launchIn(coroutineScope)
-                call.enableCallSounds(logger, soundScope!!)
+
+                if (ContextRetainer.context.shouldEnableCallSounds()) {
+                    call.enableCallSounds(logger, soundScope!!)
+                }
             }
             .launchIn(coroutineScope)
     }

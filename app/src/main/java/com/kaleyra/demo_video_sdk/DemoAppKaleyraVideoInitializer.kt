@@ -54,7 +54,7 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
                 val colorResourceSeed = ColorResource(Color(0xFF2A638A).toArgb())
                 val appConfiguration = ConfigurationPrefsManager.getConfiguration(applicationContext)
-                val logoUri = appConfiguration.logoUrl?.let { Uri.parse(it) } ?: Uri.EMPTY
+                val logoUri = getUriFromString(appConfiguration.logoUrl) ?: Uri.EMPTY
                 KaleyraVideo.theme = Theme(
                     logo = Theme.Logo(URIResource(logoUri, logoUri)),
                     palette = Theme.Palette(seed = colorResourceSeed),
@@ -62,9 +62,10 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     config = Theme.Config(style = Theme.Config.Style.System)
                 )
             }
-            val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-            KaleyraVideo.conference.callActions = callConfiguration.actions.mapToCallUIActions()
+
             KaleyraVideo.conference.call.onEach {
+                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
+                it.actions.emit(callConfiguration.actions.mapToCallUIActions())
                 it.withFeedback = callConfiguration.options.feedbackEnabled
                 if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
             }.launchIn(MainScope())

@@ -17,16 +17,19 @@
 package com.kaleyra.video_common_ui.utils.extensions
 
 import android.app.Activity
+import android.app.AppOpsManager
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
-import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.requestOverlayPermission
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCanDrawOverlaysPermission
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDeviceSecure
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasOpsPermission
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isScreenLocked
 
 /**
@@ -116,4 +119,8 @@ object ActivityExtensions {
             }
         }
     }
+
+    fun Activity.isPictureInPictureModeSupported() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+            && hasOpsPermission(AppOpsManager.OPSTR_PICTURE_IN_PICTURE)
 }
