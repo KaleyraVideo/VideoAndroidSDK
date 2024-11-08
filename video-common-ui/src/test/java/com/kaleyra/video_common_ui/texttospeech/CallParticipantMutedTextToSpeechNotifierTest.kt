@@ -17,7 +17,6 @@
 package com.kaleyra.video_common_ui.texttospeech
 
 import android.content.Context
-import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
@@ -30,14 +29,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -52,26 +51,31 @@ class CallParticipantMutedTextToSpeechNotifierTest {
 
     private val contextMock = mockk<Context>(relaxed = true)
 
-    private val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
-
     @Before
     fun setUp() {
         mockkObject(ContextRetainer)
         mockkObject(InputMapper)
         every { ContextRetainer.context } returns contextMock
         every { contextMock.getString(any()) } returns ""
-        every { notifier.shouldNotify } returns true
         every { callMock.toMuteEvents() } returns MutableStateFlow(mockk())
         mockkObject(KaleyraVideo)
         every { KaleyraVideo.voicePrompts } returns VoicePrompts.Enabled
     }
 
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
     @Test
-    fun `test participant muted utterance`() = runTest(UnconfinedTestDispatcher()) {
+    fun `test participant muted utterance`() = runTest {
+        val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
+        every { notifier.shouldNotify } returns true
         every { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) } returns "text"
 
         notifier.start(backgroundScope)
 
+        runCurrent()
         verify(exactly = 1) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
     }
@@ -91,6 +95,9 @@ class CallParticipantMutedTextToSpeechNotifierTest {
 
     @Test
     fun testDispose() = runTest(UnconfinedTestDispatcher()) {
+        val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
+        every { notifier.shouldNotify } returns true
+
         notifier.start(backgroundScope)
         notifier.dispose()
         verify(exactly = 1) { callTextToSpeechMock.dispose(false) }
@@ -98,6 +105,9 @@ class CallParticipantMutedTextToSpeechNotifierTest {
 
     @Test
     fun `calling start again disposes previous notifier tts`() = runTest(UnconfinedTestDispatcher()) {
+        val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
+        every { notifier.shouldNotify } returns true
+
         notifier.start(backgroundScope)
         notifier.start(backgroundScope)
         verify(exactly = 1) { callTextToSpeechMock.dispose(false) }
