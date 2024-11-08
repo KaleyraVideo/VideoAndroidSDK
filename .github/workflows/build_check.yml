@@ -50,7 +50,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-Common-UI
-        run: ./gradlew :video-common-ui:build
+        run: ./gradlew :video-common-ui:testDebugUnitTest
 
   build_video_sdk:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
@@ -70,7 +70,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-SDK
-        run: ./gradlew :video-sdk:build
+        run: ./gradlew :video-sdk:testDebugUnitTest
 
   build_glasses_sdk:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
@@ -90,7 +90,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build module Video-Glasses-SDK
-        run: ./gradlew :video-glasses-sdk:build
+        run: ./gradlew :video-glasses-sdk:testDebugUnitTest
 
   build_app:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}

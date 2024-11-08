@@ -60,10 +60,10 @@ class TermsAndConditionsViewModelTest {
 
     @Test
     fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest {
-        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
-        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         val actual = viewModel.uiState.first()
         assertEquals(false, actual.isConnected)
+        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         advanceUntilIdle()
         val new = viewModel.uiState.first()
         assertEquals(true, new.isConnected)
