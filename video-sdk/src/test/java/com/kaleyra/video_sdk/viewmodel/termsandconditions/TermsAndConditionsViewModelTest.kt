@@ -40,39 +40,39 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class TermsAndConditionsViewModelTest {
 
-//    @get:Rule
-//    var mainDispatcherRule = MainDispatcherRule()
+    @get:Rule
+    var mainDispatcherRule = MainDispatcherRule()
 
-//    private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
+    private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
-//    private val conversationMock = mockk<ConversationUI>(relaxed = true)
+    private val conversationMock = mockk<ConversationUI>(relaxed = true)
 
-//    @After
-//    fun tearDown() {
-//        unmockkAll()
-//    }
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
-//    @Test
-//    fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest(UnconfinedTestDispatcher()) {
-//        every { conferenceMock.state } returns MutableStateFlow(State.Connecting)
-//        every { conversationMock.state } returns MutableStateFlow(State.Connecting)
-//        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
-//        val actual = viewModel.uiState.first()
-//        assertEquals(false, actual.isConnected)
-//        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
-//        every { conversationMock.state } returns MutableStateFlow(State.Connected)
-//        advanceUntilIdle()
-//        val new = viewModel.uiState.first()
-//        assertEquals(true, new.isConnected)
-//    }
+    @Test
+    fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest(UnconfinedTestDispatcher()) {
+        every { conferenceMock.state } returns MutableStateFlow(State.Connecting)
+        every { conversationMock.state } returns MutableStateFlow(State.Connecting)
+        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
+        val actual = viewModel.uiState.first()
+        assertEquals(false, actual.isConnected)
+        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
+        advanceUntilIdle()
+        val new = viewModel.uiState.first()
+        assertEquals(true, new.isConnected)
+    }
 
-//    @Test
-//    fun testDecline() = runTest(UnconfinedTestDispatcher()) {
-//        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
-//        every { conversationMock.state } returns MutableStateFlow(State.Connected)
-//        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
-//        viewModel.decline()
-//        val actual = viewModel.uiState.first()
-//        assertEquals(true, actual.isDeclined)
-//    }
+    @Test
+    fun testDecline() = runTest(UnconfinedTestDispatcher()) {
+        every { conferenceMock.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
+        val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
+        viewModel.decline()
+        val actual = viewModel.uiState.first()
+        assertEquals(true, actual.isDeclined)
+    }
 }
