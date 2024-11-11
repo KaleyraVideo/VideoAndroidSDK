@@ -1,4 +1,5 @@
 import com.github.jk1.license.render.JsonReportRenderer
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 /*
  * Copyright 2023 Kaleyra @ https://www.kaleyra.com
@@ -45,6 +46,8 @@ android {
                     events "passed", "skipped", "failed", "standardOut", "standardError"
                     outputs.upToDateWhen { false }
                     showStandardStreams = true
+                    setExceptionFormat(TestExceptionFormat.FULL)
+                    showStackTraces(true)
                 }
                 systemProperty 'robolectric.logging.enabled', true
             }
