@@ -90,8 +90,8 @@ class BrandLogoViewModelTest {
     @Test
     fun testEmptyLogoReceived() = runTest {
         advanceUntilIdle()
-        Assert.assertEquals(Uri.EMPTY, viewModel.uiState.first().logo.dark)
-        Assert.assertEquals(Uri.EMPTY, viewModel.uiState.first().logo.light)
+        Assert.assertEquals(null, viewModel.uiState.first().logo.dark)
+        Assert.assertEquals(null, viewModel.uiState.first().logo.light)
     }
 
     @Test
