@@ -42,6 +42,8 @@ android {
             all {
                 jvmArgs "-Xmx8g"
                 setMaxHeapSize('8g')
+                maxParallelForks = Runtime.runtime.availableProcessors()
+                forkEvery = 100
                 testLogging {
                     events "passed", "skipped", "failed", "standardOut", "standardError"
                     outputs.upToDateWhen { false }
