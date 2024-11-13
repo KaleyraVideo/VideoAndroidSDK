@@ -132,6 +132,7 @@ internal fun HCallScreen(
                         VSheetContent(
                             isMoreToggled = isSheetExpanded,
                             inputPermissions = inputPermissions,
+                            onAskInputPermissions = onAskInputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
                             onModularComponentRequest = onModalSheetComponentRequest,
                             onMoreToggle = onChangeSheetState,

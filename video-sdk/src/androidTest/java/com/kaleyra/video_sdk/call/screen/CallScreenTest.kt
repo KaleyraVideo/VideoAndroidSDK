@@ -156,7 +156,7 @@ class CallScreenTest {
         VirtualBackgroundAction(),
         MicAction(),
         CameraAction(),
-        ScreenShareAction(),
+        ScreenShareAction.UserChoice(),
     )
 
     @Before
@@ -380,7 +380,7 @@ class CallScreenTest {
     @Test
     fun userClicksScreenShareAction_screenShareComponentDisplayed() {
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction()).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList()
         )
         composeTestRule.setUpCallScreen(configuration = compactScreenConfiguration)
 
@@ -919,7 +919,7 @@ class CallScreenTest {
             onAskInputPermissions = { arePermissionAsked = true }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction()).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList()
         )
 
         val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)

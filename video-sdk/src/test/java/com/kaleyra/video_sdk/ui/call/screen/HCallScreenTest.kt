@@ -53,6 +53,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
 import com.kaleyra.video_sdk.call.brandlogo.model.Logo
 import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
@@ -166,7 +167,7 @@ class HCallScreenTest {
         VirtualBackgroundAction(),
         MicAction(),
         CameraAction(),
-        ScreenShareAction(),
+        ScreenShareAction.UserChoice(),
     )
 
     @Before
@@ -387,7 +388,7 @@ class HCallScreenTest {
     fun testSheetActions_screenShareToggleOff() {
         composeTestRule.setUpHCallScreen()
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val text =
@@ -407,7 +408,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val buttonText =
@@ -749,7 +750,7 @@ class HCallScreenTest {
             configuration = compactScreenConfiguration
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val screenShareText =
@@ -774,7 +775,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val screenShareText =

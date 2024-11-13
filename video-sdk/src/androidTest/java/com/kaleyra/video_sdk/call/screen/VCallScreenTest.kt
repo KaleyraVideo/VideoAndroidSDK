@@ -45,6 +45,7 @@ import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
 import com.kaleyra.video_sdk.call.brandlogo.model.Logo
 import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
@@ -173,7 +174,7 @@ class VCallScreenTest {
         VirtualBackgroundAction(),
         MicAction(),
         CameraAction(),
-        ScreenShareAction(),
+        ScreenShareAction.UserChoice(),
     )
 
     @Before
@@ -416,7 +417,7 @@ class VCallScreenTest {
     fun testSheetActions_screenShareToggleOff() {
         composeTestRule.setUpVCallScreen()
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val text =
@@ -436,7 +437,7 @@ class VCallScreenTest {
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val buttonText =
@@ -959,7 +960,7 @@ class VCallScreenTest {
             configuration = compactScreenConfiguration
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val screenShareText =
@@ -984,7 +985,7 @@ class VCallScreenTest {
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val screenShareText =
@@ -1238,12 +1239,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_screenShareToggleOff() {
-        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        val actions = (allActions - ScreenShareAction.UserChoice()).take(LargeScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList(),
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList(),
         )
 
         val moreText =
@@ -1266,14 +1267,14 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_screenShareToggleOn() {
-        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        val actions = (allActions - ScreenShareAction.UserChoice()).take(LargeScreenMaxActions)
         var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction()).toImmutableList(),
+            actionList = (actions + ScreenShareAction.UserChoice()).toImmutableList(),
         )
 
         val moreText =

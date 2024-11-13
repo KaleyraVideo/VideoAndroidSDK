@@ -30,6 +30,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.callactions.view.HangUpActionExtendedWidth
 import com.kaleyra.video_sdk.call.callactions.view.HangUpActionWidth
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import io.mockk.every
 import io.mockk.mockk
@@ -387,7 +388,7 @@ class CallSheetItemTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
-                callAction = ScreenShareAction(isEnabled = true),
+                callAction = ScreenShareAction.UserChoice(isEnabled = true),
                 label = false,
                 extended = false,
                 onHangUpClick = {  },
@@ -411,7 +412,7 @@ class CallSheetItemTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
-                callAction = ScreenShareAction(isEnabled = false),
+                callAction = ScreenShareAction.UserChoice(isEnabled = false),
                 label = false,
                 extended = false,
                 onHangUpClick = {  },
@@ -714,7 +715,7 @@ class CallSheetItemTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
-                callAction = ScreenShareAction(),
+                callAction = ScreenShareAction.UserChoice(),
                 label = false,
                 extended = false,
                 onHangUpClick = { },
@@ -1027,7 +1028,7 @@ class CallSheetItemTest {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
-                callAction = ScreenShareAction(),
+                callAction = ScreenShareAction.UserChoice(),
                 label = true,
                 extended = false,
                 onHangUpClick = { },
@@ -1050,7 +1051,7 @@ class CallSheetItemTest {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
-                callAction = ScreenShareAction(),
+                callAction = ScreenShareAction.UserChoice(),
                 label = false,
                 extended = false,
                 onHangUpClick = { },

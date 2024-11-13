@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,7 +61,9 @@ internal object CallActionsMapper {
             val audio = actions.any { action -> action is CallUI.Action.Audio }
             val chat = actions.any { action -> action is CallUI.Action.OpenChat.Full && !isGroupCall }
             val fileShare = actions.any { action -> action is CallUI.Action.FileShare }
-            val screenShare = actions.any { action -> action is CallUI.Action.ScreenShare }
+            val screenShareUserChoice = actions.any { action -> action is CallUI.Action.ScreenShare.Companion || action is CallUI.Action.ScreenShare.UserChoice }
+            val screenShareApp = actions.any { action -> action is CallUI.Action.ScreenShare.App }
+            val screenShareWholeDevice = actions.any { action -> action is CallUI.Action.ScreenShare.WholeDevice }
             val whiteboard = actions.any { action -> action is CallUI.Action.OpenWhiteboard.Full }
 
             if (hangUp) result += HangUpAction()
@@ -70,7 +73,9 @@ internal object CallActionsMapper {
             if (hasVirtualBackground) result += VirtualBackgroundAction()
             if (audio) result += AudioAction()
             if (fileShare) result += FileShareAction()
-            if (screenShare) result += ScreenShareAction()
+            if (screenShareUserChoice) result += ScreenShareAction.UserChoice()
+            if (screenShareApp) result += ScreenShareAction.App()
+            if (screenShareWholeDevice) result += ScreenShareAction.WholeDevice()
             if (chat) result += ChatAction()
             if (whiteboard) result += WhiteboardAction()
 
