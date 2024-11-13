@@ -97,7 +97,7 @@ internal fun HCallScreen(
     HCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
-        paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing, left = contentSpacing, right = contentSpacing),
+        paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, left = contentSpacing, right = contentSpacing),
         topAppBar = {
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
@@ -184,7 +184,7 @@ internal fun HCallScreen(
 
         val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) - StreamItemSpacing
         val topPadding = paddingValues.calculateTopPadding() + contentSpacing - StreamItemSpacing
-        val bottomPadding = paddingValues.calculateBottomPadding() - StreamItemSpacing
+        val bottomPadding = 0.dp
         val rightPadding = horizontalPaddingValues.calculateRightPadding(layoutDirection) + contentSpacing + StreamItemSpacing + when {
             selectedStreamId != null -> StreamMenuEstimatedWidth
             hasSheetDragContent -> CallSheetEstimatedWidthWithHandle
