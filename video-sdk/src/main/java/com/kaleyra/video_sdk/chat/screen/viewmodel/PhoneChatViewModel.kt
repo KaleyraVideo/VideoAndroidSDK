@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 private data class PhoneChatViewModelState(
     val isGroupChat: Boolean = false,
@@ -159,7 +160,9 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         actions
             // mapNotNull instead of map because sometimes is received a null value causing crash
             .mapNotNull {
-                it.mapToChatActions(call = { pt -> call(pt) })
+                it.mapToChatActions(call = { preferredType, maxDuration, recordingType ->
+                    call(preferredType, maxDuration, recordingType)
+                })
             }
             .onEach { actions -> viewModelState.update { it.copy(actions = ImmutableSet(actions)) } }
             .launchIn(viewModelScope)
@@ -255,12 +258,14 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         }
     }
 
-    private fun call(preferredType: Call.PreferredType) {
+    private fun call(preferredType: Call.PreferredType, maxDuration: Long? = null, recordingType: Call.Recording.Type? = null) {
         val conference = conference.getValue() ?: return
         val chat = chat.getValue() ?: return
         val userId = chat.participants.value.others.first().userId
         conference.call(listOf(userId)) {
             this.preferredType = preferredType
+            this.maxDuration = maxDuration
+            this.recordingType = recordingType ?: Call.Recording.Type.Never
         }
     }
 

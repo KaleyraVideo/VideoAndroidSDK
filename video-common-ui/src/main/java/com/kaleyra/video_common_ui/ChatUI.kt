@@ -20,6 +20,7 @@ import android.os.Parcelable
 import androidx.annotation.Keep
 import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Conference
 import com.kaleyra.video_common_ui.utils.extensions.mapToSharedFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +54,7 @@ class ChatUI(
      * The chat action sealed class
      */
     @Keep
-    sealed class Action : Parcelable {
+    sealed class Action {
         /**
          * @suppress
          */
@@ -84,15 +85,19 @@ class ChatUI(
          * The create call action
          *
          * @property preferredType The call PreferredType
+         * @property maxDuration Optional max duration of the call in seconds
+         * @property recordingType Optional call recording type, default recording type is set to Call.Recording.Type.Never
          * @constructor
          */
-        @Parcelize
-        data class CreateCall(val preferredType: Call.PreferredType = Call.PreferredType.audioVideo()) : Action()
+        data class CreateCall(
+            val preferredType: Call.PreferredType = Call.PreferredType.audioVideo(),
+            val maxDuration: Long? = 0,
+            val recordingType: Call.Recording.Type? = Call.Recording.Type.Never
+            ) : Action()
 
         /**
          * Show participants action
          */
-        @Parcelize
-        object ShowParticipants : Action()
+        data object ShowParticipants : Action()
     }
 }
