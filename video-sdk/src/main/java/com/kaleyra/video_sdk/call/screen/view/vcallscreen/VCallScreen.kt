@@ -203,13 +203,17 @@ internal fun VCallScreen(
                         || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
                         || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
                 }
-            ) BrandLogoComponent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(46.dp)
-                    .align(Alignment.Center),
-                alignment = Alignment.CenterStart
-            )
+            ) {
+                val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start).asPaddingValues()
+                BrandLogoComponent(
+                    modifier = Modifier
+                        .padding(windowInsets)
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .align(Alignment.Center),
+                    alignment = Alignment.CenterStart
+                )
+            }
         },
         sheetContent = {
             val isSheetExpanded by remember(sheetState) {
@@ -341,16 +345,21 @@ internal fun VCallScreen(
                                     )
                             )
 
-                            val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
-
                             Column(Modifier.padding(top = topPadding)) {
+                                val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
                                 if (displayBrandLogo) {
-                                    Spacer(modifier = Modifier.height(if (isLargeScreen) 48.dp else 24.dp))
-                                    BrandLogoComponent(
-                                        modifier = Modifier
-                                            .height(if (isLargeScreen) 96.dp else 48.dp)
-                                            .fillMaxWidth()
-                                    )
+                                    val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+                                    val brandlogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()
+                                    val brandLogoUri = if (isDarkTheme) brandlogoUiState.logo.dark else brandlogoUiState.logo.light
+                                    if (brandLogoUri != null && brandLogoUri != Uri.EMPTY) {
+                                        Spacer(modifier = Modifier.height(if (isLargeScreen) 48.dp else 24.dp))
+                                        BrandLogoComponent(
+                                            viewModel = brandLogoViewModel,
+                                            modifier = Modifier
+                                                .height(if (isLargeScreen) 96.dp else 48.dp)
+                                                .fillMaxWidth()
+                                        )
+                                    }
                                 }
                                 
                                 CallInfoComponent(
