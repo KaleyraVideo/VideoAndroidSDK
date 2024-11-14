@@ -465,7 +465,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 isLargeScreen = false,
                 onModularComponentRequest = {}
             )
@@ -487,7 +487,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 isLargeScreen = false,
                 onModularComponentRequest = { component = it }
             )
@@ -638,7 +638,7 @@ class HSheetDragContentTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             HSheetDragContent(
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },

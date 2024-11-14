@@ -176,6 +176,7 @@ internal fun VCallScreen(
                                 onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
+                            onAskInputPermissions = onAskInputPermissions,
                             modifier = Modifier.testTag(PanelTestTag)
                         )
                     }
@@ -233,6 +234,7 @@ internal fun VCallScreen(
                             isMoreToggled = isSheetExpanded || showSheetPanelContent,
                             maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                             inputPermissions = inputPermissions,
+                            onAskInputPermissions = onAskInputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
                             onModularComponentRequest = onSideBarSheetComponentRequest,
                             onMoreToggle = { isSheetCollapsed ->

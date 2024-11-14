@@ -35,6 +35,7 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
@@ -302,7 +303,7 @@ class VSheetDragContentTest {
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 onModularComponentRequest = {}
             )
         }
@@ -323,7 +324,7 @@ class VSheetDragContentTest {
         composeTestRule.setContent {
             VSheetDragContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 onModularComponentRequest = { component = it }
             )
         }
@@ -438,7 +439,7 @@ class VSheetDragContentTest {
         val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             VSheetDragContent(
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },

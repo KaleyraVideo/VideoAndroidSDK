@@ -171,11 +171,18 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
                         is FileShareAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
-                        is ScreenShareAction -> action.copy(
+                        is ScreenShareAction.UserChoice -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
-
+                        is ScreenShareAction.App -> action.copy(
+                            isToggled = isSharingScreen,
+                            isEnabled = isCallActive && !isCallEnded
+                        )
+                        is ScreenShareAction.WholeDevice -> action.copy(
+                            isToggled = isSharingScreen,
+                            isEnabled = isCallActive && !isCallEnded
+                        )
                         is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
@@ -189,7 +196,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             uiState
                 .map { it.actionList.value }
-                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) } ) { actionList, state ->
+                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) }) { actionList, state ->
                     val inputState = when (state) {
                         is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
                         is Input.State.Closed.Error -> InputCallAction.State.Error
@@ -396,7 +403,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         transform: (T) -> CallActionUI
     ) {
         actionList.indexOfFirst { it::class == T::class }.takeIf { it != -1 }?.let { index ->
-            val action = transform( (actionList[index] as T))
+            val action = transform((actionList[index] as T))
             val updatedActionList = actionList.toMutableList().also { it[index] = action }
             _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
         }
