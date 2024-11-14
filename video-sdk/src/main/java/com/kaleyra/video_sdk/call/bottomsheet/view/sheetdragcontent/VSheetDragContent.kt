@@ -29,8 +29,8 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
 
-internal val VSheetDragHorizontalPadding = 20.dp
 internal val VSheetDragVerticalPadding = SheetItemsSpacing
+internal val VSheetDragHorizontalPadding = VSheetDragVerticalPadding
 
 private const val MaxVSheetDragItems = 5
 
