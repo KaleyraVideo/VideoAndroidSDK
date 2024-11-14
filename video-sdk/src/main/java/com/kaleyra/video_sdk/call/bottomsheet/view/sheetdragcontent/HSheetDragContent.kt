@@ -36,7 +36,7 @@ import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
 
 internal val HSheetDragHorizontalPadding = SheetItemsSpacing
-internal val HSheetDragVerticalPadding = 20.dp
+internal val HSheetDragVerticalPadding = HSheetDragHorizontalPadding
 
 private const val MaxHSheetDragItems = 5
 

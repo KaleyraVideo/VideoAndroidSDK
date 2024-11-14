@@ -19,13 +19,6 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
-import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragContent
-import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragHorizontalPadding
-import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.VSheetDragVerticalPadding
-import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
-import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
@@ -33,11 +26,18 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
-import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragContent
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragHorizontalPadding
+import com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent.HSheetDragVerticalPadding
+import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.callactions.view.CallActionDefaults
+import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
@@ -547,10 +547,10 @@ class HSheetDragContentTest {
         childBounds2.left.assertIsEqualTo(childBounds1.right + HSheetDragHorizontalPadding, "child 2 left bound")
         childBounds2.right.assertIsEqualTo(rootBounds.right, "child 2 right bound")
         childBounds3.left.assertIsEqualTo(rootBounds.left, "child 3 left bound")
-        childBounds3.top.assertIsEqualTo(childBounds1.bottom + VSheetDragVerticalPadding, "child 3 top bound")
+        childBounds3.top.assertIsEqualTo(childBounds1.bottom + HSheetDragVerticalPadding, "child 3 top bound")
         childBounds4.left.assertIsEqualTo(childBounds3.right + HSheetDragHorizontalPadding, "child 4 left bound")
         childBounds4.right.assertIsEqualTo(rootBounds.right, "child 4 right bound")
-        childBounds4.top.assertIsEqualTo(childBounds2.bottom + VSheetDragVerticalPadding, "child 4 top bound")
+        childBounds4.top.assertIsEqualTo(childBounds2.bottom + HSheetDragVerticalPadding, "child 4 top bound")
     }
 
     @Test
