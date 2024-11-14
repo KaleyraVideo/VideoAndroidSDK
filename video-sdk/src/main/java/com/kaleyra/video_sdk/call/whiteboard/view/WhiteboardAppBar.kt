@@ -53,7 +53,7 @@ internal fun WhiteboardAppBar(
                     onClick = onUploadClick,
                     ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_image),
+                        painter = painterResource(id = R.drawable.ic_kaleyra_add),
                         contentDescription = stringResource(id = R.string.kaleyra_upload_file))
                 }
             } else {
