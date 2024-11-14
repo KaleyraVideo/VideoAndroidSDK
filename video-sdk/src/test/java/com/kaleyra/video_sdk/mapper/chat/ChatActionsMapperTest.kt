@@ -71,7 +71,7 @@ class ChatActionsMapperTest {
     }
 
     @Test
-    fun maxDurationAndRecordingParametersPassedToOnClick() {
+    fun allActions_mapToUiActions_onClickCalledCallOptionsReceived() {
         val actions = setOf(
             ChatUI.Action.CreateCall(Call.PreferredType.audioOnly(), 1, Call.Recording.Type.Never),
             ChatUI.Action.CreateCall(Call.PreferredType.audioUpgradable(), 2, Call.Recording.Type.OnDemand),
