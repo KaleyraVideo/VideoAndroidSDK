@@ -102,7 +102,7 @@ internal fun HCallScreen(
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(end = contentSpacing)
+                modifier = Modifier.padding(start = 4.dp, end = contentSpacing + 4.dp)
             )
         },
         sheetDragContent = {

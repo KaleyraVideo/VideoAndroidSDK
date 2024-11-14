@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.screen.view.vcallscreen
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -160,7 +161,7 @@ internal fun VCallScreen(
             CallAppBarComponent(
                 onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = contentSpacing)
+                modifier = Modifier.padding(horizontal = contentSpacing + 4.dp)
             )
         },
         sheetPanelContent = if (!isRinging && isLargeScreen) {
