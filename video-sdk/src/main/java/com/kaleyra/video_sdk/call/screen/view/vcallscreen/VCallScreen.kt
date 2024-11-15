@@ -122,7 +122,7 @@ internal fun VCallScreen(
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
     val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isAtLeastMediumWidth() }
-    val isLargeScreenLandscape =  remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
+    val isLargeScreenLandscape = remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) {
@@ -258,7 +258,10 @@ internal fun VCallScreen(
                 } else {
                     HStreamMenuContent(
                         selectedStreamId = currentlySelectedStreamId,
-                        onDismiss = { onStreamSelected(null) },
+                        onDismiss = {
+                            isInFullscreenMode = false
+                            onStreamSelected(null)
+                        },
                         onFullscreen = { isInFullscreenMode = true },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
@@ -363,7 +366,7 @@ internal fun VCallScreen(
                                         )
                                     }
                                 }
-                                
+
                                 CallInfoComponent(
                                     modifier = Modifier
                                         .padding(

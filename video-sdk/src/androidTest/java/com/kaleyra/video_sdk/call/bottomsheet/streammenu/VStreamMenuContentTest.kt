@@ -61,11 +61,11 @@ class VStreamMenuContentTest {
     fun testExitFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = stream)
-
+        var fullscreen = true
         composeTestRule.setContent {
             VStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { },
+                onDismiss = { fullscreen = false },
                 onFullscreen = { }
             )
         }
@@ -77,6 +77,7 @@ class VStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(null) }
+        assertEquals(false, fullscreen)
     }
 
     @Test
