@@ -193,7 +193,7 @@ fun Set<ConfigAction>.mapToCallUIActions(): Set<CallUI.Action> {
             ConfigAction.OpenWhiteboard.Full -> CallUI.Action.OpenWhiteboard.Full
             ConfigAction.OpenChat.ViewOnly -> CallUI.Action.OpenChat.ViewOnly
             ConfigAction.OpenWhiteboard.ViewOnly -> CallUI.Action.OpenWhiteboard.ViewOnly
-            ConfigAction.ScreenShare -> CallUI.Action.ScreenShare.WholeDevice
+            ConfigAction.ScreenShare -> CallUI.Action.ScreenShare.UserChoice
             ConfigAction.ShowParticipants -> CallUI.Action.ShowParticipants
             ConfigAction.SwitchCamera -> CallUI.Action.SwitchCamera
             ConfigAction.ToggleCamera -> CallUI.Action.ToggleCamera
