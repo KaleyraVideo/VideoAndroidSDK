@@ -45,7 +45,6 @@ import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
 import com.kaleyra.video_sdk.call.brandlogo.model.Logo
 import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
@@ -88,9 +87,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -945,7 +942,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(chatText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(chatText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
