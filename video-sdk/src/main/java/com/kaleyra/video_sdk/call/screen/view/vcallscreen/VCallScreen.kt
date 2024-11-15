@@ -162,7 +162,7 @@ internal fun VCallScreen(
             CallAppBarComponent(
                 onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = contentSpacing + 4.dp)
+                modifier = Modifier.padding(horizontal = contentSpacing)
             )
         },
         sheetPanelContent = if (!isRinging && isLargeScreen) {
