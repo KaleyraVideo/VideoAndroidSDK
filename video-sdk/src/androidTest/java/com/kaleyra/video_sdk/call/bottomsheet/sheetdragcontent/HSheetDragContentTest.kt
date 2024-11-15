@@ -509,7 +509,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                screenShareViewModel = mockk(),
+                screenShareViewModel = mockk(relaxed = true),
                 callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 isLargeScreen = false,
                 onAskInputPermissions = {},
@@ -536,7 +536,7 @@ class HSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                screenShareViewModel = mockk(),
+                screenShareViewModel = mockk(relaxed = true),
                 callActions = ImmutableList(listOf(ScreenShareAction.App())),
                 isLargeScreen = false,
                 onAskInputPermissions = {},
