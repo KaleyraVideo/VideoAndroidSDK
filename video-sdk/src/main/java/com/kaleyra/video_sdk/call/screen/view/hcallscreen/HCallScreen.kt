@@ -110,6 +110,7 @@ internal fun HCallScreen(
                 VSheetDragContent(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
+                    onAskInputPermissions = onAskInputPermissions,
                     onModularComponentRequest = onModalSheetComponentRequest,
                     contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 8.dp),
                     modifier = Modifier.animateContentSize()

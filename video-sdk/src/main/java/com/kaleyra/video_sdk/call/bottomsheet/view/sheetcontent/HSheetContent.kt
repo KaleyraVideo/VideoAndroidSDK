@@ -3,7 +3,6 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -96,7 +95,7 @@ internal fun HSheetContent(
                     when (screenShareMode) {
                         null -> Unit
                         is ScreenShareAction.UserChoice -> onModularComponentRequest(ModularComponent.ScreenShare)
-                        is ScreenShareAction.App -> screenShareViewModel?.shareApplicationScreen(activity, {}, {})
+                        is ScreenShareAction.App -> screenShareViewModel.shareApplicationScreen(activity, {}, {})
                         is ScreenShareAction.WholeDevice -> {
                             onAskInputPermissions(true)
                             activity.unlockDevice(

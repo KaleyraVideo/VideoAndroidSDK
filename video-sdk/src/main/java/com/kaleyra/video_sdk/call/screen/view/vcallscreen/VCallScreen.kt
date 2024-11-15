@@ -193,6 +193,7 @@ internal fun VCallScreen(
                     inputPermissions = inputPermissions,
                     onModularComponentRequest = onSideBarSheetComponentRequest,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
+                    onAskInputPermissions = onAskInputPermissions,
                     modifier = Modifier.animateContentSize()
                 )
             }

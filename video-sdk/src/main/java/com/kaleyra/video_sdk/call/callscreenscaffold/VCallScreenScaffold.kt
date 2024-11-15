@@ -185,7 +185,7 @@ internal fun VCallScreenScaffold(
                     if ((constraints.maxWidth == 0 && constraints.maxHeight > 0) || constraints.maxHeight > 0 && constraints.maxHeight == 0) return@with
 
                     if ((hasSufficientSpaceForBrandLogo || windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded)
-                        && constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight){
+                        && constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight) {
                         hasSufficientSpaceForBrandLogo = true
                         brandLogo()
                     } else {
