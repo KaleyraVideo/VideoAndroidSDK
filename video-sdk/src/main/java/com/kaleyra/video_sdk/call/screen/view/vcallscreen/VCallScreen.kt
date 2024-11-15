@@ -154,6 +154,7 @@ internal fun VCallScreen(
 
     VCallScreenScaffold(
         modifier = modifier,
+        windowSizeClass = windowSizeClass,
         sheetState = sheetState,
         // Avoid applying horizontal padding here to prevent it from affecting the bottom sheet.
         paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing),

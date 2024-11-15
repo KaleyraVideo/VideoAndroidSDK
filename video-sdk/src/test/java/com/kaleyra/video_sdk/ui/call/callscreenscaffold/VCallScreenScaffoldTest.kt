@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -33,6 +34,8 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.callscreenscaffold.CallScreenScaffoldDefaults
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
 import com.kaleyra.video_sdk.ui.performVerticalSwipe
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -294,6 +297,42 @@ class VCallScreenScaffoldTest {
     }
 
     @Test
+    @Config(qualifiers = "w480dp-h840dp")
+    fun testBrandLogoComposableCalledWithLargeScreenAndSizeClassMedium() {
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            windowSizeClass = mockk {
+                every { widthSizeClass } returns WindowWidthSizeClass.Medium
+            },
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
+    @Test
+    @Config(qualifiers = "w480dp-h840dp")
+    fun testBrandLogoComposableCalledWithExpandedSizeClass() {
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            windowSizeClass = mockk {
+                every { widthSizeClass } returns WindowWidthSizeClass.Expanded
+            },
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
+    @Test
     @Config(qualifiers = "w100dp-h200dp")
     fun testBrandLogoComposableNotCalledOnSmallScreen() {
         var hasCalledBrandLogo = false
@@ -310,6 +349,7 @@ class VCallScreenScaffoldTest {
 
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
+        windowSizeClass: WindowSizeClass = mockk(relaxed = true),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
@@ -319,6 +359,7 @@ class VCallScreenScaffoldTest {
         setContent {
             VCallScreenScaffold(
                 sheetState = sheetState,
+                windowSizeClass = windowSizeClass,
                 topAppBar = topAppBar,
                 sheetPanelContent = panelContent,
                 sheetContent = {

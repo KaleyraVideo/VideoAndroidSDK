@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -46,7 +48,6 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -98,6 +99,7 @@ internal object VCallScreenScaffoldDefaults {
 @Composable
 internal fun VCallScreenScaffold(
     modifier: Modifier = Modifier,
+    windowSizeClass: WindowSizeClass,
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable ColumnScope.() -> Unit,
     brandLogo: @Composable BoxScope.() -> Unit,
@@ -139,6 +141,7 @@ internal fun VCallScreenScaffold(
     var dragHandleHeight by remember { mutableIntStateOf(0) }
     var sheetContentPosition by remember { mutableStateOf(Size(0f, 0f)) }
     var brandLogoPosition by remember { mutableStateOf(Size(0f, 0f)) }
+    var hasSufficientSpaceForBrandLogo by remember(windowSizeClass.widthSizeClass) { mutableStateOf(true) }
 
     if (sheetPanelContent != null) {
         LaunchedEffect(Unit) {
@@ -178,7 +181,16 @@ internal fun VCallScreenScaffold(
                     }
             ) {
                 with (density) {
-                    if (constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight ) brandLogo()
+                    // fixes rotation use case in which constraints could be possibly be 0
+                    if ((constraints.maxWidth == 0 && constraints.maxHeight > 0) || constraints.maxHeight > 0 && constraints.maxHeight == 0) return@with
+
+                    if ((hasSufficientSpaceForBrandLogo || windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded)
+                        && constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight){
+                        hasSufficientSpaceForBrandLogo = true
+                        brandLogo()
+                    } else {
+                        hasSufficientSpaceForBrandLogo = false
+                    }
                 }
             }
 
