@@ -49,6 +49,7 @@ class CallOptionsDialogView(
         val info = findViewById<TextView>(R.id.info)
         audioOnlyCallOptionsView = CallOptions(context)
         audioOnlyCallOptionsView!!.titleView.text = context.getString(R.string.audio_only)
+        audioOnlyCallOptionsView!!.callOptionsViewContainer.findViewById<View>(R.id.call_options_camera_effects).visibility = View.GONE
         audioOnlyCallOptionsView!!.callOptionsViewContainer.findViewById<View>(R.id.call_options_back_camera).visibility = View.GONE
         audioUpgradableCallOptionsView = CallOptions(context)
         audioUpgradableCallOptionsView!!.titleView.text = context.getString(R.string.audio_upgradable)
@@ -79,9 +80,10 @@ class CallOptionsDialogView(
         info.text = context.getString(R.string.select_call_type)
         deSelectAllCallTypes()
         when (callOptionType!!) {
-            CallOptionsType.AUDIO_ONLY       -> {
+            CallOptionsType.AUDIO_ONLY -> {
                 audioOnlyCallOptionsView!!.selectingProgrammatically = true
                 audioOnlyCallOptionsView!!.titleView.isChecked = true
+
             }
 
             CallOptionsType.AUDIO_UPGRADABLE -> {
@@ -89,7 +91,7 @@ class CallOptionsDialogView(
                 audioUpgradableCallOptionsView!!.titleView.isChecked = true
             }
 
-            CallOptionsType.AUDIO_VIDEO      -> {
+            CallOptionsType.AUDIO_VIDEO -> {
                 audioVideoCallOptionsView!!.selectingProgrammatically = true
                 audioVideoCallOptionsView!!.titleView.isChecked = true
             }
@@ -133,7 +135,7 @@ class CallOptionsDialogView(
         callOptionsView.titleView.setOnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
                 when {
-                    callOptionsView === audioOnlyCallOptionsView       -> {
+                    callOptionsView === audioOnlyCallOptionsView -> {
                         deselectAll(audioUpgradableCallOptionsView)
                         deselectAll(audioVideoCallOptionsView)
                     }
@@ -143,7 +145,7 @@ class CallOptionsDialogView(
                         deselectAll(audioVideoCallOptionsView)
                     }
 
-                    callOptionsView === audioVideoCallOptionsView      -> {
+                    callOptionsView === audioVideoCallOptionsView -> {
                         deselectAll(audioUpgradableCallOptionsView)
                         deselectAll(audioOnlyCallOptionsView)
                     }
@@ -198,10 +200,11 @@ class CallOptionsDialogView(
             actions.forEach {
                 when (it) {
                     is ConfigAction.OpenWhiteboard -> setChecked(R.id.call_options_whiteboard, true)
-                    is ConfigAction.FileShare      -> setChecked(R.id.call_options_file_share, true)
-                    is ConfigAction.OpenChat       -> setChecked(R.id.call_options_chat, true)
-                    is ConfigAction.ScreenShare    -> setChecked(R.id.call_options_screen_sharing, true)
-                    else              -> Unit
+                    is ConfigAction.FileShare -> setChecked(R.id.call_options_file_share, true)
+                    is ConfigAction.OpenChat -> setChecked(R.id.call_options_chat, true)
+                    is ConfigAction.ScreenShare -> setChecked(R.id.call_options_screen_sharing, true)
+                    is ConfigAction.CameraEffects -> setChecked(R.id.call_options_camera_effects, true)
+                    else -> Unit
                 }
             }
             setChecked(R.id.call_options_recording, options.recordingEnabled)
@@ -222,6 +225,7 @@ class CallOptionsDialogView(
             addCheckedChangeListener(R.id.call_options_chat, checkedChangeListener)
             addCheckedChangeListener(R.id.call_options_back_camera, checkedChangeListener)
             addCheckedChangeListener(R.id.call_options_feedback, checkedChangeListener)
+            addCheckedChangeListener(R.id.call_options_camera_effects, checkedChangeListener)
         }
 
         private fun addCheckedChangeListener(id: Int, checkedChangeListener: CompoundButton.OnCheckedChangeListener) {
@@ -234,6 +238,7 @@ class CallOptionsDialogView(
             setChecked(R.id.call_options_whiteboard, true)
             setChecked(R.id.call_options_file_share, true)
             setChecked(R.id.call_options_screen_sharing, true)
+            setChecked(R.id.call_options_camera_effects, true)
             setChecked(R.id.call_options_chat, true)
         }
 
@@ -241,6 +246,7 @@ class CallOptionsDialogView(
             setChecked(R.id.call_options_whiteboard, false)
             setChecked(R.id.call_options_file_share, false)
             setChecked(R.id.call_options_screen_sharing, false)
+            setChecked(R.id.call_options_camera_effects, false)
             with(R.id.call_options_chat) {
                 if (!findViewById<CheckBox>(this).isEnabled) return
                 setChecked(this, false)
@@ -280,6 +286,9 @@ class CallOptionsDialogView(
 
         val isFeedbackChecked: Boolean
             get() = isChecked(R.id.call_options_feedback)
+
+        val isCameraEffectsChecked: Boolean
+            get() = isChecked(R.id.call_options_camera_effects)
 
         val isChecked: Boolean
             get() = titleView.isChecked

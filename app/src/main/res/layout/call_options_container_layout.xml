@@ -72,6 +72,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/screen_sharing_requires_api_21" />
 
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/call_options_camera_effects"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/camera_effects" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

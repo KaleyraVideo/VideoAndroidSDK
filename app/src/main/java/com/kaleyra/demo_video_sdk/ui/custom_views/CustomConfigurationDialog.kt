@@ -154,6 +154,7 @@ class CustomConfigurationDialog : DialogFragment() {
         if (optionView.isFileShareChecked) actions += CallUI.Action.FileShare
         if (optionView.isScreenShareChecked) actions += CallUI.Action.ScreenShare
         if (optionView.isWhiteboardChecked) actions += CallUI.Action.OpenWhiteboard.Full
+        if (optionView.isCameraEffectsChecked) actions += CallUI.Action.CameraEffects
         return actions.mapToConfigActions()
     }
 
