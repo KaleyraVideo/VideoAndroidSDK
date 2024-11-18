@@ -37,6 +37,7 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.every
 import io.mockk.mockk
@@ -69,14 +70,18 @@ class SheetPanelContentTest {
         every { uiState } returns callActionsUiState
     }
 
+    private val screenShareViewModel = mockk<ScreenShareViewModel>(relaxed = true)
+
     @Test
     fun userClicksChat_onModularComponentRequestChat() {
         var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(ChatAction())),
-                onModularComponentRequest = { component = it }
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -94,8 +99,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(FlipCameraAction())),
-                onModularComponentRequest = {}
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -114,8 +121,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(AudioAction())),
-                onModularComponentRequest = { component = it }
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -134,8 +143,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(FileShareAction())),
-                onModularComponentRequest = { component = it }
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -154,8 +165,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(WhiteboardAction())),
-                onModularComponentRequest = { component = it }
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -174,8 +187,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
                 callActions = ImmutableList(listOf(VirtualBackgroundAction())),
-                onModularComponentRequest = { component = it }
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -194,8 +209,10 @@ class SheetPanelContentTest {
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModularComponentRequest = {}
+                screenShareViewModel = screenShareViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -209,14 +226,16 @@ class SheetPanelContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModularComponentRequestScreenShare() {
+    fun userClicksScreenShareUserChoiceWhenNotEnabled_onModularComponentRequestScreenShare() {
         every { callActionsViewModel.tryStopScreenShare() } returns false
         var component: ModularComponent? = null
         composeTestRule.setContent {
             SheetPanelContent(
                 viewModel = callActionsViewModel,
-                callActions = ImmutableList(listOf(ScreenShareAction())),
-                onModularComponentRequest = { component = it }
+                screenShareViewModel = screenShareViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -227,6 +246,54 @@ class SheetPanelContentTest {
             .performClick()
 
         assertEquals(ModularComponent.ScreenShare, component)
+    }
+
+    @Test
+    fun userClicksScreenShareAppWhenNotEnabled_onModularScreenShareComponentNotRequested() {
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModularComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.App())),
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(null, component)
+    }
+
+    @Test
+    fun userClicksScreenShareWholeDeviceWhenNotEnabled_onModularScreenShareComponentNotRequested() {
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var isAskingInputPermission = false
+        var component: ModularComponent? = null
+        composeTestRule.setContent {
+            SheetPanelContent(
+                viewModel = callActionsViewModel,
+                screenShareViewModel = screenShareViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.WholeDevice())),
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = { isAskingInputPermission = it }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(true, isAskingInputPermission)
+        assertEquals(null, component)
     }
 
     @Test

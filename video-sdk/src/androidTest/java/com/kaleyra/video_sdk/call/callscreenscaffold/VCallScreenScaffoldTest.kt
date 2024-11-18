@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.width
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.performVerticalSwipe
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -303,6 +304,7 @@ class VCallScreenScaffoldTest {
         setContent {
             VCallScreenScaffold(
                 sheetState = sheetState,
+                windowSizeClass = mockk(),
                 topAppBar = topAppBar,
                 sheetPanelContent = panelContent,
                 sheetContent = {

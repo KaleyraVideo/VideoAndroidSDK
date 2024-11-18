@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
@@ -162,7 +163,7 @@ class CallScreenTest {
         VirtualBackgroundAction(),
         MicAction(),
         CameraAction(),
-        ScreenShareAction(),
+        ScreenShareAction.UserChoice(),
     )
 
     @Before
@@ -386,7 +387,7 @@ class CallScreenTest {
     @Test
     fun userClicksScreenShareAction_screenShareComponentDisplayed() {
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction()).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList()
         )
         composeTestRule.setUpCallScreen(configuration = compactScreenConfiguration)
 
@@ -925,7 +926,7 @@ class CallScreenTest {
             onAskInputPermissions = { arePermissionAsked = true }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction()).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList()
         )
 
         val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)

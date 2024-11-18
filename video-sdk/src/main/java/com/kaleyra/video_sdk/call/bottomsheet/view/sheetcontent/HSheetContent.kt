@@ -19,6 +19,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.HSheetItemsLayout
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
@@ -29,6 +30,7 @@ import com.kaleyra.video_sdk.call.callactions.view.MoreAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.row.ReversibleRow
@@ -41,6 +43,7 @@ private const val MaxHSheetItems = 5
 @Composable
 internal fun HSheetContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     isLargeScreen: Boolean,
     isMoreToggled: Boolean,
     onMoreToggle: (Boolean) -> Unit,
@@ -48,10 +51,14 @@ internal fun HSheetContent(
     onModularComponentRequest: (ModularComponent) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
-    inputPermissions: InputPermissions = InputPermissions()
+    inputPermissions: InputPermissions = InputPermissions(),
+    onAskInputPermissions: (Boolean) -> Unit
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
+    screenShareMode = uiState.actionList.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
     HSheetContent(
         callActions = uiState.actionList,
@@ -67,18 +74,49 @@ internal fun HSheetContent(
         },
         onAnswerClick = viewModel::accept,
         onHangUpClick = viewModel::hangUp,
-        onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val micPermission = inputPermissions.micPermission ?: return@lambda
-            if (micPermission.status.isGranted) viewModel.toggleMic(activity)
-            else micPermission.launchPermissionRequest()
-        } },
-        onCameraToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
-            if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
-            else cameraPermission.launchPermissionRequest()
-        } },
+        onMicToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val micPermission = inputPermissions.micPermission ?: return@lambda
+                if (micPermission.status.isGranted) viewModel.toggleMic(activity)
+                else micPermission.launchPermissionRequest()
+            }
+        },
+        onCameraToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
+                if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
+                else cameraPermission.launchPermissionRequest()
+            }
+        },
         onScreenShareToggle = remember(viewModel) {
-            { if (!viewModel.tryStopScreenShare()) onModularComponentRequest(ModularComponent.ScreenShare) }
+            {
+                if (!viewModel.tryStopScreenShare()) {
+
+                    when (screenShareMode) {
+                        null -> Unit
+                        is ScreenShareAction.UserChoice -> onModularComponentRequest(ModularComponent.ScreenShare)
+                        is ScreenShareAction.App -> screenShareViewModel.shareApplicationScreen(activity, {}, {})
+                        is ScreenShareAction.WholeDevice -> {
+                            onAskInputPermissions(true)
+                            activity.unlockDevice(
+                                onUnlocked = {
+                                    screenShareViewModel?.shareDeviceScreen(
+                                        activity,
+                                        onScreenSharingStarted = {
+                                            onAskInputPermissions(false)
+                                        },
+                                        onScreenSharingAborted = {
+                                            onAskInputPermissions(false)
+                                        }
+                                    )
+                                },
+                                onDismiss = {
+                                    onAskInputPermissions(false)
+                                })
+                        }
+                    }
+                }
+            }
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
@@ -132,6 +170,7 @@ internal fun HSheetContent(
                 AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
                 Spacer(Modifier.width(SheetItemsSpacing))
             }
+
             showMoreAction -> {
                 MoreAction(
                     badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,

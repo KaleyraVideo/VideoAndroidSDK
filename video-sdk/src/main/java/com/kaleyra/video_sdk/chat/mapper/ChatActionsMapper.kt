@@ -21,18 +21,29 @@ import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 
 internal object ChatActionsMapper {
-    internal fun Set<ChatUI.Action>.mapToChatActions(call: (Call.PreferredType) -> Unit): Set<ChatAction> {
+    internal fun Set<ChatUI.Action>.mapToChatActions(
+        call: (
+            Call.PreferredType,
+            Long?,
+            Call.Recording.Type?) -> Unit
+    ): Set<ChatAction> {
         val actionsSet = mutableSetOf<ChatAction>()
-            val actions = this@mapToChatActions.filterIsInstance<ChatUI.Action.CreateCall>()
-            actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
-                actionsSet.add(ChatAction.AudioCall { call(action.preferredType) })
-            }
-            actions.firstOrNull { !it.preferredType.isVideoEnabled() }?.also { action ->
-                actionsSet.add(ChatAction.AudioUpgradableCall { call(action.preferredType) })
-            }
-            actions.firstOrNull { it.preferredType.isVideoEnabled() }?.also { action ->
-                actionsSet.add(ChatAction.VideoCall { call(action.preferredType) })
-            }
+        val actions = this@mapToChatActions.filterIsInstance<ChatUI.Action.CreateCall>()
+        actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
+            actionsSet.add(ChatAction.AudioCall {
+                call(action.preferredType, action.maxDuration, action.recordingType)
+            })
+        }
+        actions.firstOrNull { it.preferredType.hasVideo() && !it.preferredType.isVideoEnabled() }?.also { action ->
+            actionsSet.add(ChatAction.AudioUpgradableCall {
+                call(action.preferredType, action.maxDuration, action.recordingType)
+            })
+        }
+        actions.firstOrNull { it.preferredType.isVideoEnabled() }?.also { action ->
+            actionsSet.add(ChatAction.VideoCall {
+                call(action.preferredType, action.maxDuration, action.recordingType)
+            })
+        }
         return actionsSet
     }
 }

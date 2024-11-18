@@ -139,6 +139,7 @@
     <string name="disable_proximity_sensor" translatable="false">Disable proximity sensor</string>
     <string name="display_feedback_ui" translatable="false">Display call feedback UI on call ended</string>
     <string name="screen_sharing_requires_api_21" translatable="false">Screen sharing (requires API 21)</string>
+    <string name="camera_effects" translatable="false">Camera effects</string>
     <string name="chat_requires_api_19" translatable="false">Chat (requires API 19)</string>
     <string name="whiteboard_requires_api_19" translatable="false">Whiteboard (requires API 19)</string>
     <string name="call_recording" translatable="false">Call recording</string>

@@ -36,7 +36,7 @@ data class CallConfiguration(
         val recordingEnabled: Boolean = false,
         val feedbackEnabled: Boolean = false,
         val backCameraAsDefault: Boolean = false
-    ): Parcelable
+    ) : Parcelable
 
     fun encode(): String = Json.encodeToString(this)
 
@@ -167,7 +167,10 @@ fun Set<CallUI.Action>.mapToConfigActions(): Set<ConfigAction> {
             CallUI.Action.OpenWhiteboard.Full -> ConfigAction.OpenWhiteboard.Full
             CallUI.Action.OpenChat.ViewOnly -> ConfigAction.OpenChat.Full
             CallUI.Action.OpenWhiteboard.ViewOnly -> ConfigAction.OpenWhiteboard.ViewOnly
-            CallUI.Action.ScreenShare -> ConfigAction.ScreenShare
+            CallUI.Action.ScreenShare,
+            CallUI.Action.ScreenShare.UserChoice,
+            CallUI.Action.ScreenShare.App,
+            CallUI.Action.ScreenShare.WholeDevice -> ConfigAction.ScreenShare
             CallUI.Action.ShowParticipants -> ConfigAction.ShowParticipants
             CallUI.Action.SwitchCamera -> ConfigAction.SwitchCamera
             CallUI.Action.ToggleCamera -> ConfigAction.ToggleCamera
@@ -190,7 +193,7 @@ fun Set<ConfigAction>.mapToCallUIActions(): Set<CallUI.Action> {
             ConfigAction.OpenWhiteboard.Full -> CallUI.Action.OpenWhiteboard.Full
             ConfigAction.OpenChat.ViewOnly -> CallUI.Action.OpenChat.ViewOnly
             ConfigAction.OpenWhiteboard.ViewOnly -> CallUI.Action.OpenWhiteboard.ViewOnly
-            ConfigAction.ScreenShare -> CallUI.Action.ScreenShare
+            ConfigAction.ScreenShare -> CallUI.Action.ScreenShare.UserChoice
             ConfigAction.ShowParticipants -> CallUI.Action.ShowParticipants
             ConfigAction.SwitchCamera -> CallUI.Action.SwitchCamera
             ConfigAction.ToggleCamera -> CallUI.Action.ToggleCamera

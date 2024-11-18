@@ -55,6 +55,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
@@ -844,7 +845,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(),
             MicAction(),
             CameraAction(),
-            ScreenShareAction()
+            ScreenShareAction.UserChoice()
         )
         every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
@@ -871,7 +872,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(isEnabled = false),
             MicAction(isEnabled = false),
             CameraAction(isEnabled = false),
-            ScreenShareAction(isEnabled = false)
+            ScreenShareAction.UserChoice(isEnabled = false)
         )
         assertEquals(expected, actual)
     }
@@ -889,7 +890,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(),
             MicAction(),
             CameraAction(),
-            ScreenShareAction()
+            ScreenShareAction.UserChoice()
         )
         every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
@@ -916,7 +917,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(isEnabled = false),
             MicAction(isEnabled = false),
             CameraAction(isEnabled = false),
-            ScreenShareAction(isEnabled = false)
+            ScreenShareAction.UserChoice(isEnabled = false)
         )
         assertEquals(expected, actual)
     }
@@ -938,7 +939,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsNotConnected_screenShareActionDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isEnabled = true)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = true)))
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
@@ -947,7 +948,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isEnabled = false))
+        val expected = listOf(ScreenShareAction.UserChoice(isEnabled = false))
         assertEquals(expected, actual)
     }
 
@@ -983,7 +984,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsConnected_screenShareActionEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isEnabled = false)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = false)))
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
@@ -992,7 +993,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isEnabled = true))
+        val expected = listOf(ScreenShareAction.UserChoice(isEnabled = true))
         assertEquals(expected, actual)
     }
 
@@ -1013,7 +1014,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun screenSharingEnabled_screenShareActionToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isToggled = false)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = false)))
         every { callMock.isSharingScreen() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1022,13 +1023,13 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isToggled = true))
+        val expected = listOf(ScreenShareAction.UserChoice(isToggled = true))
         assertEquals(expected, actual)
     }
 
     @Test
     fun screenSharingDisabled_screenShareActionNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isToggled = true)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = true)))
         every { callMock.isSharingScreen() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1037,7 +1038,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isToggled = false))
+        val expected = listOf(ScreenShareAction.UserChoice(isToggled = false))
         assertEquals(expected, actual)
     }
 

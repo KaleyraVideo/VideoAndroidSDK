@@ -63,11 +63,12 @@ class HStreamMenuContentTest {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = stream)
 
+        var fullscreen = true
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
-                onDismiss = { },
-                onFullscreen = { }
+                onDismiss = { fullscreen = false },
+                onFullscreen = {}
             )
         }
 
@@ -78,6 +79,7 @@ class HStreamMenuContentTest {
             .performClick()
 
         verify(exactly = 1) { streamViewModel.fullscreen(null) }
+        assertEquals(false, fullscreen)
     }
 
     @Test

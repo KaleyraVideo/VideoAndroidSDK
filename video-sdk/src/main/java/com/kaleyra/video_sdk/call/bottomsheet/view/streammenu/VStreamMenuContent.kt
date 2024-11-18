@@ -45,10 +45,13 @@ internal fun VStreamMenuContent(
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
         if (isFullscreen) {
             viewModel.fullscreen(null)
+            showFullscreenMenu = false
             onDismiss()
-        } else viewModel.fullscreen(selectedStreamId)
-        showFullscreenMenu = true
-        onFullscreen()
+        } else {
+            viewModel.fullscreen(selectedStreamId)
+            showFullscreenMenu = true
+            onFullscreen()
+        }
     }
     val isPinLimitReached by remember(viewModel) {
         derivedStateOf {

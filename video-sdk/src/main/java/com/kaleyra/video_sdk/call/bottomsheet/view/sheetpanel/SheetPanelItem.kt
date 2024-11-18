@@ -25,6 +25,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.view.CallActionTextBadge
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.view.audioPainterFor
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
@@ -95,7 +96,7 @@ private fun textFor(callAction: CallActionUI) =
 internal fun SheetPanelScreenShareItemPreview() {
     KaleyraTheme {
         Surface {
-            SheetPanelItem(callAction = ScreenShareAction())
+            SheetPanelItem(callAction = ScreenShareAction.UserChoice())
         }
     }
 }
@@ -106,7 +107,7 @@ internal fun SheetPanelScreenShareItemPreview() {
 internal fun SheetPanelScreenShareItemDisabledPreview() {
     KaleyraTheme {
         Surface {
-            SheetPanelItem(callAction = ScreenShareAction(isEnabled = false))
+            SheetPanelItem(callAction = ScreenShareAction.UserChoice(isEnabled = false))
         }
     }
 }
