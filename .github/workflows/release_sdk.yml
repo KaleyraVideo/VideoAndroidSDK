@@ -16,31 +16,8 @@ on:
           - major
 
 jobs:
-  
-  determine-runner-integration:
-    name: Determine which runner to use for integration tests
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.set-runner.outputs.runner }}
-    steps:
-      - name: Generate a token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-      - name: Determine which runner to use
-        id: set-runner
-        uses: benjaminmichaelis/get-soonest-available-runner@v1.1.0
-        with:
-          primary-runner: "self-hosted"
-          fallback-runner: "ubuntu-latest"
-          min-available-runners: 1
-          github-token: ${{steps.generate_token.outputs.token}}
-
   update_sdk_version:
-    needs: determine-runner-integration
-    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.output_tag.outputs.TAG }}
     steps:
@@ -59,8 +36,6 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: 'gradle'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -97,32 +72,23 @@ jobs:
           tagging_message: ${{ steps.output_tag.outputs.TAG }}
 
   update_bom_version:
-    needs: [ determine-runner-integration, update_sdk_version ]
-    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    steps:
-      - name: update bom version
-        uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
-        with:
-          release_version: ${{ inputs.release_version }}
-          specific_release_version: ${{ inputs.specific_release_version }}
-          secrets: inherit
+    needs: update_sdk_version
+    uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
+    with:
+      release_version: ${{ inputs.release_version }}
+      specific_release_version: ${{ inputs.specific_release_version }}
+    secrets: inherit
 
   release_apps:
-    needs: [ determine-runner-integration, update_sdk_version, update_bom_version ]
-    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    steps:
-      - name: release_apps
-        uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
-        with:
-          tag: "${{needs.update_sdk_version.outputs.tag}}"
-          secrets: inherit
+    needs: [update_sdk_version, update_bom_version]
+    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
+    with:
+      tag: "${{needs.update_sdk_version.outputs.tag}}"
+    secrets: inherit
 
   release_notes:
-    needs: [ determine-runner-integration, update_sdk_version, update_bom_version ]
-    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    steps:
-      - name: steps
-        uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
-        with:
-          tag: "${{needs.update_sdk_version.outputs.tag}}"
-          secrets: inherit
+    needs: [update_sdk_version, update_bom_version]
+    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
+    with:
+      tag: "${{needs.update_sdk_version.outputs.tag}}"
+    secrets: inherit
