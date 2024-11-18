@@ -311,20 +311,68 @@ class VSheetDragContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenEnabled_tryStopScreenShareInvoked() {
+    fun userClicksScreenShareUserChoiceWhenEnabled_tryStopScreenShareInvoked() {
         every { callActionsViewModel.tryStopScreenShare() } returns true
+
         composeTestRule.setContent {
-            VSheetDragContent(
+            HSheetDragContent(
                 viewModel = callActionsViewModel,
                 callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
-                onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                isLargeScreen = false,
+                onAskInputPermissions = {},
+                onModularComponentRequest = {}
             )
         }
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule
-            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareAppWhenEnabled_tryStopScreenShareInvoked() {
+        every { callActionsViewModel.tryStopScreenShare() } returns true
+
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.App())),
+                isLargeScreen = false,
+                onAskInputPermissions = {},
+                onModularComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareWholeDeviceWhenEnabled_tryStopScreenShareInvoked() {
+        every { callActionsViewModel.tryStopScreenShare() } returns true
+
+        composeTestRule.setContent {
+            HSheetDragContent(
+                viewModel = callActionsViewModel,
+                callActions = ImmutableList(listOf(ScreenShareAction.WholeDevice())),
+                isLargeScreen = false,
+                onAskInputPermissions = {},
+                onModularComponentRequest = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
 
