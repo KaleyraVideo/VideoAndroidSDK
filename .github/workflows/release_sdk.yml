@@ -59,6 +59,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: 'gradle'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -97,24 +99,30 @@ jobs:
   update_bom_version:
     needs: [ determine-runner-integration, update_sdk_version ]
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
-    with:
-      release_version: ${{ inputs.release_version }}
-      specific_release_version: ${{ inputs.specific_release_version }}
-    secrets: inherit
+    steps:
+      - name: update bom version
+        uses: KaleyraVideo/AndroidDependenciesCatalog/.github/workflows/release_bom.yml@main
+        with:
+          release_version: ${{ inputs.release_version }}
+          specific_release_version: ${{ inputs.specific_release_version }}
+          secrets: inherit
 
   release_apps:
     needs: [ determine-runner-integration, update_sdk_version, update_bom_version ]
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
-    with:
-      tag: "${{needs.update_sdk_version.outputs.tag}}"
-    secrets: inherit
+    steps:
+      - name: release_apps
+        uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_notes.yml@main
+        with:
+          tag: "${{needs.update_sdk_version.outputs.tag}}"
+          secrets: inherit
 
   release_notes:
     needs: [ determine-runner-integration, update_sdk_version, update_bom_version ]
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-    uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
-    with:
-      tag: "${{needs.update_sdk_version.outputs.tag}}"
-    secrets: inherit
+    steps:
+      - name: steps
+        uses: KaleyraVideo/VideoAndroidSDK/.github/workflows/release_app.yml@main
+        with:
+          tag: "${{needs.update_sdk_version.outputs.tag}}"
+          secrets: inherit
