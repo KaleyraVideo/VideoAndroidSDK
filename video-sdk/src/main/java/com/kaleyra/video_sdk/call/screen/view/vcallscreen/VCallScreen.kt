@@ -312,8 +312,12 @@ internal fun VCallScreen(
                     val constraints = constraints
 
                     Row {
-                        val sidePanelWeight = remember(sidePanelComponent) {
-                            if (sidePanelComponent == ModularComponent.Whiteboard) 4f else 1f
+                        val sidePanelWeight = remember(sidePanelComponent, isLargeScreenLandscape) {
+                            when {
+                                sidePanelComponent == ModularComponent.Whiteboard -> 4f
+                                isLargeScreenLandscape -> 1f
+                                else -> 2f
+                            }
                         }
 
                         Box(
