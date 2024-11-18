@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.screen.view.vcallscreen
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -121,7 +122,7 @@ internal fun VCallScreen(
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
     val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isAtLeastMediumWidth() }
-    val isLargeScreenLandscape =  remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
+    val isLargeScreenLandscape = remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) {
@@ -153,6 +154,7 @@ internal fun VCallScreen(
 
     VCallScreenScaffold(
         modifier = modifier,
+        windowSizeClass = windowSizeClass,
         sheetState = sheetState,
         // Avoid applying horizontal padding here to prevent it from affecting the bottom sheet.
         paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing),
@@ -176,6 +178,7 @@ internal fun VCallScreen(
                                 onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
+                            onAskInputPermissions = onAskInputPermissions,
                             modifier = Modifier.testTag(PanelTestTag)
                         )
                     }
@@ -190,6 +193,7 @@ internal fun VCallScreen(
                     inputPermissions = inputPermissions,
                     onModularComponentRequest = onSideBarSheetComponentRequest,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
+                    onAskInputPermissions = onAskInputPermissions,
                     modifier = Modifier.animateContentSize()
                 )
             }
@@ -202,13 +206,17 @@ internal fun VCallScreen(
                         || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
                         || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
                 }
-            ) BrandLogoComponent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(46.dp)
-                    .align(Alignment.Center),
-                alignment = Alignment.CenterStart
-            )
+            ) {
+                val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start).asPaddingValues()
+                BrandLogoComponent(
+                    modifier = Modifier
+                        .padding(windowInsets)
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .align(Alignment.Center),
+                    alignment = Alignment.CenterStart
+                )
+            }
         },
         sheetContent = {
             val isSheetExpanded by remember(sheetState) {
@@ -233,6 +241,7 @@ internal fun VCallScreen(
                             isMoreToggled = isSheetExpanded || showSheetPanelContent,
                             maxActions = if (isLargeScreen) LargeScreenMaxActions else CompactScreenMaxActions,
                             inputPermissions = inputPermissions,
+                            onAskInputPermissions = onAskInputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
                             onModularComponentRequest = onSideBarSheetComponentRequest,
                             onMoreToggle = { isSheetCollapsed ->
@@ -250,7 +259,10 @@ internal fun VCallScreen(
                 } else {
                     HStreamMenuContent(
                         selectedStreamId = currentlySelectedStreamId,
-                        onDismiss = { onStreamSelected(null) },
+                        onDismiss = {
+                            isInFullscreenMode = false
+                            onStreamSelected(null)
+                        },
                         onFullscreen = { isInFullscreenMode = true },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
@@ -343,18 +355,23 @@ internal fun VCallScreen(
                                     )
                             )
 
-                            val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
-
                             Column(Modifier.padding(top = topPadding)) {
+                                val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
                                 if (displayBrandLogo) {
-                                    Spacer(modifier = Modifier.height(if (isLargeScreen) 48.dp else 24.dp))
-                                    BrandLogoComponent(
-                                        modifier = Modifier
-                                            .height(if (isLargeScreen) 96.dp else 48.dp)
-                                            .fillMaxWidth()
-                                    )
+                                    val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+                                    val brandlogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()
+                                    val brandLogoUri = if (isDarkTheme) brandlogoUiState.logo.dark else brandlogoUiState.logo.light
+                                    if (brandLogoUri != null && brandLogoUri != Uri.EMPTY) {
+                                        Spacer(modifier = Modifier.height(if (isLargeScreen) 48.dp else 24.dp))
+                                        BrandLogoComponent(
+                                            viewModel = brandLogoViewModel,
+                                            modifier = Modifier
+                                                .height(if (isLargeScreen) 96.dp else 48.dp)
+                                                .fillMaxWidth()
+                                        )
+                                    }
                                 }
-                                
+
                                 CallInfoComponent(
                                     modifier = Modifier
                                         .padding(

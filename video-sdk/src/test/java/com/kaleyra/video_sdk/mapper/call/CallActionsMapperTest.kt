@@ -115,7 +115,10 @@ class CallActionsMapperTest {
                 CallUI.Action.OpenWhiteboard.Full,
                 CallUI.Action.Audio,
                 CallUI.Action.FileShare,
-                CallUI.Action.ScreenShare
+                CallUI.Action.ScreenShare,
+                CallUI.Action.ScreenShare.UserChoice,
+                CallUI.Action.ScreenShare.App,
+                CallUI.Action.ScreenShare.WholeDevice
             )
         )
         val result = callMock.toCallActions(flowOf("companyId"))
@@ -128,7 +131,9 @@ class CallActionsMapperTest {
             VirtualBackgroundAction(),
             AudioAction(),
             FileShareAction(),
-            ScreenShareAction(),
+            ScreenShareAction.UserChoice(),
+            ScreenShareAction.App(),
+            ScreenShareAction.WholeDevice(),
             ChatAction(),
             WhiteboardAction(),
         )

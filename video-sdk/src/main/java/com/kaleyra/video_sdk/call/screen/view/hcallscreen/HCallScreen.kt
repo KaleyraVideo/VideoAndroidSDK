@@ -110,6 +110,7 @@ internal fun HCallScreen(
                 VSheetDragContent(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
+                    onAskInputPermissions = onAskInputPermissions,
                     onModularComponentRequest = onModalSheetComponentRequest,
                     contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 8.dp),
                     modifier = Modifier.animateContentSize()
@@ -132,6 +133,7 @@ internal fun HCallScreen(
                         VSheetContent(
                             isMoreToggled = isSheetExpanded,
                             inputPermissions = inputPermissions,
+                            onAskInputPermissions = onAskInputPermissions,
                             onActionsOverflow = { sheetDragActions = it },
                             onModularComponentRequest = onModalSheetComponentRequest,
                             onMoreToggle = onChangeSheetState,
@@ -147,14 +149,17 @@ internal fun HCallScreen(
                 } else {
                     VStreamMenuContent(
                         selectedStreamId = currentlySelectedStreamId,
-                        onDismiss = { onStreamSelected(null) },
+                        onDismiss = {
+                            isInFullscreenMode = false
+                            onStreamSelected(null)
+                        },
                         onFullscreen = { isInFullscreenMode = true },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
             }
         },
-        brandLogo = brandLogo@ {
+        brandLogo = brandLogo@{
             var hasConnectedCallOnce by remember { mutableStateOf(false) }
             val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
             val brandLogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()
@@ -166,13 +171,17 @@ internal fun HCallScreen(
             val hasLogo = brandLogoUiState.hasLogo(isDarkTheme)
             if (!hasLogo) return@brandLogo
 
+            val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start + WindowInsetsSides.Bottom).asPaddingValues()
             BrandLogoComponent(
-                    modifier = Modifier.align(Alignment.BottomStart)
-                        .padding(start = 12.dp, bottom = 12.dp)
-                        .height(80.dp)
-                        .width(142.dp),
-                    alignment = Alignment.BottomStart
-                )
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding()
+                    .padding(windowInsets)
+                    .padding(start = 12.dp, bottom = 12.dp)
+                    .height(80.dp)
+                    .width(142.dp),
+                alignment = Alignment.BottomStart
+            )
         },
         sheetDragHandle = (@Composable { CallBottomSheetDefaults.VDragHandle() }).takeIf { hasSheetDragContent }
     ) { paddingValues ->

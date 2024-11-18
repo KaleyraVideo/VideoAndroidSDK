@@ -87,9 +87,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -173,7 +171,7 @@ class VCallScreenTest {
         VirtualBackgroundAction(),
         MicAction(),
         CameraAction(),
-        ScreenShareAction(),
+        ScreenShareAction.UserChoice(),
     )
 
     @Before
@@ -416,7 +414,7 @@ class VCallScreenTest {
     fun testSheetActions_screenShareToggleOff() {
         composeTestRule.setUpVCallScreen()
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val text =
@@ -436,7 +434,7 @@ class VCallScreenTest {
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = listOf(ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val buttonText =
@@ -944,7 +942,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(chatText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(chatText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -959,7 +957,7 @@ class VCallScreenTest {
             configuration = compactScreenConfiguration
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
 
         val screenShareText =
@@ -984,7 +982,7 @@ class VCallScreenTest {
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = false)).toImmutableList()
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = false)).toImmutableList()
         )
 
         val screenShareText =
@@ -1238,12 +1236,12 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_screenShareToggleOff() {
-        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        val actions = (allActions - ScreenShareAction.UserChoice()).take(LargeScreenMaxActions)
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction(isToggled = true)).toImmutableList(),
+            actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList(),
         )
 
         val moreText =
@@ -1266,14 +1264,14 @@ class VCallScreenTest {
 
     @Test
     fun testSheetPanelActions_screenShareToggleOn() {
-        val actions = (allActions - ScreenShareAction()).take(LargeScreenMaxActions)
+        val actions = (allActions - ScreenShareAction.UserChoice()).take(LargeScreenMaxActions)
         var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             configuration = largeScreenConfiguration,
             onModalSheetComponentRequest = { component = it }
         )
         callActionsUiState.value = CallActionsUiState(
-            actionList = (actions + ScreenShareAction()).toImmutableList(),
+            actionList = (actions + ScreenShareAction.UserChoice()).toImmutableList(),
         )
 
         val moreText =

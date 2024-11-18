@@ -21,6 +21,7 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.VSheetItemsLayout
@@ -30,6 +31,7 @@ import com.kaleyra.video_sdk.call.callactions.view.MoreAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
@@ -41,16 +43,21 @@ private const val MaxVSheetItems = 5
 @Composable
 internal fun VSheetContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    screenShareViewModel: ScreenShareViewModel = viewModel(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     isMoreToggled: Boolean,
     onMoreToggle: (Boolean) -> Unit,
     onActionsOverflow: (overflowedActions: ImmutableList<CallActionUI>) -> Unit,
     onModularComponentRequest: (ModularComponent) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxVSheetItems,
-    inputPermissions: InputPermissions = InputPermissions()
+    inputPermissions: InputPermissions = InputPermissions(),
+    onAskInputPermissions: (Boolean) -> Unit
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
+    screenShareMode = uiState.actionList.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
     VSheetContent(
         callActions = uiState.actionList,
@@ -76,7 +83,34 @@ internal fun VSheetContent(
             else cameraPermission.launchPermissionRequest()
         } } ,
         onScreenShareToggle = remember(viewModel) {
-            { if (!viewModel.tryStopScreenShare()) onModularComponentRequest(ModularComponent.ScreenShare) }
+            {
+                if (!viewModel.tryStopScreenShare()) {
+
+                    when (screenShareMode) {
+                        null -> Unit
+                        is ScreenShareAction.UserChoice -> onModularComponentRequest(ModularComponent.ScreenShare)
+                        is ScreenShareAction.App -> screenShareViewModel?.shareApplicationScreen(activity, {}, {})
+                        is ScreenShareAction.WholeDevice -> {
+                            onAskInputPermissions(true)
+                            activity.unlockDevice(
+                                onUnlocked = {
+                                    screenShareViewModel?.shareDeviceScreen(
+                                        activity,
+                                        onScreenSharingStarted = {
+                                            onAskInputPermissions(false)
+                                        },
+                                        onScreenSharingAborted = {
+                                            onAskInputPermissions(false)
+                                        }
+                                    )
+                                },
+                                onDismiss = {
+                                    onAskInputPermissions(false)
+                                })
+                        }
+                    }
+                }
+            }
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
