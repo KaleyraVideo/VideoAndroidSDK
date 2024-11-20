@@ -1,11 +1,9 @@
 package com.kaleyra.video_common_ui.connectionservice
 
 import android.app.Activity
-import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Build
 import android.os.Bundle
-import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.DisconnectCause
 import android.telecom.TelecomManager
@@ -15,7 +13,7 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapCurrentRouteToAudioOutputDevice
 import com.kaleyra.video_common_ui.connectionservice.CallAudioStateExtensions.mapToAvailableAudioOutputDevices
-import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_extension_audio.extensions.AbstractKaleyraConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -27,7 +25,7 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.M)
-class KaleyraCallConnection private constructor(val call: CallUI, val coroutineScope: CoroutineScope) : Connection(), ActivityLifecycleCallbacks {
+class KaleyraCallConnection private constructor(val call: CallUI, val coroutineScope: CoroutineScope) : AbstractKaleyraConnection(), ActivityLifecycleCallbacks {
 
     interface Listener {
         fun onConnectionStateChange(connection: KaleyraCallConnection) = Unit
@@ -65,6 +63,8 @@ class KaleyraCallConnection private constructor(val call: CallUI, val coroutineS
     private var wasAnswered = false
 
     private var wasRejected = false
+
+    override var isMuted: Boolean = false
 
     val currentAudioDevice: SharedFlow<AudioOutputDevice?> = _currentAudioDevice
 
@@ -186,11 +186,23 @@ class KaleyraCallConnection private constructor(val call: CallUI, val coroutineS
 
     @Deprecated("Deprecated in Java")
     override fun onCallAudioStateChanged(state: android.telecom.CallAudioState) {
+        if (isMuted) return
+
         coroutineScope.launch {
             _currentAudioDevice.emit(state.mapCurrentRouteToAudioOutputDevice())
             _availableAudioDevices.emit(state.mapToAvailableAudioOutputDevices())
         }
     }
+
+    override fun onMuted(isMuted: Boolean) {
+        this@KaleyraCallConnection.isMuted = isMuted
+
+        coroutineScope.launch {
+            if (isMuted) _currentAudioDevice.emit(AudioOutputDevice.None())
+            else onCallAudioStateChanged(callAudioState)
+        }
+    }
+
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
 

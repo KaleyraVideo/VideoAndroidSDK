@@ -22,12 +22,12 @@ import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.DisplayModeEvent
@@ -42,6 +42,7 @@ import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -77,8 +78,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class MainViewModelTest {
 
     @get:Rule
@@ -115,14 +119,14 @@ class MainViewModelTest {
 
     @Test
     fun testTheme() = runTest {
-        val themeMock = mockk<CompanyUI.Theme>()
+        val theme = Theme()
         val companyMock = mockk<Company>()
-        every { companyMock.combinedTheme } returns flowOf(themeMock)
+        every { companyMock.combinedTheme } returns flowOf(theme)
 
         val viewModel = MainViewModel { Success(conferenceMock, mockk(), companyMock, MutableStateFlow(mockk())) }
         advanceUntilIdle()
 
-        assertEquals(themeMock, viewModel.theme.first())
+        assertEquals(theme, viewModel.theme.first())
     }
 
     @Test
@@ -691,5 +695,45 @@ class MainViewModelTest {
         val actual = viewModel.whiteboardRequest.first()
         assertEquals(true, actual is WhiteboardRequest.Hide)
         assertEquals("displayName1", actual.username)
+    }
+
+    @Test
+    fun oneToOneCall_getOtherUserIdIsSuccessful() = runTest {
+        val participant = mockk<CallParticipant> {
+            every { userId } returns "participantId"
+        }
+        val companyParticipant = mockk<CallParticipant> {
+            every { userId } returns "companyId"
+        }
+        val participants = mockk<CallParticipants> {
+            every { others } returns listOf(participant, companyParticipant)
+        }
+        val company = mockk<Company>(relaxed = true)
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { company.id } returns MutableStateFlow("companyId")
+        val viewModel = MainViewModel { Success(conferenceMock, mockk(), company, MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        val actual = viewModel.getOtherUserId()
+        assertEquals(participant.userId, actual)
+    }
+
+    @Test
+    fun groupCall_getOtherUserIdIsNull() = runTest {
+        val participant1 = mockk<CallParticipant> {
+            every { userId } returns "participantId1"
+        }
+        val participant2 = mockk<CallParticipant> {
+            every { userId } returns "participantId2"
+        }
+        val participants = mockk<CallParticipants> {
+            every { others } returns listOf(participant1, participant2)
+        }
+        val company = mockk<Company>(relaxed = true)
+        every { callMock.participants } returns MutableStateFlow(participants)
+        every { company.id } returns MutableStateFlow("companyId")
+        val viewModel = MainViewModel { Success(conferenceMock, mockk(), company, MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        val actual = viewModel.getOtherUserId()
+        assertEquals(null, actual)
     }
 }

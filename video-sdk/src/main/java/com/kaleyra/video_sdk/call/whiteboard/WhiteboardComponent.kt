@@ -54,7 +54,8 @@ internal fun WhiteboardComponent(
         factory = WhiteboardViewModel.provideFactory(::requestCollaborationViewModelConfiguration, WhiteboardView(LocalContext.current))
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit
+    onUserMessageActionClick: (UserMessage) -> Unit = { },
+    isLargeScreen: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -65,11 +66,14 @@ internal fun WhiteboardComponent(
     WhiteboardComponent(
         modifier = modifier,
         uiState = uiState,
+        userMessageComponent = {
+            StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+        },
         onWhiteboardClosed = viewModel::onWhiteboardClosed,
         onReloadClick = viewModel::onReloadClick,
         onBackPressed = onDismiss,
         onUploadClick = { launcher.launch("image/*") },
-        onUserMessageActionClick = onUserMessageActionClick
+        isLargeScreen = isLargeScreen
     )
 }
 
@@ -77,11 +81,12 @@ internal fun WhiteboardComponent(
 internal fun WhiteboardComponent(
     modifier: Modifier = Modifier,
     uiState: WhiteboardUiState,
+    userMessageComponent: @Composable () -> Unit = { },
     onWhiteboardClosed: () -> Unit,
     onReloadClick: () -> Unit,
     onBackPressed: () -> Unit,
     onUploadClick: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit
+    isLargeScreen: Boolean = false
 ) {
     DisposableEffect(Unit) {
         onDispose(onWhiteboardClosed)
@@ -92,6 +97,7 @@ internal fun WhiteboardComponent(
             WhiteboardAppBar(
                 isFileSharingSupported = uiState.isFileSharingSupported && !uiState.isOffline && !uiState.isLoading,
                 onBackPressed = onBackPressed,
+                isLargeScreen = isLargeScreen,
                 onUploadClick = { onUploadClick() },
                 modifier = modifier
             )
@@ -118,7 +124,9 @@ internal fun WhiteboardComponent(
                     }
                 }
 
-                StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+                if (!isLargeScreen) {
+                    userMessageComponent()
+                }
             }
 
             NavigationBarsSpacer()

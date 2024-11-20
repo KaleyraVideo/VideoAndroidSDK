@@ -49,8 +49,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.*
 import org.junit.Assert.assertEquals
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class CallActionsMapperTest {
 
     @get:Rule
@@ -112,7 +115,10 @@ class CallActionsMapperTest {
                 CallUI.Action.OpenWhiteboard.Full,
                 CallUI.Action.Audio,
                 CallUI.Action.FileShare,
-                CallUI.Action.ScreenShare
+                CallUI.Action.ScreenShare,
+                CallUI.Action.ScreenShare.UserChoice,
+                CallUI.Action.ScreenShare.App,
+                CallUI.Action.ScreenShare.WholeDevice
             )
         )
         val result = callMock.toCallActions(flowOf("companyId"))
@@ -125,7 +131,9 @@ class CallActionsMapperTest {
             VirtualBackgroundAction(),
             AudioAction(),
             FileShareAction(),
-            ScreenShareAction(),
+            ScreenShareAction.UserChoice(),
+            ScreenShareAction.App(),
+            ScreenShareAction.WholeDevice(),
             ChatAction(),
             WhiteboardAction(),
         )

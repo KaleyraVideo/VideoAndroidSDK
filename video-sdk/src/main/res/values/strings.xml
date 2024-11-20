@@ -26,6 +26,7 @@
     <string name="kaleyra_call_sheet_unpin">Unpin</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Fullscreen</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Exit</string>
+    <string name="kaleyra_call_sheet_zoom" translatable="false">Zoom</string>
     <string name="kaleyra_call_sheet_flip_camera">Flip cam</string>
     <string name="kaleyra_call_sheet_recording">Recording</string>
     <string name="kaleyra_call_sheet_cancel">Cancel</string>
@@ -41,6 +42,10 @@
     <string name="kaleyra_call_sheet_description_enable_camera">Enable camera</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Disable camera</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Stop screen share</string>
+    <string name="kaleyra_call_sheet_description_mic_warning">Microphone warning</string>
+    <string name="kaleyra_call_sheet_description_mic_error">Microphone error</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Camera warning</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Camera error</string>
 
     <string name="kaleyra_stream_screenshare_message">Meeting attendees are seeing your screen</string>
     <string name="kaleyra_stream_screenshare_action">Stop Screen Sharing</string>
@@ -149,6 +154,7 @@
     <string name="kaleyra_chat_no_messages_subtitle">Send a message to initiate communication</string>
     <string name="kaleyra_chat_avatar_desc">Chat image</string>
     <string name="kaleyra_chat_group_title">Group chat</string>
+    <string name="kaleyra_chat">Chat</string>
 
     <!-- Call -->
     <string name="kaleyra_call_show_buttons">Show buttons</string>
@@ -205,6 +211,7 @@
     <string name="kaleyra_back">Back</string>
     <string name="kaleyra_avatar">User avatar</string>
     <string name="kaleyra_company_logo">Company logo</string>
+    <string name="kaleyra_app_icon">App icon</string>
 
     <string name="kaleyra_move_to_featured_streams">Move to featured streams</string>
     <string name="kaleyra_tap_to_answer">tap to answer</string>

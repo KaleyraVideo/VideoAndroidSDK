@@ -2,16 +2,19 @@ package com.kaleyra.video_common_ui
 
 import android.app.Application
 import com.kaleyra.video.Collaboration
+import com.kaleyra.video.configuration.Configuration
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -21,14 +24,17 @@ import kotlin.coroutines.CoroutineContext
 
 class KaleyraVideoFacadeTest {
 
+    private val configuration = mockk<Configuration>(relaxed = true)
+    
     @Before
     fun setup() {
+        mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoInitializationProviderKt")
         mockkStatic(::requestConfiguration)
-        mockkStatic(Executors::class)
         mockkStatic("kotlinx.coroutines.ExecutorsKt")
+        mockkStatic(Executors::class)
         every { Executors.newSingleThreadExecutor() } returns mockk {
             every { this@mockk.asCoroutineDispatcher() } returns object : ExecutorCoroutineDispatcher() {
-                override val executor: Executor = Executor { }
+                override val executor: Executor = Executor { command -> command.run() }
                 override fun close() = Unit
                 override fun dispatch(context: CoroutineContext, block: Runnable) = block.run()
             }
@@ -40,6 +46,12 @@ class KaleyraVideoFacadeTest {
         mockkObject(Collaboration)
         every { Collaboration.create(any()) } returns mockk(relaxed = true)
         every { PhoneActivityClazzProvider.getActivityClazzConfiguration() } returns mockk(relaxed = true)
+        KaleyraVideo.reset()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
         KaleyraVideo.reset()
     }
 
@@ -55,49 +67,41 @@ class KaleyraVideoFacadeTest {
 
     @Test
     fun conversationUI_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(configuration)
         KaleyraVideo.conversation
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationState_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(configuration)
         KaleyraVideo.state
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationSynchronization_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(configuration)
         KaleyraVideo.synchronization
         verify { requestConfiguration() }
     }
 
     @Test
     fun collaborationConnectedUser_requestConfigurationRequested() {
-        every { requestConfiguration() } answers {
-            KaleyraVideo.configure(mockk(relaxed = true))
-        }
+        KaleyraVideo.configure(configuration)
         KaleyraVideo.connectedUser
         verify { requestConfiguration() }
     }
 
     @Test
     fun testConferenceUIReady() {
-        KaleyraVideo.configure(mockk(relaxed = true))
+        KaleyraVideo.configure(configuration)
         Assert.assertEquals(true, KaleyraVideo.conference != null)
     }
 
     @Test
     fun testConversationUIReady() {
-        KaleyraVideo.configure(mockk(relaxed = true))
+        KaleyraVideo.configure(configuration)
         Assert.assertEquals(true, KaleyraVideo.conversation != null)
     }
 

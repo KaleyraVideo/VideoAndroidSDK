@@ -27,10 +27,14 @@ class MainDispatcherRule(
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(),
 ) : TestWatcher() {
     override fun starting(description: Description) {
-        Dispatchers.setMain(testDispatcher)
+        kotlin.runCatching {
+            Dispatchers.setMain(testDispatcher)
+        }.onFailure { println(it.message) }
     }
 
     override fun finished(description: Description) {
-        Dispatchers.resetMain()
+        kotlin.runCatching {
+            Dispatchers.resetMain()
+        }.onFailure { println(it.message) }
     }
 }

@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
-import android.view.View
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,12 +19,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.prettyPrint
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
@@ -35,6 +40,7 @@ import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSett
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamItemPadding = 8.dp
+internal val ZoomIconTestTag = "ZoomIconTestTag"
 
 @Composable
 internal fun StreamItem(
@@ -62,8 +68,9 @@ internal fun StreamItem(
             )
         }
 
-        StatusIcons(
+        StreamStatusIcons(
             streamAudioUi = stream.audio,
+            streamVideoUi = stream.video,
             fullscreen = fullscreen,
             mine = stream.isMine,
             modifier = Modifier
@@ -83,8 +90,9 @@ internal fun StreamItem(
 }
 
 @Composable
-private fun StatusIcons(
+internal fun StreamStatusIcons(
     streamAudioUi: AudioUi?,
+    streamVideoUi: VideoUi?,
     fullscreen: Boolean,
     mine: Boolean,
     modifier: Modifier = Modifier
@@ -94,8 +102,11 @@ private fun StatusIcons(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
+        streamVideoUi?.takeIf { it.isEnabled }?.zoomLevelUi?.prettyPrint()?.takeIf { it.isNotBlank() }?.let {
+            ZoomIcon(text = it)
+        }
         when {
-            streamAudioUi == null -> MicDisabledIcon()
+            streamAudioUi == null -> Unit
             streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
             !streamAudioUi.isEnabled -> MicDisabledIcon()
         }
@@ -135,6 +146,29 @@ private fun UserLabel(
                 style = MaterialTheme.typography.labelSmall
             )
         }
+    }
+}
+
+@Composable
+private fun ZoomIcon(modifier: Modifier = Modifier, text: String) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .size(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val zoomContentDescription = "${stringResource(R.string.kaleyra_call_sheet_zoom)} $text"
+        Text(
+            modifier = Modifier.semantics {
+                contentDescription = zoomContentDescription
+            }.testTag(ZoomIconTestTag),
+            text = text,
+            maxLines = 1,
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }
 
@@ -195,7 +229,7 @@ internal fun StreamItemPreview() {
                 stream = StreamUi(
                     id = "id",
                     username = "Viola J. Allen",
-                    video = VideoUi(id = "id", view = ImmutableView(View(LocalContext.current))),
+                    video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`),
                     audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true),
                 ),
                 fullscreen = true,

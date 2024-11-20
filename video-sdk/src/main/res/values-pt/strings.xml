@@ -17,6 +17,8 @@
 <resources>
 
     <!-- Etiquetas de rota de áudio -->
+    <string name="kaleyra_call_sheet_description_mic_warning">Aviso do microfone</string>
+    <string name="kaleyra_call_sheet_description_mic_error">Erro do microfone</string>
     <string name="kaleyra_stream_screenshare_message">Os participantes da reunião estão a ver o seu ecrã</string>
     <string name="kaleyra_stream_screenshare_action">Parar partilha de ecrã</string>
     <string name="kaleyra_audio_route_title">Selecionar uma saída de áudio</string>
@@ -82,6 +84,7 @@
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
     <!-- Chamada -->
+    <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botões</string>
     <string name="kaleyra_close">Fechar</string>
     <string name="kaleyra_call_status_connecting">A conectar …</string>
@@ -341,5 +344,8 @@
     <string name="kaleyra_chat_no_messages_subtitle">Envie uma mensagem para iniciar a comunicação</string>
     <string name="kaleyra_call_failed">Chamada falhou</string>
     <string name="kaleyra_chat_participants_is_online">está online</string>
+    <string name="kaleyra_app_icon">Ícone do aplicativo</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Aviso da câmera</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Erro da câmera</string>
 
 </resources>

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-internal val SheetItemsSpacing = 20.dp
+internal val SheetItemsSpacing = 16.dp
 
 /**
  * Try to place all the items in the available space in a row like manner

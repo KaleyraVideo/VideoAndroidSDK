@@ -32,9 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.time.withTimeoutOrNull
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -371,7 +369,9 @@ class KaleyraCallConnectionTest {
     fun testOnSilence() = runTest {
         var silenced = false
         val listener = object : KaleyraCallConnection.Listener {
-            override fun onSilence() { silenced = true }
+            override fun onSilence() {
+                silenced = true
+            }
         }
         val connection = KaleyraCallConnection.create(requestMock, callMock, backgroundScope)
         connection.addListener(listener)
@@ -446,6 +446,49 @@ class KaleyraCallConnectionTest {
         connection.onActivityResumed(activity)
 
         unmockkObject(CallAudioStateExtensions)
+    }
+
+    @Test
+    fun testOnMutedCalled_currentAudioDeviceNone() = runTest(UnconfinedTestDispatcher()) {
+        val call = mockk<CallUI>(relaxed = true)
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
+
+        connection.onMuted(true)
+
+        assertEquals(true, connection.isMuted)
+        assertEquals(true, connection.currentAudioDevice.replayCache.first() is AudioOutputDevice.None)
+    }
+
+    @Test
+    fun testOnUnMutedCalled_currentAudioDeviceNone() = runTest(UnconfinedTestDispatcher()) {
+        val call = mockk<CallUI>(relaxed = true)
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope)) {
+            every { callAudioState } returns mockk(relaxed = true) {
+                every { isMuted } returns false
+                every { route } returns ROUTE_EARPIECE
+            }
+        }
+
+        connection.onMuted(true)
+        connection.onMuted(false)
+
+        assertEquals(false, connection.isMuted)
+        assertEquals(true, connection.currentAudioDevice.replayCache.first() is AudioOutputDevice.Earpiece)
+    }
+
+    @Test
+    fun testAudioStateChangedWhenMuted_currentAudioDeviceNone() = runTest(UnconfinedTestDispatcher()) {
+        val call = mockk<CallUI>(relaxed = true)
+        val connection = spyk(KaleyraCallConnection.create(requestMock, call, backgroundScope))
+
+        connection.onMuted(true)
+        connection.onCallAudioStateChanged(mockk {
+            every { isMuted } returns false
+            every { route } returns ROUTE_EARPIECE
+        })
+
+        assertEquals(true, connection.isMuted)
+        assertEquals(true, connection.currentAudioDevice.replayCache.first() is AudioOutputDevice.None)
     }
 
 //    @Test

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -82,9 +83,8 @@ internal fun PipRecordingComponent(modifier: Modifier = Modifier) {
             Spacer(Modifier.width(4.dp))
             Text(
                 text = stringResource(id = R.string.kaleyra_call_info_rec).uppercase(),
-                fontWeight = FontWeight.Bold,
                 color = Color.White,
-                fontSize = 12.sp
+                style = MaterialTheme.typography.labelSmall
             )
             Spacer(Modifier.height(16.dp))
         }

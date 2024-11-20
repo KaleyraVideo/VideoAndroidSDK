@@ -74,7 +74,7 @@ object Iso8601 {
         return if (Build.VERSION .SDK_INT >= Build.VERSION_CODES.O) Instant.parse(tstamp).toEpochMilli()
         else {
             kotlin.runCatching {
-                val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'", Locale.getDefault())
                 df.timeZone = TimeZone.getTimeZone("UTC")
                 df.parse(tstamp)!!.time
             }.getOrDefault(0L)

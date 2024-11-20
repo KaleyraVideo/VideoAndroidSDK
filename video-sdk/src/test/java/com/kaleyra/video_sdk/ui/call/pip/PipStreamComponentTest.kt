@@ -112,11 +112,11 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun moreParticipantsIsDisplayed_localParticipantIsNotCounted() {
+    fun moreParticipantsIsDisplayed_localScreenShareIsNotCounted() {
         val stream1 = defaultStreamUi(username = "mario")
         val stream2 = defaultStreamUi(username = "alice")
         val stream3 = defaultStreamUi(username = "john")
-        val stream4 = defaultStreamUi(username = "lara", mine = true)
+        val stream4 = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
         streamUiState = StreamUiState(
             streams = listOf(stream1, stream2, stream3, stream4).toImmutableList()
         )
@@ -131,17 +131,35 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun localStreamIsNotDisplayed() {
+    fun moreParticipantsIsDisplayed_localStreamIsCounted() {
         val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice", mine = true)
+        val stream2 = defaultStreamUi(username = "alice")
+        val stream3 = defaultStreamUi(username = "john")
+        val stream4 = defaultStreamUi(username = "lara", mine = true)
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2).toImmutableList()
+            streams = listOf(stream1, stream2, stream3, stream4).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
 
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 3)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertDoesNotExist()
+        composeTestRule.onNodeWithText("A").assertIsDisplayed()
+        composeTestRule.onNodeWithText("J").assertIsDisplayed()
+        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
+    }
+
+    @Test
+    fun localScreenShareIsNotDisplayed() {
+        val stream = defaultStreamUi(id = "id1", username = "username1")
+        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
+        streamUiState = StreamUiState(
+            streams = listOf(stream, localScreenShareStream).toImmutableList()
+        )
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(you).assertDoesNotExist()
     }
 
     @Test
@@ -239,7 +257,7 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun streamAudioNull_micDisabledIconIsDisplayed() {
+    fun streamAudioNull_micDisabledIconDoesNotExists() {
         val stream1 = defaultStreamUi(username = "mario", audio = null)
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -249,7 +267,7 @@ class PipStreamComponentTest {
 
         val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
     }
 
     @Test
@@ -295,6 +313,39 @@ class PipStreamComponentTest {
     }
 
     @Test
+    fun previewStreamAudioMuted_micMutedIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = AudioUi(id = "audioId", isEnabled = false))
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertIsDisplayed()
+    }
+
+    @Test
+    fun previewStreamAudioNull_micMutedDoesNotExists() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = null)
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertDoesNotExist()
+    }
+
+    @Test
+    fun previewStreamAudioEnabled_micMutedDoesNotExist() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(audio = AudioUi(id = "audioId", isEnabled = true))
+        )
+        composeTestRule.waitForIdle()
+
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
+        composeTestRule.onNodeWithContentDescription(muted).assertDoesNotExist()
+    }
+
+    @Test
     fun localScreenSharePinnedStream_streamIsNotDisplayed() {
         val stream = defaultStreamUi(id = "id1", username = "username1")
         val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
@@ -306,6 +357,19 @@ class PipStreamComponentTest {
         val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
         composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
         composeTestRule.onNodeWithText(you).assertDoesNotExist()
+    }
+
+    @Test
+    fun localStream_streamIsDisplayed() {
+        val stream = defaultStreamUi(id = "id1", username = "username1")
+        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true)
+        streamUiState = StreamUiState(
+            streams = listOf(stream, localScreenShareStream).toImmutableList(),
+        )
+
+        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(you).assertIsDisplayed()
     }
 
     @Test

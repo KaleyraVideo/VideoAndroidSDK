@@ -1,10 +1,13 @@
 package com.kaleyra.video_sdk.call.callscreenscaffold
 
+import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,11 +18,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -33,13 +39,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
@@ -55,7 +66,7 @@ internal object VCallScreenScaffoldDefaults {
 
     val SheetPanelContentPadding = 8.dp
 
-    val SheetElevation = 2.dp
+    val BrandLogoHeight = 40.dp
 }
 
 // Parameters
@@ -88,8 +99,10 @@ internal object VCallScreenScaffoldDefaults {
 @Composable
 internal fun VCallScreenScaffold(
     modifier: Modifier = Modifier,
+    windowSizeClass: WindowSizeClass,
     topAppBar: @Composable () -> Unit,
     sheetContent: @Composable ColumnScope.() -> Unit,
+    brandLogo: @Composable BoxScope.() -> Unit,
     sheetPanelContent: @Composable (ColumnScope.() -> Unit)? = null,
     sheetDragContent: @Composable ColumnScope.() -> Unit,
     sheetState: CallSheetState = rememberCallSheetState(),
@@ -111,19 +124,23 @@ internal fun VCallScreenScaffold(
         { scope.launch { sheetState.settle(it) } }
     }
 
-    val density = LocalDensity.current
-    var sheetDragContentHeight by remember { mutableStateOf(0.dp) }
-    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
-    var topAppBarPadding by remember { mutableStateOf(0.dp) }
-    val contentPaddingValues by remember {
-        derivedStateOf { PaddingValues(top = topAppBarPadding, bottom = bottomSheetPadding) }
-    }
-
     val layoutDirection = LocalLayoutDirection.current
     val topPadding = paddingValues.calculateTopPadding()
     val bottomPadding = paddingValues.calculateBottomPadding()
     val startPadding = paddingValues.calculateStartPadding(layoutDirection)
     val endPadding = paddingValues.calculateEndPadding(layoutDirection)
+
+    val density = LocalDensity.current
+    var sheetDragContentHeight by remember { mutableStateOf(0.dp) }
+    var bottomSheetPadding by remember { mutableStateOf(0.dp) }
+    var topAppBarPadding by remember { mutableStateOf(0.dp) }
+    val contentPaddingValues by remember(startPadding, endPadding) {
+        derivedStateOf { PaddingValues(start = startPadding, top = topAppBarPadding, end = endPadding, bottom = bottomSheetPadding) }
+    }
+
+    var sheetContentPosition by remember(windowSizeClass.widthSizeClass) { mutableStateOf(DpSize(0.dp, 0.dp)) }
+    var brandLogoPosition by remember { mutableStateOf(DpSize(0.dp, 0.dp)) }
+    var hasSufficientSpaceForBrandLogo by remember(windowSizeClass.widthSizeClass) { mutableStateOf(true) }
 
     if (sheetPanelContent != null) {
         LaunchedEffect(Unit) {
@@ -151,6 +168,31 @@ internal fun VCallScreenScaffold(
                 onDismissRequest = animateToDismiss,
                 visible = sheetState.targetValue == CallSheetValue.Expanded
             )
+
+            BoxWithConstraints(
+                modifier = Modifier
+                    .width(sheetContentPosition.width)
+                    .height(VCallScreenScaffoldDefaults.BrandLogoHeight)
+                    .padding(horizontal = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) 32.dp else 16.dp)
+                    .graphicsLayer {
+                        translationX = 0f
+                        translationY = brandLogoPosition.height.toPx() - VCallScreenScaffoldDefaults.BrandLogoHeight.toPx() - 16.dp.toPx()
+                    }
+            ) {
+                with (density) {
+                    // fixes rotation use case in which constraints could be possibly be 0
+                    if ((constraints.maxWidth == 0 && constraints.maxHeight > 0) || constraints.maxHeight > 0 && constraints.maxHeight == 0) return@with
+
+                    if ((hasSufficientSpaceForBrandLogo || windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded)
+                        && constraints.maxWidth.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight && constraints.maxHeight.toDp() >= VCallScreenScaffoldDefaults.BrandLogoHeight) {
+                        hasSufficientSpaceForBrandLogo = true
+                        brandLogo()
+                    } else {
+                        hasSufficientSpaceForBrandLogo = false
+                    }
+                }
+            }
+
             Column(Modifier.align(Alignment.BottomCenter)) {
                 if (sheetPanelContent != null) {
                     Column(
@@ -164,7 +206,7 @@ internal fun VCallScreenScaffold(
                 CallBottomSheetLayout(
                     modifier = Modifier
                         .onSizeChanged {
-                            val height = with(density) { it.height.toDp() }
+                            val height = it.height.dp
                             bottomSheetPadding = height - (sheetDragContentHeight.takeIf { sheetDragHandle != null } ?: 0.dp)
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)
@@ -172,12 +214,20 @@ internal fun VCallScreenScaffold(
                     sheetContent = {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceContainer,
-                            tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
-                            modifier = Modifier.anchoredDraggable(
-                                state = sheetState.anchoredDraggableState,
-                                orientation = dragOrientation,
-                                enabled = sheetDragHandle != null
-                            )
+                            modifier = Modifier
+                                .anchoredDraggable(
+                                    state = sheetState.anchoredDraggableState,
+                                    orientation = dragOrientation,
+                                    enabled = sheetDragHandle != null
+                                )
+                                .onGloballyPositioned {
+                                    with(density) {
+                                        brandLogoPosition = DpSize(0.dp, it.positionInRoot().y.toDp() + it.size.height.toDp())
+                                        sheetContentPosition = DpSize(
+                                            minOf(sheetContentPosition.width.takeIf { it > 0.dp } ?: Dp.Infinity, it.positionInRoot().x.toDp()),
+                                            maxOf(sheetContentPosition.height, it.size.height.toDp()))
+                                    }
+                                }
                         ) {
                             Column(content = sheetContent)
                         }
@@ -186,7 +236,6 @@ internal fun VCallScreenScaffold(
                         {
                             Surface(
                                 color = MaterialTheme.colorScheme.surfaceContainer,
-                                tonalElevation = VCallScreenScaffoldDefaults.SheetElevation,
                                 modifier = Modifier
                                     .dragVerticalOffset(sheetState)
                                     .anchoredDraggable(

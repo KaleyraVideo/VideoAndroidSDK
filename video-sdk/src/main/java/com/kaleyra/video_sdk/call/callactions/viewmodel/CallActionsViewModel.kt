@@ -55,6 +55,7 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
@@ -177,11 +178,18 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
                         is FileShareAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
-                        is ScreenShareAction -> action.copy(
+                        is ScreenShareAction.UserChoice -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
-
+                        is ScreenShareAction.App -> action.copy(
+                            isToggled = isSharingScreen,
+                            isEnabled = isCallActive && !isCallEnded
+                        )
+                        is ScreenShareAction.WholeDevice -> action.copy(
+                            isToggled = isSharingScreen,
+                            isEnabled = isCallActive && !isCallEnded
+                        )
                         is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
@@ -195,7 +203,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             uiState
                 .map { it.actionList.value }
-                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) } ) { actionList, state ->
+                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) }) { actionList, state ->
                     val inputState = when (state) {
                         is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
                         is Input.State.Closed.Error -> InputCallAction.State.Error
@@ -232,7 +240,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             combine(
                 uiState.map { it.actionList.value },
-                call.sharedFolder.files.map { files -> files.map { it.creationTime } },
+                call.toOtherFilesCreationTimes(),
                 lastFileShareCreationTime
             ) { actionList, creationTimes, lastFileShareCreationTime ->
                 if (FileShareVisibilityObserver.isDisplayed.value) {
@@ -383,8 +391,10 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun clearFileShareBadge() {
-        call.getValue()?.sharedFolder?.files?.value?.let { files ->
-            val maxCreationTime = files.maxOfOrNull { it.creationTime } ?: return
+        viewModelScope.launch {
+            val call = call.getValue()
+            val creationTimes = call?.toOtherFilesCreationTimes()?.first()
+            val maxCreationTime = creationTimes?.maxOrNull() ?: return@launch
             lastFileShareCreationTime.value = maxCreationTime
         }
     }
@@ -394,7 +404,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         transform: (T) -> CallActionUI
     ) {
         actionList.indexOfFirst { it::class == T::class }.takeIf { it != -1 }?.let { index ->
-            val action = transform( (actionList[index] as T))
+            val action = transform((actionList[index] as T))
             val updatedActionList = actionList.toMutableList().also { it[index] = action }
             _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
         }

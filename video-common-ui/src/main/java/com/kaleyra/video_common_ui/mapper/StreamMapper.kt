@@ -19,6 +19,7 @@ package com.kaleyra.video_common_ui.mapper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -112,10 +113,9 @@ object StreamMapper {
     fun Call.amIWaitingOthers(): Flow<Boolean> =
         combine(
             state,
-            amIAlone(),
-            toInCallParticipants()
-        ) { callState, amIAlone, inCallParticipants ->
-            callState is Call.State.Connected && amIAlone && inCallParticipants.size == 1
+            amIAlone()
+        ) { callState, amIAlone ->
+            callState is Call.State.Connected && amIAlone
         }.distinctUntilChanged()
 
     internal fun Flow<List<Stream>>.mapStreamsToVideos(): Flow<List<Input.Video?>> {

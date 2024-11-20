@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -20,17 +22,19 @@ import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
 
-internal val VSheetDragHorizontalPadding = 20.dp
 internal val VSheetDragVerticalPadding = SheetItemsSpacing
+internal val VSheetDragHorizontalPadding = VSheetDragVerticalPadding
 
 private const val MaxVSheetDragItems = 5
 
@@ -38,11 +42,13 @@ private const val MaxVSheetDragItems = 5
 @Composable
 internal fun VSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
-    onModalSheetComponentRequest: (ModalSheetComponent) -> Unit,
-    modifier: Modifier = Modifier,
+    onModularComponentRequest: (ModularComponent) -> Unit,
     inputPermissions: InputPermissions = InputPermissions(),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    onAskInputPermissions: (Boolean) -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    modifier: Modifier = Modifier
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,6 +62,9 @@ internal fun VSheetDragContent(
             max(1, sheetActionsCount - callActions.count() + 1)
         }
     }
+
+    var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
+    screenShareMode = uiState.actionList.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
     VSheetDragContent(
         modifier = modifier,
@@ -75,17 +84,44 @@ internal fun VSheetDragContent(
             else cameraPermission.launchPermissionRequest()
         } },
         onScreenShareToggle = remember(viewModel) {
-            { if (!viewModel.tryStopScreenShare()) onModalSheetComponentRequest(ModalSheetComponent.ScreenShare) }
+            {
+                if (!viewModel.tryStopScreenShare()) {
+
+                    when (screenShareMode) {
+                        null -> Unit
+                        is ScreenShareAction.UserChoice -> onModularComponentRequest(ModularComponent.ScreenShare)
+                        is ScreenShareAction.App -> screenShareViewModel.shareApplicationScreen(activity, {}, {})
+                        is ScreenShareAction.WholeDevice -> {
+                            onAskInputPermissions(true)
+                            activity.unlockDevice(
+                                onUnlocked = {
+                                    screenShareViewModel?.shareDeviceScreen(
+                                        activity,
+                                        onScreenSharingStarted = {
+                                            onAskInputPermissions(false)
+                                        },
+                                        onScreenSharingAborted = {
+                                            onAskInputPermissions(false)
+                                        }
+                                    )
+                                },
+                                onDismiss = {
+                                    onAskInputPermissions(false)
+                                })
+                        }
+                    }
+                }
+            }
         },
         onFlipCameraClick = viewModel::switchCamera,
-        onAudioClick = { onModalSheetComponentRequest(ModalSheetComponent.Audio) },
+        onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
         onFileShareClick = {
-            onModalSheetComponentRequest(ModalSheetComponent.FileShare)
+            onModularComponentRequest(ModularComponent.FileShare)
             viewModel.clearFileShareBadge()
         },
-        onWhiteboardClick = { onModalSheetComponentRequest(ModalSheetComponent.Whiteboard) },
-        onVirtualBackgroundToggle = { onModalSheetComponentRequest(ModalSheetComponent.VirtualBackground) }
+        onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) }
     )
 }
 

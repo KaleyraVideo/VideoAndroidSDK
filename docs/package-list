@@ -24,6 +24,8 @@ com.kaleyra.video_common_ui.termsandconditions.extensions
 com.kaleyra.video_common_ui.termsandconditions.model
 com.kaleyra.video_common_ui.textview
 com.kaleyra.video_common_ui.theme
+com.kaleyra.video_common_ui.theme.resource
+com.kaleyra.video_common_ui.theme.utils
 com.kaleyra.video_common_ui.utils
 com.kaleyra.video_common_ui.utils.extensions
 com.kaleyra.video_common_ui.widget
@@ -40,6 +42,9 @@ com.kaleyra.video_sdk.call.audiooutput.model
 com.kaleyra.video_sdk.call.bottomsheet
 com.kaleyra.video_sdk.call.bottomsheet.model
 com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model
+com.kaleyra.video_sdk.call.brandlogo.model
+com.kaleyra.video_sdk.call.brandlogo.view
+com.kaleyra.video_sdk.call.brandlogo.viewmodel
 com.kaleyra.video_sdk.call.callactions.view
 com.kaleyra.video_sdk.call.callinfo.model
 com.kaleyra.video_sdk.call.callinfo.view

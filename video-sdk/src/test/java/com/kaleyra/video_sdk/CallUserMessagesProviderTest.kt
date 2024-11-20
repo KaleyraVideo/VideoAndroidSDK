@@ -30,13 +30,13 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
@@ -44,14 +44,13 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class CallUserMessagesProviderTest {
-
-    @get:Rule
-    val mainDispatcherRule = com.kaleyra.video_sdk.MainDispatcherRule()
 
     private val callMock = mockk<CallUI>(relaxed = true)
 
@@ -75,7 +74,7 @@ class CallUserMessagesProviderTest {
 
     @Test
     fun testDoubleStart() = runTest {
-        val scope = MainScope()
+        val scope = TestScope()
         CallUserMessagesProvider.start(callMock, scope)
         CallUserMessagesProvider.start(callMock, backgroundScope)
         assertEquals(false, scope.isActive)

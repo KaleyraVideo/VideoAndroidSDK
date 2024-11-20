@@ -25,4 +25,4 @@ import androidx.compose.runtime.Immutable
  * @constructor
  */
 @Immutable
-data class ImmutableView(val value: View)
+data class ImmutableView<T: View>(val value: T)

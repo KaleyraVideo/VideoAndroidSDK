@@ -108,7 +108,6 @@ internal fun FeedbackForm(
         Text(
             text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -162,7 +161,6 @@ internal fun FeedbackForm(
                     Text(
                         text = stringResource(id = R.string.kaleyra_action_cancel),
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.labelLarge
                     )
                 },
@@ -174,8 +172,7 @@ internal fun FeedbackForm(
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_feedback_vote),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }

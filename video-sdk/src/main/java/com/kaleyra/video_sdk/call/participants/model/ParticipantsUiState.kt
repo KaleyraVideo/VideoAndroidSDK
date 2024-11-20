@@ -9,4 +9,5 @@ internal data class ParticipantsUiState(
     val invitedParticipants: ImmutableList<String> = ImmutableList(),
     val adminsStreamsIds: ImmutableList<String> = ImmutableList(),
     val isLocalParticipantAdmin: Boolean = false,
+    val participantCount: Int = 0
 ): UiState

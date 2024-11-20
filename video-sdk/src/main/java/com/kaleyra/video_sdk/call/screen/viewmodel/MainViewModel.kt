@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.ad
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermission
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.getWhiteboardRequestEvents
@@ -47,6 +48,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -68,9 +70,9 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
     private val _whiteboardRequest: Channel<WhiteboardRequest> = Channel(Channel.CONFLATED)
     val whiteboardRequest: Flow<WhiteboardRequest> = _whiteboardRequest.receiveAsFlow()
 
-    val theme = company
+    val theme: StateFlow<Theme> = company
         .flatMapLatest { it.combinedTheme }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Theme())
 
     val shouldAskConnectionServicePermissions: Boolean
         get() = ConnectionServiceUtils.isConnectionServiceSupported && conference.getValue()?.connectionServiceOption != ConnectionServiceOption.Disabled
@@ -195,6 +197,11 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
         } else {
             conference.getValue()?.call?.getValue()?.end()
         }
+    }
+
+    suspend fun getChatId(): String? {
+        val call = call.getValue()
+        return call?.chatId?.first()
     }
 
     fun setOnCallEnded(block: suspend (hasFeedback: Boolean, hasErrorOccurred: Boolean, hasBeenKicked: Boolean) -> Unit) {

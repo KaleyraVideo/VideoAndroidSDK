@@ -6,10 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.bandyer.android_audiosession.session.AudioCallSession
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.onCallReady
+import com.kaleyra.video_common_ui.proximity.AudioCallSessionAudioProximityDelegate
 import com.kaleyra.video_common_ui.proximity.CallProximityDelegate
+import com.kaleyra.video_common_ui.proximity.ConnectionAudioProximityDelegate
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.requestConfiguration
 import com.kaleyra.video_common_ui.texttospeech.AwaitingParticipantsTextToSpeechNotifier
@@ -31,13 +34,16 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
 
     companion object {
 
-        fun start() = with(ContextRetainer.context) {
+        internal var connection: KaleyraCallConnection? = null
+
+        fun start(connection: KaleyraCallConnection? = null) = with(ContextRetainer.context) {
             val intent = Intent(this, ProximityService::class.java)
             startService(intent)
-            Unit
+            this@Companion.connection = connection
         }
 
         fun stop() = with(ContextRetainer.context) {
+            connection = null
             stopService(Intent(this, ProximityService::class.java))
         }
     }
@@ -118,6 +124,8 @@ internal class ProximityService : LifecycleService(), ActivityLifecycleCallbacks
             lifecycleContext = this,
             call = call,
             disableProximity = { proximityCallActivity?.disableProximity ?: false },
+            audioProximityDelegate = connection?.let { ConnectionAudioProximityDelegate(it) }
+                ?: AudioCallSessionAudioProximityDelegate(AudioCallSession.getInstance())
         ).apply { bind() }
     }
 

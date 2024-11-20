@@ -41,7 +41,7 @@ internal fun UsbDisconnectedSnackbarM3(
     onDismissClick: () -> Unit,
 ) {
     val resources = LocalContext.current.resources
-    UserMessageInfoSnackbarM3(message = resources.getString(R.string.kaleyra_external_camera_disconnected), onDismissClick)
+    UserMessageInfoSnackbarM3(message = resources.getString(R.string.kaleyra_external_camera_disconnected), onDismissClick = onDismissClick)
 }
 
 @Composable
@@ -49,7 +49,7 @@ internal fun UsbNotSupportedSnackbarM3(
     onDismissClick: ()-> Unit
 ) {
     val resources = LocalContext.current.resources
-    UserMessageInfoSnackbarM3(message = resources.getString(R.string.kaleyra_external_camera_unsupported), onDismissClick)
+    UserMessageInfoSnackbarM3(message = resources.getString(R.string.kaleyra_external_camera_unsupported), onDismissClick =  onDismissClick)
 }
 
 @Preview(name = "Light Mode")

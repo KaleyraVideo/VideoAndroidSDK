@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+
 package com.kaleyra.video_sdk.call.callscreenscaffold
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -22,6 +27,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -29,6 +35,7 @@ import androidx.compose.ui.unit.width
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.performVerticalSwipe
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -270,16 +277,34 @@ class VCallScreenScaffoldTest {
         assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
+    @Test
+    fun testBrandLogoComposableCalled() {
+        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
+        var hasCalledBrandLogo = false
+        composeTestRule.setCallScreenScaffold(
+            sheetState = sheetState,
+            brandLogo = {
+                hasCalledBrandLogo = true
+            }
+        )
+
+        composeTestRule.waitForIdle()
+
+        assertEquals(true, hasCalledBrandLogo)
+    }
+
     private fun ComposeContentTestRule.setCallScreenScaffold(
         sheetState: CallSheetState = CallSheetState(),
         topAppBar: @Composable () -> Unit = {},
         panelContent: @Composable (ColumnScope.() -> Unit)? = null,
         paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
-        content: @Composable (PaddingValues) -> Unit = {}
+        content: @Composable (PaddingValues) -> Unit = {},
+        brandLogo: @Composable (BoxScope) -> Unit = {},
     ) {
         setContent {
             VCallScreenScaffold(
                 sheetState = sheetState,
+                windowSizeClass = mockk(),
                 topAppBar = topAppBar,
                 sheetPanelContent = panelContent,
                 sheetContent = {
@@ -306,7 +331,8 @@ class VCallScreenScaffoldTest {
                     )
                 },
                 paddingValues = paddingValues,
-                content = content
+                content = content,
+                brandLogo = brandLogo,
             )
         }
     }

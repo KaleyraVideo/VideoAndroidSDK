@@ -24,11 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class BluetoothDeviceStateExtTest {
-
-    @get:Rule
-    var mainDispatcherRule = com.kaleyra.video_sdk.MainDispatcherRule()
 
     @Test
     fun availableBluetoothState_isConnecting_false() {

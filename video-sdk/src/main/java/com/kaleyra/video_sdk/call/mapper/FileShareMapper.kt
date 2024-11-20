@@ -61,6 +61,17 @@ internal object FileShareMapper {
             }.distinctUntilChanged()
     }
 
+    fun Call.toOtherFilesCreationTimes(): Flow<List<Long>> {
+        return combine(
+            toMe(),
+            sharedFolder.files
+        ) { me, files ->
+            files
+                .filter { it.sender.userId != me.userId }
+                .map { it.creationTime }
+        }
+    }
+
     private fun SharedFileUi.isCancelledUpload(): Boolean =
         isMine && state == SharedFileUi.State.Cancelled
 

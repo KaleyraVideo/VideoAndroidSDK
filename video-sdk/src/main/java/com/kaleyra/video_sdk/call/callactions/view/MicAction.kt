@@ -16,9 +16,10 @@ internal fun MicAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    label: Boolean = false,
     enabled: Boolean = true,
     warning: Boolean = false,
-    error: Boolean = false
+    error: Boolean = false,
 ) {
     CallToggleAction(
         modifier = modifier,
@@ -26,8 +27,18 @@ internal fun MicAction(
         contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_enable_microphone else R.string.kaleyra_call_sheet_description_disable_microphone),
         checked = checked,
         onCheckedChange = onCheckedChange,
+        label = if (label) stringResource(R.string.kaleyra_call_sheet_microphone) else null,
         enabled = enabled,
-        badgeText = if (warning || error) "!" else null,
+        badgePainter = when {
+            warning -> painterResource(R.drawable.ic_kaleyra_call_sheet_warning)
+            error -> painterResource(R.drawable.ic_kaleyra_call_sheet_error)
+            else -> null
+        },
+        badgeDescription =  when {
+            warning -> stringResource(R.string.kaleyra_call_sheet_description_mic_warning)
+            error -> stringResource(R.string.kaleyra_call_sheet_description_mic_error)
+            else -> null
+        },
         badgeBackgroundColor = if (warning) KaleyraTheme.colors.warning else MaterialTheme.colorScheme.error,
         badgeContentColor = if (warning) KaleyraTheme.colors.onWarning else MaterialTheme.colorScheme.onError
     )

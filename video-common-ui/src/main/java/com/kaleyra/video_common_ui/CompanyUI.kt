@@ -20,14 +20,40 @@ import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.compose.ui.text.font.FontFamily
 import com.kaleyra.video.Company
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 
 /**
  * UI representation of a Company
  * @constructor
  */
-class CompanyUI(company: Company) : Company by company {
+@Deprecated("This class is deprecated. It will be removed in a future release")
+class CompanyUI(company: Company, coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) :
+    Company by company {
+
+    override val theme: SharedFlow<Theme> = company.theme.map {
+        Theme(
+            day = Theme.Style(
+                logo = it.day.logo,
+                colors = it.day.colors.takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }
+                    ?.let { colors ->
+                        Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+                    }
+            ),
+            night = Theme.Style(
+                logo = it.night.logo,
+                colors = it.night.colors.takeIf { colors -> colors is Company.Theme.Style.Colors.Seed }
+                    ?.let { colors ->
+                        Theme.Colors.Seed((colors as Company.Theme.Style.Colors.Seed).color)
+                    }
+            ),
+        )
+    }.shareIn(coroutineScope, SharingStarted.Eagerly, 1)
 
     /**
      * Company associated theme
@@ -37,31 +63,39 @@ class CompanyUI(company: Company) : Company by company {
      * @property night Style Night mode style
      * @constructor
      */
+    @Deprecated(
+        message = "This class is deprecated. It will be removed in a future release. Use com.kaleyra.video_common_ui.theme.Theme instead.",
+        replaceWith = ReplaceWith("com.kaleyra.video_common_ui.theme.Theme")
+    )
     data class Theme(
         val fontFamily: FontFamily = KaleyraFontFamily.default,
         val defaultStyle: DefaultStyle = DefaultStyle.System,
         override val day: Style = Style(),
-        override val night: Style = Style()
-    ) : Company.Theme {
+        override val night: Style = Style(),
+    ) : Company.Theme, KaleyraVideo.Theme {
 
         /**
          * Default Style representation
          */
+        @Deprecated("This class is deprecated. It will be removed in a future release")
         sealed class DefaultStyle {
 
             /**
              * Day style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object Day : DefaultStyle()
 
             /**
              * Night style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object Night : DefaultStyle()
 
             /**
              * Style based on operating system selected style
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data object System : DefaultStyle()
         }
 
@@ -71,12 +105,15 @@ class CompanyUI(company: Company) : Company by company {
          * @property colors Colors? optional colors of the company
          * @constructor
          */
-        data class Style(override val logo: Uri? = null, val colors: Colors? = null) : Company.Theme.Style
+        @Deprecated("This class is deprecated. It will be removed in a future release")
+        data class Style(override val logo: Uri? = null, override val colors: Colors? = null) :
+            Company.Theme.Style
 
         /**
          * Colors representations
          */
-        sealed class Colors {
+        @Deprecated("This class is deprecated. It will be removed in a future release")
+        sealed class Colors : Company.Theme.Style.Colors {
 
             /**
              * Theme colors representation from seed color
@@ -84,6 +121,7 @@ class CompanyUI(company: Company) : Company by company {
              *
              * @constructor
              */
+            @Deprecated("This class is deprecated. It will be removed in a future release")
             data class Seed(@ColorInt val color: Int) : Colors()
         }
     }
@@ -92,5 +130,5 @@ class CompanyUI(company: Company) : Company by company {
 internal class NoOpCompany(
     override val name: SharedFlow<String> = MutableSharedFlow(),
     override val id: SharedFlow<String> = MutableSharedFlow(),
-    override val theme: SharedFlow<Company.Theme> = MutableSharedFlow()
+    override val theme: SharedFlow<Company.Theme> = MutableSharedFlow(),
 ) : Company

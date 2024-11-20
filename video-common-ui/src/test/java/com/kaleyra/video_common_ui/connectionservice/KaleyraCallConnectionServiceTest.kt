@@ -16,6 +16,7 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.R
@@ -29,6 +30,7 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResu
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.disableAudioRouting
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableAudioRouting
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.BaseLogger
 import com.kaleyra.video_utils.logging.PriorityLogger
 import io.mockk.every
@@ -48,6 +50,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
@@ -106,7 +109,10 @@ class KaleyraCallConnectionServiceTest {
         mockkObject(ContactDetailsManager)
         mockkObject(KaleyraCallConnection)
         mockkObject(KaleyraVideo)
+        mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns mockk(relaxed = true)
         every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any()) } returns Unit
+        every { anyConstructed<CallForegroundServiceWorker>().bind(any(), any(), any()) } returns Unit
         every { anyConstructed<CallForegroundServiceWorker>().dispose() } returns Unit
         every { ContactsController.createOrUpdateConnectionServiceContact(any(), any(), any()) } returns Unit
         every { ContactsController.deleteConnectionServiceContact(any(), any()) } returns Unit
@@ -238,6 +244,15 @@ class KaleyraCallConnectionServiceTest {
     }
 
     @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun testConnectionServiceAlwaysDisabledOnSmartGlass() {
+        val conferenceUI = ConferenceUI(mockk(relaxed = true), Class.forName("androidx.appcompat.app.AppCompatActivity"), isSmartGlass = true)
+        Assert.assertEquals(ConnectionServiceOption.Disabled, conferenceUI.connectionServiceOption)
+        conferenceUI.connectionServiceOption = ConnectionServiceOption.Enforced
+        Assert.assertEquals(ConnectionServiceOption.Disabled, conferenceUI.connectionServiceOption)
+    }
+
+    @Test
     fun testOnClearNotification() {
         service!!.startForeground(10, notificationBuilder!!.build())
         service!!.onClearNotification(10)
@@ -288,7 +303,8 @@ class KaleyraCallConnectionServiceTest {
             verify(exactly = 1) {
                 anyConstructed<CallForegroundServiceWorker>().bind(
                     service!!,
-                    callMock
+                    callMock,
+                    connectionMock
                 )
             }
             verify(exactly = 1) {
@@ -316,7 +332,8 @@ class KaleyraCallConnectionServiceTest {
             verify(exactly = 1) {
                 anyConstructed<CallForegroundServiceWorker>().bind(
                     service!!,
-                    callMock
+                    callMock,
+                    connectionMock
                 )
             }
             verify(exactly = 1) {

@@ -65,7 +65,7 @@ internal fun UserMessageSnackbar(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(text = title, fontWeight = FontWeight.SemiBold)
+                    Text(text = title, fontWeight = FontWeight.Medium)
                     if (subtitle != null) Text(text = subtitle)
                 }
             }

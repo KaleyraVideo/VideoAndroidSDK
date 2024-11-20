@@ -35,13 +35,15 @@
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_hang_up">Colgar</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostrar más acciones</string>
-    <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
-    <string name="kaleyra_call_sheet_description_disable_microphone">Disable microphone</string>
+    <string name="kaleyra_call_sheet_description_enable_microphone">Activar micrófono</string>
+    <string name="kaleyra_call_sheet_description_disable_microphone">Desactivar micrófono</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Habilitar cámara</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Desactivar cámara</string>
     <string name="kaleyra_call_sheet_description_stop_screen_share">Dejar de compartir pantalla</string>
     <string name="kaleyra_call_sheet_description_hide_actions">Ocultar acciones</string>
 
+    <string name="kaleyra_call_sheet_description_mic_warning">Advertencia del micrófono</string>
+    <string name="kaleyra_call_sheet_description_mic_error">Error del micrófono</string>
     <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
     <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
@@ -125,6 +127,7 @@
     <string name="kaleyra_call_info_recording">Esta llamada será grabada</string>
     <string name="kaleyra_call_left_alone">Quedaste solo/a</string>
     <string name="kaleyra_call_offline">Estás fuera de línea</string>
+    <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botones</string>
     <string name="kaleyra_call_status_answered_on_other_device">Has respondido en otro dispositivo.</string>
     <string name="kaleyra_call_status_connecting">Conectando…</string>
@@ -291,5 +294,8 @@
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
     <string name="kaleyra_call_failed">Llamada fallida</string>
     <string name="kaleyra_chat_participants_is_online">está en línea</string>
+    <string name="kaleyra_app_icon">Icono de la aplicación</string>
+    <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
+    <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>
 
 </resources>

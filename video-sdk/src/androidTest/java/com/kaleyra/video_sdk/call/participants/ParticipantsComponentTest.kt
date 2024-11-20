@@ -51,6 +51,8 @@ class ParticipantsComponentTest {
 
     private var enableGridLayout by mutableStateOf(true)
 
+    private var participantsCount by mutableStateOf(0)
+
     private var layoutClicked: StreamsLayout? = null
 
     private var clickedStreamId: String? = null
@@ -77,6 +79,7 @@ class ParticipantsComponentTest {
                 amIAdmin = amIAdmin,
                 enableGridLayout = enableGridLayout,
                 isPinLimitReached = isPinLimitReached,
+                participantsCount = participantsCount,
                 onLayoutClick = { layoutClicked = it },
                 onMuteStreamClick = { streamId, value ->
                     clickedStreamId = streamId
@@ -111,12 +114,13 @@ class ParticipantsComponentTest {
         isStreamPinned = null
         isCloseClicked = false
         isKickParticipantClicked = false
+        participantsCount = 0
     }
 
     @Test
     fun testParticipantCountIsDisplayed() {
-        streams = ImmutableList(listOf(streamUiMock.copy(id = "id1"), streamUiMock.copy(id = "id2")))
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, streams.count(), streams.count())
+        participantsCount = 4
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, 4, 4)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

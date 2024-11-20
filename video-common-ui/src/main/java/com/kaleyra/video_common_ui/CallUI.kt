@@ -206,8 +206,36 @@ class CallUI(
         /**
          * Screen share request action
          */
-        @Parcelize
-        data object ScreenShare : Action()
+        sealed class ScreenShare : Action() {
+
+            /**
+             * User will be prompted to select in-app screensharing or whole device screensharing
+             */
+            @Parcelize
+            @Deprecated(
+                message = "Screenshare Action is deprecated and it will be removed in a further release.\n" +
+                    "Please update using ScreenShare.UserChoice or ScreenShare.App or ScreenShare.WholeDevice.",
+                replaceWith = ReplaceWith("UserChoice"))
+            companion object : ScreenShare()
+
+            /**
+             * Screensharing will capture only app screens
+             */
+            @Parcelize
+            data object UserChoice: ScreenShare()
+
+            /**
+             * Screensharing will capture only app screens
+             */
+            @Parcelize
+            data object App: ScreenShare()
+
+            /**
+             * Screensharing will capture all device's screens
+             */
+            @Parcelize
+            data object WholeDevice: ScreenShare()
+        }
 
         /**
          * Camera Effects action

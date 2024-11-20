@@ -76,7 +76,6 @@ internal fun ResetScrollFab(
                 if (counter > 0) {
                     Text(
                         text = "$counter",
-                        fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.labelLarge,
                     )
                 }

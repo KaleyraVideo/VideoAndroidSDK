@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.viewmodel.chat
 
 import android.net.Uri
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video.State
 import com.kaleyra.video.User
 import com.kaleyra.video.conference.Call
@@ -85,10 +86,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class PhoneChatViewModelTest {
 
     @get:Rule
@@ -384,10 +384,20 @@ class PhoneChatViewModelTest {
         verify { callMock.show() }
     }
 
+    @Test
+    fun testGetLoggedUserId() = runTest {
+        val user = mockk<User> {
+            every { userId } returns "customUserId"
+        }
+        connectedUserFlow.value = user
+        advanceUntilIdle()
+        val userId = viewModel.getLoggedUserId()
+        assertEquals(user.userId, userId)
+    }
+
     private suspend fun areChatParticipantDetailsEquals(expected: ChatParticipantDetails,  actual: ChatParticipantDetails) {
         assertEquals(expected.username, actual.username)
         assertEquals(expected.image, actual.image)
         assertEquals(expected.state.firstOrNull(), actual.state.firstOrNull())
     }
-
 }

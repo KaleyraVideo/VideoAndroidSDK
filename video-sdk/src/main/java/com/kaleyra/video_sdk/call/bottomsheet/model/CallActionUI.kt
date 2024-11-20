@@ -114,9 +114,28 @@ data class CameraAction(
     override val isToggled: Boolean = false
 ) : InputCallAction
 
+
 @Immutable
-data class ScreenShareAction(
-    override val id: String = SCREEN_SHARE_ACTION_ID,
-    override val isEnabled: Boolean = true,
-    override val isToggled: Boolean = false
-) : ToggleableCallAction
+sealed class ScreenShareAction : ToggleableCallAction {
+
+    @Immutable
+    data class UserChoice(
+        override val id: String = SCREEN_SHARE_ACTION_ID,
+        override val isEnabled: Boolean = true,
+        override val isToggled: Boolean = false
+    ) : ScreenShareAction()
+
+    @Immutable
+    data class App(
+        override val id: String = SCREEN_SHARE_ACTION_ID,
+        override val isEnabled: Boolean = true,
+        override val isToggled: Boolean = false
+    ) : ScreenShareAction()
+
+    @Immutable
+    data class WholeDevice(
+        override val id: String = SCREEN_SHARE_ACTION_ID,
+        override val isEnabled: Boolean = true,
+        override val isToggled: Boolean = false
+    ) : ScreenShareAction()
+}

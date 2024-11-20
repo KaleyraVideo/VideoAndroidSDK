@@ -25,6 +25,7 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResu
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.shouldEnableCallSounds
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
@@ -116,7 +117,8 @@ class ConferenceUIExtensionsTest {
         coEvery { CallNotificationProducer.buildOutgoingCallNotification(any(), any(), any(), any()) } returns outgoingNotificationMock
         every { NotificationManager.notify(any(), any()) } returns Unit
         every { NotificationManager.cancel(any()) } returns Unit
-        coEvery { ContactDetailsManager.refreshContactDetails(any()) } returns Unit
+        coEvery { ContactDetailsManager.refreshContactDetails(*anyVararg()) } returns Unit
+        every { contextMock.shouldEnableCallSounds() } returns true
     }
 
     @After
@@ -125,9 +127,17 @@ class ConferenceUIExtensionsTest {
     }
 
     @Test
-    fun testConfigureCallSounds() = runTest(UnconfinedTestDispatcher()) {
+    fun shouldEnableCallSoundTrue_callSoundsAreEnabled() = runTest(UnconfinedTestDispatcher()) {
+        every { contextMock.shouldEnableCallSounds() } returns true
         conferenceMock.configureCallSounds(logger, backgroundScope)
         verify(exactly = 1) { callMock.enableCallSounds(logger, any()) }
+    }
+
+    @Test
+    fun shouldEnableCallSoundFalse_callSoundsAreNotEnabled() = runTest(UnconfinedTestDispatcher()) {
+        every { contextMock.shouldEnableCallSounds() } returns false
+        conferenceMock.configureCallSounds(logger, backgroundScope)
+        verify(exactly = 0) { callMock.enableCallSounds(logger, any()) }
     }
 
     @Test

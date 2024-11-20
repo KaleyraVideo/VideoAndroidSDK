@@ -19,4 +19,5 @@
     <color name="stateConnecting">#FFAB40</color>
     <color name="stateDisconnecting">#92979D</color>
     <color name="stateDisconnected">#92979D</color>
+    <color name="ongoingCallLabel">#1A7924</color>
 </resources>

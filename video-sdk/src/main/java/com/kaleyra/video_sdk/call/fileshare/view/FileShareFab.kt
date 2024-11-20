@@ -46,6 +46,7 @@ internal fun FileShareFab(
 ) {
     FloatingActionButton(
         modifier = modifier.sizeIn(minWidth = FabSize, minHeight = FabSize),
+        containerColor = MaterialTheme.colorScheme.primary,
         onClick = onClick
     ) {
         val padding = if (collapsed) 0.dp else FabPadding
@@ -63,7 +64,6 @@ internal fun FileShareFab(
                 Spacer(Modifier.width(FabIconPadding))
                 Text(
                     text = stringResource(id = R.string.kaleyra_fileshare_add),
-                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelLarge
                 )
             }

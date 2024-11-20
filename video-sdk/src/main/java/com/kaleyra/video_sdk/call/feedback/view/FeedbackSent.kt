@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,15 +60,14 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
 
         Text(
             text = stringResource(id = R.string.kaleyra_feedback_thank_you),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.bodyLarge
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(id = R.string.kaleyra_feedback_see_you_soon),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = 4.dp)
         )
 
@@ -81,8 +82,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
         ) {
             Text(
                 text = stringResource(id = R.string.kaleyra_feedback_close),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+                style = MaterialTheme.typography.labelLarge
             )
         }
     }

@@ -38,10 +38,11 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
-import com.kaleyra.video_sdk.call.screen.view.ModalSheetComponent
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -75,7 +76,7 @@ class HSheetContentTest {
     @Test
     fun actionsOverflow_onActionsPlacedHaveOverflown() {
         callActionsUiState.value = CallActionsUiState(
-            actionList = listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction(), FlipCameraAction(), WhiteboardAction()).toImmutableList()
+            actionList = listOf(HangUpAction(), MicAction(), CameraAction(), ScreenShareAction.UserChoice(), FlipCameraAction(), WhiteboardAction()).toImmutableList()
         )
         var overflowedActions: ImmutableList<CallActionUI>? = null
         composeTestRule.setContent {
@@ -85,12 +86,13 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = { overflowedActions = it },
-                onModalSheetComponentRequest = {},
-                modifier = Modifier.width(300.dp)
+                onModularComponentRequest = {},
+                modifier = Modifier.width(300.dp),
+                onAskInputPermissions = {}
             )
         }
 
-        val expected = ImmutableList(listOf(ScreenShareAction(), FlipCameraAction(), WhiteboardAction()))
+        val expected = ImmutableList(listOf(ScreenShareAction.UserChoice(), FlipCameraAction(), WhiteboardAction()))
         assertEquals(expected, overflowedActions)
     }
 
@@ -104,7 +106,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -127,7 +130,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -154,7 +158,8 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -181,7 +186,8 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(micPermission = micPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -208,7 +214,8 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -235,7 +242,8 @@ class HSheetContentTest {
                 inputPermissions = InputPermissions(cameraPermission = cameraPermission),
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -259,7 +267,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -275,6 +284,31 @@ class HSheetContentTest {
     }
 
     @Test
+    fun userClicksChatOnLargeScreen_onModularComponentRequestChat() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ChatAction()).toImmutableList())
+        var component: ModularComponent? = null
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = true,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        TestCase.assertEquals(ModularComponent.Chat, component)
+    }
+
+    @Test
     fun userClicksFlipCamera_switchCameraInvoked() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(FlipCameraAction()).toImmutableList())
         composeTestRule.setContent {
@@ -284,7 +318,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -298,9 +333,9 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksAudio_onModalSheetComponentRequestAudio() {
+    fun userClicksAudio_onModularComponentRequestAudio() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(AudioAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -308,7 +343,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -318,13 +354,13 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Audio, component)
+        TestCase.assertEquals(ModularComponent.Audio, component)
     }
 
     @Test
-    fun userClicksFileShare_onModalSheetComponentRequestFileShare() {
+    fun userClicksFileShare_onModularComponentRequestFileShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(FileShareAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -332,7 +368,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -342,14 +379,14 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.FileShare, component)
+        TestCase.assertEquals(ModularComponent.FileShare, component)
         verify(exactly = 1) { callActionsViewModel.clearFileShareBadge()  }
     }
 
     @Test
-    fun userClicksWhiteboard_onModalSheetComponentRequestWhiteboard() {
+    fun userClicksWhiteboard_onModularComponentRequestWhiteboard() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(WhiteboardAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -357,7 +394,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -367,13 +405,13 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.Whiteboard, component)
+        TestCase.assertEquals(ModularComponent.Whiteboard, component)
     }
 
     @Test
-    fun userClicksVirtualBackground_onModalSheetComponentRequestVirtualBackground() {
+    fun userClicksVirtualBackground_onModularComponentRequestVirtualBackground() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(VirtualBackgroundAction()).toImmutableList())
-        var component: ModalSheetComponent? = null
+        var component: ModularComponent? = null
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -381,7 +419,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
             )
         }
 
@@ -391,12 +430,12 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.VirtualBackground, component)
+        TestCase.assertEquals(ModularComponent.VirtualBackground, component)
     }
 
     @Test
-    fun userClicksScreenShareWhenEnabled_tryStopScreenShareInvoked() {
-        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction()).toImmutableList())
+    fun userClicksScreenSharUserChoiceWhenEnabled_tryStopScreenShareInvoked() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns true
         composeTestRule.setContent {
             HSheetContent(
@@ -405,7 +444,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -419,10 +459,9 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWhenNotEnabled_onModalSheetComponentRequestScreenShare() {
-        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction()).toImmutableList())
-        every { callActionsViewModel.tryStopScreenShare() } returns false
-        var component: ModalSheetComponent? = null
+    fun userClicksScreenShareAppWhenEnabled_tryStopScreenShareInvoked() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.App()).toImmutableList())
+        every { callActionsViewModel.tryStopScreenShare() } returns true
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
@@ -430,7 +469,8 @@ class HSheetContentTest {
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
-                onModalSheetComponentRequest = { component = it },
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
             )
         }
 
@@ -440,7 +480,112 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        TestCase.assertEquals(ModalSheetComponent.ScreenShare, component)
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareWholeDeviceWhenEnabled_tryStopScreenShareInvoked() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.WholeDevice()).toImmutableList())
+        every { callActionsViewModel.tryStopScreenShare() } returns true
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = false,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = {},
+                onAskInputPermissions = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        verify(exactly = 1) { callActionsViewModel.tryStopScreenShare() }
+    }
+
+    @Test
+    fun userClicksScreenShareUserChoiceWhenNotEnabled_onModularComponentRequestScreenShare() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList())
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModularComponent? = null
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = false,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        TestCase.assertEquals(ModularComponent.ScreenShare, component)
+    }
+
+    @Test
+    fun userClicksScreenShareAppWhenNotEnabled_onModularComponentScreenShareNotRequested() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.App()).toImmutableList())
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModularComponent? = null
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = false,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = {}
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        TestCase.assertEquals(null, component)
+    }
+
+    @Test
+    fun userClicksScreenShareWholeDeviceWhenNotEnabled_onModularComponentScreenShareNotRequested() {
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.WholeDevice()).toImmutableList())
+        every { callActionsViewModel.tryStopScreenShare() } returns false
+        var component: ModularComponent? = null
+        var onAskingInputPermissions = false
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isLargeScreen = false,
+                isMoreToggled = false,
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { component = it },
+                onAskInputPermissions = { onAskingInputPermissions = true }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(true, onAskingInputPermissions)
+        TestCase.assertEquals(null, component)
     }
 
     @Test
@@ -735,7 +880,7 @@ class HSheetContentTest {
         val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.setContent {
             HSheetContent(
-                callActions = ImmutableList(listOf(ScreenShareAction())),
+                callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 showAnswerAction = true,
                 isLargeScreen = false,
                 isMoreToggled = false,
@@ -971,7 +1116,7 @@ class HSheetContentTest {
     }
 
     @Test
-    fun testonMoreToggle() {
+    fun testOnMoreToggle() {
         var isMoreClicked = false
         val moreDescription =
             composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)

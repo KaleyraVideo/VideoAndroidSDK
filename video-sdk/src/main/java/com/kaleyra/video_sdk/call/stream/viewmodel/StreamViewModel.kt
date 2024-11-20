@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,6 +42,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     override fun initialState() = StreamUiState()
 
     var maxPinnedStreams = DEFAULT_MAX_PINNED_STREAMS
+        set(value) {
+            if (value < 1) throw IllegalArgumentException("max pinned streams must be at least 1")
+            field = value
+        }
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
@@ -61,9 +65,9 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 }
                 .mapLatest { (_, streams, callState) ->
                     val updatedStreams = when {
-                        streams == uiState.value.streams.value -> uiState.value.streams
-                        else -> streams.toImmutableList()
-                    }
+                        streams == uiState.value.streams.value -> uiState.value.streams.value
+                        else -> streams
+                    }.sortedBy { it.isMine }.toImmutableList()
 
                     _uiState.update {
                         it.copy(
@@ -78,15 +82,16 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 .onCompletion { _uiState.update { StreamUiState() } }
                 .launchIn(this)
 
-            val isPreCallState = callState
-                .map { state -> state == CallStateUi.Ringing || state == CallStateUi.Dialing || state == CallStateUi.RingingRemotely }
+            val shouldShowStreamPreviewFlow = callState
+                .map { state -> state == CallStateUi.Ringing || state == CallStateUi.Dialing || state == CallStateUi.RingingRemotely || state == CallStateUi.Reconnecting }
                 .distinctUntilChanged()
             combine(
-                isPreCallState,
-                call.toMyCameraVideoUi()
-            ) { state, video -> state to video }
-                .onEach { (isPreCallState, video) ->
-                    if (!isPreCallState) return@onEach
+                shouldShowStreamPreviewFlow,
+                call.toMyCameraVideoUi(),
+                call.toMyCameraStreamAudioUi(),
+                call.preferredType
+            ) { shouldShowStreamPreview, video, audio, preferredType ->
+                if (shouldShowStreamPreview) {
                     val isGroupCall = call.isGroupCall(company.flatMapLatest { it.id }).first()
                     val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
                     val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
@@ -95,19 +100,19 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                             preview = StreamPreview(
                                 isGroupCall = isGroupCall,
                                 video = video,
+                                audio = audio,
                                 username = otherUsername,
-                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) }
+                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) },
+                                isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
                             )
                         )
                     }
-                }
-                .takeWhile { (isPreCallState, _) -> isPreCallState }
-                .onCompletion {
+                } else {
                     // wait for at least another participant's stream to be added before setting the preview to null
                     uiState.first { it.streams.value.size > 1 }
                     _uiState.update { it.copy(preview = null) }
                 }
-                .launchIn(this)
+            }.launchIn(this)
         }
     }
 
@@ -119,22 +124,38 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     }
 
     fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
-        val streams = uiState.value.streams.value
+        val uiState = uiState.value
+        val streams = uiState.streams.value
         val stream = streams.find { it.id == streamId } ?: return false
-        val isMaxStreamsReached = uiState.value.pinnedStreams.count() >= maxPinnedStreams
-        if (isMaxStreamsReached && !force) return false
 
-        val pinnedStreams = if (isMaxStreamsReached) {
-            val pinnedStreams = uiState.value.pinnedStreams.value.toMutableList()
-            if (prepend) pinnedStreams.removeFirstOrNull() else pinnedStreams.removeLastOrNull()
-            pinnedStreams
-        } else uiState.value.pinnedStreams.value
+        val pinnedStreams = uiState.pinnedStreams.value
+        if (pinnedStreams.any { it.id == streamId } || (pinnedStreams.count() >= maxPinnedStreams && !force)) {
+            return false
+        }
+
+        val localScreenShare = pinnedStreams.firstOrNull { it.isMine && it.video?.isScreenShare == true }
+        val otherPinnedStreams = pinnedStreams - localScreenShare
+        val maxStreamsLimit = maxPinnedStreams - if (localScreenShare != null) 1 else 0
+
+        var isStreamAdded = false
+        val newPinnedStreams = buildList {
+            add(localScreenShare)
+            if (maxStreamsLimit > 0) {
+                if (prepend) {
+                    add(stream)
+                    addAll(otherPinnedStreams.takeLast(maxStreamsLimit - 1))
+                } else {
+                    addAll(otherPinnedStreams.take(maxStreamsLimit - 1))
+                    add(stream)
+                }
+                isStreamAdded = true
+            }
+        }.filterNotNull()
 
         _uiState.update {
-            val newPinnedStreams = if (prepend) listOf(stream) + pinnedStreams else pinnedStreams + stream
             it.copy(pinnedStreams = newPinnedStreams.toImmutableList())
         }
-        return true
+        return isStreamAdded
     }
 
     fun unpin(streamId: String) {
@@ -151,6 +172,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         _uiState.update { it.copy(pinnedStreams = ImmutableList()) }
     }
 
+    fun zoom(streamId: String) =
+        uiState.value.streams.value.firstOrNull { it.id == streamId }
+            ?.video?.view?.value?.zoom()
+
+
     // TODO remove code duplication in CallActionsViewModel
     fun tryStopScreenShare(): Boolean {
         val input = availableInputs?.filter { it is Input.Video.Screen || it is Input.Video.Application }?.firstOrNull { it.enabled.value.isAtLeastLocallyEnabled() }
@@ -161,10 +187,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             val streams = me?.streams?.value
             val stream = streams?.firstOrNull { it.id == SCREEN_SHARE_STREAM_ID }
             if (stream != null) me.removeStream(stream)
-            val hasStopped = when(input) {
+            val hasStopped = when (input) {
                 is Input.Video.Screen -> true.also {
                     input.dispose()
                 }
+
                 is Input.Video.Application -> input.tryDisable()
                 else -> false
             }

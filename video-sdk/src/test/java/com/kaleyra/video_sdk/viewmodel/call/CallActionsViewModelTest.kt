@@ -27,8 +27,6 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conversation.Chat
-import com.kaleyra.video.sharedfolder.SharedFile
-import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ChatUI
@@ -65,6 +63,8 @@ import com.kaleyra.video_sdk.call.mapper.CallActionsMapper
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
@@ -105,8 +105,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class CallActionsViewModelTest {
 
     @get:Rule
@@ -130,6 +133,7 @@ class CallActionsViewModelTest {
         mockkObject(VirtualBackgroundMapper)
         mockkObject(ParticipantMapper)
         mockkObject(AudioOutputMapper)
+        mockkObject(FileShareMapper)
         mockkObject(CallStateMapper)
         mockkObject(VirtualBackgroundViewModel)
         mockkObject(FileShareVisibilityObserver)
@@ -150,6 +154,7 @@ class CallActionsViewModelTest {
         every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(false)
         every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
         every { callMock.whiteboard } returns whiteboardMock
+        every { callMock.toOtherFilesCreationTimes() } returns MutableStateFlow(listOf())
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { conversationMock.create(any<String>()) } returns Result.failure(Throwable())
@@ -844,7 +849,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(),
             MicAction(),
             CameraAction(),
-            ScreenShareAction()
+            ScreenShareAction.UserChoice()
         )
         every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
@@ -871,7 +876,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(isEnabled = false),
             MicAction(isEnabled = false),
             CameraAction(isEnabled = false),
-            ScreenShareAction(isEnabled = false)
+            ScreenShareAction.UserChoice(isEnabled = false)
         )
         assertEquals(expected, actual)
     }
@@ -889,7 +894,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(),
             MicAction(),
             CameraAction(),
-            ScreenShareAction()
+            ScreenShareAction.UserChoice()
         )
         every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
@@ -916,7 +921,7 @@ class CallActionsViewModelTest {
             VirtualBackgroundAction(isEnabled = false),
             MicAction(isEnabled = false),
             CameraAction(isEnabled = false),
-            ScreenShareAction(isEnabled = false)
+            ScreenShareAction.UserChoice(isEnabled = false)
         )
         assertEquals(expected, actual)
     }
@@ -938,7 +943,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsNotConnected_screenShareActionDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isEnabled = true)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = true)))
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
@@ -947,7 +952,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isEnabled = false))
+        val expected = listOf(ScreenShareAction.UserChoice(isEnabled = false))
         assertEquals(expected, actual)
     }
 
@@ -983,7 +988,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsConnected_screenShareActionEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isEnabled = false)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = false)))
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
@@ -992,7 +997,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isEnabled = true))
+        val expected = listOf(ScreenShareAction.UserChoice(isEnabled = true))
         assertEquals(expected, actual)
     }
 
@@ -1013,7 +1018,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun screenSharingEnabled_screenShareActionToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isToggled = false)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = false)))
         every { callMock.isSharingScreen() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1022,13 +1027,13 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isToggled = true))
+        val expected = listOf(ScreenShareAction.UserChoice(isToggled = true))
         assertEquals(expected, actual)
     }
 
     @Test
     fun screenSharingDisabled_screenShareActionNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction(isToggled = true)))
+        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = true)))
         every { callMock.isSharingScreen() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1037,7 +1042,7 @@ class CallActionsViewModelTest {
         advanceUntilIdle()
 
         val actual = viewModel.uiState.first().actionList.value
-        val expected = listOf(ScreenShareAction(isToggled = false))
+        val expected = listOf(ScreenShareAction.UserChoice(isToggled = false))
         assertEquals(expected, actual)
     }
 
@@ -1789,12 +1794,9 @@ class CallActionsViewModelTest {
 
     @Test
     fun noFileShared_fileShareActionNotificationCountIsZero() = runTest {
-        val sharedFolderMock = mockk<SharedFolder> {
-            every { files } returns MutableStateFlow(setOf())
-        }
         with(callMock) {
             every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
-            every { sharedFolder } returns sharedFolderMock
+            every { toOtherFilesCreationTimes() } returns MutableStateFlow(listOf())
         }
 
         viewModel = spyk(CallActionsViewModel{
@@ -1808,18 +1810,9 @@ class CallActionsViewModelTest {
 
     @Test
     fun nFilesShared_fileShareActionNotificationIsN() = runTest {
-        val file1 = mockk<SharedFile> {
-            every { creationTime } returns 100L
-        }
-        val file2 = mockk<SharedFile> {
-            every { creationTime } returns 200L
-        }
-        val sharedFolderMock = mockk<SharedFolder> {
-            every { files } returns MutableStateFlow(setOf(file1, file2))
-        }
         with(callMock) {
             every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
-            every { sharedFolder } returns sharedFolderMock
+            every { toOtherFilesCreationTimes() } returns MutableStateFlow(listOf(100L, 200L))
         }
 
         viewModel = spyk(CallActionsViewModel{
@@ -1833,22 +1826,10 @@ class CallActionsViewModelTest {
 
     @Test
     fun testFileShareActionNotificationCountWhenFileShareIsDisplayed() = runTest {
-        val file1 = mockk<SharedFile> {
-            every { creationTime } returns 100L
-        }
-        val file2 = mockk<SharedFile> {
-            every { creationTime } returns 200L
-        }
-        val file3 = mockk<SharedFile> {
-            every { creationTime } returns 300L
-        }
-        val filesFlow = MutableStateFlow(setOf(file1))
-        val sharedFolderMock = mockk<SharedFolder> {
-            every { files } returns filesFlow
-        }
+        val creationTimesFlow = MutableStateFlow(listOf(100L))
         with(callMock) {
             every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
-            every { sharedFolder } returns sharedFolderMock
+            every { toOtherFilesCreationTimes() } returns creationTimesFlow
         }
 
         viewModel = spyk(CallActionsViewModel{
@@ -1862,7 +1843,7 @@ class CallActionsViewModelTest {
         )
 
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
-        filesFlow.value = setOf(file1, file2)
+        creationTimesFlow.value = listOf(100L, 200L)
 
         assertEquals(
             FileShareAction(notificationCount = 1),
@@ -1871,7 +1852,7 @@ class CallActionsViewModelTest {
 
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
 
-        filesFlow.value = setOf(file1, file2, file3)
+        creationTimesFlow.value = listOf(100L, 200L, 300L)
 
         assertEquals(
             FileShareAction(notificationCount = 1),
@@ -1881,22 +1862,10 @@ class CallActionsViewModelTest {
 
     @Test
     fun testClearFileShareBadge() = runTest {
-        val file1 = mockk<SharedFile> {
-            every { creationTime } returns 100L
-        }
-        val file2 = mockk<SharedFile> {
-            every { creationTime } returns 200L
-        }
-        val file3 = mockk<SharedFile> {
-            every { creationTime } returns 300L
-        }
-        val sharedFolderFlow = MutableStateFlow(setOf(file1, file2))
-        val sharedFolderMock = mockk<SharedFolder> {
-            every { files } returns sharedFolderFlow
-        }
+        val creationTimesFlow = MutableStateFlow(listOf(100L, 200L))
         with(callMock) {
             every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
-            every { sharedFolder } returns sharedFolderMock
+            every { toOtherFilesCreationTimes() } returns creationTimesFlow
         }
 
         viewModel = spyk(CallActionsViewModel{
@@ -1914,7 +1883,7 @@ class CallActionsViewModelTest {
 
         assertEquals(FileShareAction(), viewModel.uiState.first().actionList.value[0])
 
-        sharedFolderFlow.value = setOf(file1, file2, file3)
+        creationTimesFlow.value = listOf(100L, 200L, 300L)
         runCurrent()
 
         assertEquals(FileShareAction(notificationCount = 1), viewModel.uiState.first().actionList.value[0])

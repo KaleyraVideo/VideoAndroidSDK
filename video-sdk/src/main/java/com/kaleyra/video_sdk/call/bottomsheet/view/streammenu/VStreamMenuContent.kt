@@ -22,6 +22,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout
 import com.kaleyra.video_sdk.call.callactions.view.CancelAction
 import com.kaleyra.video_sdk.call.callactions.view.FullscreenAction
 import com.kaleyra.video_sdk.call.callactions.view.PinAction
+import com.kaleyra.video_sdk.call.callactions.view.ZoomAction
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -44,10 +45,13 @@ internal fun VStreamMenuContent(
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
         if (isFullscreen) {
             viewModel.fullscreen(null)
+            showFullscreenMenu = false
             onDismiss()
-        } else viewModel.fullscreen(selectedStreamId)
-        showFullscreenMenu = true
-        onFullscreen()
+        } else {
+            viewModel.fullscreen(selectedStreamId)
+            showFullscreenMenu = true
+            onFullscreen()
+        }
     }
     val isPinLimitReached by remember(viewModel) {
         derivedStateOf {
@@ -61,6 +65,7 @@ internal fun VStreamMenuContent(
     
     VStreamMenuContent(
         isFullscreen = uiState.fullscreenStream?.id == selectedStreamId,
+        hasVideo = uiState.streams.value.firstOrNull { it.id == selectedStreamId }?.video?.isEnabled == true,
         isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         isPinLimitReached = isPinLimitReached,
         onCancelClick = onDismiss,
@@ -70,6 +75,7 @@ internal fun VStreamMenuContent(
             else viewModel.pin(selectedStreamId)
             onDismiss()
         },
+        onZoomClick = { viewModel.zoom(selectedStreamId) },
         modifier = modifier
     )
 }
@@ -77,11 +83,13 @@ internal fun VStreamMenuContent(
 @Composable
 internal fun VStreamMenuContent(
     isFullscreen: Boolean,
+    hasVideo: Boolean,
     isPinned: Boolean,
     isPinLimitReached: Boolean,
     onCancelClick: () -> Unit,
     onFullscreenClick: (Boolean) -> Unit,
     onPinClick: (Boolean) -> Unit,
+    onZoomClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(14.dp)) {
@@ -99,6 +107,10 @@ internal fun VStreamMenuContent(
             )
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
         }
+        if (hasVideo) {
+            ZoomAction(onClick = onZoomClick, label = false)
+            Spacer(modifier = Modifier.height(SheetItemsSpacing))
+        }
         FullscreenAction(
             label = false,
             fullscreen = isFullscreen,
@@ -112,7 +124,7 @@ internal fun VStreamMenuContent(
 internal fun VStreamMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            VStreamMenuContent(false, false, false,  {}, {}, {})
+            VStreamMenuContent(false, true, false, false, {}, {}, {}, {})
         }
     }
 }
@@ -122,7 +134,7 @@ internal fun VStreamMenuContentPreview() {
 internal fun VStreamFullscreenMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            VStreamMenuContent(true, false, false, {}, {}, {})
+            VStreamMenuContent(true, true, false, false, {}, {}, {}, {})
         }
     }
 }
@@ -133,7 +145,7 @@ internal fun VStreamFullscreenMenuContentPreview() {
 internal fun VStreamPinLimitMenuContentPreview() {
     KaleyraTheme {
         Surface {
-            VStreamMenuContent(false, false, true, {}, {}, {})
+            VStreamMenuContent(false, true, false, true, {}, {}, {}, {})
         }
     }
 }

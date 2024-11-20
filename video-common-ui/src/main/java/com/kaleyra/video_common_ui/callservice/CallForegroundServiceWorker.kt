@@ -11,6 +11,7 @@ import com.kaleyra.video_common_ui.call.CameraStreamManager
 import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.StreamsManager
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.utils.DeviceUtils
@@ -38,26 +39,37 @@ internal class CallForegroundServiceWorker(
 
     private val streamsAudioManager by lazy { StreamsAudioManager(coroutineScope) }
 
-    private var call: Call? = null
+    private var call: CallUI? = null
+    private var connection: KaleyraCallConnection? = null
 
     fun bind(service: Service, call: CallUI) {
-        Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
         this.call = call
-        cameraStreamManager.bind(call)
-        streamsManager.bind(call)
-        participantManager.bind(call)
-        streamsAudioManager.bind(call)
-        callNotificationProducer.bind(call, service)
+       internalBind(service)
+    }
+
+    fun bind(service: Service, call: CallUI, connection: KaleyraCallConnection) {
+        this.call = call
+        this.connection = connection
+        internalBind(service)
+    }
+
+    private fun internalBind(service: Service) {
+        Thread.setDefaultUncaughtExceptionHandler(CallUncaughtExceptionHandler)
+        cameraStreamManager.bind(call!!)
+        streamsManager.bind(call!!)
+        participantManager.bind(call!!)
+        streamsAudioManager.bind(call!!)
+        callNotificationProducer.bind(call!!, service)
         callNotificationProducer.listener = callNotificationListener
 
-        call.state
+        call!!.state
             .takeWhile { it !is Call.State.Disconnected.Ended }
             .onCompletion { service.stopSelf() }
             .launchIn(coroutineScope)
 
         if (!DeviceUtils.isSmartGlass) {
-            ProximityService.start()
-            fileShareNotificationProducer.bind(call)
+            ProximityService.start(connection)
+            fileShareNotificationProducer.bind(call!!)
         }
     }
 

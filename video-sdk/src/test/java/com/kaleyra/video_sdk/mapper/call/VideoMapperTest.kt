@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.mapper.call
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
@@ -32,8 +33,10 @@ import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointerUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToPointersUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.prettyPrint
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.shouldMirrorPointer
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
+import com.kaleyra.video_sdk.call.mapper.VideoMapper.toZoomLevelUi
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -52,14 +55,21 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class VideoMapperTest {
 
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
 
-    private val viewMock = mockk<VideoStreamView>()
+    private val zoomLevelFlow: MutableStateFlow<StreamView.ZoomLevel> = MutableStateFlow(StreamView.ZoomLevel.Fit)
+
+    private val viewMock = mockk<VideoStreamView> {
+        every { zoomLevel } returns zoomLevelFlow
+    }
 
     private val videoMock = mockk<Input.Video.Screen>(relaxed = true)
 
@@ -111,7 +121,79 @@ class VideoMapperTest {
     fun videoInputNotNull_mapToVideoUi_mappedVideoUi() = runTest {
         val flow = MutableStateFlow(videoMock)
         val actual = flow.mapToVideoUi().first()
-        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = true, isScreenShare = true)
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevelFit_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.Fit)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevelFill_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.Fill)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fill, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel2x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`2x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`2x`, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel3x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`3x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`3x`, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel4x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`4x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`4x`, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel5x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`5x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`5x`, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel6x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`6x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`6x`, isEnabled = true, isScreenShare = true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun videoInputNotNull_zoomLevel7x_mappedVideoUi() = runTest {
+        zoomLevelFlow.emit(StreamView.ZoomLevel.`7x`)
+        val flow = MutableStateFlow(videoMock)
+        val actual = flow.mapToVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.`7x`, isEnabled = true, isScreenShare = true)
         Assert.assertEquals(expected, actual)
     }
 
@@ -279,7 +361,7 @@ class VideoMapperTest {
     }
 
     @Test
-    fun cameraStreamVideo_toMyCameraVideoUi_cameraVideoUi() = runTest {
+    fun cameraStreamVideoEnabled_toMyCameraVideoUi_cameraVideoUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
         val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
@@ -294,7 +376,70 @@ class VideoMapperTest {
         }
         every { callMock.toMyCameraStream() } returns flowOf(stream)
         val actual = callMock.toMyCameraVideoUi().first()
-        val expected = VideoUi("videoId", ImmutableView(viewMock), isEnabled = true)
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = true)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoDisabled_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.None)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = false)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoEnabledLocally_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.Local)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = false)
+        Assert.assertEquals(expected, actual)
+        unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun cameraStreamVideoEnabledRemotely_toMyCameraVideoUi_cameraVideoUi() = runTest {
+        mockkObject(InputMapper)
+        val callMock = mockk<Call>(relaxed = true)
+        val videoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
+        with(videoMock) {
+            every { id } returns "videoId"
+            every { view } returns MutableStateFlow(viewMock)
+            every { enabled } returns MutableStateFlow(Input.Enabled.Remote)
+        }
+        val stream = mockk<Stream.Mutable>(relaxed = true) {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(videoMock)
+        }
+        every { callMock.toMyCameraStream() } returns flowOf(stream)
+        val actual = callMock.toMyCameraVideoUi().first()
+        val expected = VideoUi("videoId", ImmutableView(viewMock), VideoUi.ZoomLevelUi.Fit, isEnabled = true)
         Assert.assertEquals(expected, actual)
         unmockkObject(InputMapper)
     }
@@ -311,5 +456,29 @@ class VideoMapperTest {
         val actual = callMock.toMyCameraVideoUi().first()
         Assert.assertEquals(null, actual)
         unmockkObject(InputMapper)
+    }
+
+    @Test
+    fun testZoomLevelToZoomLevelUi() {
+        Assert.assertEquals(VideoUi.ZoomLevelUi.Fit, StreamView.ZoomLevel.Fit.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.Fill, StreamView.ZoomLevel.Fill.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`2x`, StreamView.ZoomLevel.`2x`.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`3x`, StreamView.ZoomLevel.`3x`.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`4x`, StreamView.ZoomLevel.`4x`.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`5x`, StreamView.ZoomLevel.`5x`.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`6x`, StreamView.ZoomLevel.`6x`.toZoomLevelUi())
+        Assert.assertEquals(VideoUi.ZoomLevelUi.`7x`, StreamView.ZoomLevel.`7x`.toZoomLevelUi())
+    }
+
+    @Test
+    fun testZoomLevelUiPrettyPrint() {
+        Assert.assertEquals("", VideoUi.ZoomLevelUi.Fit.prettyPrint())
+        Assert.assertEquals("", VideoUi.ZoomLevelUi.Fill.prettyPrint())
+        Assert.assertEquals("2x", VideoUi.ZoomLevelUi.`2x`.prettyPrint())
+        Assert.assertEquals("3x", VideoUi.ZoomLevelUi.`3x`.prettyPrint())
+        Assert.assertEquals("4x", VideoUi.ZoomLevelUi.`4x`.prettyPrint())
+        Assert.assertEquals("5x", VideoUi.ZoomLevelUi.`5x`.prettyPrint())
+        Assert.assertEquals("6x", VideoUi.ZoomLevelUi.`6x`.prettyPrint())
+        Assert.assertEquals("7x", VideoUi.ZoomLevelUi.`7x`.prettyPrint())
     }
 }

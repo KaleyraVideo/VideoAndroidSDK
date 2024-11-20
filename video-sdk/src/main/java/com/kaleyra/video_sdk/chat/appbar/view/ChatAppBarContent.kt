@@ -22,7 +22,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +30,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -63,7 +61,7 @@ internal fun ChatAppBarContent(
             EllipsizeText(
                 text = title,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontFamily = KaleyraFontFamily.default,
+                fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                 fontWeight = MaterialTheme.typography.titleMedium.fontWeight!!,
                 ellipsize = Ellipsize.Marquee
@@ -71,7 +69,7 @@ internal fun ChatAppBarContent(
             Row {
                 EllipsizeText(
                     text = subtitle,
-                    fontFamily = KaleyraFontFamily.default,
+                    fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                     fontSize = MaterialTheme.typography.bodySmall.fontSize,
                     fontWeight = MaterialTheme.typography.bodySmall.fontWeight!!,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

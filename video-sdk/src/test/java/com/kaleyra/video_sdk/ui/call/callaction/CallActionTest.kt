@@ -154,7 +154,7 @@ class CallActionTest {
     }
 
     @Test
-    fun testBadgeIsDisplayed() {
+    fun testBadgeTextIsDisplayed() {
         val badgeText = "badgeText"
         composeTestRule.setContent {
             CallAction(
@@ -165,6 +165,21 @@ class CallActionTest {
             )
         }
         composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+    }
+
+    @Test
+    fun testBadgeIconIsDisplayed() {
+        val badgeDescr = "badgeDescr"
+        composeTestRule.setContent {
+            CallAction(
+                icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
+                contentDescription = "",
+                onClick = {},
+                badgePainter = painterResource(R.drawable.ic_kaleyra_call_sheet_warning),
+                badgeDescription = badgeDescr
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test

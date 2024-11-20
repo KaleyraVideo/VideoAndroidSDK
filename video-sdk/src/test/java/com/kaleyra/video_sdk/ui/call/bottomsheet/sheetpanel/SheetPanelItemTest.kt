@@ -18,6 +18,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -89,14 +90,14 @@ class SheetPanelItemTest {
 
     @Test
     fun screenShareAction_screenShareTextIsDisplayed() {
-        callAction = ScreenShareAction()
+        callAction = ScreenShareAction.UserChoice()
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun screenShareActionToggled_stopScreenShareTextIsDisplayed() {
-        callAction = ScreenShareAction(isToggled = true)
+        callAction = ScreenShareAction.UserChoice(isToggled = true)
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }

@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -78,8 +77,9 @@ internal fun FileShareComponent(
         factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
     ),
     onDismiss: () -> Unit,
-    onUserMessageActionClick: (UserMessage) -> Unit,
-    isTesting: Boolean = false
+    onUserMessageActionClick: (UserMessage) -> Unit = { },
+    isTesting: Boolean = false,
+    isLargeScreen: Boolean = false
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()
@@ -108,6 +108,9 @@ internal fun FileShareComponent(
 
     FileShareComponent(
         uiState = uiState,
+        userMessageComponent = {
+            StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+        },
         showUnableToOpenFileSnackBar = showUnableToOpenFileSnackBar,
         showCancelledFileSnackBar = showCancelledFileSnackBar,
         onFileOpenFailure = { doesFileExists ->
@@ -123,26 +126,27 @@ internal fun FileShareComponent(
         onDownload = viewModel::download,
         onShareCancel = viewModel::cancel,
         modifier = modifier,
-        onUserMessageActionClick = onUserMessageActionClick,
-        onBackPressed = onDismiss
+        onBackPressed = onDismiss,
+        isLargeScreen = isLargeScreen
     )
 }
 
 @Composable
 internal fun FileShareComponent(
     uiState: FileShareUiState,
+    userMessageComponent: @Composable () -> Unit = { },
     showUnableToOpenFileSnackBar: Boolean = false,
     showCancelledFileSnackBar: Boolean = false,
     onFileOpenFailure: ((doesFileExists: Boolean) -> Unit)? = null,
     onSnackBarShowed: (() -> Unit)? = null,
     onAlertDialogDismiss: (() -> Unit)? = null,
     onBackPressed: (() -> Unit)? = null,
-    onUserMessageActionClick: (UserMessage) -> Unit,
     onUpload: (Uri) -> Unit,
     onDownload: (String) -> Unit,
     onShareCancel: (String) -> Unit,
     modifier: Modifier = Modifier,
-    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    isLargeScreen: Boolean = false
 ) {
     val context = LocalContext.current
 
@@ -180,12 +184,12 @@ internal fun FileShareComponent(
 
     val lazyGridState = rememberLazyGridState()
 
-    Column(
-        modifier = modifier
-            .statusBarsPadding()
-            .fillMaxSize()
-    ) {
-        FileShareAppBar(onBackPressed = { onBackPressed?.invoke() }, lazyGridState = lazyGridState)
+    Column(modifier.fillMaxSize()) {
+        FileShareAppBar(
+            onBackPressed = { onBackPressed?.invoke() },
+            lazyGridState = lazyGridState,
+            isLargeScreen = isLargeScreen
+        )
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -211,9 +215,9 @@ internal fun FileShareComponent(
                 )
             }
 
-            StackedUserMessageComponent(
-                onActionClick = onUserMessageActionClick
-            )
+            if (!isLargeScreen) {
+                userMessageComponent()
+            }
 
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -246,7 +250,6 @@ internal fun FileShareComponentPreview() {
                     sharedFiles = ImmutableList((0..20).map { mockUploadSharedFile.copy(id = UUID.randomUUID().toString()) })
                 ),
                 onUpload = {},
-                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )
@@ -263,7 +266,6 @@ internal fun FileShareComponentEmptyPreview() {
             FileShareComponent(
                 uiState = FileShareUiState(),
                 onUpload = {},
-                onUserMessageActionClick = {},
                 onDownload = {},
                 onShareCancel = {}
             )

@@ -2,7 +2,9 @@ package com.kaleyra.video_common_ui
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.telecom.TelecomManager
+import androidx.core.app.NotificationManagerCompat
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
@@ -17,6 +19,7 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsA
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.shouldEnableCallSounds
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.logging.PriorityLogger
@@ -25,6 +28,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -46,7 +50,10 @@ internal object ConferenceUIExtensions {
                     .takeWhile { it !is Call.State.Disconnected.Ended }
                     .onCompletion { soundScope?.cancel() }
                     .launchIn(coroutineScope)
-                call.enableCallSounds(logger, soundScope!!)
+
+                if (ContextRetainer.context.shouldEnableCallSounds()) {
+                    call.enableCallSounds(logger, soundScope!!)
+                }
             }
             .launchIn(coroutineScope)
     }
@@ -98,18 +105,17 @@ internal object ConferenceUIExtensions {
                         telecomManager.addCall(call = call, logger)
                     }
 
-                    else -> showProvisionalCallNotification(call, activityClazz, coroutineScope)
+                    else -> showProvisionalCallNotification(call, activityClazz)
                 }
             }
             .launchIn(coroutineScope)
     }
 
-    private fun showProvisionalCallNotification(
+    private suspend fun showProvisionalCallNotification(
         call: Call,
-        callActivityClazz: Class<*>,
-        coroutineScope: CoroutineScope
+        callActivityClazz: Class<*>
     ) {
-        coroutineScope.launch {
+        coroutineScope {
             showCallNotification(call, callActivityClazz)
             call.state
                 .takeWhile { it !is Call.State.Disconnected.Ended }
@@ -126,8 +132,7 @@ internal object ConferenceUIExtensions {
         val participants = call.participants.first()
 
         if (state is Call.State.Disconnected.Ended) return
-        ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }
-            .toTypedArray())
+        ContactDetailsManager.refreshContactDetails(*participants.list.map { it.userId }.toTypedArray())
 
         val notification = when {
             CallExtensions.isIncoming(state, participants) -> {

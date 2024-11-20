@@ -27,6 +27,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_utils.ContextRetainer
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -45,8 +46,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class FileShareNotificationProducerTest {
 
     @get:Rule
@@ -79,6 +83,7 @@ class FileShareNotificationProducerTest {
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
+        coEvery { ContactDetailsManager.refreshContactDetails(*anyVararg()) } returns Unit
         every { ContextRetainer.context } returns contextMock
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)

@@ -27,6 +27,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
@@ -68,6 +69,8 @@ import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video.conference.Call.Recording
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.NavBackComponent
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_utils.ContextRetainer
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -106,6 +109,12 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
     var searchView: SearchView? = null
     private val usersList: ArrayList<UserSelectionItem> = ArrayList()
 
+    private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            showConfirmDialog(string.logout, string.logout_confirmation) { _: DialogInterface?, i: Int -> logout() }
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +125,8 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
                 MainScope().launch { delay(1500); requestFullscreenPermissionActivityApi34() }
             }
         }
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // inflate main layout and keep a reference to it in case of use with dpad navigation
         setContentView(layout.activity_main)
@@ -140,7 +151,11 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         // in case the MainActivity has been shown by an action of missed call notification
         handleMissedCall(intent)
         binding!!.ongoingCallLabel.setOnClickListener { v: View? ->
-            lifecycleScope.launch { KaleyraVideo.conference.call.first().setDisplayMode(CallUI.DisplayMode.Foreground) }
+            lifecycleScope.launch {
+                with(KaleyraVideo.conference.call.first()) {
+                    if (!setDisplayMode(CallUI.DisplayMode.Foreground)) this.show()
+                }
+            }
         }
         val selectedUsersAdapter = FastAdapter.with(selectedUsersItemAdapter)
         val selectExtension = selectedUsersAdapter.getOrCreateExtension(SelectExtension::class.java)
@@ -160,8 +175,8 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         KaleyraVideo.state.filter { it is Disconnected.Error }.onEach { showErrorDialog(it.toString()) }.launchIn(lifecycleScope)
 
         KaleyraVideo.conference.call.flatMapLatest { it.state }.onEach {
-            if (it is Call.State.Disconnected) hideOngoingCallLabel()
-            if (it is Call.State.Connecting) showOngoingCallLabel()
+            if (it is Call.State.Disconnected.Ended) hideOngoingCallLabel()
+            if (it is Call.State.Disconnected.Companion || it is Call.State.Connecting) showOngoingCallLabel()
         }.launchIn(lifecycleScope)
 
         KaleyraVideo.conference.call
@@ -267,10 +282,6 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
                 Toast.makeText(ContextRetainer.context, exception.message, Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onBackPressed() {
-        showConfirmDialog(string.logout, string.logout_confirmation) { _: DialogInterface?, i: Int -> logout() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

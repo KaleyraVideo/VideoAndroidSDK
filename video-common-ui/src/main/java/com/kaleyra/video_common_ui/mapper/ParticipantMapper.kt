@@ -46,7 +46,7 @@ object ParticipantMapper {
     /**
      * Utility function to retrieve the participants that are in-call
      * @receiver Flow<Call> the call flow
-     * @return Flow<CallParticipant.Me> flow emitting all the participants that are in-call
+     * @return Flow<List<CallParticipant>> flow emitting all the participants that are in-call
      */
     fun Call.toInCallParticipants(): Flow<List<CallParticipant>> =
         this.participants

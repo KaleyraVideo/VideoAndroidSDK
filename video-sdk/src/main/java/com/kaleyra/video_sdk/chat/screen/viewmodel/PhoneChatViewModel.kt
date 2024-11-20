@@ -25,6 +25,7 @@ import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatViewModel
 import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantsState
@@ -49,6 +50,7 @@ import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -58,6 +60,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 private data class PhoneChatViewModelState(
     val isGroupChat: Boolean = false,
@@ -109,9 +112,9 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         .map(PhoneChatViewModelState::toUiState)
         .stateIn(viewModelScope, SharingStarted.Eagerly, viewModelState.value.toUiState())
 
-    val theme = company
+    val theme: StateFlow<Theme> = company
         .flatMapLatest { it.combinedTheme }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, CompanyUI.Theme())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Theme())
 
     override val userMessage: Flow<UserMessage>
         get() = CallUserMessagesProvider.userMessage
@@ -163,7 +166,9 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         actions
             // mapNotNull instead of map because sometimes is received a null value causing crash
             .mapNotNull {
-                it.mapToChatActions(call = { pt -> call(pt) })
+                it.mapToChatActions(call = { preferredType, maxDuration, recordingType ->
+                    call(preferredType, maxDuration, recordingType)
+                })
             }
             .onEach { actions -> viewModelState.update { it.copy(actions = ImmutableSet(actions)) } }
             .launchIn(viewModelScope)
@@ -243,6 +248,8 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         call.show()
     }
 
+    fun getLoggedUserId(): String? = connectedUser.getValue()?.userId
+
     private fun updateUnreadMessagesCount(count: Int) {
         viewModelState.update {
             val conversationState = it.conversationState.copy(unreadMessagesCount = count)
@@ -264,7 +271,7 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         }
     }
 
-    private fun call(preferredType: Call.PreferredType) {
+    private fun call(preferredType: Call.PreferredType, maxDuration: Long? = null, recordingType: Call.Recording.Type? = null) {
         val conference = conference.getValue() ?: return
         if (conference.state.value !is State.Connected) return
         val chat = chat.getValue() ?: return
@@ -272,6 +279,8 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         conference.call(userId) {
             this.preferredType = preferredType
             this.chatId = chat.id
+            this.maxDuration = maxDuration
+            this.recordingType = recordingType ?: Call.Recording.Type.Never
         }
     }
 

@@ -2,9 +2,13 @@ package com.kaleyra.video_sdk.utils
 
 import android.content.res.Configuration
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -57,5 +61,29 @@ class WindowSizeClassUtilTest {
             assertEquals(WindowWidthSizeClass.Expanded, info.widthSizeClass)
             assertEquals(WindowHeightSizeClass.Expanded, info.heightSizeClass)
         }
+    }
+
+    @Test
+    fun compactSizeWidth_isAtLeastMediumWidth_false() {
+        val windowSizeClass = mockk<WindowSizeClass>()
+        every { windowSizeClass.widthSizeClass } returns WindowWidthSizeClass.Compact
+
+        assertEquals(false, windowSizeClass.isAtLeastMediumWidth())
+    }
+
+    @Test
+    fun mediumSizeWidth_isAtLeastMediumWidth_true() {
+        val windowSizeClass = mockk<WindowSizeClass>()
+        every { windowSizeClass.widthSizeClass } returns WindowWidthSizeClass.Medium
+
+        assertEquals(true, windowSizeClass.isAtLeastMediumWidth())
+    }
+
+    @Test
+    fun expandedSizeWidth_isAtLeastMediumWidth_true() {
+        val windowSizeClass = mockk<WindowSizeClass>()
+        every { windowSizeClass.widthSizeClass } returns WindowWidthSizeClass.Expanded
+
+        assertEquals(true, windowSizeClass.isAtLeastMediumWidth())
     }
 }

@@ -18,6 +18,7 @@ package com.kaleyra.video_sdk.common.text
 
 import android.graphics.Typeface
 import android.text.TextUtils
+import android.view.View
 import android.widget.TextView
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -71,9 +72,10 @@ internal fun EllipsizeText(
     fontWeight: FontWeight = FontWeight.Normal,
     fontFamily: FontFamily? = LocalTextStyle.current.fontFamily,
     fontSize: TextUnit = 16.sp,
+    textAlignment: Int? = null,
     ellipsize: Ellipsize,
     shadow: Shadow? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     AndroidView(
@@ -91,6 +93,7 @@ internal fun EllipsizeText(
 
                 maxLines = 1
                 textSize = fontSize.value
+                textAlignment?.let { this.textAlignment = it }
                 setTextColor(color.toArgb())
                 tf.let { typeface = it }
                 this.ellipsize = ellipsize.value

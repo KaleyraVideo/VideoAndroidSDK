@@ -47,6 +47,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.reflect.KClass
 
 @RunWith(RobolectricTestRunner::class)
 class ScreenShareComponentTest {
@@ -62,7 +63,7 @@ class ScreenShareComponentTest {
     fun setUp() {
         mockkObject(ScreenShareViewModel)
         every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
-            every { create<ScreenShareViewModel>(any(), any()) } returns screenShareViewModel
+            every { create(any<KClass<ScreenShareViewModel>>(), any()) } returns screenShareViewModel
         }
         every { screenShareViewModel.uiState } returns screenShareUiState
     }

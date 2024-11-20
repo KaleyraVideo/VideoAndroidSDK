@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.callactions.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,8 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -147,6 +150,8 @@ internal fun CallToggleAction(
     enabled: Boolean = true,
     buttonText: String? = null,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
+    badgePainter: Painter? = null,
+    badgeDescription: String? = null,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
@@ -156,7 +161,9 @@ internal fun CallToggleAction(
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
+        badgePainter = badgePainter,
         badgeText = badgeText,
+        badgeDescription = badgeDescription,
         badgeBackgroundColor = badgeBackgroundColor,
         badgeContentColor = badgeContentColor,
         iconButton = {
@@ -198,6 +205,8 @@ internal fun CallAction(
     disabledButtonColor: Color = CallActionDefaults.DisabledContainerColor,
     disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
+    badgePainter: Painter? = null,
+    badgeDescription: String? = null,
     badgeText: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
@@ -207,7 +216,9 @@ internal fun CallAction(
     CallActionLayout(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
+        badgePainter = badgePainter,
         badgeText = badgeText,
+        badgeDescription = badgeDescription,
         badgeBackgroundColor = badgeBackgroundColor,
         badgeContentColor = badgeContentColor,
         iconButton = {
@@ -245,7 +256,9 @@ private fun CallActionLayout(
     modifier: Modifier,
     iconButton: @Composable () -> Unit,
     label: String? = null,
+    badgePainter: Painter? = null,
     badgeText: String? = null,
+    badgeDescription: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
 ) {
@@ -276,25 +289,35 @@ private fun CallActionLayout(
                             }
                         },
                     text = label,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
         }
+        val badgeModifier = Modifier.offset {
+                with(density) {
+                    val offset = CallActionDefaults.BadgeOffset
+                        .toPx()
+                        .roundToInt()
+                    IntOffset(offset, -offset)
+                }
+            }
         if (badgeText != null) {
-            CallActionBadge(
+            CallActionTextBadge(
                 text = badgeText,
                 containerColor = badgeBackgroundColor,
                 contentColor = badgeContentColor,
-                modifier = modifier
-                    .offset {
-                        with(density) {
-                            val offset = CallActionDefaults.BadgeOffset
-                                .toPx()
-                                .roundToInt()
-                            IntOffset(offset, -offset)
-                        }
-                    }
+                modifier = badgeModifier
+            )
+        } else if (badgePainter != null) {
+            CallActionIconBadge(
+                painter = badgePainter,
+                contentDescription = badgeDescription,
+                containerColor = badgeBackgroundColor,
+                contentColor = badgeContentColor,
+                modifier = badgeModifier
             )
         }
     }
@@ -338,11 +361,55 @@ private fun ButtonLayout(
 }
 
 @Composable
-internal fun CallActionBadge(
+internal fun CallActionTextBadge(
     text: String,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(containerColor),
+) {
+    CallActionBadge(
+        modifier = modifier,
+        containerColor = containerColor,
+        contentColor = contentColor
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = text,
+            style = MaterialTheme.typography.labelMedium.clearFontPadding()
+        )
+    }
+}
+
+@Composable
+internal fun CallActionIconBadge(
+    painter: Painter,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = contentColorFor(containerColor),
+    contentDescription: String? = null
+) {
+    CallActionBadge(
+        modifier = modifier,
+        containerColor = containerColor,
+        contentColor = contentColor
+    ) {
+        Icon(
+            painter = painter,
+            tint = contentColor,
+            contentDescription = contentDescription,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(4.dp)
+        )
+    }
+}
+
+@Composable
+private fun CallActionBadge(
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = contentColorFor(containerColor),
+    content: @Composable BoxScope.() -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -354,12 +421,7 @@ internal fun CallActionBadge(
                 .size(CallActionDefaults.BadgeSize)
                 .align(Alignment.CenterHorizontally)
         ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = text,
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelMedium.clearFontPadding()
-            )
+            content()
         }
     }
 }

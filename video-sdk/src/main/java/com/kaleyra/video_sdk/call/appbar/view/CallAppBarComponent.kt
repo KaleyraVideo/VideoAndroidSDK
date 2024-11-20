@@ -42,14 +42,12 @@ import coil.compose.AsyncImage
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.appbar.model.Logo
 import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.theme.typography
 
 @Stable
 internal object CallAppBarDefaults {
@@ -72,7 +70,7 @@ internal fun CallAppBarComponent(
     CallAppBarComponent(
         modifier = modifier,
         title = uiState.title,
-        logo = uiState.logo,
+        appIcon = uiState.appIconUri,
         automaticRecording = uiState.automaticRecording,
         recordingStateUi = uiState.recordingStateUi,
         callStateUi = uiState.callStateUi,
@@ -85,7 +83,7 @@ internal fun CallAppBarComponent(
 internal fun CallAppBarComponent(
     modifier: Modifier = Modifier,
     title: String?,
-    logo: Logo,
+    appIcon: Uri,
     automaticRecording: Boolean,
     recordingStateUi: RecordingStateUi,
     callStateUi: CallStateUi,
@@ -93,8 +91,6 @@ internal fun CallAppBarComponent(
     onParticipantClick: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    val isDarkTheme = isSystemInDarkTheme()
-
     var hasConnectedOnce by remember { mutableStateOf(false) }
     if (callStateUi is CallStateUi.Connected) hasConnectedOnce = true
 
@@ -142,8 +138,8 @@ internal fun CallAppBarComponent(
                     onClick = onBackPressed
                 )
                 AsyncImage(
-                    model = logo.let { if (!isDarkTheme) it.light else it.dark },
-                    contentDescription = stringResource(id = R.string.kaleyra_company_logo),
+                    model = appIcon,
+                    contentDescription = stringResource(id = R.string.kaleyra_app_icon),
                     contentScale = ContentScale.Fit,
                     modifier = modifier
                         .clip(CircleShape)
@@ -175,7 +171,7 @@ private fun Title(recording: Boolean, pulseRecording: Boolean, title: String) {
         }
         Text(
             text = title,
-            style = typography.labelLarge.copy(
+            style = MaterialTheme.typography.labelLarge.copy(
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false
                 )
@@ -200,7 +196,7 @@ private fun CallParticipantsButton(
         ) {
             Text(
                 text = "$participantCount",
-                style = typography.labelLarge.copy(
+                style = MaterialTheme.typography.labelLarge.copy(
                     platformStyle = PlatformTextStyle(
                         includeFontPadding = false
                     )
@@ -221,7 +217,7 @@ private fun CallParticipantsButton(
 internal fun CallAppBarComponentPreview() = KaleyraTheme {
     Column {
         CallAppBarComponent(
-            logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
+            appIcon = Uri.EMPTY,
             title = "09:56",
             participantCount = 2,
             automaticRecording = true,
@@ -234,7 +230,7 @@ internal fun CallAppBarComponentPreview() = KaleyraTheme {
         Spacer(modifier = Modifier.size(16.dp))
 
         CallAppBarComponent(
-            logo = Logo(light = Uri.EMPTY, dark = Uri.EMPTY),
+            appIcon = Uri.EMPTY,
             title = "09:56",
             participantCount = 2,
             automaticRecording = true,

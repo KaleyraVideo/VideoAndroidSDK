@@ -15,8 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactions.view.CallActionBadge
-import com.kaleyra.video_sdk.call.callactions.view.audioPainterFor
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
@@ -26,6 +24,9 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.CallActionTextBadge
+import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
+import com.kaleyra.video_sdk.call.callactions.view.audioPainterFor
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -54,7 +55,7 @@ internal fun SheetPanelItem(
         )
         Spacer(modifier = Modifier.weight(1f))
         if (callAction is NotifiableCallAction && callAction.notificationCount != 0) {
-            CallActionBadge(text = "${callAction.notificationCount}")
+            CallActionTextBadge(text = "${callAction.notificationCount}")
         }
     }
 }
@@ -95,7 +96,7 @@ private fun textFor(callAction: CallActionUI) =
 internal fun SheetPanelScreenShareItemPreview() {
     KaleyraTheme {
         Surface {
-            SheetPanelItem(callAction = ScreenShareAction())
+            SheetPanelItem(callAction = ScreenShareAction.UserChoice())
         }
     }
 }
@@ -106,7 +107,7 @@ internal fun SheetPanelScreenShareItemPreview() {
 internal fun SheetPanelScreenShareItemDisabledPreview() {
     KaleyraTheme {
         Surface {
-            SheetPanelItem(callAction = ScreenShareAction(isEnabled = false))
+            SheetPanelItem(callAction = ScreenShareAction.UserChoice(isEnabled = false))
         }
     }
 }

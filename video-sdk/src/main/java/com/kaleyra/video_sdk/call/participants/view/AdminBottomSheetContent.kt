@@ -57,7 +57,6 @@ internal fun AdminBottomSheetContent(
                     text = stream.username,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleMedium
                 )
             }

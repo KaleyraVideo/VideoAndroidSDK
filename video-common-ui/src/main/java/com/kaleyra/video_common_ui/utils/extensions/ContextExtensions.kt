@@ -42,10 +42,12 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.utils.MathUtils
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasConnectionServicePermissions
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getMimeType
 import com.kaleyra.video_utils.ContextRetainer
 
@@ -404,5 +406,18 @@ object ContextExtensions {
             .filter { it.topActivity != null }
             .filter { it.topActivity!!.packageName == ContextRetainer.context.packageName }
             .all { it.topActivity!!.className.contains(currentActivityName) }
+    }
+
+    fun Context.hasOpsPermission(permission: String) = with(getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            unsafeCheckOpNoThrow(permission, android.os.Process.myUid(), packageName) == AppOpsManager.MODE_ALLOWED
+        else
+            checkOpNoThrow(permission, android.os.Process.myUid(), packageName) == AppOpsManager.MODE_ALLOWED
+    }
+
+    internal fun Context.shouldEnableCallSounds(): Boolean {
+        val areNotificationEnabled =  NotificationManagerCompat.from(this).areNotificationsEnabled()
+        val hasConnectionServicePermissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && hasConnectionServicePermissions()
+        return areNotificationEnabled || hasConnectionServicePermissions
     }
 }

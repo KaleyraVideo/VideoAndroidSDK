@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.callactions.view.CameraAction
 import com.kaleyra.video_sdk.call.callactions.view.MicAction
 import org.junit.Assert
 import org.junit.Rule
@@ -53,8 +54,21 @@ class MicActionTest {
     }
 
     @Test
+    fun testLabelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        composeTestRule.setContent {
+            MicAction(
+                label = true,
+                checked = false,
+                onCheckedChange = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
     fun testWarningBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_warning)
         composeTestRule.setContent {
             MicAction(
                 onCheckedChange = {},
@@ -62,12 +76,12 @@ class MicActionTest {
                 warning = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test
     fun testErrorBadge() {
-        val badgeText = "!"
+        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_error)
         composeTestRule.setContent {
             MicAction(
                 onCheckedChange = {},
@@ -75,7 +89,7 @@ class MicActionTest {
                 error = true
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(badgeDescr).assertIsDisplayed()
     }
 
     @Test

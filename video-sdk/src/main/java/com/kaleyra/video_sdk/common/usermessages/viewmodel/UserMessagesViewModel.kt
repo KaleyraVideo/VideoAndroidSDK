@@ -56,7 +56,7 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
                     }.launchIn(this@launch)
                 alertMessages
                     .onEach { newAlertMessages ->
-                        _uiState.update { it.copy(alertMessages = ImmutableList(newAlertMessages)) }
+                        _uiState.update { it.copy(alertMessages = ImmutableList(newAlertMessages.toList())) }
                     }.launchIn(this@launch)
             }
         }

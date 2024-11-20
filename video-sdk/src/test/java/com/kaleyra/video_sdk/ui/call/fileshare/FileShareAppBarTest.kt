@@ -18,6 +18,9 @@ package com.kaleyra.video_sdk.ui.call.fileshare
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -38,17 +41,24 @@ class FileShareAppBarTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private var isLargeScreen by mutableStateOf(false)
+
     private var isBackPressed = false
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            FileShareAppBar(onBackPressed = { isBackPressed = true }, lazyGridState = rememberLazyGridState())
+            FileShareAppBar(
+                onBackPressed = { isBackPressed = true },
+                lazyGridState = rememberLazyGridState(),
+                isLargeScreen = isLargeScreen
+            )
         }
     }
 
     @After
     fun tearDown() {
+        isLargeScreen = false
         isBackPressed = false
     }
 
@@ -64,5 +74,14 @@ class FileShareAppBarTest {
     fun fileShareTextDisplayed() {
         val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClickCloseOnLargeScreen_backPressedInvoked() {
+        isLargeScreen = true
+        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(close).performClick()
+        assert(isBackPressed)
     }
 }

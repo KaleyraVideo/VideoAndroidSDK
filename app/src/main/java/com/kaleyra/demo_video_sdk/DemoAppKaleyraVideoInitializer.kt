@@ -26,13 +26,16 @@ import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.LoginManager
 import com.kaleyra.demo_video_sdk.storage.DefaultConfigurationManager
 import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIActions
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
+import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.KaleyraVideoInitializer
 import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
+import com.kaleyra.video_common_ui.theme.Theme
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
+import com.kaleyra.video_common_ui.theme.resource.URIResource
 import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
@@ -49,23 +52,22 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 KaleyraVideo.userDetailsProvider = customUserDetailsProvider(applicationContext)
                 KaleyraVideo.conference.connectionServiceOption = ConnectionServiceOption.Enabled
                 KaleyraVideo.pushNotificationHandlingStrategy = PushNotificationHandlingStrategy.Automatic
-                val themeColorSeed = Color(0xFF0087E2).toArgb()
-                KaleyraVideo.theme =
-                    CompanyUI.Theme(
-                        fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif,
-                        defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-                        day = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = themeColorSeed)),
-                        night = CompanyUI.Theme.Style(colors = CompanyUI.Theme.Colors.Seed(color = themeColorSeed))
-                    )
+                val appConfiguration = ConfigurationPrefsManager.getConfiguration(applicationContext)
+                val logoUri = appConfiguration.logoUrl?.takeIf { it.isNotEmpty() }
+                    ?.let { getUriFromString(appConfiguration.logoUrl) }
+                KaleyraVideo.theme = Theme(
+                    logo = logoUri?.let { Theme.Logo(URIResource(it, it)) },
+                    typography = Theme.Typography(fontFamily = KaleyraFontFamily.default),
+                    config = Theme.Config(style = Theme.Config.Style.System)
+                )
             }
 
-            val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-            KaleyraVideo.conference.callActions = callConfiguration.actions.mapToCallUIActions()
             KaleyraVideo.conference.call.onEach {
+                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
+                it.actions.emit(callConfiguration.actions.mapToCallUIActions())
                 it.withFeedback = callConfiguration.options.feedbackEnabled
                 if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
             }.launchIn(MainScope())
-
         }
 
         fun connect(applicationContext: Context) {
@@ -92,5 +94,4 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
     override fun onRequestKaleyraVideoConfigure() = configure(applicationContext)
 
     override fun onRequestKaleyraVideoConnect() = connect(applicationContext)
-
 }

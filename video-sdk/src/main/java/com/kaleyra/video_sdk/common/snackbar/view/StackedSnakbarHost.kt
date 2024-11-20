@@ -14,10 +14,12 @@ fun StackedUserMessageComponent(
     onActionClick: (UserMessage) -> Unit,
     onDismissClick: (UserMessage) -> Unit,
 ) {
-    StackedSnackbar(
-        modifier = modifier,
-        snackbarData = ImmutableList(alertMessages.value.plus(userMessages.value)),
-        onDismissClick = onDismissClick,
-        onActionClick = onActionClick
-    )
+    if (userMessages.isNotEmpty() || alertMessages.isNotEmpty()) {
+        StackedSnackbar(
+            modifier = modifier,
+            snackbarData = ImmutableList(alertMessages.value.plus(userMessages.value)),
+            onDismissClick = onDismissClick,
+            onActionClick = onActionClick
+        )
+    }
 }

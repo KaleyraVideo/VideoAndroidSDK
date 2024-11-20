@@ -14,10 +14,13 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -325,7 +328,7 @@ class StreamComponentTest {
     }
 
     @Test
-    fun streamAudioNull_micDisabledIconIsDisplayed() {
+    fun streamAudioNull_micDisabledIconDoesNotExits() {
         val stream1 = defaultStreamUi(username = "mario", audio = null)
         streamUiState = StreamUiState(
             streams = listOf(stream1).toImmutableList()
@@ -335,7 +338,7 @@ class StreamComponentTest {
 
         val micDisabledDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(micDisabledDescription).assertDoesNotExist()
     }
 
     @Test
@@ -421,13 +424,69 @@ class StreamComponentTest {
     }
 
     @Test
-    fun previewIsGroupCallTrue_avatarLetterIsNotDisplayed() {
+    fun previewIsGroupCallTrue_avatarIsNotDisplayed() {
         streamUiState = StreamUiState(
             preview = StreamPreview(isGroupCall = true, username = "mario"),
         )
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "mario", video = null, isStartingWithVideo = true),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoFalse_avatarIsDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(username = "mario", isStartingWithVideo = false),
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertIsDisplayed()
+    }
+
+    @Test
+    fun previewIsStartingWithVideoTrueAndVideoIsNotNull_videoIsDisplayed() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.runOnMainSync {
+            streamUiState = StreamUiState(
+                preview = StreamPreview(
+                    username = "mario",
+                    video = VideoUi(
+                        id = "videoId",
+                        view = ImmutableView(VideoStreamView(instrumentation.context))
+                    ),
+                    isStartingWithVideo = true
+                )
+            )
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("M").assertIsDisplayed()
+    }
+
+    fun participantItemIsAddedAfterwards_onClickBehaviourIsSetCorrectly() {
+        val stream1 = defaultStreamUi()
+        val stream2 = defaultStreamUi()
+        val stream3 = defaultStreamUi()
+        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
+        composeTestRule.waitForIdle()
+
+        maxFeaturedStreams = 2
+        composeTestRule.waitForIdle()
+
+        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
+        composeTestRule.onNodeWithText(otherText).performClick()
+
+        assertEquals(true, moreParticipantClicked)
     }
 
     fun defaultStreamUi(

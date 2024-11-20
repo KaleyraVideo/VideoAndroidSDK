@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,7 +28,7 @@ import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-internal val ParticipantItemAvatarSize = 28.dp
+internal val ParticipantItemAvatarSize = 40.dp
 
 @Composable
 internal fun ParticipantItem(
@@ -51,7 +50,7 @@ internal fun ParticipantItem(
         Avatar(
             username = stream.username,
             uri = stream.avatar,
-            modifier = Modifier.size(ParticipantItemAvatarSize)
+            size = ParticipantItemAvatarSize
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
@@ -80,40 +79,43 @@ internal fun ParticipantItem(
             )
         }
 
-        if (amIAdmin || stream.isMine) {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                enabled = stream.video == null || !stream.video.isScreenShare,
-                onClick = {
-                    if (stream.audio != null) onDisableMicClick(
-                        stream.id,
-                        stream.audio.isEnabled
-                    ) else Unit
-                },
-                content = {
-                    Icon(
-                        disableMicPainterFor(stream.audio),
-                        disableContentDescriptionFor(stream.audio, stream.username)
-                    )
-                }
-            )
-        } else {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                enabled = stream.video == null || !stream.video.isScreenShare,
-                onClick = {
-                    if (stream.audio != null) onMuteStreamClick(
-                        stream.id,
-                        !stream.audio.isMutedForYou
-                    )
-                    else Unit
-                },
-                content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.username)) }
-            )
+        when {
+            stream.audio == null -> Unit
+            amIAdmin || stream.isMine -> {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    enabled = stream.video == null || !stream.video.isScreenShare,
+                    onClick = {
+                        onDisableMicClick(
+                            stream.id,
+                            stream.audio.isEnabled
+                        )
+                    },
+                    content = {
+                        Icon(
+                            disableMicPainterFor(stream.audio),
+                            disableContentDescriptionFor(stream.audio, stream.username)
+                        )
+                    }
+                )
+            }
+            else -> {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    enabled = stream.video == null || !stream.video.isScreenShare,
+                    onClick = {
+                        onMuteStreamClick(
+                            stream.id,
+                            !stream.audio.isMutedForYou
+                        )
+                    },
+                    content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.username)) }
+                )
+            }
         }
 
         if (!amIAdmin || stream.isMine) {

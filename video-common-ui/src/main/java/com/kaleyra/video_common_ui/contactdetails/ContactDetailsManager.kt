@@ -87,6 +87,11 @@ object ContactDetailsManager {
         contactImagesFlow.emit(contactImages)
     }
 
+    internal fun clear() {
+        contactNames.clear()
+        contactImages.clear()
+    }
+
     private fun <T> Flow<Map<String, StateFlow<T>>>.mapToUserFlow(userId: String) = flatMapLatest { it[userId] ?: flowOf(null) }.distinctUntilChanged()
 
 }

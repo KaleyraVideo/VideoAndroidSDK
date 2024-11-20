@@ -28,23 +28,24 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
 
     private var _alertMessages: MutableList<AlertMessage>? = null
     private val _userMessages = mutableListOf<UserMessage>()
-    private val _alertMessagesFlow = MutableStateFlow<List<AlertMessage>>(listOf())
+    private val _alertMessagesFlow = MutableStateFlow<Set<AlertMessage>>(setOf())
     private val _userMessagesFlow = MutableSharedFlow<List<UserMessage>>(replay = 0)
     val userMessages: SharedFlow<List<UserMessage>> = _userMessagesFlow
-    val alertMessages: StateFlow<List<AlertMessage>> = _alertMessagesFlow
+    val alertMessages: StateFlow<Set<AlertMessage>> = _alertMessagesFlow
 
-    fun addAlertMessages(messages: List<AlertMessage>) = scope.launch {
+    fun addAlertMessages(messages: Set<AlertMessage>) = scope.launch {
         _alertMessages?.filter { alertMessage -> !messages.contains(alertMessage) }?.forEach { removedAlertMessage ->
             internalRemoveUserMessage(removedAlertMessage)
         }
-
-        if (messages.isEmpty()) return@launch
 
         _alertMessages = _alertMessages ?: mutableListOf()
 
         messages.map { alertMessage ->
             if (!_alertMessages!!.contains(alertMessage)) _alertMessages!!.add(alertMessage)
         }
+
+        if (messages.isEmpty()) _alertMessages!!.clear()
+
         updateUserMessages()
     }
 
@@ -87,7 +88,7 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
 
     private fun updateUserMessages() = scope.launch {
         _userMessagesFlow.emit(mutableListOf(*_userMessages.toTypedArray()))
-        _alertMessages?.let { alertMessages -> _alertMessagesFlow.emit(listOf(*alertMessages.toTypedArray())) }
+        _alertMessages?.let { alertMessages -> _alertMessagesFlow.emit(setOf(*alertMessages.toTypedArray())) }
     }
 }
 
