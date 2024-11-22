@@ -145,6 +145,8 @@ fun CallInfoComponent(
                 )
             }
 
+            Spacer(Modifier.size(4.dp))
+
             displaySubtitle?.takeIf { it.isNotEmpty() }?.let {
                 val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium)
                     .shadow(color = MaterialTheme.colorScheme.surface)
