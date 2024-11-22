@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +36,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -124,7 +124,7 @@ fun CallInfoComponent(
 
     if (callInfoUiState.callStateUi != null && (!displayTitle.isNullOrEmpty() || !displaySubtitle.isNullOrEmpty())) {
         Column(
-            modifier = Modifier.then(modifier),
+            modifier = Modifier.then(modifier).fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
         ) {
             displayTitle?.takeIf { it.isNotEmpty() }?.let {
@@ -132,7 +132,7 @@ fun CallInfoComponent(
                     .shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
                         .basicMarquee()
                         .testTag(CallInfoTitleTestTag),
                     textAlign = if (isPipMode) TextAlign.Start else TextAlign.Center,
@@ -152,7 +152,7 @@ fun CallInfoComponent(
                     .shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
                         .testTag(CallInfoSubtitleTestTag),
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
