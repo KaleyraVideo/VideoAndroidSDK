@@ -18,8 +18,11 @@ package com.kaleyra.video_sdk.call.kicked.view
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,34 +74,40 @@ fun KickedMessageDialog(kickedUiState: KickedMessageUiState, onDismiss: () -> Un
     if (!activity.isAtLeastResumed()) return
     kickedUiState as KickedMessageUiState.Display
 
-    Dialog(onDismissRequest = onDismiss) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.7f))
+    ) {
+        Dialog(onDismissRequest = onDismiss) {
 
-        LaunchedEffect(Unit) {
-            delay(AutoDismissMs)
-            onDismiss()
-        }
+            LaunchedEffect(Unit) {
+                delay(AutoDismissMs)
+                onDismiss()
+            }
 
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .wrapContentSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClickLabel = stringResource(id = R.string.kaleyra_action_dismiss),
-                    role = Role.Button,
-                    onClick = onDismiss
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClickLabel = stringResource(id = R.string.kaleyra_action_dismiss),
+                        role = Role.Button,
+                        onClick = onDismiss
+                    )
+            ) {
+                Text(
+                    text = pluralStringResource(
+                        id = R.plurals.kaleyra_call_participant_removed,
+                        count = if (kickedUiState.adminName?.isNotBlank() == true) 1 else 0,
+                        kickedUiState.adminName ?: ""),
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center
                 )
-        ) {
-            Text(
-                text = pluralStringResource(
-                    id = R.plurals.kaleyra_call_participant_removed,
-                    count = if (kickedUiState.adminName?.isNotBlank() == true) 1 else 0,
-                    kickedUiState.adminName ?: ""),
-                modifier = Modifier.padding(16.dp),
-                textAlign = TextAlign.Center
-            )
+            }
         }
     }
 }
