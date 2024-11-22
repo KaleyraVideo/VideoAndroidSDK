@@ -80,7 +80,7 @@ class PipScreenTest {
         val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
         val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
         // check the content description because it's a TextView
-        composeTestRule.onNodeWithContentDescription(title).assertIsDisplayed()
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
         composeTestRule.onNodeWithText(subtitle).assertIsDisplayed()
     }
 

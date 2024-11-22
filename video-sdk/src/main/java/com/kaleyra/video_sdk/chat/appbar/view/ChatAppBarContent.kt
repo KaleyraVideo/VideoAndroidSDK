@@ -19,10 +19,12 @@ package com.kaleyra.video_sdk.chat.appbar.view
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,8 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
-import com.kaleyra.video_sdk.common.text.Ellipsize
-import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val TypingDotsPadding = 4.dp
@@ -58,23 +58,24 @@ internal fun ChatAppBarContent(
             size = 40.dp
         )
         Column(Modifier.padding(start = 12.dp)) {
-            EllipsizeText(
+            Text(
+                modifier = Modifier.basicMarquee(),
                 text = title,
+                maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                 fontWeight = MaterialTheme.typography.titleMedium.fontWeight!!,
-                ellipsize = Ellipsize.Marquee
             )
             Row {
-                EllipsizeText(
+                Text(
                     text = subtitle,
+                    maxLines = 1,
                     fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                     fontSize = MaterialTheme.typography.bodySmall.fontSize,
                     fontWeight = MaterialTheme.typography.bodySmall.fontWeight!!,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.testTag(SubtitleTag),
-                    ellipsize = Ellipsize.Marquee
+                    modifier = Modifier.testTag(SubtitleTag).basicMarquee(),
                 )
                 if (typingDots) {
                     TypingDots(

@@ -18,7 +18,6 @@ package com.kaleyra.video_sdk.common.text
 
 import android.graphics.Typeface
 import android.text.TextUtils
-import android.view.View
 import android.widget.TextView
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle

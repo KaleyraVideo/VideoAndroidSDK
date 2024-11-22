@@ -16,24 +16,26 @@
 
 package com.kaleyra.video_sdk.call.callinfo.view
 
-import android.view.View.TEXT_ALIGNMENT_CENTER
-import android.view.View.TEXT_ALIGNMENT_VIEW_START
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -45,8 +47,6 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
-import com.kaleyra.video_sdk.common.text.Ellipsize
-import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.TextStyleExtensions.shadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -128,23 +128,26 @@ fun CallInfoComponent(
             verticalArrangement = Arrangement.Center,
         ) {
             displayTitle?.takeIf { it.isNotEmpty() }?.let {
-                val titleTextStyle = (if (isPipMode) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge).shadow(color = MaterialTheme.colorScheme.surface)
-                EllipsizeText(
+                val titleTextStyle = (if (isPipMode) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge)
+                    .shadow(color = MaterialTheme.colorScheme.surface)
+                Text(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .basicMarquee()
                         .testTag(CallInfoTitleTestTag),
+                    textAlign = if (isPipMode) TextAlign.Start else TextAlign.Center,
+                    maxLines = 1,
                     text = it,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = titleTextStyle.fontSize,
-                    textAlignment = if (isPipMode) TEXT_ALIGNMENT_VIEW_START else TEXT_ALIGNMENT_CENTER,
                     fontWeight = titleTextStyle.fontWeight ?: FontWeight.Normal,
-                    ellipsize = Ellipsize.Marquee,
-                    shadow = titleTextStyle.shadow
+                    style = titleTextStyle
                 )
             }
 
             displaySubtitle?.takeIf { it.isNotEmpty() }?.let {
-                val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium).shadow(color = MaterialTheme.colorScheme.surface)
+                val subtitleTextStyle = (if (isPipMode) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium)
+                    .shadow(color = MaterialTheme.colorScheme.surface)
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
