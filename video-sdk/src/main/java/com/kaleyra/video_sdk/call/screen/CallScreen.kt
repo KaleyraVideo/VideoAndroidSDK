@@ -45,7 +45,11 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.rememberCallSheetState
 import com.kaleyra.video_sdk.call.feedback.UserFeedbackDialog
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
+import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
+import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
 import com.kaleyra.video_sdk.call.kicked.view.KickedMessageDialog
+import com.kaleyra.video_sdk.call.kicked.viewmodel.KickedMessageViewModel
 import com.kaleyra.video_sdk.call.pip.PipScreen
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
@@ -388,9 +392,19 @@ internal fun CallScreen(
             )
         }
 
-        UserFeedbackDialog(onDismiss = onCallEndedBack)
+        val feedbackViewModel: FeedbackViewModel = viewModel(factory = FeedbackViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+        UserFeedbackDialog(viewModel = feedbackViewModel, onDismiss = onCallEndedBack)
 
+        val kickedMessageViewModel: KickedMessageViewModel  = viewModel(factory = KickedMessageViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
         KickedMessageDialog(onDismiss = onCallEndedBack)
+
+        val feedbackUiState = feedbackViewModel.uiState.collectAsStateWithLifecycle()
+        val kickedUiState = kickedMessageViewModel.uiState.collectAsStateWithLifecycle()
+
+        if (feedbackUiState.value is FeedbackUiState.Display || kickedUiState.value is KickedMessageUiState.Display) {
+            onSidePanelComponentRequest(null)
+            onModalSheetComponentRequest(null)
+        }
     }
 }
 

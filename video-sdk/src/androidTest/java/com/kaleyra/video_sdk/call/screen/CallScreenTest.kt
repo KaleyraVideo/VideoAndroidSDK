@@ -2,11 +2,11 @@ package com.kaleyra.video_sdk.call.screen
 
 import android.content.res.Configuration
 import android.util.Rational
-import android.view.WindowInsets.Side
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -146,6 +146,16 @@ class CallScreenTest {
         every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
     }
 
+    private val feedbackUiState: MutableStateFlow<FeedbackUiState> = MutableStateFlow(FeedbackUiState.Hidden)
+    private val feedbackViewModel = mockk<FeedbackViewModel>(relaxed = true) {
+        every { uiState } returns feedbackUiState
+    }
+
+    private val kickedUiState: MutableStateFlow<KickedMessageUiState> = MutableStateFlow(KickedMessageUiState.Hidden)
+    private val kickedMessageViewModel = mockk<KickedMessageViewModel>(relaxed = true) {
+        every { uiState } returns kickedUiState
+    }
+
     private val allActions = listOf(
         HangUpAction(),
         FlipCameraAction(),
@@ -218,14 +228,10 @@ class CallScreenTest {
             every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns userMessagesViewModel
         }
         every { FeedbackViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<FeedbackViewModel>>(), any()) } returns mockk(relaxed = true) {
-                every { uiState } returns MutableStateFlow(FeedbackUiState.Hidden)
-            }
+            every { create(any<KClass<FeedbackViewModel>>(), any()) } returns feedbackViewModel
         }
         every { KickedMessageViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<KickedMessageViewModel>>(), any()) } returns mockk(relaxed = true) {
-                every { uiState } returns MutableStateFlow(KickedMessageUiState.Hidden)
-            }
+            every { create(any<KClass<KickedMessageViewModel>>(), any()) } returns kickedMessageViewModel
         }
     }
 
@@ -316,6 +322,58 @@ class CallScreenTest {
     }
 
     @Test
+    fun userClicksFileShareActionOnSmallScreen_fileShareModalSheetIsDisplayed_feedbackDisplayed_fileShareModalSheetHidden() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = compactScreenConfiguration)
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
+
+        feedbackUiState.value = FeedbackUiState.Display()
+
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun userClicksFileShareActionOnSmallScreen_fileShareModalSheetIsDisplayed_kickedDisplayed_fileShareModalSheetHidden() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = compactScreenConfiguration)
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
+
+        kickedUiState.value = KickedMessageUiState.Display()
+
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
     fun userClicksFileShareActionOnLargeScreen_fileShareSidePanelIsDisplayed() {
         callActionsUiState.value = CallActionsUiState(
             actionList = listOf(FileShareAction()).toImmutableList()
@@ -334,6 +392,50 @@ class CallScreenTest {
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun userClicksFileShareActionOnLargeScreen_fileShareSidePanelIsDisplayed_feedbackDisplayed_fileShareSidePanelNotDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+
+        feedbackUiState.value = FeedbackUiState.Display()
+
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun userClicksFileShareActionOnLargeScreen_fileShareSidePanelIsDisplayed_kickedDisplayed_fileShareSidePanelNotDisplayed() {
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(FileShareAction()).toImmutableList()
+        )
+        composeTestRule.setUpCallScreen(configuration = largeScreenConfiguration)
+
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        // Check the button contained in the draggable part of the bottom sheet is displayed
+        // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
+        composeTestRule
+            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
+
+        kickedUiState.value = KickedMessageUiState.Display()
+
+        composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsNotDisplayed()
     }
 
     @Test
