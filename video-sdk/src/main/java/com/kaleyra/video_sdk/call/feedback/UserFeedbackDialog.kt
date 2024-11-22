@@ -19,7 +19,9 @@ package com.kaleyra.video_sdk.call.feedback
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -34,15 +36,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
@@ -82,41 +89,48 @@ internal fun UserFeedbackDialog(
 
     val orientation = LocalConfiguration.current.orientation
     val windowSizeClass = currentWindowAdaptiveInfo()
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
-        var isFeedbackSent by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.7f))
+    ) {
+        Dialog(
+            onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
+            var isFeedbackSent by remember { mutableStateOf(false) }
 
-        if (isFeedbackSent) {
-            LaunchedEffect(Unit) {
-                delay(AutoDismissMs)
-                onDismiss()
+            if (isFeedbackSent) {
+                LaunchedEffect(Unit) {
+                    delay(AutoDismissMs)
+                    onDismiss()
+                }
             }
-        }
 
-        val configuration = LocalConfiguration.current
-        Box(Modifier
-            .width(min(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
-            .padding(
-                if (
-                    orientation == Configuration.ORIENTATION_LANDSCAPE &&
-                    windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-                ) 8.dp else 24.dp)) {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .animateContentSize()
-            ) {
-                if (!isFeedbackSent) {
-                    FeedbackForm(
-                        feedbackUiState = feedbackUiState,
-                        onUserFeedback = { rating: FeedbackUiRating, text: String ->
-                            onUserFeedback(rating, text)
-                            isFeedbackSent = true
-                        },
-                        onDismiss = onDismiss
-                    )
-                } else FeedbackSent(onDismiss)
+            val configuration = LocalConfiguration.current
+            Box(Modifier
+                .width(min(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
+                .padding(
+                    if (
+                        orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                        windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+                    ) 8.dp else 24.dp)) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .animateContentSize()
+                ) {
+                    if (!isFeedbackSent) {
+                        FeedbackForm(
+                            feedbackUiState = feedbackUiState,
+                            onUserFeedback = { rating: FeedbackUiRating, text: String ->
+                                onUserFeedback(rating, text)
+                                isFeedbackSent = true
+                            },
+                            onDismiss = onDismiss
+                        )
+                    } else FeedbackSent(onDismiss)
+                }
             }
         }
     }

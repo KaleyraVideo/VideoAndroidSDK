@@ -99,35 +99,35 @@ class OneToOneAppBarTest {
     // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
-        composeTestRule.onNodeWithContentDescription(chatParticipantsDetails.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(chatParticipantsDetails.username).assertIsDisplayed()
     }
 
     @Test
     fun connectionStateUndefinedAndRecipientStateUnknown_subtitleNotDisplayed() {
         connectionState = ConnectionState.Unknown
         chatParticipantState.value = ChatParticipantState.Unknown
-        getSubtitle().assertContentDescriptionEquals("")
+        getSubtitle().assertTextEquals("")
     }
 
     @Test
     fun connectionStateConnecting_connectingDisplayed() {
         connectionState = ConnectionState.Connecting
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_chat_state_connecting)
-        getSubtitle().assertContentDescriptionEquals(connecting)
+        getSubtitle().assertTextEquals(connecting)
     }
 
     @Test
     fun connectionStateOffline_waitingForNetworkDisplayed() {
         connectionState = ConnectionState.Offline
         val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_chat_state_waiting_for_network)
-        getSubtitle().assertContentDescriptionEquals(waitingForNetwork)
+        getSubtitle().assertTextEquals(waitingForNetwork)
     }
 
     @Test
     fun chatParticipantStateOnline_onlineDisplayed() {
         chatParticipantState.value = ChatParticipantState.Online
         val online = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_online)
-        getSubtitle().assertContentDescriptionEquals(online)
+        getSubtitle().assertTextEquals(online)
     }
 
     @Test
@@ -139,14 +139,14 @@ class OneToOneAppBarTest {
             .withZone(ZoneId.systemDefault())
             .format(Instant.ofEpochMilli(0))
         val offline = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_last_login, timestamp)
-        getSubtitle().assertContentDescriptionEquals(offline)
+        getSubtitle().assertTextEquals(offline)
     }
 
     @Test
     fun chatParticipantStateNeverOnline_recentlySeenDisplayed() {
         chatParticipantState.value = ChatParticipantState.Offline(null)
         val offline = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_offline)
-        getSubtitle().assertContentDescriptionEquals(offline)
+        getSubtitle().assertTextEquals(offline)
     }
 
     @Test
@@ -154,7 +154,7 @@ class OneToOneAppBarTest {
         getBouncingDots().assertDoesNotExist()
         chatParticipantState.value = ChatParticipantState.Typing
         val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_typing)
-        getSubtitle().assertContentDescriptionEquals(typing)
+        getSubtitle().assertTextEquals(typing)
         getBouncingDots().assertExists()
     }
 
