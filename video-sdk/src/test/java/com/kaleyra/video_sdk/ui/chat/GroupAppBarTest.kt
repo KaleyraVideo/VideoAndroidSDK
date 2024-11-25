@@ -104,21 +104,21 @@ class GroupAppBarTest {
     // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
-        composeTestRule.onNodeWithContentDescription("chatName").assertIsDisplayed()
+        composeTestRule.onNodeWithText("chatName").assertIsDisplayed()
     }
 
     @Test
     fun chatStateNetworkConnecting_connectingDisplayed() {
         connectionState = ConnectionState.Connecting
         val connecting = composeTestRule.activity.getString(R.string.kaleyra_chat_state_connecting)
-        getSubtitle().assertContentDescriptionEquals(connecting)
+        getSubtitle().assertTextEquals(connecting)
     }
 
     @Test
     fun chatStateNetworkOffline_waitingForNetworkDisplayed() {
         connectionState = ConnectionState.Offline
         val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_chat_state_waiting_for_network)
-        getSubtitle().assertContentDescriptionEquals(waitingForNetwork)
+        getSubtitle().assertTextEquals(waitingForNetwork)
     }
 
     @Test
@@ -126,7 +126,7 @@ class GroupAppBarTest {
         val users = listOf("mary")
         participantsState = ChatParticipantsState(typing = ImmutableList(users))
         val typing = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participants_typing, 1, users[0])
-        getSubtitle().assertContentDescriptionEquals(typing)
+        getSubtitle().assertTextEquals(typing)
     }
 
     @Test
@@ -134,7 +134,7 @@ class GroupAppBarTest {
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(typing = ImmutableList(users))
         val typing = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participants_typing, users.size, users.size)
-        getSubtitle().assertContentDescriptionEquals(typing)
+        getSubtitle().assertTextEquals(typing)
     }
 
     @Test
@@ -142,7 +142,7 @@ class GroupAppBarTest {
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(online = ImmutableList(users))
         val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_participants_online, users.size, users.size)
-        getSubtitle().assertContentDescriptionEquals(typing)
+        getSubtitle().assertTextEquals(typing)
     }
 
     @Test
@@ -154,7 +154,7 @@ class GroupAppBarTest {
                 )
             )
         val subtitle = participantsDetails.value.values.joinToString(", ") { it.username }
-        getSubtitle().assertContentDescriptionEquals(subtitle)
+        getSubtitle().assertTextEquals(subtitle)
     }
 
     @Test

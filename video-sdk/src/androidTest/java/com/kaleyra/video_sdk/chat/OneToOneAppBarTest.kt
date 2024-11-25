@@ -99,7 +99,7 @@ class OneToOneAppBarTest {
     // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
-        composeTestRule.onNodeWithContentDescription(chatParticipantsDetails.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(chatParticipantsDetails.username).assertIsDisplayed()
     }
 
     @Test

@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
@@ -58,7 +58,7 @@ class CallInfoComponentTest {
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -73,7 +73,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("user1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("user1").assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -88,7 +88,7 @@ class CallInfoComponentTest {
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -103,7 +103,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("user1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("user1").assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -118,7 +118,7 @@ class CallInfoComponentTest {
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -134,7 +134,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("user1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("user1").assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -151,7 +151,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callee.value.joinToString(", ")).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callee.value.joinToString(", ")).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -166,7 +166,7 @@ class CallInfoComponentTest {
         )
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -182,7 +182,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callee.value.joinToString(", ")).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callee.value.joinToString(", ")).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -246,7 +246,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -262,7 +262,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(displayState).assertIsDisplayed()
+        composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
     @Test
@@ -279,7 +279,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -297,7 +297,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -315,7 +315,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -333,7 +333,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -351,7 +351,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -369,7 +369,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -387,7 +387,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -405,7 +405,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(displayState).assertIsDisplayed()
     }
 
@@ -422,7 +422,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -439,7 +439,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -456,7 +456,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -473,7 +473,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -490,7 +490,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -507,7 +507,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
         composeTestRule.onNodeWithText(callFailed).assertIsDisplayed()
     }
 
@@ -523,7 +523,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 
     @Test
@@ -538,7 +538,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 
     @Test
@@ -553,7 +553,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 
     @Test
@@ -568,7 +568,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 
     @Test
@@ -583,7 +583,7 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 
     @Test
@@ -598,6 +598,6 @@ class CallInfoComponentTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(CallInfoTitleTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallInfoSubtitleTestTag).assertIsNotDisplayed()
-        composeTestRule.onNodeWithContentDescription(callEnded).assertIsDisplayed()
+        composeTestRule.onNodeWithText(callEnded).assertIsDisplayed()
     }
 }
