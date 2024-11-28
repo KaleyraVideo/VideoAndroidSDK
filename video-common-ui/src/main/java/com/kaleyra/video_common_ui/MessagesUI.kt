@@ -98,7 +98,7 @@ class MessagesUI(
             chatCustomNotificationActivity
         )
         if (DisplayedChatActivity.chatId.value == chatUI.id) return
-        NotificationManager.notify(chatId.hashCode(), notification)
+        NotificationManager.notify(chatUI.id.hashCode(), notification)
     }
 
     private suspend fun OtherMessage.toChatNotificationMessage(chatParticipants: ChatParticipants): ChatNotificationMessage {
