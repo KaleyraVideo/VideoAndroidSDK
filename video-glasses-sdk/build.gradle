@@ -46,6 +46,8 @@ dependencies {
     implementation catalog.androidxNavigationUiKtx
     implementation catalog.material
     implementation catalog.androidxDataBindingCommon
+    implementation platform(catalog.androidxComposeBom)
+    implementation 'androidx.compose.material3:material3'
 
     // UI
     api catalog.fastadapter
