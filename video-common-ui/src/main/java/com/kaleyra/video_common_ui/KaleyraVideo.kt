@@ -28,6 +28,7 @@ import com.kaleyra.video_common_ui.activityclazzprovider.GlassActivityClazzProvi
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
+import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.termsandconditions.TermsAndConditionsRequester
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.utils.CORE_UI
@@ -295,6 +296,7 @@ object KaleyraVideo {
      */
     fun disconnect(clearSavedData: Boolean = false) {
         serialScope.launchBlocking {
+            com.kaleyra.video_common_ui.notification.NotificationManager.cancelAll()
             collaboration?.disconnect(clearSavedData)
             termsAndConditionsRequester?.dispose()
         }
@@ -313,6 +315,7 @@ object KaleyraVideo {
             collaboration = null
             _conference = null
             _conversation = null
+            com.kaleyra.video_common_ui.notification.NotificationManager.cancelAll()
         }
     }
 }
