@@ -18,12 +18,11 @@ package com.kaleyra.video_common_ui
 
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.State
+import com.kaleyra.video.conversation.Chat
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * ChatViewModel representation of the chat view model
@@ -73,13 +72,20 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
         if (KaleyraVideo.conversation.state.value is State.Disconnected) {
             requestConnect(loggedUserId)
         }
-        val chat = withTimeoutOrNull(3000L) {
-            val chat = conversation.chats.replayCache.first().first {
-                it.id == chatId || it.serverId.first() == chatId
-            }
-            _chat.tryEmit(chat)
-            return@withTimeoutOrNull chat
+
+        val getChatById: suspend (ChatUI) -> Boolean = {
+            it.id == chatId || it.serverId.first() == chatId
         }
+
+        if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
+            conversation.find(chatId).await()
+
+        var chat: ChatUI? = null
+        conversation.chats.first { it.firstOrNull { getChatById(it) }?.let {
+            _chat.emit(it)
+            chat = it
+        } != null }
+
         return chat
     }
 }
