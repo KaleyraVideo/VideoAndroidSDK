@@ -46,17 +46,15 @@ object KaleyraUIProvider {
      * @param context Context required context to start activity
      * @param activityClazz Class<*> the requested chat activity's Class
      * @param loggedUserId String? optional logged user id if already connecting or connected
-     * @param userIds List<String> user ids to chat with
      * @param chatId String? optional chat id to be opened
      */
-    fun startChatActivity(context: Context, activityClazz: Class<*>, loggedUserId: String?, userIds: List<String>, chatId: String? = null) = with(context) {
+    fun startChatActivity(context: Context, activityClazz: Class<*>, loggedUserId: String?, chatId: String? = null) = with(context) {
         val intent = Intent(context, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra(ENABLE_TILT_EXTRA, isSmartGlass)
             putExtra(ChatActivity.LOGGED_USER_ID_KEY, loggedUserId)
             putExtra(ChatActivity.CHAT_ID_KEY, chatId)
-            putExtra(ChatActivity.USER_IDS_KEY, userIds.toTypedArray())
         }
         startActivity(intent)
     }

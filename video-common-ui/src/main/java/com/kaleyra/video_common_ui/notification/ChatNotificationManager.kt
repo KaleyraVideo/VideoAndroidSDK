@@ -113,23 +113,21 @@ internal interface ChatNotificationManager {
     }
 
     private fun contentPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, userIds, chatId)
+        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
 
     private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, userIds, chatId)
+        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
 
     private fun <T> createChatActivityPendingIntent(
         context: Context,
         requestCode: Int,
         activityClazz: Class<T>,
         loggedUserId: String,
-        userIds: List<String>,
         chatId: String?
     ): PendingIntent {
         val applicationContext = context.applicationContext
         val intent = Intent(applicationContext, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(ChatActivity.USER_IDS_KEY, userIds.toTypedArray())
             putExtra(ChatActivity.LOGGED_USER_ID_KEY, loggedUserId)
             chatId?.let { putExtra(ChatActivity.CHAT_ID_KEY, it) }
         }

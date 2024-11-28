@@ -31,7 +31,6 @@ abstract class ChatActivity : FragmentActivity() {
     companion object {
         internal const val LOGGED_USER_ID_KEY = "loggedUserId"
         internal const val CHAT_ID_KEY = "chatId"
-        internal const val USER_IDS_KEY = "userIds"
     }
 
     protected abstract val viewModel: ChatViewModel

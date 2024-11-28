@@ -101,7 +101,6 @@ class ConversationUI(
             context,
             chatActivityClazz,
             loggedUserId,
-            chat.participants.value.others.map { it.userId },
             chat.id
         )
     }
