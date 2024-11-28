@@ -27,7 +27,6 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video_common_ui.ChatUI
-import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
@@ -73,13 +72,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -182,14 +179,17 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is ScreenShareAction.App -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is ScreenShareAction.WholeDevice -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
@@ -262,23 +262,20 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
-            val conversation = conversation.getValue()
+            val conversation = conversation.first()
             val chatId = call.chatId.first()
-            val chat: Chat? =
-                conversation!!.chats.replayCache.firstOrNull()?.firstOrNull { it.serverId.replayCache.firstOrNull() == call.chatId.replayCache.firstOrNull() }
-                    ?: kotlin.runCatching { conversation.find(chatId).await().getOrNull() }.getOrNull()
 
-            if (chat != null) {
-                this@CallActionsViewModel.chat.emit(chat)
-                combine(
-                    uiState.map { it.actionList.value },
-                    chat.unreadMessagesCount
-                ) { actionList, unreadMessagesCount ->
-                    updateAction<ChatAction>(actionList) { action ->
-                        action.copy(notificationCount = unreadMessagesCount)
-                    }
-                }.launchIn(this)
+            val getChatById: suspend (ChatUI) -> Boolean = {
+                it.id == chatId || it.serverId.first() == chatId
             }
+
+            if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
+                conversation.chats.first { it.firstOrNull { getChatById(it) } != null }
+
+            conversation.chats.getValue()?.firstOrNull { getChatById(it) }?.let {
+                chat.emit(it)
+            }
+
         }
     }
 
