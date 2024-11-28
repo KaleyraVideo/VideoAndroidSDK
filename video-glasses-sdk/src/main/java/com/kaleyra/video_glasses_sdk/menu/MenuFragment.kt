@@ -229,7 +229,7 @@ internal class MenuFragment : BaseFragment(), TiltListener {
         withVolume = actions.any { it is ChangeVolume },
         withZoom = actions.any { it is ChangeZoom },
         withParticipants = actions.any { it is ShowParticipants },
-        withChat = actions.any { viewModel.participants.replayCache.firstOrNull()?.others?.size == 1 && it is OpenChat },
+        withChat = actions.any { it is OpenChat },
         withWhiteboard = actions.any { it is OpenWhiteboard }
     )
 
