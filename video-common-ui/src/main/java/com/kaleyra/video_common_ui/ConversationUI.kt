@@ -139,10 +139,10 @@ class ConversationUI(
         show(context, KaleyraVideo.connectedUser.value?.userId, it)
     }
 
-    override fun find(chatId: String): Deferred<Result<ChatUI>> = CompletableDeferred<Result<ChatUI>>().apply {
+    override fun find(chatServerId: String): Deferred<Result<ChatUI>> = CompletableDeferred<Result<ChatUI>>().apply {
         chatScope.launch {
             runCatching {
-                this@apply.complete(Result.success(getOrCreateChatUI(conversation.find(chatId).await().getOrNull()!!)))
+                this@apply.complete(Result.success(getOrCreateChatUI(conversation.find(chatServerId).await().getOrNull()!!)))
             }.onFailure {
                 this@apply.completeExceptionally(CancellationException(it.message))
             }
