@@ -21,14 +21,12 @@ import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.Conversation
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
-import com.kaleyra.video_common_ui.notification.NotificationManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,6 +37,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 /**
  * The conversation UI
@@ -55,6 +54,7 @@ class ConversationUI(
 ) : Conversation by conversation {
 
     private var chatScope = CoroutineScope(Dispatchers.IO)
+    private var unreadMessagesScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
 
     private var lastMessagePerChat: HashMap<String, String> = hashMapOf()
 
@@ -84,6 +84,7 @@ class ConversationUI(
 
     internal fun dispose() {
         chatScope.cancel()
+        unreadMessagesScope.cancel()
     }
 
     /**
@@ -138,10 +139,10 @@ class ConversationUI(
         show(context, KaleyraVideo.connectedUser.value?.userId, it)
     }
 
-    override fun find(chatServerId: String): Deferred<Result<ChatUI>> = CompletableDeferred<Result<ChatUI>>().apply {
+    override fun find(chatId: String): Deferred<Result<ChatUI>> = CompletableDeferred<Result<ChatUI>>().apply {
         chatScope.launch {
             runCatching {
-                this@apply.complete(Result.success(getOrCreateChatUI(conversation.find(chatServerId).await().getOrNull()!!)))
+                this@apply.complete(Result.success(getOrCreateChatUI(conversation.find(chatId).await().getOrNull()!!)))
             }.onFailure {
                 this@apply.completeExceptionally(CancellationException(it.message))
             }
@@ -149,11 +150,11 @@ class ConversationUI(
     }
 
     private fun listenToMessages() {
-        var msgsScope: CoroutineScope? = null
+        val listenedChats = mutableListOf<String>()
         chats.onEach { chats ->
-            msgsScope?.cancel()
-            msgsScope = CoroutineScope(SupervisorJob(chatScope.coroutineContext[Job]))
             chats.forEach { chat ->
+                if (listenedChats.contains(chat.id)) return@forEach
+                listenedChats.add(chat.id)
                 val chatParticipants = chat.participants.value
                 ContactDetailsManager.refreshContactDetails(*chatParticipants.list.map { it.userId }.toTypedArray())
                 chat.messages.onEach messagesUI@{
@@ -163,10 +164,10 @@ class ConversationUI(
                     lastMessagePerChat[chat.id] = lastMessage.id
                     it.showUnreadMsgs(chat)
                 }.onCompletion {
-                    chats.forEach { NotificationManager.cancel(it.id.hashCode()) }
-                }.launchIn(msgsScope!!)
+                    listenedChats.remove(chat.id)
+                }.launchIn(unreadMessagesScope)
             }
-        }.launchIn(chatScope)
+        }.launchIn(unreadMessagesScope)
     }
 
     fun show(context: Context, chat: Chat) {
