@@ -274,8 +274,15 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             conversation.chats.getValue()?.firstOrNull { getChatById(it) }?.let {
                 chat.emit(it)
+                combine(
+                    uiState.map { it.actionList.value },
+                    it.unreadMessagesCount
+                ) { actionList, unreadMessagesCount ->
+                    updateAction<ChatAction>(actionList) { action ->
+                        action.copy(notificationCount = unreadMessagesCount)
+                    }
+                }.launchIn(this)
             }
-
         }
     }
 
