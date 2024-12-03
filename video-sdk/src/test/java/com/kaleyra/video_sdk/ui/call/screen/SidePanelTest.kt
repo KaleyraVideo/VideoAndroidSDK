@@ -124,7 +124,7 @@ class SidePanelTest {
         composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
         coVerify(exactly = 1) {
-            chatViewModel.setChat("loggedId", "otherId")
+            chatViewModel.setChat("loggedId", "chatId")
         }
     }
 
