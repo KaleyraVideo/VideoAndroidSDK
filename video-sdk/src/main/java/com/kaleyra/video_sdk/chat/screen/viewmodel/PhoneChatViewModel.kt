@@ -16,7 +16,6 @@
 
 package com.kaleyra.video_sdk.chat.screen.viewmodel
 
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
