@@ -87,11 +87,11 @@ class MessagesUI(
             chatUI.id,
             chatUI.isGroup,
             if (chatUI.isGroup) {
-              when {
-                  chatUI.name.isNullOrBlank() ->
-                      chatUI.participants.value.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() }.toSet().joinToString(", ")
-                  else -> chatUI.name
-              }
+                when {
+                    chatUI.name.isNullOrBlank() ->
+                        chatUI.participants.value.others.map { it.combinedDisplayName.filterNotNull().firstOrNull() }.toSet().joinToString(", ")
+                    else -> chatUI.name
+                }
             } else "",
             messages,
             chatActivityClazz,
