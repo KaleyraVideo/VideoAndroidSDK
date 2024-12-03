@@ -16,14 +16,15 @@
 
 package com.kaleyra.video_sdk.chat.screen.viewmodel
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatViewModel
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
@@ -60,7 +61,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
 private data class PhoneChatViewModelState(
     val isGroupChat: Boolean = false,
@@ -73,7 +73,8 @@ private data class PhoneChatViewModelState(
     val participantsState: ChatParticipantsState = ChatParticipantsState(),
     val conversationState: ConversationState = ConversationState(),
     val isInCall: Boolean = false,
-    val isUserConnected: Boolean = true
+    val isUserConnected: Boolean = true,
+    val isDeleted: Boolean = false
 ) {
 
     fun toUiState(): ChatUiState {
@@ -87,7 +88,8 @@ private data class PhoneChatViewModelState(
                 connectionState = connectionState,
                 conversationState = conversationState,
                 isInCall = isInCall,
-                isUserConnected = isUserConnected
+                isUserConnected = isUserConnected,
+                isDeleted = isDeleted
             )
         } else {
             ChatUiState.OneToOne(
@@ -96,7 +98,8 @@ private data class PhoneChatViewModelState(
                 connectionState = connectionState,
                 conversationState = conversationState,
                 isInCall = isInCall,
-                isUserConnected = isUserConnected
+                isUserConnected = isUserConnected,
+                isDeleted = isDeleted
             )
         }
     }
@@ -186,6 +189,11 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         chat
             .flatMapLatest { it.unreadMessagesCount }
             .onEach { count -> updateUnreadMessagesCount(count) }
+            .launchIn(viewModelScope)
+
+        chat
+            .flatMapLatest { it.state }
+            .onEach { state -> if (state is Chat.State.Closed) viewModelState.update { it.copy(isDeleted = true) } }
             .launchIn(viewModelScope)
 
         connectedUser

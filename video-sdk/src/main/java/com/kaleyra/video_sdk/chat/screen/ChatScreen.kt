@@ -296,17 +296,19 @@ internal fun ChatScreen(
 
                 HorizontalDivider(color = chatUserInputContainerColor)
 
-                ChatUserInput(
-                    modifier = Modifier
-                        .onGloballyPositioned {
-                            fabPadding = it.boundsInRoot().height
-                        }
-                        .navigationBarsPadding()
-                        .let { if (!embedded) it.imePadding() else it },
-                    onTextChanged = onTyping,
-                    onMessageSent = onMessageSent,
-                    onDirectionLeft = topBarRef::requestFocus
-                )
+                if (!uiState.isDeleted) {
+                    ChatUserInput(
+                        modifier = Modifier
+                            .onGloballyPositioned {
+                                fabPadding = it.boundsInRoot().height
+                            }
+                            .navigationBarsPadding()
+                            .let { if (!embedded) it.imePadding() else it },
+                        onTextChanged = onTyping,
+                        onMessageSent = onMessageSent,
+                        onDirectionLeft = topBarRef::requestFocus
+                    )
+                }
             }
         }
     }

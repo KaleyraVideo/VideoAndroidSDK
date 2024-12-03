@@ -28,6 +28,7 @@ import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -51,8 +52,8 @@ internal interface ChatNotificationManager {
 
     fun cancelChatNotificationOnShow(scope: CoroutineScope) {
         DisplayedChatActivity.chatId
-            .filter { it != null }
-            .onEach { NotificationManager.cancel(it!!.hashCode()) }
+            .filterNotNull()
+            .onEach { NotificationManager.cancel(it.hashCode()) }
             .launchIn(scope)
     }
 
@@ -61,7 +62,7 @@ internal interface ChatNotificationManager {
      *
      * @param myUserName String The other user name
      * @param myAvatar Uri The other user avatar
-     * @param chatId String? optional chat identifier
+     * @param chatId String chat identifier
      * @param isGroup Boolean determines if the chat is a group chat
      * @param chatTitle String? optional chat title
      * @param messages List<ChatNotificationMessage> The list of messages
@@ -73,7 +74,7 @@ internal interface ChatNotificationManager {
         myUserId: String,
         myUserName: String,
         myAvatar: Uri,
-        chatId: String?,
+        chatId: String,
         isGroup: Boolean,
         chatTitle: String?,
         messages: List<ChatNotificationMessage>,
