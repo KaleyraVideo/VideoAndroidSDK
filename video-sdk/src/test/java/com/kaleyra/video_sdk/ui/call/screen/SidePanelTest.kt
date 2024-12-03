@@ -18,6 +18,7 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -57,7 +58,7 @@ class SidePanelTest {
 
         with(mainViewModel) {
             every { uiState } returns MutableStateFlow(MainUiState())
-            every { getOtherUserId() } returns "otherId"
+            coEvery { getChatId() } returns "chatId"
         }
 
         with(chatViewModel) {
@@ -144,7 +145,7 @@ class SidePanelTest {
     @Test
     fun chatComponentAndOtherUserIdIsNull_onDismissInvoked() {
         component = ModularComponent.Chat
-        every { mainViewModel.getOtherUserId() } returns null
+        coEvery { mainViewModel.getChatId() } returns null
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()

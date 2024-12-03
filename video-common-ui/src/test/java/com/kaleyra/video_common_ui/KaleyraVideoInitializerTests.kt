@@ -6,7 +6,9 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import com.kaleyra.video.State
 import com.kaleyra.video_common_ui.KaleyraVideoInitializationProvider.Companion.KALEYRA_VIDEO_INITIALIZER
+import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.instantiateClassWithEmptyConstructor
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.verify
 import io.mockk.every
 import io.mockk.mockk
@@ -19,13 +21,23 @@ import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class KaleyraVideoInitializerTests {
 
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @Before
     fun setup() {
+        mockkObject(NotificationManager)
+        every { NotificationManager.cancel(any()) } returns Unit
+        every { NotificationManager.cancelAll() } returns Unit
         mockkObject(KaleyraVideo)
+        val contextMock = mockk<Context>(relaxed = true)
+        every { contextMock.getSystemService(Context.NOTIFICATION_SERVICE) } returns mockk<NotificationManager>(relaxed = true)
+        ContextRetainer().create(mockk(relaxed = true))
     }
 
     @Test
