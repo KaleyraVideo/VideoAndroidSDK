@@ -51,8 +51,8 @@ internal object ParticipantsMapper {
             coroutineScope {
                 val participantsDetails = list
                     .map {
-                        val name = async { it.combinedDisplayName.filterNotNull().firstOrNull() ?: it.userId }
-                        val image = async { it.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY }
+                        val name = async { it.combinedDisplayName.filterNotNull().first() ?: it.userId }
+                        val image = async { it.combinedDisplayImage.filterNotNull().first() ?: Uri.EMPTY }
                         Triple(it, name, image)
                     }
                     .map { (participant, name, image) ->
