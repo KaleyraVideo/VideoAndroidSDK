@@ -77,14 +77,19 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
             it.id == chatId || it.serverId.first() == chatId
         }
 
-        if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
-            conversation.find(chatId).await()
-
         var chat: ChatUI? = null
-        conversation.chats.first { it.firstOrNull { getChatById(it) }?.let {
-            _chat.emit(it)
-            chat = it
-        } != null }
+
+        kotlin.runCatching {
+            if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
+                conversation.find(chatId).await()
+
+            conversation.chats.first {
+                it.firstOrNull { getChatById(it) }?.let {
+                    _chat.emit(it)
+                    chat = it
+                } != null
+            }
+        }
 
         return chat
     }
