@@ -163,6 +163,23 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
                         }
                     }.launchIn(this)
             }
+
+            chat.name?.let { chatName ->
+                viewModelState.update {
+                    it.copy(chatName = chatName)
+                }
+            }
+
+            findFirstUnreadMessageId(chat.messages.first(), chat::fetch).also {
+                firstUnreadMessageId.value = it
+            }
+
+            messages
+                .onEach { messagesUI ->
+                    val newItems = messagesUI.list.mapToConversationItems(firstUnreadMessageId = firstUnreadMessageId.value)
+                    updateConversationItems(newItems)
+                }
+                .launchIn(this)
         }
 
         actions
@@ -198,27 +215,6 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         connectedUser
             .onEach { user -> viewModelState.update { it.copy(isUserConnected = user != null) } }
             .launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            val chat = chat.first()
-
-            chat.name?.let { chatName ->
-                viewModelState.update {
-                    it.copy(chatName = chatName)
-                }
-            }
-
-            findFirstUnreadMessageId(chat.messages.first(), chat::fetch).also {
-                firstUnreadMessageId.value = it
-            }
-
-            messages
-                .onEach { messagesUI ->
-                    val newItems = messagesUI.list.mapToConversationItems(firstUnreadMessageId = firstUnreadMessageId.value)
-                    updateConversationItems(newItems)
-                }
-                .launchIn(this)
-        }
     }
 
     fun sendMessage(text: String) {
