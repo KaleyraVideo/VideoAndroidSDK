@@ -30,9 +30,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.kaleyra.video_common_ui.theme.KaleyraPaletteSeed
 import com.kaleyra.video_common_ui.theme.Theme
-import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toDarkColorScheme
 import com.kaleyra.video_common_ui.theme.utils.PaletteExtensions.toLightColorScheme
 
@@ -59,7 +57,7 @@ fun CollaborationTheme(
         }
     }
 
-    val palette = theme.palette ?: Theme.Palette(ColorResource(KaleyraPaletteSeed))
+    val palette = theme.palette ?: Theme.Palette.monochrome()
     val colorScheme = remember(theme) {
         when {
             isDarkTheme -> palette.toDarkColorScheme()

@@ -130,6 +130,15 @@ class CompanyThemeManagerTest {
     }
 
     @Test
+    fun `set not supported theme`() = runTest {
+        val customTheme = object : KaleyraVideo.Theme { }
+        every { KaleyraVideo.theme } returns customTheme
+
+        val expected = Theme(Theme.Logo(URIResource(Uri.EMPTY, Uri.EMPTY)), Theme.Palette.monochrome())
+        assertEquals(expected, company.combinedTheme.first())
+    }
+
+    @Test
     fun `legacy theme uses remote light logo if local light logo is not defined`() = runTest {
         val darkLogo = mockk<Uri>()
         val companyUITheme = CompanyUI.Theme(
@@ -220,20 +229,20 @@ class CompanyThemeManagerTest {
     }
 
     @Test
-    fun `legacy theme uses kaleyra light colors if local and remote light colors are not defined`() = runTest {
+    fun `legacy theme uses default color if local and remote light colors are not defined`() = runTest {
         val lightLogo = mockk<Uri>()
         val darkLogo = mockk<Uri>()
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
             day = Style(logo = lightLogo, colors = null),
-            night = Style(logo = darkLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Black.toArgb()))
+            night = Style(logo = darkLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Blue.toArgb()))
         )
         every { KaleyraVideo.theme } returns companyUITheme
         every { company.theme } returns MutableStateFlow(mockk<Company.Theme>(relaxed = true))
         val expected = Theme(
             logo = Theme.Logo(URIResource(lightLogo, darkLogo)),
-            palette = Theme.Palette(ColorResource(KaleyraPaletteSeed, Color.Black.toArgb())),
+            palette = Theme.Palette(ColorResource(Color.Black.toArgb(), Color.Blue.toArgb())),
             typography = Theme.Typography(FontFamily.SansSerif),
             config = Theme.Config(Theme.Config.Style.System)
         )
@@ -241,20 +250,20 @@ class CompanyThemeManagerTest {
     }
 
     @Test
-    fun `legacy theme uses kaleyra dark colors if local and remote dark colors are not defined`() = runTest {
+    fun `legacy theme uses default color if local and remote dark colors are not defined`() = runTest {
         val lightLogo = mockk<Uri>()
         val darkLogo = mockk<Uri>()
         val companyUITheme = CompanyUI.Theme(
             fontFamily = FontFamily.SansSerif,
             defaultStyle = CompanyUI.Theme.DefaultStyle.System,
-            day = Style(logo = lightLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Black.toArgb())),
+            day = Style(logo = lightLogo, colors = CompanyUI.Theme.Colors.Seed(color = Color.Blue.toArgb())),
             night = Style(logo = darkLogo, colors = null)
         )
         every { KaleyraVideo.theme } returns companyUITheme
         every { company.theme } returns MutableStateFlow(mockk<Company.Theme>(relaxed = true))
         val expected = Theme(
             logo = Theme.Logo(URIResource(lightLogo, darkLogo)),
-            palette = Theme.Palette(ColorResource(Color.Black.toArgb(), KaleyraPaletteSeed)),
+            palette = Theme.Palette(ColorResource(Color.Blue.toArgb(), Color.White.toArgb())),
             typography = Theme.Typography(FontFamily.SansSerif),
             config = Theme.Config(Theme.Config.Style.System)
         )
@@ -300,7 +309,7 @@ class CompanyThemeManagerTest {
     }
 
     @Test
-    fun `theme uses kaleyra light colors if local and remote light colors are not defined`() = runTest {
+    fun `theme uses default color if local and remote light colors are not defined`() = runTest {
         val lightLogo = mockk<Uri>()
         val darkLogo = mockk<Uri>()
         val companyUITheme = Theme(
@@ -316,7 +325,7 @@ class CompanyThemeManagerTest {
         }
         val expected = Theme(
             logo = Theme.Logo(URIResource(lightLogo, darkLogo)),
-            palette = Theme.Palette(ColorResource(KaleyraPaletteSeed, remoteDarkColors.color)),
+            palette = Theme.Palette(ColorResource(Color.Black.toArgb(), remoteDarkColors.color)),
             typography = Theme.Typography(FontFamily.SansSerif),
             config = Theme.Config(Theme.Config.Style.System)
         )
@@ -324,7 +333,7 @@ class CompanyThemeManagerTest {
     }
 
     @Test
-    fun `theme uses kaleyra dark colors if local and remote dark colors are not defined`() = runTest {
+    fun `theme uses default color if local and remote dark colors are not defined`() = runTest {
         val lightLogo = mockk<Uri>()
         val darkLogo = mockk<Uri>()
         val companyUITheme = Theme(
@@ -340,7 +349,7 @@ class CompanyThemeManagerTest {
         }
         val expected = Theme(
             logo = Theme.Logo(URIResource(lightLogo, darkLogo)),
-            palette = Theme.Palette(ColorResource(remoteLightColors.color, KaleyraPaletteSeed)),
+            palette = Theme.Palette(ColorResource(remoteLightColors.color, Color.White.toArgb())),
             typography = Theme.Typography(FontFamily.SansSerif),
             config = Theme.Config(Theme.Config.Style.System)
         )
