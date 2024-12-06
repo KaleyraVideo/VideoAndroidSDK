@@ -5,9 +5,11 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
+import com.kaleyra.video_common_ui.theme.Theme.Palette
 import com.kaleyra.video_common_ui.theme.factory.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
+import com.kaleyra.video_common_ui.theme.utils.DynamicSchemeExtensions.toColorScheme
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -139,5 +141,14 @@ class ThemeTest {
             )
         )
         assertEquals(expected, colorSchemePalette)
+    }
+
+    @Test
+    fun testMonochromeColorSchemePalette() {
+        val expected = Palette(
+            ColorSchemeFactory.lightSchemeMonochrome.toColorScheme(),
+            ColorSchemeFactory.darkSchemeMonochrome.toColorScheme()
+        )
+        assertEquals(expected, Palette.monochrome())
     }
 }
