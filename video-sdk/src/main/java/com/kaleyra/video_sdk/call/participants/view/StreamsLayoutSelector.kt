@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +44,7 @@ internal fun StreamsLayoutSelector(
     ) {
         val gridInteractionSource = remember { MutableInteractionSource() }
         val gridContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant }
+        val gridText = stringResource(R.string.kaleyra_participants_component_grid)
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
@@ -51,7 +54,10 @@ internal fun StreamsLayoutSelector(
             enabled = enableGridLayout,
             modifier = Modifier
                 .weight(1f)
-                .highlightOnFocus(gridInteractionSource),
+                .highlightOnFocus(gridInteractionSource)
+                .semantics {
+                    contentDescription = gridText
+                },
             interactionSource = gridInteractionSource,
             contentPadding = PaddingValues(8.dp),
             onClick = { onLayoutClick(StreamsLayout.Grid) }
@@ -63,7 +69,7 @@ internal fun StreamsLayoutSelector(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = stringResource(R.string.kaleyra_participants_component_grid),
+                text = gridText,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -74,6 +80,7 @@ internal fun StreamsLayoutSelector(
 
         val pinInteractionSource = remember { MutableInteractionSource() }
         val pinContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant }
+        val pinText = stringResource(R.string.kaleyra_participants_component_pin)
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
@@ -82,7 +89,10 @@ internal fun StreamsLayoutSelector(
             ),
             modifier = Modifier
                 .weight(1f)
-                .highlightOnFocus(pinInteractionSource),
+                .highlightOnFocus(pinInteractionSource)
+                .semantics {
+                    contentDescription = pinText
+                },
             interactionSource = pinInteractionSource,
             contentPadding = PaddingValues(8.dp),
             onClick = { onLayoutClick(StreamsLayout.Pin) }
@@ -94,7 +104,7 @@ internal fun StreamsLayoutSelector(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = stringResource(R.string.kaleyra_participants_component_pin),
+                text = pinText,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1
             )
