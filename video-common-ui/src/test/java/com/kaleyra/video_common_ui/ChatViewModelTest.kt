@@ -47,7 +47,9 @@ class ChatViewModelTest {
 
     private val conference = mockk<ConferenceUI>()
 
-    private val conversation = mockk<ConversationUI>()
+    private val conversation = mockk<ConversationUI>() {
+        every { state } returns MutableStateFlow(State.Connected)
+    }
 
     private val call = mockk<CallUI>()
 

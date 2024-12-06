@@ -100,6 +100,8 @@ internal fun CallScreen(
     onActivityFinishing: () -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onConnectionServicePermissionsResult: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val activity = LocalContext.current.findActivity() as FragmentActivity
@@ -239,6 +241,8 @@ internal fun CallScreen(
             onPipAspectRatio = onPipAspectRatio,
             onCallEndedBack = finishActivity,
             onBackPressed = onBackPressed,
+            onChatDeleted = onChatDeleted,
+            onChatCreationFailed = onChatCreationFailed,
         )
     }
 }
@@ -258,6 +262,8 @@ internal fun CallScreen(
     onPipAspectRatio: (Rational) -> Unit,
     onCallEndedBack: () -> Unit,
     onBackPressed: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
     modifier: Modifier = Modifier,
     isInPipMode: Boolean = false
 ) {
@@ -388,6 +394,8 @@ internal fun CallScreen(
                 onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
+                onChatDeleted = onChatDeleted,
+                onChatCreationFailed = onChatCreationFailed,
                 modifier = modifier.testTag(VCallScreenTestTag)
             )
         }

@@ -347,4 +347,6 @@
     <string name="kaleyra_call_sheet_drag_description">Drag</string>
 
     <string name="kaleyra_input_text_default_error">Input text error</string>
+    <string name="kaleyra_chat_deleted">The conversation has been deleted.</string>
+    <string name="kaleyra_chat_creation_failed">Conversation creation failed</string>
 </resources>

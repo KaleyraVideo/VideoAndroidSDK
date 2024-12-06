@@ -79,15 +79,22 @@ class ChatScreenTest {
 
     private var onSendMessage = false
 
+    private var onChatDeleted = false
+
+    private var onChatCreationFailed = false
+
     private var onTyping = false
 
     @Before
     fun setUp() {
+        uiState.update { it.copy(isDeleted = false) }
         composeTestRule.setContent {
             ChatScreen(
                 uiState = uiState.collectAsState().value,
                 userMessage = userMessage,
                 onBackPressed = { onBackPressed = true },
+                onChatDeleted = { onChatDeleted = true },
+                onChatCreationFailed = { onChatCreationFailed = true },
                 onMessageScrolled = { onMessageScrolled = true },
                 onResetMessagesScroll = { onResetMessagesScroll = true },
                 onFetchMessages = { onFetchMessages = true },
@@ -108,6 +115,8 @@ class ChatScreenTest {
             actions = mockActions
         )
         onBackPressed = false
+        onChatDeleted = false
+        onChatCreationFailed = false
         onMessageScrolled = false
         onResetMessagesScroll = false
         onFetchMessages = false
@@ -211,6 +220,20 @@ class ChatScreenTest {
         val ongoingCall = composeTestRule.activity.getString(R.string.kaleyra_ongoing_call_label)
         uiState.update { it.copy(isInCall = true) }
         composeTestRule.onNodeWithText(ongoingCall).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatHasFailedCreation_onBackPressedInvoked() {
+        uiState.update { it.copy(hasFailedCreation = true) }
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
+        assert(onChatCreationFailed)
+    }
+
+    @Test
+    fun channelIsDeleted_chatInputNotShown() {
+        uiState.update { it.copy(isDeleted = true) }
+        composeTestRule.onNodeWithTag(TextFieldTag).assertDoesNotExist()
+        assert(onChatDeleted)
     }
 
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)

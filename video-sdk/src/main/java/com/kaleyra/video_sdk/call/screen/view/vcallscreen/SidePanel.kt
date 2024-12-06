@@ -39,6 +39,8 @@ internal val SidePanelTag = "SidePanelTag"
 internal fun SidePanel(
     modularComponent: ModularComponent,
     onDismiss: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
     onComponentDisplayed: (ModularComponent?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +78,9 @@ internal fun SidePanel(
 
                 ModularComponent.Chat -> ChatComponent(
                     onBackPressed = onDismiss,
-                    onChatConfigurationFailure = onDismiss
+                    onChatConfigurationFailure = onDismiss,
+                    onChatDeleted = onChatDeleted,
+                    onChatCreationFailed = onChatCreationFailed,
                 )
 
                 else -> Unit
@@ -91,6 +95,8 @@ internal fun SidePanel(
 private fun ChatComponent(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
     onChatConfigurationFailure: () -> Unit,
     mainViewModel: MainViewModel = viewModel(factory = MainViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     chatViewModel: PhoneChatViewModel = viewModel(factory = PhoneChatViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
@@ -114,7 +120,9 @@ private fun ChatComponent(
         ChatScreen(
             viewModel = chatViewModel,
             embedded = true,
-            onBackPressed = onBackPressed
+            onBackPressed = onBackPressed,
+            onChatDeleted = onChatDeleted,
+            onChatCreationFailed = onChatCreationFailed
         )
     }
 }

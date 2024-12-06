@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.Contact
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
@@ -157,6 +158,7 @@ class CallActionsViewModelTest {
         every { callMock.toOtherFilesCreationTimes() } returns MutableStateFlow(listOf())
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         every { conversationMock.create(any<String>()) } returns Result.failure(Throwable())
         every { conversationMock.chats } returns MutableStateFlow(listOf(mockk(relaxed = true) { every { this@mockk.id } returns "chatId" }))
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)

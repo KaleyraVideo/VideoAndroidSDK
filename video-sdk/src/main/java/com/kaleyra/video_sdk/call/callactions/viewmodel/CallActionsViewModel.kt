@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
@@ -262,26 +263,41 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
+
             val conversation = conversation.first()
             val chatId = call.chatId.first()
 
-            val getChatById: suspend (ChatUI) -> Boolean = {
-                it.id == chatId || it.serverId.first() == chatId
+            val getChatById: (ChatUI) -> Boolean = {
+                it.id == chatId
+            }
+            val getChatByServerId: suspend (ChatUI) -> Boolean = {
+                it.serverId.first() == chatId
             }
 
-            if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
-                conversation.chats.first { it.firstOrNull { getChatById(it) } != null }
+            kotlin.runCatching {
+                conversation.state.first { it is State.Connected }
+                var foundByServerId = false
+                val foundById = conversation.chats.getValue()?.any { getChatById(it) } ?: false
+                if (!foundById) {
+                    val chatFoundByServerId = conversation.find(chatId).await()
+                    foundByServerId = chatFoundByServerId.isSuccess
+                }
 
-            conversation.chats.getValue()?.firstOrNull { getChatById(it) }?.let {
-                chat.emit(it)
-                combine(
-                    uiState.map { it.actionList.value },
-                    it.unreadMessagesCount
-                ) { actionList, unreadMessagesCount ->
-                    updateAction<ChatAction>(actionList) { action ->
-                        action.copy(notificationCount = unreadMessagesCount)
+                if (foundById || foundByServerId) {
+                    conversation.chats.first {
+                        it.lastOrNull { getChatById(it) || getChatByServerId(it) }?.let {
+                            this@CallActionsViewModel.chat.emit(it)
+                            combine(
+                                uiState.map { it.actionList.value },
+                                it.unreadMessagesCount
+                            ) { actionList, unreadMessagesCount ->
+                                updateAction<ChatAction>(actionList) { action ->
+                                    action.copy(notificationCount = unreadMessagesCount)
+                                }
+                            }.launchIn(this)
+                        } != null
                     }
-                }.launchIn(this)
+                }
             }
         }
     }

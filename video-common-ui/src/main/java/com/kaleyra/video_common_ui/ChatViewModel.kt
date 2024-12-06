@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.lastOrNull
 
 /**
  * ChatViewModel representation of the chat view model
@@ -73,21 +74,31 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
             requestConnect(loggedUserId)
         }
 
-        val getChatById: suspend (ChatUI) -> Boolean = {
-            it.id == chatId || it.serverId.first() == chatId
+        val getChatById: (ChatUI) -> Boolean = {
+            it.id == chatId
+        }
+        val getChatByServerId: suspend (ChatUI) -> Boolean = {
+            it.serverId.first() == chatId
         }
 
         var chat: ChatUI? = null
 
         kotlin.runCatching {
-            if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
-                conversation.find(chatId).await()
+            conversation.state.first { it is State.Connected }
+            var foundByServerId = false
+            val foundById = conversation.chats.getValue()?.any { getChatById(it) } ?: false
+            if (!foundById) {
+                val chatFoundByServerId = conversation.find(chatId).await()
+                foundByServerId = chatFoundByServerId.isSuccess
+            }
 
-            conversation.chats.first {
-                it.firstOrNull { getChatById(it) }?.let {
-                    _chat.emit(it)
-                    chat = it
-                } != null
+            if (foundById || foundByServerId) {
+                conversation.chats.first {
+                    it.lastOrNull { getChatById(it) || getChatByServerId(it) }?.let {
+                        _chat.emit(it)
+                        chat = it
+                    } != null
+                }
             }
         }
 

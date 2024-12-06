@@ -151,6 +151,8 @@
     <string name="kaleyra_chat_no_messages_title">Nessun messaggio</string>
     <string name="kaleyra_chat_avatar_desc">Immagine della chat</string>
     <string name="kaleyra_chat_group_title">Chat di gruppo</string>
+    <string name="kaleyra_chat_creation_failed">Creazione della chat fallita.</string>
+    <string name="kaleyra_chat_deleted">La conversazione è stata cancellata.</string>
 
     <!-- Call -->
     <string name="kaleyra_chat">Chat</string>

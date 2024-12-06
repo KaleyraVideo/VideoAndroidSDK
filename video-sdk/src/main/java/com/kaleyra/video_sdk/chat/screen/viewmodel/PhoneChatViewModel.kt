@@ -73,7 +73,8 @@ private data class PhoneChatViewModelState(
     val conversationState: ConversationState = ConversationState(),
     val isInCall: Boolean = false,
     val isUserConnected: Boolean = true,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val hasFailedCreation: Boolean = false
 ) {
 
     fun toUiState(): ChatUiState {
@@ -88,7 +89,8 @@ private data class PhoneChatViewModelState(
                 conversationState = conversationState,
                 isInCall = isInCall,
                 isUserConnected = isUserConnected,
-                isDeleted = isDeleted
+                isDeleted = isDeleted,
+                hasFailedCreation = hasFailedCreation
             )
         } else {
             ChatUiState.OneToOne(
@@ -98,7 +100,8 @@ private data class PhoneChatViewModelState(
                 conversationState = conversationState,
                 isInCall = isInCall,
                 isUserConnected = isUserConnected,
-                isDeleted = isDeleted
+                isDeleted = isDeleted,
+                hasFailedCreation = hasFailedCreation
             )
         }
     }
@@ -209,7 +212,13 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
         chat
             .flatMapLatest { it.state }
-            .onEach { state -> if (state is Chat.State.Closed) viewModelState.update { it.copy(isDeleted = true) } }
+            .onEach { state ->
+                when (state) {
+                    Chat.State.Closed.Companion -> viewModelState.update { it.copy(isDeleted = true) }
+                    Chat.State.Closed.Error.InvalidParticipants -> viewModelState.update { it.copy(hasFailedCreation = true, isDeleted = true) }
+                    else -> Unit
+                }
+            }
             .launchIn(viewModelScope)
 
         connectedUser

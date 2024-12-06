@@ -21,6 +21,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video.State
 import com.kaleyra.video.User
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.ChatParticipant
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatUI
@@ -108,16 +109,20 @@ class PhoneChatViewModelTest {
 
     private val connectedUserFlow = MutableStateFlow<User?>(mockk())
 
+    private val chatMockState: MutableStateFlow<Chat.State> = MutableStateFlow(Chat.State.Active)
+
     @Before
     fun setUp() {
         mockkObject(KaleyraVideo)
         every { KaleyraVideo.isConfigured } returns true
         every { KaleyraVideo.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         every { KaleyraVideo.conversation } returns conversationMock
         every { KaleyraVideo.conference } returns conferenceMock
         mockkObject(ContactDetailsManager)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
+        every { chatMock.state } returns chatMockState
         with(conversationMock) {
             every { chats } returns MutableStateFlow(listOf(chatMock))
             every { create(any<String>()) } returns Result.success(chatMock)
@@ -393,6 +398,26 @@ class PhoneChatViewModelTest {
         advanceUntilIdle()
         val userId = viewModel.getLoggedUserId()
         assertEquals(user.userId, userId)
+    }
+
+    @Test
+    fun testChatDeletedUiStateUpdated() = runTest {
+        chatMockState.emit(Chat.State.Closed.Companion)
+        advanceUntilIdle()
+
+        val uiState = viewModel.uiState.first()
+
+        Assert.assertEquals(true, uiState.isDeleted)
+    }
+
+    @Test
+    fun testChatCreationFailedUiStateUpdated() = runTest {
+        chatMockState.emit(Chat.State.Closed.Error.InvalidParticipants)
+        advanceUntilIdle()
+
+        val uiState = viewModel.uiState.first()
+
+        Assert.assertEquals(true, uiState.hasFailedCreation)
     }
 
     private suspend fun areChatParticipantDetailsEquals(expected: ChatParticipantDetails,  actual: ChatParticipantDetails) {
