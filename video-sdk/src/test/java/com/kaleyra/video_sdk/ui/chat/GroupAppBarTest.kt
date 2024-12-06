@@ -24,10 +24,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.chat.appbar.*
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantsState
@@ -48,7 +54,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class GroupAppBarTest {
@@ -159,6 +164,13 @@ class GroupAppBarTest {
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(typing = ImmutableList(users))
         getBouncingDots().assertExists()
+    }
+
+    @Test
+    fun oneParticipantOnline_isOnlineTextDisplayed() {
+        val users = listOf("mary")
+        participantsState = ChatParticipantsState(online = ImmutableList(users))
+        getSubtitle().assertTextEquals(users.first() + " " + composeTestRule.activity.getString(R.string.kaleyra_chat_participants_is_online))
     }
 
     @Test

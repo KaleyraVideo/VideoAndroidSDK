@@ -20,12 +20,14 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.Contact
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ChatUI
@@ -55,7 +57,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
-import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
@@ -89,11 +90,14 @@ import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -136,6 +140,7 @@ class CallActionsViewModelTest {
         mockkObject(FileShareVisibilityObserver)
 
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
+        every { callMock.chatId } returns MutableSharedFlow<String>(replay = 1).apply { runBlocking { emit("chatId") } }
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
         every { callMock.isMyCameraEnabled() } returns MutableStateFlow(true)
         every { callMock.hasUsbCamera() } returns MutableStateFlow(false)
@@ -153,7 +158,9 @@ class CallActionsViewModelTest {
         every { callMock.toOtherFilesCreationTimes() } returns MutableStateFlow(listOf())
 
         every { conferenceMock.call } returns MutableStateFlow(callMock)
-        every { conversationMock.create(any()) } returns Result.failure(Throwable())
+        every { conversationMock.state } returns MutableStateFlow(State.Connected)
+        every { conversationMock.create(any<String>()) } returns Result.failure(Throwable())
+        every { conversationMock.chats } returns MutableStateFlow(listOf(mockk(relaxed = true) { every { this@mockk.id } returns "chatId" }))
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         every { whiteboardMock.notificationCount } returns MutableStateFlow(0)
     }
@@ -168,7 +175,7 @@ class CallActionsViewModelTest {
         mockkObject(ConnectionServiceUtils) {
             every { isConnectionServiceEnabled } returns false
             viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
+                mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
             })
 
             advanceUntilIdle()
@@ -182,7 +189,7 @@ class CallActionsViewModelTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
             viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
+                mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
             })
 
             advanceUntilIdle()
@@ -199,7 +206,7 @@ class CallActionsViewModelTest {
             every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
 
             viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
+                mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
             })
 
             advanceUntilIdle()
@@ -216,7 +223,7 @@ class CallActionsViewModelTest {
             every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
 
             viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
+                mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
             })
 
             advanceUntilIdle()
@@ -231,7 +238,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         val current = viewModel.uiState.first().isRinging
@@ -248,7 +255,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(mockk<CallStateUi>())
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         val current = viewModel.uiState.first().isRinging
@@ -266,7 +273,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns actions
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         val current = viewModel.uiState.first().actionList.value
@@ -287,7 +294,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -311,7 +318,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyMicEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -335,7 +342,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.LoudSpeaker)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -358,7 +365,7 @@ class CallActionsViewModelTest {
         every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -379,7 +386,7 @@ class CallActionsViewModelTest {
         every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -398,7 +405,7 @@ class CallActionsViewModelTest {
         every { callMock.toAudioInput() } returns audioFlow
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -425,7 +432,7 @@ class CallActionsViewModelTest {
         every { callMock.toAudioInput() } returns audioFlow
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -452,7 +459,7 @@ class CallActionsViewModelTest {
         every { callMock.toCameraVideoInput() } returns videoFlow
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -479,7 +486,7 @@ class CallActionsViewModelTest {
         every { callMock.toCameraVideoInput() } returns videoFlow
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -507,7 +514,7 @@ class CallActionsViewModelTest {
         every { callMock.hasCameraUsageRestriction() } returns hasUsageRestricted
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -529,7 +536,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -544,7 +551,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -559,7 +566,7 @@ class CallActionsViewModelTest {
         every { callMock.isMeParticipantInitialized() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -574,7 +581,7 @@ class CallActionsViewModelTest {
         every { callMock.isMeParticipantInitialized() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -589,7 +596,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyMicEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -604,7 +611,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyMicEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -620,7 +627,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -636,7 +643,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -652,7 +659,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -668,7 +675,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -684,7 +691,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -699,7 +706,7 @@ class CallActionsViewModelTest {
         every { callMock.isMeParticipantInitialized() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -714,7 +721,7 @@ class CallActionsViewModelTest {
         every { callMock.isMeParticipantInitialized() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -729,7 +736,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.LoudSpeaker)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -744,7 +751,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.EarPiece)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -759,7 +766,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.WiredHeadset)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -774,7 +781,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.Muted)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -789,7 +796,7 @@ class CallActionsViewModelTest {
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.Bluetooth("id", null, null, null))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -806,7 +813,7 @@ class CallActionsViewModelTest {
         every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -823,7 +830,7 @@ class CallActionsViewModelTest {
         every { callMock.isVirtualBackgroundEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -851,7 +858,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -896,7 +903,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
 
         advanceUntilIdle()
@@ -928,7 +935,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -943,7 +950,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -958,7 +965,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -973,7 +980,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -988,7 +995,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1003,7 +1010,7 @@ class CallActionsViewModelTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1018,7 +1025,7 @@ class CallActionsViewModelTest {
         every { callMock.isSharingScreen() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1033,7 +1040,7 @@ class CallActionsViewModelTest {
         every { callMock.isSharingScreen() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1048,7 +1055,7 @@ class CallActionsViewModelTest {
         every { callMock.hasUsbCamera() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1064,7 +1071,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1080,7 +1087,7 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1101,7 +1108,7 @@ class CallActionsViewModelTest {
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1127,7 +1134,7 @@ class CallActionsViewModelTest {
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1153,7 +1160,7 @@ class CallActionsViewModelTest {
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1179,7 +1186,7 @@ class CallActionsViewModelTest {
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1221,7 +1228,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1262,7 +1269,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1310,7 +1317,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs } returns inputs
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1360,7 +1367,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs } returns inputs
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1405,7 +1412,7 @@ class CallActionsViewModelTest {
         var inputMessage: InputMessage? = null
         backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
         viewModel.toggleCamera(activity)
@@ -1445,7 +1452,7 @@ class CallActionsViewModelTest {
         var inputMessage: InputMessage? = null
         backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
         viewModel.toggleCamera(activity)
@@ -1483,7 +1490,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1502,7 +1509,7 @@ class CallActionsViewModelTest {
             every { isConnectionServiceEnabled } returns true
 
             viewModel = spyk(CallActionsViewModel{
-                mockkSuccessfulConfiguration(conference = conferenceMock)
+                mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
             })
             advanceUntilIdle()
 
@@ -1527,7 +1534,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>(relaxed = true)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1550,7 +1557,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(video, mockk<Input.Video.Camera.Usb>(relaxed = true)))
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1572,7 +1579,7 @@ class CallActionsViewModelTest {
         val contextMock = mockk<Context>()
 
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
-        every { conversationMock.chat(any(), any()) } returns Result.success(mockk())
+        every { conversationMock.find(any<String>()) } returns CompletableDeferred(Result.success(mockk(relaxed = true)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock, company = companyMock)
@@ -1582,11 +1589,10 @@ class CallActionsViewModelTest {
         viewModel.showChat(contextMock)
 
         advanceUntilIdle()
-        val expectedUserId = otherParticipantMock.userId
         verify(exactly = 1) {
-            conversationMock.chat(
+            conversationMock.show(
                 context = contextMock,
-                userId = withArg { assertEquals(it, expectedUserId) }
+                chat = any<Chat>()
             )
         }
     }
@@ -1606,9 +1612,13 @@ class CallActionsViewModelTest {
             every { others } returns listOf(otherParticipantMock, companyParticipant)
         }
         val contextMock = mockk<Context>()
-
+        val chatUI: ChatUI = mockk(relaxed = true) {
+            every { isGroup } returns false
+            every { id } returns "chatId"
+        }
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
-        every { conversationMock.chat(any(), any()) } returns Result.success(mockk())
+        every { conversationMock.chats } returns MutableStateFlow(listOf(chatUI))
+        every { conversationMock.find(any()) } returns CompletableDeferred<Result<ChatUI>>(Result.success(chatUI))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock, company = companyMock)
@@ -1618,11 +1628,10 @@ class CallActionsViewModelTest {
         viewModel.showChat(contextMock)
 
         advanceUntilIdle()
-        val expectedUserId = otherParticipantMock.userId
         verify(exactly = 1) {
-            conversationMock.chat(
+            conversationMock.show(
                 context = contextMock,
-                userId = withArg { assertEquals(it, expectedUserId) }
+                chat = chatUI,
             )
         }
     }
@@ -1644,7 +1653,7 @@ class CallActionsViewModelTest {
         val contextMock = mockk<Context>()
 
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
-        every { conversationMock.chat(any(), any()) } returns Result.success(mockk())
+        every { conversationMock.chat(any<Context>(), any<String>()) } returns Result.success(mockk())
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock, company = companyMock)
@@ -1655,52 +1664,48 @@ class CallActionsViewModelTest {
 
         advanceUntilIdle()
         verify(exactly = 0) {
-            conversationMock.chat(any(), any())
+            conversationMock.chat(any<Context>(), any<String>())
         }
     }
 
-    // TODO de-comment this when mtm will be available again
-//    @Test
-//    fun testShowGroupChat() = runTest {
-//        val contextMock = mockk<Context>()
-//        every { conversationMock.chat(any(), any(), any()) } returns Result.success(mockk())
-//        every { callParticipantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2)
-//        advanceUntilIdle()
-//        viewModel.showChat(contextMock)
-//        advanceUntilIdle()
-//        val expectedCallServerId = callMock.serverId.replayCache.first()
-//        val expectedUserIds = listOf(otherParticipantMock.userId, otherParticipantMock2.userId)
-//        verify(exactly = 1) {
-//            conversationMock.chat(
-//                context = contextMock,
-//                userIds = withArg { assertEquals(it, expectedUserIds) },
-//                chatId = withArg { assertEquals(it, expectedCallServerId) }
-//            )
-//        }
-//    }
+    @Test
+    fun mtmWithCompanyParticipant_showChatSuccessful() = runTest {
+        val companyMock = mockk<Company>(relaxed = true) {
+            every { id } returns MutableStateFlow("companyId")
+        }
+        val otherParticipantMock = mockk<CallParticipant>(relaxed = true) {
+            every { userId } returns "userId1"
+        }
+        val companyParticipant = mockk<CallParticipant>(relaxed = true) {
+            every { userId } returns "companyId"
+        }
+        val callParticipantsMock = mockk<CallParticipants>(relaxed = true) {
+            every { others } returns listOf(otherParticipantMock, companyParticipant)
+        }
+        val contextMock = mockk<Context>()
+        val chatUI: ChatUI = mockk(relaxed = true) {
+            every { isGroup } returns true
+            every { id } returns "chatId"
+        }
+        every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
+        every { conversationMock.chats } returns MutableStateFlow(listOf(chatUI))
+        every { conversationMock.find(any()) } returns CompletableDeferred<Result<ChatUI>>(Result.success(chatUI))
 
-    // TODO de-comment this when mtm will be available again
-//    @Test
-//    fun testShowGroupChatWithCompanyIdParticipant() = runTest {
-//        val contextMock = mockk<Context>()
-//        val companyParticipant = mockk<CallParticipant> {
-//            every { userId } returns "companyId"
-//        }
-//        every { conversationMock.chat(any(), any(), any()) } returns Result.success(mockk())
-//        every { callParticipantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2, companyParticipant)
-//        advanceUntilIdle()
-//        viewModel.showChat(contextMock)
-//        advanceUntilIdle()
-//        val expectedCallServerId = callMock.serverId.replayCache.first()
-//        val expectedUserIds = listOf(otherParticipantMock.userId, otherParticipantMock2.userId)
-//        verify(exactly = 1) {
-//            conversationMock.chat(
-//                context = contextMock,
-//                userIds = withArg { assertEquals(it, expectedUserIds) },
-//                chatId = expectedCallServerId
-//            )
-//        }
-//    }
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock, company = companyMock)
+        })
+        advanceUntilIdle()
+
+        viewModel.showChat(contextMock)
+
+        advanceUntilIdle()
+        verify(exactly = 1) {
+            conversationMock.show(
+                context = contextMock,
+                chat = chatUI,
+            )
+        }
+    }
 
     @Test
     fun noScreenShareInputAvailable_stopScreenShareFail() = runTest {
@@ -1715,7 +1720,7 @@ class CallActionsViewModelTest {
         every { callMock.inputs.availableInputs } returns MutableStateFlow(availableInputs)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1747,7 +1752,7 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1780,7 +1785,7 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1802,7 +1807,7 @@ class CallActionsViewModelTest {
         }
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1818,7 +1823,7 @@ class CallActionsViewModelTest {
         }
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1835,7 +1840,7 @@ class CallActionsViewModelTest {
         }
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1871,7 +1876,7 @@ class CallActionsViewModelTest {
         }
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1896,6 +1901,7 @@ class CallActionsViewModelTest {
         val unreadMessageCountFlow = MutableStateFlow(0)
         val chatMock = mockk<ChatUI> {
             every { unreadMessagesCount } returns unreadMessageCountFlow
+            every { id } returns "chatId"
         }
         val companyMock = mockk<Company>(relaxed = true) {
             every { id } returns MutableStateFlow("companyId")
@@ -1911,7 +1917,8 @@ class CallActionsViewModelTest {
         }
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ChatAction()))
         every { callMock.participants } returns MutableStateFlow(participantsMock)
-        every { conversationMock.create(any()) } returns Result.success(chatMock)
+        every { conversationMock.chats } returns MutableStateFlow(listOf(chatMock))
+        every { conversationMock.find(any<String>()) } returns CompletableDeferred(Result.success(chatMock))
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(
                 conference = conferenceMock,
@@ -1935,7 +1942,7 @@ class CallActionsViewModelTest {
         every { whiteboardMock.notificationCount } returns unreadMessageCountFlow
         every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction()))
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 
@@ -1966,7 +1973,7 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
 
         viewModel = spyk(CallActionsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
         advanceUntilIdle()
 

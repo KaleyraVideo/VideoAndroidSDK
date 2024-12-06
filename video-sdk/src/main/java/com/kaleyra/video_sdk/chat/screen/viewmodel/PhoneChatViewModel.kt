@@ -19,10 +19,11 @@ package com.kaleyra.video_sdk.chat.screen.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video_common_ui.ChatViewModel
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager.combinedTheme
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
@@ -36,7 +37,6 @@ import com.kaleyra.video_sdk.chat.mapper.ChatActionsMapper.mapToChatActions
 import com.kaleyra.video_sdk.chat.mapper.ConversationStateMapper.toConnectionState
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.findFirstUnreadMessageId
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.mapToConversationItems
-import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.isGroupChat
 import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.toOtherParticipantsState
 import com.kaleyra.video_sdk.chat.mapper.ParticipantsMapper.toParticipantsDetails
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
@@ -60,7 +60,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
 private data class PhoneChatViewModelState(
     val isGroupChat: Boolean = false,
@@ -73,7 +72,9 @@ private data class PhoneChatViewModelState(
     val participantsState: ChatParticipantsState = ChatParticipantsState(),
     val conversationState: ConversationState = ConversationState(),
     val isInCall: Boolean = false,
-    val isUserConnected: Boolean = true
+    val isUserConnected: Boolean = true,
+    val isDeleted: Boolean = false,
+    val hasFailedCreation: Boolean = false
 ) {
 
     fun toUiState(): ChatUiState {
@@ -87,7 +88,9 @@ private data class PhoneChatViewModelState(
                 connectionState = connectionState,
                 conversationState = conversationState,
                 isInCall = isInCall,
-                isUserConnected = isUserConnected
+                isUserConnected = isUserConnected,
+                isDeleted = isDeleted,
+                hasFailedCreation = hasFailedCreation
             )
         } else {
             ChatUiState.OneToOne(
@@ -96,7 +99,9 @@ private data class PhoneChatViewModelState(
                 connectionState = connectionState,
                 conversationState = conversationState,
                 isInCall = isInCall,
-                isUserConnected = isUserConnected
+                isUserConnected = isUserConnected,
+                isDeleted = isDeleted,
+                hasFailedCreation = hasFailedCreation
             )
         }
     }
@@ -121,8 +126,14 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     init {
         viewModelScope.launch {
-            val isGroupChat = participants.first().isGroupChat()
-            viewModelState.update { it.copy(isGroupChat = isGroupChat) }
+            val chat = chat.first()
+            val isGroupChat = chat.isGroup && chat.participants.value.others.size > 1
+            viewModelState.update {
+                it.copy(
+                    isGroupChat = isGroupChat,
+                    chatName = chat.name ?: ""
+                )
+            }
 
             if (isGroupChat) {
                 // TODO bind the chat name and chat image when the mtm chats will be available
@@ -155,6 +166,23 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
                         }
                     }.launchIn(this)
             }
+
+            chat.name?.let { chatName ->
+                viewModelState.update {
+                    it.copy(chatName = chatName)
+                }
+            }
+
+            findFirstUnreadMessageId(chat.messages.first(), chat::fetch).also {
+                firstUnreadMessageId.value = it
+            }
+
+            messages
+                .onEach { messagesUI ->
+                    val newItems = messagesUI.list.mapToConversationItems(firstUnreadMessageId = firstUnreadMessageId.value)
+                    updateConversationItems(newItems)
+                }
+                .launchIn(this)
         }
 
         actions
@@ -182,23 +210,20 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
             .onEach { count -> updateUnreadMessagesCount(count) }
             .launchIn(viewModelScope)
 
+        chat
+            .flatMapLatest { it.state }
+            .onEach { state ->
+                when (state) {
+                    Chat.State.Closed.Companion -> viewModelState.update { it.copy(isDeleted = true) }
+                    Chat.State.Closed.Error.InvalidParticipants -> viewModelState.update { it.copy(hasFailedCreation = true, isDeleted = true) }
+                    else -> Unit
+                }
+            }
+            .launchIn(viewModelScope)
+
         connectedUser
             .onEach { user -> viewModelState.update { it.copy(isUserConnected = user != null) } }
             .launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            val chat = chat.first()
-            findFirstUnreadMessageId(chat.messages.first(), chat::fetch).also {
-                firstUnreadMessageId.value = it
-            }
-
-            messages
-                .onEach { messagesUI ->
-                    val newItems = messagesUI.list.mapToConversationItems(firstUnreadMessageId = firstUnreadMessageId.value)
-                    updateConversationItems(newItems)
-                }
-                .launchIn(this)
-        }
     }
 
     fun sendMessage(text: String) {
@@ -260,10 +285,12 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
 
     private fun call(preferredType: Call.PreferredType, maxDuration: Long? = null, recordingType: Call.Recording.Type? = null) {
         val conference = conference.getValue() ?: return
+        if (conference.state.value !is State.Connected) return
         val chat = chat.getValue() ?: return
-        val userId = chat.participants.value.others.first().userId
-        conference.call(listOf(userId)) {
+        val userId = chat.participants.value.others.map { it.userId }
+        conference.call(userId) {
             this.preferredType = preferredType
+            this.chatId = chat.id
             this.maxDuration = maxDuration
             this.recordingType = recordingType ?: Call.Recording.Type.Never
         }

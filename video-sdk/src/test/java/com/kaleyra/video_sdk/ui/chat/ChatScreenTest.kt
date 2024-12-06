@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.ui.chat
 
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,8 +37,12 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.ui.performScrollUp
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -76,15 +81,22 @@ class ChatScreenTest {
 
     private var onSendMessage = false
 
+    private var onChatDeleted = false
+
+    private var onChatCreationFailed = false
+
     private var onTyping = false
 
     @Before
     fun setUp() {
+        uiState.update { it.copy(isDeleted = false) }
         composeTestRule.setContent {
             ChatScreen(
                 uiState = uiState.collectAsState().value,
                 userMessage = userMessage,
                 onBackPressed = { onBackPressed = true },
+                onChatDeleted = { onChatDeleted = true },
+                onChatCreationFailed = { onChatCreationFailed = true },
                 onMessageScrolled = { onMessageScrolled = true },
                 onResetMessagesScroll = { onResetMessagesScroll = true },
                 onFetchMessages = { onFetchMessages = true },
@@ -105,6 +117,8 @@ class ChatScreenTest {
             actions = mockActions
         )
         onBackPressed = false
+        onChatDeleted = false
+        onChatCreationFailed = false
         onMessageScrolled = false
         onResetMessagesScroll = false
         onFetchMessages = false
@@ -208,6 +222,20 @@ class ChatScreenTest {
         val ongoingCall = composeTestRule.activity.getString(R.string.kaleyra_ongoing_call_label)
         uiState.update { it.copy(isInCall = true) }
         composeTestRule.onNodeWithText(ongoingCall).assertDoesNotExist()
+    }
+
+    @Test
+    fun chatHasFailedCreation_onBackPressedInvoked() {
+        uiState.update { it.copy(hasFailedCreation = true) }
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsNotDisplayed()
+        assert(onChatCreationFailed)
+    }
+
+    @Test
+    fun channelIsDeleted_chatInputNotShown() {
+        uiState.update { it.copy(isDeleted = true) }
+        composeTestRule.onNodeWithTag(TextFieldTag).assertDoesNotExist()
+        assert(onChatDeleted)
     }
 
     private fun findMessages() = composeTestRule.onNodeWithTag(ConversationComponentTag)

@@ -18,10 +18,12 @@ package com.kaleyra.video_common_ui
 
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.State
+import com.kaleyra.video.conversation.Chat
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.lastOrNull
 
 /**
  * ChatViewModel representation of the chat view model
@@ -59,23 +61,47 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
     /**
      * Set the current one-to-one chat by passing the other participant's userId
      * @param loggedUserId String optional logged user identification if the user has already connected or is connecting
-     * @param userId String the other participant's userId
+     * @param chatId String Chat id associated with the chat to be set
      * @return ChatUI? the retrieved ChatUI if available
      */
-    suspend fun setChat(loggedUserId: String?, userId: String): ChatUI? {
+    suspend fun setChat(loggedUserId: String?, chatId: String): ChatUI? {
         val conversation = conversation.first()
-
         if (!KaleyraVideo.isConfigured) {
             val hasConfigured = requestConfiguration()
             if (!hasConfigured) return null
         }
-
         if (KaleyraVideo.conversation.state.value is State.Disconnected) {
             requestConnect(loggedUserId)
         }
 
-        val chat = conversation.create(userId).getOrNull() ?: return null
-        _chat.tryEmit(chat)
+        val getChatById: (ChatUI) -> Boolean = {
+            it.id == chatId
+        }
+        val getChatByServerId: suspend (ChatUI) -> Boolean = {
+            it.serverId.first() == chatId
+        }
+
+        var chat: ChatUI? = null
+
+        kotlin.runCatching {
+            conversation.state.first { it is State.Connected }
+            var foundByServerId = false
+            val foundById = conversation.chats.getValue()?.any { getChatById(it) } ?: false
+            if (!foundById) {
+                val chatFoundByServerId = conversation.find(chatId).await()
+                foundByServerId = chatFoundByServerId.isSuccess
+            }
+
+            if (foundById || foundByServerId) {
+                conversation.chats.first {
+                    it.lastOrNull { getChatById(it) || getChatByServerId(it) }?.let {
+                        _chat.emit(it)
+                        chat = it
+                    } != null
+                }
+            }
+        }
+
         return chat
     }
 }

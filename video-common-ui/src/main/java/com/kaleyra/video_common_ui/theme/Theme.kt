@@ -7,6 +7,7 @@ import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.theme.factory.ColorSchemeFactory
 import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
+import com.kaleyra.video_common_ui.theme.utils.DynamicSchemeExtensions.toColorScheme
 
 /**
  * Represents a theme configuration for [KaleyraVideo].
@@ -175,6 +176,15 @@ data class Theme(
         var surfaceContainerLow: ColorResource,
         var surfaceContainerLowest: ColorResource,
     ) {
+        companion object {
+            fun monochrome(): Palette {
+                return Palette(
+                    ColorSchemeFactory.lightSchemeMonochrome.toColorScheme(),
+                    ColorSchemeFactory.darkSchemeMonochrome.toColorScheme()
+                )
+            }
+        }
+
         /**
          * Creates a new [Palette] instance using a single[ColorResource] as a seed for both light and dark themes.
          *

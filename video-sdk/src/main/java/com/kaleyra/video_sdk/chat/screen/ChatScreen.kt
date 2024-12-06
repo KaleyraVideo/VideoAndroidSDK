@@ -19,6 +19,7 @@
 package com.kaleyra.video_sdk.chat.screen
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -98,6 +99,7 @@ import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.CollaborationTheme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.launch
 
 internal const val ConversationComponentTag = "ConversationComponentTag"
@@ -105,6 +107,8 @@ internal const val ConversationComponentTag = "ConversationComponentTag"
 @Composable
 internal fun ChatScreen(
     onBackPressed: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
     viewModel: PhoneChatViewModel,
     embedded: Boolean = false
 ) {
@@ -123,6 +127,8 @@ internal fun ChatScreen(
             uiState = uiState,
             userMessage = userMessage,
             onBackPressed = onBackPressed,
+            onChatDeleted = onChatDeleted,
+            onChatCreationFailed = onChatCreationFailed,
             embedded = embedded,
             onMessageScrolled = viewModel::onMessageScrolled,
             onResetMessagesScroll = viewModel::onAllMessagesScrolled,
@@ -146,7 +152,9 @@ internal fun ChatScreen(
     onShowCall: () -> Unit,
     onSendMessage: (String) -> Unit,
     onTyping: () -> Unit,
-    embedded: Boolean = false
+    embedded: Boolean = false,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val topBarRef = remember { FocusRequester() }
@@ -296,17 +304,24 @@ internal fun ChatScreen(
 
                 HorizontalDivider(color = chatUserInputContainerColor)
 
-                ChatUserInput(
-                    modifier = Modifier
-                        .onGloballyPositioned {
-                            fabPadding = it.boundsInRoot().height
-                        }
-                        .navigationBarsPadding()
-                        .let { if (!embedded) it.imePadding() else it },
-                    onTextChanged = onTyping,
-                    onMessageSent = onMessageSent,
-                    onDirectionLeft = topBarRef::requestFocus
-                )
+                if (uiState.hasFailedCreation) onChatCreationFailed()
+                else if (uiState.isDeleted) onChatDeleted()
+
+                val displayChatInput = !uiState.hasFailedCreation && !uiState.isDeleted
+
+                if (displayChatInput) {
+                    ChatUserInput(
+                        modifier = Modifier
+                            .onGloballyPositioned {
+                                fabPadding = it.boundsInRoot().height
+                            }
+                            .navigationBarsPadding()
+                            .let { if (!embedded) it.imePadding() else it },
+                        onTextChanged = onTyping,
+                        onMessageSent = onMessageSent,
+                        onDirectionLeft = topBarRef::requestFocus
+                    )
+                }
             }
         }
     }
@@ -370,5 +385,7 @@ internal fun ChatScreenPreview() = KaleyraTheme {
         onSendMessage = { },
         onTyping = { },
         userMessage = RecordingMessage.Started,
+        onChatCreationFailed = {},
+        onChatDeleted = {},
     )
 }

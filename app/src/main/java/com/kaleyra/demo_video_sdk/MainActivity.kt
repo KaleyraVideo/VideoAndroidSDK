@@ -423,36 +423,23 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         binding!!.ongoingCallLabel.visibility = View.GONE
     }
 
-    /**
-     * This is how a chat is started. You must provide one users alias identifying the user your user wants to communicate with.
-     * Starting a chat is an asynchronous process, failure or success is reported in the callback provided.
-     *
-     *
-     * WARNING!!!
-     * Be aware that all the observers in this SDK, MUST NOT be defined as anonymous class because the call client will have a weak reference to them to avoid leaks and other scenarios.
-     * If you do implement the observer anonymously the methods may not be called.
-     */
     fun onChatClicked(view: View?) {
         if (calleeSelected.isEmpty()) {
             showErrorDialog(resources.getString(string.oto_chat_error_no_selected_user))
             return
         }
-        if (calleeSelected.size > 1) {
-            showErrorDialog(resources.getString(string.oto_chat_error_group_selected))
-            return
-        }
         hideKeyboard(this)
-        KaleyraVideo.conversation.chat(this, calleeSelected[0]).getOrNull()
+        if (calleeSelected.size == 1) {
+            KaleyraVideo.conversation.chat(this, calleeSelected[0]).getOrNull()
+        } else {
+            KaleyraVideo.conversation.chat(this, calleeSelected).getOrNull()
+        }
+
     }
 
     /**
      * This is how a call is started. You must provide one users alias identifying the user your user wants to communicate with.
      * Starting a chat is an asynchronous process, failure or success is reported in the callback provided.
-     *
-     *
-     * WARNING!!!
-     * Be aware that all the observers in this SDK, MUST NOT be defined as anonymous class because the call client will have a weak reference to them to avoid leaks and other scenarios.
-     * If you do implement the observer anonymously the methods may not be called.
      */
     fun onCallClicked(v: View?) {
         if (calleeSelected.isEmpty()) {

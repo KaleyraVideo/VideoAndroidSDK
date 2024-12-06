@@ -66,4 +66,8 @@
     <string name="kaleyra_utterance_recording_failed">Falha na gravação. Desligue e tente novamente</string>
     <string name="kaleyra_utterance_recording_started">Gravação iniciada agora</string>
     <string name="kaleyra_utterance_recording_stopped">Gravação interrompida</string>
+    <plurals name="kaleyra_new_messages">
+        <item quantity="one">%s nova mensagem</item>
+        <item quantity="other">Novas mensagens: %s</item>
+    </plurals>
 </resources>

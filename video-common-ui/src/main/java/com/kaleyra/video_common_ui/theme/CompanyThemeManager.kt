@@ -28,8 +28,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 
-val KaleyraPaletteSeed = Color(0xFF2A638A).toArgb()
-
 /**
  * Utility functions for the Company Theme
  */
@@ -49,8 +47,8 @@ object CompanyThemeManager {
                 val darkLogo = theme.night.logo ?: Uri.EMPTY
                 val uriResource = URIResource(lightLogo, darkLogo)
 
-                val lightSeed = (theme.day.colors as? Company.Theme.Style.Colors.Seed)?.color ?: KaleyraPaletteSeed
-                val darkSeed = (theme.night.colors as? Company.Theme.Style.Colors.Seed)?.color ?: KaleyraPaletteSeed
+                val lightSeed = (theme.day.colors as? Company.Theme.Style.Colors.Seed)?.color ?: Color.Black.toArgb()
+                val darkSeed = (theme.night.colors as? Company.Theme.Style.Colors.Seed)?.color ?: Color.White.toArgb()
                 val colorResource = ColorResource(lightSeed, darkSeed)
 
                 mapToCombinedTheme(uiTheme, uriResource, colorResource)
@@ -60,7 +58,7 @@ object CompanyThemeManager {
     private fun mapToCombinedTheme(
         uiTheme: KaleyraVideo.Theme?,
         remoteURIResource: URIResource = URIResource(Uri.EMPTY, Uri.EMPTY),
-        remoteColorResource: ColorResource = ColorResource(KaleyraPaletteSeed),
+        remoteColorResource: ColorResource? = null
     ): Theme {
         return when (uiTheme) {
             is CompanyUI.Theme -> {
@@ -68,8 +66,8 @@ object CompanyThemeManager {
                 val darkLogo = uiTheme.night.logo ?: remoteURIResource.dark
                 val logo = Theme.Logo(URIResource(lightLogo, darkLogo))
 
-                val lightSeed = (uiTheme.day.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource.light
-                val darkSeed = (uiTheme.night.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource.dark
+                val lightSeed = (uiTheme.day.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource?.light ?: Color.Black.toArgb()
+                val darkSeed = (uiTheme.night.colors as? CompanyUI.Theme.Colors.Seed)?.color ?: remoteColorResource?.dark ?: Color.White.toArgb()
                 val palette = Theme.Palette(ColorResource(lightSeed, darkSeed))
 
                 val typography = Theme.Typography(uiTheme.fontFamily)
@@ -87,13 +85,13 @@ object CompanyThemeManager {
             is Theme -> {
                 Theme(
                     logo = uiTheme.logo ?: Theme.Logo(remoteURIResource),
-                    palette = uiTheme.palette ?: Theme.Palette(remoteColorResource),
+                    palette = uiTheme.palette ?: remoteColorResource?.let { Theme.Palette(it) } ?: Theme.Palette.monochrome(),
                     typography = uiTheme.typography,
                     config = uiTheme.config
                 )
             }
 
-            else -> Theme(Theme.Logo(remoteURIResource), Theme.Palette(remoteColorResource))
+            else -> Theme(Theme.Logo(remoteURIResource), remoteColorResource?.let { Theme.Palette(it) } ?: Theme.Palette.monochrome())
         }
     }
 }

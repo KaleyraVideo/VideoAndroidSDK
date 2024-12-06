@@ -113,6 +113,8 @@ internal fun VCallScreen(
     onModularComponentDisplayed: (ModularComponent?) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
+    onChatDeleted: () -> Unit,
+    onChatCreationFailed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val callActionsViewModel: CallActionsViewModel = viewModel(
@@ -367,6 +369,7 @@ internal fun VCallScreen(
                                             viewModel = brandLogoViewModel,
                                             modifier = Modifier
                                                 .height(if (isLargeScreen) 96.dp else 48.dp)
+                                                .padding(horizontal = if (isLargeScreen) 16.dp else 8.dp)
                                                 .fillMaxWidth()
                                         )
                                     }
@@ -391,6 +394,14 @@ internal fun VCallScreen(
                             SidePanel(
                                 modularComponent = component,
                                 onDismiss = { onSidePanelComponentRequest(null) },
+                                onChatDeleted = {
+                                    onSidePanelComponentRequest(null)
+                                    onChatDeleted()
+                                },
+                                onChatCreationFailed = {
+                                    onSidePanelComponentRequest(null)
+                                    onChatCreationFailed()
+                                },
                                 onComponentDisplayed = onModularComponentDisplayed,
                                 modifier = Modifier
                                     .weight(sidePanelWeight)

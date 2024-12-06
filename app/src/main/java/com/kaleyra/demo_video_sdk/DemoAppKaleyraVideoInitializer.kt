@@ -18,8 +18,6 @@ package com.kaleyra.demo_video_sdk
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.app_configuration.model.UserDetailsProviderMode.CUSTOM
 import com.kaleyra.app_configuration.utils.MediaStorageUtils.getUriFromString
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -34,7 +32,6 @@ import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.theme.Theme
-import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
 import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
 import kotlinx.coroutines.MainScope

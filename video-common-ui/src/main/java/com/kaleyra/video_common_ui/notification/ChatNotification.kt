@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.KaleyraVideo.conversation
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
+import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.HostAppInfo
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -60,11 +61,10 @@ internal class ChatNotification {
      * @property context The context used to construct the notification
      * @property channelId The notification channel id
      * @property channelName The notification channel name showed to the users
-     * @property loggedUserId The logged user id
-     * @property username The local user name
-     * @property userId The local user id
-     * @property avatar The local user avatar
-     * @property contentTitle The notification title
+     * @property myUserId The logged user id
+     * @property myUsername The local user name
+     * @property myAvatar The local user avatar
+     * @property contentTitle String? The notification title if any
      * @property messages The message list
      * @property isGroupChat True if it's a group chat notification. False otherwise
      * @property contentIntent The pending intent to be executed when the user tap on the notification
@@ -77,11 +77,10 @@ internal class ChatNotification {
         val context: Context,
         val channelId: String,
         val channelName: String,
-        var username: String = "",
-        var loggedUserId: String = "",
-        var userId: String = "",
-        var avatar: Uri = Uri.EMPTY,
-        var contentTitle: String = "",
+        var myUsername: String = "",
+        var myUserId: String = "",
+        var myAvatar: Uri = Uri.EMPTY,
+        var contentTitle: String? = null,
         var messages: List<ChatNotificationMessage> = listOf(),
         var isGroupChat: Boolean = false,
         var contentIntent: PendingIntent? = null,
@@ -93,26 +92,18 @@ internal class ChatNotification {
         /**
          * Set the username
          *
-         * @param text The user name
+         * @param myUsername The user name
          * @return Builder
          */
-        fun username(text: String) = apply { this.username = text }
-
-        /**
-         * Set the user id
-         *
-         * @param userId The user id
-         * @return Builder
-         */
-        fun userId(userId: String) = apply { this.userId = userId }
+        fun myUsername(myUsername: String) = apply { this.myUsername = myUsername }
 
         /**
          * Set the logged id
          *
-         * @param loggedUsedId The logged id
+         * @param myUserId The logged id
          * @return Builder
          */
-        fun loggedUserId(loggedUsedId: String) = apply { this.loggedUserId = loggedUsedId }
+        fun myUserId(myUserId: String) = apply { this.myUserId = myUserId }
 
         /**
          * Set the user avatar
@@ -120,7 +111,7 @@ internal class ChatNotification {
          * @param uri The avatar Uri
          * @return Builder
          */
-        fun avatar(uri: Uri) = apply { this.avatar = uri }
+        fun myAvatar(uri: Uri) = apply { this.myAvatar = uri }
 
         /**
          * Set notification title
@@ -193,19 +184,15 @@ internal class ChatNotification {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 createNotificationChannel(context, channelId, channelName)
 
-            val bitmapAvatar = withTimeoutOrNull(3000) { avatar.toBitmap().getOrNull() }
-            val iconAvatar = bitmapAvatar?.let { IconCompat.createWithBitmap(bitmapAvatar) }
-
-            val applicationIcon =
-                context.applicationContext.packageManager.getApplicationIcon(HostAppInfo.name)
+            val myBitmapAvatar = withTimeoutOrNull(3000) { myAvatar.toBitmap().getOrNull() }
+            val myIconAvatar = myBitmapAvatar?.let { IconCompat.createWithBitmap(myBitmapAvatar) }
             val person = Person.Builder()
-                .also { builder -> iconAvatar?.let { builder.setIcon(it) } }
-                .setName(username.takeIf { it.isNotEmpty() } ?: " ")
-                .setKey(userId)
+                .also { builder -> myIconAvatar?.let { builder.setIcon(it) } }
+                .setName(myUsername.takeIf { it.isNotEmpty() } ?: " ")
+                .setKey(myUserId)
                 .build()
 
-            val messagingStyle: NotificationCompat.MessagingStyle =
-                /*
+            /*
                  * This API's behavior was changed in SDK version P. If your application's target version is
                  * less than {@link Build.VERSION_CODES#P}, setting a conversation title to
                  * a non-null value will make {@link #isGroupConversation()} return
@@ -215,6 +202,7 @@ internal class ChatNotification {
                  * In {@code P} and above, this method does not affect group conversation
                  * settings.
                  */
+            val messagingStyle: NotificationCompat.MessagingStyle =
                 NotificationCompat.MessagingStyle(person)
                     .setConversationTitle(contentTitle)
                     .setGroupConversation(isGroupChat)
@@ -237,8 +225,16 @@ internal class ChatNotification {
 
             val messageCount = messages.count()
 
+            val applicationIcon =
+                context.applicationContext.packageManager.getApplicationIcon(HostAppInfo.name)
+
+            val newMessagesText = ContextRetainer.context.resources.getQuantityString(R.plurals.kaleyra_new_messages, messageCount, messageCount)
+
             val builder =
                 NotificationCompat.Builder(context.applicationContext, channelId)
+                    .setContentTitle(this@Builder.contentTitle ?: messages.firstOrNull()?.displayName)
+                    .setContentText(if (messages.size == 1) messages.first().text else newMessagesText)
+                    .setNumber(messageCount)
                     .setStyle(messagingStyle)
                     .setSmallIcon(R.drawable.ic_kaleyra_chat)
                     .setLargeIcon(applicationIcon.toBitmap())
@@ -247,16 +243,22 @@ internal class ChatNotification {
                     // devices and all Wear devices. If you have more than one notification and
                     // you prefer a different summary notification, set a group key and create a
                     // summary notification via
-                    .setGroupSummary(true)
-                    .setGroup(userId)
+                    .setGroup(channelId)
+                    .setGroupSummary(isGroupChat)
+                    .also {
+                        if (isGroupChat) {
+                            it.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY);
+                        }
+                    }
                     .setAutoCancel(true)
+                    .setShowWhen(true)
+                    .setWhen(System.currentTimeMillis())
                     // Number of new notifications for API <24 (M and below) devices.
-                    .setSubText("$messageCount")
-                    .setCategory(Notification.CATEGORY_MESSAGE)
+                    .setSubText(newMessagesText)
+                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setNumber(messageCount)
-
 
             contentIntent?.also { builder.setContentIntent(it) }
             replyIntent?.also { builder.addAction(createReplyAction(context, it)) }

@@ -60,4 +60,8 @@
         <item quantity="one">%s te ha eliminado de la llamada</item>
         <item quantity="other">El administrador te ha eliminado de la llamada</item>
     </plurals>
+    <plurals name="kaleyra_new_messages">
+        <item quantity="one">%s nuevo mensaje</item>
+        <item quantity="other">Nuevos mensajes: %s</item>
+    </plurals>
 </resources>

@@ -28,6 +28,7 @@ import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -51,19 +52,18 @@ internal interface ChatNotificationManager {
 
     fun cancelChatNotificationOnShow(scope: CoroutineScope) {
         DisplayedChatActivity.chatId
-            .filter { it != null }
-            .onEach { NotificationManager.cancel(it!!.hashCode()) }
+            .filterNotNull()
+            .onEach { NotificationManager.cancel(it.hashCode()) }
             .launchIn(scope)
     }
 
     /**
      * Build the chat notification
      *
-     * @param loggedUserId String Logged user id
-     * @param otherUserId String The other user id
-     * @param otherUserName String The other user name
-     * @param otherUserAvatar Uri The other user avatar
-     * @param chatId String? optional chat identifier
+     * @param myUserName String The other user name
+     * @param myAvatar Uri The other user avatar
+     * @param chatId String chat identifier
+     * @param isGroup Boolean determines if the chat is a group chat
      * @param chatTitle String? optional chat title
      * @param messages List<ChatNotificationMessage> The list of messages
      * @param activityClazz Class<*> The chat activity Class<*>
@@ -71,11 +71,11 @@ internal interface ChatNotificationManager {
      * @return Notification
      */
     suspend fun buildChatNotification(
-        loggedUserId: String,
-        otherUserId: String,
-        otherUserName: String,
-        otherUserAvatar: Uri,
-        chatId: String?,
+        myUserId: String,
+        myUserName: String,
+        myAvatar: Uri,
+        chatId: String,
+        isGroup: Boolean,
         chatTitle: String?,
         messages: List<ChatNotificationMessage>,
         activityClazz: Class<*>,
@@ -84,11 +84,11 @@ internal interface ChatNotificationManager {
         val context = ContextRetainer.context
 
         val otherUserIds = messages.map { it.userId }.distinct()
-        val contentIntent = contentPendingIntent(context, activityClazz, loggedUserId, otherUserIds, chatId)
+        val contentIntent = contentPendingIntent(context, activityClazz, myUserId, otherUserIds, chatId)
         // Pending intent =
         //      API <24 (M and below): activity so the lock-screen presents the auth challenge.
         //      API 24+ (N and above): this should be a Service or BroadcastReceiver.
-        val replyIntent = replyPendingIntent(context, otherUserIds, chatId) ?: contentIntent
+        // val replyIntent = replyPendingIntent(context, otherUserIds, chatId) ?: contentIntent
 
         val builder = ChatNotification
             .Builder(
@@ -96,42 +96,39 @@ internal interface ChatNotificationManager {
                 DEFAULT_CHANNEL_ID,
                 context.resources.getString(R.string.kaleyra_notification_chat_channel_name)
             )
-            .userId(otherUserId)
-            .loggedUserId(loggedUserId)
-            .username(otherUserName)
-            .avatar(otherUserAvatar)
+            .myUserId(myUserId)
+            .myUsername(myUserName)
+            .myAvatar(myAvatar)
             .also { builder ->
                 chatTitle?.let { builder.contentTitle(it) }
             }
-            .isGroupChat(true) // Always true because of a notification ui bug
+            .isGroupChat(isGroup) // Always true because of a notification ui bug
 //            .isGroupChat(messages.map { it.userId }.distinct().count() > 1)
             .contentIntent(contentIntent)
 //            .replyIntent(replyIntent)
 //            .markAsReadIntent(markAsReadIntent(context, otherUserId))
             .messages(messages)
 
-        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it,loggedUserId, otherUserIds, chatId)) }
+        fullScreenIntentClazz?.let { builder.fullscreenIntent(fullScreenPendingIntent(context, it, myUserId, otherUserIds, chatId)) }
         return builder.build()
     }
 
-    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
+    private fun contentPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
 
-    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, loggedUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, loggedUserId, userIds, chatId)
+    private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
+        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
 
     private fun <T> createChatActivityPendingIntent(
         context: Context,
         requestCode: Int,
         activityClazz: Class<T>,
         loggedUserId: String,
-        userIds: List<String>,
         chatId: String?
     ): PendingIntent {
         val applicationContext = context.applicationContext
         val intent = Intent(applicationContext, activityClazz).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(ChatActivity.USER_IDS_KEY, userIds.toTypedArray())
             putExtra(ChatActivity.LOGGED_USER_ID_KEY, loggedUserId)
             chatId?.let { putExtra(ChatActivity.CHAT_ID_KEY, it) }
         }

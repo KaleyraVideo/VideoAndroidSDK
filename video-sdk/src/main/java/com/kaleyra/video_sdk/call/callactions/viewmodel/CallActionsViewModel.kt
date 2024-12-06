@@ -22,10 +22,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video.conversation.Chat
+import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
@@ -69,6 +71,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -97,6 +100,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         get() = call.getValue()?.inputs?.availableInputs?.value
 
     private var lastFileShareCreationTime = MutableStateFlow(-1L)
+
+    private val chat: MutableSharedFlow<Chat> = MutableSharedFlow(replay = 1)
 
     init {
         viewModelScope.launch {
@@ -175,14 +180,17 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is ScreenShareAction.App -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is ScreenShareAction.WholeDevice -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
                         )
+
                         is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
@@ -255,16 +263,41 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
-            val chat = getChat(call)
-            if (chat != null) {
-                combine(
-                    uiState.map { it.actionList.value },
-                    chat.unreadMessagesCount
-                ) { actionList, unreadMessagesCount ->
-                    updateAction<ChatAction>(actionList) { action ->
-                        action.copy(notificationCount = unreadMessagesCount)
+
+            val conversation = conversation.first()
+            val chatId = call.chatId.first()
+
+            val getChatById: (ChatUI) -> Boolean = {
+                it.id == chatId
+            }
+            val getChatByServerId: suspend (ChatUI) -> Boolean = {
+                it.serverId.first() == chatId
+            }
+
+            kotlin.runCatching {
+                conversation.state.first { it is State.Connected }
+                var foundByServerId = false
+                val foundById = conversation.chats.getValue()?.any { getChatById(it) } ?: false
+                if (!foundById) {
+                    val chatFoundByServerId = conversation.find(chatId).await()
+                    foundByServerId = chatFoundByServerId.isSuccess
+                }
+
+                if (foundById || foundByServerId) {
+                    conversation.chats.first {
+                        it.lastOrNull { getChatById(it) || getChatByServerId(it) }?.let {
+                            this@CallActionsViewModel.chat.emit(it)
+                            combine(
+                                uiState.map { it.actionList.value },
+                                it.unreadMessagesCount
+                            ) { actionList, unreadMessagesCount ->
+                                updateAction<ChatAction>(actionList) { action ->
+                                    action.copy(notificationCount = unreadMessagesCount)
+                                }
+                            }.launchIn(this)
+                        } != null
                     }
-                }.launchIn(this)
+                }
             }
         }
     }
@@ -354,14 +387,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
     }
 
     fun showChat(context: Context) {
-        val conversation = conversation.getValue()
-        val call = call.getValue()
-        val participants = call?.participants?.getValue()
-        if (conversation == null || participants == null) return
-        val companyId = company.getValue()?.id?.getValue()
-        val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        if (otherParticipants.size > 1) return
-        conversation.chat(context = context, otherParticipants.first())
+        val conversation = conversation.getValue() ?: return
+        viewModelScope.launch {
+            val chat = chat.first()
+            conversation.show(context, chat)
+        }
     }
 
     // TODO remove code duplication in StreamViewModel
@@ -386,15 +416,6 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val creationTimes = call?.toOtherFilesCreationTimes()?.first()
             val maxCreationTime = creationTimes?.maxOrNull() ?: return@launch
             lastFileShareCreationTime.value = maxCreationTime
-        }
-    }
-
-    private fun getChat(call: Call): Chat? {
-        val companyId = company.getValue()?.id?.getValue()
-        val participants = call.participants.value
-        val otherParticipants = participants.others.filter { it.userId != companyId }.map { it.userId }
-        return otherParticipants.firstOrNull()?.let { others ->
-            conversation.getValue()?.create(others)?.getOrNull()
         }
     }
 

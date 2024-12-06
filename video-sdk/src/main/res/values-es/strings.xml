@@ -127,6 +127,8 @@
     <string name="kaleyra_call_info_recording">Esta llamada será grabada</string>
     <string name="kaleyra_call_left_alone">Quedaste solo/a</string>
     <string name="kaleyra_call_offline">Estás fuera de línea</string>
+    <string name="kaleyra_chat_creation_failed">La creación de la conversación ha fallado.</string>
+    <string name="kaleyra_chat_deleted">La conversación ha sido eliminada.</string>
     <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botones</string>
     <string name="kaleyra_call_status_answered_on_other_device">Has respondido en otro dispositivo.</string>
@@ -293,6 +295,7 @@
     <string name="kaleyra_input_text_default_error">Error de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envía un mensaje para iniciar la comunicación</string>
     <string name="kaleyra_call_failed">Llamada fallida</string>
+    <string name="kaleyra_chat_participants_is_online">está en línea</string>
     <string name="kaleyra_app_icon">Icono de la aplicación</string>
     <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
     <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>

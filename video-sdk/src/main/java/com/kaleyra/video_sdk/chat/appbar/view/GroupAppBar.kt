@@ -97,9 +97,12 @@ private fun textFor(
             typingCount
         )
 
+        onlineCount == 1 -> participantsState.online.value.first() + " " + stringResource(
+            R.string.kaleyra_chat_participants_is_online
+        )
+
         onlineCount > 0 -> stringResource(
             R.string.kaleyra_chat_participants_online,
-            onlineCount,
             onlineCount
         )
 

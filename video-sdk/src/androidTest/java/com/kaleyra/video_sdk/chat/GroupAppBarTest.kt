@@ -162,6 +162,13 @@ class GroupAppBarTest {
     }
 
     @Test
+    fun oneParticipantOnline_isOnlineTextDisplayed() {
+        val users = listOf("mary")
+        participantsState = ChatParticipantsState(online = ImmutableList(users))
+        getSubtitle().assertContentDescriptionEquals(users.first() + " " + composeTestRule.activity.getString(R.string.kaleyra_chat_participants_is_online))
+    }
+
+    @Test
     fun isInCallTrue_actionsAreNotDisplayed() {
         composeTestRule.onNodeWithTag(ChatActionsTag).assertIsDisplayed()
         isInCall = true

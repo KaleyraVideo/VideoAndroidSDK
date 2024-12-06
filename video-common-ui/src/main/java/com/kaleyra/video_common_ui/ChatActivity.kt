@@ -31,7 +31,6 @@ abstract class ChatActivity : FragmentActivity() {
     companion object {
         internal const val LOGGED_USER_ID_KEY = "loggedUserId"
         internal const val CHAT_ID_KEY = "chatId"
-        internal const val USER_IDS_KEY = "userIds"
     }
 
     protected abstract val viewModel: ChatViewModel
@@ -69,14 +68,10 @@ abstract class ChatActivity : FragmentActivity() {
     }
 
     private suspend fun setChat(intent: Intent): Boolean {
-        val userIds = intent.extras?.getStringArray(USER_IDS_KEY) ?: return false
-        val chatId = intent.extras?.getString(CHAT_ID_KEY)
-        if (userIds.size > 1 && chatId == null) return false
-        val chat = if (userIds.size > 1) {
-            return false
-        } else {
-            viewModel.setChat(intent.extras?.getString(LOGGED_USER_ID_KEY, null), userIds.first()) ?: return false
-        }
+        val chatId = intent.extras?.getString(CHAT_ID_KEY)!!
+
+        val chat = viewModel.setChat(intent.extras?.getString(LOGGED_USER_ID_KEY, null), chatId) ?: return false
+
         this@ChatActivity.chatId = chat.id
         sendChatAction(DisplayedChatActivity.ACTION_CHAT_VISIBLE, chat.id)
         return true

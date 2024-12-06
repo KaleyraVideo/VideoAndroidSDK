@@ -69,11 +69,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -222,7 +222,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
             .flatMapLatest { it!!.audio }
             .filter { it != null }
             .flatMapLatest { it!!.enabled }
-            .map {  it is Input.Enabled.Both || it is Input.Enabled.Local }
+            .map { it is Input.Enabled.Both || it is Input.Enabled.Local }
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val amIAlone: SharedFlow<Boolean> = combine(
@@ -302,14 +302,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
         .flatMapLatest { it!!.events }
         .filterIsInstance()
 
-    private val chat: StateFlow<ChatUI?> =
-        participants
-            .filter { it.others.isNotEmpty() }
-            .mapNotNull {
-                if (it.others.size > 1) null
-                else KaleyraVideo.conversation.create(it.others.first().userId).getOrNull()
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val chat: MutableStateFlow<ChatUI?> = MutableStateFlow(null)
 
     val areThereNewMessages = chat
         .filter { it != null }
@@ -405,8 +398,29 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
         currentLens.zoom.value?.tryZoom(value)
     }
 
-    fun showChat(context: Context) = chat.value?.let {
-        KaleyraVideo.conversation.show(context, KaleyraVideo.connectedUser.value!!.userId, it)
+    fun showChat(context: Context) {
+        chat.value?.let {
+            KaleyraVideo.conversation.show(context, KaleyraVideo.connectedUser.value!!.userId, it)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            val conversation = conversation.first()
+            call.first()
+            val chatId = call.getValue()?.chatId?.first()
+
+            val getChatById: suspend (ChatUI) -> Boolean = {
+                it.id == chatId || it.serverId.first() == chatId
+            }
+
+            if (conversation.chats.getValue()?.firstOrNull { getChatById(it) } == null)
+                conversation.chats.first { it.firstOrNull { getChatById(it) } != null }
+
+            conversation.chats.getValue()?.firstOrNull { getChatById(it) }?.let {
+                chat.emit(it)
+            }
+        }
     }
 
     private inline fun Flow<CallParticipants>.forEachParticipant(

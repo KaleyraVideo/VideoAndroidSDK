@@ -23,6 +23,7 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
@@ -30,9 +31,11 @@ import com.kaleyra.video_common_ui.ChatActivity
 import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.utils.Android12ChatActivityTasksFixService
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
+import com.kaleyra.video_utils.ContextRetainer
 
 internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
 
@@ -46,7 +49,18 @@ internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            ChatScreen(onBackPressed = this::onBackPressed, viewModel = viewModel)
+            ChatScreen(
+                onBackPressed = this::onBackPressed,
+                viewModel = viewModel,
+                onChatDeleted = {
+                    Toast.makeText(ContextRetainer.context, resources.getString(R.string.kaleyra_chat_deleted), Toast.LENGTH_LONG).show()
+                    onBackPressed()
+                },
+                onChatCreationFailed = {
+                    Toast.makeText(ContextRetainer.context, resources.getString(R.string.kaleyra_chat_creation_failed), Toast.LENGTH_LONG).show()
+                    onBackPressed()
+                }
+            )
         }
 
         // fixes the resuming of a task on android 12

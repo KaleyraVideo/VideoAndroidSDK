@@ -41,13 +41,19 @@ internal sealed interface ChatUiState : UiState {
 
     val isUserConnected: Boolean
 
+    val isDeleted: Boolean
+
+    val hasFailedCreation: Boolean
+
     data class OneToOne(
         val recipientDetails: ChatParticipantDetails = ChatParticipantDetails("", ImmutableUri(), flowOf()),
         override val actions: ImmutableSet<ChatAction> = ImmutableSet(),
         override val connectionState: ConnectionState = ConnectionState.Unknown,
         override val conversationState: ConversationState = ConversationState(),
         override val isInCall: Boolean = false,
-        override val isUserConnected: Boolean = true
+        override val isUserConnected: Boolean = true,
+        override val isDeleted: Boolean = false,
+        override val hasFailedCreation: Boolean = false
     ): ChatUiState
 
     data class Group(
@@ -59,6 +65,8 @@ internal sealed interface ChatUiState : UiState {
         override val connectionState: ConnectionState = ConnectionState.Unknown,
         override val conversationState: ConversationState = ConversationState(),
         override val isInCall: Boolean = false,
-        override val isUserConnected: Boolean = true
+        override val isUserConnected: Boolean = true,
+        override val isDeleted: Boolean = false,
+        override val hasFailedCreation: Boolean = false
     ): ChatUiState
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -18,6 +19,7 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -25,6 +27,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -49,6 +52,11 @@ class SidePanelTest {
 
     private val chatViewModel = mockk<PhoneChatViewModel>(relaxed = true)
 
+    private var isChatDeleted = false
+
+    private var isChatCreationFailed = false
+
+    private val chatUiState = MutableStateFlow(ChatUiState.OneToOne())
     @Before
     fun setUp() {
         mockkObject(MainViewModel)
@@ -57,11 +65,11 @@ class SidePanelTest {
 
         with(mainViewModel) {
             every { uiState } returns MutableStateFlow(MainUiState())
-            every { getOtherUserId() } returns "otherId"
+            coEvery { getChatId() } returns "chatId"
         }
 
         with(chatViewModel) {
-            every { uiState } returns MutableStateFlow(ChatUiState.OneToOne())
+            every { uiState } returns chatUiState
             every { getLoggedUserId() } returns "loggedId"
             every { theme } returns MutableStateFlow(Theme())
 
@@ -78,7 +86,9 @@ class SidePanelTest {
             SidePanel(
                 modularComponent = component,
                 onDismiss = { onDismissed = true },
-                onComponentDisplayed = { sideBarComponentDisplayed = it }
+                onComponentDisplayed = { sideBarComponentDisplayed = it },
+                onChatDeleted = { isChatDeleted = true },
+                onChatCreationFailed = { isChatCreationFailed = true }
             )
         }
     }
@@ -89,6 +99,8 @@ class SidePanelTest {
         component = ModularComponent.Audio
         sideBarComponentDisplayed = null
         onDismissed = false
+        isChatDeleted = false
+        isChatCreationFailed = false
     }
 
     @Test
@@ -123,8 +135,30 @@ class SidePanelTest {
         composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
         coVerify(exactly = 1) {
-            chatViewModel.setChat("loggedId", "otherId")
+            chatViewModel.setChat("loggedId", "chatId")
         }
+    }
+
+    @Test
+    fun chatComponent_chatIsDeleted_chatIsDeletedInvoked() {
+        chatUiState.tryEmit(ChatUiState.OneToOne(isDeleted = true))
+        component = ModularComponent.Chat
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsNotDisplayed()
+        assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
+        assert(isChatDeleted)
+    }
+
+    @Test
+    fun chatComponent_chatHasFailedCreation_chatHasFailedCreationInvoked() {
+        chatUiState.tryEmit(ChatUiState.OneToOne(hasFailedCreation = true))
+        component = ModularComponent.Chat
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsNotDisplayed()
+        assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
+        assert(isChatCreationFailed)
     }
 
     @Test
@@ -144,7 +178,7 @@ class SidePanelTest {
     @Test
     fun chatComponentAndOtherUserIdIsNull_onDismissInvoked() {
         component = ModularComponent.Chat
-        every { mainViewModel.getOtherUserId() } returns null
+        coEvery { mainViewModel.getChatId() } returns null
 
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
