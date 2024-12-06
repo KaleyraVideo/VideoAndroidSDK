@@ -51,6 +51,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: 'gradle'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
