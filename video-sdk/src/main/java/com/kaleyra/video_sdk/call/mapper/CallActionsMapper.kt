@@ -65,26 +65,24 @@ internal object CallActionsMapper {
                     action is CallUI.Action.ScreenShare.WholeDevice -> ScreenShareAction.WholeDevice()
                     action is CallUI.Action.OpenWhiteboard.Full -> WhiteboardAction()
                     action is CallUI.Action.CameraEffects && hasVirtualBackground -> VirtualBackgroundAction()
-                    action is CallUI.Action.Custom -> CustomAction(id = action.id, config = action.config.toUI())
+                    action is CallUI.Action.Custom -> action.toUI()
                     else -> null
                 }
             }
         }.distinctUntilChanged()
 }
 
-private fun CallUI.Action.Custom.Configuration.toUI(): CustomCallAction.Configuration {
-    return CustomCallAction.Configuration(
-        icon = icon,
-        text = text,
-        contentDescription = accessibilityLabel,
-        buttonColors = appearance?.toUI(),
-        onClick = action
-    )
-}
-
-private fun CallUI.Action.Custom.Configuration.Appearance.toUI(): CustomCallAction.Configuration.Appearance {
-    return CustomCallAction.Configuration.Appearance(
-        buttonColor = buttonColor,
-        buttonContentColor = buttonContentColor
+private fun CallUI.Action.Custom.toUI(): CustomCallAction {
+    return CustomAction(
+        id = id,
+        icon = config.icon,
+        buttonTexts = CustomCallAction.ButtonTexts(config.text, config.accessibilityLabel),
+        buttonColors = config.appearance?.let {
+            CustomCallAction.ButtonsColors(
+                buttonColor = it.buttonColor,
+                buttonContentColor = it.buttonContentColor
+            )
+        },
+        onClick = config.action
     )
 }

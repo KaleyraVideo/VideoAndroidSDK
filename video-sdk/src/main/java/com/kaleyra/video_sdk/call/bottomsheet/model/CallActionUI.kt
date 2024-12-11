@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.bottomsheet.model
 
+import android.widget.Button
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
@@ -55,24 +56,27 @@ internal interface NotifiableCallAction: CallActionUI {
 @Stable
 internal interface CustomCallAction: CallActionUI {
 
-    val config: Configuration
+    val icon: Int
+
+    val buttonTexts: ButtonTexts
+
+    val buttonColors: ButtonsColors?
+
+    val onClick: () -> Unit
 
     @Immutable
-    data class Configuration(
-        val icon: Int,
+    data class ButtonTexts(
         val text: String?,
-        val contentDescription: String?,
-        val buttonColors: Appearance?,
-        val onClick: () -> Unit
-    ) {
-        @Immutable
-        data class Appearance(
-            val buttonColor: Int,
-            val buttonContentColor: Int,
+        val contentDescription: String?
+    )
+
+    @Immutable
+    data class ButtonsColors(
+        val buttonColor: Int,
+        val buttonContentColor: Int,
 //        val disabledButtonColor: Int?,
 //        val disabledButtonContentColor: Int?
-        )
-    }
+    )
 }
 
 @Immutable
@@ -168,5 +172,8 @@ internal sealed class ScreenShareAction : ToggleableCallAction {
 internal data class CustomAction(
     override val id: String = UUID.randomUUID().toString(),
     override val isEnabled: Boolean = true,
-    override val config: CustomCallAction.Configuration
+    override val icon: Int,
+    override val buttonTexts: CustomCallAction.ButtonTexts,
+    override val buttonColors: CustomCallAction.ButtonsColors?,
+    override val onClick: () -> Unit
 ): CustomCallAction
