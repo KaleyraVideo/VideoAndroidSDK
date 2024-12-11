@@ -156,7 +156,7 @@ sealed class ConfigAction : Parcelable {
 }
 
 fun Set<CallUI.Action>.mapToConfigActions(): Set<ConfigAction> {
-    return map { action ->
+    return mapNotNull { action ->
         when (action) {
             CallUI.Action.Audio -> ConfigAction.Audio
             CallUI.Action.ChangeVolume -> ConfigAction.ChangeVolume
@@ -177,6 +177,7 @@ fun Set<CallUI.Action>.mapToConfigActions(): Set<ConfigAction> {
             CallUI.Action.ToggleFlashlight -> ConfigAction.ToggleFlashlight
             CallUI.Action.ToggleMicrophone -> ConfigAction.ToggleMicrophone
             CallUI.Action.CameraEffects -> ConfigAction.CameraEffects
+            else -> null
         }
     }.toSet()
 }
