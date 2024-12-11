@@ -17,14 +17,12 @@
 package com.kaleyra.video_sdk.call.mapper
 
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
-import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
-import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -32,7 +30,9 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
+import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
+import com.kaleyra.video_sdk.call.mapper.InputMapper.isAudioOnly
+import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -44,40 +44,47 @@ internal object CallActionsMapper {
         return this.actions.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
     }
 
-    fun CallUI.toCallActions(companyId: Flow<String>): Flow<List<CallActionUI>> =
+    fun CallUI.toCallActions(): Flow<List<CallActionUI>> =
         combine(
             actions,
             hasVirtualBackground(),
             isAudioOnly(),
             hasAudio()
         ) { actions, hasVirtualBackground, isAudioOnly, hasAudio ->
-            val result = mutableListOf<CallActionUI>()
-
-            val hasMicrophone = actions.any { action -> action is CallUI.Action.ToggleMicrophone && hasAudio }
-            val hasCamera = actions.any { action -> action is CallUI.Action.ToggleCamera && !isAudioOnly }
-            val switchCamera = actions.any { action -> action is CallUI.Action.SwitchCamera && !isAudioOnly }
-            val hangUp = actions.any { action -> action is CallUI.Action.HangUp }
-            val audio = actions.any { action -> action is CallUI.Action.Audio }
-            val chat = actions.any { action -> action is CallUI.Action.OpenChat.Full }
-            val fileShare = actions.any { action -> action is CallUI.Action.FileShare }
-            val screenShareUserChoice = actions.any { action -> action is CallUI.Action.ScreenShare.Companion || action is CallUI.Action.ScreenShare.UserChoice }
-            val screenShareApp = actions.any { action -> action is CallUI.Action.ScreenShare.App }
-            val screenShareWholeDevice = actions.any { action -> action is CallUI.Action.ScreenShare.WholeDevice }
-            val whiteboard = actions.any { action -> action is CallUI.Action.OpenWhiteboard.Full }
-
-            if (hangUp) result += HangUpAction()
-            if (hasMicrophone) result += MicAction()
-            if (hasCamera) result += CameraAction()
-            if (switchCamera) result += FlipCameraAction()
-            if (hasVirtualBackground) result += VirtualBackgroundAction()
-            if (audio) result += AudioAction()
-            if (fileShare) result += FileShareAction()
-            if (screenShareUserChoice) result += ScreenShareAction.UserChoice()
-            if (screenShareApp) result += ScreenShareAction.App()
-            if (screenShareWholeDevice) result += ScreenShareAction.WholeDevice()
-            if (chat) result += ChatAction()
-            if (whiteboard) result += WhiteboardAction()
-
-            result
+            actions.mapNotNull { action ->
+                when {
+                    action is CallUI.Action.ToggleMicrophone && hasAudio -> MicAction()
+                    action is CallUI.Action.ToggleCamera && !isAudioOnly -> CameraAction()
+                    action is CallUI.Action.SwitchCamera && !isAudioOnly -> FlipCameraAction()
+                    action is CallUI.Action.HangUp -> HangUpAction()
+                    action is CallUI.Action.Audio -> AudioAction()
+                    action is CallUI.Action.OpenChat.Full -> ChatAction()
+                    action is CallUI.Action.FileShare -> FileShareAction()
+                    action is CallUI.Action.ScreenShare.Companion || action is CallUI.Action.ScreenShare.UserChoice -> ScreenShareAction.UserChoice()
+                    action is CallUI.Action.ScreenShare.App -> ScreenShareAction.App()
+                    action is CallUI.Action.ScreenShare.WholeDevice -> ScreenShareAction.WholeDevice()
+                    action is CallUI.Action.OpenWhiteboard.Full -> WhiteboardAction()
+                    action is CallUI.Action.CameraEffects && hasVirtualBackground -> VirtualBackgroundAction()
+                    action is CallUI.Action.Custom -> CustomAction(id = action.id, config = action.config.toUI())
+                    else -> null
+                }
+            }
         }.distinctUntilChanged()
+}
+
+private fun CallUI.Action.Custom.Configuration.toUI(): CustomCallAction.Configuration {
+    return CustomCallAction.Configuration(
+        icon = icon,
+        text = text,
+        contentDescription = accessibilityLabel,
+        buttonColors = appearance?.toUI(),
+        onClick = action
+    )
+}
+
+private fun CallUI.Action.Custom.Configuration.Appearance.toUI(): CustomCallAction.Configuration.Appearance {
+    return CustomCallAction.Configuration.Appearance(
+        buttonColor = buttonColor,
+        buttonContentColor = buttonContentColor
+    )
 }

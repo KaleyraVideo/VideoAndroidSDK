@@ -111,11 +111,11 @@ class CallActionsMapperTest {
                 CallUI.Action.ToggleCamera,
                 CallUI.Action.SwitchCamera,
                 CallUI.Action.HangUp,
+                CallUI.Action.CameraEffects,
                 CallUI.Action.OpenChat.Full,
                 CallUI.Action.OpenWhiteboard.Full,
                 CallUI.Action.Audio,
                 CallUI.Action.FileShare,
-                CallUI.Action.ScreenShare,
                 CallUI.Action.ScreenShare.UserChoice,
                 CallUI.Action.ScreenShare.App,
                 CallUI.Action.ScreenShare.WholeDevice
@@ -124,30 +124,39 @@ class CallActionsMapperTest {
         val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(
-            HangUpAction(),
             MicAction(),
             CameraAction(),
             FlipCameraAction(),
+            HangUpAction(),
             VirtualBackgroundAction(),
+            ChatAction(),
+            WhiteboardAction(),
             AudioAction(),
             FileShareAction(),
             ScreenShareAction.UserChoice(),
             ScreenShareAction.App(),
             ScreenShareAction.WholeDevice(),
-            ChatAction(),
-            WhiteboardAction(),
         )
         assertEquals(expected, actual)
     }
 
     @Test
-    fun hasVirtualBackgroundTrue_toCallActions_actionsListHasVirtualBackground() = runTest {
-        every { callMock.actions } returns MutableStateFlow(emptySet())
+    fun cameraEffectsAndHasVirtualBackgroundTrue_toCallActions_actionsListHasVirtualBackground() = runTest {
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.CameraEffects))
         every { callMock.hasVirtualBackground() } returns flowOf(true)
         val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(VirtualBackgroundAction())
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun cameraEffectsAndHasVirtualBackgroundFalse_toCallActions_emptyList() = runTest {
+        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.CameraEffects))
+        every { callMock.hasVirtualBackground() } returns flowOf(false)
+        val result = callMock.toCallActions()
+        val actual = result.first()
+        assertEquals(listOf<CallActionUI>(), actual)
     }
 
     @Test
