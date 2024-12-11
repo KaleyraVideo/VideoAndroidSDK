@@ -1078,7 +1078,9 @@ class CallScreenTest {
                 onCallEndedBack = onCallEndedBack,
                 onFileShareVisibility = onFileShareVisibility,
                 onWhiteboardVisibility = onWhiteboardVisibility,
-                isInPipMode = isPipMode
+                isInPipMode = isPipMode,
+                onChatDeleted = {},
+                onChatCreationFailed = {}
             )
         }
     }

@@ -24,6 +24,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -72,6 +74,8 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
+import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
@@ -161,6 +165,12 @@ class VCallScreenTest {
         every { uiState } returns brandLogoUiState
     }
 
+    private val phoneChatViewModelState = MutableStateFlow(ChatUiState.OneToOne())
+    private val phoneChatViewModel = mockk<PhoneChatViewModel>(relaxed = true) {
+        every { theme } returns MutableStateFlow(Theme())
+        every { uiState } returns phoneChatViewModelState
+    }
+
     private val allActions = listOf(
         HangUpAction(),
         FlipCameraAction(),
@@ -175,7 +185,8 @@ class VCallScreenTest {
     )
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
+        mockkObject(KaleyraVideo)
         mockkObject(CallActionsViewModel)
         mockkObject(StreamViewModel)
         mockkObject(AudioOutputViewModel)
@@ -188,6 +199,12 @@ class VCallScreenTest {
         mockkObject(ParticipantsViewModel)
         mockkObject(UserMessagesViewModel)
         mockkObject(BrandLogoViewModel)
+        mockkObject(PhoneChatViewModel)
+
+        every { KaleyraVideo.isConfigured } returns true
+        every { KaleyraVideo.conference } returns mockk(relaxed = true)
+        every { KaleyraVideo.conversation } returns mockk(relaxed = true)
+        every { KaleyraVideo.connectedUser } returns MutableStateFlow(mockk(relaxed = true))
 
         every { CallActionsViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<CallActionsViewModel>>(), any()) } returns callViewModel
@@ -230,6 +247,10 @@ class VCallScreenTest {
 
         every { BrandLogoViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<BrandLogoViewModel>>(), any()) } returns brandLogoViewModel
+        }
+
+        every { PhoneChatViewModel.provideFactory(any()) } returns mockk {
+            every { create(any<KClass<PhoneChatViewModel>>(), any()) } returns phoneChatViewModel
         }
     }
 
@@ -1065,7 +1086,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(fileShareText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(fileShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -1116,7 +1137,7 @@ class VCallScreenTest {
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
-            .onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
+            .onAllNodesWithText(whiteboardText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
             .performClick()
 
@@ -2032,6 +2053,32 @@ class VCallScreenTest {
         composeTestRule.onNodeWithContentDescription(companyLogo).assertDoesNotExist()
     }
 
+    @Test
+    fun chatIsDeleted_isChatDeletedInvoked() = runTest {
+        phoneChatViewModelState.tryEmit(ChatUiState.OneToOne(isDeleted = true))
+        var onChatDeleted = false
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.Chat,
+            onChatDeleted = {
+                onChatDeleted = true
+            }
+        )
+        assert(onChatDeleted)
+    }
+
+    @Test
+    fun chatHasFailedCreation_isChatDeletedInvoked() {
+        phoneChatViewModelState.tryEmit(ChatUiState.OneToOne(hasFailedCreation = true))
+        var onChatCreationFailed = false
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.Chat,
+            onChatCreationFailed = {
+                onChatCreationFailed = true
+            }
+        )
+        assert(onChatCreationFailed)
+    }
+
     private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
         configuration: Configuration = compactScreenConfiguration,
         sheetState: CallSheetState = CallSheetState(),
@@ -2044,7 +2091,9 @@ class VCallScreenTest {
         onSidePanelComponentRequest: (ModularComponent?) -> Unit = { },
         onModularComponentDisplayed: (ModularComponent?) -> Unit = { },
         onAskInputPermissions: (Boolean) -> Unit = {},
-        onBackPressed: () -> Unit = { },
+        onBackPressed: () -> Unit = {},
+        onChatDeleted: () -> Unit = {},
+        onChatCreationFailed: () -> Unit = {},
         inputPermissions: InputPermissions = InputPermissions()
     ) {
         setContent {
@@ -2063,6 +2112,8 @@ class VCallScreenTest {
                 onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
+                onChatDeleted = onChatDeleted,
+                onChatCreationFailed = onChatCreationFailed
             )
         }
     }
