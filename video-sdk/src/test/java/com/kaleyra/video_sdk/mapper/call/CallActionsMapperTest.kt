@@ -96,7 +96,7 @@ class CallActionsMapperTest {
     @Test
     fun emptyCallActions_toCallActions_emptyList() = runTest {
         every { callMock.actions } returns MutableStateFlow(emptySet())
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf<CallActionUI>()
         assertEquals(expected, actual)
@@ -121,7 +121,7 @@ class CallActionsMapperTest {
                 CallUI.Action.ScreenShare.WholeDevice
             )
         )
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(
             HangUpAction(),
@@ -144,7 +144,7 @@ class CallActionsMapperTest {
     fun hasVirtualBackgroundTrue_toCallActions_actionsListHasVirtualBackground() = runTest {
         every { callMock.actions } returns MutableStateFlow(emptySet())
         every { callMock.hasVirtualBackground() } returns flowOf(true)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(VirtualBackgroundAction())
         assertEquals(expected, actual)
@@ -154,7 +154,7 @@ class CallActionsMapperTest {
     fun toggleCameraActionAndCallHasVideo_toCallActions_actionsListHasCamera() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleCamera))
         every { callMock.isAudioOnly() } returns flowOf(false)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(CameraAction())
         assertEquals(expected, actual)
@@ -164,7 +164,7 @@ class CallActionsMapperTest {
     fun toggleCameraActionAndCallHasNoVideo_toCallActions_emptyList() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleCamera))
         every { callMock.isAudioOnly() } returns flowOf(true)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         assertEquals(listOf<CallActionUI>(), actual)
     }
@@ -173,7 +173,7 @@ class CallActionsMapperTest {
     fun chatActionAndItIsNotGroupCall_toCallActions_actionsListHasChatAction() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.OpenChat.Full))
         every { callMock.isGroupCall(any()) } returns flowOf(false)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         assertEquals(listOf(ChatAction()), actual)
     }
@@ -182,7 +182,7 @@ class CallActionsMapperTest {
     fun chatActionAndItIsGroupCall_toCallActions_emptyList() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.OpenChat.Full))
         every { callMock.isGroupCall(any()) } returns flowOf(true)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         assertEquals(listOf<CallActionUI>(ChatAction()), actual)
     }
@@ -191,7 +191,7 @@ class CallActionsMapperTest {
     fun switchCameraActionAndCallHasVideo_toCallActions_actionsListHasSwitchCamera() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.SwitchCamera))
         every { callMock.isAudioOnly() } returns flowOf(false)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(FlipCameraAction())
         assertEquals(expected, actual)
@@ -201,7 +201,7 @@ class CallActionsMapperTest {
     fun switchCameraActionAndCallHasNoVideo_toCallActions_emptyList() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.SwitchCamera))
         every { callMock.isAudioOnly() } returns flowOf(true)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         assertEquals(listOf<CallActionUI>(), actual)
     }
@@ -210,7 +210,7 @@ class CallActionsMapperTest {
     fun toggleMicActionAndCallHasAudio_toCallActions_actionsListHasMicrophone() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleMicrophone))
         every { callMock.hasAudio() } returns flowOf(true)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         val expected = listOf(MicAction())
         assertEquals(expected, actual)
@@ -220,7 +220,7 @@ class CallActionsMapperTest {
     fun toggleMicActionAndCallHasNoAudio_toCallActions_emptyList() = runTest {
         every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.ToggleMicrophone))
         every { callMock.hasAudio() } returns flowOf(false)
-        val result = callMock.toCallActions(flowOf("companyId"))
+        val result = callMock.toCallActions()
         val actual = result.first()
         assertEquals(listOf<CallActionUI>(), actual)
     }

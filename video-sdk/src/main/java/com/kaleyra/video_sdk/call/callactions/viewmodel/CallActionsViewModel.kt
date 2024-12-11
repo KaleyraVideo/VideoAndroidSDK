@@ -108,7 +108,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val call = call.first()
 
             val availableCallActionsFlow = call
-                .toCallActions(company.flatMapLatest { it.id })
+                .toCallActions()
                 .shareInEagerly(this)
 
             val isCallActiveFlow = call.state
