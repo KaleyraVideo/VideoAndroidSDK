@@ -170,10 +170,10 @@ internal sealed class ScreenShareAction : ToggleableCallAction {
 
 @Immutable
 internal data class CustomAction(
+    override val icon: Int,
     override val id: String = UUID.randomUUID().toString(),
     override val isEnabled: Boolean = true,
-    override val icon: Int,
-    override val buttonTexts: CustomCallAction.ButtonTexts,
-    override val buttonColors: CustomCallAction.ButtonsColors?,
-    override val onClick: () -> Unit
+    override val buttonTexts: CustomCallAction.ButtonTexts = CustomCallAction.ButtonTexts(null, null),
+    override val buttonColors: CustomCallAction.ButtonsColors? = null,
+    override val onClick: () -> Unit = { }
 ): CustomCallAction
