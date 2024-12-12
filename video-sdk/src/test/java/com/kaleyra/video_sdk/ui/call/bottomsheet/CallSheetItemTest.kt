@@ -19,6 +19,8 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -1597,5 +1599,144 @@ class CallSheetItemTest {
         composeTestRule.onNodeWithContentDescription(error).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsOn()
+    }
+
+    @Test
+    fun customActionEnabled_actionIsEnabled() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    isEnabled = true,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", null)
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription("testText").assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription("testText").assertIsEnabled()
+    }
+
+    @Test
+    fun customActionDisabled_actionIsNotEnabled() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    isEnabled = false,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", null)
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = {  },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithContentDescription("testText").assertHasClickAction()
+        composeTestRule.onNodeWithContentDescription("testText").assertIsNotEnabled()
+    }
+
+    @Test
+    fun customActionLabelTrue_actionHasLabel() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    isEnabled = false,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", null)
+                ),
+                label = true,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("testText").assertIsDisplayed()
+    }
+
+    @Test
+    fun customActionLabelFalse_actionHasNoLabel() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    isEnabled = false,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", null)
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("testText").assertDoesNotExist()
+    }
+
+    @Test
+    fun userClicksCustomAction_onClickInvoked() {
+        var clicked = false
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    isEnabled = true,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", "descr"),
+                    onClick = { clicked = true }
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule
+            .onNodeWithContentDescription("descr")
+            .assertHasClickAction()
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(true, clicked)
     }
 }

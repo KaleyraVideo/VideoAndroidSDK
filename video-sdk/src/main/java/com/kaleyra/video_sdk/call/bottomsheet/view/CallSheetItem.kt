@@ -9,6 +9,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -145,6 +146,16 @@ internal fun CallSheetItem(
                 checked = ca.isToggled,
                 onCheckedChange = onVirtualBackgroundToggle,
                 modifier = modifier
+            )
+        }
+        is CustomAction -> {
+            com.kaleyra.video_sdk.call.callactions.view.CustomAction(
+                label = label,
+                enabled = ca.isEnabled,
+                icon = ca.icon,
+                buttonTexts = ca.buttonTexts,
+                buttonColors = ca.buttonColors,
+                onClick = ca.onClick,
             )
         }
     }
