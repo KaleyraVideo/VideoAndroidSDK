@@ -41,7 +41,11 @@ import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Stable
-data class UserMessageSnackbarActionConfig(val action: TextRef, val iconResource: Int? = null, val onActionClick: () -> Unit)
+data class UserMessageSnackbarActionConfig(
+    val action: TextRef,
+    val iconResource: Int? = null,
+    val onActionClick: () -> Unit
+)
 
 @Composable
 internal fun UserMessageSnackbarM3(

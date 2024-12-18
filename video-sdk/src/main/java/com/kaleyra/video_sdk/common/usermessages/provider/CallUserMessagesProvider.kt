@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:OptIn(FlowPreview::class)
+@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 
 package com.kaleyra.video_sdk.common.usermessages.provider
 
@@ -27,13 +27,16 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.toAudioConnectionFailureMes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toUsbCameraMessage
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingMessage
+import com.kaleyra.video_sdk.call.mapper.toCustomAlertMessage
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_utils.MutableSharedStateFlow
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
@@ -43,6 +46,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
@@ -96,6 +100,7 @@ object CallUserMessagesProvider {
         _alertMessages.sendAutomaticRecordingAlertEvents(call, scope)
         _alertMessages.sendAmIAloneEvents(call, scope)
         _alertMessages.sendWaitingForOtherParticipantsEvents(call, scope)
+        _alertMessages.sendCustomMessages(call, scope)
     }
 
     /**
@@ -112,7 +117,7 @@ object CallUserMessagesProvider {
      * Dispose User Message Provider
      */
     fun dispose() {
-        _alertMessages.value = setOf()
+        _alertMessages.tryEmit(setOf())
         coroutineScope?.cancel()
         coroutineScope = null
     }
@@ -139,8 +144,14 @@ object CallUserMessagesProvider {
     }
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendAmIAloneEvents(call: CallUI, scope: CoroutineScope) {
+        call.state
+            .takeWhile { it !is Call.State.Disconnected.Ended }
+            .onCompletion {
+                value = value.toMutableSet().minus(AlertMessage.LeftAloneMessage)
+            }
+            .launchIn(scope)
+
         call.toCallStateUi()
-            .takeWhile { it !is CallStateUi.Disconnecting && it !is CallStateUi.Disconnected.Ended }
             .filterNot { it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Dialing }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
             .dropWhile { !it }
@@ -149,9 +160,6 @@ object CallUserMessagesProvider {
                 val mutableList = value.toMutableSet()
                 val newList = if (!doOthersHaveStreams) mutableList.plus(AlertMessage.LeftAloneMessage) else mutableList.minus(AlertMessage.LeftAloneMessage)
                 value = newList
-            }
-            .onCompletion {
-                value = value.toMutableSet().minus(AlertMessage.LeftAloneMessage)
             }
             .launchIn(scope)
     }
@@ -187,4 +195,31 @@ object CallUserMessagesProvider {
             value = newList
         }.launchIn(scope)
     }
+
+    private fun MutableStateFlow<Set<AlertMessage>>.sendCustomMessages(call: CallUI, scope: CoroutineScope) {
+        call.state
+            .takeWhile { it !is Call.State.Disconnected.Ended }
+            .onCompletion {
+                val mutableList = value.toMutableSet()
+                emit(mutableList.filterNot { it is AlertMessage.CustomMessage }.toSet())
+            }
+            .launchIn(scope)
+
+        call
+            .floatingMessages
+            .distinctUntilChanged()
+            .onEach { floatingMessage ->
+                val mutableList = value.toMutableSet()
+                val floatingMessage = floatingMessage?.get()
+                val newList =
+                    if (floatingMessage != null) {
+                        val customAlertMessage = floatingMessage.toCustomAlertMessage()
+                        mutableList.plus(customAlertMessage)
+                    } else {
+                        mutableList.filterNot { it is AlertMessage.CustomMessage }.toSet()
+                    }
+                emit(newList)
+            }.launchIn(scope)
+    }
+
 }

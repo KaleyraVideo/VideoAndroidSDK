@@ -16,9 +16,18 @@
 
 package com.kaleyra.video_sdk
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
+import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
+import com.kaleyra.video_common_ui.model.FloatingMessage
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper
+import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper
+import com.kaleyra.video_sdk.call.screen.model.CallStateUi
+import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
@@ -30,6 +39,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
@@ -38,6 +48,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
@@ -45,11 +56,9 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import java.lang.ref.WeakReference
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
 class CallUserMessagesProviderTest {
 
     private val callMock = mockk<CallUI>(relaxed = true)
@@ -58,6 +67,10 @@ class CallUserMessagesProviderTest {
     fun setUp() {
         mockkObject(InputMapper)
         mockkObject(RecordingMapper)
+        mockkObject(KaleyraVideo)
+        mockkObject(CallStateMapper)
+        mockkObject(com.kaleyra.video_common_ui.mapper.StreamMapper)
+        every { KaleyraVideo.conference } returns mockk(relaxed = true)
     }
 
     @After
@@ -219,5 +232,99 @@ class CallUserMessagesProviderTest {
         CallUserMessagesProvider.sendUserMessage(CameraRestrictionMessage())
         val actual = CallUserMessagesProvider.userMessage.first()
         assert(actual is CameraRestrictionMessage)
+    }
+
+    @Test
+    fun testAutomaticRecordingAlertMessage() = runTest {
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connecting)
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callMock.recording } returns MutableStateFlow<Call.Recording>(mockk {
+            every { type } returns Call.Recording.automatic()
+            every { state } returns MutableStateFlow(Call.Recording.State.Stopped)
+        })
+
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        CallUserMessagesProvider.alertMessages.first { it.contains(AlertMessage.AutomaticRecordingMessage) }
+
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.AutomaticRecordingMessage)
+    }
+
+    @Test
+    fun testAmIAloneAlertMessage() = runTest {
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connected)
+        val doOtherHaveStreams = MutableStateFlow<Boolean>(false)
+        every { callMock.doOthersHaveStreams() } returns doOtherHaveStreams
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+
+        advanceTimeBy(100)
+        doOtherHaveStreams.emit(true)
+        advanceTimeBy(100)
+        doOtherHaveStreams.emit(false)
+        CallUserMessagesProvider.alertMessages.first { it.contains(AlertMessage.LeftAloneMessage) }
+
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.LeftAloneMessage)
+    }
+
+    @Test
+    fun testAmIAloneAlertMessageClearedOnCallEnded() = runTest {
+        val callState = MutableStateFlow<Call.State>(Call.State.Connected)
+        every { callMock.state } returns callState
+        val callStateUi = MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toCallStateUi() } returns callStateUi
+        val doOtherHaveStreams = MutableStateFlow<Boolean>(false)
+        every { callMock.doOthersHaveStreams() } returns doOtherHaveStreams
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        advanceTimeBy(100)
+        doOtherHaveStreams.emit(true)
+        advanceTimeBy(100)
+        doOtherHaveStreams.emit(false)
+        CallUserMessagesProvider.alertMessages.first { it.contains(AlertMessage.LeftAloneMessage) }
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.LeftAloneMessage)
+
+        callState.emit(Call.State.Disconnected.Ended.HungUp())
+
+        CallUserMessagesProvider.alertMessages.first { it.isEmpty() }
+        assert(CallUserMessagesProvider.alertMessages.first().isEmpty())
+    }
+
+    @Test
+    fun testWaitingForOtherParticipantsAlertMessage() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connected)
+        val amIWaitingOthers = MutableStateFlow<Boolean>(true)
+        every { callMock.amIWaitingOthers() } returns amIWaitingOthers
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+
+        CallUserMessagesProvider.alertMessages.first { it.contains(AlertMessage.WaitingForOtherParticipantsMessage) }
+
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.WaitingForOtherParticipantsMessage)
+    }
+
+    @Test
+    fun testCustomAlertMessage() = runTest {
+        val floatingMessage = FloatingMessage("body", FloatingMessage.Button("text", action = { }))
+        every { callMock.floatingMessages } returns MutableStateFlow(WeakReference(floatingMessage))
+        every { callMock.state } returns MutableStateFlow(Call.State.Connected)
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+
+        CallUserMessagesProvider.alertMessages.first { it.any { it is AlertMessage.CustomMessage } }
+
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.CustomMessage)
+    }
+
+    @Test
+    fun testCustomAlertMessageClearedOnCallEnd() = runTest {
+        val callState: MutableStateFlow<Call.State> = MutableStateFlow(Call.State.Connected)
+        val floatingMessage = FloatingMessage("body", FloatingMessage.Button("text", action = { }))
+        every { callMock.floatingMessages } returns MutableStateFlow(WeakReference(floatingMessage))
+        every { callMock.state } returns callState
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        CallUserMessagesProvider.alertMessages.first { it.any { it is AlertMessage.CustomMessage } }
+        assert(CallUserMessagesProvider.alertMessages.first().first() is AlertMessage.CustomMessage)
+
+        callState.emit(Call.State.Disconnected.Ended.HungUp())
+        backgroundScope.cancel()
+
+        CallUserMessagesProvider.alertMessages.first { it.none { it is AlertMessage.CustomMessage } }
+        assert(CallUserMessagesProvider.alertMessages.first().isEmpty())
     }
 }
