@@ -1734,4 +1734,58 @@ class CallSheetItemTest {
             .performClick()
         assertEquals(true, clicked)
     }
+
+    @Test
+    fun customActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", "descr"),
+                    onClick = { },
+                    notificationCount = 0
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun customActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = CustomAction(
+                    icon = R.drawable.ic_kaleyra_call_sheet_error,
+                    buttonTexts = CustomCallAction.ButtonTexts(text = "testText", "descr"),
+                    onClick = { },
+                    notificationCount = 5
+                ),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = {  },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText("5").assertIsDisplayed()
+    }
 }

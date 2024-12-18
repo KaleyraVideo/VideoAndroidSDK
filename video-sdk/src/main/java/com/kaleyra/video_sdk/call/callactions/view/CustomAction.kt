@@ -14,7 +14,8 @@ internal fun CustomAction(
     onClick: () -> Unit,
     buttonColors: CustomCallAction.ButtonsColors? = null,
     enabled: Boolean = true,
-    label: Boolean = true,
+    label: Boolean = false,
+    badgeText: String? = null
 ) {
     CallAction(
         modifier = modifier,
@@ -22,11 +23,10 @@ internal fun CustomAction(
         contentDescription = buttonTexts.contentDescription ?: buttonTexts.text ?: "",
         enabled = enabled,
         buttonText = buttonTexts.text,
+        badgeText = badgeText,
         label = if (label) buttonTexts.text else null,
         buttonColor = buttonColors?.buttonColor?.let { Color(it) } ?: CallActionDefaults.ContainerColor,
         buttonContentColor = buttonColors?.buttonContentColor?.let { Color(it) } ?: CallActionDefaults.ContentColor,
-//            disabledButtonColor = buttonColors.disabledButtonColor,
-//            disabledButtonContentColor = buttonColors.disabledButtonContentColor,,
         onClick = onClick
     )
 }

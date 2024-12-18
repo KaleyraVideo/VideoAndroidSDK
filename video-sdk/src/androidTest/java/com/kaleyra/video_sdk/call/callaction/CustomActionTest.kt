@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.callactions.view.CustomAction
+import com.kaleyra.video_sdk.call.callactions.view.FileShareAction
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -106,5 +107,20 @@ class CustomActionTest {
             )
         }
         composeTestRule.onNodeWithContentDescription("test").assertIsNotEnabled()
+    }
+
+    @Test
+    fun testBadgeIsDisplayed() {
+        val badgeText = "badgeText"
+        composeTestRule.setContent {
+            CustomAction(
+                icon = R.drawable.ic_kaleyra_call_sheet_error,
+
+                buttonTexts = CustomCallAction.ButtonTexts("test", null),
+                onClick = {},
+                badgeText = badgeText,
+            )
+        }
+        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
     }
 }

@@ -110,4 +110,19 @@ class CustomActionTest {
         }
         composeTestRule.onNodeWithContentDescription("test").assertIsNotEnabled()
     }
+
+    @Test
+    fun testBadgeIsDisplayed() {
+        val badgeText = "badgeText"
+        composeTestRule.setContent {
+            CustomAction(
+                icon = R.drawable.ic_kaleyra_call_sheet_error,
+
+                buttonTexts = CustomCallAction.ButtonTexts("test", null),
+                onClick = {},
+                badgeText = badgeText,
+            )
+        }
+        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+    }
 }
