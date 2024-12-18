@@ -2063,6 +2063,8 @@ class VCallScreenTest {
                 onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
+                onChatDeleted = {},
+                onChatCreationFailed = {}
             )
         }
     }
