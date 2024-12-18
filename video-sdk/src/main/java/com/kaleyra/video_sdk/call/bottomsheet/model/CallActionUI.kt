@@ -54,7 +54,7 @@ internal interface NotifiableCallAction: CallActionUI {
 }
 
 @Stable
-internal interface CustomCallAction: CallActionUI {
+internal interface CustomCallAction: NotifiableCallAction {
 
     val icon: Int
 
@@ -173,6 +173,7 @@ internal data class CustomAction(
     override val icon: Int,
     override val id: String = UUID.randomUUID().toString(),
     override val isEnabled: Boolean = true,
+    override val notificationCount: Int = 0,
     override val buttonTexts: CustomCallAction.ButtonTexts = CustomCallAction.ButtonTexts(null, null),
     override val buttonColors: CustomCallAction.ButtonsColors? = null,
     override val onClick: () -> Unit = { }
