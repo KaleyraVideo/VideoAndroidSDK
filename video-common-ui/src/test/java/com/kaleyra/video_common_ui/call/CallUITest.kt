@@ -123,7 +123,7 @@ class CallUITest {
 
         callUI.present(floatingMessage)
 
-        Assert.assertEquals(floatingMessage, callUI.floatingMessages.replayCache.firstOrNull()?.get())
+        Assert.assertEquals(floatingMessage, callUI.floatingMessages.replayCache.firstOrNull())
     }
 
     @Test
@@ -133,7 +133,7 @@ class CallUITest {
 
         callUI.present(floatingMessage)
         floatingMessage.dismiss()
-        Assert.assertEquals(true, callUI.floatingMessages.replayCache.firstOrNull()?.get() == null)
+        Assert.assertEquals(true, callUI.floatingMessages.replayCache.firstOrNull() == null)
     }
 
     @Test
@@ -144,6 +144,6 @@ class CallUITest {
 
         callUI.present(floatingMessage1)
         callUI.present(floatingMessage2)
-        Assert.assertEquals(false, callUI.floatingMessages.replayCache.firstOrNull()?.get() == null)
+        Assert.assertEquals(false, callUI.floatingMessages.replayCache.firstOrNull() == null)
     }
 }

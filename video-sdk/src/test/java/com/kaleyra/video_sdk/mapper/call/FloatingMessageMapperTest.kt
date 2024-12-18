@@ -17,6 +17,6 @@ class FloatingMessageMapperTest {
        Assert.assertEquals(floatingMessage.body, customAlertMessage.body)
        Assert.assertEquals(floatingMessage.button?.text!!, customAlertMessage.button?.text!!)
        Assert.assertEquals(floatingMessage.button?.icon!!, customAlertMessage.button?.icon!!)
-       Assert.assertEquals(floatingMessage.button?.action!!, customAlertMessage.button?.action?.get()!!)
+       Assert.assertEquals(floatingMessage.button?.action!!, customAlertMessage.button?.action!!)
    }
 }

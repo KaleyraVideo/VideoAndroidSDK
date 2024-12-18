@@ -41,9 +41,9 @@ sealed class AlertMessage: UserMessage() {
          * Class representing the custom message action
          * @property text String? optional button text
          * @property icon Int? optional button icon
-         * @property action WeakReference<Function0<Unit>>
+         * @property action (Function0<Unit>)? optional button action
          * @constructor
          */
-        data class Button(val text: String? = null, val icon: Int? = null, val action: WeakReference<() -> Unit>)
+        data class Button(val text: String? = null, val icon: Int? = null, val action: (() -> Unit)?)
     }
 }

@@ -210,7 +210,6 @@ object CallUserMessagesProvider {
             .distinctUntilChanged()
             .onEach { floatingMessage ->
                 val mutableList = value.toMutableSet()
-                val floatingMessage = floatingMessage?.get()
                 val newList =
                     if (floatingMessage != null) {
                         val customAlertMessage = floatingMessage.toCustomAlertMessage()

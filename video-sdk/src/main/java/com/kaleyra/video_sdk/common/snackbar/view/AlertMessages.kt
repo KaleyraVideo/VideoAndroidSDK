@@ -40,11 +40,10 @@ fun CustomMessageSnackbarM3(customMessage: AlertMessage.CustomMessage) {
         actionConfig = customMessage.button?.let { button ->
             UserMessageSnackbarActionConfig(
                 TextRef.PlainText(button.text),
-                button.icon,
-                {
-                    button.action.get()?.invoke()
-                }
-            )
+                button.icon
+            ) {
+                button.action?.invoke()
+            }
         }
     )
 }

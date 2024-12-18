@@ -1,6 +1,5 @@
 package com.kaleyra.video_common_ui.model
 
-import java.lang.ref.WeakReference
 import java.util.UUID
 
 /**
@@ -9,9 +8,6 @@ import java.util.UUID
  * @property id String
  * @property body String
  * @property button Button?
- * @property onDismissed Function0<Unit>?
- * @property onBodyUpdated Function1<String, Unit>?
- * @property onButtonUpdated Function1<Button?, Unit>?
  * @constructor
  */
 class FloatingMessage(body: String, button: Button? = null) {
@@ -24,12 +20,9 @@ class FloatingMessage(body: String, button: Button? = null) {
             onBodyUpdated?.invoke(field)
         }
 
-    internal var weakButton: WeakReference<Button?> = WeakReference(button)
-
-    var button: Button? = weakButton.get()
-        get() = weakButton.get()
+    var button: Button? = button
         set(value) {
-            weakButton = WeakReference(value)
+            field = value
             onButtonUpdated?.invoke(field)
         }
 
@@ -41,6 +34,14 @@ class FloatingMessage(body: String, button: Button? = null) {
             button?.onButtonUpdated = field
         }
 
+    /**
+     * Class representing the button inside a floating message class
+     * @property id String button identifier
+     * @property text String button text
+     * @property icon Int? optional button icon
+     * @property action Function0<Unit> button action
+     * @constructor
+     */
     class Button(
         text: String,
         icon: Int? = null,
@@ -60,11 +61,9 @@ class FloatingMessage(body: String, button: Button? = null) {
                 onButtonUpdated?.invoke(this)
             }
 
-        internal var weakAction: WeakReference<(() -> Unit)?> = WeakReference(action)
-        var action: (() -> Unit)?
-            get() = weakAction.get()
+        var action: () -> Unit = action
             set(value) {
-                weakAction = WeakReference(value)
+                field = value
                 onButtonUpdated?.invoke(this)
             }
 
@@ -85,7 +84,6 @@ class FloatingMessage(body: String, button: Button? = null) {
             result = 31 * result + text.hashCode()
             result = 31 * result + (icon ?: 0)
             result = 31 * result + action.hashCode()
-            result = 31 * result + (onButtonUpdated?.hashCode() ?: 0)
             return result
         }
     }
@@ -110,9 +108,6 @@ class FloatingMessage(body: String, button: Button? = null) {
         var result = id.hashCode()
         result = 31 * result + body.hashCode()
         result = 31 * result + (button?.hashCode() ?: 0)
-        result = 31 * result + (onDismissed?.hashCode() ?: 0)
-        result = 31 * result + (onBodyUpdated?.hashCode() ?: 0)
-        result = 31 * result + (onButtonUpdated?.hashCode() ?: 0)
         return result
     }
 }

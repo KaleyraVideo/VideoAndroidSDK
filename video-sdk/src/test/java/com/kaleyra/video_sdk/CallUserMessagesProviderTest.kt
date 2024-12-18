@@ -302,7 +302,7 @@ class CallUserMessagesProviderTest {
     @Test
     fun testCustomAlertMessage() = runTest {
         val floatingMessage = FloatingMessage("body", FloatingMessage.Button("text", action = { }))
-        every { callMock.floatingMessages } returns MutableStateFlow(WeakReference(floatingMessage))
+        every { callMock.floatingMessages } returns MutableStateFlow(floatingMessage)
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         CallUserMessagesProvider.start(callMock, backgroundScope)
 
@@ -315,7 +315,7 @@ class CallUserMessagesProviderTest {
     fun testCustomAlertMessageClearedOnCallEnd() = runTest {
         val callState: MutableStateFlow<Call.State> = MutableStateFlow(Call.State.Connected)
         val floatingMessage = FloatingMessage("body", FloatingMessage.Button("text", action = { }))
-        every { callMock.floatingMessages } returns MutableStateFlow(WeakReference(floatingMessage))
+        every { callMock.floatingMessages } returns MutableStateFlow(floatingMessage)
         every { callMock.state } returns callState
         CallUserMessagesProvider.start(callMock, backgroundScope)
         CallUserMessagesProvider.alertMessages.first { it.any { it is AlertMessage.CustomMessage } }
