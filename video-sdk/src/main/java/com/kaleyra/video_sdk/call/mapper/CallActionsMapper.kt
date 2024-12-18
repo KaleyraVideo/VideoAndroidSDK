@@ -76,6 +76,8 @@ private fun CallUI.Action.Custom.toUI(): CustomCallAction {
     return CustomAction(
         id = id,
         icon = config.icon,
+        isEnabled = config.isEnabled,
+        notificationCount = config.badgeValue,
         buttonTexts = CustomCallAction.ButtonTexts(config.text, config.accessibilityLabel),
         buttonColors = config.appearance?.let {
             CustomCallAction.ButtonsColors(

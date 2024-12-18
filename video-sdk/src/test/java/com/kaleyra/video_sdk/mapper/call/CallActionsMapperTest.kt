@@ -31,6 +31,8 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -138,6 +140,37 @@ class CallActionsMapperTest {
             ScreenShareAction.WholeDevice(),
         )
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun customAction_toCallActions_actionListHasCustomAction() = runTest {
+        val customAction = CallUI.Action.Custom(
+            CallUI.Action.Custom.Configuration(
+                icon = 20,
+                text = "customText",
+                action = { },
+                badgeValue = 3,
+                isEnabled = false,
+                accessibilityLabel = "accessibilityText",
+                appearance = CallUI.Action.Custom.Configuration.Appearance(14, 17)
+            )
+        )
+        every { callMock.actions } returns MutableStateFlow(setOf(customAction))
+        val result = callMock.toCallActions().first()
+        val expected = listOf(
+            CustomAction(
+                id = customAction.id,
+                icon = customAction.config.icon,
+                buttonTexts = CustomCallAction.ButtonTexts(customAction.config.text, customAction.config.accessibilityLabel),
+                onClick = customAction.config.action,
+                notificationCount = customAction.config.badgeValue,
+                buttonColors = customAction.config.appearance?.let {
+                    CustomCallAction.ButtonsColors(it.buttonColor, it.buttonContentColor)
+                },
+                isEnabled = customAction.config.isEnabled
+            )
+        )
+        assertEquals(expected, result)
     }
 
     @Test
