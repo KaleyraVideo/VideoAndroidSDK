@@ -77,16 +77,6 @@ internal object CallActionDefaults {
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface
 
-    val DisabledContainerColor: Color
-        @Composable
-        @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.surfaceContainerHighest.copy(.38f)
-
-    val DisabledContentColor: Color
-        @Composable
-        @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.onSurface.copy(.38f)
-
     val CheckedContainerColor: Color
         @Composable
         @ReadOnlyComposable
@@ -106,8 +96,8 @@ internal object CallActionDefaults {
     fun iconButtonColors(
         containerColor: Color = ContainerColor,
         contentColor: Color = ContentColor,
-        disabledContainerColor: Color = DisabledContainerColor,
-        disabledContentColor: Color = DisabledContentColor,
+        disabledContainerColor: Color = containerColor.copy(.38f),
+        disabledContentColor: Color = contentColor.copy(.38f),
     ): IconButtonColors =
         IconButtonDefaults.filledIconButtonColors(
             containerColor,
@@ -202,8 +192,6 @@ internal fun CallAction(
     buttonText: String? = null,
     buttonColor: Color = CallActionDefaults.ContainerColor,
     buttonContentColor: Color = CallActionDefaults.ContentColor,
-    disabledButtonColor: Color = CallActionDefaults.DisabledContainerColor,
-    disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgePainter: Painter? = null,
     badgeDescription: String? = null,
@@ -233,9 +221,7 @@ internal fun CallAction(
                 shape = CallActionDefaults.ButtonShape,
                 colors = CallActionDefaults.iconButtonColors(
                     containerColor = buttonColor,
-                    contentColor = buttonContentColor,
-                    disabledContainerColor = disabledButtonColor,
-                    disabledContentColor = disabledButtonContentColor
+                    contentColor = buttonContentColor
                 ),
                 onClick = onClick
             ) {

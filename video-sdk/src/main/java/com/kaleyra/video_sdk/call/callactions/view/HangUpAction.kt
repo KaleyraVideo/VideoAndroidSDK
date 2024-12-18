@@ -33,8 +33,6 @@ internal fun HangUpAction(
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
         buttonColor = KaleyraTheme.colors.negativeContainer,
         buttonContentColor = KaleyraTheme.colors.onNegativeContainer,
-        disabledButtonColor = KaleyraTheme.colors.negativeContainer.copy(.38f),
-        disabledButtonContentColor = KaleyraTheme.colors.onNegativeContainer.copy(.38f),
         enabled = enabled,
         onClick = onClick
     )
