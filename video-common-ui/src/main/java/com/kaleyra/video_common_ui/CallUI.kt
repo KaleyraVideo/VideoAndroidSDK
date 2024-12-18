@@ -16,7 +16,6 @@
 
 package com.kaleyra.video_common_ui
 
-import android.os.Parcelable
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isActivityRunning
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
@@ -120,7 +118,7 @@ class CallUI(
     /**
      * Call Action triggered by the UI
      */
-    sealed class Action : Parcelable {
+    sealed class Action {
 
         /**
          * @suppress
@@ -132,13 +130,14 @@ class CallUI(
              */
             val all by lazy {
                 setOf(
+                    HangUp,
                     ToggleMicrophone,
                     ToggleCamera,
                     SwitchCamera,
-                    HangUp,
-                    FileShare,
-                    ScreenShare,
+                    CameraEffects,
                     Audio,
+                    FileShare,
+                    ScreenShare.UserChoice,
                     ChangeZoom,
                     ChangeVolume,
                     ToggleFlashlight,
@@ -147,7 +146,6 @@ class CallUI(
                     ShowParticipants,
                     OpenWhiteboard.ViewOnly,
                     OpenWhiteboard.Full,
-                    CameraEffects
                 )
             }
 
@@ -156,10 +154,10 @@ class CallUI(
              */
             val default by lazy {
                 setOf(
+                    HangUp,
                     ToggleMicrophone,
                     ToggleCamera,
                     SwitchCamera,
-                    HangUp,
                     Audio,
                     ChangeVolume,
                     ShowParticipants
@@ -170,37 +168,31 @@ class CallUI(
         /**
          * Change volume action
          */
-        @Parcelize
         data object ChangeVolume : Action()
 
         /**
          * Toggle camera action
          */
-        @Parcelize
         data object ToggleCamera : Action()
 
         /**
          * Toggle microphone action
          */
-        @Parcelize
         data object ToggleMicrophone : Action()
 
         /**
          * Switch camera action
          */
-        @Parcelize
         data object SwitchCamera : Action()
 
         /**
          * HangUp action
          */
-        @Parcelize
         data object HangUp : Action()
 
         /**
          * File Share open action
          */
-        @Parcelize
         data object FileShare : Action()
 
         /**
@@ -211,7 +203,6 @@ class CallUI(
             /**
              * User will be prompted to select in-app screensharing or whole device screensharing
              */
-            @Parcelize
             @Deprecated(
                 message = "Screenshare Action is deprecated and it will be removed in a further release.\n" +
                     "Please update using ScreenShare.UserChoice or ScreenShare.App or ScreenShare.WholeDevice.",
@@ -221,50 +212,42 @@ class CallUI(
             /**
              * Screensharing will capture only app screens
              */
-            @Parcelize
             data object UserChoice: ScreenShare()
 
             /**
              * Screensharing will capture only app screens
              */
-            @Parcelize
             data object App: ScreenShare()
 
             /**
              * Screensharing will capture all device's screens
              */
-            @Parcelize
             data object WholeDevice: ScreenShare()
         }
 
         /**
          * Camera Effects action
          */
-        @Parcelize
         data object CameraEffects : Action()
 
         /**
          * Audio switches displaying request
          */
-        @Parcelize
         data object Audio : Action()
 
         /**
          * Change zoom action
          */
-        @Parcelize
         data object ChangeZoom : Action()
 
         /**
          * Toggle flashlight action
          */
-        @Parcelize
         data object ToggleFlashlight : Action()
 
         /**
          * Show participants action
          */
-        @Parcelize
         data object ShowParticipants : Action()
 
         /**
@@ -274,13 +257,11 @@ class CallUI(
             /**
              * Open chat action with view only
              */
-            @Parcelize
             data object ViewOnly : OpenChat()
 
             /**
              * Open chat action with view and send messages capabilities
              */
-            @Parcelize
             data object Full : OpenChat()
         }
 
@@ -291,14 +272,32 @@ class CallUI(
             /**
              * Open whiteboard action with view only
              */
-            @Parcelize
             data object ViewOnly : OpenWhiteboard()
 
             /**
              * Open whiteboard action with view and interaction capability
              */
-            @Parcelize
             data object Full : OpenWhiteboard()
+        }
+
+        data class Custom(val config: Configuration): Action() {
+
+            val id: String = UUID.randomUUID().toString()
+
+            data class Configuration(
+                val icon: Int,
+                val text: String?,
+                val action: () -> Unit,
+                val badgeValue: Int = 0,
+                val isEnabled: Boolean = true,
+                val accessibilityLabel: String? = null,
+                val appearance: Appearance? = null
+            ) {
+                data class Appearance(
+                    val buttonColor: Int,
+                    val buttonContentColor: Int
+                )
+            }
         }
     }
 }
