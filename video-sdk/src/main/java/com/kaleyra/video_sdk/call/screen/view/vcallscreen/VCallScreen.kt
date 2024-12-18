@@ -265,7 +265,10 @@ internal fun VCallScreen(
                             isInFullscreenMode = false
                             onStreamSelected(null)
                         },
-                        onFullscreen = { isInFullscreenMode = true },
+                        onFullscreen = {
+                            isInFullscreenMode = true
+                            onStreamSelected(null)
+                        },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
