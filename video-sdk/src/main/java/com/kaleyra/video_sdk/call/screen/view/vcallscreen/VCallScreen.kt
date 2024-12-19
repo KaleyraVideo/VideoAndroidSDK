@@ -56,6 +56,8 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessage
+import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.HSheetContent
@@ -462,7 +464,8 @@ private fun LargeScreenInputMessageHost(modifier: Modifier = Modifier) {
         val messageModifier = Modifier.padding(top = 3.dp)
         InputMessageHost(
             micMessage = { enabled -> MicMessageText(enabled, messageModifier) },
-            cameraMessage = { enabled -> CameraMessageText(enabled, messageModifier) }
+            cameraMessage = { enabled -> CameraMessageText(enabled, messageModifier) },
+            fullscreenMessage = { enabled -> FullScreenMessageText(enabled, messageModifier) }
         )
     }
 }
