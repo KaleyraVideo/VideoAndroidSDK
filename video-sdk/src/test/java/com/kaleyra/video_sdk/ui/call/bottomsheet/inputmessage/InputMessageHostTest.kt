@@ -5,10 +5,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageDuration
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
+import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
+import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
+import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,6 +78,40 @@ class InputMessageHostTest {
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
         composeTestRule.setContent {
             InputMessageHost(inputMessage = CameraMessage.Disabled)
+        }
+        composeTestRule.onNodeWithText(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithText(off).assertIsDisplayed()
+        composeTestRule.mainClock.advanceTimeBy(InputMessageDuration - 200)
+        composeTestRule.onNodeWithText(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithText(off).assertIsDisplayed()
+        composeTestRule.mainClock.advanceTimeBy(200)
+        composeTestRule.onNodeWithText(camera).assertDoesNotExist()
+        composeTestRule.onNodeWithText(off).assertDoesNotExist()
+    }
+
+    @Test
+    fun testFullScreenMessageEnabled() {
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_fullscreen)
+        val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_active)
+        composeTestRule.setContent {
+            InputMessageHost(inputMessage = FullScreenMessage.Enabled)
+        }
+        composeTestRule.onNodeWithText(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithText(on).assertIsDisplayed()
+        composeTestRule.mainClock.advanceTimeBy(InputMessageDuration - 200)
+        composeTestRule.onNodeWithText(camera).assertIsDisplayed()
+        composeTestRule.onNodeWithText(on).assertIsDisplayed()
+        composeTestRule.mainClock.advanceTimeBy(200)
+        composeTestRule.onNodeWithText(camera).assertDoesNotExist()
+        composeTestRule.onNodeWithText(on).assertDoesNotExist()
+    }
+
+    @Test
+    fun testFullScreenMessageDisabled() {
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_fullscreen)
+        val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_disabled)
+        composeTestRule.setContent {
+            InputMessageHost(inputMessage = FullScreenMessage.Disabled)
         }
         composeTestRule.onNodeWithText(camera).assertIsDisplayed()
         composeTestRule.onNodeWithText(off).assertIsDisplayed()

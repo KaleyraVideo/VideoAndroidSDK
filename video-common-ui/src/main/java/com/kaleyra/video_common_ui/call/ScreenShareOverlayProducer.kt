@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 
 /**
  *
@@ -87,6 +88,7 @@ internal class ScreenShareOverlayProducer(
     }
 
     private fun syncScreenShareOverlay(activity: Activity, call: Call) {
+        val activity = WeakReference<Activity>(activity)
         var deviceScreenShareOverlay: AppViewOverlay? = null
         var appScreenShareOverlay: AppViewOverlay? = null
 
@@ -97,6 +99,7 @@ internal class ScreenShareOverlayProducer(
             .onEach {
                 withContext(Dispatchers.Main) {
                     if (it) {
+                        val activity = activity.get() ?: return@withContext
                         activity.requestOverlayPermission()
                         deviceScreenShareOverlay = AppViewOverlay(StatusBarOverlayView(activity), ViewOverlayAttacher.OverlayType.GLOBAL)
                         deviceScreenShareOverlay!!.show(activity)
@@ -117,6 +120,7 @@ internal class ScreenShareOverlayProducer(
             .onEach {
                 withContext(Dispatchers.Main) {
                     if (it) {
+                        val activity = activity.get() ?: return@withContext
                         appScreenShareOverlay = AppViewOverlay(StatusBarOverlayView(activity), ViewOverlayAttacher.OverlayType.CURRENT_APPLICATION)
                         appScreenShareOverlay!!.show(activity)
                     } else {

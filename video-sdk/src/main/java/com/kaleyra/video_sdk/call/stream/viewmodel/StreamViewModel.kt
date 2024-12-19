@@ -22,8 +22,12 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -33,6 +37,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -49,6 +54,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
+
+    private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
+
+    val userMessage: Flow<UserMessage> = userMessageChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -68,6 +77,11 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                         streams == uiState.value.streams.value -> uiState.value.streams.value
                         else -> streams
                     }.sortedBy { it.isMine }.toImmutableList()
+
+                    _uiState.value.fullscreenStream?.id?.let { fullScreenStreamId ->
+                        if (updatedStreams.value.none { it.id == fullScreenStreamId })
+                            userMessageChannel.send(FullScreenMessage.Disabled)
+                    }
 
                     _uiState.update {
                         it.copy(
@@ -121,6 +135,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
         val stream = streams.find { it.id == streamId }
         if (streamId != null && stream == null) return
         _uiState.update { it.copy(fullscreenStream = stream) }
+        viewModelScope.launch {
+            if (stream == null) userMessageChannel.send(FullScreenMessage.Disabled)
+            else userMessageChannel.send(FullScreenMessage.Enabled)
+        }
     }
 
     fun pin(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {

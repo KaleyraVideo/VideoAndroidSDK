@@ -50,12 +50,14 @@ internal fun StackedSnackbar(
                     dismiss()
                     onActionClick(userMessage)
                 })
+                is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
+                is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
 
                 AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                 AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                 AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
-                is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
-                is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
+                is AlertMessage.CustomMessage -> CustomMessageSnackbarM3(it as AlertMessage.CustomMessage)
+                else -> {}
             }
             Spacer(Modifier.height(16.dp))
         }

@@ -54,9 +54,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
@@ -78,7 +75,10 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgr
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
+import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
+import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.Ordering
@@ -1112,8 +1112,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
@@ -1138,8 +1138,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
@@ -1164,8 +1164,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
@@ -1190,8 +1190,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleMic(activity)
         runCurrent()
 
@@ -1232,8 +1232,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleCamera(activity)
         runCurrent()
 
@@ -1273,8 +1273,8 @@ class CallActionsViewModelTest {
         })
         advanceUntilIdle()
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel.toggleCamera(activity)
         runCurrent()
 
@@ -1409,8 +1409,8 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })
@@ -1449,8 +1449,8 @@ class CallActionsViewModelTest {
         every { callMock.participants } returns MutableStateFlow(participants)
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(cameraVideo))
 
-        var inputMessage: InputMessage? = null
-        backgroundScope.launch { inputMessage = viewModel.inputMessage.first() }
+        var inputMessage: UserMessage? = null
+        backgroundScope.launch { inputMessage = viewModel.userMessage.first() }
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })

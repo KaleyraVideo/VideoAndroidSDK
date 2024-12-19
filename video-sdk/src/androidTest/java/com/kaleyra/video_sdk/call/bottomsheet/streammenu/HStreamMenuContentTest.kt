@@ -1,6 +1,8 @@
 package com.kaleyra.video_sdk.call.bottomsheet.streammenu
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -11,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video.conference.StreamView
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
@@ -38,7 +41,6 @@ class HStreamMenuContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
     private val streamUiState = MutableStateFlow(StreamUiState())
 
     private val streamViewModel = mockk<StreamViewModel>(relaxed = true) {
@@ -62,13 +64,12 @@ class HStreamMenuContentTest {
     fun testExitFullscreen() {
         val stream = StreamUi(id = "streamId", username = "username")
         streamUiState.value = StreamUiState(fullscreenStream = stream)
-
         var fullscreen = true
         composeTestRule.setContent {
             HStreamMenuContent(
                 selectedStreamId = stream.id,
                 onDismiss = { fullscreen = false },
-                onFullscreen = {}
+                onFullscreen = { }
             )
         }
 
@@ -256,11 +257,32 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
+                onZoomClick = {},
+                onPinClick = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun fullscreenFalse_fullscreenActionClicked_onCancelClickCalled() {
+        var onFullscreenClicked = false
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                isFullscreen = false,
+                hasVideo = false,
+                isPinned = false,
+                isPinLimitReached = false,
+                onCancelClick = {},
+                onFullscreenClick = { onFullscreenClicked = true },
                 onPinClick = {},
                 onZoomClick = {}
             )
         }
-        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).performClick()
+        assert(onFullscreenClicked)
     }
 
     @Test
@@ -274,8 +296,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -292,8 +314,26 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun fullscreenTrue_cancelActionDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        composeTestRule.setContent {
+            HStreamMenuContent(
+                isFullscreen = true,
+                hasVideo = false,
+                isPinned = false,
+                isPinLimitReached = false,
+                onCancelClick = {},
+                onFullscreenClick = {},
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -310,8 +350,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -328,8 +368,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
@@ -347,8 +387,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = { clicked = true },
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
@@ -357,7 +397,7 @@ class HStreamMenuContentTest {
     }
 
     @Test
-    fun testOnFullscreenClickFalse() {
+    fun testOnFullscreenClickTrue() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
         var fullscreenClick: Boolean? = null
         composeTestRule.setContent {
@@ -368,17 +408,17 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = { fullscreenClick = it },
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(false, fullscreenClick)
+        Assert.assertEquals(true, fullscreenClick)
     }
 
     @Test
-    fun testOnFullscreenClickTrue() {
+    fun testOnFullscreenClickFalse() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_off)
         var fullscreenClick: Boolean? = null
         composeTestRule.setContent {
@@ -389,13 +429,13 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = { fullscreenClick = it },
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(text).performClick()
-        Assert.assertEquals(true, fullscreenClick)
+        Assert.assertEquals(false, fullscreenClick)
     }
 
     @Test
@@ -410,8 +450,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = { pinClick = it },
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = { pinClick = it }
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
@@ -486,15 +526,19 @@ class HStreamMenuContentTest {
 
     @Test
     fun testZoomCalledOnViewModel() {
-        val stream = StreamUi(
-            id = "streamId",
-            username = "username",
-            video = VideoUi("streamId", ImmutableView(mockk(relaxed = true) {
-                every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
-            }), VideoUi.ZoomLevelUi.Fit, isEnabled = true))
-        streamUiState.value = StreamUiState(streams = listOf(stream).toImmutableList())
-
         composeTestRule.setContent {
+            val stream = StreamUi(
+                id = "streamId",
+                username = "username",
+                video = VideoUi(
+                    "streamId",
+                    ImmutableView(VideoStreamView(LocalContext.current)),
+                    isEnabled = true
+                )
+            )
+            LaunchedEffect(Unit) {
+                streamUiState.value = StreamUiState(streams = listOf(stream).toImmutableList())
+            }
             VStreamMenuContent(
                 selectedStreamId = stream.id,
                 onDismiss = { },
@@ -502,13 +546,14 @@ class HStreamMenuContentTest {
             )
         }
 
+        composeTestRule.waitForIdle()
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_zoom)
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.zoom(stream.id) }
+        verify(exactly = 1) { streamViewModel.zoom("streamId") }
     }
 
     @Test
@@ -523,8 +568,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = false,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = { pinClick = it },
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = { pinClick = it }
             )
         }
         composeTestRule.onNodeWithContentDescription(text).assertIsEnabled()
@@ -543,8 +588,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = true,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule
@@ -564,8 +609,8 @@ class HStreamMenuContentTest {
                 isPinLimitReached = true,
                 onCancelClick = {},
                 onFullscreenClick = {},
-                onPinClick = {},
-                onZoomClick = {}
+                onZoomClick = {},
+                onPinClick = {}
             )
         }
         composeTestRule

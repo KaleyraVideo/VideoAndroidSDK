@@ -12,13 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
+import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
+import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
 internal const val InputMessageDuration = 1000L
@@ -26,28 +29,32 @@ internal const val InputMessageDuration = 1000L
 @Composable
 internal fun InputMessageHost(
     modifier: Modifier = Modifier,
-    viewModel: CallActionsViewModel = viewModel(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    callActionsViewModel: CallActionsViewModel = viewModel(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
+    streamViewModel: StreamViewModel = viewModel(factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     micMessage: @Composable (enabled: Boolean) -> Unit = { MicMessage(it) },
-    cameraMessage: @Composable (enabled: Boolean) -> Unit = { CameraMessage(it) }
+    cameraMessage: @Composable (enabled: Boolean) -> Unit = { CameraMessage(it) },
+    fullscreenMessage: @Composable (enabled: Boolean) -> Unit = { FullScreenMessage(it) }
 ) {
-    val inputMessage = viewModel.inputMessage.collectAsStateWithLifecycle(initialValue = null)
+    val inputMessage = merge(callActionsViewModel.userMessage, streamViewModel.userMessage).collectAsStateWithLifecycle(initialValue = null)
     InputMessageHost(
         modifier = modifier,
         inputMessage = inputMessage.value,
         snackbarHostState = snackbarHostState,
         micMessage = micMessage,
-        cameraMessage = cameraMessage
+        cameraMessage = cameraMessage,
+        fullscreenMessage = fullscreenMessage
     )
 }
 
 @Composable
 internal fun InputMessageHost(
     modifier: Modifier = Modifier,
-    inputMessage: InputMessage?,
+    inputMessage: UserMessage?,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     micMessage: @Composable (enabled: Boolean) -> Unit = { MicMessage(it) },
-    cameraMessage: @Composable (enabled: Boolean) -> Unit = { CameraMessage(it) }
+    cameraMessage: @Composable (enabled: Boolean) -> Unit = { CameraMessage(it) },
+    fullscreenMessage: @Composable (enabled: Boolean) -> Unit = { FullScreenMessage(it) }
 ) {
     val updatedState by rememberUpdatedState(inputMessage)
     LaunchedEffect(Unit) {
@@ -70,6 +77,8 @@ internal fun InputMessageHost(
                 MicMessage.Disabled.javaClass.name -> micMessage(false)
                 CameraMessage.Enabled.javaClass.name -> cameraMessage(true)
                 CameraMessage.Disabled.javaClass.name -> cameraMessage(false)
+                FullScreenMessage.Enabled.javaClass.name -> fullscreenMessage(true)
+                FullScreenMessage.Disabled.javaClass.name -> fullscreenMessage(false)
             }
         }
     )

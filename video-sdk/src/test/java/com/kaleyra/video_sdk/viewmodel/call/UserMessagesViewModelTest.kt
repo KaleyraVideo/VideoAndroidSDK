@@ -3,6 +3,7 @@ package com.kaleyra.video_sdk.viewmodel.call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
@@ -47,6 +48,8 @@ class UserMessagesViewModelTest {
 
     @Before
     fun setUp() {
+        mockkObject(KaleyraVideo)
+        every { KaleyraVideo.conference } returns mockk(relaxed = true)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { CallUserMessagesProvider.userMessage } returns userMessages

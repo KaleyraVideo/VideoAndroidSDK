@@ -24,6 +24,7 @@
     <string name="kaleyra_call_sheet_virtual_background">Virtual background</string>
     <string name="kaleyra_call_sheet_pin">Pin</string>
     <string name="kaleyra_call_sheet_unpin">Unpin</string>
+    <string name="kaleyra_fullscreen">Fullscreen</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Fullscreen</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Exit</string>
     <string name="kaleyra_call_sheet_zoom" translatable="false">Zoom</string>
@@ -34,6 +35,8 @@
     <string name="kaleyra_call_sheet_camera">Camera</string>
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
+    <string name="kaleyra_call_sheet_active">Active</string>
+    <string name="kaleyra_call_sheet_disabled">Disabled</string>
     <string name="kaleyra_call_sheet_hang_up">Hang up</string>
     <string name="kaleyra_call_sheet_description_more_actions">Show more actions</string>
     <string name="kaleyra_call_sheet_description_hide_actions">Hide actions</string>
@@ -349,4 +352,5 @@
     <string name="kaleyra_input_text_default_error">Input text error</string>
     <string name="kaleyra_chat_deleted">The conversation has been deleted.</string>
     <string name="kaleyra_chat_creation_failed">Conversation creation failed</string>
+
 </resources>
