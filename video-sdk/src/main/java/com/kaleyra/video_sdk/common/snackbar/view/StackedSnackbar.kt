@@ -57,7 +57,7 @@ internal fun StackedSnackbar(
                 AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                 AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
                 is AlertMessage.CustomMessage -> CustomMessageSnackbarM3(it as AlertMessage.CustomMessage)
-
+                else -> {}
             }
             Spacer(Modifier.height(16.dp))
         }

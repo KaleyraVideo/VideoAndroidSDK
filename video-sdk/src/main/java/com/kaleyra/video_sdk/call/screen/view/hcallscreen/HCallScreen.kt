@@ -153,7 +153,10 @@ internal fun HCallScreen(
                             isInFullscreenMode = false
                             onStreamSelected(null)
                         },
-                        onFullscreen = { isInFullscreenMode = true },
+                        onFullscreen = {
+                            isInFullscreenMode = true
+                            onStreamSelected(null)
+                        },
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
