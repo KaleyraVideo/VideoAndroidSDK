@@ -50,7 +50,7 @@ class CallUI(
     private val call: Call,
     val activityClazz: Class<*>,
     val actions: MutableStateFlow<Set<Action>> = MutableStateFlow(Action.default),
-    val floatingMessagePresenter: FloatingMessagePresenter = CallUIFloatingMessagePresenter()
+    val floatingMessagePresenter: FloatingMessagePresenter = CallUIFloatingMessagePresenter(isGlassesSDK = KaleyraVideo.isGlassesSdk, logger = KaleyraVideo.logger)
 ) : Call by call, FloatingMessagePresenter by floatingMessagePresenter {
 
     private val _displayModeEvent = MutableSharedFlow<DisplayModeEvent>(1, 1, BufferOverflow.DROP_OLDEST)

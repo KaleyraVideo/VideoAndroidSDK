@@ -84,11 +84,12 @@ object KaleyraVideo {
 
     private var termsAndConditionsRequester: TermsAndConditionsRequester? = null
 
-    private var logger: PriorityLogger? = null
+    internal var logger: PriorityLogger? = null
+
     private var _conference: ConferenceUI? = null
     private var _conversation: ConversationUI? = null
 
-    private var isGlassesSdk = false
+    internal var isGlassesSdk = false
 
     @get:Synchronized
         /**

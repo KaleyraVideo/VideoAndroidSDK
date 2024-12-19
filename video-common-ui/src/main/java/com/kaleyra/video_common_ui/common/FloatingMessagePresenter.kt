@@ -1,6 +1,8 @@
 package com.kaleyra.video_common_ui.common
 
+import com.kaleyra.video.utils.logger.PHONE_BOX
 import com.kaleyra.video_common_ui.model.FloatingMessage
+import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,29 +16,41 @@ import kotlin.coroutines.resume
 interface FloatingMessagePresenter {
     val floatingMessages: SharedFlow<FloatingMessage?>
 
-    fun present(floatingMessage: FloatingMessage)
+    fun present(message: FloatingMessage)
 }
 
-internal class CallUIFloatingMessagePresenter(val scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())) : FloatingMessagePresenter {
+internal class CallUIFloatingMessagePresenter(
+    val scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()),
+    val isGlassesSDK: Boolean = false,
+    val logger: PriorityLogger? = null,
+) : FloatingMessagePresenter {
 
     private val _floatingMessages = MutableSharedFlow<FloatingMessage?>(replay = 1)
     override val floatingMessages: SharedFlow<FloatingMessage?> = _floatingMessages.asSharedFlow()
 
-    override fun present(floatingMessage: FloatingMessage) {
-        _floatingMessages.tryEmit(floatingMessage)
+    override fun present(message: FloatingMessage) {
+        if (isGlassesSDK) {
+            logger?.warn(
+                logTarget = PHONE_BOX,
+                message = "Floating messages are not supported yet on Kaleyra Video Glasses SDK.\n" +
+                    "Please use Kaleyra Video SDK (phone and tablet UIs) in order to display floating messages.")
+            return
+        }
+        _floatingMessages.tryEmit(message)
 
-        floatingMessage.onDismissed = {
-            scope.launch { dismissMessage(floatingMessage) }
+        message.onDismissed = {
+            scope.launch { dismissMessage(message) }
         }
 
         val updateFloatingMessage = {
             scope.launch { _floatingMessages.emit(null) }
-            scope.launch { _floatingMessages.emit(floatingMessage) }
+            scope.launch { _floatingMessages.emit(message) }
         }
-        floatingMessage.onBodyUpdated = { updateFloatingMessage() }
-        floatingMessage.onButtonUpdated = { updateFloatingMessage() }
+        message.onBodyUpdated = { updateFloatingMessage() }
+        message.onButtonUpdated = { updateFloatingMessage() }
 
-        _floatingMessages.tryEmit(floatingMessage)
+        _floatingMessages.tryEmit(message)
+    }
     }
 
     private suspend fun dismissMessage(floatingMessage: FloatingMessage?): Boolean = suspendCancellableCoroutine { continuation ->
