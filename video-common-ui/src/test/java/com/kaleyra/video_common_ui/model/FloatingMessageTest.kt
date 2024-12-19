@@ -58,6 +58,19 @@ class FloatingMessageTest {
     }
 
     @Test
+    fun floatingMessageNoButton_buttonUpdated_onButtonUpdatedInvoked() {
+        val floatingMessage = FloatingMessage(body = "body")
+        var onButtonUpdatedInvoked = false
+        floatingMessage.onButtonUpdated = {
+            onButtonUpdatedInvoked = true
+        }
+
+        floatingMessage.button = FloatingMessage.Button(text = "click") { }
+
+        assert(onButtonUpdatedInvoked)
+    }
+
+    @Test
     fun floatingMessage_buttonTextUpdated_onButtonTextUpdatedInvoked() {
         val floatingMessageButton = FloatingMessage.Button(text = "click", action = {})
         val floatingMessage = FloatingMessage(body = "body", floatingMessageButton)

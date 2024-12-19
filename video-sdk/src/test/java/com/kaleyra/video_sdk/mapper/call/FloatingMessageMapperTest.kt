@@ -19,4 +19,14 @@ class FloatingMessageMapperTest {
        Assert.assertEquals(floatingMessage.button?.icon!!, customAlertMessage.button?.icon!!)
        Assert.assertEquals(floatingMessage.button?.action!!, customAlertMessage.button?.action!!)
    }
+
+    @Test
+    fun testFloatingMessageWithNoActionToAlertCustomMessageMapping() {
+        val floatingMessage = FloatingMessage(body = "body")
+
+        val customAlertMessage = floatingMessage.toCustomAlertMessage()
+
+        Assert.assertEquals(floatingMessage.body, customAlertMessage.body)
+        Assert.assertEquals(null, customAlertMessage.button)
+    }
 }

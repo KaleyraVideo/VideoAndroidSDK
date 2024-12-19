@@ -23,6 +23,7 @@ class FloatingMessage(body: String, button: Button? = null) {
     var button: Button? = button
         set(value) {
             field = value
+            field?.onButtonUpdated = onButtonUpdated
             onButtonUpdated?.invoke(field)
         }
 
@@ -55,6 +56,7 @@ class FloatingMessage(body: String, button: Button? = null) {
                 field = value
                 onButtonUpdated?.invoke(this)
             }
+
         var icon: Int? = icon
             set(value) {
                 field = value
