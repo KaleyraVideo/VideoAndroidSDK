@@ -35,7 +35,7 @@ fun LeftAloneSnackbarM3() {
 
 @Composable
 fun CustomMessageSnackbarM3(customMessage: AlertMessage.CustomMessage) {
-    UserMessageInfoSnackbarM3(
+    UserMessageSnackbarM3(
         message = customMessage.body,
         actionConfig = customMessage.button?.let { button ->
             UserMessageSnackbarActionConfig(
