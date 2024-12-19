@@ -6,9 +6,11 @@ import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 internal fun FloatingMessage.toCustomAlertMessage() =
     AlertMessage.CustomMessage(
         body = body,
-        button = AlertMessage.CustomMessage.Button(
-            text = button?.text,
-            icon = button?.icon,
-            action = button?.action
-        )
+        button = button?.let { button ->
+            AlertMessage.CustomMessage.Button(
+                text = button.text,
+                icon = button.icon,
+                action = button.action
+            )
+        }
     )

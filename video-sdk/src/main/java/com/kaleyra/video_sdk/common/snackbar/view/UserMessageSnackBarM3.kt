@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -50,7 +52,7 @@ data class UserMessageSnackbarActionConfig(
 @Composable
 internal fun UserMessageSnackbarM3(
     modifier: Modifier = Modifier,
-    iconPainter: Painter,
+    iconPainter: Painter? = null,
     iconTint: Color = MaterialTheme.colorScheme.surface,
     message: String,
     actionConfig: UserMessageSnackbarActionConfig? = null,
@@ -69,7 +71,7 @@ internal fun UserMessageSnackbarM3(
                 shape = if (actionConfig != null || isMultilineMessage) RoundedCornerShape(16.dp) else CircleShape
             )
             .align(Alignment.Center)) {
-            if (actionConfig == null) {
+            if (actionConfig == null && iconPainter != null) {
                 Icon(
                     modifier = Modifier
                         .size(40.dp)
@@ -84,7 +86,9 @@ internal fun UserMessageSnackbarM3(
                 color = contentColor,
                 modifier = Modifier
                     .weight(1f, fill = false)
-                    .padding(top = 4.dp, bottom = 4.dp, start = if (actionConfig != null) 16.dp else 8.dp, end = if (onDismissClick == null && actionConfig == null) 16.dp else 8.dp)
+                    .heightIn(min = 40.dp)
+                    .padding(top = 4.dp, bottom = 4.dp, start = if (actionConfig != null || iconPainter == null) 16.dp else 8.dp, end = if (onDismissClick == null && actionConfig == null) 16.dp else 8.dp)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
                     .align(Alignment.CenterVertically),
                 text = message,
                 style = MaterialTheme.typography.bodySmall,
@@ -236,6 +240,21 @@ fun AlertMessageSnackbarPreview() = KaleyraTheme {
         horizontalArrangement = Arrangement.Center) {
         UserMessageInfoSnackbarM3(
             message = "Alert text",
+        )
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+fun OnlyTextMessagePreview() = KaleyraTheme {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface),
+        horizontalArrangement = Arrangement.Center) {
+        UserMessageSnackbarM3(
+            message = "only text",
         )
     }
 }
