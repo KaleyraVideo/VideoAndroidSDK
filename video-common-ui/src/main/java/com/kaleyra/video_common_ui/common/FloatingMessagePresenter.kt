@@ -17,6 +17,8 @@ interface FloatingMessagePresenter {
     val floatingMessages: SharedFlow<FloatingMessage?>
 
     fun present(message: FloatingMessage)
+
+    fun dismiss(message: FloatingMessage)
 }
 
 internal class CallUIFloatingMessagePresenter(
@@ -51,6 +53,16 @@ internal class CallUIFloatingMessagePresenter(
 
         _floatingMessages.tryEmit(message)
     }
+
+    override fun dismiss(message: FloatingMessage) {
+        if (isGlassesSDK) {
+            logger?.warn(
+                logTarget = PHONE_BOX,
+                message = "Floating messages are not supported yet on Kaleyra Video Glasses SDK.\n" +
+                    "Please use Kaleyra Video SDK (phone and tablet UIs) in order to display floating messages.")
+            return
+        }
+        message.dismiss()
     }
 
     private suspend fun dismissMessage(floatingMessage: FloatingMessage?): Boolean = suspendCancellableCoroutine { continuation ->

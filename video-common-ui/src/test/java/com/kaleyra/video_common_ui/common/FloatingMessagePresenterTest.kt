@@ -35,6 +35,19 @@ class FloatingMessagePresenterTest {
     }
 
     @Test
+    fun testFloatingMessageDismissedFromPresenter() = runTest {
+        val floatingMessage = FloatingMessage("body")
+        val floatingMessagePresenter = CallUIFloatingMessagePresenter(this)
+        floatingMessagePresenter.present(floatingMessage)
+        Assert.assertEquals("body", floatingMessagePresenter.floatingMessages.first()?.body)
+
+        floatingMessagePresenter.dismiss(floatingMessage)
+        advanceUntilIdle()
+
+        Assert.assertEquals(null, floatingMessagePresenter.floatingMessages.first())
+    }
+
+    @Test
     fun testFloatingMessageUpdated() = runTest {
         val floatingMessage = FloatingMessage("body")
         val floatingMessagePresenter = CallUIFloatingMessagePresenter(this)
