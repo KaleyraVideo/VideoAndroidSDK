@@ -13,11 +13,34 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 
+/**
+ * Represents a presenter responsible for managing the presentation of floating messages on call UI.
+ *
+ * This interface defines the contract for displaying and dismissing floating messages
+ * within the application's user interface.
+ */
 interface FloatingMessagePresenter {
+
+    /**
+     * A [SharedFlow] emitting the currently presented floating message, or `null` if no message is presented.
+     *
+     * Observers of this flow can be notified about changes in the presented message,
+     * allowing them to update the UI accordingly.
+     */
     val floatingMessages: SharedFlow<FloatingMessage?>
 
+    /**
+     * Presents a floating message to the user.
+     *
+     * @param message The [FloatingMessage] to be presented.
+     */
     fun present(message: FloatingMessage)
 
+    /**
+     * Dismisses a floating message.
+     *
+     * @param message The [FloatingMessage] to be dismissed.
+     */
     fun dismiss(message: FloatingMessage)
 }
 

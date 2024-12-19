@@ -5,9 +5,9 @@ import java.util.UUID
 /**
  * A class representing a floating message that can be used to display a
  * floating text and optionally a button with text and/or icon and a custom callback.
- * @property id String
- * @property body String
- * @property button Button?
+ * @property id String floating message unique identifier
+ * @property body String the body of the floating message
+ * @property button Button? optional floating message button
  * @constructor
  */
 class FloatingMessage(body: String, button: Button? = null) {
