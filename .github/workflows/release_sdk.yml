@@ -82,7 +82,7 @@ jobs:
   update_hybrid_version:
     needs: update_sdk_version
     if: ${{ inputs.release_version == "patch" || inputs.release_version == "minor" }}
-    uses: KaleyraVideo/VideoHybridNativeBridge/blob/main/.github/workflows/release_hybrid.yml@main
+    uses: KaleyraVideo/VideoHybridNativeBridge/.github/workflows/release_hybrid.yml@main
     with: 
       release_version: ${{ inputs.specific_release_version || steps.output_tag.outputs.NEW_VERSION }}
       release_type: ${{ inputs.release_version }}
