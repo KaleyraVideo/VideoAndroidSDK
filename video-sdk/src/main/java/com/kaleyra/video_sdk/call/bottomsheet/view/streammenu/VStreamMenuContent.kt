@@ -93,11 +93,16 @@ internal fun VStreamMenuContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(14.dp)) {
-        CancelAction(
+        FullscreenAction(
             label = false,
-            onClick = onCancelClick
+            fullscreen = isFullscreen,
+            onClick = { onFullscreenClick(isFullscreen) }
         )
         Spacer(modifier = Modifier.height(SheetItemsSpacing))
+        if (hasVideo) {
+            ZoomAction(onClick = onZoomClick, label = false)
+            Spacer(modifier = Modifier.height(SheetItemsSpacing))
+        }
         if (!isFullscreen) {
             PinAction(
                 label = false,
@@ -107,14 +112,9 @@ internal fun VStreamMenuContent(
             )
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
         }
-        if (hasVideo) {
-            ZoomAction(onClick = onZoomClick, label = false)
-            Spacer(modifier = Modifier.height(SheetItemsSpacing))
-        }
-        FullscreenAction(
+        CancelAction(
             label = false,
-            fullscreen = isFullscreen,
-            onClick = { onFullscreenClick(isFullscreen) }
+            onClick = onCancelClick
         )
     }
 }
