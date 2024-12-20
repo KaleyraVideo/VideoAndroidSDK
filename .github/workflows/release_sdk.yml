@@ -87,7 +87,7 @@ jobs:
     with: 
       release_version: ${{ inputs.specific_release_version || needs.update_sdk_version.outputs.new_version }}
       release_type: ${{ inputs.release_version }}
-      platform: "android"
+      platform: 'android'
     secrets: inherit
 
   release_notes:
