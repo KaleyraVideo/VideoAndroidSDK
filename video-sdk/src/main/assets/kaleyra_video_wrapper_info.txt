@@ -1,1 +1,1 @@
-VideoAndroidSDK/4.3.0
+VideoAndroidSDK/4.4.0

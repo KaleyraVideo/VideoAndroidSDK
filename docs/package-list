@@ -41,7 +41,6 @@ com.kaleyra.video_sdk.call.appbar.viewmodel
 com.kaleyra.video_sdk.call.audiooutput.model
 com.kaleyra.video_sdk.call.bottomsheet
 com.kaleyra.video_sdk.call.bottomsheet.model
-com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model
 com.kaleyra.video_sdk.call.brandlogo.model
 com.kaleyra.video_sdk.call.brandlogo.view
 com.kaleyra.video_sdk.call.brandlogo.viewmodel
