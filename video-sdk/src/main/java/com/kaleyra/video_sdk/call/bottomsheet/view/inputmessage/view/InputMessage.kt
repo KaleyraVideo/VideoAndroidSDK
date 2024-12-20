@@ -54,6 +54,21 @@ internal fun CameraMessage(
 }
 
 @Composable
+internal fun FullScreenMessage(
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    InputMessage(
+        modifier = modifier,
+        inputPainter = if (enabled) {
+            painterResource(R.drawable.ic_kaleyra_stream_fullscreen_on)
+        } else painterResource(R.drawable.ic_kaleyra_stream_fullscreen_action_off),
+        inputText = stringResource(R.string.kaleyra_fullscreen),
+        stateText = if (enabled) stringResource(R.string.kaleyra_call_sheet_active) else stringResource(R.string.kaleyra_call_sheet_disabled)
+    )
+}
+
+@Composable
 private fun InputMessage(
     inputPainter: Painter,
     inputText: String,
@@ -100,6 +115,18 @@ internal fun CameraMessageText(
         modifier = modifier,
         inputText = stringResource(id = R.string.kaleyra_call_sheet_camera),
         stateText = if (enabled) stringResource(id = R.string.kaleyra_call_sheet_on) else stringResource(id = R.string.kaleyra_call_sheet_off)
+    )
+}
+
+@Composable
+internal fun FullScreenMessageText(
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    InputMessageText(
+        modifier = modifier,
+        inputText = stringResource(id = R.string.kaleyra_fullscreen),
+        stateText = if (enabled) stringResource(id = R.string.kaleyra_call_sheet_active) else stringResource(id = R.string.kaleyra_call_sheet_disabled)
     )
 }
 
@@ -166,6 +193,28 @@ internal fun CameraOffInputMessagePreview() {
     KaleyraTheme {
         Surface {
             CameraMessage(false)
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FullscreenActiveInputMessagePreview() {
+    KaleyraTheme {
+        Surface {
+            FullScreenMessage(true)
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FullscreenModeDisabledInputMessagePreview() {
+    KaleyraTheme {
+        Surface {
+            FullScreenMessage(false)
         }
     }
 }

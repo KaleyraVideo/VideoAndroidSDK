@@ -20,6 +20,7 @@ import android.content.Context
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraUIProvider
 import com.kaleyra.video_common_ui.MainDispatcherRule
+import com.kaleyra.video_common_ui.model.FloatingMessage
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isActivityRunning
@@ -27,15 +28,23 @@ import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CallUITest {
@@ -47,6 +56,15 @@ class CallUITest {
 
     @Before
     fun setUp() {
+        mockkStatic("kotlinx.coroutines.ExecutorsKt")
+        mockkStatic(Executors::class)
+        every { Executors.newSingleThreadExecutor() } returns mockk {
+            every { this@mockk.asCoroutineDispatcher() } returns object : ExecutorCoroutineDispatcher() {
+                override val executor: Executor = Executor { command -> command.run() }
+                override fun close() = Unit
+                override fun dispatch(context: CoroutineContext, block: Runnable) = block.run()
+            }
+        }
         mockkObject(ContextExtensions)
         mockkObject(KaleyraUIProvider)
         mockkObject(ContextRetainer)
@@ -98,4 +116,34 @@ class CallUITest {
         assertEquals(null, actualDisplayMode)
     }
 
+    @Test
+    fun displayMessage_customMessageAdded() = runTest {
+        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val floatingMessage = FloatingMessage(body = "customMessage")
+
+        callUI.present(floatingMessage)
+
+        Assert.assertEquals(floatingMessage, callUI.floatingMessages.replayCache.firstOrNull())
+    }
+
+    @Test
+    fun displayMessage_dismissMessage_customMessageRemoved() = runTest {
+        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val floatingMessage = FloatingMessage(body = "customMessage")
+
+        callUI.present(floatingMessage)
+        floatingMessage.dismiss()
+        Assert.assertEquals(true, callUI.floatingMessages.replayCache.firstOrNull() == null)
+    }
+
+    @Test
+    fun displayMessageA_dismissMessageB_customMessageNotRemoved() = runTest {
+        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val floatingMessage1 = FloatingMessage(body = "customMessage1")
+        val floatingMessage2 = FloatingMessage(body = "customMessage2")
+
+        callUI.present(floatingMessage1)
+        callUI.present(floatingMessage2)
+        Assert.assertEquals(false, callUI.floatingMessages.replayCache.firstOrNull() == null)
+    }
 }

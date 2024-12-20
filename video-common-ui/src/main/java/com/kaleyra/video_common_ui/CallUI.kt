@@ -18,6 +18,8 @@ package com.kaleyra.video_common_ui
 
 import android.os.Parcelable
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.common.CallUIFloatingMessagePresenter
+import com.kaleyra.video_common_ui.common.FloatingMessagePresenter
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isActivityRunning
 import com.kaleyra.video_utils.ContextRetainer
@@ -47,8 +49,9 @@ data class DisplayModeEvent(val id: String, val displayMode: CallUI.DisplayMode)
 class CallUI(
     private val call: Call,
     val activityClazz: Class<*>,
-    val actions: MutableStateFlow<Set<Action>> = MutableStateFlow(Action.default)
-) : Call by call {
+    val actions: MutableStateFlow<Set<Action>> = MutableStateFlow(Action.default),
+    val floatingMessagePresenter: FloatingMessagePresenter = CallUIFloatingMessagePresenter(isGlassesSDK = KaleyraVideo.isGlassesSdk, logger = KaleyraVideo.logger)
+) : Call by call, FloatingMessagePresenter by floatingMessagePresenter {
 
     private val _displayModeEvent = MutableSharedFlow<DisplayModeEvent>(1, 1, BufferOverflow.DROP_OLDEST)
 

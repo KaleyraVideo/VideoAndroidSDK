@@ -43,7 +43,7 @@ internal fun VStreamMenuContent(
     var showFullscreenMenu by remember { mutableStateOf(false) }
 
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
-        if (isFullscreen) {
+        if (!isFullscreen) {
             viewModel.fullscreen(null)
             showFullscreenMenu = false
             onDismiss()
@@ -60,7 +60,7 @@ internal fun VStreamMenuContent(
     }
 
     BackHandler(enabled = showFullscreenMenu) {
-        onFullscreenClick(true)
+        onFullscreenClick(false)
     }
     
     VStreamMenuContent(
@@ -69,7 +69,7 @@ internal fun VStreamMenuContent(
         isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
         isPinLimitReached = isPinLimitReached,
         onCancelClick = onDismiss,
-        onFullscreenClick = { isFullscreen -> onFullscreenClick(isFullscreen) },
+        onFullscreenClick = { isFullscreen -> onFullscreenClick(!isFullscreen) },
         onPinClick = { isPinned ->
             if (isPinned) viewModel.unpin(selectedStreamId)
             else viewModel.pin(selectedStreamId)
@@ -93,12 +93,17 @@ internal fun VStreamMenuContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(14.dp)) {
-        if (!isFullscreen) {
-            CancelAction(
-                label = false,
-                onClick = onCancelClick
-            )
+        FullscreenAction(
+            label = false,
+            fullscreen = isFullscreen,
+            onClick = { onFullscreenClick(isFullscreen) }
+        )
+        Spacer(modifier = Modifier.height(SheetItemsSpacing))
+        if (hasVideo) {
+            ZoomAction(onClick = onZoomClick, label = false)
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
+        }
+        if (!isFullscreen) {
             PinAction(
                 label = false,
                 pin = isPinned,
@@ -107,14 +112,9 @@ internal fun VStreamMenuContent(
             )
             Spacer(modifier = Modifier.height(SheetItemsSpacing))
         }
-        if (hasVideo) {
-            ZoomAction(onClick = onZoomClick, label = false)
-            Spacer(modifier = Modifier.height(SheetItemsSpacing))
-        }
-        FullscreenAction(
+        CancelAction(
             label = false,
-            fullscreen = isFullscreen,
-            onClick = { onFullscreenClick(isFullscreen) }
+            onClick = onCancelClick
         )
     }
 }

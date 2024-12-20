@@ -34,6 +34,12 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
     val alertMessages: StateFlow<Set<AlertMessage>> = _alertMessagesFlow
 
     fun addAlertMessages(messages: Set<AlertMessage>) = scope.launch {
+
+        if (messages.any { it is AlertMessage.CustomMessage }) {
+            _alertMessages?.removeIf { it is AlertMessage.CustomMessage }
+            updateUserMessages()
+        }
+
         _alertMessages?.filter { alertMessage -> !messages.contains(alertMessage) }?.forEach { removedAlertMessage ->
             internalRemoveUserMessage(removedAlertMessage)
         }
@@ -51,23 +57,25 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
 
     fun addUserMessage(userMessage: UserMessage, autoDismiss: Boolean = false) = scope.launch { internalAddUserMessage(userMessage, autoDismiss) }
 
-    private fun internalAddUserMessage(userMessage: UserMessage, autoDismiss: Boolean = false) {
+    private fun internalAddUserMessage(userMessage: UserMessage, autoDismiss: Boolean = false) = scope.launch {
         with(_userMessages) {
             when (userMessage) {
                 is RecordingMessage -> this.removeIf { it is RecordingMessage }
                 is AudioConnectionFailureMessage -> this.removeIf { it is AudioConnectionFailureMessage }
                 is UsbCameraMessage -> this.removeIf { it is UsbCameraMessage }
                 is WhiteboardRequestMessage -> this.removeIf { it is WhiteboardRequestMessage }
+                is AlertMessage.CustomMessage -> this.removeIf { it.id == userMessage.id }
                 else -> Unit
             }
 
-            if (contains(userMessage)) return
+            if (contains(userMessage)) return@launch
 
             add(0, userMessage)
         }
+
         updateUserMessages()
 
-        if (!autoDismiss) return
+        if (!autoDismiss) return@launch
 
         autoDismissUserMessage(userMessage)
     }
@@ -86,9 +94,11 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
         if (!_userMessages.remove(userMessage)) _alertMessages?.remove(userMessage)
     }
 
-    private fun updateUserMessages() = scope.launch {
+    private suspend fun updateUserMessages() {
         _userMessagesFlow.emit(mutableListOf(*_userMessages.toTypedArray()))
-        _alertMessages?.let { alertMessages -> _alertMessagesFlow.emit(setOf(*alertMessages.toTypedArray())) }
+        _alertMessages?.let { alertMessages ->
+            _alertMessagesFlow.emit(setOf(*alertMessages.toTypedArray()))
+        }
     }
 }
 

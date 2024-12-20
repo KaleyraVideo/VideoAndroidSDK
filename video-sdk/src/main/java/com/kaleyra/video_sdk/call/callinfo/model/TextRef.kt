@@ -7,6 +7,9 @@ sealed class TextRef(open val id: Int, open val args: List<Any>? = emptyList()) 
 
     abstract fun resolve(context: Context): String
 
+    data class PlainText(val text: String?): TextRef(-1) {
+        override fun resolve(context: Context) = text ?: ""
+    }
     data class StringResource(override val id: Int, override val args: List<Any>? = emptyList()): TextRef(id, args) {
         override fun resolve(context: Context) = context.resources.getString(id, *args!!.toTypedArray())
     }

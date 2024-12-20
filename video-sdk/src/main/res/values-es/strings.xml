@@ -33,6 +33,8 @@
     <string name="kaleyra_call_sheet_camera">Cámara</string>
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
+    <string name="kaleyra_call_sheet_active">Activo</string>
+    <string name="kaleyra_call_sheet_disabled">Desactivado</string>
     <string name="kaleyra_call_sheet_hang_up">Colgar</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostrar más acciones</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Activar micrófono</string>
@@ -299,5 +301,6 @@
     <string name="kaleyra_app_icon">Icono de la aplicación</string>
     <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
     <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>
+    <string name="kaleyra_fullscreen">Pantalla completa</string>
 
 </resources>
