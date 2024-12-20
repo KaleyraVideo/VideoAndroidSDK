@@ -81,7 +81,7 @@ jobs:
 
   update_hybrid_version:
     needs: update_sdk_version
-    if: ${{ inputs.release_version == "patch" || inputs.release_version == "minor" }}
+    if: ${{ inputs.release_version == 'patch' || inputs.release_version == 'minor' }}
     uses: KaleyraVideo/VideoHybridNativeBridge/.github/workflows/update_native_dep.yml@main
     with: 
       release_version: ${{ inputs.specific_release_version || steps.output_tag.outputs.NEW_VERSION }}
