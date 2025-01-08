@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.CoroutineScope
@@ -10,20 +11,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-
-/**
- * TODO
- * Consider refactoring layout options to "Auto" and "Manual".
- *
- * The current "Grid" and "Fullscreen" layouts can be considered special cases of the
- * "Manual" layout (formerly "Pin").
- *
- * - "Grid" layout: Achieved by setting `maxAllowedPinnedStreams` to 0.
- * - "Fullscreen" layout: Achieved by setting `maxAllowedPinnedStreams` to 1.
- * - "Pin" layout: Achieved by setting `maxAllowedPinnedStreams` to a value greater than 1.
- *
- * This refactoring would simplify the layout logic and reduce redundancy.
- */
 
 /**
  * An interface representing a layout that supports pinning streams.
@@ -46,6 +33,30 @@ internal interface PinLayout: StreamLayout {
      * in the context of a call, such as notifications related to pinning or unpinning streams.
      */
     val callUserMessageProvider: CallUserMessagesProvider
+
+    /**
+     * Pins a stream with the given [streamId].
+     *
+     * @param streamId The ID of the stream to pin.
+     * @param prepend If true, the stream is added to the beginning of the pinned list.
+     * @param force If true, the stream is pinned even if the maximum number of pinned streams is reached, maintaining the max number constraint.
+     * @return True if the stream was successfully pinned, false otherwise.
+     */
+    fun pin(streamId: String, prepend: Boolean, force: Boolean): Boolean
+
+    /**
+     * Unpins a stream with the given [streamId].
+     *
+     * @param streamId The ID of the stream to unpin.
+     */
+    fun unpin(streamId: String)
+
+    /**
+     * Unpins a stream with the given [streamId].
+     *
+     * @param streamId The ID of the stream to unpin.
+     */
+    fun clear()
 }
 
 /**
@@ -147,7 +158,7 @@ internal class PinLayoutImpl(
      * @param force If true, the stream is pinned even if the maximum number of pinned streams is reached, maintaining the max number constraint.
      * @return True if the stream was successfully pinned, false otherwise.
      */
-    fun pin(streamId: String, prepend: Boolean, force: Boolean): Boolean {
+    override fun pin(streamId: String, prepend: Boolean, force: Boolean): Boolean {
         _internalState.update { state ->
             val maxAllowedPinnedStreams = maxAllowedPinnedStreams.value
             val pinnedStreams = state.pinnedStreams
@@ -166,7 +177,7 @@ internal class PinLayoutImpl(
      *
      * @param streamId The ID of the stream to unpin.
      */
-    fun unpin(streamId: String) {
+    override fun unpin(streamId: String) {
         _internalState.update { state ->
             state.copy(pinnedStreams = state.pinnedStreams.filter { it.id != streamId })
         }
@@ -175,7 +186,7 @@ internal class PinLayoutImpl(
     /**
      * Clears all pinned streams.
      */
-    fun clear() {
+    override fun clear() {
         _internalState.update { state ->
             state.copy(pinnedStreams = emptyList())
         }
