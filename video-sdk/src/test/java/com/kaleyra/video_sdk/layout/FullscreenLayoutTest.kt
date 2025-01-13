@@ -6,19 +6,16 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FullscreenLayoutImplTest {
+class FullscreenLayoutTest {
 
     @Test
     fun `initial streamItems is empty`() = runTest {
