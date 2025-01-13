@@ -22,15 +22,15 @@ internal class GridLayoutImpl(
 
     private data class State(
         val allStreams: List<StreamUi> = emptyList(),
-        val featuredStreams: List<StreamUi> = emptyList(),
+        val streamItems: List<StreamItem> = emptyList(),
         val maxFeaturedStreams: Int = 0
     )
 
     private val _internalState: MutableStateFlow<State> = MutableStateFlow(State())
 
-    private val _streamsPresentation: MutableStateFlow<List<StreamPresentation>> = MutableStateFlow(emptyList())
+    private val _streamItems: MutableStateFlow<List<StreamItem>> = MutableStateFlow(emptyList())
 
-    override val streamsPresentation: StateFlow<List<StreamPresentation>> = _streamsPresentation
+    override val streamItems: StateFlow<List<StreamItem>> = _streamItems
 
     init {
         combine(
@@ -38,28 +38,38 @@ internal class GridLayoutImpl(
             maxFeaturedStreams
         ) { streams, maxFeaturedStreams ->
             _internalState.update { state ->
-                when {
-                    maxFeaturedStreams < 1 -> {
-                        state.copy(allStreams = streams, featuredStreams = emptyList(), maxFeaturedStreams = 0)
-                    }
-
-                    state.allStreams != streams || state.maxFeaturedStreams != maxFeaturedStreams -> {
-                        state.copy(
-                            allStreams = streams,
-                            featuredStreams = streams.take(maxFeaturedStreams),
-                            maxFeaturedStreams = maxFeaturedStreams
-                        )
-                    }
-
-                    else -> return@combine
+                if (maxFeaturedStreams < 1) {
+                    state.copy(allStreams = streams, streamItems = emptyList(), maxFeaturedStreams = 0)
+                } else {
+                    state.copy(
+                        allStreams = streams,
+                        streamItems = buildStreamItems(streams, maxFeaturedStreams),
+                        maxFeaturedStreams = maxFeaturedStreams
+                    )
                 }
             }
         }.launchIn(coroutineScope)
 
         _internalState
-            .onEach { state ->
-                _streamsPresentation.value = state.featuredStreams.map { StreamPresentation(it) }
-            }
+            .onEach { state -> _streamItems.value = state.streamItems }
             .launchIn(coroutineScope)
+    }
+
+    private fun buildStreamItems(streams: List<StreamUi>, maxFeaturedStreams: Int): List<StreamItem> {
+        if (streams.isEmpty()) return emptyList()
+
+        return if (streams.size <= maxFeaturedStreams) {
+            streams.map { stream -> StreamItem.Stream(stream.id, stream) }
+        } else {
+            val (featuredStreams, remainingStreams) = streams.withIndex().partition { it.index < maxFeaturedStreams - 1 }
+
+            val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) }
+            val moreItem = StreamItem.More(
+                id = remainingStreams.first().value.id,
+                users = remainingStreams.map { UserPreview(it.value.username, it.value.avatar) }
+            )
+
+            streamItems + moreItem
+        }
     }
 }
