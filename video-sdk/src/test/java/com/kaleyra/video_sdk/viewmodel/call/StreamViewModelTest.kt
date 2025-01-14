@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
@@ -396,6 +397,38 @@ class StreamViewModelTest {
 
         val new = viewModel.uiState.first().fullscreenStream
         assertEquals(null, new)
+    }
+
+    @Test
+    fun `test fullscreen stream set fullscreen user message emitted`() = runTest {
+        val streams = listOf(streamMock1, streamMock2, streamMock3)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+        every { callMock.toCallStateUi() } returns callState
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+        val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
+        advanceUntilIdle()
+
+        viewModel.fullscreen(streamMock1.id)
+
+        assertEquals(FullScreenMessage.Enabled, viewModel.userMessage.first())
+    }
+
+    @Test
+    fun `test fullscreen stream null fullscreen user message emitted`() = runTest {
+        val streams = listOf(streamMock1, streamMock2, streamMock3)
+        val callState = MutableStateFlow<CallStateUi>(CallStateUi.Connected)
+        every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
+        every { callMock.toCallStateUi() } returns callState
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+        val viewModel = spyk(StreamViewModel { mockkSuccessfulConfiguration(conference = conferenceMock) })
+        advanceUntilIdle()
+        viewModel.fullscreen(streamMock1.id)
+        viewModel.userMessage.first()
+
+        viewModel.fullscreen(null)
+
+        assertEquals(FullScreenMessage.Disabled, viewModel.userMessage.first())
     }
 
     @Test

@@ -3,7 +3,6 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.streammenu
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
@@ -43,7 +42,7 @@ internal fun HStreamMenuContent(
     var showFullscreenMenu by remember { mutableStateOf(false) }
 
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
-        if (isFullscreen) {
+        if (!isFullscreen) {
             viewModel.fullscreen(null)
             showFullscreenMenu = false
             onDismiss()
@@ -60,7 +59,7 @@ internal fun HStreamMenuContent(
     }
 
     BackHandler(enabled = showFullscreenMenu) {
-        onFullscreenClick(true)
+        onFullscreenClick(false)
     }
 
     HStreamMenuContent(
@@ -93,12 +92,12 @@ internal fun HStreamMenuContent(
     modifier: Modifier = Modifier
 ) {
     Row(modifier.padding(14.dp)) {
+        CancelAction(
+            label = true,
+            onClick = onCancelClick
+        )
+        Spacer(modifier = Modifier.width(SheetItemsSpacing))
         if (!isFullscreen) {
-            CancelAction(
-                label = true,
-                onClick = onCancelClick
-            )
-            Spacer(modifier = Modifier.width(SheetItemsSpacing))
             PinAction(
                 label = true,
                 pin = isPinned,
@@ -114,7 +113,7 @@ internal fun HStreamMenuContent(
         FullscreenAction(
             label = true,
             fullscreen = isFullscreen,
-            onClick = { onFullscreenClick(isFullscreen) }
+            onClick = { onFullscreenClick(!isFullscreen) }
         )
     }
 }

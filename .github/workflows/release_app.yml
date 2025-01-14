@@ -81,29 +81,29 @@ jobs:
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/mapping/release/mapping.txt
             app/build/intermediates/merged_native_libs/release/out/lib
-#  upload_playstore:
-#    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
-#    needs: [ determine-runner-integration, build_aab]
-#    steps:
-#      - uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#          fetch-tags: true
-#          ref: ${{ inputs.tag }}
-#      - name: Download math result for job 1
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: build_release
-#          path: build
-#      - name: Deploy to PlayStore
-#        uses: r0adkll/upload-google-play@v1
-#        with:
-#          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-#          packageName: com.kaleyra.demo_video_sdk
-#          releaseFiles: build/outputs/bundle/release/app-release.aab
-#          track: beta
-#          mappingFile: build/outputs/mapping/release/mapping.txt
-#          debugSymbols: build/intermediates/merged_native_libs/release/out/lib
+  upload_playstore:
+    runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
+    needs: [ determine-runner-integration, build_aab]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ inputs.tag }}
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v4
+        with:
+          name: build_release
+          path: build
+      - name: Deploy to PlayStore
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          packageName: com.kaleyra.demo_video_sdk
+          releaseFiles: build/outputs/bundle/release/app-release.aab
+          track: beta
+          mappingFile: build/outputs/mapping/release/mapping.txt
+          debugSymbols: build/intermediates/merged_native_libs/release/out/lib
   upload_huawei:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: [ determine-runner-integration, build_aab ]

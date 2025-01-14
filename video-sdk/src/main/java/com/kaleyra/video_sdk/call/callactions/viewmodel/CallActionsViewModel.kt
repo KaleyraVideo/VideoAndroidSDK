@@ -48,9 +48,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.CameraMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.InputMessage
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.model.MicMessage
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
@@ -67,7 +64,10 @@ import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Com
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
+import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -92,9 +92,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
     override fun initialState() = CallActionsUiState()
 
-    private val inputMessageChannel = Channel<InputMessage>(Channel.BUFFERED)
+    private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
 
-    val inputMessage: Flow<InputMessage> = inputMessageChannel.receiveAsFlow()
+    val userMessage: Flow<UserMessage> = userMessageChannel.receiveAsFlow()
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
@@ -317,7 +317,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val hasSucceed = if (!isMicEnabled) input.tryEnable() else input.tryDisable()
             if (hasSucceed) {
                 val message = if (isMicEnabled) MicMessage.Disabled else MicMessage.Enabled
-                inputMessageChannel.send(message)
+                userMessageChannel.send(message)
             }
         }
     }
@@ -345,12 +345,12 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             existingCameraVideo == null || !currentCall.inputs.availableInputs.value.contains(existingCameraVideo) -> requestVideoInputs(currentCall, activity)
             existingCameraVideo.enabled.value.isAtLeastLocallyEnabled() -> {
                 val hasSucceed = existingCameraVideo.tryDisable()
-                if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Disabled)
+                if (hasSucceed) userMessageChannel.trySend(CameraMessage.Disabled)
             }
 
             else -> {
                 val hasSucceed = existingCameraVideo.tryEnable()
-                if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
+                if (hasSucceed) userMessageChannel.trySend(CameraMessage.Enabled)
             }
         }
     }
@@ -360,14 +360,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val input = call.inputs.request(activity, Inputs.Type.Camera.External)
                 .getOrNull<Input.Video>() ?: return@launch
             val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
-            if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
+            if (hasSucceed) userMessageChannel.trySend(CameraMessage.Enabled)
         }
 
         viewModelScope.launch {
             val input = call.inputs.request(activity, Inputs.Type.Camera.Internal)
                 .getOrNull<Input.Video>() ?: return@launch
             val hasSucceed = if (!input.enabled.value.isAtLeastLocallyEnabled()) input.tryEnable() else true
-            if (hasSucceed) inputMessageChannel.trySend(CameraMessage.Enabled)
+            if (hasSucceed) userMessageChannel.trySend(CameraMessage.Enabled)
         }
     }
 

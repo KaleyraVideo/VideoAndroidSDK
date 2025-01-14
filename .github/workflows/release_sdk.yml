@@ -19,6 +19,7 @@ jobs:
   update_sdk_version:
     runs-on: ubuntu-latest
     outputs:
+      new_version: ${{ steps.output_tag.outputs.NEW_VERSION }}
       tag: ${{ steps.output_tag.outputs.TAG }}
     steps:
       - name: Generate a token
@@ -77,6 +78,16 @@ jobs:
     with:
       release_version: ${{ inputs.release_version }}
       specific_release_version: ${{ inputs.specific_release_version }}
+    secrets: inherit
+
+  update_hybrid_version:
+    needs: update_sdk_version
+    if: ${{ inputs.release_version == 'patch' || inputs.release_version == 'minor' }}
+    uses: KaleyraVideo/VideoHybridNativeBridge/.github/workflows/update_native_dep.yml@main
+    with: 
+      release_version: ${{ inputs.specific_release_version || needs.update_sdk_version.outputs.new_version }}
+      release_type: "patch"
+      platform: 'android'
     secrets: inherit
 
   release_notes:

@@ -33,6 +33,8 @@
     <string name="kaleyra_call_sheet_camera">Camera</string>
     <string name="kaleyra_call_sheet_on">On</string>
     <string name="kaleyra_call_sheet_off">Off</string>
+    <string name="kaleyra_call_sheet_active">Attivo</string>
+    <string name="kaleyra_call_sheet_disabled">Disattivato</string>
     <string name="kaleyra_call_sheet_hang_up">Aggancia</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostra più azioni</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Abilita microfono</string>
@@ -197,9 +199,10 @@
     <string name="kaleyra_share_whiteboard">Condividi sulla lavagna</string>
     <string name="kaleyra_download">Salva</string>
 
-    <string name="kaleyra_fullscreen_info">Modalità primo piano</string>
-    <string name="kaleyra_exit_fullscreen">Esci modalità primo piano</string>
-    <string name="kaleyra_enter_fullscreen">Entra modalità primo piano</string>
+    <string name="kaleyra_fullscreen">Schermo intero</string>
+    <string name="kaleyra_fullscreen_info">Modalità schermo intero</string>
+    <string name="kaleyra_exit_fullscreen">Esci modalità schermo intero</string>
+    <string name="kaleyra_enter_fullscreen">Entra modalità schermo intero</string>
 
     <string name="kaleyra_ringing_answer">Rispondi</string>
     <string name="kaleyra_ringing_decline">Rifiuta</string>

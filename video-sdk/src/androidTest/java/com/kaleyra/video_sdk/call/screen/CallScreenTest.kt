@@ -76,10 +76,8 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
