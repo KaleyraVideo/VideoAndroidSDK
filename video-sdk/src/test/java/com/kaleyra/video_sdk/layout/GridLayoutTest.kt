@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.GridLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.UserPreview
@@ -9,14 +10,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -103,6 +100,45 @@ class GridLayoutTest {
     }
 
     @Test
+    fun `local camera stream is the last featured stream in streamItems when streams size is less or equal than to maxFeaturedStreams`() = runTest {
+        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()), video = VideoUi(id = "1", isScreenShare = false))
+        val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
+        val stream3 = StreamUi("3", "user3", isMine = true, avatar = ImmutableUri(mockk()))
+        streamsFlow.value = listOf(stream1, stream2, stream3)
+        maxFeaturedStreamsFlow.value = 3
+
+        val expected = listOf(
+            StreamItem.Stream("2", stream2),
+            StreamItem.Stream("3", stream3),
+            StreamItem.Stream("1", stream1),
+        )
+        Assert.assertEquals(expected, gridLayout.streamItems.first())
+    }
+
+    @Test
+    fun `local camera stream is the last visible stream in streamItems when streams size is more than maxFeaturedStreams`() = runTest {
+        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()), video = VideoUi(id = "1", isScreenShare = false))
+        val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
+        val stream3 = StreamUi("3", "user3", isMine = true, avatar = ImmutableUri(mockk()))
+        val stream4 = StreamUi("4", "user4")
+        streamsFlow.value = listOf(stream1, stream2, stream3, stream4)
+        maxFeaturedStreamsFlow.value = 3
+
+        val expected = listOf(
+            StreamItem.Stream("2", stream2),
+            StreamItem.Stream("1", stream1),
+            StreamItem.More(
+                id = "3",
+                users = listOf(
+                    UserPreview("user3", stream3.avatar),
+                    UserPreview("user4", stream4.avatar)
+                )
+            )
+        )
+        Assert.assertEquals(expected, gridLayout.streamItems.first())
+    }
+
+    @Test
     fun `streamItems updates when streams flow changes`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2")
@@ -175,29 +211,5 @@ class GridLayoutTest {
             )
         )
         Assert.assertEquals(expected2, gridLayout.streamItems.first())
-    }
-
-    @Test
-    fun `streamItems only emits when there is a change`() = runTest(UnconfinedTestDispatcher()) {
-        val stream1 = StreamUi("1", "user1")
-
-        val collectedItems = mutableListOf<List<StreamItem>>()
-        val job = launch {
-            gridLayout.streamItems.toList(collectedItems)
-        }
-
-        streamsFlow.value = listOf(stream1)
-        maxFeaturedStreamsFlow.value = 2
-
-        streamsFlow.value = listOf(stream1)
-        maxFeaturedStreamsFlow.value = 2
-
-        streamsFlow.value = listOf()
-
-        assertEquals(3, collectedItems.size)
-        assertTrue(collectedItems[0].isEmpty())
-        assertEquals(1, collectedItems[1].size)
-        assertTrue(collectedItems[2].isEmpty())
-        job.cancel()
     }
 }

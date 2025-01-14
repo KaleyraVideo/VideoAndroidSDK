@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,11 +60,13 @@ internal class GridLayoutImpl(
         if (streams.isEmpty()) return emptyList()
 
         return if (streams.size <= maxFeaturedStreams) {
-            streams.map { stream -> StreamItem.Stream(stream.id, stream) }
+            streams.sortedBy { it.isMyCameraStream() }.map { stream -> StreamItem.Stream(stream.id, stream) }
         } else {
-            val (featuredStreams, remainingStreams) = streams.withIndex().partition { it.index < maxFeaturedStreams - 1 }
+            val (localCameraStream, otherStreams) = streams.partition { it.isMyCameraStream() }
+            val maxOtherFeaturedStreams = maxFeaturedStreams - localCameraStream.size
+            val (featuredStreams, remainingStreams) = otherStreams.withIndex().partition { it.index < maxOtherFeaturedStreams - 1 }
 
-            val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) }
+            val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) } + localCameraStream.map { StreamItem.Stream(it.id, it) }
             val moreItem = StreamItem.More(
                 id = remainingStreams.first().value.id,
                 users = remainingStreams.map { UserPreview(it.value.username, it.value.avatar) }
