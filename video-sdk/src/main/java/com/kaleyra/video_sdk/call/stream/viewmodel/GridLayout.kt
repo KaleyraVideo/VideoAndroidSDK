@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,19 +11,19 @@ import kotlinx.coroutines.flow.update
 
 internal interface GridLayout: StreamLayout {
 
-    val maxFeaturedStreams: StateFlow<Int>
+    val maxStreams: StateFlow<Int>
 }
 
 internal class GridLayoutImpl(
     override val streams: StateFlow<List<StreamUi>>,
-    override val maxFeaturedStreams: StateFlow<Int>,
+    override val maxStreams: StateFlow<Int>,
     coroutineScope: CoroutineScope
 ) : GridLayout {
 
     private data class State(
         val allStreams: List<StreamUi> = emptyList(),
         val streamItems: List<StreamItem> = emptyList(),
-        val maxFeaturedStreams: Int = 0
+        val maxStreams: Int = 0
     )
 
     private val _internalState: MutableStateFlow<State> = MutableStateFlow(State())
@@ -36,16 +35,16 @@ internal class GridLayoutImpl(
     init {
         combine(
             streams,
-            maxFeaturedStreams
-        ) { streams, maxFeaturedStreams ->
+            maxStreams
+        ) { streams, maxStreams ->
             _internalState.update { state ->
-                if (maxFeaturedStreams < 1) {
-                    state.copy(allStreams = streams, streamItems = emptyList(), maxFeaturedStreams = 0)
+                if (maxStreams < 1) {
+                    state.copy(allStreams = streams, streamItems = emptyList(), maxStreams = 0)
                 } else {
                     state.copy(
                         allStreams = streams,
-                        streamItems = buildStreamItems(streams, maxFeaturedStreams),
-                        maxFeaturedStreams = maxFeaturedStreams
+                        streamItems = buildStreamItems(streams, maxStreams),
+                        maxStreams = maxStreams
                     )
                 }
             }
@@ -60,9 +59,9 @@ internal class GridLayoutImpl(
         if (streams.isEmpty()) return emptyList()
 
         return if (streams.size <= maxFeaturedStreams) {
-            streams.sortedBy { it.isMyCameraStream() }.map { stream -> StreamItem.Stream(stream.id, stream) }
+            streams.sortedBy { it.isMine }.map { stream -> StreamItem.Stream(stream.id, stream) }
         } else {
-            val (localCameraStream, otherStreams) = streams.partition { it.isMyCameraStream() }
+            val (localCameraStream, otherStreams) = streams.partition { it.isMine }
             val maxOtherFeaturedStreams = maxFeaturedStreams - localCameraStream.size
             val (featuredStreams, remainingStreams) = otherStreams.withIndex().partition { it.index < maxOtherFeaturedStreams - 1 }
 

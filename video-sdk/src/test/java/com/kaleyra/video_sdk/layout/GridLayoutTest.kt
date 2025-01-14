@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.GridLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.UserPreview
@@ -22,38 +21,38 @@ class GridLayoutTest {
 
     private lateinit var gridLayout: GridLayoutImpl
     private lateinit var streamsFlow: MutableStateFlow<List<StreamUi>>
-    private lateinit var maxFeaturedStreamsFlow: MutableStateFlow<Int>
+    private lateinit var maxStreamsFlow: MutableStateFlow<Int>
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Before
     fun setup() {
         streamsFlow = MutableStateFlow(emptyList())
-        maxFeaturedStreamsFlow = MutableStateFlow(0)
-        gridLayout = GridLayoutImpl(streamsFlow, maxFeaturedStreamsFlow, testScope)
+        maxStreamsFlow = MutableStateFlow(0)
+        gridLayout = GridLayoutImpl(streamsFlow, maxStreamsFlow, testScope)
     }
 
     @Test
     fun `streamItems is empty when streams are empty`() = runTest {
-        maxFeaturedStreamsFlow = MutableStateFlow(2)
+        maxStreamsFlow = MutableStateFlow(2)
         Assert.assertEquals(emptyList<StreamItem>(), gridLayout.streamItems.first())
     }
 
     @Test
-    fun `streamItems is empty when maxFeaturedStreams is less than 1`() = runTest {
+    fun `streamItems is empty when maxStreams is less than 1`() = runTest {
         streamsFlow.value = listOf(
             StreamUi("1", "user1"),
             StreamUi("2", "user2")
         )
-        maxFeaturedStreamsFlow.value = 0
+        maxStreamsFlow.value = 0
         Assert.assertEquals(emptyList<StreamItem>(), gridLayout.streamItems.first())
     }
 
     @Test
-    fun `streamItems contains all streams when streams size is less than to maxFeaturedStreams`() = runTest {
+    fun `streamItems contains all streams when streams size is less than to maxStreams`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2")
         streamsFlow.value = listOf(stream1, stream2)
-        maxFeaturedStreamsFlow.value = 4
+        maxStreamsFlow.value = 4
 
         val expected = listOf(
             StreamItem.Stream("1", stream1),
@@ -63,11 +62,11 @@ class GridLayoutTest {
     }
 
     @Test
-    fun `streamItems contains all streams when streams size is equals to maxFeaturedStreams`() = runTest {
+    fun `streamItems contains all streams when streams size is equals to maxStreams`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2")
         streamsFlow.value = listOf(stream1, stream2)
-        maxFeaturedStreamsFlow.value = 2
+        maxStreamsFlow.value = 2
 
         val expected = listOf(
             StreamItem.Stream("1", stream1),
@@ -77,13 +76,13 @@ class GridLayoutTest {
     }
 
     @Test
-    fun `streamItems contains featured streams and more item when streams size is greater than maxFeaturedStreams`() = runTest {
+    fun `streamItems contains featured streams and more item when streams size is greater than maxStreams`() = runTest {
         val stream1 = StreamUi("1", "user1", avatar = ImmutableUri(mockk()))
         val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
         val stream3 = StreamUi("3", "user3", avatar = ImmutableUri(mockk()))
         val stream4 = StreamUi("4", "user4", avatar = ImmutableUri(mockk()))
         streamsFlow.value = listOf(stream1, stream2, stream3, stream4)
-        maxFeaturedStreamsFlow.value = 3
+        maxStreamsFlow.value = 3
 
         val expected = listOf(
             StreamItem.Stream("1", stream1),
@@ -100,38 +99,40 @@ class GridLayoutTest {
     }
 
     @Test
-    fun `local camera stream is the last featured stream in streamItems when streams size is less or equal than to maxFeaturedStreams`() = runTest {
-        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()), video = VideoUi(id = "1", isScreenShare = false))
+    fun `local streams are the last featured streams in streamItems when streams size is less or equal than to maxStreams`() = runTest {
+        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()))
         val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
         val stream3 = StreamUi("3", "user3", isMine = true, avatar = ImmutableUri(mockk()))
         streamsFlow.value = listOf(stream1, stream2, stream3)
-        maxFeaturedStreamsFlow.value = 3
+        maxStreamsFlow.value = 3
 
         val expected = listOf(
             StreamItem.Stream("2", stream2),
-            StreamItem.Stream("3", stream3),
             StreamItem.Stream("1", stream1),
+            StreamItem.Stream("3", stream3),
         )
         Assert.assertEquals(expected, gridLayout.streamItems.first())
     }
 
     @Test
-    fun `local camera stream is the last visible stream in streamItems when streams size is more than maxFeaturedStreams`() = runTest {
-        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()), video = VideoUi(id = "1", isScreenShare = false))
+    fun `local streams are the last visible streams in streamItems when streams size is more than maxStreams`() = runTest {
+        val stream1 = StreamUi("1", "user1", isMine = true, avatar = ImmutableUri(mockk()))
         val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
         val stream3 = StreamUi("3", "user3", isMine = true, avatar = ImmutableUri(mockk()))
-        val stream4 = StreamUi("4", "user4")
-        streamsFlow.value = listOf(stream1, stream2, stream3, stream4)
-        maxFeaturedStreamsFlow.value = 3
+        val stream4 = StreamUi("4", "user4", avatar = ImmutableUri(mockk()))
+        val stream5 = StreamUi("5", "user5", avatar = ImmutableUri(mockk()))
+        streamsFlow.value = listOf(stream1, stream2, stream3, stream4, stream5)
+        maxStreamsFlow.value = 4
 
         val expected = listOf(
             StreamItem.Stream("2", stream2),
             StreamItem.Stream("1", stream1),
+            StreamItem.Stream("3", stream3),
             StreamItem.More(
-                id = "3",
+                id = "4",
                 users = listOf(
-                    UserPreview("user3", stream3.avatar),
-                    UserPreview("user4", stream4.avatar)
+                    UserPreview("user4", stream4.avatar),
+                    UserPreview("user5", stream5.avatar)
                 )
             )
         )
@@ -142,7 +143,7 @@ class GridLayoutTest {
     fun `streamItems updates when streams flow changes`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2")
-        maxFeaturedStreamsFlow.value = 2
+        maxStreamsFlow.value = 2
         streamsFlow.value = listOf(stream1)
         val expected1 = listOf(StreamItem.Stream("1", stream1))
         Assert.assertEquals(expected1, gridLayout.streamItems.first())
@@ -153,12 +154,12 @@ class GridLayoutTest {
     }
 
     @Test
-    fun `streamItems updates when maxFeaturedStreams flow changes`() = runTest {
+    fun `streamItems updates when maxStreams flow changes`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
         val stream3 = StreamUi("3", "user3", avatar = ImmutableUri(mockk()))
         streamsFlow.value = listOf(stream1, stream2, stream3)
-        maxFeaturedStreamsFlow.value = 2
+        maxStreamsFlow.value = 2
         val expected1 = listOf(
             StreamItem.Stream("1", stream1),
             StreamItem.More(
@@ -171,7 +172,7 @@ class GridLayoutTest {
         )
         Assert.assertEquals(expected1, gridLayout.streamItems.first())
 
-        maxFeaturedStreamsFlow.value = 3
+        maxStreamsFlow.value = 3
         val expected2 = listOf(
             StreamItem.Stream("1", stream1),
             StreamItem.Stream("2", stream2),
@@ -181,12 +182,12 @@ class GridLayoutTest {
     }
 
     @Test
-    fun `streamItems updates when both streams and maxFeaturedStreams flow changes`() = runTest {
+    fun `streamItems updates when both streams and maxStreams flow changes`() = runTest {
         val stream1 = StreamUi("1", "user1")
         val stream2 = StreamUi("2", "user2", avatar = ImmutableUri(mockk()))
         val stream3 = StreamUi("3", "user3", avatar = ImmutableUri(mockk()))
         streamsFlow.value = listOf(stream1, stream2)
-        maxFeaturedStreamsFlow.value = 1
+        maxStreamsFlow.value = 1
         val expected1 = listOf(
             StreamItem.More(
                 id = "1",
@@ -199,7 +200,7 @@ class GridLayoutTest {
         Assert.assertEquals(expected1, gridLayout.streamItems.first())
 
         streamsFlow.value = listOf(stream1, stream2, stream3)
-        maxFeaturedStreamsFlow.value = 2
+        maxStreamsFlow.value = 2
         val expected2 = listOf(
             StreamItem.Stream("1", stream1),
             StreamItem.More(
