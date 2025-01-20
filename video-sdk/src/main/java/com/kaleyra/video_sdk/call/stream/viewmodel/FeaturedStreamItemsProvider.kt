@@ -11,7 +11,7 @@ internal class FeaturedStreamItemsProvider(
 
     override fun buildStreamItems(): List<StreamItem> {
         require(maxThumbnailStreams >= 0) {
-            "maxAllowedThumbnailStreams must be greater or equal to 0"
+            "maxThumbnailStreams must be greater or equal to 0"
         }
         if (featuredStreamIds.isEmpty()) return emptyList()
 
