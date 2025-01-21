@@ -13,11 +13,7 @@ import kotlin.math.max
 
 internal interface ManualLayout: StreamLayout {
 
-    val maxAllowedFeaturedStreams: StateFlow<Int>
-
-    val maxAllowedPinnedStreams: StateFlow<Int>
-
-    val maxAllowedThumbnailStreams: StateFlow<Int>
+    val maxPinnedStreams: StateFlow<Int>
 
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean
 
@@ -32,9 +28,10 @@ internal interface ManualLayout: StreamLayout {
 
 internal class ManualLayoutImpl(
     override val streams: StateFlow<List<StreamUi>>,
-    override val maxAllowedFeaturedStreams: StateFlow<Int>,
-    override val maxAllowedPinnedStreams: StateFlow<Int>,
-    override val maxAllowedThumbnailStreams: StateFlow<Int>,
+    override val maxPinnedStreams: StateFlow<Int>,
+    private val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
+    private val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
+    private val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
     coroutineScope: CoroutineScope,
 ): ManualLayout {
 
@@ -42,9 +39,7 @@ internal class ManualLayoutImpl(
         val allStreams: List<StreamUi> = emptyList(),
         val pinnedStreamIds: List<String> = emptyList(),
         val fullscreenStreamId: String? = null,
-        val maxAllowedFeaturedStreams: Int = 0,
-        val maxAllowedPinnedStreams: Int = 0,
-        val maxAllowedThumbnailStreams: Int = 0
+        val maxPinnedStreams: Int = 0,
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -56,18 +51,14 @@ internal class ManualLayoutImpl(
     init {
         combine(
             streams,
-            maxAllowedFeaturedStreams,
-            maxAllowedPinnedStreams,
-            maxAllowedThumbnailStreams
-        ) { newStreams, maxAllowedFeaturedStreams, maxAllowedPinnedStreams, maxAllowedThumbnailStreams ->
+            maxPinnedStreams
+        ) { newStreams, maxPinnedStreams ->
             _internalState.update { state ->
                 state.copy(
                     allStreams = newStreams,
-                    pinnedStreamIds = retainPinnedStreamIds(state, newStreams, maxAllowedPinnedStreams),
+                    pinnedStreamIds = retainPinnedStreamIds(state, newStreams, maxPinnedStreams),
                     fullscreenStreamId = newStreams.firstOrNull { it.id == state.fullscreenStreamId }?.id,
-                    maxAllowedFeaturedStreams = max(0, maxAllowedFeaturedStreams),
-                    maxAllowedPinnedStreams = max(0, maxAllowedPinnedStreams),
-                    maxAllowedThumbnailStreams = max(0, maxAllowedThumbnailStreams),
+                    maxPinnedStreams = max(0, maxPinnedStreams),
                 )
             }
         }.launchIn(coroutineScope)
@@ -75,31 +66,30 @@ internal class ManualLayoutImpl(
         coroutineScope.launch {
             _internalState
                 .collectLatest { state ->
-                    val streamItemsProvider = when {
-                        state.fullscreenStreamId != null -> FullscreenStreamItemProvider(state.allStreams, state.fullscreenStreamId)
-                        state.pinnedStreamIds.isNotEmpty() -> FeaturedStreamItemsProvider(
+                    val streamItems = when {
+                        state.fullscreenStreamId != null -> fullscreenStreamItemProvider.buildStreamItems(state.allStreams, state.fullscreenStreamId)
+                        state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
                             streams = state.allStreams,
                             featuredStreamIds = state.pinnedStreamIds,
-                            maxAllowedThumbnailStreams = state.maxAllowedThumbnailStreams,
                             featuredStreamItemState = StreamItemState.Featured.Pinned
                         )
-                        else -> MosaicStreamItemsProvider(state.allStreams, state.maxAllowedFeaturedStreams)
+                        else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
                     }
-                    _streamItems.update { streamItemsProvider.buildStreamItems() }
+                    _streamItems.value = streamItems
                 }
         }
     }
 
     override fun pinStream(streamId: String, prepend: Boolean, force: Boolean): Boolean {
         _internalState.update { state ->
-            val maxAllowedPinnedStreams = state.maxAllowedPinnedStreams
+            val maxPinnedStreams = state.maxPinnedStreams
             val pinnedStreams = state.pinnedStreamIds
             val stream = state.allStreams.find { it.id == streamId } ?: return false
 
-            val canPin = canPinStream(stream, pinnedStreams, maxAllowedPinnedStreams, force)
+            val canPin = canPinStream(stream, pinnedStreams, maxPinnedStreams, force)
             if (!canPin) return false
 
-            state.copy(pinnedStreamIds = pinStream(stream.id, state.pinnedStreamIds, maxAllowedPinnedStreams, prepend))
+            state.copy(pinnedStreamIds = pinStream(stream.id, state.pinnedStreamIds, maxPinnedStreams, prepend))
         }
         return true
     }
