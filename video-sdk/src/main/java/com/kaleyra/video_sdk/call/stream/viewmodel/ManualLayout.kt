@@ -16,6 +16,12 @@ internal interface ManualLayout: StreamLayout {
 
     val maxPinnedStreams: StateFlow<Int>
 
+    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
+
+    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
+
+    val fullscreenStreamItemProvider: FullscreenStreamItemProvider
+
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean
 
     fun unpinStream(streamId: String)
@@ -30,9 +36,9 @@ internal interface ManualLayout: StreamLayout {
 internal class ManualLayoutImpl(
     override val streams: StateFlow<List<StreamUi>>,
     override val maxPinnedStreams: StateFlow<Int>,
-    private val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
-    private val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
-    private val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
+    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
     coroutineScope: CoroutineScope,
 ): ManualLayout {
 
