@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProvider
+import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProviderImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import org.junit.Assert
@@ -16,9 +16,9 @@ class FullscreenStreamItemProviderTest {
             StreamUi("stream2", "Stream 2")
         )
         val fullscreenStreamId = "stream3"
-        val provider = FullscreenStreamItemProvider(streams, fullscreenStreamId)
+        val provider = FullscreenStreamItemProviderImpl()
 
-        val result = provider.buildStreamItems()
+        val result = provider.buildStreamItems(streams, fullscreenStreamId)
 
         Assert.assertEquals(emptyList<StreamItem>(), result)
     }
@@ -30,9 +30,9 @@ class FullscreenStreamItemProviderTest {
             StreamUi("stream2", "Stream 2")
         )
         val fullscreenStreamId = "stream2"
-        val provider = FullscreenStreamItemProvider(streams, fullscreenStreamId)
+        val provider = FullscreenStreamItemProviderImpl()
 
-        val result = provider.buildStreamItems()
+        val result = provider.buildStreamItems(streams, fullscreenStreamId)
 
         Assert.assertEquals(1, result.size)
         val streamItem = result.first()

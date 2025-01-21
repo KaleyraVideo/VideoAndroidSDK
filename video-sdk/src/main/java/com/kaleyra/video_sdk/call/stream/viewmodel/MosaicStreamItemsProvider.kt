@@ -1,23 +1,26 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import kotlinx.coroutines.flow.StateFlow
 
-internal class MosaicStreamItemsProvider(
-    override val streams: List<StreamUi>,
-    private val maxFeaturedStreams: Int,
-): StreamItemsProvider {
+internal interface MosaicStreamItemsProvider: StreamItemsProvider {
 
-    override fun buildStreamItems(): List<StreamItem> {
-        require(maxFeaturedStreams >= 0) {
-            "maxFeaturedStreams must be greater or equal to 0"
-        }
-        if (streams.isEmpty()) return emptyList()
+    val maxStreams: StateFlow<Int>
 
-        return if (streams.size <= maxFeaturedStreams) {
+    fun buildStreamItems(streams: List<StreamUi>): List<StreamItem>
+}
+
+internal class MosaicStreamItemsProviderImpl(override val maxStreams: StateFlow<Int>): MosaicStreamItemsProvider {
+
+    override fun buildStreamItems(streams: List<StreamUi>): List<StreamItem> {
+        val maxStreamsValue = maxStreams.value
+        if (maxStreamsValue < 1 || streams.isEmpty()) return emptyList()
+
+        return if (streams.size <= maxStreamsValue) {
             streams.sortedBy { it.isMine }.map { stream -> StreamItem.Stream(stream.id, stream) }
         } else {
             val (localStream, otherStreams) = streams.partition { it.isMine }
-            val maxOtherFeaturedStreams = maxFeaturedStreams - localStream.size
+            val maxOtherFeaturedStreams = maxStreamsValue - localStream.size
             val (featuredStreams, remainingStreams) = otherStreams.withIndex().partition { it.index < maxOtherFeaturedStreams - 1 }
 
             val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) } + localStream.map { StreamItem.Stream(it.id, it) }
