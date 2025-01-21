@@ -2,12 +2,12 @@
 
 package com.kaleyra.video_sdk.layout
 
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

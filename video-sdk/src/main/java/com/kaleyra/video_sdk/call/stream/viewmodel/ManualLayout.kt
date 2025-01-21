@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow

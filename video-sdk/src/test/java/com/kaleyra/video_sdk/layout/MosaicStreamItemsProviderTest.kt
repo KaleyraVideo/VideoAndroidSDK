@@ -1,9 +1,9 @@
 package com.kaleyra.video_sdk.layout
 
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.UserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProviderImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItem
-import com.kaleyra.video_sdk.call.stream.viewmodel.UserPreview
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
