@@ -87,7 +87,7 @@ class ManualLayoutImplTest {
     }
 
     @Test
-    fun `initial empty list`() = runTest(testDispatcher) {
+    fun `streamItems is an empty list when streams is empty`() = runTest(testDispatcher) {
         val streamItems = manualLayout.streamItems.value
         Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }

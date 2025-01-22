@@ -1,12 +1,10 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,17 +19,6 @@ internal interface StreamLayout {
     val streams: StateFlow<List<StreamUi>>
 
     val streamItems: StateFlow<List<StreamItem>>
-}
-
-internal interface AutoLayout : StreamLayout {
-
-    val isOneToOneCall: StateFlow<Boolean>
-
-    val maxAllowedFeaturedStreams: StateFlow<Int>
-
-    val maxAllowedThumbnailStreams: StateFlow<Int>
-
-    val isDefaultBackCamera: Boolean
 }
 
 sealed class StreamItemState {
@@ -49,46 +36,29 @@ sealed class StreamItemState {
     data object Thumbnail : StreamItemState()
 }
 
+internal interface AutoLayout : StreamLayout {
 
-@Immutable
-data class UserPreview(
-    val username: String,
-    val avatar: ImmutableUri?,
-)
+    val isOneToOneCall: StateFlow<Boolean>
 
-@Stable
-internal sealed interface StreamItem {
+    val isDefaultBackCamera: Boolean
 
-    val id: String
+    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
-    @Immutable
-    data class Stream(
-        override val id: String,
-        val stream: StreamUi,
-        val state: StreamItemState = StreamItemState.Standard,
-    ) : StreamItem
-
-    @Immutable
-    data class More(
-        override val id: String = "moreItemId",
-        val users: List<UserPreview>,
-    ) : StreamItem
+    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
 }
 
 internal class AutoLayoutImpl(
     override val streams: StateFlow<List<StreamUi>>,
     override val isOneToOneCall: StateFlow<Boolean>,
-    override val maxAllowedFeaturedStreams: StateFlow<Int>,
-    override val maxAllowedThumbnailStreams: StateFlow<Int>,
     override val isDefaultBackCamera: Boolean,
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
     coroutineScope: CoroutineScope,
 ) : AutoLayout {
 
     private data class LayoutState(
         val allStreams: List<StreamUi> = emptyList(),
-        val isOneToOneCall: Boolean = false,
-        val maxAllowedFeaturedStreams: Int = 0,
-        val maxAllowedThumbnailStreams: Int = 0,
+        val isOneToOneCall: Boolean = false
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -100,17 +70,10 @@ internal class AutoLayoutImpl(
     init {
         combine(
             streams,
-            isOneToOneCall,
-            maxAllowedFeaturedStreams,
-            maxAllowedThumbnailStreams
-        ) { streams, isOneToOneCall, maxAllowedFeaturedStreams, maxAllowedThumbnailStreams ->
+            isOneToOneCall
+        ) { streams, isOneToOneCall ->
             _internalState.update { state ->
-                state.copy(
-                    allStreams = streams,
-                    isOneToOneCall = isOneToOneCall,
-                    maxAllowedFeaturedStreams = maxAllowedFeaturedStreams,
-                    maxAllowedThumbnailStreams = maxAllowedThumbnailStreams
-                )
+                state.copy(allStreams = streams, isOneToOneCall = isOneToOneCall)
             }
         }.launchIn(coroutineScope)
 
@@ -123,15 +86,14 @@ internal class AutoLayoutImpl(
                         featuredStreamId = featuredStreamId
                     )
 
-                    FeaturedStreamItemsProvider(
+                    featuredStreamItemsProvider.buildStreamItems(
                         streams = sortedStreams,
                         featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
-                        maxAllowedThumbnailStreams = state.maxAllowedThumbnailStreams,
                     )
                 } else {
-                    MosaicStreamItemsProvider(state.allStreams, state.maxAllowedFeaturedStreams)
+                    mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
                 }
-                _streamItems.update { streamItemsProvider.buildStreamItems() }
+                _streamItems.value = streamItemsProvider
             }
         }
     }
@@ -152,8 +114,7 @@ internal class AutoLayoutImpl(
             .count { it.stream.isRemoteScreenShare() }
 
         val hasOneRemoteScreenShare = newRemoteScreenShareCount == 1
-        val hasTwoRemoteScreensWithStreamItems =
-            newRemoteScreenShareCount > 1 && previousRemoteScreenShareCount != 0
+        val hasTwoRemoteScreensWithStreamItems = newRemoteScreenShareCount > 1 && previousRemoteScreenShareCount != 0
         return state.isOneToOneCall || hasOneRemoteScreenShare || hasTwoRemoteScreensWithStreamItems
     }
 
