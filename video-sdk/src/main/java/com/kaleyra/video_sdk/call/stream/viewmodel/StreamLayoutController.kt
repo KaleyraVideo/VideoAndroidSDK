@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-internal interface VideoLayoutController {
+internal interface StreamLayoutController {
 
     val streamItems: StateFlow<List<StreamItem>>
 
@@ -35,20 +35,22 @@ internal interface VideoLayoutController {
 
     val callUserMessageProvider: CallUserMessagesProvider
 
-    fun enableManualLayout()
+    fun switchToManualLayout()
 
-    fun enableAutoLayout()
+    fun switchToAutoLayout()
 
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean
 
     fun unpinStream(streamId: String)
+
+    fun clearPinnedStreams()
 
     fun setFullscreenStream(id: String)
 
     fun clearFullscreenStream()
 }
 
-internal class VideoLayoutControllerImpl(
+internal class StreamLayoutControllerImpl(
     override val streams: StateFlow<List<StreamUi>>,
     override val maxPinnedStreams: StateFlow<Int>,
     override val isOneToOneCall: StateFlow<Boolean>,
@@ -58,7 +60,7 @@ internal class VideoLayoutControllerImpl(
     override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
     override val callUserMessageProvider: CallUserMessagesProvider,
     coroutineScope: CoroutineScope,
-) : VideoLayoutController {
+) : StreamLayoutController {
 
     private data class ControllerState(
         val streamLayout: StreamLayout,
@@ -111,12 +113,12 @@ internal class VideoLayoutControllerImpl(
             }.launchIn(coroutineScope)
     }
 
-    override fun enableManualLayout() {
+    override fun switchToManualLayout() {
         manualLayout.clearPinnedStreams()
         updateInternalState(manualLayout)
     }
 
-    override fun enableAutoLayout() {
+    override fun switchToAutoLayout() {
         updateInternalState(autoLayout)
     }
 
@@ -128,6 +130,10 @@ internal class VideoLayoutControllerImpl(
 
     override fun unpinStream(streamId: String) {
         manualLayout.unpinStream(streamId)
+    }
+
+    override fun clearPinnedStreams() {
+        manualLayout.clearPinnedStreams()
     }
 
     override fun setFullscreenStream(id: String) {
