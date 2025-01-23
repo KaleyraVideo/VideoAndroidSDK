@@ -5,8 +5,10 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsCompact
-import com.kaleyra.video_sdk.call.stream.MaxFeaturedStreamsExpanded
+import com.kaleyra.video_sdk.call.stream.MaxMosaicStreamsCompact
+import com.kaleyra.video_sdk.call.stream.MaxMosaicStreamsExpanded
+import com.kaleyra.video_sdk.call.stream.MaxPinnedStreamsCompact
+import com.kaleyra.video_sdk.call.stream.MaxPinnedStreamsExpanded
 import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
 import org.junit.Assert.*
 import org.junit.Test
@@ -15,38 +17,74 @@ import org.junit.Test
 class StreamComponentDefaultsTest {
 
     @Test
-    fun windowWidthSizeClassCompact_maxFeaturedStreams_maxFeaturedStreamsCompact() {
+    fun windowWidthSizeClassCompact_maxPinnedStreamsFor_maxMosaicStreamsCompact() {
         val sizeClass = WindowSizeClass.calculateFromSize(DpSize(100.dp, 600.dp))
         assertEquals(
-            MaxFeaturedStreamsCompact,
-            StreamComponentDefaults.maxFeaturedStreams(sizeClass)
+            MaxPinnedStreamsCompact,
+            StreamComponentDefaults.maxPinnedStreamsFor(sizeClass)
         )
     }
 
     @Test
-    fun windowHeightSizeClassCompact_maxFeaturedStreams_maxFeaturedStreamsCompact() {
+    fun windowHeightSizeClassCompact_maxPinnedStreamsFor_maxMosaicStreamsCompact() {
         val sizeClass = WindowSizeClass.calculateFromSize(DpSize(600.dp, 100.dp))
         assertEquals(
-            MaxFeaturedStreamsCompact,
-            StreamComponentDefaults.maxFeaturedStreams(sizeClass)
+            MaxPinnedStreamsCompact,
+            StreamComponentDefaults.maxPinnedStreamsFor(sizeClass)
         )
     }
 
     @Test
-    fun windowSizeClassMedium_maxFeaturedStreams_maxFeaturedStreamsExpanded() {
+    fun windowSizeClassMedium_maxPinnedStreamsFor_maxMosaicStreamsExpanded() {
         val sizeClass = WindowSizeClass.calculateFromSize(DpSize(600.dp, 480.dp))
         assertEquals(
-            MaxFeaturedStreamsExpanded,
-            StreamComponentDefaults.maxFeaturedStreams(sizeClass)
+            MaxPinnedStreamsExpanded,
+            StreamComponentDefaults.maxPinnedStreamsFor(sizeClass)
         )
     }
 
     @Test
-    fun windowSizeClassExpanded_maxFeaturedStreams_maxFeaturedStreamsExpanded() {
+    fun windowSizeClassExpanded_maxPinnedStreamsFor_maxMosaicStreamsExpanded() {
         val sizeClass = WindowSizeClass.calculateFromSize(DpSize(840.dp, 900.dp))
         assertEquals(
-            MaxFeaturedStreamsExpanded,
-            StreamComponentDefaults.maxFeaturedStreams(sizeClass)
+            MaxPinnedStreamsExpanded,
+            StreamComponentDefaults.maxPinnedStreamsFor(sizeClass)
+        )
+    }
+
+    @Test
+    fun windowWidthSizeClassCompact_maxMosaicStreamsFor_maxMosaicStreamsCompact() {
+        val sizeClass = WindowSizeClass.calculateFromSize(DpSize(100.dp, 600.dp))
+        assertEquals(
+            MaxMosaicStreamsCompact,
+            StreamComponentDefaults.maxMosaicStreamsFor(sizeClass)
+        )
+    }
+
+    @Test
+    fun windowHeightSizeClassCompact_maxMosaicStreamsFor_maxMosaicStreamsCompact() {
+        val sizeClass = WindowSizeClass.calculateFromSize(DpSize(600.dp, 100.dp))
+        assertEquals(
+            MaxMosaicStreamsCompact,
+            StreamComponentDefaults.maxMosaicStreamsFor(sizeClass)
+        )
+    }
+
+    @Test
+    fun windowSizeClassMedium_maxMosaicStreamsFor_maxMosaicStreamsExpanded() {
+        val sizeClass = WindowSizeClass.calculateFromSize(DpSize(600.dp, 480.dp))
+        assertEquals(
+            MaxMosaicStreamsExpanded,
+            StreamComponentDefaults.maxMosaicStreamsFor(sizeClass)
+        )
+    }
+
+    @Test
+    fun windowSizeClassExpanded_maxMosaicStreamsFor_maxMosaicStreamsExpanded() {
+        val sizeClass = WindowSizeClass.calculateFromSize(DpSize(840.dp, 900.dp))
+        assertEquals(
+            MaxMosaicStreamsExpanded,
+            StreamComponentDefaults.maxMosaicStreamsFor(sizeClass)
         )
     }
 

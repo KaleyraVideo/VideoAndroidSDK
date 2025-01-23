@@ -51,17 +51,11 @@ import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasExpandedWidth
 import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasMediumWidth
 import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import com.kaleyra.video_sdk.common.preview.DayModePreview
-import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
-import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
-internal const val MaxFeaturedStreamsCompact = 8
-internal const val MaxFeaturedStreamsExpanded = 15
+internal const val MaxMosaicStreamsCompact = 8
+internal const val MaxMosaicStreamsExpanded = 15
 
 internal const val MaxPinnedStreamsCompact = 2
 internal const val MaxPinnedStreamsExpanded = 6
@@ -74,10 +68,16 @@ internal object StreamComponentDefaults {
 
     val MaxThumbnailSize = 180.dp
 
-    fun maxFeaturedStreams(windowSizeClass: WindowSizeClass): Int {
+    fun maxMosaicStreamsFor(windowSizeClass: WindowSizeClass): Int {
         return if (windowSizeClass.isCompactInAnyDimension()) {
-            MaxFeaturedStreamsCompact
-        } else MaxFeaturedStreamsExpanded
+            MaxMosaicStreamsCompact
+        } else MaxMosaicStreamsExpanded
+    }
+
+    fun maxPinnedStreamsFor(windowSizeClass: WindowSizeClass): Int {
+        return if (windowSizeClass.isCompactInAnyDimension()) {
+            MaxPinnedStreamsCompact
+        } else MaxPinnedStreamsExpanded
     }
 
     fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
