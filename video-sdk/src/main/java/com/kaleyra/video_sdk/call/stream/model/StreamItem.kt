@@ -22,4 +22,16 @@ internal sealed interface StreamItem {
         override val id: String = "moreItemId",
         val users: List<UserPreview>,
     ) : StreamItem
+
+    fun isPinned(): Boolean {
+        return (this as? Stream)?.state == StreamItemState.Featured.Pinned
+    }
+
+    fun isFullscreen(): Boolean {
+        return (this as? Stream)?.state == StreamItemState.Featured.Fullscreen
+    }
+
+    fun hasVideoEnabled(): Boolean {
+        return (this as? Stream)?.stream?.video?.isEnabled == true
+    }
 }
