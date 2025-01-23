@@ -1,6 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
-import android.util.Log
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
@@ -17,25 +17,27 @@ import kotlinx.coroutines.flow.update
 
 internal interface VideoLayoutController {
 
+    val streamItems: StateFlow<List<StreamItem>>
+
     val streams: StateFlow<List<StreamUi>>
+
+    val maxPinnedStreams: StateFlow<Int>
 
     val isOneToOneCall: StateFlow<Boolean>
 
-    val maxFeaturedStreams: StateFlow<Int>
+    val isDefaultBackCamera: Boolean
 
-    val maxAllowedPinnedStreams: StateFlow<Int>
+    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
-    val maxAllowedThumbnailStreams: StateFlow<Int>
+    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
 
-    val streamItems: StateFlow<List<StreamItem>>
+    val fullscreenStreamItemProvider: FullscreenStreamItemProvider
 
     val callUserMessageProvider: CallUserMessagesProvider
 
-    val isDefaultBackCamera: Boolean
+    fun enableManualLayout()
 
-    fun enterMosaicLayout()
-
-    fun enterAutoLayout()
+    fun enableAutoLayout()
 
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean
 
@@ -48,37 +50,38 @@ internal interface VideoLayoutController {
 
 internal class VideoLayoutControllerImpl(
     override val streams: StateFlow<List<StreamUi>>,
+    override val maxPinnedStreams: StateFlow<Int>,
     override val isOneToOneCall: StateFlow<Boolean>,
-    override val maxFeaturedStreams: StateFlow<Int>,
-    override val maxAllowedPinnedStreams: StateFlow<Int>,
-    override val maxAllowedThumbnailStreams: StateFlow<Int>,
     override val isDefaultBackCamera: Boolean,
-    // TODO implement this logic
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
+    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
     override val callUserMessageProvider: CallUserMessagesProvider,
     coroutineScope: CoroutineScope,
 ) : VideoLayoutController {
 
+    private data class ControllerState(
+        val streamLayout: StreamLayout,
+        val previousStreamLayout: StreamLayout? = null,
+        val remoteScreenShareStreams: List<StreamUi> = emptyList()
+    )
+
     private val autoLayout: AutoLayout = AutoLayoutImpl(
         streams = streams,
         isOneToOneCall = isOneToOneCall,
-        maxAllowedFeaturedStreams = maxFeaturedStreams,
-        maxAllowedThumbnailStreams = maxAllowedThumbnailStreams,
+        mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+        featuredStreamItemsProvider = featuredStreamItemsProvider,
         isDefaultBackCamera = isDefaultBackCamera,
         coroutineScope = coroutineScope
     )
 
     private val manualLayout: ManualLayout = ManualLayoutImpl(
         streams = streams,
-        maxAllowedFeaturedStreams = maxFeaturedStreams,
-        maxAllowedPinnedStreams = maxAllowedPinnedStreams,
-        maxAllowedThumbnailStreams = maxAllowedThumbnailStreams,
+        maxPinnedStreams = maxPinnedStreams,
+        mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+        featuredStreamItemsProvider = featuredStreamItemsProvider,
+        fullscreenStreamItemProvider = fullscreenStreamItemProvider,
         coroutineScope = coroutineScope
-    )
-
-    private data class ControllerState(
-        val streamLayout: StreamLayout,
-        val previousStreamLayout: StreamLayout? = null,
-        val allStreamsWithVideo: List<StreamUi> = emptyList()
     )
 
     private val _internalState: MutableStateFlow<ControllerState> = MutableStateFlow(ControllerState(autoLayout))
@@ -87,38 +90,33 @@ internal class VideoLayoutControllerImpl(
         .flatMapLatest { it.streamLayout.streamItems }
         .stateIn(
             scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(5000L),
+            started = SharingStarted.Lazily,
             initialValue = emptyList()
         )
 
     init {
         streams
             .onEach { streams ->
-                val streamsWithVideo = streams.filter { it.video != null }
+                val remoteScreenShareStreams = streams.filter { it.isRemoteScreenShare() }
                 _internalState.update { state ->
-                    if (state.streamLayout is ManualLayout || (state.streamLayout is AutoLayout && streams.count { it.isRemoteScreenShare() } > 1)) {
-                        val screenShareToRequestPin = findNewRemoteScreenShares(
-                            state,
-                            streamsWithVideo
-                        ).firstOrNull()
+                    if (shouldSendPinScreenShareMessage(state, remoteScreenShareStreams)) {
+                        val screenShareToRequestPin = findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
                         screenShareToRequestPin?.let {
-                            callUserMessageProvider.sendUserMessage(
-                                PinScreenshareMessage(it.id, it.username)
-                            )
+                            callUserMessageProvider.sendUserMessage(PinScreenshareMessage(it.id, it.username))
                         }
                     }
-                    state.copy(allStreamsWithVideo = streamsWithVideo)
+                    state.copy(remoteScreenShareStreams = remoteScreenShareStreams)
                 }
 
             }.launchIn(coroutineScope)
     }
 
-    override fun enterMosaicLayout() {
+    override fun enableManualLayout() {
         manualLayout.clearPinnedStreams()
         updateInternalState(manualLayout)
     }
 
-    override fun enterAutoLayout() {
+    override fun enableAutoLayout() {
         updateInternalState(autoLayout)
     }
 
@@ -144,16 +142,14 @@ internal class VideoLayoutControllerImpl(
         }
     }
 
-    private fun findNewRemoteScreenShares(currentState: ControllerState, newStreams: List<StreamUi>): List<StreamUi> {
-        val displayedStreamIds = currentState.allStreamsWithVideo.map { it.id }
-        val a = newStreams.filter { isNewRemoteScreenShare(it, displayedStreamIds) }
-        return a
+    private fun shouldSendPinScreenShareMessage(state: ControllerState, remoteScreenShareStreams: List<StreamUi>): Boolean {
+        return state.streamLayout is ManualLayout || (state.streamLayout is AutoLayout && remoteScreenShareStreams.size > 1)
     }
 
-    private fun isNewRemoteScreenShare(
-        stream: StreamUi,
-        presentedStreamIds: List<String>,
-    ): Boolean = stream.isRemoteScreenShare() && stream.id !in presentedStreamIds
+    private fun findNewRemoteScreenShares(currentState: ControllerState, remoteScreenShareStreams: List<StreamUi>): List<StreamUi> {
+        val currentRemoteScreenShareIds = currentState.remoteScreenShareStreams.map { it.id }
+        return remoteScreenShareStreams.filter { stream -> stream.id !in currentRemoteScreenShareIds }
+    }
 
     private fun updateInternalState(newLayout: StreamLayout) {
         _internalState.update { state ->
@@ -163,5 +159,4 @@ internal class VideoLayoutControllerImpl(
             )
         }
     }
-
 }

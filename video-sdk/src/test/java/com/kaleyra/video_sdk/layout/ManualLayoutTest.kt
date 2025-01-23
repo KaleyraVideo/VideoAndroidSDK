@@ -33,7 +33,7 @@ class ManualLayoutImplTest {
 
     private lateinit var manualLayout: ManualLayoutImpl
 
-    private lateinit var mosaicStreamItemsProvider: MosaicStreamItemsProvider
+    private lateinit var mosaicStreamItemsProviderMock: MosaicStreamItemsProvider
 
     private lateinit var featuredStreamItemsProviderMock: FeaturedStreamItemsProvider
 
@@ -43,7 +43,7 @@ class ManualLayoutImplTest {
     fun setup() {
         testDispatcher = UnconfinedTestDispatcher()
         testScope = TestScope(UnconfinedTestDispatcher())
-        mosaicStreamItemsProvider = object : MosaicStreamItemsProvider {
+        mosaicStreamItemsProviderMock = object : MosaicStreamItemsProvider {
             override val maxStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
                 streams: List<StreamUi>
@@ -61,7 +61,7 @@ class ManualLayoutImplTest {
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map {
-                    StreamItem.Stream(it, StreamUi(it, "stream$it"), state = StreamItemState.Featured.Pinned)
+                    StreamItem.Stream(it, StreamUi(it, "stream$it"), state = featuredStreamItemState)
                 }
             }
         }
@@ -79,7 +79,7 @@ class ManualLayoutImplTest {
         manualLayout = ManualLayoutImpl(
             streamsFlow,
             maxPinnedStreamsFlow,
-            mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+            mosaicStreamItemsProvider = mosaicStreamItemsProviderMock,
             featuredStreamItemsProvider = featuredStreamItemsProviderMock,
             fullscreenStreamItemProvider = fullscreenStreamItemProviderMock,
             coroutineScope = testScope
