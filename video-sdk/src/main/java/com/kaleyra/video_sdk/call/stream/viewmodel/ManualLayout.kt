@@ -3,18 +3,20 @@ package com.kaleyra.video_sdk.call.stream.viewmodel
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
 internal interface ManualLayout: StreamLayout {
 
-    val maxPinnedStreams: StateFlow<Int>
+    val maxPinnedStreams: Flow<Int>
 
     val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
@@ -34,8 +36,8 @@ internal interface ManualLayout: StreamLayout {
 }
 
 internal class ManualLayoutImpl(
-    override val streams: StateFlow<List<StreamUi>>,
-    override val maxPinnedStreams: StateFlow<Int>,
+    override val streams: Flow<List<StreamUi>>,
+    override val maxPinnedStreams: Flow<Int>,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
     override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
@@ -51,9 +53,7 @@ internal class ManualLayoutImpl(
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
 
-    private val _streamItems: MutableStateFlow<List<StreamItem>> = MutableStateFlow(emptyList())
-
-    override val streamItems: StateFlow<List<StreamItem>> = _streamItems
+    override val streamItems: Flow<List<StreamItem>> = _internalState.map(::mapToStreamItems)
 
     init {
         combine(
@@ -69,22 +69,6 @@ internal class ManualLayoutImpl(
                 )
             }
         }.launchIn(coroutineScope)
-
-        coroutineScope.launch {
-            _internalState
-                .collectLatest { state ->
-                    val streamItems = when {
-                        state.fullscreenStreamId != null -> fullscreenStreamItemProvider.buildStreamItems(state.allStreams, state.fullscreenStreamId)
-                        state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
-                            streams = state.allStreams,
-                            featuredStreamIds = state.pinnedStreamIds,
-                            featuredStreamItemState = StreamItemState.Featured.Pinned
-                        )
-                        else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
-                    }
-                    _streamItems.value = streamItems
-                }
-        }
     }
 
     override fun pinStream(streamId: String, prepend: Boolean, force: Boolean): Boolean {
@@ -154,6 +138,18 @@ internal class ManualLayoutImpl(
             (listOf(streamId) + currentPinnedStreamIds).take(maxAllowedPinnedStreams)
         } else {
             (currentPinnedStreamIds + streamId).takeLast(maxAllowedPinnedStreams)
+        }
+    }
+
+    private fun mapToStreamItems(state: LayoutState): List<StreamItem> {
+        return when {
+            state.fullscreenStreamId != null -> fullscreenStreamItemProvider.buildStreamItems(state.allStreams, state.fullscreenStreamId)
+            state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
+                streams = state.allStreams,
+                featuredStreamIds = state.pinnedStreamIds,
+                featuredStreamItemState = StreamItemState.Featured.Pinned
+            )
+            else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
         }
     }
 }

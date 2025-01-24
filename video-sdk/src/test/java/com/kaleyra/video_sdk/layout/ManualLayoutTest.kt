@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -88,7 +89,7 @@ class ManualLayoutImplTest {
 
     @Test
     fun `streamItems is an empty list when streams is empty`() = runTest(testDispatcher) {
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
@@ -100,7 +101,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2")
         Assert.assertTrue(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned),
@@ -118,7 +119,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2", prepend = true)
         Assert.assertTrue(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream(id = "2", stream = StreamUi("2", "stream2"), state = StreamItemState.Featured.Pinned),
@@ -136,7 +137,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2")
         Assert.assertFalse(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream(id = "1", stream = StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned)
@@ -153,7 +154,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2", force = true)
         Assert.assertTrue(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("2", StreamUi("2", "stream2"), StreamItemState.Featured.Pinned)), streamItems)
     }
 
@@ -164,7 +165,7 @@ class ManualLayoutImplTest {
 
         manualLayout.pinStream("1")
 
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -181,7 +182,7 @@ class ManualLayoutImplTest {
 
         val result = manualLayout.pinStream("1")
         Assert.assertFalse(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -199,7 +200,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("1")
         Assert.assertFalse(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("1", StreamUi("1", "stream1"), StreamItemState.Featured.Pinned)), streamItems)
     }
 
@@ -210,7 +211,7 @@ class ManualLayoutImplTest {
 
         val result = manualLayout.pinStream("2")
         Assert.assertFalse(result)
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("1", StreamUi("1", "stream1"))), streamItems)
     }
 
@@ -221,7 +222,7 @@ class ManualLayoutImplTest {
 
         manualLayout.pinStream("1")
         manualLayout.unpinStream("1")
-        val streamItems2 = manualLayout.streamItems.value
+        val streamItems2 = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("1", StreamUi("1", "stream1"))), streamItems2)
     }
 
@@ -234,7 +235,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("2")
 
         manualLayout.clearPinnedStreams()
-        val streamItems2 = manualLayout.streamItems.value
+        val streamItems2 = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -249,7 +250,7 @@ class ManualLayoutImplTest {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
 
         manualLayout.setFullscreenStream("1")
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf<StreamItem>(StreamItem.Stream("1", StreamUi("1", "stream1"), StreamItemState.Featured.Fullscreen)), streamItems)
     }
 
@@ -259,7 +260,7 @@ class ManualLayoutImplTest {
 
         manualLayout.setFullscreenStream("1")
         manualLayout.clearFullscreenStream()
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -275,7 +276,7 @@ class ManualLayoutImplTest {
 
         manualLayout.pinStream("1")
         streamsFlow.value = listOf(StreamUi("2", "stream2"))
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("2", StreamUi("2", "stream2"))), streamItems)
     }
 
@@ -285,7 +286,7 @@ class ManualLayoutImplTest {
 
         manualLayout.setFullscreenStream("1")
         streamsFlow.value = listOf(StreamUi("2", "stream2"))
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(listOf(StreamItem.Stream("2", StreamUi("2", "stream2"))), streamItems)
     }
 
@@ -295,14 +296,14 @@ class ManualLayoutImplTest {
         maxPinnedStreamsFlow.value = 1
 
         manualLayout.pinStream("1")
-        val streamItems1 = manualLayout.streamItems.value
+        val streamItems1 = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned)),
             streamItems1
         )
 
         manualLayout.setFullscreenStream("2")
-        val streamItems2 = manualLayout.streamItems.value
+        val streamItems2 = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Featured.Fullscreen)),
             streamItems2
@@ -315,7 +316,7 @@ class ManualLayoutImplTest {
         maxPinnedStreamsFlow.value = 1
 
         manualLayout.pinStream("1")
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned)),
             streamItems
@@ -326,7 +327,7 @@ class ManualLayoutImplTest {
     fun `mosaic streams are set by default`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
 
-        val streamItems = manualLayout.streamItems.value
+        val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),

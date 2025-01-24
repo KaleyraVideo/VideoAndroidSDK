@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -75,7 +76,7 @@ class AutoLayoutImplTest {
 
     @Test
     fun `streamItems is an empty list when streams is empty`() = runTest(testDispatcher) {
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
@@ -84,7 +85,7 @@ class AutoLayoutImplTest {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
         isOneToOneCallFlow.value = false
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -99,7 +100,7 @@ class AutoLayoutImplTest {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
         isOneToOneCallFlow.value = true
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
@@ -116,7 +117,7 @@ class AutoLayoutImplTest {
             StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true))
         )
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true)), state = StreamItemState.Featured),
@@ -134,7 +135,7 @@ class AutoLayoutImplTest {
             StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true))
         )
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -154,7 +155,7 @@ class AutoLayoutImplTest {
 
         streamsFlow.value = listOf(stream1, stream2, stream3)
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", stream2, state = StreamItemState.Featured),
@@ -180,7 +181,7 @@ class AutoLayoutImplTest {
             coroutineScope = testScope
         )
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", screenShareStream, state = StreamItemState.Featured),
@@ -206,7 +207,7 @@ class AutoLayoutImplTest {
             coroutineScope = testScope
         )
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", cameraStream, state = StreamItemState.Featured),
@@ -223,7 +224,7 @@ class AutoLayoutImplTest {
         streamsFlow.value = listOf(cameraStream, remoteCameraStream)
         isOneToOneCallFlow.value = true
 
-        val streamItems = autoLayout.streamItems.value
+        val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", remoteCameraStream, state = StreamItemState.Featured),
@@ -251,7 +252,7 @@ class AutoLayoutImplTest {
 
         streamsFlow.value = listOf(remoteScreenShare1)
 
-        val streamItems1 = autoLayout.streamItems.value
+        val streamItems1 = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(StreamItem.Stream("1", remoteScreenShare1, state = StreamItemState.Featured)),
             streamItems1
@@ -264,7 +265,7 @@ class AutoLayoutImplTest {
             remoteScreenShare1
         )
 
-        val streamItems2 = autoLayout.streamItems.value
+        val streamItems2 = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", remoteScreenShare1, state = StreamItemState.Featured),

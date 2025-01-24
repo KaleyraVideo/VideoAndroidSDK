@@ -6,6 +6,7 @@ import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,11 +20,11 @@ internal interface StreamLayoutController {
 
     val streamItems: StateFlow<List<StreamItem>>
 
-    val streams: StateFlow<List<StreamUi>>
+    val streams: Flow<List<StreamUi>>
 
-    val maxPinnedStreams: StateFlow<Int>
+    val maxPinnedStreams: Flow<Int>
 
-    val isOneToOneCall: StateFlow<Boolean>
+    val isOneToOneCall: Flow<Boolean>
 
     val isDefaultBackCamera: Boolean
 
@@ -51,9 +52,9 @@ internal interface StreamLayoutController {
 }
 
 internal class StreamLayoutControllerImpl(
-    override val streams: StateFlow<List<StreamUi>>,
-    override val maxPinnedStreams: StateFlow<Int>,
-    override val isOneToOneCall: StateFlow<Boolean>,
+    override val streams: Flow<List<StreamUi>>,
+    override val maxPinnedStreams: Flow<Int>,
+    override val isOneToOneCall: Flow<Boolean>,
     override val isDefaultBackCamera: Boolean,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,

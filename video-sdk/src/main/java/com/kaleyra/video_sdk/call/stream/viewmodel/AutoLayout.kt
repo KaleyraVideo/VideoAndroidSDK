@@ -6,19 +6,20 @@ import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal interface StreamLayout {
 
-    val streams: StateFlow<List<StreamUi>>
+    val streams: Flow<List<StreamUi>>
 
-    val streamItems: StateFlow<List<StreamItem>>
+    val streamItems: Flow<List<StreamItem>>
 }
 
 sealed class StreamItemState {
@@ -38,7 +39,7 @@ sealed class StreamItemState {
 
 internal interface AutoLayout : StreamLayout {
 
-    val isOneToOneCall: StateFlow<Boolean>
+    val isOneToOneCall: Flow<Boolean>
 
     val isDefaultBackCamera: Boolean
 
@@ -48,8 +49,8 @@ internal interface AutoLayout : StreamLayout {
 }
 
 internal class AutoLayoutImpl(
-    override val streams: StateFlow<List<StreamUi>>,
-    override val isOneToOneCall: StateFlow<Boolean>,
+    override val streams: Flow<List<StreamUi>>,
+    override val isOneToOneCall: Flow<Boolean>,
     override val isDefaultBackCamera: Boolean,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
@@ -65,7 +66,7 @@ internal class AutoLayoutImpl(
 
     private val _streamItems: MutableStateFlow<List<StreamItem>> = MutableStateFlow(emptyList())
 
-    override val streamItems: StateFlow<List<StreamItem>> = _streamItems
+    override val streamItems: Flow<List<StreamItem>> = _streamItems
 
     init {
         combine(
@@ -77,25 +78,11 @@ internal class AutoLayoutImpl(
             }
         }.launchIn(coroutineScope)
 
-        coroutineScope.launch {
-            _internalState.collectLatest { state ->
-                val streamItemsProvider = if (shouldArrangeByPriority(state, _streamItems.value)) {
-                    val featuredStreamId = findCurrentFeaturedStreamItem(_streamItems.value)?.takeIf { it.stream.video?.isScreenShare == true }?.id
-                    val sortedStreams = sortStreamsByPriority(
-                        streams = state.allStreams,
-                        featuredStreamId = featuredStreamId
-                    )
-
-                    featuredStreamItemsProvider.buildStreamItems(
-                        streams = sortedStreams,
-                        featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
-                    )
-                } else {
-                    mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
-                }
-                _streamItems.value = streamItemsProvider
+        _internalState
+            .onEach { internalState ->
+                _streamItems.update { streamItems -> mapToStreamItems(internalState, streamItems) }
             }
-        }
+            .launchIn(coroutineScope)
     }
 
     private fun findCurrentFeaturedStreamItem(items: List<StreamItem>): StreamItem.Stream? {
@@ -129,5 +116,22 @@ internal class AutoLayoutImpl(
                     .thenByDescending { it.isMyCameraStream() && isDefaultBackCamera }
                     .thenByDescending { it.isRemoteCameraStream() }
             )
+    }
+
+    private fun mapToStreamItems(state: LayoutState, currentStreamItems: List<StreamItem>): List<StreamItem> {
+        return if (shouldArrangeByPriority(state, currentStreamItems)) {
+            val featuredStreamId = findCurrentFeaturedStreamItem(currentStreamItems)?.takeIf { it.stream.video?.isScreenShare == true }?.id
+            val sortedStreams = sortStreamsByPriority(
+                streams = state.allStreams,
+                featuredStreamId = featuredStreamId
+            )
+
+            featuredStreamItemsProvider.buildStreamItems(
+                streams = sortedStreams,
+                featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
+            )
+        } else {
+            mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
+        }
     }
 }
