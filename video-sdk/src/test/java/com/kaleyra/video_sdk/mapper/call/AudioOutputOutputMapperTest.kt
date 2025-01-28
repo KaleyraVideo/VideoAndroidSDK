@@ -47,7 +47,7 @@ import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class AudioOutputMapperTest {
+class AudioOutputOutputMapperTest {
 
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()

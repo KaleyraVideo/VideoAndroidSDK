@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.bottomsheet.model
 
-import android.widget.Button
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
@@ -74,8 +73,8 @@ internal interface CustomCallAction: NotifiableCallAction {
     data class ButtonsColors(
         val buttonColor: Int,
         val buttonContentColor: Int,
-//        val disabledButtonColor: Int?,
-//        val disabledButtonContentColor: Int?
+        val disabledButtonColor: Int?,
+        val disabledButtonContentColor: Int?
     )
 }
 

@@ -100,8 +100,8 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
     val preferredCallType: StateFlow<Call.PreferredType?> =
         call.flatMapLatest { it.preferredType }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    val actions: StateFlow<Set<CallUI.Action>> =
-        call.flatMapLatest { it.actions }.stateIn(viewModelScope, SharingStarted.Eagerly, setOf())
+    val actions: StateFlow<Set<CallUI.Button>> =
+        call.flatMapLatest { it.buttons }.stateIn(viewModelScope, SharingStarted.Eagerly, setOf())
 
     val callState: SharedFlow<Call.State> =
         call.flatMapLatest { it.state }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)

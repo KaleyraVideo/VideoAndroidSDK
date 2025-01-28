@@ -32,7 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class AudioOutputFailureSnackbarM3Test {
+class AudioOutputOutputFailureSnackbarM3Test {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()

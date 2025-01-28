@@ -26,7 +26,7 @@
     <string name="kaleyra_call_sheet_unpin">Rimuovi pin</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Espandi</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Esci</string>
-    <string name="kaleyra_call_sheet_flip_camera">Cambia camera</string>
+    <string name="kaleyra_call_sheet_flip_camera">Cambia</string>
     <string name="kaleyra_call_sheet_recording">Registrazione</string>
     <string name="kaleyra_call_sheet_cancel">Annulla</string>
     <string name="kaleyra_call_sheet_microphone">Microfono</string>
@@ -351,5 +351,9 @@
     <string name="kaleyra_app_icon">Icona dell\'app</string>
     <string name="kaleyra_call_sheet_description_camera_warning">Avviso fotocamera</string>
     <string name="kaleyra_call_sheet_description_camera_error">Errore della fotocamera</string>
+    <string name="kaleyra_call_action_mic_unmute">Riattiva</string>
+    <string name="kaleyra_call_sheet_enable">Abilita</string>
+    <string name="kaleyra_call_sheet_disable">Disabilita</string>
+    <string name="kaleyra_call_sheet_hang_up_action">Termina</string>
 
 </resources>

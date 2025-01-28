@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StreamsAudioManagerTest {
+class StreamsAudioOutputManagerTest {
 
     private val callMock = mockk<Call>(relaxed = true)
 

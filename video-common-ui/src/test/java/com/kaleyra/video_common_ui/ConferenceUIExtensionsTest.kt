@@ -6,6 +6,9 @@ import android.content.Context
 import android.telecom.TelecomManager
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.whiteboard.Whiteboard
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
@@ -43,8 +46,10 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -406,5 +411,59 @@ class ConferenceUIExtensionsTest {
         runCurrent()
 
         Assert.assertEquals(true, hasDisposedScreenShareOverlayProducer)
+    }
+
+    @Test
+    fun whiteboardRequestReceived_buttonsProviderCalledWithWhiteboardButton() = runTest {
+        var receivedCallButtons: MutableStateFlow<MutableSet<CallUI.Button>> = MutableStateFlow(mutableSetOf())
+        val buttonsProvider: ((MutableSet<CallUI. Button>) -> Set<CallUI. Button>) = { callButtons ->
+            receivedCallButtons.tryEmit(callButtons)
+            callButtons
+        }
+        every { callMock.actions } returns MutableStateFlow(setOf())
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.buttonsProvider } returns buttonsProvider
+        every { callMock.whiteboard } returns mockk {
+            every { events } returns MutableStateFlow(Whiteboard.Event.Request.Show("displayName1"))
+        }
+
+        conferenceMock.bindCallButtons(backgroundScope)
+        receivedCallButtons.first { it.contains(CallUI.Button.Whiteboard) }
+
+        Assert.assertEquals(true, receivedCallButtons.value.contains(CallUI.Button.Whiteboard))
+    }
+
+
+    @Test
+    fun shredFileReceived_buttonsProviderCalledWithFileShareButton() = runTest {
+        val receivedCallButtons: MutableStateFlow<MutableSet<CallUI.Button>> = MutableStateFlow(mutableSetOf())
+        val buttonsProvider: ((MutableSet<CallUI. Button>) -> Set<CallUI. Button>) = { callButtons ->
+            receivedCallButtons.tryEmit(callButtons)
+            callButtons
+        }
+        every { callMock.actions } returns MutableStateFlow(setOf())
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.participants } returns MutableStateFlow(mockk<CallParticipants> {
+            every { me } returns mockk {
+                every { userId } returns "me"
+            }
+        })
+        every { callMock.buttonsProvider } returns buttonsProvider
+        every { callMock.sharedFolder } returns mockk {
+            every { files } returns MutableStateFlow(setOf(mockk {
+                every { id } returns "sharedFileId"
+                every { name } returns "sharedFileName"
+                every { size } returns 1024L
+                every { creationTime } returns 1234L
+                every { uri } returns mockk()
+                every { state } returns MutableStateFlow(SharedFile.State.Available)
+                every { sender } returns mockk { every { userId } returns "user1"}
+            }))
+        }
+
+        conferenceMock.bindCallButtons(backgroundScope)
+        receivedCallButtons.first { it.isNotEmpty() }
+
+        Assert.assertEquals(true, receivedCallButtons.value.contains(CallUI.Button.FileShare))
     }
 }

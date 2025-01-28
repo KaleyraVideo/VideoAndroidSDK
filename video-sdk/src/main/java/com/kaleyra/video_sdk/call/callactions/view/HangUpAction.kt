@@ -23,7 +23,8 @@ internal fun HangUpAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    extended: Boolean = false
+    extended: Boolean = false,
+    label: Boolean = false
 ) {
     CallAction(
         modifier = if (extended) modifier.width(HangUpActionExtendedWidth) else modifier.width(
@@ -33,8 +34,11 @@ internal fun HangUpAction(
         contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
         buttonColor = KaleyraTheme.colors.negativeContainer,
         buttonContentColor = KaleyraTheme.colors.onNegativeContainer,
+        disabledButtonColor = KaleyraTheme.colors.negativeContainer.copy(alpha = 0.38f),
+        disabledButtonContentColor = KaleyraTheme.colors.onNegativeContainer.copy(alpha = 0.38f),
         enabled = enabled,
-        onClick = onClick
+        label = if (label) stringResource(R.string.kaleyra_call_sheet_hang_up_action) else null,
+        onClick = onClick,
     )
 }
 
@@ -43,6 +47,16 @@ internal fun HangUpAction(
 @Composable
 internal fun HangUpActionPreview() {
     KaleyraTheme {
-        HangUpAction({})
+        HangUpAction(label = true, onClick = {})
+    }
+}
+
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun DisabledHangUpActionPreview() {
+    KaleyraTheme {
+        HangUpAction(label = true, onClick = {}, enabled = false)
     }
 }

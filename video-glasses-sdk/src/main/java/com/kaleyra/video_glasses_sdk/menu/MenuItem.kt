@@ -21,6 +21,10 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.kaleyra.video.conference.Effect.Video.None
+import com.kaleyra.video.conference.Effect.Video.None.id
+import com.kaleyra.video_glasses_sdk.R
 import com.kaleyra.video_glasses_sdk.call.CallAction
 import com.kaleyra.video_glasses_sdk.utils.extensions.ContextExtensions.getAttributeResourceId
 import com.kaleyra.video_glasses_sdk.databinding.KaleyraGlassMenuItemLayoutBinding
@@ -59,10 +63,20 @@ internal class MenuItem(val action: CallAction) : AbstractItem<MenuItem.ViewHold
      */
     override fun getViewHolder(v: View) = ViewHolder(v)
 
-    override fun createView(ctx: Context, parent: ViewGroup?): View =
-        LayoutInflater.from(
+    override fun createView(ctx: Context, parent: ViewGroup?): View {
+        val layout = LayoutInflater.from(
             ContextThemeWrapper(ctx, ctx.theme.getAttributeResourceId(action.styleAttr))
         ).inflate(layoutRes, parent, false).apply { id = action.viewId }
+
+        if (action is CallAction.CUSTOM) {
+            layout.findViewById<TextView>(R.id.kaleyra_text)?.let { actionText ->
+                actionText.setText(action.text)
+            }
+        }
+
+        return layout
+    }
+
 
     /**
      * View holder for menu item

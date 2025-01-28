@@ -25,10 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.State
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
-import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.PresentationModeEvent
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
@@ -79,7 +78,7 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     private var onCallEnded: MutableSharedFlow<(suspend (Boolean, Boolean, Boolean) -> Unit)> = MutableSharedFlow(replay = 1)
 
-    private var onDisplayMode: MutableSharedFlow<(CallUI.DisplayMode) -> Unit> = MutableSharedFlow(replay = 1)
+    private var onDisplayMode: MutableSharedFlow<(CallUI.PresentationMode) -> Unit> = MutableSharedFlow(replay = 1)
 
     private var onAudioOrVideoChanged: MutableSharedFlow<(Boolean, Boolean) -> Unit> = MutableSharedFlow(replay = 1)
 
@@ -126,12 +125,12 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
                 .launchIn(viewModelScope)
 
             combine(
-                call.displayModeEvent,
+                call.presentationModeEvent,
                 onDisplayMode
             ) { event, onDisplayMode ->
-                if (lastDisplayModeEvent?.id == event.id) return@combine
-                lastDisplayModeEvent = event
-                onDisplayMode.invoke(event.displayMode)
+                if (lastPresentationModeEvent?.id == event.id) return@combine
+                lastPresentationModeEvent = event
+                onDisplayMode.invoke(event.presentationMode)
             }
                 .combine(callState) { _, callState -> callState}
                 .takeWhile { it !is CallStateUi.Disconnected.Ended }
@@ -210,7 +209,7 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
         }
     }
 
-    fun setOnDisplayMode(block: (CallUI.DisplayMode) -> Unit) {
+    fun setOnDisplayMode(block: (CallUI.PresentationMode) -> Unit) {
         viewModelScope.launch {
             onDisplayMode.emit(block)
         }
@@ -230,7 +229,7 @@ internal class MainViewModel(configure: suspend () -> Configuration) : BaseViewM
 
     companion object {
 
-        private var lastDisplayModeEvent: DisplayModeEvent? = null
+        private var lastPresentationModeEvent: PresentationModeEvent? = null
 
         const val NULL_CALL_TIMEOUT = 1000L
 

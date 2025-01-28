@@ -26,7 +26,7 @@ import kotlinx.serialization.json.Json
 @Serializable
 @Parcelize
 data class CallConfiguration(
-    val actions: Set<ConfigAction> = CallUI.Action.all.mapToConfigActions(),
+    val actions: Set<ConfigAction> = CallUI.Button.all.mapToConfigActions(),
     val options: CallOptions = CallOptions()
 ) : Parcelable {
 
@@ -155,52 +155,47 @@ sealed class ConfigAction : Parcelable {
     }
 }
 
-fun Set<CallUI.Action>.mapToConfigActions(): Set<ConfigAction> {
+fun Set<CallUI.Button>.mapToConfigActions(): Set<ConfigAction> {
     return mapNotNull { action ->
         when (action) {
-            CallUI.Action.Audio -> ConfigAction.Audio
-            CallUI.Action.ChangeVolume -> ConfigAction.ChangeVolume
-            CallUI.Action.ChangeZoom -> ConfigAction.ChangeZoom
-            CallUI.Action.FileShare -> ConfigAction.FileShare
-            CallUI.Action.HangUp -> ConfigAction.HangUp
-            CallUI.Action.OpenChat.Full -> ConfigAction.OpenChat.Full
-            CallUI.Action.OpenWhiteboard.Full -> ConfigAction.OpenWhiteboard.Full
-            CallUI.Action.OpenChat.ViewOnly -> ConfigAction.OpenChat.Full
-            CallUI.Action.OpenWhiteboard.ViewOnly -> ConfigAction.OpenWhiteboard.ViewOnly
-            CallUI.Action.ScreenShare,
-            CallUI.Action.ScreenShare.UserChoice,
-            CallUI.Action.ScreenShare.App,
-            CallUI.Action.ScreenShare.WholeDevice -> ConfigAction.ScreenShare
-            CallUI.Action.ShowParticipants -> ConfigAction.ShowParticipants
-            CallUI.Action.SwitchCamera -> ConfigAction.SwitchCamera
-            CallUI.Action.ToggleCamera -> ConfigAction.ToggleCamera
-            CallUI.Action.ToggleFlashlight -> ConfigAction.ToggleFlashlight
-            CallUI.Action.ToggleMicrophone -> ConfigAction.ToggleMicrophone
-            CallUI.Action.CameraEffects -> ConfigAction.CameraEffects
+            CallUI.Button.AudioOutput -> ConfigAction.Audio
+            CallUI.Button.Volume -> ConfigAction.ChangeVolume
+            CallUI.Button.Zoom -> ConfigAction.ChangeZoom
+            CallUI.Button.FileShare -> ConfigAction.FileShare
+            CallUI.Button.HangUp -> ConfigAction.HangUp
+            CallUI.Button.Chat -> ConfigAction.OpenChat.Full
+            CallUI.Button.Whiteboard -> ConfigAction.OpenWhiteboard.Full
+            CallUI.Button.ScreenShare.UserChoice,
+            CallUI.Button.ScreenShare.App,
+            CallUI.Button.ScreenShare.WholeDevice -> ConfigAction.ScreenShare
+            CallUI.Button.Participants -> ConfigAction.ShowParticipants
+            CallUI.Button.FlipCamera -> ConfigAction.SwitchCamera
+            CallUI.Button.Camera -> ConfigAction.ToggleCamera
+            CallUI.Button.FlashLight -> ConfigAction.ToggleFlashlight
+            CallUI.Button.Microphone -> ConfigAction.ToggleMicrophone
+            CallUI.Button.CameraEffects -> ConfigAction.CameraEffects
             else -> null
         }
     }.toSet()
 }
 
-fun Set<ConfigAction>.mapToCallUIActions(): Set<CallUI.Action> {
+fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
     return map { action ->
         when (action) {
-            ConfigAction.Audio -> CallUI.Action.Audio
-            ConfigAction.ChangeVolume -> CallUI.Action.ChangeVolume
-            ConfigAction.ChangeZoom -> CallUI.Action.ChangeZoom
-            ConfigAction.FileShare -> CallUI.Action.FileShare
-            ConfigAction.HangUp -> CallUI.Action.HangUp
-            ConfigAction.OpenChat.Full -> CallUI.Action.OpenChat.Full
-            ConfigAction.OpenWhiteboard.Full -> CallUI.Action.OpenWhiteboard.Full
-            ConfigAction.OpenChat.ViewOnly -> CallUI.Action.OpenChat.ViewOnly
-            ConfigAction.OpenWhiteboard.ViewOnly -> CallUI.Action.OpenWhiteboard.ViewOnly
-            ConfigAction.ScreenShare -> CallUI.Action.ScreenShare.UserChoice
-            ConfigAction.ShowParticipants -> CallUI.Action.ShowParticipants
-            ConfigAction.SwitchCamera -> CallUI.Action.SwitchCamera
-            ConfigAction.ToggleCamera -> CallUI.Action.ToggleCamera
-            ConfigAction.ToggleFlashlight -> CallUI.Action.ToggleFlashlight
-            ConfigAction.ToggleMicrophone -> CallUI.Action.ToggleMicrophone
-            ConfigAction.CameraEffects -> CallUI.Action.CameraEffects
+            ConfigAction.Audio -> CallUI.Button.AudioOutput
+            ConfigAction.ChangeVolume -> CallUI.Button.Volume
+            ConfigAction.ChangeZoom -> CallUI.Button.Zoom
+            ConfigAction.FileShare -> CallUI.Button.FileShare
+            ConfigAction.HangUp -> CallUI.Button.HangUp
+            ConfigAction.OpenChat.Full, ConfigAction.OpenChat.ViewOnly -> CallUI.Button.Chat
+            ConfigAction.OpenWhiteboard.Full, ConfigAction.OpenWhiteboard.ViewOnly -> CallUI.Button.Whiteboard
+            ConfigAction.ScreenShare -> CallUI.Button.ScreenShare.UserChoice
+            ConfigAction.ShowParticipants -> CallUI.Button.Participants
+            ConfigAction.SwitchCamera -> CallUI.Button.FlipCamera
+            ConfigAction.ToggleCamera -> CallUI.Button.Camera
+            ConfigAction.ToggleFlashlight -> CallUI.Button.FlashLight
+            ConfigAction.ToggleMicrophone -> CallUI.Button.Microphone
+            ConfigAction.CameraEffects -> CallUI.Button.CameraEffects
         }
     }.toSet()
 }

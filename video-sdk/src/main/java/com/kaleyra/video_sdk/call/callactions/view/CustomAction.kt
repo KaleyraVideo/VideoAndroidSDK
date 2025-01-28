@@ -27,6 +27,8 @@ internal fun CustomAction(
         label = if (label) buttonTexts.text else null,
         buttonColor = buttonColors?.buttonColor?.let { Color(it) } ?: CallActionDefaults.ContainerColor,
         buttonContentColor = buttonColors?.buttonContentColor?.let { Color(it) } ?: CallActionDefaults.ContentColor,
+        disabledButtonColor =  buttonColors?.disabledButtonColor?.let { Color(it) } ?: CallActionDefaults.DisabledContainerColor,
+        disabledButtonContentColor = buttonColors?.disabledButtonContentColor?.let { Color(it) } ?: CallActionDefaults.ContentColor,
         onClick = onClick
     )
 }

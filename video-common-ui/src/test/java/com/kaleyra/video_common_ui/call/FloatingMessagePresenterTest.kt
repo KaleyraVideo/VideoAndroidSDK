@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.kaleyra.video_common_ui.common
+package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video_common_ui.model.FloatingMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi

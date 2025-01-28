@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class AudioOutputFailureSnackbarM3Test {
+class AudioOutputOutputFailureSnackbarM3Test {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()

@@ -254,4 +254,14 @@ internal abstract class CallAction(
         R.layout.kaleyra_glass_menu_item_layout,
         R.attr.kaleyra_recyclerViewWhiteboardItemStyle
     )
+
+    /**
+     * Custom menu action item
+     * @constructor
+     */
+    data class CUSTOM(val text: String, val action: () -> Unit) : CallAction(
+        R.id.id_glass_menu_whiteboard_item,
+        R.layout.kaleyra_glass_menu_item_layout,
+        R.attr.kaleyra_recyclerViewCustomItemStyle
+    )
 }

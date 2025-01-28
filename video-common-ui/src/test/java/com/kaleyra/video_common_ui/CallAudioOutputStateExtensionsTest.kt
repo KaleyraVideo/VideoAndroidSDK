@@ -26,7 +26,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-class CallAudioStateExtensionsTest {
+class CallAudioOutputStateExtensionsTest {
 
     @Test
     fun maskSupportRoute_hasCallAudioStateRoute_true() {

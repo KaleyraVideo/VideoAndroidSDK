@@ -528,20 +528,18 @@ internal class GlassCallActivity :
                 .takeWhile { it !is Call.State.Connected }
                 .onCompletion {
                     combine(viewModel.whiteboard, viewModel.actions) { wb, actions ->
-                        if (!actions.any { it is CallUI.Action.OpenWhiteboard }) {
+                        if (!actions.any { it is CallUI.Button.Whiteboard }) {
                             if (currentWhiteboard == null) return@combine
                             wbJob?.cancel()
                             currentWhiteboard = null
                             wbJob = null
                         } else {
                             if (currentWhiteboard == wb) return@combine
-                            val mode =
-                                if (actions.any { it is CallUI.Action.OpenWhiteboard.ViewOnly }) LoadOptions.Mode.ViewOnly else LoadOptions.Mode.Default
                             wbJob?.cancel()
                             wbJob?.join()
 //                            currentWhiteboard?.unload()
                             currentWhiteboard = wb
-                            wb.load(LoadOptions(mode))
+                            wb.load(LoadOptions(LoadOptions.Mode.ViewOnly))
 //                            whiteboardItemAdapter!!.clear()
                             whiteboardItemAdapter!!.add(WhiteboardItem(wb))
                             wbJob = viewModel.callState

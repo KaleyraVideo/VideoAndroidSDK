@@ -110,8 +110,8 @@ class WhiteboardViewModelTest {
 
     @Test
     fun testWhiteboardUiState_isSharingScreenSupportedUpdated() = runTest {
-        assertEquals(false, viewModel.uiState.first().isFileSharingSupported)
-        every { callMock.actions } returns MutableStateFlow(setOf(CallUI.Action.FileShare))
+        assertEquals(true, viewModel.uiState.first().isFileSharingSupported)
+        every { callMock.buttons } returns MutableStateFlow(setOf(CallUI.Button.FileShare))
         advanceUntilIdle()
         assertEquals(true, viewModel.uiState.first().isFileSharingSupported)
     }

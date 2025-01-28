@@ -92,12 +92,22 @@ internal object CallActionDefaults {
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.primary
 
+    val DisabledContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = ContainerColor.copy(.38f)
+
+    val DisabledContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = ContentColor.copy(.38f)
+
     @Composable
     fun iconButtonColors(
         containerColor: Color = ContainerColor,
         contentColor: Color = ContentColor,
-        disabledContainerColor: Color = containerColor.copy(.38f),
-        disabledContentColor: Color = contentColor.copy(.38f),
+        disabledContainerColor: Color = DisabledContainerColor,
+        disabledContentColor: Color = DisabledContentColor,
     ): IconButtonColors =
         IconButtonDefaults.filledIconButtonColors(
             containerColor,
@@ -112,11 +122,15 @@ internal object CallActionDefaults {
         contentColor: Color = ContentColor,
         checkedContainerColor: Color = CheckedContainerColor,
         checkedContentColor: Color = CheckedContentColor,
+        disabledContainerColor: Color = DisabledContainerColor,
+        disabledContentColor: Color = DisabledContentColor,
     ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
         checkedContainerColor = checkedContainerColor,
-        checkedContentColor = checkedContentColor
+        checkedContentColor = checkedContentColor,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor
     )
 
     @Composable
@@ -192,6 +206,8 @@ internal fun CallAction(
     buttonText: String? = null,
     buttonColor: Color = CallActionDefaults.ContainerColor,
     buttonContentColor: Color = CallActionDefaults.ContentColor,
+    disabledButtonColor: Color = CallActionDefaults.DisabledContainerColor,
+    disabledButtonContentColor: Color = CallActionDefaults.DisabledContentColor,
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgePainter: Painter? = null,
     badgeDescription: String? = null,
@@ -221,7 +237,9 @@ internal fun CallAction(
                 shape = CallActionDefaults.ButtonShape,
                 colors = CallActionDefaults.iconButtonColors(
                     containerColor = buttonColor,
-                    contentColor = buttonContentColor
+                    contentColor = buttonContentColor,
+                    disabledContainerColor = disabledButtonColor,
+                    disabledContentColor = disabledButtonContentColor
                 ),
                 onClick = onClick
             ) {

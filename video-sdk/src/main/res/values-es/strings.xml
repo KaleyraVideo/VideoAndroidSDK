@@ -26,7 +26,7 @@
     <string name="kaleyra_call_sheet_unpin">Desfijar</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Pantalla completa</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Salir</string>
-    <string name="kaleyra_call_sheet_flip_camera">Voltear cámara</string>
+    <string name="kaleyra_call_sheet_flip_camera">Voltear</string>
     <string name="kaleyra_call_sheet_recording">Grabación</string>
     <string name="kaleyra_call_sheet_cancel">Cancelar</string>
     <string name="kaleyra_call_sheet_microphone">Micrófono</string>
@@ -302,5 +302,9 @@
     <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
     <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>
     <string name="kaleyra_fullscreen">Pantalla completa</string>
+    <string name="kaleyra_call_action_mic_unmute">Reactivar</string>
+    <string name="kaleyra_call_sheet_enable">Activar</string>
+    <string name="kaleyra_call_sheet_disable">Desactivar</string>
+    <string name="kaleyra_call_sheet_hang_up_action">Termina</string>
 
 </resources>

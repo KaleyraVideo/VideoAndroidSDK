@@ -52,6 +52,7 @@ internal fun CallSheetItem(
     when(val ca = callAction) {
         is HangUpAction -> {
             HangUpAction(
+                label = label,
                 enabled = ca.isEnabled,
                 onClick = onHangUpClick,
                 extended = extended,
@@ -66,6 +67,7 @@ internal fun CallSheetItem(
             MicAction(
                 checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
+                label = label,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onMicToggle,
@@ -80,6 +82,7 @@ internal fun CallSheetItem(
             CameraAction(
                 checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
+                label = label,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onCameraToggle,

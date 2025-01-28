@@ -16,6 +16,8 @@
 
 package com.kaleyra.video_sdk.call.mapper
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
@@ -36,43 +38,45 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackg
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 
 internal object CallActionsMapper {
 
     fun CallUI.isFileSharingSupported(): Flow<Boolean> {
-        return this.actions.map { actions -> actions.any { action -> action is CallUI.Action.FileShare } }
+        return this.buttons.map { actions -> actions.any { action -> action is CallUI.Button.FileShare } }
     }
 
     fun CallUI.toCallActions(): Flow<List<CallActionUI>> =
         combine(
-            actions,
+            buttons,
             hasVirtualBackground(),
             isAudioOnly(),
             hasAudio()
         ) { actions, hasVirtualBackground, isAudioOnly, hasAudio ->
             actions.mapNotNull { action ->
                 when {
-                    action is CallUI.Action.ToggleMicrophone && hasAudio -> MicAction()
-                    action is CallUI.Action.ToggleCamera && !isAudioOnly -> CameraAction()
-                    action is CallUI.Action.SwitchCamera && !isAudioOnly -> FlipCameraAction()
-                    action is CallUI.Action.HangUp -> HangUpAction()
-                    action is CallUI.Action.Audio -> AudioAction()
-                    action is CallUI.Action.OpenChat.Full -> ChatAction()
-                    action is CallUI.Action.FileShare -> FileShareAction()
-                    action is CallUI.Action.ScreenShare.Companion || action is CallUI.Action.ScreenShare.UserChoice -> ScreenShareAction.UserChoice()
-                    action is CallUI.Action.ScreenShare.App -> ScreenShareAction.App()
-                    action is CallUI.Action.ScreenShare.WholeDevice -> ScreenShareAction.WholeDevice()
-                    action is CallUI.Action.OpenWhiteboard.Full -> WhiteboardAction()
-                    action is CallUI.Action.CameraEffects && hasVirtualBackground -> VirtualBackgroundAction()
-                    action is CallUI.Action.Custom -> action.toUI()
+                    action is CallUI.Button.Microphone -> MicAction(isEnabled = hasAudio)
+                    action is CallUI.Button.Camera -> CameraAction(isEnabled = !isAudioOnly)
+                    action is CallUI.Button.FlipCamera -> FlipCameraAction(isEnabled = !isAudioOnly)
+                    action is CallUI.Button.HangUp -> HangUpAction()
+                    action is CallUI.Button.AudioOutput -> AudioAction()
+                    action is CallUI.Button.Chat -> ChatAction()
+                    action is CallUI.Button.FileShare -> FileShareAction()
+                    action is CallUI.Button.ScreenShare.UserChoice -> ScreenShareAction.UserChoice()
+                    action is CallUI.Button.ScreenShare.App -> ScreenShareAction.App()
+                    action is CallUI.Button.ScreenShare.WholeDevice -> ScreenShareAction.WholeDevice()
+                    action is CallUI.Button.Whiteboard -> WhiteboardAction()
+                    action is CallUI.Button.CameraEffects -> VirtualBackgroundAction(isEnabled = hasVirtualBackground && !isAudioOnly)
+                    action is CallUI.Button.Custom -> action.toUI()
                     else -> null
                 }
             }
         }.distinctUntilChanged()
 }
 
-private fun CallUI.Action.Custom.toUI(): CustomCallAction {
+private fun CallUI.Button.Custom.toUI(): CustomCallAction {
     return CustomAction(
         id = id,
         icon = config.icon,
@@ -81,8 +85,10 @@ private fun CallUI.Action.Custom.toUI(): CustomCallAction {
         buttonTexts = CustomCallAction.ButtonTexts(config.text, config.accessibilityLabel),
         buttonColors = config.appearance?.let {
             CustomCallAction.ButtonsColors(
-                buttonColor = it.buttonColor,
-                buttonContentColor = it.buttonContentColor
+                buttonColor = it.background,
+                buttonContentColor = it.tint,
+                disabledButtonColor = Color(it.background).copy(alpha = 0.38f).toArgb(),
+                disabledButtonContentColor = Color(it.tint).copy(alpha = 0.38f).toArgb()
             )
         },
         onClick = config.action

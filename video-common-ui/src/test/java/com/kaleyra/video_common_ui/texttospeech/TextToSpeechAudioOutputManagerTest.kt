@@ -26,7 +26,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-class TextToSpeechAudioManagerTest {
+class TextToSpeechAudioOutputManagerTest {
 
     private val contextMock = mockk<Context>(relaxed = true)
 

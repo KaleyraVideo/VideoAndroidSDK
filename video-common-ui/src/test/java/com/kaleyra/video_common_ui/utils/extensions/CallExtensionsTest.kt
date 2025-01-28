@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui
+package com.kaleyra.video_common_ui.utils.extensions
 
 import android.content.Context
+import com.kaleyra.video.Participant
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
+import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.getMyInternalCamera
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsbInput
@@ -35,7 +39,8 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isOngoing
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isOutgoing
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.toCallUIButton
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.toDownloadFiles
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDND
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
@@ -46,9 +51,11 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -75,6 +82,7 @@ class CallExtensionsTest {
         every { ContextRetainer.context } returns context
         every { call.participants } returns MutableStateFlow(callParticipants)
         every { callParticipants.me } returns me
+        every { me.userId } returns "myUserId"
     }
 
     @After
@@ -377,4 +385,85 @@ class CallExtensionsTest {
         runCurrent()
         verify(exactly = 1) { call.show() }
     }
+
+    @Test
+    fun sharedFiles_toDownloadFiles_filesSentByMeFiltered() = runTest {
+        every { call.state } returns MutableStateFlow(Call.State.Disconnected)
+
+        val senderMock = mockk<Participant> {
+            every { userId } returns "userId"
+        }
+        val senderMock2 = mockk<Participant> {
+            every { userId } returns "userId2"
+        }
+        val sharedFileMock1 = mockk<SharedFile> {
+            every { id } returns "sharedFileId"
+            every { name } returns "sharedFileName"
+            every { size } returns 1024L
+            every { creationTime } returns 1234L
+            every { uri } returns mockk()
+            every { state } returns MutableStateFlow(SharedFile.State.Available)
+            every { sender } returns senderMock
+        }
+        val sharedFileMock2 = mockk<SharedFile> {
+            every { id } returns "sharedFileId2"
+            every { name } returns "sharedFileName2"
+            every { size } returns 2048L
+            every { creationTime } returns 2345L
+            every { uri } returns mockk()
+            every { state } returns MutableStateFlow(SharedFile.State.Pending)
+            every { sender } returns senderMock2
+        }
+
+        val mySharedFileMock = mockk<SharedFile> {
+            every { id } returns "sharedFileMe"
+            every { name } returns "sharedFileName3"
+            every { size } returns 2048L
+            every { creationTime } returns 2345L
+            every { uri } returns mockk()
+            every { state } returns MutableStateFlow(com.kaleyra.video.sharedfolder.SharedFile.State.Pending)
+            every { sender } returns me
+        }
+        val filesFlow = MutableStateFlow<Set<SharedFile>>(setOf())
+
+        every { call.sharedFolder } returns mockk {
+            every { files } returns filesFlow
+        }
+        filesFlow.emit(setOf(sharedFileMock1))
+
+        val downloadFilesFlow = call.toDownloadFiles(backgroundScope)
+
+        downloadFilesFlow.first { it.size == 1 }
+        assertEquals(1, downloadFilesFlow.value.size)
+
+        filesFlow.emit(setOf(sharedFileMock1, sharedFileMock2))
+        filesFlow.emit(setOf(sharedFileMock1, sharedFileMock2, mySharedFileMock))
+
+        downloadFilesFlow.first { it.size == 2 }
+        assertEquals(2, downloadFilesFlow.value.size)
+    }
+
+    @Test
+    fun testCallUIActionToCallUICallButtonsMappings() {
+        assertEquals(CallUI.Action.Audio.toCallUIButton(), CallUI.Button.AudioOutput)
+        assertEquals(CallUI.Action.CameraEffects.toCallUIButton(), CallUI.Button.CameraEffects)
+        assertEquals(CallUI.Action.ChangeVolume.toCallUIButton(), CallUI.Button.Volume)
+        assertEquals(CallUI.Action.ChangeZoom.toCallUIButton(), CallUI.Button.Zoom)
+        assertEquals(CallUI.Action.FileShare.toCallUIButton(), CallUI.Button.FileShare)
+        assertEquals(CallUI.Action.HangUp.toCallUIButton(), CallUI.Button.HangUp)
+        assertEquals(CallUI.Action.OpenChat.Full.toCallUIButton(), CallUI.Button.Chat)
+        assertEquals(CallUI.Action.OpenChat.ViewOnly.toCallUIButton(), CallUI.Button.Chat)
+        assertEquals(CallUI.Action.OpenWhiteboard.Full.toCallUIButton(), CallUI.Button.Whiteboard)
+        assertEquals(CallUI.Action.OpenWhiteboard.ViewOnly.toCallUIButton(), CallUI.Button.Whiteboard)
+        assertEquals(CallUI.Action.ScreenShare.App.toCallUIButton(), CallUI.Button.ScreenShare.App)
+        assertEquals(CallUI.Action.ScreenShare.toCallUIButton(), CallUI.Button.ScreenShare.UserChoice)
+        assertEquals(CallUI.Action.ScreenShare.UserChoice.toCallUIButton(), CallUI.Button.ScreenShare.UserChoice)
+        assertEquals(CallUI.Action.ScreenShare.WholeDevice.toCallUIButton(), CallUI.Button.ScreenShare.WholeDevice)
+        assertEquals(CallUI.Action.ShowParticipants.toCallUIButton(), CallUI.Button.Participants)
+        assertEquals(CallUI.Action.SwitchCamera.toCallUIButton(), CallUI.Button.FlipCamera)
+        assertEquals(CallUI.Action.ToggleCamera.toCallUIButton(), CallUI.Button.Camera)
+        assertEquals(CallUI.Action.ToggleFlashlight.toCallUIButton(), CallUI.Button.FlashLight)
+        assertEquals(CallUI.Action.ToggleMicrophone.toCallUIButton(), CallUI.Button.Microphone)
+    }
+
 }

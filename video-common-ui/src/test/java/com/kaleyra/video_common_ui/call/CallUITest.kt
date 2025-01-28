@@ -17,6 +17,7 @@
 package com.kaleyra.video_common_ui.call
 
 import android.content.Context
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraUIProvider
 import com.kaleyra.video_common_ui.MainDispatcherRule
@@ -35,6 +36,8 @@ import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
@@ -80,7 +83,7 @@ class CallUITest {
 
     @Test
     fun appInForeground_callShowSuccessful() {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         every { AppLifecycle.isInForeground } returns MutableStateFlow(true)
         val success = callUI.show()
         assertEquals(true, success)
@@ -89,7 +92,7 @@ class CallUITest {
 
     @Test
     fun appInBackground_callShowFailed() {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         every { AppLifecycle.isInForeground } returns MutableStateFlow(false)
         val success = callUI.show()
         assertEquals(false, success)
@@ -98,27 +101,27 @@ class CallUITest {
 
     @Test
     fun activityRunning_setDisplayModeSuccessful() {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         every { context.isActivityRunning(callUI.activityClazz) } returns true
-        val success = callUI.setDisplayMode(CallUI.DisplayMode.PictureInPicture)
-        val actualDisplayMode = callUI.displayModeEvent.replayCache.firstOrNull()?.displayMode
+        val success = callUI.change(CallUI.PresentationMode.PictureInPicture)
+        val presentationMode = callUI.presentationModeEvent.replayCache.firstOrNull()?.presentationMode
         assertEquals(true, success)
-        assertEquals(CallUI.DisplayMode.PictureInPicture, actualDisplayMode)
+        assertEquals(CallUI.PresentationMode.PictureInPicture, presentationMode)
     }
 
     @Test
     fun activityDestroyed_setDisplayModeFailed() {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         every { context.isActivityRunning(callUI.activityClazz) } returns false
-        val success = callUI.setDisplayMode(CallUI.DisplayMode.PictureInPicture)
-        val actualDisplayMode = callUI.displayModeEvent.replayCache.firstOrNull()?.displayMode
+        val success = callUI.change(CallUI.PresentationMode.PictureInPicture)
+        val actualPresentationMode = callUI.presentationModeEvent.replayCache.firstOrNull()?.presentationMode
         assertEquals(false, success)
-        assertEquals(null, actualDisplayMode)
+        assertEquals(null, actualPresentationMode)
     }
 
     @Test
     fun displayMessage_customMessageAdded() = runTest {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         val floatingMessage = FloatingMessage(body = "customMessage")
 
         callUI.present(floatingMessage)
@@ -128,7 +131,7 @@ class CallUITest {
 
     @Test
     fun displayMessage_dismissMessage_customMessageRemoved() = runTest {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         val floatingMessage = FloatingMessage(body = "customMessage")
 
         callUI.present(floatingMessage)
@@ -138,12 +141,28 @@ class CallUITest {
 
     @Test
     fun displayMessageA_dismissMessageB_customMessageNotRemoved() = runTest {
-        val callUI = CallUI(call = mockk(), activityClazz = this::class.java)
+        val callUI = CallUI(call = mockk(relaxed = true), activityClazz = this::class.java)
         val floatingMessage1 = FloatingMessage(body = "customMessage1")
         val floatingMessage2 = FloatingMessage(body = "customMessage2")
 
         callUI.present(floatingMessage1)
         callUI.present(floatingMessage2)
         Assert.assertEquals(false, callUI.floatingMessages.replayCache.firstOrNull() == null)
+    }
+
+    @Test
+    fun legacyActionsSet_callButtonsUpdated() = runTest {
+        val callUI = CallUI(
+            call = mockk(relaxed = true) {
+                every { state } returns MutableStateFlow(Call.State.Disconnected)
+            },
+            activityClazz = this::class.java,
+            actions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
+            scope = backgroundScope)
+
+        runCurrent()
+
+        Assert.assertEquals(1, callUI.buttons.value.size)
+        Assert.assertEquals(CallUI.Button.HangUp, callUI.buttons.value.first())
     }
 }

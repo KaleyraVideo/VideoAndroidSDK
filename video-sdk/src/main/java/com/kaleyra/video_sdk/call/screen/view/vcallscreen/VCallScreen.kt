@@ -56,7 +56,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
@@ -182,6 +181,7 @@ internal fun VCallScreen(
                                 onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
+                            inputPermissions = inputPermissions,
                             onAskInputPermissions = onAskInputPermissions,
                             modifier = Modifier.testTag(PanelTestTag)
                         )
