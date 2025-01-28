@@ -18,7 +18,7 @@ internal sealed interface StreamItem {
     ) : StreamItem
 
     @Immutable
-    data class More(
+    data class HiddenStreams(
         override val id: String = "moreItemId",
         val users: List<HiddenStreamUserPreview>,
     ) : StreamItem

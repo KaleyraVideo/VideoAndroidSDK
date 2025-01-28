@@ -62,7 +62,7 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("1", stream1), result[0])
         Assert.assertEquals(StreamItem.Stream("2", stream2), result[1])
         Assert.assertEquals(
-            StreamItem.More(
+            StreamItem.HiddenStreams(
                 users = listOf(
                     HiddenStreamUserPreview("3", "stream3", avatar1),
                     HiddenStreamUserPreview("4", "stream4", avatar2),
@@ -104,7 +104,7 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("2", stream2), result[0])
         Assert.assertEquals(StreamItem.Stream("1", stream1), result[1])
         Assert.assertEquals(
-            StreamItem.More(
+            StreamItem.HiddenStreams(
                 users = listOf(
                     HiddenStreamUserPreview("3", "stream3", avatar1),
                     HiddenStreamUserPreview("4", "stream4", avatar2),

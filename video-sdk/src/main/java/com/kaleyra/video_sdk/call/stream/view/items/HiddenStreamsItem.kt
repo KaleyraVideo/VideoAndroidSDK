@@ -13,7 +13,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,11 +44,11 @@ private val MaxAvatarSize = 48.dp
 private val AvatarSpacing = (-16).dp
 
 @Composable
-internal fun MoreParticipantsItem(
-    moreItem: StreamItem.More,
+internal fun HiddenStreamsItem(
+    hiddenStreamsItem: StreamItem.HiddenStreams,
     modifier: Modifier = Modifier,
 ) {
-    val count = remember(moreItem) { moreItem.users.count() }
+    val count = remember(hiddenStreamsItem) { hiddenStreamsItem.users.count() }
     val elevation = 2.dp
 
     Surface(
@@ -61,7 +60,7 @@ internal fun MoreParticipantsItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier.fillMaxSize()
         ) {
-            Avatars(moreItem, elevation)
+            Avatars(hiddenStreamsItem, elevation)
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(id = R.string.kaleyra_stream_other_participants, count),
@@ -76,7 +75,7 @@ internal fun MoreParticipantsItem(
 
 @Composable
 private fun Avatars(
-    moreItem: StreamItem.More,
+    hiddenStreamsItem: StreamItem.HiddenStreams,
     elevation: Dp
 ) {
     val color = MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
@@ -84,7 +83,7 @@ private fun Avatars(
         val avatarSize = (maxWidth / AvatarCount).coerceIn(MinAvatarSize, MaxAvatarSize)
 
         Row(horizontalArrangement = Arrangement.spacedBy(AvatarSpacing)) {
-            moreItem.users
+            hiddenStreamsItem.users
                 .take(AvatarCount)
                 .fastForEach { (id: String, username: String, uri: ImmutableUri?) ->
                     key(id) {
@@ -115,8 +114,8 @@ private fun Avatars(
 internal fun MoreParticipantsItemPreview() {
     KaleyraTheme {
         Surface {
-            MoreParticipantsItem(
-                moreItem = StreamItem.More(
+            HiddenStreamsItem(
+                hiddenStreamsItem = StreamItem.HiddenStreams(
                     users = listOf(
                         HiddenStreamUserPreview(id = "1", username = "Viola J. Allen", null),
                         HiddenStreamUserPreview(id = "2", username = "John Doe", null),

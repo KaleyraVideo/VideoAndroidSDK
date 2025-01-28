@@ -26,11 +26,11 @@ internal class MosaicStreamItemsProviderImpl(override val maxStreams: StateFlow<
             val (featuredStreams, remainingStreams) = otherStreams.withIndex().partition { it.index < maxOtherFeaturedStreams - 1 }
 
             val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) } + localStream.map { StreamItem.Stream(it.id, it) }
-            val moreStreamItem = StreamItem.More(
+            val hiddenStreamsItem = StreamItem.HiddenStreams(
                 users = remainingStreams.map { HiddenStreamUserPreview(it.value.id, it.value.username, it.value.avatar) }
             )
 
-            streamItems + moreStreamItem
+            streamItems + hiddenStreamsItem
         }
     }
 }

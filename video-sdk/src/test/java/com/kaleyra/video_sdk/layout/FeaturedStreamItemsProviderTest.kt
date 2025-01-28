@@ -100,7 +100,7 @@ class FeaturedStreamItemsProviderTest {
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
         Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
-        Assert.assertEquals(StreamItem.More(users = listOf(HiddenStreamUserPreview("3", "Stream 3", avatar1), HiddenStreamUserPreview("4","Stream 4", avatar2))), result[2])
+        Assert.assertEquals(StreamItem.HiddenStreams(users = listOf(HiddenStreamUserPreview("3", "Stream 3", avatar1), HiddenStreamUserPreview("4","Stream 4", avatar2))), result[2])
     }
 
     @Test

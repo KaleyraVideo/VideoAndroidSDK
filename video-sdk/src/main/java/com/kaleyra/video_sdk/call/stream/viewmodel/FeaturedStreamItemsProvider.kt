@@ -42,10 +42,10 @@ internal class FeaturedStreamItemsProviderImpl(override val maxThumbnailStreams:
         val thumbnailStreamItems = thumbnailStreams.map {
             StreamItem.Stream(it.id, it, state = StreamItemState.Thumbnail)
         }
-        val moreStreamItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
-            StreamItem.More(users = streams.map { HiddenStreamUserPreview(it.id, it.username, it.avatar) })
+        val hiddenStreamsItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
+            StreamItem.HiddenStreams(users = streams.map { HiddenStreamUserPreview(it.id, it.username, it.avatar) })
         }
 
-        return featuredStreamItems + thumbnailStreamItems + listOfNotNull(moreStreamItems)
+        return featuredStreamItems + thumbnailStreamItems + listOfNotNull(hiddenStreamsItems)
     }
 }

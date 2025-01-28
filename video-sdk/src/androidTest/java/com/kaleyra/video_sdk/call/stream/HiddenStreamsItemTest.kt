@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.ui.call.stream
+package com.kaleyra.video_sdk.call.stream
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -8,39 +8,36 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.view.items.MoreParticipantsItem
+import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItem
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class MoreParticipantsItemTest {
+class HiddenStreamsItemTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var moreStreamItem by mutableStateOf(StreamItem.More(users = listOf()))
+    private var hiddenStreamsItem by mutableStateOf(StreamItem.HiddenStreams(users = listOf()))
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            MoreParticipantsItem(moreItem = moreStreamItem)
+            HiddenStreamsItem(hiddenStreamsItem = hiddenStreamsItem)
         }
     }
 
     @After
     fun tearDown() {
-        moreStreamItem = StreamItem.More(users = listOf())
+        hiddenStreamsItem = StreamItem.HiddenStreams(users = listOf())
     }
 
     @Test
     fun testAvatarIsDisplayed() {
-        moreStreamItem = StreamItem.More(
+        hiddenStreamsItem = StreamItem.HiddenStreams(
             users = listOf(HiddenStreamUserPreview("1","john", null),)
         )
         composeTestRule.onNodeWithText("J").assertIsDisplayed()
@@ -48,7 +45,7 @@ class MoreParticipantsItemTest {
 
     @Test
     fun testMaxThreeAvatarsAreDisplayed() {
-        moreStreamItem = StreamItem.More(
+        hiddenStreamsItem = StreamItem.HiddenStreams(
             users = listOf(
                 HiddenStreamUserPreview("1", "john", null),
                 HiddenStreamUserPreview("2", "mary", null),
@@ -64,7 +61,7 @@ class MoreParticipantsItemTest {
 
     @Test
     fun testOthersCountIsDisplayed() {
-        moreStreamItem = StreamItem.More(
+        hiddenStreamsItem = StreamItem.HiddenStreams(
             users = listOf(
                 HiddenStreamUserPreview("1", "john", null),
                 HiddenStreamUserPreview("2", "mary", null)

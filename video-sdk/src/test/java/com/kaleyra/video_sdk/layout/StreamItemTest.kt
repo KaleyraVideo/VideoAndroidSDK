@@ -30,8 +30,8 @@ class StreamItemTest {
     }
 
     @Test
-    fun `isPinned returns false when StreamItem is More`() {
-        val streamItem = StreamItem.More(users = emptyList())
+    fun `isPinned returns false when StreamItem is HiddenStreams`() {
+        val streamItem = StreamItem.HiddenStreams(users = emptyList())
         Assert.assertFalse(streamItem.isPinned())
     }
 
@@ -56,8 +56,8 @@ class StreamItemTest {
     }
 
     @Test
-    fun `isFullscreen returns false when StreamItem is More`() {
-        val streamItem = StreamItem.More(users = emptyList())
+    fun `isFullscreen returns false when StreamItem is HiddenStreams`() {
+        val streamItem = StreamItem.HiddenStreams(users = emptyList())
         Assert.assertFalse(streamItem.isFullscreen())
     }
 
@@ -80,8 +80,8 @@ class StreamItemTest {
     }
 
     @Test
-    fun `hasVideoEnabled returns false when StreamItem is More`() {
-        val streamItem = StreamItem.More(users = emptyList())
+    fun `hasVideoEnabled returns false when StreamItem is HiddenStreams`() {
+        val streamItem = StreamItem.HiddenStreams(users = emptyList())
         Assert.assertFalse(streamItem.hasVideoEnabled())
     }
 }
