@@ -11,15 +11,16 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
@@ -62,12 +63,16 @@ class VStreamMenuContentTest {
 
     @Test
     fun testExitFullscreen() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = stream)
+        val streamItem = StreamItem.Stream(
+            "1",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Fullscreen
+        )
+        streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
         var fullscreen = true
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { fullscreen = false },
                 onFullscreen = { }
             )
@@ -79,18 +84,16 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.fullscreen(null) }
+        verify(exactly = 1) { streamViewModel.clearFullscreenStream() }
         assertEquals(false, fullscreen)
     }
 
     @Test
     fun testEnterFullscreen() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
         var fullscreen = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { },
                 onFullscreen = { fullscreen = true }
             )
@@ -102,18 +105,16 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
+        verify(exactly = 1) { streamViewModel.setFullscreenStream("streamId") }
         Assert.assertEquals(true, fullscreen)
     }
 
     @Test
     fun fullScreeEntered_backPressed_menuDismissed() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -132,13 +133,20 @@ class VStreamMenuContentTest {
 
     @Test
     fun testUnPin() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        val streamItem = StreamItem.Stream(
+            "1",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Pinned
+        )
+        streamUiState.value = StreamUiState(
+            streamItems = listOf(streamItem).toImmutableList(),
+            hasReachedMaxPinnedStreams = false
+        )
 
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -150,21 +158,18 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.unpin(stream.id) }
+        verify(exactly = 1) { streamViewModel.unpinStream(streamItem.id) }
         assertEquals(true, dismissed)
     }
 
     @Test
     fun testPin() {
-        every { streamViewModel.maxPinnedStreams } returns 2
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState()
+        streamUiState.value = StreamUiState(hasReachedMaxPinnedStreams = false)
 
         var dismissed = false
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -176,7 +181,7 @@ class VStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.pin(stream.id) }
+        verify(exactly = 1) { streamViewModel.pinStream("streamId") }
         assertEquals(true, dismissed)
     }
 
@@ -545,20 +550,23 @@ class VStreamMenuContentTest {
     @Test
     fun testZoomCalledOnViewModel() {
         composeTestRule.setContent {
-            val stream = StreamUi(
+            val streamItem = StreamItem.Stream(
                 id = "streamId",
-                username = "username",
-                video = VideoUi(
-                    "streamId",
-                    ImmutableView(VideoStreamView(LocalContext.current)),
-                    isEnabled = true
+                stream = StreamUi(
+                    id = "streamId",
+                    username = "username",
+                    video = VideoUi(
+                        "streamId",
+                        ImmutableView(VideoStreamView(LocalContext.current)),
+                        isEnabled = true
+                    )
                 )
             )
             LaunchedEffect(Unit) {
-                streamUiState.value = StreamUiState(streams = listOf(stream).toImmutableList())
+                streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
             }
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { },
                 onFullscreen = { }
             )
@@ -575,15 +583,41 @@ class VStreamMenuContentTest {
     }
 
     @Test
-    fun testPinLimitReached_unpinButtonIsEnabled() {
-        every { streamViewModel.maxPinnedStreams } returns 1
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+    fun testPinLimitReached_pinButtonIsNotEnabled() {
+        streamUiState.value = StreamUiState(
+            hasReachedMaxPinnedStreams = true
+        )
 
         composeTestRule.setContent {
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "id",
+                onDismiss = { },
+                onFullscreen = { }
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_pin)
+        composeTestRule
+            .onNodeWithContentDescription(text)
+            .assertHasClickAction()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun testPinLimitReached_unpinButtonIsEnabled() {
+        val streamItem = StreamItem.Stream(
+            "streamId",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Pinned
+        )
+        streamUiState.value = StreamUiState(
+            streamItems = listOf(streamItem).toImmutableList(),
+            hasReachedMaxPinnedStreams = true
+        )
+
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                selectedStreamId = streamItem.id,
                 onDismiss = { },
                 onFullscreen = { }
             )
