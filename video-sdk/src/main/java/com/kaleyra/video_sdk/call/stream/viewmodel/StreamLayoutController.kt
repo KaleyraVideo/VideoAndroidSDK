@@ -6,6 +6,7 @@ import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.update
 
 internal interface StreamLayoutController {
 
-    val streamItems: StateFlow<List<StreamItem>>
+    val streamItems: Flow<List<StreamItem>>
 
     val streams: Flow<List<StreamUi>>
 
@@ -51,6 +52,7 @@ internal interface StreamLayoutController {
     fun clearFullscreenStream()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class StreamLayoutControllerImpl(
     override val streams: Flow<List<StreamUi>>,
     override val maxPinnedStreams: Flow<Int>,
@@ -89,13 +91,7 @@ internal class StreamLayoutControllerImpl(
 
     private val _internalState: MutableStateFlow<ControllerState> = MutableStateFlow(ControllerState(autoLayout))
 
-    override val streamItems: StateFlow<List<StreamItem>> = _internalState
-        .flatMapLatest { it.streamLayout.streamItems }
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.Lazily,
-            initialValue = emptyList()
-        )
+    override val streamItems: Flow<List<StreamItem>> = _internalState.flatMapLatest { it.streamLayout.streamItems }
 
     init {
         streams

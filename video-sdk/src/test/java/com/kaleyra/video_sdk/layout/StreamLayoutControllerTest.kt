@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
@@ -152,8 +153,8 @@ class StreamLayoutControllerTest {
     }
 
     @Test
-    fun `initial streamItems is empty`() = runTest(testDispatcher) {
-        assertEquals(emptyList<StreamItem>(), layoutController.streamItems.value)
+    fun `streamItems are autoLayout streamItems by default`() = runTest(testDispatcher) {
+        assertEquals(autoLayoutStreamItems, layoutController.streamItems.first())
     }
 
     @Test
