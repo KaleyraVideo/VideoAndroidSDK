@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -43,6 +44,8 @@ private val MaxAvatarSize = 48.dp
 
 private val AvatarSpacing = (-16).dp
 
+internal val HiddenStreamsItemTag = "HiddenStreamsItemTag"
+
 @Composable
 internal fun HiddenStreamsItem(
     hiddenStreamsItem: StreamItem.HiddenStreams,
@@ -58,7 +61,9 @@ internal fun HiddenStreamsItem(
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxSize()
+            modifier = modifier
+                .fillMaxSize()
+                .testTag(HiddenStreamsItemTag)
         ) {
             Avatars(hiddenStreamsItem, elevation)
             Spacer(Modifier.height(4.dp))
