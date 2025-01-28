@@ -7,14 +7,14 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.view.items.ScreenShareItem
+import com.kaleyra.video_sdk.call.stream.view.items.ActiveScreenShareIndicator
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class ScreenShareItemTest {
+class ActiveScreenShareIndicatorTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -24,7 +24,7 @@ class ScreenShareItemTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            ScreenShareItem(
+            ActiveScreenShareIndicator(
                 onStopClick = {
                     clicked = true
                 }

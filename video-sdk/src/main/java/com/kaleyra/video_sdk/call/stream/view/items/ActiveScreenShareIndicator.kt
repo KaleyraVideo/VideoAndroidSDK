@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-// TODO test this
 @Composable
-fun ScreenShareItem(
+fun ActiveScreenShareIndicator(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -36,8 +35,11 @@ fun ScreenShareItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp)
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 12.dp
+            )
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
@@ -70,9 +72,8 @@ fun ScreenShareItem(
 internal fun ScreenShareItemPreview() {
     KaleyraTheme {
         Surface {
-            ScreenShareItem(
+            ActiveScreenShareIndicator(
                 onStopClick = {},
-                modifier = Modifier.fillMaxSize()
             )
         }
     }
