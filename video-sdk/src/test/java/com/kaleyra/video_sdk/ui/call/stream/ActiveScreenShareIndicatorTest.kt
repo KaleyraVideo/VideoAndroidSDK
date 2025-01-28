@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class ActiveScreenShareIndicatorTest {
@@ -62,4 +63,28 @@ class ActiveScreenShareIndicatorTest {
         assertEquals(true, clicked)
     }
 
+    @Config(qualifiers = "w640dp-h360dp")
+    @Test
+    fun testTitleIsDisplayedInLandscape() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_message)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Config(qualifiers = "w640dp-h360dp")
+    @Test
+    fun testButtonIsDisplayedInLandscape() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        composeTestRule
+            .onNodeWithText(text)
+            .assertHasClickAction()
+            .assertIsDisplayed()
+    }
+
+    @Config(qualifiers = "w640dp-h360dp")
+    @Test
+    fun testButtonIsClickedInLandscape() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        composeTestRule.onNodeWithText(text).performClick()
+        assertEquals(true, clicked)
+    }
 }

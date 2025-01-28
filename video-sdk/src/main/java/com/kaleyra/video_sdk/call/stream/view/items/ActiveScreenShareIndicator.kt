@@ -1,9 +1,10 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,9 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeWidth
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -31,22 +33,41 @@ fun ActiveScreenShareIndicator(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    BoxWithConstraints(
+        contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 12.dp
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        if (maxWidth.isAtLeastMediumSizeWidth()) {
+            HScreenShareIndicator(
+                onStopClick = onStopClick,
+                modifier = Modifier.fillMaxWidth()
             )
+        } else {
+            VScreenShareIndicator(onStopClick)
+        }
+    }
+
+}
+
+@Composable
+private fun HScreenShareIndicator(
+    onStopClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         Text(
             text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
-            textAlign = TextAlign.Center,
+//            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Button(
             shape = RoundedCornerShape(4.dp),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
@@ -66,8 +87,42 @@ fun ActiveScreenShareIndicator(
     }
 }
 
-@Preview(name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+private fun VScreenShareIndicator(
+    onStopClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(id = R.string.kaleyra_stream_screenshare_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            shape = RoundedCornerShape(4.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            onClick = onStopClick
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_kaleyra_screen_share),
+                contentDescription = null
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+    }
+}
+
+@MultiConfigPreview
 @Composable
 internal fun ScreenShareItemPreview() {
     KaleyraTheme {
