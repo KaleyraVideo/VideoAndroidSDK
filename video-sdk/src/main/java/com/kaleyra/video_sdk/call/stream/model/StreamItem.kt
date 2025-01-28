@@ -20,7 +20,7 @@ internal sealed interface StreamItem {
     @Immutable
     data class More(
         override val id: String = "moreItemId",
-        val users: List<UserPreview>,
+        val users: List<HiddenStreamUserPreview>,
     ) : StreamItem
 
     fun isPinned(): Boolean {

@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.UserPreview
+import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.flow.StateFlow
 
@@ -43,7 +43,7 @@ internal class FeaturedStreamItemsProviderImpl(override val maxThumbnailStreams:
             StreamItem.Stream(it.id, it, state = StreamItemState.Thumbnail)
         }
         val moreStreamItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
-            StreamItem.More(users = streams.map { UserPreview(it.username, it.avatar) })
+            StreamItem.More(users = streams.map { HiddenStreamUserPreview(it.id, it.username, it.avatar) })
         }
 
         return featuredStreamItems + thumbnailStreamItems + listOfNotNull(moreStreamItems)

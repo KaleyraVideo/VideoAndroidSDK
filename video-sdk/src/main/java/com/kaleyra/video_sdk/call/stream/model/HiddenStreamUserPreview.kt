@@ -4,7 +4,8 @@ import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 
 @Immutable
-data class UserPreview(
+data class HiddenStreamUserPreview(
+    val id: String,
     val username: String,
     val avatar: ImmutableUri?,
 )

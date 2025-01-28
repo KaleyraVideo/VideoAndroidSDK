@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.UserPreview
+import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.flow.StateFlow
 
@@ -27,7 +27,7 @@ internal class MosaicStreamItemsProviderImpl(override val maxStreams: StateFlow<
 
             val streamItems = featuredStreams.map { indexedValue -> StreamItem.Stream(indexedValue.value.id, indexedValue.value) } + localStream.map { StreamItem.Stream(it.id, it) }
             val moreStreamItem = StreamItem.More(
-                users = remainingStreams.map { UserPreview(it.value.username, it.value.avatar) }
+                users = remainingStreams.map { HiddenStreamUserPreview(it.value.id, it.value.username, it.value.avatar) }
             )
 
             streamItems + moreStreamItem

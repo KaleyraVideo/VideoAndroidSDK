@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.UserPreview
+import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProviderImpl
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -64,9 +64,9 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(
             StreamItem.More(
                 users = listOf(
-                    UserPreview("stream3", avatar1),
-                    UserPreview("stream4", avatar2),
-                    UserPreview("stream5", avatar3)
+                    HiddenStreamUserPreview("3", "stream3", avatar1),
+                    HiddenStreamUserPreview("4", "stream4", avatar2),
+                    HiddenStreamUserPreview("5", "stream5", avatar3)
                 )
             ),
             result[2]
@@ -106,8 +106,8 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(
             StreamItem.More(
                 users = listOf(
-                    UserPreview("stream3", avatar1),
-                    UserPreview("stream4", avatar2),
+                    HiddenStreamUserPreview("3", "stream3", avatar1),
+                    HiddenStreamUserPreview("4", "stream4", avatar2),
                 )
             ),
             result[2]
