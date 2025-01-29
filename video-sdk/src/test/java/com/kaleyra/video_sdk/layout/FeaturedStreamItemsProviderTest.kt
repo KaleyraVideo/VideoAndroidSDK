@@ -60,6 +60,21 @@ class FeaturedStreamItemsProviderTest {
     }
 
     @Test
+    fun `buildStreamItems returns no thumbnails if maxThumbnailStreams is zero`() {
+        val streams = listOf(
+            StreamUi("1", "Stream 1"),
+            StreamUi("2", "Stream 2"),
+            StreamUi("3", "Stream 3")
+        )
+        val featuredStreamIds = listOf("1", "2")
+        val provider = FeaturedStreamItemsProviderImpl()
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 0)
+        Assert.assertEquals(2, result.size)
+        Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Featured), result[1])
+    }
+
+    @Test
     fun `buildStreamItems returns featured and thumbnail streams when non featured streams are less or equal than maxThumbnailStreams`() {
         val streams = listOf(
             StreamUi("1", "Stream 1"),

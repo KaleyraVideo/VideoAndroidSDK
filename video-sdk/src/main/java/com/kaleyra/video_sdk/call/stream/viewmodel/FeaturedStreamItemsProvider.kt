@@ -21,19 +21,17 @@ internal class FeaturedStreamItemsProviderImpl: FeaturedStreamItemsProvider {
         maxThumbnailStreams: Int,
         featuredStreamItemState: StreamItemState.Featured
     ): List<StreamItem> {
-        if (maxThumbnailStreams < 1 || featuredStreamIds.isEmpty()) return emptyList()
+        if (maxThumbnailStreams < 0 || featuredStreamIds.isEmpty()) return emptyList()
 
         val (featuredStreams, nonFeaturedStreams) = streams.partition { it.id in featuredStreamIds }
 
         val featuredStreamIdIndices = featuredStreamIds.withIndex().associate { indexedValue -> indexedValue.value to indexedValue.index }
         val sortedFeaturedStreams = featuredStreams.sortedBy { featuredStreamIdIndices[it.id] ?: Int.MAX_VALUE }
-        val (thumbnailStreams, moreStreams) = if (nonFeaturedStreams.size <= maxThumbnailStreams) {
-            nonFeaturedStreams to emptyList()
-        } else {
-            with(nonFeaturedStreams) {
-                take(maxThumbnailStreams - 1) to drop(
-                    maxThumbnailStreams - 1
-                )
+        val (thumbnailStreams, moreStreams) = when {
+            maxThumbnailStreams == 0 -> emptyList<StreamUi>() to emptyList()
+            nonFeaturedStreams.size <= maxThumbnailStreams -> nonFeaturedStreams to emptyList()
+            else -> with(nonFeaturedStreams) {
+                take(maxThumbnailStreams - 1) to drop(maxThumbnailStreams - 1)
             }
         }
 
