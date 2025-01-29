@@ -56,7 +56,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
@@ -318,7 +317,7 @@ internal fun VCallScreen(
                 { message: UserMessage ->
                     when (message) {
                         is PinScreenshareMessage -> {
-                            streamViewModel.pin(message.streamId, prepend = true, force = true); Unit
+                            streamViewModel.pinStream(message.streamId, prepend = true, force = true); Unit
                         }
 
                         else -> Unit
@@ -348,7 +347,7 @@ internal fun VCallScreen(
                                 viewModel = streamViewModel,
                                 windowSizeClass = windowSizeClass,
                                 selectedStreamId = selectedStreamId,
-                                onStreamClick = { stream -> onStreamSelected(stream.id) },
+                                onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
                                 onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                                 modifier = Modifier
                                     .fillMaxSize()
