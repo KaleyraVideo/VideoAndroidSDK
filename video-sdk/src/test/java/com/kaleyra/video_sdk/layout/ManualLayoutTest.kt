@@ -12,12 +12,12 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +26,11 @@ class ManualLayoutImplTest {
 
     private val streamsFlow: MutableStateFlow<List<StreamUi>> = MutableStateFlow(listOf())
 
+    private val maxMosaicStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+
     private val maxPinnedStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    private val maxThumbnailStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
 
     private lateinit var testDispatcher: TestDispatcher
 
@@ -45,24 +49,26 @@ class ManualLayoutImplTest {
         testDispatcher = UnconfinedTestDispatcher()
         testScope = TestScope(UnconfinedTestDispatcher())
         mosaicStreamItemsProviderMock = object : MosaicStreamItemsProvider {
-            override val maxStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
-                streams: List<StreamUi>
+                streams: List<StreamUi>,
+                maxStreams: Int
             ): List<StreamItem> {
-                return streams.map { stream ->
+                return streams.take(maxStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream)
                 }
             }
         }
         featuredStreamItemsProviderMock = object : FeaturedStreamItemsProvider {
-            override val maxThumbnailStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
                 streams: List<StreamUi>,
                 featuredStreamIds: List<String>,
+                maxThumbnailStreams: Int,
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map {
                     StreamItem.Stream(it, StreamUi(it, "stream$it"), state = featuredStreamItemState)
+                } + streams.filter { it.id !in featuredStreamIds }.take(maxThumbnailStreams).map {
+                    StreamItem.Stream(it.id, StreamUi(it.id, "stream${it.id}"), state = StreamItemState.Thumbnail)
                 }
             }
         }
@@ -73,18 +79,27 @@ class ManualLayoutImplTest {
             ): List<StreamItem> {
                 return streams.firstOrNull { it.id == fullscreenStreamId }?.let { stream ->
                     listOf(StreamItem.Stream(stream.id, stream, state = StreamItemState.Featured.Fullscreen))
-                } ?: emptyList<StreamItem>()
+                } ?: emptyList()
             }
         }
 
         manualLayout = ManualLayoutImpl(
             streamsFlow,
-            maxPinnedStreamsFlow,
+            maxMosaicStreams = maxMosaicStreamsFlow,
+            maxPinnedStreams = maxPinnedStreamsFlow,
+            maxThumbnailStreams = maxThumbnailStreamsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProviderMock,
             featuredStreamItemsProvider = featuredStreamItemsProviderMock,
             fullscreenStreamItemProvider = fullscreenStreamItemProviderMock,
             coroutineScope = testScope
         )
+    }
+
+    @After
+    fun tearDown() {
+        maxMosaicStreamsFlow.value = 0
+        maxPinnedStreamsFlow.value = 0
+        maxThumbnailStreamsFlow.value = 0
     }
 
     @Test
@@ -167,10 +182,7 @@ class ManualLayoutImplTest {
 
         val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
-            listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
-            ),
+            emptyList<StreamItem>(),
             streamItems
         )
     }
@@ -184,10 +196,7 @@ class ManualLayoutImplTest {
         Assert.assertFalse(result)
         val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
-            listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
-            ),
+            emptyList<StreamItem>(),
             streamItems
         )
     }
@@ -212,7 +221,7 @@ class ManualLayoutImplTest {
         val result = manualLayout.pinStream("2")
         Assert.assertFalse(result)
         val streamItems = manualLayout.streamItems.first()
-        Assert.assertEquals(listOf(StreamItem.Stream("1", StreamUi("1", "stream1"))), streamItems)
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
     @Test
@@ -223,7 +232,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         manualLayout.unpinStream("1")
         val streamItems2 = manualLayout.streamItems.first()
-        Assert.assertEquals(listOf(StreamItem.Stream("1", StreamUi("1", "stream1"))), streamItems2)
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems2)
     }
 
     @Test
@@ -236,13 +245,7 @@ class ManualLayoutImplTest {
 
         manualLayout.clearPinnedStreams()
         val streamItems2 = manualLayout.streamItems.first()
-        Assert.assertEquals(
-            listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
-            ),
-            streamItems2
-        )
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems2)
     }
 
     @Test
@@ -261,13 +264,7 @@ class ManualLayoutImplTest {
         manualLayout.setFullscreenStream("1")
         manualLayout.clearFullscreenStream()
         val streamItems = manualLayout.streamItems.first()
-        Assert.assertEquals(
-            listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
-            ),
-            streamItems
-        )
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
     @Test
@@ -277,7 +274,7 @@ class ManualLayoutImplTest {
         manualLayout.pinStream("1")
         streamsFlow.value = listOf(StreamUi("2", "stream2"))
         val streamItems = manualLayout.streamItems.first()
-        Assert.assertEquals(listOf(StreamItem.Stream("2", StreamUi("2", "stream2"))), streamItems)
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
     @Test
@@ -287,7 +284,7 @@ class ManualLayoutImplTest {
         manualLayout.setFullscreenStream("1")
         streamsFlow.value = listOf(StreamUi("2", "stream2"))
         val streamItems = manualLayout.streamItems.first()
-        Assert.assertEquals(listOf(StreamItem.Stream("2", StreamUi("2", "stream2"))), streamItems)
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 
     @Test
@@ -325,6 +322,7 @@ class ManualLayoutImplTest {
 
     @Test
     fun `mosaic streams are set by default`() = runTest(testDispatcher) {
+        maxMosaicStreamsFlow.value = 2
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
 
         val streamItems = manualLayout.streamItems.first()
@@ -332,6 +330,49 @@ class ManualLayoutImplTest {
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1")),
                 StreamItem.Stream("2", StreamUi("2", "stream2"))
+            ),
+            streamItems
+        )
+    }
+
+    @Test
+    fun `mosaic stream sizes are constrained by the maximum number of mosaic streams`() = runTest(testDispatcher) {
+        streamsFlow.value = listOf(
+            StreamUi("1", "stream1"),
+            StreamUi("2", "stream2"),
+            StreamUi("3", "stream3"),
+            StreamUi("4", "stream4")
+        )
+        maxMosaicStreamsFlow.value = 2
+
+        val streamItems = manualLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "stream1")),
+                StreamItem.Stream("2", StreamUi("2", "stream2"))
+            ),
+            streamItems
+        )
+    }
+
+    @Test
+    fun `thumbnail stream sizes are constrained by the maximum number of thumbnail streams`() = runTest(testDispatcher) {
+        streamsFlow.value = listOf(
+            StreamUi("1", "stream1"),
+            StreamUi("2", "stream2"),
+            StreamUi("3", "stream3"),
+            StreamUi("4", "stream4")
+        )
+        maxPinnedStreamsFlow.value = 1
+        maxThumbnailStreamsFlow.value = 2
+
+        manualLayout.pinStream("1")
+        val streamItems = manualLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail),
+                StreamItem.Stream("3", StreamUi("3", "stream3"), state = StreamItemState.Thumbnail)
             ),
             streamItems
         )

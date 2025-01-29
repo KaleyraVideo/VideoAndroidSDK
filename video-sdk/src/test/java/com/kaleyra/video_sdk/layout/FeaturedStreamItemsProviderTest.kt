@@ -21,10 +21,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("2", "Stream 2")
         )
         val featuredStreamIds = emptyList<String>()
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(emptyList<StreamItem>(), result)
     }
@@ -37,10 +36,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("3", "Stream 3")
         )
         val featuredStreamIds = listOf("1", "2", "3")
-        val maxThumbnailStreams = MutableStateFlow(1)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 1)
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
@@ -56,9 +54,8 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("3", "Stream 3")
         )
         val featuredStreamIds = listOf("1")
-        val maxThumbnailStreams = MutableStateFlow(-4)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val provider = FeaturedStreamItemsProviderImpl()
+        val result = provider.buildStreamItems(streams, featuredStreamIds, -4)
         assertEquals(emptyList<StreamItem>(), result)
     }
 
@@ -70,10 +67,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("3", "Stream 3")
         )
         val featuredStreamIds = listOf("1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
@@ -92,10 +88,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("4", "Stream 4", avatar = avatar2)
         )
         val featuredStreamIds = listOf("1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
@@ -111,10 +106,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("3", "Stream 3")
         )
         val featuredStreamIds = listOf("3", "1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("3", StreamUi("3", "Stream 3"), StreamItemState.Featured), result[0])
@@ -129,10 +123,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("2", "Stream 2")
         )
         val featuredStreamIds = listOf("3", "1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
@@ -146,10 +139,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("2", "Stream 2")
         )
         val featuredStreamIds = listOf("1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2)
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
@@ -163,10 +155,9 @@ class FeaturedStreamItemsProviderTest {
             StreamUi("2", "Stream 2")
         )
         val featuredStreamIds = listOf("1")
-        val maxThumbnailStreams = MutableStateFlow(2)
-        val provider = FeaturedStreamItemsProviderImpl(maxThumbnailStreams)
+        val provider = FeaturedStreamItemsProviderImpl()
 
-        val result = provider.buildStreamItems(streams, featuredStreamIds, featuredStreamItemState = StreamItemState.Featured.Pinned)
+        val result = provider.buildStreamItems(streams, featuredStreamIds, 2, featuredStreamItemState = StreamItemState.Featured.Pinned)
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured.Pinned), result[0])

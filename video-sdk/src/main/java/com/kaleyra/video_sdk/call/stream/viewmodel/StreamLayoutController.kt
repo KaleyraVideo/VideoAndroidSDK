@@ -25,6 +25,10 @@ internal interface StreamLayoutController {
 
     val maxPinnedStreams: Flow<Int>
 
+    val maxMosaicStreams: Flow<Int>
+
+    val maxThumbnailStreams: Flow<Int>
+
     val isOneToOneCall: Flow<Boolean>
 
     val isDefaultBackCamera: Boolean
@@ -55,13 +59,15 @@ internal interface StreamLayoutController {
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StreamLayoutControllerImpl(
     override val streams: Flow<List<StreamUi>>,
+    override val maxMosaicStreams: Flow<Int>,
     override val maxPinnedStreams: Flow<Int>,
+    override val maxThumbnailStreams: Flow<Int>,
     override val isOneToOneCall: Flow<Boolean>,
     override val isDefaultBackCamera: Boolean,
-    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
-    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
-    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
-    override val callUserMessageProvider: CallUserMessagesProvider,
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider = MosaicStreamItemsProviderImpl(),
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider = FeaturedStreamItemsProviderImpl(),
+    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider = FullscreenStreamItemProviderImpl(),
+    override val callUserMessageProvider: CallUserMessagesProvider = CallUserMessagesProvider,
     coroutineScope: CoroutineScope,
 ) : StreamLayoutController {
 
@@ -74,6 +80,8 @@ internal class StreamLayoutControllerImpl(
     private val autoLayout: AutoLayout = AutoLayoutImpl(
         streams = streams,
         isOneToOneCall = isOneToOneCall,
+        maxMosaicStreams = maxMosaicStreams,
+        maxThumbnailStreams = maxThumbnailStreams,
         mosaicStreamItemsProvider = mosaicStreamItemsProvider,
         featuredStreamItemsProvider = featuredStreamItemsProvider,
         isDefaultBackCamera = isDefaultBackCamera,
@@ -82,7 +90,9 @@ internal class StreamLayoutControllerImpl(
 
     private val manualLayout: ManualLayout = ManualLayoutImpl(
         streams = streams,
+        maxMosaicStreams = maxMosaicStreams,
         maxPinnedStreams = maxPinnedStreams,
+        maxThumbnailStreams = maxThumbnailStreams,
         mosaicStreamItemsProvider = mosaicStreamItemsProvider,
         featuredStreamItemsProvider = featuredStreamItemsProvider,
         fullscreenStreamItemProvider = fullscreenStreamItemProvider,

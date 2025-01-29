@@ -43,6 +43,10 @@ internal interface AutoLayout : StreamLayout {
 
     val isDefaultBackCamera: Boolean
 
+    val maxMosaicStreams: Flow<Int>
+
+    val maxThumbnailStreams: Flow<Int>
+
     val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
     val featuredStreamItemsProvider: FeaturedStreamItemsProvider
@@ -52,6 +56,8 @@ internal class AutoLayoutImpl(
     override val streams: Flow<List<StreamUi>>,
     override val isOneToOneCall: Flow<Boolean>,
     override val isDefaultBackCamera: Boolean,
+    override val maxMosaicStreams: Flow<Int>,
+    override val maxThumbnailStreams: Flow<Int>,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
     coroutineScope: CoroutineScope,
@@ -59,7 +65,9 @@ internal class AutoLayoutImpl(
 
     private data class LayoutState(
         val allStreams: List<StreamUi> = emptyList(),
-        val isOneToOneCall: Boolean = false
+        val isOneToOneCall: Boolean = false,
+        val maxMosaicStreams: Int = 0,
+        val maxThumbnailStreams: Int = 0
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -71,10 +79,17 @@ internal class AutoLayoutImpl(
     init {
         combine(
             streams,
-            isOneToOneCall
-        ) { streams, isOneToOneCall ->
+            isOneToOneCall,
+            maxMosaicStreams,
+            maxThumbnailStreams
+        ) { streams, isOneToOneCall, maxMosaicStreams, maxThumbnailStreams ->
             _internalState.update { state ->
-                state.copy(allStreams = streams, isOneToOneCall = isOneToOneCall)
+                state.copy(
+                    allStreams = streams,
+                    isOneToOneCall = isOneToOneCall,
+                    maxMosaicStreams = maxMosaicStreams,
+                    maxThumbnailStreams = maxThumbnailStreams
+                )
             }
         }.launchIn(coroutineScope)
 
@@ -129,9 +144,10 @@ internal class AutoLayoutImpl(
             featuredStreamItemsProvider.buildStreamItems(
                 streams = sortedStreams,
                 featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
+                maxThumbnailStreams = state.maxThumbnailStreams
             )
         } else {
-            mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
+            mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.maxMosaicStreams)
         }
     }
 }

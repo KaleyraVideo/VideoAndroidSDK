@@ -23,7 +23,6 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -39,7 +38,11 @@ class StreamLayoutControllerTest {
 
     private val streamsFlow: MutableStateFlow<List<StreamUi>> = MutableStateFlow(emptyList())
 
-    private val maxPinnedStreams: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val maxMosaicStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    private val maxPinnedStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    private val maxThumbnailStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
 
     private val isOneToOneCall: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -74,28 +77,26 @@ class StreamLayoutControllerTest {
         testDispatcher = UnconfinedTestDispatcher()
         testScope = TestScope(UnconfinedTestDispatcher())
         mosaicStreamItemsProviderMock = object : MosaicStreamItemsProvider {
-            override val maxStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
                 streams: List<StreamUi>,
+                maxStreams: Int
             ): List<StreamItem> {
-                return streams.map { stream ->
+                return streams.take(maxStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream)
                 }
             }
         }
         featuredStreamItemsProviderMock = object : FeaturedStreamItemsProvider {
-            override val maxThumbnailStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
                 streams: List<StreamUi>,
                 featuredStreamIds: List<String>,
+                maxThumbnailStreams: Int,
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map {
-                    StreamItem.Stream(
-                        it,
-                        StreamUi(it, "stream$it"),
-                        state = featuredStreamItemState
-                    )
+                    StreamItem.Stream(it, StreamUi(it, "stream$it"), state = featuredStreamItemState)
+                } + streams.filter { it.id !in featuredStreamIds }.take(maxThumbnailStreams).map {
+                    StreamItem.Stream(it.id, StreamUi(it.id, "stream${it.id}"), state = StreamItemState.Thumbnail)
                 }
             }
         }
@@ -121,6 +122,8 @@ class StreamLayoutControllerTest {
                 EqMatcher(streamsFlow),
                 EqMatcher(isOneToOneCall),
                 EqMatcher(false),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(testScope),
@@ -129,7 +132,9 @@ class StreamLayoutControllerTest {
         every {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -139,7 +144,9 @@ class StreamLayoutControllerTest {
         layoutController = spyk(
             StreamLayoutControllerImpl(
                 streams = streamsFlow,
-                maxPinnedStreams = maxPinnedStreams,
+                maxPinnedStreams = maxPinnedStreamsFlow,
+                maxMosaicStreams = maxMosaicStreamsFlow,
+                maxThumbnailStreams = maxThumbnailStreamsFlow,
                 isOneToOneCall = isOneToOneCall,
                 isDefaultBackCamera = false,
                 mosaicStreamItemsProvider = mosaicStreamItemsProviderMock,
@@ -179,7 +186,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -216,7 +225,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -231,7 +242,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -246,7 +259,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -261,7 +276,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -276,7 +293,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -291,7 +310,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -306,7 +327,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),
@@ -321,7 +344,9 @@ class StreamLayoutControllerTest {
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
                 EqMatcher(streamsFlow),
-                EqMatcher(maxPinnedStreams),
+                EqMatcher(maxPinnedStreamsFlow),
+                EqMatcher(maxMosaicStreamsFlow),
+                EqMatcher(maxThumbnailStreamsFlow),
                 EqMatcher(mosaicStreamItemsProviderMock),
                 EqMatcher(featuredStreamItemsProviderMock),
                 EqMatcher(fullscreenStreamItemProviderMock),

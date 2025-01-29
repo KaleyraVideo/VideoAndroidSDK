@@ -5,18 +5,19 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlin.math.max
 
 internal interface ManualLayout: StreamLayout {
 
     val maxPinnedStreams: Flow<Int>
+
+    val maxMosaicStreams: Flow<Int>
+
+    val maxThumbnailStreams: Flow<Int>
 
     val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
@@ -38,6 +39,8 @@ internal interface ManualLayout: StreamLayout {
 internal class ManualLayoutImpl(
     override val streams: Flow<List<StreamUi>>,
     override val maxPinnedStreams: Flow<Int>,
+    override val maxMosaicStreams: Flow<Int>,
+    override val maxThumbnailStreams: Flow<Int>,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
     override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
@@ -48,7 +51,9 @@ internal class ManualLayoutImpl(
         val allStreams: List<StreamUi> = emptyList(),
         val pinnedStreamIds: List<String> = emptyList(),
         val fullscreenStreamId: String? = null,
+        val maxMosaicStreams: Int = 0,
         val maxPinnedStreams: Int = 0,
+        val maxThumbnailStreams: Int = 0,
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -58,14 +63,18 @@ internal class ManualLayoutImpl(
     init {
         combine(
             streams,
-            maxPinnedStreams
-        ) { newStreams, maxPinnedStreams ->
+            maxMosaicStreams,
+            maxPinnedStreams,
+            maxThumbnailStreams
+        ) { newStreams, maxMosaicStreams, maxPinnedStreams, maxThumbnailStreams ->
             _internalState.update { state ->
                 state.copy(
                     allStreams = newStreams,
                     pinnedStreamIds = retainPinnedStreamIds(state, newStreams, maxPinnedStreams),
                     fullscreenStreamId = newStreams.firstOrNull { it.id == state.fullscreenStreamId }?.id,
+                    maxMosaicStreams = max(0, maxMosaicStreams),
                     maxPinnedStreams = max(0, maxPinnedStreams),
+                    maxThumbnailStreams = max(0, maxThumbnailStreams)
                 )
             }
         }.launchIn(coroutineScope)
@@ -147,9 +156,10 @@ internal class ManualLayoutImpl(
             state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
                 streams = state.allStreams,
                 featuredStreamIds = state.pinnedStreamIds,
+                maxThumbnailStreams = state.maxThumbnailStreams,
                 featuredStreamItemState = StreamItemState.Featured.Pinned
             )
-            else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams)
+            else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.maxMosaicStreams)
         }
     }
 }

@@ -3,37 +3,38 @@ package com.kaleyra.video_sdk.call.stream.viewmodel
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import kotlinx.coroutines.flow.StateFlow
 
 internal interface FeaturedStreamItemsProvider: StreamItemsProvider {
-
-    val maxThumbnailStreams: StateFlow<Int>
-
     fun buildStreamItems(
         streams: List<StreamUi>,
         featuredStreamIds: List<String>,
+        maxThumbnailStreams: Int,
         featuredStreamItemState: StreamItemState.Featured = StreamItemState.Featured
     ): List<StreamItem>
 }
 
-internal class FeaturedStreamItemsProviderImpl(override val maxThumbnailStreams: StateFlow<Int>): FeaturedStreamItemsProvider {
+internal class FeaturedStreamItemsProviderImpl: FeaturedStreamItemsProvider {
 
     override fun buildStreamItems(
         streams: List<StreamUi>,
         featuredStreamIds: List<String>,
+        maxThumbnailStreams: Int,
         featuredStreamItemState: StreamItemState.Featured
     ): List<StreamItem> {
-        val maxThumbnailStreamsValue = maxThumbnailStreams.value
-        if (maxThumbnailStreamsValue < 1 || featuredStreamIds.isEmpty()) return emptyList()
+        if (maxThumbnailStreams < 1 || featuredStreamIds.isEmpty()) return emptyList()
 
         val (featuredStreams, nonFeaturedStreams) = streams.partition { it.id in featuredStreamIds }
 
         val featuredStreamIdIndices = featuredStreamIds.withIndex().associate { indexedValue -> indexedValue.value to indexedValue.index }
         val sortedFeaturedStreams = featuredStreams.sortedBy { featuredStreamIdIndices[it.id] ?: Int.MAX_VALUE }
-        val (thumbnailStreams, moreStreams) = if (nonFeaturedStreams.size <= maxThumbnailStreamsValue) {
+        val (thumbnailStreams, moreStreams) = if (nonFeaturedStreams.size <= maxThumbnailStreams) {
             nonFeaturedStreams to emptyList()
         } else {
-            with (nonFeaturedStreams) { take(maxThumbnailStreamsValue - 1) to drop(maxThumbnailStreamsValue - 1) }
+            with(nonFeaturedStreams) {
+                take(maxThumbnailStreams - 1) to drop(
+                    maxThumbnailStreams - 1
+                )
+            }
         }
 
         val featuredStreamItems = sortedFeaturedStreams.map {

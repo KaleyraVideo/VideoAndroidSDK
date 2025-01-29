@@ -11,12 +11,12 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -35,31 +35,34 @@ class AutoLayoutImplTest {
     private val streamsFlow = MutableStateFlow<List<StreamUi>>(emptyList())
     private val isOneToOneCallFlow = MutableStateFlow(false)
 
+    private val maxMosaicStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(Int.MAX_VALUE)
+    private val maxThumbnailStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(Int.MAX_VALUE)
+
     @Before
     fun setUp() {
         testDispatcher = UnconfinedTestDispatcher()
         testScope = TestScope(testDispatcher)
         mosaicStreamItemsProvider = object : MosaicStreamItemsProvider {
-            override val maxStreams: StateFlow<Int> = MutableStateFlow(0)
             override fun buildStreamItems(
                 streams: List<StreamUi>,
+                maxStreams: Int
             ): List<StreamItem> {
-                return streams.map { stream ->
+                return streams.take(maxStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream)
                 }
             }
         }
         featuredStreamItemsProvider = object : FeaturedStreamItemsProvider {
-            override val maxThumbnailStreams: StateFlow<Int> = MutableStateFlow(Int.MAX_VALUE)
             override fun buildStreamItems(
                 streams: List<StreamUi>,
                 featuredStreamIds: List<String>,
+                maxThumbnailStreams: Int,
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map { id ->
                     val stream = streams.firstOrNull { it.id == id } ?: StreamUi("id", "stream")
                     StreamItem.Stream(id, stream, state = StreamItemState.Featured)
-                } + streams.filter { stream -> stream.id !in featuredStreamIds }.map { stream ->
+                } + streams.filter { stream -> stream.id !in featuredStreamIds }.take(maxThumbnailStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream, state = StreamItemState.Thumbnail)
                 }
             }
@@ -67,11 +70,19 @@ class AutoLayoutImplTest {
         autoLayout = AutoLayoutImpl(
             streamsFlow,
             isOneToOneCallFlow,
+            maxMosaicStreams = maxMosaicStreamsFlow,
+            maxThumbnailStreams = maxThumbnailStreamsFlow,
             isDefaultBackCamera = false,
-            mosaicStreamItemsProvider,
-            featuredStreamItemsProvider,
+            mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+            featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
         )
+    }
+
+    @After
+    fun tearDown() {
+        maxMosaicStreamsFlow.value = Int.MAX_VALUE
+        maxThumbnailStreamsFlow.value = Int.MAX_VALUE
     }
 
     @Test
@@ -176,8 +187,10 @@ class AutoLayoutImplTest {
             streamsFlow,
             isOneToOneCallFlow,
             isDefaultBackCamera = true,
-            mosaicStreamItemsProvider,
-            featuredStreamItemsProvider,
+            maxMosaicStreams = maxMosaicStreamsFlow,
+            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+            featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
         )
 
@@ -202,8 +215,10 @@ class AutoLayoutImplTest {
             streamsFlow,
             isOneToOneCallFlow,
             isDefaultBackCamera = true,
-            mosaicStreamItemsProvider,
-            featuredStreamItemsProvider,
+            maxMosaicStreams = maxMosaicStreamsFlow,
+            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+            featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
         )
 
@@ -245,8 +260,10 @@ class AutoLayoutImplTest {
             streamsFlow,
             isOneToOneCallFlow,
             isDefaultBackCamera = true,
-            mosaicStreamItemsProvider,
-            featuredStreamItemsProvider,
+            maxMosaicStreams = maxMosaicStreamsFlow,
+            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            mosaicStreamItemsProvider = mosaicStreamItemsProvider,
+            featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
         )
 
@@ -274,6 +291,47 @@ class AutoLayoutImplTest {
                 StreamItem.Stream("4", remoteCamera, state = StreamItemState.Thumbnail),
             ),
             streamItems2
+        )
+    }
+
+    @Test
+    fun `mosaic stream sizes are constrained by the maximum number of mosaic streams`() = runTest(testDispatcher) {
+        streamsFlow.value = listOf(
+            StreamUi("1", "stream1"),
+            StreamUi("2", "stream2"),
+            StreamUi("3", "stream3"),
+            StreamUi("4", "stream4")
+        )
+        maxMosaicStreamsFlow.value = 2
+
+        val streamItems = autoLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "stream1")),
+                StreamItem.Stream("2", StreamUi("2", "stream2"))
+            ),
+            streamItems
+        )
+    }
+
+    @Test
+    fun `thumbnail stream sizes are constrained by the maximum number of thumbnail streams`() = runTest(testDispatcher) {
+        streamsFlow.value = listOf(
+            StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true)),
+            StreamUi("2", "stream2"),
+            StreamUi("3", "stream3"),
+            StreamUi("4", "stream4")
+        )
+        maxThumbnailStreamsFlow.value = 2
+
+        val streamItems = autoLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true)), state = StreamItemState.Featured),
+                StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail),
+                StreamItem.Stream("3", StreamUi("3", "stream3"), state = StreamItemState.Thumbnail)
+            ),
+            streamItems
         )
     }
 }
