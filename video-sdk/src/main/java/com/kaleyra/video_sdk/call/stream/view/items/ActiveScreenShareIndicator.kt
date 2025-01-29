@@ -33,22 +33,27 @@ fun ActiveScreenShareIndicator(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(
-        contentAlignment = Alignment.Center,
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        if (maxWidth.isAtLeastMediumSizeWidth()) {
-            HScreenShareIndicator(
-                onStopClick = onStopClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-            VScreenShareIndicator(onStopClick)
+        BoxWithConstraints(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            if (maxWidth.isAtLeastMediumSizeWidth()) {
+                HScreenShareIndicator(
+                    onStopClick = onStopClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                VScreenShareIndicator(onStopClick)
+            }
         }
     }
-
 }
 
 @Composable
