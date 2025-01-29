@@ -210,7 +210,7 @@ internal fun HCallScreen(
             { message: UserMessage ->
                 when (message) {
                     is PinScreenshareMessage -> {
-                        streamViewModel.pin(message.streamId, prepend = true, force = true); Unit
+                        streamViewModel.pinStream(message.streamId, prepend = true, force = true); Unit
                     }
 
                     else -> Unit
@@ -233,7 +233,7 @@ internal fun HCallScreen(
                 viewModel = streamViewModel,
                 windowSizeClass = windowSizeClass,
                 selectedStreamId = selectedStreamId,
-                onStreamClick = { stream -> onStreamSelected(stream.id) },
+                onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
                 onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 modifier = Modifier
                     .fillMaxSize()
