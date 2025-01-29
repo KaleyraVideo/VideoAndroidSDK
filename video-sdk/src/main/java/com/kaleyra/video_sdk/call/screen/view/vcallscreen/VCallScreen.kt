@@ -147,7 +147,7 @@ internal fun VCallScreen(
         else onModalSheetComponentRequest(component)
     }
 
-    val contentSpacing = if (isLargeScreen) 16.dp else 8.dp
+    val contentSpacing = 12.dp
     var hasConnectedCallOnce by remember { mutableStateOf(false) }
     val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
     val isDarkTheme = isSystemInDarkTheme()

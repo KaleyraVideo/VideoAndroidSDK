@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +64,7 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
-internal val StreamItemSpacing = 4.dp
+internal val StreamItemSpacing = 6.dp
 
 internal object StreamComponentDefaults {
 
@@ -169,7 +171,9 @@ internal fun StreamComponent(
         } else {
             Column(modifier) {
                 if (uiState.isScreenShareActive) {
-                    ActiveScreenShareIndicator(onStopScreenShareClick)
+                    Box(Modifier.padding(6.dp)) {
+                        ActiveScreenShareIndicator(onStopClick = onStopScreenShareClick)
+                    }
                 }
                 BoxWithConstraints(contentAlignment = Alignment.Center) {
                     // Calculate thumbnail size based on available space
