@@ -13,12 +13,19 @@ import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
+import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItemTag
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -55,11 +62,37 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun multipleStream_rationalIsDefaultPipAspectRatio() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
+    fun emptyStreamItems_noStreamItemIsDisplayed() {
+        streamUiState = StreamUiState(streamItems = ImmutableList())
+        composeTestRule.onNodeWithTag(StreamItemTag, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(HiddenStreamsItemTag, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun streamItem_streamItemIsDisplayed() {
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2).toImmutableList()
+            streamItems = listOf(StreamItem.Stream("1", stream = streamUiMock)).toImmutableList()
+        )
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(StreamItemTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun hiddenStreamsItem_hiddenStreamsItemIsDisplayed() {
+        streamUiState = StreamUiState(
+            streamItems = listOf(
+                StreamItem.HiddenStreams(users = listOf(HiddenStreamUserPreview("1", "user", null)))
+            ).toImmutableList()
+        )
+        composeTestRule.onNodeWithTag(HiddenStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun multipleStream_rationalIsDefaultPipAspectRatio() {
+        val streamItem1 = defaultStreamItem(username = "mario")
+        val streamItem2 = defaultStreamItem(username = "alice")
+        streamUiState = StreamUiState(
+            streamItems = listOf(streamItem1, streamItem2).toImmutableList()
         )
 
         assertEquals(DefaultPipAspectRatio, aspectRatio)
@@ -73,7 +106,7 @@ class PipStreamComponentTest {
 //        }
 //
 //        val video = VideoUi(id = "videoId", view = ImmutableView(view))
-//        val stream = defaultStreamUi(username = "mario", video = video)
+//        val stream = defaultStreamItem(username = "mario", video = video)
 //        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
 //        composeTestRule.waitForIdle()
 //
@@ -81,143 +114,11 @@ class PipStreamComponentTest {
 //    }
 
     @Test
-    fun testUpToTwoStreamsAreDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList()
-        )
-        composeTestRule.onNodeWithTag(stream1.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream2.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream3.id).assertDoesNotExist()
-    }
-
-    @Test
-    fun moreThanTwoStreams_moreParticipantItemIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList()
-        )
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertIsDisplayed()
-        composeTestRule.onNodeWithText("J").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
-    }
-
-    @Test
-    fun moreParticipantsIsDisplayed_localScreenShareIsNotCounted() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        val stream4 = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4).toImmutableList()
-        )
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertIsDisplayed()
-        composeTestRule.onNodeWithText("J").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
-    }
-
-    @Test
-    fun moreParticipantsIsDisplayed_localStreamIsCounted() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        val stream4 = defaultStreamUi(username = "lara", mine = true)
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4).toImmutableList()
-        )
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 3)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertIsDisplayed()
-        composeTestRule.onNodeWithText("J").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
-    }
-
-    @Test
-    fun localScreenShareIsNotDisplayed() {
-        val stream = defaultStreamUi(id = "id1", username = "username1")
-        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
-        streamUiState = StreamUiState(
-            streams = listOf(stream, localScreenShareStream).toImmutableList()
-        )
-
-        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
-        composeTestRule.onNodeWithText(you).assertDoesNotExist()
-    }
-
-    @Test
-    fun fullscreenIsSet_fullscreenStreamIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList(),
-            fullscreenStream = stream2
-        )
-
-        composeTestRule.onNodeWithText("mario").assertDoesNotExist()
-        composeTestRule.onNodeWithText("john").assertDoesNotExist()
-        composeTestRule.onNodeWithText("alice").assertIsDisplayed()
-    }
-
-    @Test
-    fun pinnedStreams_onlyPinnedAreDisplayed() {
-        val stream1 = defaultStreamUi(id = "id1", username = "username1")
-        val stream2 = defaultStreamUi(id = "id2", username = "username2")
-        val stream3 = defaultStreamUi(id = "id3", username = "username3")
-        val stream4 = defaultStreamUi(id = "id4", username = "username4")
-        val stream5 = defaultStreamUi(id = "id5", username = "username5")
-        val stream6 = defaultStreamUi(id = "id6", username = "username6")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4, stream5, stream6).toImmutableList(),
-            pinnedStreams = listOf(stream3, stream4).toImmutableList()
-        )
-
-        composeTestRule.onNodeWithText(stream3.username).assertIsDisplayed()
-        composeTestRule.onNodeWithText(stream4.username).assertIsDisplayed()
-    }
-
-    @Test
-    fun pinnedStreams_upToTwoPinnedAreDisplayed() {
-        val stream1 = defaultStreamUi(id = "id1", username = "username1")
-        val stream2 = defaultStreamUi(id = "id2", username = "username2")
-        val stream3 = defaultStreamUi(id = "id3", username = "username3")
-        val stream4 = defaultStreamUi(id = "id4", username = "username4")
-        val stream5 = defaultStreamUi(id = "id5", username = "username5")
-        val stream6 = defaultStreamUi(id = "id6", username = "username6")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4, stream5, stream6).toImmutableList(),
-            pinnedStreams = listOf(stream3, stream4, stream5).toImmutableList()
-        )
-
-        composeTestRule.onNodeWithText(stream3.username).assertIsDisplayed()
-        composeTestRule.onNodeWithText(stream4.username).assertIsDisplayed()
-        composeTestRule.onNodeWithText(stream5.username).assertDoesNotExist()
-    }
-
-    @Test
     fun streamsAreExactlyAtMaxCapacity_moreParticipantItemDoesNotExists() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
+        val streamItem1 = defaultStreamItem(username = "mario")
+        val streamItem2 = defaultStreamItem(username = "alice")
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2).toImmutableList()
+            streamItems = listOf(streamItem1, streamItem2).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -230,9 +131,9 @@ class PipStreamComponentTest {
 
     @Test
     fun streamMicDisabled_micDisabledIconIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false))
+        val streamItem1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = false))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -244,9 +145,9 @@ class PipStreamComponentTest {
 
     @Test
     fun streamMicEnabled_micDisabledIconIsNotDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = true))
+        val streamItem1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -258,9 +159,9 @@ class PipStreamComponentTest {
 
     @Test
     fun streamAudioNull_micDisabledIconDoesNotExists() {
-        val stream1 = defaultStreamUi(username = "mario", audio = null)
+        val streamItem1 = defaultStreamItem(username = "mario", audio = null)
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -272,9 +173,9 @@ class PipStreamComponentTest {
 
     @Test
     fun streamMutedForYou_mutedForYouIconIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = true, isMutedForYou = true))
+        val streamItem1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = true, isMutedForYou = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -286,9 +187,9 @@ class PipStreamComponentTest {
 
     @Test
     fun remoteStreamMicDisabledAndMutedForYou_mutedForIconIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
+        val streamItem1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -302,10 +203,10 @@ class PipStreamComponentTest {
 
     @Test
     fun previewStreamNotNull_previewIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
+        val streamItem1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
             preview = StreamPreview(username = "previewUsername"),
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
         composeTestRule.waitForIdle()
 
@@ -346,59 +247,50 @@ class PipStreamComponentTest {
     }
 
     @Test
-    fun localScreenSharePinnedStream_streamIsNotDisplayed() {
-        val stream = defaultStreamUi(id = "id1", username = "username1")
-        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true, video = VideoUi(id = "id", isScreenShare = true))
-        streamUiState = StreamUiState(
-            streams = listOf(stream, localScreenShareStream).toImmutableList(),
-            pinnedStreams = listOf(stream, localScreenShareStream).toImmutableList()
-        )
-
-        val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
-        composeTestRule.onNodeWithText(you).assertDoesNotExist()
-    }
-
-    @Test
     fun localStream_streamIsDisplayed() {
-        val stream = defaultStreamUi(id = "id1", username = "username1")
-        val localScreenShareStream = defaultStreamUi(id = "id2", username = "username2", mine = true)
+        val streamItem = defaultStreamItem(id = "id1", username = "username1")
+        val localScreenShareStream = defaultStreamItem(id = "id2", username = "username2", mine = true)
         streamUiState = StreamUiState(
-            streams = listOf(stream, localScreenShareStream).toImmutableList(),
+            streamItems = listOf(streamItem, localScreenShareStream).toImmutableList(),
         )
 
         val you = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText("username1").assertIsDisplayed()
         composeTestRule.onNodeWithText(you).assertIsDisplayed()
     }
 
     @Test
     fun previewStreamNotNull_streamIsNotDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
+        val streamItem1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
             preview = StreamPreview(username = "previewUsername"),
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(streamItem1).toImmutableList()
         )
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("mario").assertDoesNotExist()
     }
 
-    private fun defaultStreamUi(
+    private fun defaultStreamItem(
         id: String = UUID.randomUUID().toString(),
         username: String = "username",
         mine: Boolean = false,
         audio: AudioUi? = null,
         video: VideoUi? = null,
-        avatar: ImmutableUri? = null
-    ): StreamUi {
-        return StreamUi(
+        avatar: ImmutableUri? = null,
+        streamItemState: StreamItemState = StreamItemState.Standard
+    ): StreamItem {
+        return StreamItem.Stream(
             id = id,
-            username = username,
-            isMine = mine,
-            audio = audio,
-            video = video,
-            avatar = avatar
+            stream = StreamUi(
+                id = id,
+                username = username,
+                isMine = mine,
+                audio = audio,
+                video = video,
+                avatar = avatar
+            ),
+            state = streamItemState
         )
     }
 }
