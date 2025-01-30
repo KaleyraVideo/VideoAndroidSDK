@@ -5,7 +5,6 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.model.StreamItemState
@@ -86,7 +85,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).streamItems
         } returns MutableStateFlow(manualLayoutStreamItems)
@@ -132,7 +130,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).clearPinnedStreams()
         }
@@ -169,7 +166,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).pinStream("streamId", prepend = true)
         }
@@ -184,7 +180,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).pinStream("streamId", prepend = false)
         }
@@ -199,7 +194,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).pinStream("streamId", force = true)
         }
@@ -214,7 +208,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).pinStream("streamId", force = false)
         }
@@ -229,7 +222,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).unpinStream("streamId")
         }
@@ -244,7 +236,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).clearPinnedStreams()
         }
@@ -259,7 +250,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).setFullscreenStream("streamId")
         }
@@ -274,7 +264,6 @@ class StreamLayoutControllerTest {
                 EqMatcher(layoutConstraintsFlow),
                 OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
                 OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                OfTypeMatcher<FullscreenStreamItemProvider>(FullscreenStreamItemProvider::class),
                 EqMatcher(testScope),
             ).clearFullscreenStream()
         }

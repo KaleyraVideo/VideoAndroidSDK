@@ -8,6 +8,10 @@ internal interface StreamLayoutInputs {
     val layoutStreams: Flow<List<StreamUi>>
 
     val layoutConstraints: Flow<StreamLayoutConstraints>
+
+    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
+
+    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
 }
 
 internal interface StreamLayoutOutput {

@@ -11,13 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-internal interface ManualLayout: StreamLayout {
-
-    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
-
-    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
-
-    val fullscreenStreamItemProvider: FullscreenStreamItemProvider
+internal interface ManualLayout : StreamLayout {
 
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean
 
@@ -35,7 +29,6 @@ internal class ManualLayoutImpl(
     override val layoutConstraints: Flow<StreamLayoutConstraints>,
     override val mosaicStreamItemsProvider: MosaicStreamItemsProvider = MosaicStreamItemsProviderImpl(),
     override val featuredStreamItemsProvider: FeaturedStreamItemsProvider = FeaturedStreamItemsProviderImpl(),
-    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider = FullscreenStreamItemProviderImpl(),
     coroutineScope: CoroutineScope,
 ): ManualLayout {
 
@@ -138,7 +131,12 @@ internal class ManualLayoutImpl(
 
     private fun mapToStreamItems(state: LayoutState): List<StreamItem> {
         return when {
-            state.fullscreenStreamId != null -> fullscreenStreamItemProvider.buildStreamItems(state.allStreams, state.fullscreenStreamId)
+            state.fullscreenStreamId != null -> featuredStreamItemsProvider.buildStreamItems(
+                streams = state.allStreams,
+                featuredStreamIds = listOf(state.fullscreenStreamId),
+                maxThumbnailStreams = 0,
+                featuredStreamItemState = StreamItemState.Featured.Fullscreen
+            )
             state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
                 streams = state.allStreams,
                 featuredStreamIds = state.pinnedStreamIds,

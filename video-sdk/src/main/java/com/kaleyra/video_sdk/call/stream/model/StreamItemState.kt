@@ -54,8 +54,7 @@ sealed class StreamItemState {
     /**
      * Represents the thumbnail state of a [StreamItem].
      *
-     * In this state, the stream item is displayed as a small thumbnail,
-     * typically in a list of other stream items.
+     * In this state, the stream item is displayed as a small thumbnail.te
      */
     data object Thumbnail : StreamItemState()
 }

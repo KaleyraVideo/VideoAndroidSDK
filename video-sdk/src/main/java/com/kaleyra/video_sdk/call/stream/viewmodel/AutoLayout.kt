@@ -15,12 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
 internal interface AutoLayout : StreamLayout {
-
     val layoutSettings: Flow<StreamLayoutSettings>
-
-    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
-
-    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
 }
 
 internal class AutoLayoutImpl(

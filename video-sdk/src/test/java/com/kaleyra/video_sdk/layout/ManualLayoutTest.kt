@@ -3,12 +3,11 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,8 +39,6 @@ class ManualLayoutImplTest {
 
     private lateinit var featuredStreamItemsProviderMock: FeaturedStreamItemsProvider
 
-    private lateinit var fullscreenStreamItemProviderMock: FullscreenStreamItemProvider
-
     @Before
     fun setup() {
         testDispatcher = UnconfinedTestDispatcher()
@@ -70,23 +67,12 @@ class ManualLayoutImplTest {
                 }
             }
         }
-        fullscreenStreamItemProviderMock = object : FullscreenStreamItemProvider {
-            override fun buildStreamItems(
-                streams: List<StreamUi>,
-                fullscreenStreamId: String,
-            ): List<StreamItem> {
-                return streams.firstOrNull { it.id == fullscreenStreamId }?.let { stream ->
-                    listOf(StreamItem.Stream(stream.id, stream, state = StreamItemState.Featured.Fullscreen))
-                } ?: emptyList()
-            }
-        }
 
         manualLayout = ManualLayoutImpl(
             streamsFlow,
             layoutConstraints = layoutConstraintsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProviderMock,
             featuredStreamItemsProvider = featuredStreamItemsProviderMock,
-            fullscreenStreamItemProvider = fullscreenStreamItemProviderMock,
             coroutineScope = testScope
         )
     }
@@ -282,7 +268,7 @@ class ManualLayoutImplTest {
     }
 
     @Test
-    fun `fullscreen stream has higher importance over featured streams`() = runTest(testDispatcher) {
+    fun `fullscreen stream has higher importance over pinned streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
         layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
