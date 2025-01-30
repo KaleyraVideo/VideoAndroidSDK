@@ -3,6 +3,7 @@ package com.kaleyra.video_common_ui.call
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CallUI.Button
+import com.kaleyra.video_common_ui.common.UIButtonsProvider
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.toCallUIButton
 import com.kaleyra.video_common_ui.utils.extensions.CallTypeExtensions.toCallButtons
 import kotlinx.coroutines.CoroutineScope
@@ -14,17 +15,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
 
-interface CallUIButtonsProvider {
+interface CallUIButtonsProvider : UIButtonsProvider<Button> {
     /**
      * Current Call UI buttons
      */
-    val buttons: StateFlow<Set<Button>>
+    override val buttons: StateFlow<Set<Button>>
 
     /**
      * Buttons Provider represents an optional callback that is invoked when call buttons hierarchy is about to being displayed on call UI.
      * This callback allows to return an updated set of Call Buttons if some call button must be added or removed in the integration use case.
      */
-    var buttonsProvider: ((MutableSet<CallUI.Button>) -> Set<CallUI.Button>)?
+    override var buttonsProvider: ((MutableSet<CallUI.Button>) -> Set<CallUI.Button>)?
 }
 
 internal class DefaultCallUIButtonsProvider(
@@ -72,7 +73,6 @@ internal class DefaultCallUIButtonsProvider(
                 _buttons.emit(actions.map { it.toCallUIButton() }.toSet())
             }?.launchIn(scope)
             ?.invokeOnCompletion {
-                println("removed")
                 buttonsProvider = null
             }
 

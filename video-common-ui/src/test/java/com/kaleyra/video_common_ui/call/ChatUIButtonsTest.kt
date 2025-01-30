@@ -4,7 +4,7 @@ import com.kaleyra.video_common_ui.CallUI
 import org.junit.Assert
 import org.junit.Test
 
-class CallUIButtonsTest {
+class ChatUIButtonsTest {
 
     @Test
     fun callUIButtonCustom_textUpdated_callbackInvoked() {

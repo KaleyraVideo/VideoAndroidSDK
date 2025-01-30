@@ -75,6 +75,7 @@ class ConversationUI(
     /**
      * The chat actions that will be set on every chat
      */
+    @Deprecated("ChatActions have been deprecated and will be removed in a further release. Please add Chat Buttons to the ChatUI object in order to add/remove call actions to a chat.")
     var chatActions: Set<ChatUI.Action> = ChatUI.Action.default
 
 

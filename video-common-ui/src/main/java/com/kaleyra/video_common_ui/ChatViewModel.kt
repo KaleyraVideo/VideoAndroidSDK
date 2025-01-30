@@ -49,9 +49,9 @@ open class ChatViewModel(configure: suspend () -> Configuration) : Collaboration
     val messages = chat.flatMapLatest { it.messages }.shareInEagerly(viewModelScope)
 
     /**
-     * Chat UI Actions flow
+     * Chat UI Button flow
      */
-    val actions = chat.flatMapLatest { it.actions }.shareInEagerly(viewModelScope)
+    val buttons = chat.flatMapLatest { it.buttons }.shareInEagerly(viewModelScope)
 
     /**
      * Chat participants flow

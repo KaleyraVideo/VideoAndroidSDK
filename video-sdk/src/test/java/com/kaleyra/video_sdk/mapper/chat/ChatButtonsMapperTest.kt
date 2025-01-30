@@ -29,14 +29,14 @@ import com.kaleyra.video_sdk.Mocks.otherParticipantEvents
 import com.kaleyra.video_sdk.Mocks.otherParticipantState
 import com.kaleyra.video_sdk.Mocks.otherYesterdayUnreadMessage
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
-import com.kaleyra.video_sdk.chat.mapper.ChatActionsMapper.mapToChatActions
+import com.kaleyra.video_sdk.chat.mapper.ChatButtonsMapper.mapToChatActions
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-class ChatActionsMapperTest {
+class ChatButtonsMapperTest {
 
     @Before
     fun setUp() {

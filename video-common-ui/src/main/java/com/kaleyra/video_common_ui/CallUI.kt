@@ -21,6 +21,7 @@ import com.kaleyra.video_common_ui.call.CallUIButtonsProvider
 import com.kaleyra.video_common_ui.call.CallUIFloatingMessagePresenter
 import com.kaleyra.video_common_ui.call.DefaultCallUIButtonsProvider
 import com.kaleyra.video_common_ui.call.FloatingMessagePresenter
+import com.kaleyra.video_common_ui.common.UIButton
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isActivityRunning
 import com.kaleyra.video_utils.ContextRetainer
@@ -203,7 +204,7 @@ class CallUI(
     /**
      * Call Button representing an action on the call UI
      */
-    sealed class Button {
+    sealed class Button : UIButton {
 
         /**
          * Collections of Call Buttons

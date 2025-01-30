@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.utils.DeviceUtils
-import com.kaleyra.video_glasses_sdk.*
 import com.kaleyra.video_glasses_sdk.bottom_navigation.BottomNavigationView
 import com.kaleyra.video_glasses_sdk.chat.ChatAction
 import com.kaleyra.video_glasses_sdk.chat.GlassChatViewModel
@@ -119,14 +118,14 @@ internal class ChatMenuFragment : BaseFragment(), TiltListener {
             }
         }
 
-        getActions(viewModel.actions.replayCache[0]).map { ChatMenuItem(it) }.also { itemAdapter!!.add(it) }
+        getActions(viewModel.buttons.replayCache[0]).map { ChatMenuItem(it) }.also { itemAdapter!!.add(it) }
         return binding.root
     }
 
-    private fun getActions(actions: Set<ChatUI.Action>): List<ChatAction> = ChatAction.getActions(
-        withParticipants = actions.any { it is ChatUI.Action.ShowParticipants },
-        withVideoCall = actions.any { it is ChatUI.Action.CreateCall && it.preferredType.isVideoEnabled() },
-        withCall = actions.any { it is ChatUI.Action.CreateCall  && !it.preferredType.isVideoEnabled() },
+    private fun getActions(actions: Set<ChatUI.Button>): List<ChatAction> = ChatAction.getActions(
+        withParticipants = actions.any { it is ChatUI.Button.Participants },
+        withVideoCall = actions.any { it is ChatUI.Button.Call && it.preferredType.isVideoEnabled() },
+        withCall = actions.any { it is ChatUI.Button.Call  && !it.preferredType.isVideoEnabled() },
     )
 
     /**
