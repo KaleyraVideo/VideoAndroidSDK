@@ -57,6 +57,8 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.CameraPermission
 import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
@@ -464,9 +466,9 @@ private fun BackHandler(
         isCallEnded -> BackHandler(onBack = onCallEndedBack)
         sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
         isAnyStreamSelected -> BackHandler(onBack = onDismissSelectedStream)
-        streamUiState.fullscreenStream != null -> BackHandler(onBack = {
-            streamViewModel.fullscreen(null)
-            streamViewModel.unpinAll()
+        streamUiState.streamItems.value.firstOrNull { it is StreamItem.Stream && it.state == StreamItemState.Featured.Fullscreen } != null -> BackHandler(onBack = {
+            streamViewModel.clearFullscreenStream()
+            streamViewModel.clearPinnedStreams()
         })
     }
 }
