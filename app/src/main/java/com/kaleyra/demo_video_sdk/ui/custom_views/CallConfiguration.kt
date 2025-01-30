@@ -16,8 +16,16 @@
 
 package com.kaleyra.demo_video_sdk.ui.custom_views
 
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.Parcelable
+import androidx.core.content.ContextCompat
+import com.kaleyra.demo_video_sdk.R
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.model.FloatingMessage
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -62,11 +70,9 @@ sealed class ConfigAction : Parcelable {
                 ChangeZoom,
                 ChangeVolume,
                 ToggleFlashlight,
-                OpenChat.ViewOnly,
-                OpenChat.Full,
+                OpenChat,
                 ShowParticipants,
-                OpenWhiteboard.ViewOnly,
-                OpenWhiteboard.Full
+                OpenWhiteboard,
             )
         }
 
@@ -132,27 +138,16 @@ sealed class ConfigAction : Parcelable {
     data object ShowParticipants : ConfigAction()
 
     @Serializable
-    sealed class OpenChat : ConfigAction() {
-
-        @Serializable
-        @Parcelize
-        data object ViewOnly : OpenChat()
-
-        @Serializable
-        @Parcelize
-        data object Full : OpenChat()
-    }
+    @Parcelize
+    data object OpenChat : ConfigAction()
 
     @Serializable
-    sealed class OpenWhiteboard : ConfigAction() {
-        @Serializable
-        @Parcelize
-        data object ViewOnly : OpenWhiteboard()
+    @Parcelize
+    data object OpenWhiteboard : ConfigAction()
 
-        @Serializable
-        @Parcelize
-        data object Full : OpenWhiteboard()
-    }
+    @Serializable
+    @Parcelize
+    data class OpenUrl(val url: String) : ConfigAction()
 }
 
 fun Set<CallUI.Button>.mapToConfigActions(): Set<ConfigAction> {
@@ -163,11 +158,12 @@ fun Set<CallUI.Button>.mapToConfigActions(): Set<ConfigAction> {
             CallUI.Button.Zoom -> ConfigAction.ChangeZoom
             CallUI.Button.FileShare -> ConfigAction.FileShare
             CallUI.Button.HangUp -> ConfigAction.HangUp
-            CallUI.Button.Chat -> ConfigAction.OpenChat.Full
-            CallUI.Button.Whiteboard -> ConfigAction.OpenWhiteboard.Full
+            CallUI.Button.Chat -> ConfigAction.OpenChat
+            CallUI.Button.Whiteboard -> ConfigAction.OpenWhiteboard
             CallUI.Button.ScreenShare.UserChoice,
             CallUI.Button.ScreenShare.App,
             CallUI.Button.ScreenShare.WholeDevice -> ConfigAction.ScreenShare
+
             CallUI.Button.Participants -> ConfigAction.ShowParticipants
             CallUI.Button.FlipCamera -> ConfigAction.SwitchCamera
             CallUI.Button.Camera -> ConfigAction.ToggleCamera
@@ -187,8 +183,8 @@ fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
             ConfigAction.ChangeZoom -> CallUI.Button.Zoom
             ConfigAction.FileShare -> CallUI.Button.FileShare
             ConfigAction.HangUp -> CallUI.Button.HangUp
-            ConfigAction.OpenChat.Full, ConfigAction.OpenChat.ViewOnly -> CallUI.Button.Chat
-            ConfigAction.OpenWhiteboard.Full, ConfigAction.OpenWhiteboard.ViewOnly -> CallUI.Button.Whiteboard
+            ConfigAction.OpenChat -> CallUI.Button.Chat
+            ConfigAction.OpenWhiteboard -> CallUI.Button.Whiteboard
             ConfigAction.ScreenShare -> CallUI.Button.ScreenShare.UserChoice
             ConfigAction.ShowParticipants -> CallUI.Button.Participants
             ConfigAction.SwitchCamera -> CallUI.Button.FlipCamera
@@ -196,6 +192,38 @@ fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
             ConfigAction.ToggleFlashlight -> CallUI.Button.FlashLight
             ConfigAction.ToggleMicrophone -> CallUI.Button.Microphone
             ConfigAction.CameraEffects -> CallUI.Button.CameraEffects
+            is ConfigAction.OpenUrl -> CallUI.Button.Custom(
+                config = CallUI.Button.Custom.Configuration(
+                    icon = R.drawable.common_full_open_on_phone,
+                    text = ContextRetainer.context.getString(R.string.open_url_custom_button),
+                    action = {
+                        KaleyraVideo.conference.call.replayCache.firstOrNull()?.let { ongoingCall ->
+                            var floatingMessage: FloatingMessage? = null
+                            floatingMessage = FloatingMessage(
+                                body = ContextRetainer.context.getString(R.string.open_url_floating_message_title),
+                                button = FloatingMessage.Button(
+                                    text = ContextRetainer.context.getString(R.string.open_url_floating_message_action),
+                                    icon = R.drawable.common_full_open_on_phone,
+                                    action = {
+                                        floatingMessage?.dismiss()
+                                        ContextRetainer.context.startActivity(
+                                            Intent(Intent.ACTION_VIEW).apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                setData(Uri.parse(action.url))
+                                            }
+                                        )
+                                    }
+                                )
+                            )
+                            ongoingCall.present(floatingMessage)
+                        }
+                    },
+                    appearance = CallUI.Button.Custom.Configuration.Appearance(
+                        background = ContextCompat.getColor(ContextRetainer.context, R.color.customButtonColor),
+                        tint = Color.WHITE
+                    )
+                )
+            )
         }
     }.toSet()
 }
