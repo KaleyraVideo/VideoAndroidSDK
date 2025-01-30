@@ -140,7 +140,10 @@ internal class ChatMenuFragment : BaseFragment(), TiltListener {
     override fun onTilt(deltaAzimuth: Float, deltaPitch: Float, deltaRoll: Float) =
         binding.kaleyraActions.scrollBy((deltaAzimuth * requireContext().tiltScrollFactor()).toInt(), 0)
 
-    override fun onTap() = onTap(itemAdapter!!.getAdapterItem(actionIndex).action)
+    override fun onTap(): Boolean {
+        if (itemAdapter!!.adapterItems.isEmpty()) return false
+        else return onTap(itemAdapter!!.getAdapterItem(actionIndex).action)
+    }
 
     private fun onTap(action: ChatAction) = when (action) {
         is ChatAction.PARTICIPANTS -> true.also {
