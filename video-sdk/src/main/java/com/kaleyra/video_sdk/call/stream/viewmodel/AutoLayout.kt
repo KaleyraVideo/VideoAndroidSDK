@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteCameraStream
@@ -8,44 +9,14 @@ import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-
-internal interface StreamLayout {
-
-    val streams: Flow<List<StreamUi>>
-
-    val streamItems: Flow<List<StreamItem>>
-}
-
-sealed class StreamItemState {
-    data object Standard : StreamItemState()
-
-    sealed class Featured : StreamItemState() {
-
-        companion object Companion : Featured()
-
-        data object Pinned : Featured()
-
-        data object Fullscreen : Featured()
-    }
-
-    data object Thumbnail : StreamItemState()
-}
 
 internal interface AutoLayout : StreamLayout {
 
-    val isOneToOneCall: Flow<Boolean>
-
-    val isDefaultBackCamera: Boolean
-
-    val maxMosaicStreams: Flow<Int>
-
-    val maxThumbnailStreams: Flow<Int>
+    val layoutSettings: Flow<StreamLayoutSettings>
 
     val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
@@ -53,21 +24,18 @@ internal interface AutoLayout : StreamLayout {
 }
 
 internal class AutoLayoutImpl(
-    override val streams: Flow<List<StreamUi>>,
-    override val isOneToOneCall: Flow<Boolean>,
-    override val isDefaultBackCamera: Boolean,
-    override val maxMosaicStreams: Flow<Int>,
-    override val maxThumbnailStreams: Flow<Int>,
-    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
-    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
+    override val layoutStreams: Flow<List<StreamUi>>,
+    override val layoutConstraints: Flow<StreamLayoutConstraints>,
+    override val layoutSettings: Flow<StreamLayoutSettings>,
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider = MosaicStreamItemsProviderImpl(),
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider = FeaturedStreamItemsProviderImpl(),
     coroutineScope: CoroutineScope,
 ) : AutoLayout {
 
     private data class LayoutState(
         val allStreams: List<StreamUi> = emptyList(),
-        val isOneToOneCall: Boolean = false,
-        val maxMosaicStreams: Int = 0,
-        val maxThumbnailStreams: Int = 0
+        val layoutConstraints: StreamLayoutConstraints = StreamLayoutConstraints(),
+        val layoutSettings: StreamLayoutSettings = StreamLayoutSettings()
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -78,17 +46,15 @@ internal class AutoLayoutImpl(
 
     init {
         combine(
-            streams,
-            isOneToOneCall,
-            maxMosaicStreams,
-            maxThumbnailStreams
-        ) { streams, isOneToOneCall, maxMosaicStreams, maxThumbnailStreams ->
+            layoutStreams,
+            layoutConstraints,
+            layoutSettings
+        ) { streams, layoutConstraints, layoutSettings ->
             _internalState.update { state ->
                 state.copy(
                     allStreams = streams,
-                    isOneToOneCall = isOneToOneCall,
-                    maxMosaicStreams = maxMosaicStreams,
-                    maxThumbnailStreams = maxThumbnailStreams
+                    layoutConstraints = layoutConstraints,
+                    layoutSettings = layoutSettings
                 )
             }
         }.launchIn(coroutineScope)
@@ -117,37 +83,39 @@ internal class AutoLayoutImpl(
 
         val hasOneRemoteScreenShare = newRemoteScreenShareCount == 1
         val hasTwoRemoteScreensWithStreamItems = newRemoteScreenShareCount > 1 && previousRemoteScreenShareCount != 0
-        return state.isOneToOneCall || hasOneRemoteScreenShare || hasTwoRemoteScreensWithStreamItems
+        return !state.layoutSettings.isGroupCall || hasOneRemoteScreenShare || hasTwoRemoteScreensWithStreamItems
     }
 
     private fun sortStreamsByPriority(
         streams: List<StreamUi>,
         featuredStreamId: String? = null,
+        defaultCameraIsBack: Boolean
     ): List<StreamUi> {
         return streams
             .sortedWith(
                 compareByDescending<StreamUi> { it.id == featuredStreamId }
                     .thenByDescending { it.isRemoteScreenShare() }
-                    .thenByDescending { it.isMyCameraStream() && isDefaultBackCamera }
+                    .thenByDescending { it.isMyCameraStream() && defaultCameraIsBack }
                     .thenByDescending { it.isRemoteCameraStream() }
             )
     }
 
     private fun mapToStreamItems(state: LayoutState, currentStreamItems: List<StreamItem>): List<StreamItem> {
-        return if (shouldArrangeByPriority(state, currentStreamItems)) {
+        return if (state.layoutConstraints.featuredStreamThreshold > 0 && shouldArrangeByPriority(state, currentStreamItems)) {
             val featuredStreamId = findCurrentFeaturedStreamItem(currentStreamItems)?.takeIf { it.stream.video?.isScreenShare == true }?.id
             val sortedStreams = sortStreamsByPriority(
                 streams = state.allStreams,
-                featuredStreamId = featuredStreamId
+                featuredStreamId = featuredStreamId,
+                defaultCameraIsBack = state.layoutSettings.defaultCameraIsBack
             )
 
             featuredStreamItemsProvider.buildStreamItems(
                 streams = sortedStreams,
                 featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
-                maxThumbnailStreams = state.maxThumbnailStreams
+                maxThumbnailStreams = state.layoutConstraints.thumbnailStreamThreshold
             )
         } else {
-            mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.maxMosaicStreams)
+            mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.layoutConstraints.mosaicStreamThreshold)
         }
     }
 }

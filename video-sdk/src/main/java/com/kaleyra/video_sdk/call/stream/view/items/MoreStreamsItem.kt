@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
@@ -44,14 +44,14 @@ private val MaxAvatarSize = 48.dp
 
 private val AvatarSpacing = (-16).dp
 
-internal val HiddenStreamsItemTag = "HiddenStreamsItemTag"
+internal val MoreStreamsItemTag = "MoreStreamsItemTag"
 
 @Composable
-internal fun HiddenStreamsItem(
-    hiddenStreamsItem: StreamItem.HiddenStreams,
+internal fun MoreStreamsItem(
+    moreStreamsItem: StreamItem.MoreStreams,
     modifier: Modifier = Modifier,
 ) {
-    val count = remember(hiddenStreamsItem) { hiddenStreamsItem.users.count() }
+    val count = remember(moreStreamsItem) { moreStreamsItem.users.count() }
     val elevation = 2.dp
 
     Surface(
@@ -63,9 +63,9 @@ internal fun HiddenStreamsItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxSize()
-                .testTag(HiddenStreamsItemTag)
+                .testTag(MoreStreamsItemTag)
         ) {
-            Avatars(hiddenStreamsItem, elevation)
+            Avatars(moreStreamsItem, elevation)
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(id = R.string.kaleyra_stream_other_participants, count),
@@ -80,7 +80,7 @@ internal fun HiddenStreamsItem(
 
 @Composable
 private fun Avatars(
-    hiddenStreamsItem: StreamItem.HiddenStreams,
+    moreStreamsItem: StreamItem.MoreStreams,
     elevation: Dp
 ) {
     val color = MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
@@ -88,7 +88,7 @@ private fun Avatars(
         val avatarSize = (maxWidth / AvatarCount).coerceIn(MinAvatarSize, MaxAvatarSize)
 
         Row(horizontalArrangement = Arrangement.spacedBy(AvatarSpacing)) {
-            hiddenStreamsItem.users
+            moreStreamsItem.users
                 .take(AvatarCount)
                 .fastForEach { (id: String, username: String, uri: ImmutableUri?) ->
                     key(id) {
@@ -116,15 +116,15 @@ private fun Avatars(
 @DayModePreview
 @NightModePreview
 @Composable
-internal fun MoreParticipantsItemPreview() {
+internal fun MoreStreamsItemPreview() {
     KaleyraTheme {
         Surface {
-            HiddenStreamsItem(
-                hiddenStreamsItem = StreamItem.HiddenStreams(
+            MoreStreamsItem(
+                moreStreamsItem = StreamItem.MoreStreams(
                     users = listOf(
-                        HiddenStreamUserPreview(id = "1", username = "Viola J. Allen", null),
-                        HiddenStreamUserPreview(id = "2", username = "John Doe", null),
-                        HiddenStreamUserPreview(id = "3", username = "Mary Smith", null),
+                        MoreStreamsUserPreview(id = "1", username = "Viola J. Allen", null),
+                        MoreStreamsUserPreview(id = "2", username = "John Doe", null),
+                        MoreStreamsUserPreview(id = "3", username = "Mary Smith", null),
                     )
                 )
             )

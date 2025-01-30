@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -9,15 +10,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.math.max
 
 internal interface ManualLayout: StreamLayout {
-
-    val maxPinnedStreams: Flow<Int>
-
-    val maxMosaicStreams: Flow<Int>
-
-    val maxThumbnailStreams: Flow<Int>
 
     val mosaicStreamItemsProvider: MosaicStreamItemsProvider
 
@@ -37,13 +31,11 @@ internal interface ManualLayout: StreamLayout {
 }
 
 internal class ManualLayoutImpl(
-    override val streams: Flow<List<StreamUi>>,
-    override val maxPinnedStreams: Flow<Int>,
-    override val maxMosaicStreams: Flow<Int>,
-    override val maxThumbnailStreams: Flow<Int>,
-    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider,
-    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider,
-    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider,
+    override val layoutStreams: Flow<List<StreamUi>>,
+    override val layoutConstraints: Flow<StreamLayoutConstraints>,
+    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider = MosaicStreamItemsProviderImpl(),
+    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider = FeaturedStreamItemsProviderImpl(),
+    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider = FullscreenStreamItemProviderImpl(),
     coroutineScope: CoroutineScope,
 ): ManualLayout {
 
@@ -51,9 +43,7 @@ internal class ManualLayoutImpl(
         val allStreams: List<StreamUi> = emptyList(),
         val pinnedStreamIds: List<String> = emptyList(),
         val fullscreenStreamId: String? = null,
-        val maxMosaicStreams: Int = 0,
-        val maxPinnedStreams: Int = 0,
-        val maxThumbnailStreams: Int = 0,
+        val streamLayoutConstraints: StreamLayoutConstraints = StreamLayoutConstraints(),
     )
 
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
@@ -62,19 +52,15 @@ internal class ManualLayoutImpl(
 
     init {
         combine(
-            streams,
-            maxMosaicStreams,
-            maxPinnedStreams,
-            maxThumbnailStreams
-        ) { newStreams, maxMosaicStreams, maxPinnedStreams, maxThumbnailStreams ->
+            layoutStreams,
+            layoutConstraints
+        ) { newStreams, streamConstraints ->
             _internalState.update { state ->
                 state.copy(
                     allStreams = newStreams,
-                    pinnedStreamIds = retainPinnedStreamIds(state, newStreams, maxPinnedStreams),
+                    pinnedStreamIds = retainPinnedStreamIds(state, newStreams, streamConstraints.featuredStreamThreshold),
                     fullscreenStreamId = newStreams.firstOrNull { it.id == state.fullscreenStreamId }?.id,
-                    maxMosaicStreams = max(0, maxMosaicStreams),
-                    maxPinnedStreams = max(0, maxPinnedStreams),
-                    maxThumbnailStreams = max(0, maxThumbnailStreams)
+                    streamLayoutConstraints = streamConstraints,
                 )
             }
         }.launchIn(coroutineScope)
@@ -82,7 +68,7 @@ internal class ManualLayoutImpl(
 
     override fun pinStream(streamId: String, prepend: Boolean, force: Boolean): Boolean {
         _internalState.update { state ->
-            val maxPinnedStreams = state.maxPinnedStreams
+            val maxPinnedStreams = state.streamLayoutConstraints.featuredStreamThreshold
             val pinnedStreams = state.pinnedStreamIds
             val stream = state.allStreams.find { it.id == streamId } ?: return false
 
@@ -156,10 +142,10 @@ internal class ManualLayoutImpl(
             state.pinnedStreamIds.isNotEmpty() -> featuredStreamItemsProvider.buildStreamItems(
                 streams = state.allStreams,
                 featuredStreamIds = state.pinnedStreamIds,
-                maxThumbnailStreams = state.maxThumbnailStreams,
+                maxThumbnailStreams = state.streamLayoutConstraints.thumbnailStreamThreshold,
                 featuredStreamItemState = StreamItemState.Featured.Pinned
             )
-            else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.maxMosaicStreams)
+            else -> mosaicStreamItemsProvider.buildStreamItems(state.allStreams, state.streamLayoutConstraints.mosaicStreamThreshold)
         }
     }
 }

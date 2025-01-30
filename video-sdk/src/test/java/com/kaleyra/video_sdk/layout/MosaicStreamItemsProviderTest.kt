@@ -1,6 +1,6 @@
 package com.kaleyra.video_sdk.layout
 
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProviderImpl
@@ -60,11 +60,11 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("1", stream1), result[0])
         Assert.assertEquals(StreamItem.Stream("2", stream2), result[1])
         Assert.assertEquals(
-            StreamItem.HiddenStreams(
+            StreamItem.MoreStreams(
                 users = listOf(
-                    HiddenStreamUserPreview("3", "stream3", avatar1),
-                    HiddenStreamUserPreview("4", "stream4", avatar2),
-                    HiddenStreamUserPreview("5", "stream5", avatar3)
+                    MoreStreamsUserPreview("3", "stream3", avatar1),
+                    MoreStreamsUserPreview("4", "stream4", avatar2),
+                    MoreStreamsUserPreview("5", "stream5", avatar3)
                 )
             ),
             result[2]
@@ -102,10 +102,10 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("2", stream2), result[0])
         Assert.assertEquals(StreamItem.Stream("1", stream1), result[1])
         Assert.assertEquals(
-            StreamItem.HiddenStreams(
+            StreamItem.MoreStreams(
                 users = listOf(
-                    HiddenStreamUserPreview("3", "stream3", avatar1),
-                    HiddenStreamUserPreview("4", "stream4", avatar2),
+                    MoreStreamsUserPreview("3", "stream3", avatar1),
+                    MoreStreamsUserPreview("4", "stream4", avatar2),
                 )
             ),
             result[2]

@@ -57,7 +57,7 @@ import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandle
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -1158,10 +1158,10 @@ class HCallScreenTest {
     @Test
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
-            StreamItem.HiddenStreams(
+            StreamItem.MoreStreams(
                 users = listOf(
-                    HiddenStreamUserPreview("1", "user1", null),
-                    HiddenStreamUserPreview("2", "user2", null),
+                    MoreStreamsUserPreview("1", "user1", null),
+                    MoreStreamsUserPreview("2", "user2", null),
                 )
             )
         )

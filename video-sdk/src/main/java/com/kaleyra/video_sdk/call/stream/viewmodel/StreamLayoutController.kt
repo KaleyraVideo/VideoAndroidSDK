@@ -9,38 +9,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-internal interface StreamLayoutController {
+internal interface StreamLayoutControllerInputs {
+    val layoutStreams: Flow<List<StreamUi>>
 
-    val streamItems: Flow<List<StreamItem>>
+    val layoutConstraints: Flow<StreamLayoutConstraints>
 
-    val streams: Flow<List<StreamUi>>
-
-    val maxPinnedStreams: Flow<Int>
-
-    val maxMosaicStreams: Flow<Int>
-
-    val maxThumbnailStreams: Flow<Int>
-
-    val isOneToOneCall: Flow<Boolean>
-
-    val isDefaultBackCamera: Boolean
-
-    val mosaicStreamItemsProvider: MosaicStreamItemsProvider
-
-    val featuredStreamItemsProvider: FeaturedStreamItemsProvider
-
-    val fullscreenStreamItemProvider: FullscreenStreamItemProvider
+    val layoutSettings: Flow<StreamLayoutSettings>
 
     val callUserMessageProvider: CallUserMessagesProvider
+}
 
+internal interface StreamLayoutControllerOutput {
+    val streamItems: Flow<List<StreamItem>>
+}
+
+internal interface StreamLayoutController : StreamLayoutControllerInputs, StreamLayoutControllerOutput {
     fun switchToManualLayout()
 
     fun switchToAutoLayout()
@@ -58,15 +46,9 @@ internal interface StreamLayoutController {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StreamLayoutControllerImpl(
-    override val streams: Flow<List<StreamUi>>,
-    override val maxMosaicStreams: Flow<Int>,
-    override val maxPinnedStreams: Flow<Int>,
-    override val maxThumbnailStreams: Flow<Int>,
-    override val isOneToOneCall: Flow<Boolean>,
-    override val isDefaultBackCamera: Boolean,
-    override val mosaicStreamItemsProvider: MosaicStreamItemsProvider = MosaicStreamItemsProviderImpl(),
-    override val featuredStreamItemsProvider: FeaturedStreamItemsProvider = FeaturedStreamItemsProviderImpl(),
-    override val fullscreenStreamItemProvider: FullscreenStreamItemProvider = FullscreenStreamItemProviderImpl(),
+    override val layoutStreams: Flow<List<StreamUi>>,
+    override val layoutConstraints: Flow<StreamLayoutConstraints>,
+    override val layoutSettings: Flow<StreamLayoutSettings>,
     override val callUserMessageProvider: CallUserMessagesProvider = CallUserMessagesProvider,
     coroutineScope: CoroutineScope,
 ) : StreamLayoutController {
@@ -74,28 +56,19 @@ internal class StreamLayoutControllerImpl(
     private data class ControllerState(
         val streamLayout: StreamLayout,
         val previousStreamLayout: StreamLayout? = null,
-        val remoteScreenShareStreams: List<StreamUi> = emptyList()
+        val remoteScreenShareStreams: List<StreamUi> = emptyList(),
     )
 
     private val autoLayout: AutoLayout = AutoLayoutImpl(
-        streams = streams,
-        isOneToOneCall = isOneToOneCall,
-        maxMosaicStreams = maxMosaicStreams,
-        maxThumbnailStreams = maxThumbnailStreams,
-        mosaicStreamItemsProvider = mosaicStreamItemsProvider,
-        featuredStreamItemsProvider = featuredStreamItemsProvider,
-        isDefaultBackCamera = isDefaultBackCamera,
+        layoutStreams,
+        layoutConstraints,
+        layoutSettings,
         coroutineScope = coroutineScope
     )
 
     private val manualLayout: ManualLayout = ManualLayoutImpl(
-        streams = streams,
-        maxMosaicStreams = maxMosaicStreams,
-        maxPinnedStreams = maxPinnedStreams,
-        maxThumbnailStreams = maxThumbnailStreams,
-        mosaicStreamItemsProvider = mosaicStreamItemsProvider,
-        featuredStreamItemsProvider = featuredStreamItemsProvider,
-        fullscreenStreamItemProvider = fullscreenStreamItemProvider,
+        layoutStreams,
+        layoutConstraints,
         coroutineScope = coroutineScope
     )
 
@@ -104,12 +77,13 @@ internal class StreamLayoutControllerImpl(
     override val streamItems: Flow<List<StreamItem>> = _internalState.flatMapLatest { it.streamLayout.streamItems }
 
     init {
-        streams
+        layoutStreams
             .onEach { streams ->
                 val remoteScreenShareStreams = streams.filter { it.isRemoteScreenShare() }
                 _internalState.update { state ->
                     if (shouldSendPinScreenShareMessage(state, remoteScreenShareStreams)) {
-                        val screenShareToRequestPin = findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
+                        val screenShareToRequestPin =
+                            findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
                         screenShareToRequestPin?.let {
                             callUserMessageProvider.sendUserMessage(PinScreenshareMessage(it.id, it.username))
                         }
@@ -155,11 +129,17 @@ internal class StreamLayoutControllerImpl(
         }
     }
 
-    private fun shouldSendPinScreenShareMessage(state: ControllerState, remoteScreenShareStreams: List<StreamUi>): Boolean {
+    private fun shouldSendPinScreenShareMessage(
+        state: ControllerState,
+        remoteScreenShareStreams: List<StreamUi>,
+    ): Boolean {
         return state.streamLayout is ManualLayout || (state.streamLayout is AutoLayout && remoteScreenShareStreams.size > 1)
     }
 
-    private fun findNewRemoteScreenShares(currentState: ControllerState, remoteScreenShareStreams: List<StreamUi>): List<StreamUi> {
+    private fun findNewRemoteScreenShares(
+        currentState: ControllerState,
+        remoteScreenShareStreams: List<StreamUi>,
+    ): List<StreamUi> {
         val currentRemoteScreenShareIds = currentState.remoteScreenShareStreams.map { it.id }
         return remoteScreenShareStreams.filter { stream -> stream.id !in currentRemoteScreenShareIds }
     }

@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 
 internal interface MosaicStreamItemsProvider: StreamItemsProvider {
@@ -27,9 +27,9 @@ internal class MosaicStreamItemsProviderImpl: MosaicStreamItemsProvider {
                     indexedValue.value
                 )
             } + localStream.map { StreamItem.Stream(it.id, it) }
-            val hiddenStreamsItem = StreamItem.HiddenStreams(
+            val moreStreamsItem = StreamItem.MoreStreams(
                 users = remainingStreams.map {
-                    HiddenStreamUserPreview(
+                    MoreStreamsUserPreview(
                         it.value.id,
                         it.value.username,
                         it.value.avatar
@@ -37,7 +37,7 @@ internal class MosaicStreamItemsProviderImpl: MosaicStreamItemsProvider {
                 }
             )
 
-            streamItems + hiddenStreamsItem
+            streamItems + moreStreamsItem
         }
     }
 }

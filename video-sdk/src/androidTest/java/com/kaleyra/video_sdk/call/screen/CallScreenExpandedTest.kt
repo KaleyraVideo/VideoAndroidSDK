@@ -11,52 +11,22 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
-import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
-import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
-import com.kaleyra.video_sdk.call.feedback.viewmodel.FeedbackViewModel
-import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
-import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
-import com.kaleyra.video_sdk.call.kicked.viewmodel.KickedMessageViewModel
-import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
-import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
-import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
-import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
-import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
-import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
-import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkAll
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.reflect.KClass
 
 internal class CallScreenExpandedTest: CallScreenBaseTest() {
 
@@ -229,10 +199,10 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
 
     @Test
     fun userClicksMoreParticipantsStream_participantsSidePanelDisplayed() {
-        val streamItem = StreamItem.HiddenStreams(
+        val streamItem = StreamItem.MoreStreams(
             users = listOf(
-                HiddenStreamUserPreview("1", "user1", null),
-                HiddenStreamUserPreview("2", "user2", null)
+                MoreStreamsUserPreview("1", "user1", null),
+                MoreStreamsUserPreview("2", "user2", null)
             )
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())

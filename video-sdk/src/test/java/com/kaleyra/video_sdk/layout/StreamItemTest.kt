@@ -3,7 +3,7 @@ package com.kaleyra.video_sdk.layout
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import org.junit.Assert
 import org.junit.Test
 
@@ -31,7 +31,7 @@ class StreamItemTest {
 
     @Test
     fun `isPinned returns false when StreamItem is HiddenStreams`() {
-        val streamItem = StreamItem.HiddenStreams(users = emptyList())
+        val streamItem = StreamItem.MoreStreams(users = emptyList())
         Assert.assertFalse(streamItem.isPinned())
     }
 
@@ -57,7 +57,7 @@ class StreamItemTest {
 
     @Test
     fun `isFullscreen returns false when StreamItem is HiddenStreams`() {
-        val streamItem = StreamItem.HiddenStreams(users = emptyList())
+        val streamItem = StreamItem.MoreStreams(users = emptyList())
         Assert.assertFalse(streamItem.isFullscreen())
     }
 
@@ -81,7 +81,7 @@ class StreamItemTest {
 
     @Test
     fun `hasVideoEnabled returns false when StreamItem is HiddenStreams`() {
-        val streamItem = StreamItem.HiddenStreams(users = emptyList())
+        val streamItem = StreamItem.MoreStreams(users = emptyList())
         Assert.assertFalse(streamItem.hasVideoEnabled())
     }
 }

@@ -8,9 +8,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItem
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -19,41 +19,41 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class HiddenStreamsItemTest {
+class MoreStreamsItemTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var hiddenStreamsItem by mutableStateOf(StreamItem.HiddenStreams(users = listOf()))
+    private var moreStreamsItem by mutableStateOf(StreamItem.MoreStreams(users = listOf()))
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            HiddenStreamsItem(hiddenStreamsItem = hiddenStreamsItem)
+            MoreStreamsItem(moreStreamsItem = moreStreamsItem)
         }
     }
 
     @After
     fun tearDown() {
-        hiddenStreamsItem = StreamItem.HiddenStreams(users = listOf())
+        moreStreamsItem = StreamItem.MoreStreams(users = listOf())
     }
 
     @Test
     fun testAvatarIsDisplayed() {
-        hiddenStreamsItem = StreamItem.HiddenStreams(
-            users = listOf(HiddenStreamUserPreview("1","john", null),)
+        moreStreamsItem = StreamItem.MoreStreams(
+            users = listOf(MoreStreamsUserPreview("1","john", null),)
         )
         composeTestRule.onNodeWithText("J").assertIsDisplayed()
     }
 
     @Test
     fun testMaxThreeAvatarsAreDisplayed() {
-        hiddenStreamsItem = StreamItem.HiddenStreams(
+        moreStreamsItem = StreamItem.MoreStreams(
             users = listOf(
-                HiddenStreamUserPreview("1", "john", null),
-                HiddenStreamUserPreview("2", "mary", null),
-                HiddenStreamUserPreview("3", "alice", null),
-                HiddenStreamUserPreview("4", "harry", null),
+                MoreStreamsUserPreview("1", "john", null),
+                MoreStreamsUserPreview("2", "mary", null),
+                MoreStreamsUserPreview("3", "alice", null),
+                MoreStreamsUserPreview("4", "harry", null),
             )
         )
         composeTestRule.onNodeWithText("J").assertIsDisplayed()
@@ -64,10 +64,10 @@ class HiddenStreamsItemTest {
 
     @Test
     fun testOthersCountIsDisplayed() {
-        hiddenStreamsItem = StreamItem.HiddenStreams(
+        moreStreamsItem = StreamItem.MoreStreams(
             users = listOf(
-                HiddenStreamUserPreview("1", "john", null),
-                HiddenStreamUserPreview("2", "mary", null)
+                MoreStreamsUserPreview("1", "john", null),
+                MoreStreamsUserPreview("2", "mary", null)
             )
         )
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)

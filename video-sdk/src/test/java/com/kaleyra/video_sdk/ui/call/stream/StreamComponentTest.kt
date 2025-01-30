@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -18,7 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.StreamComponent
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -27,9 +26,9 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
-import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItemTag
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -86,7 +85,7 @@ class StreamComponentTest {
     fun emptyStreamItems_noStreamItemIsDisplayed() {
         streamUiState = StreamUiState(streamItems = ImmutableList())
         composeTestRule.onNodeWithTag(StreamItemTag, useUnmergedTree = true).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(HiddenStreamsItemTag, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
@@ -102,10 +101,10 @@ class StreamComponentTest {
     fun hiddenStreamsItem_hiddenStreamsItemIsDisplayed() {
         streamUiState = StreamUiState(
             streamItems = listOf(
-                StreamItem.HiddenStreams(users = listOf(HiddenStreamUserPreview("1", "user", null)))
+                StreamItem.MoreStreams(users = listOf(MoreStreamsUserPreview("1", "user", null)))
             ).toImmutableList()
         )
-        composeTestRule.onNodeWithTag(HiddenStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
@@ -127,10 +126,10 @@ class StreamComponentTest {
     @Test
     fun testOnHiddenStreamsClick() {
         val stream1 = defaultStreamItem(username = "mario")
-        val stream2 = StreamItem.HiddenStreams(
+        val stream2 = StreamItem.MoreStreams(
             users = listOf(
-                HiddenStreamUserPreview("id1", "user1", null),
-                HiddenStreamUserPreview("id2", "user2", null),
+                MoreStreamsUserPreview("id1", "user1", null),
+                MoreStreamsUserPreview("id2", "user2", null),
             )
         )
         streamUiState = StreamUiState(

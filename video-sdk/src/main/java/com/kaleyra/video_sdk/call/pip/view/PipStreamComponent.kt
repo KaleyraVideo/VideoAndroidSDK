@@ -30,7 +30,7 @@ import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
-import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItem
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
@@ -50,9 +50,11 @@ internal fun PipStreamComponent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.setMaxMosaicStreams(2)
-        viewModel.setMaxPinnedStreams(2)
-        viewModel.setMaxThumbnailStreams(0)
+        viewModel.setStreamLayoutConstraints(
+            mosaicStreamThreshold = 2,
+            featuredStreamThreshold = 2,
+            thumbnailStreamThreshold = 0
+        )
     }
 
     PipStreamComponent(
@@ -132,7 +134,7 @@ internal fun PipStreamComponent(
                                 ) {
                                     Box {
                                         when (streamItem) {
-                                            is StreamItem.HiddenStreams -> HiddenStreamsItem(streamItem)
+                                            is StreamItem.MoreStreams -> MoreStreamsItem(streamItem)
 
                                             is StreamItem.Stream -> {
                                                 StreamItem(

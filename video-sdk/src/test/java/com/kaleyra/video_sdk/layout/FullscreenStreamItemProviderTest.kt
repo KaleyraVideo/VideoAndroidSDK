@@ -3,7 +3,7 @@ package com.kaleyra.video_sdk.layout
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProviderImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import org.junit.Assert
 import org.junit.Test
 

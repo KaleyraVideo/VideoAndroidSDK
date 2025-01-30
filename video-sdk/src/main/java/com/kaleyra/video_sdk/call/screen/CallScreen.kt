@@ -58,7 +58,7 @@ import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.CameraPermission
 import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions

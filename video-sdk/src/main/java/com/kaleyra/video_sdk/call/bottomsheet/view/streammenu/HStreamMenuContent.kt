@@ -26,7 +26,7 @@ import com.kaleyra.video_sdk.call.callactions.view.FullscreenAction
 import com.kaleyra.video_sdk.call.callactions.view.PinAction
 import com.kaleyra.video_sdk.call.callactions.view.ZoomAction
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview

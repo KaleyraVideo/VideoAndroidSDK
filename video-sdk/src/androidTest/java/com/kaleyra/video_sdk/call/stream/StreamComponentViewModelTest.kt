@@ -69,9 +69,7 @@ class StreamComponentViewModelTest {
         }
 
         verify(exactly = 1) {
-            streamViewModel.setMaxMosaicStreams(MaxMosaicStreamsCompact)
-            streamViewModel.setMaxPinnedStreams(MaxPinnedStreamsCompact)
-            streamViewModel.setMaxThumbnailStreams(MaxThumbnailStreams)
+            streamViewModel.setStreamLayoutConstraints(MaxMosaicStreamsCompact, MaxPinnedStreamsCompact, MaxThumbnailStreams)
         }
     }
 
@@ -91,9 +89,7 @@ class StreamComponentViewModelTest {
         }
 
         verify(exactly = 1) {
-            streamViewModel.setMaxMosaicStreams(MaxMosaicStreamsExpanded)
-            streamViewModel.setMaxPinnedStreams(MaxPinnedStreamsExpanded)
-            streamViewModel.setMaxThumbnailStreams(MaxThumbnailStreams)
+            streamViewModel.setStreamLayoutConstraints(MaxMosaicStreamsExpanded, MaxPinnedStreamsExpanded, MaxThumbnailStreams)
         }
     }
 

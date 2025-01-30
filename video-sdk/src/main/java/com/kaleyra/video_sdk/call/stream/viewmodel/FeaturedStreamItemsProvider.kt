@@ -1,7 +1,8 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 
 internal interface FeaturedStreamItemsProvider: StreamItemsProvider {
@@ -41,10 +42,10 @@ internal class FeaturedStreamItemsProviderImpl: FeaturedStreamItemsProvider {
         val thumbnailStreamItems = thumbnailStreams.map {
             StreamItem.Stream(it.id, it, state = StreamItemState.Thumbnail)
         }
-        val hiddenStreamsItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
-            StreamItem.HiddenStreams(users = streams.map { HiddenStreamUserPreview(it.id, it.username, it.avatar) })
+        val moreStreamsItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
+            StreamItem.MoreStreams(users = streams.map { MoreStreamsUserPreview(it.id, it.username, it.avatar) })
         }
 
-        return featuredStreamItems + thumbnailStreamItems + listOfNotNull(hiddenStreamsItems)
+        return featuredStreamItems + thumbnailStreamItems + listOfNotNull(moreStreamsItems)
     }
 }

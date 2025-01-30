@@ -5,11 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -45,9 +41,9 @@ import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.items.ActiveScreenShareIndicator
-import com.kaleyra.video_sdk.call.stream.view.items.HiddenStreamsItem
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
 import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasCompactHeight
@@ -113,9 +109,11 @@ internal fun StreamComponent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(windowSizeClass) {
-        viewModel.setMaxMosaicStreams(StreamComponentDefaults.maxMosaicStreamsFor(windowSizeClass))
-        viewModel.setMaxPinnedStreams(StreamComponentDefaults.maxPinnedStreamsFor(windowSizeClass))
-        viewModel.setMaxThumbnailStreams(StreamComponentDefaults.MaxThumbnailStreams)
+        viewModel.setStreamLayoutConstraints(
+            mosaicStreamThreshold = StreamComponentDefaults.maxMosaicStreamsFor(windowSizeClass),
+            featuredStreamThreshold = StreamComponentDefaults.maxPinnedStreamsFor(windowSizeClass),
+            thumbnailStreamThreshold = StreamComponentDefaults.MaxThumbnailStreams
+        )
     }
 
     StreamComponent(
@@ -211,7 +209,7 @@ internal fun StreamComponent(
                                         onClick@{
                                             when (streamItem) {
                                                 is StreamItem.Stream -> onStreamClick(streamItem)
-                                                is StreamItem.HiddenStreams -> onMoreParticipantClick()
+                                                is StreamItem.MoreStreams -> onMoreParticipantClick()
                                             }
                                         }
                                     }
@@ -229,7 +227,7 @@ internal fun StreamComponent(
                                             .streamDim(isDimmed)
                                             .streamClickable(
                                                 onClick = onClick,
-                                                label = if (streamItem is StreamItem.HiddenStreams) stringResource(
+                                                label = if (streamItem is StreamItem.MoreStreams) stringResource(
                                                     id = R.string.kaleyra_stream_show_actions
                                                 ) else stringResource(id = R.string.kaleyra_stream_show_participants)
                                             )
@@ -237,7 +235,7 @@ internal fun StreamComponent(
                                     ) {
                                         Box {
                                             when (streamItem) {
-                                                is StreamItem.HiddenStreams -> HiddenStreamsItem(streamItem)
+                                                is StreamItem.MoreStreams -> MoreStreamsItem(streamItem)
 
                                                 is StreamItem.Stream -> {
                                                     val statusIconsAlignment = if (streamItem.state == StreamItemState.Thumbnail) Alignment.BottomEnd else Alignment.TopEnd

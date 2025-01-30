@@ -8,11 +8,13 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.FullscreenStreamItemProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -26,11 +28,7 @@ class ManualLayoutImplTest {
 
     private val streamsFlow: MutableStateFlow<List<StreamUi>> = MutableStateFlow(listOf())
 
-    private val maxMosaicStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
-
-    private val maxPinnedStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
-
-    private val maxThumbnailStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val layoutConstraintsFlow = MutableStateFlow(StreamLayoutConstraints())
 
     private lateinit var testDispatcher: TestDispatcher
 
@@ -85,9 +83,7 @@ class ManualLayoutImplTest {
 
         manualLayout = ManualLayoutImpl(
             streamsFlow,
-            maxMosaicStreams = maxMosaicStreamsFlow,
-            maxPinnedStreams = maxPinnedStreamsFlow,
-            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            layoutConstraints = layoutConstraintsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProviderMock,
             featuredStreamItemsProvider = featuredStreamItemsProviderMock,
             fullscreenStreamItemProvider = fullscreenStreamItemProviderMock,
@@ -97,9 +93,7 @@ class ManualLayoutImplTest {
 
     @After
     fun tearDown() {
-        maxMosaicStreamsFlow.value = 0
-        maxPinnedStreamsFlow.value = 0
-        maxThumbnailStreamsFlow.value = 0
+        layoutConstraintsFlow.value= StreamLayoutConstraints()
     }
 
     @Test
@@ -111,7 +105,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream add the pinned stream as the last in the pinned streams list`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 2) }
 
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2")
@@ -129,7 +123,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream add the pinned stream as first in the pinned streams list when prepend is true`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 2) }
 
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2", prepend = true)
@@ -147,7 +141,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream don't add the pinned stream when the maxPinnedStream limit is reached`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2")
@@ -164,7 +158,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream add the pinned stream even if the pin limit is reached when force is true`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("2", force = true)
@@ -176,7 +170,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream don't add the pinned stream when maxPinnedStreams is less than 0`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = -1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = -1) }
 
         manualLayout.pinStream("1")
 
@@ -190,7 +184,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream don't add the pinned stream if the maxPinnedStream is zero`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 0
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 0) }
 
         val result = manualLayout.pinStream("1")
         Assert.assertFalse(result)
@@ -204,7 +198,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream don't add the pinned stream if the stream is already pinned`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         val result = manualLayout.pinStream("1")
@@ -216,7 +210,7 @@ class ManualLayoutImplTest {
     @Test
     fun `pinStream don't pin the stream when the id is not found in the streams list`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         val result = manualLayout.pinStream("2")
         Assert.assertFalse(result)
@@ -227,7 +221,7 @@ class ManualLayoutImplTest {
     @Test
     fun `unpinStream removes the stream from the pinned streams list`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         manualLayout.unpinStream("1")
@@ -238,7 +232,7 @@ class ManualLayoutImplTest {
     @Test
     fun `clearPinnedStreams removes all the pinned streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 2) }
 
         manualLayout.pinStream("1")
         manualLayout.pinStream("2")
@@ -290,7 +284,7 @@ class ManualLayoutImplTest {
     @Test
     fun `fullscreen stream has higher importance over featured streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         val streamItems1 = manualLayout.streamItems.first()
@@ -310,7 +304,7 @@ class ManualLayoutImplTest {
     @Test
     fun `featured streams have higher importance over mosaic streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        maxPinnedStreamsFlow.value = 1
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1) }
 
         manualLayout.pinStream("1")
         val streamItems = manualLayout.streamItems.first()
@@ -322,7 +316,7 @@ class ManualLayoutImplTest {
 
     @Test
     fun `mosaic streams are set by default`() = runTest(testDispatcher) {
-        maxMosaicStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(mosaicStreamThreshold = 2) }
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
 
         val streamItems = manualLayout.streamItems.first()
@@ -343,7 +337,7 @@ class ManualLayoutImplTest {
             StreamUi("3", "stream3"),
             StreamUi("4", "stream4")
         )
-        maxMosaicStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(mosaicStreamThreshold = 2) }
 
         val streamItems = manualLayout.streamItems.first()
         Assert.assertEquals(
@@ -363,8 +357,7 @@ class ManualLayoutImplTest {
             StreamUi("3", "stream3"),
             StreamUi("4", "stream4")
         )
-        maxPinnedStreamsFlow.value = 1
-        maxThumbnailStreamsFlow.value = 2
+        layoutConstraintsFlow.update { it.copy(featuredStreamThreshold = 1, thumbnailStreamThreshold = 2) }
 
         manualLayout.pinStream("1")
         val streamItems = manualLayout.streamItems.first()

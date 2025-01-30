@@ -7,7 +7,9 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayout
 import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayoutImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,10 +35,8 @@ class AutoLayoutImplTest {
     private lateinit var autoLayout: AutoLayout
 
     private val streamsFlow = MutableStateFlow<List<StreamUi>>(emptyList())
-    private val isOneToOneCallFlow = MutableStateFlow(false)
-
-    private val maxMosaicStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(Int.MAX_VALUE)
-    private val maxThumbnailStreamsFlow: MutableStateFlow<Int> = MutableStateFlow(Int.MAX_VALUE)
+    private val layoutSettingsFlow = MutableStateFlow(StreamLayoutSettings())
+    private val layoutConstraintsFlow = MutableStateFlow(StreamLayoutConstraints(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE))
 
     @Before
     fun setUp() {
@@ -69,10 +69,8 @@ class AutoLayoutImplTest {
         }
         autoLayout = AutoLayoutImpl(
             streamsFlow,
-            isOneToOneCallFlow,
-            maxMosaicStreams = maxMosaicStreamsFlow,
-            maxThumbnailStreams = maxThumbnailStreamsFlow,
-            isDefaultBackCamera = false,
+            layoutConstraints = layoutConstraintsFlow,
+            layoutSettings = layoutSettingsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProvider,
             featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
@@ -81,8 +79,8 @@ class AutoLayoutImplTest {
 
     @After
     fun tearDown() {
-        maxMosaicStreamsFlow.value = Int.MAX_VALUE
-        maxThumbnailStreamsFlow.value = Int.MAX_VALUE
+        layoutConstraintsFlow.value = StreamLayoutConstraints(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE)
+        layoutSettingsFlow.value = StreamLayoutSettings()
     }
 
     @Test
@@ -94,7 +92,7 @@ class AutoLayoutImplTest {
     @Test
     fun `streamItems are in mosaic mode when not in one to one call and no screen share`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        isOneToOneCallFlow.value = false
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = true)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -109,7 +107,7 @@ class AutoLayoutImplTest {
     @Test
     fun `streamItems are in featured mode when in one to one call`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
-        isOneToOneCallFlow.value = true
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -145,6 +143,7 @@ class AutoLayoutImplTest {
             StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true)),
             StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true))
         )
+        layoutConstraintsFlow.value = StreamLayoutConstraints(mosaicStreamThreshold = 4)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -182,13 +181,12 @@ class AutoLayoutImplTest {
         val screenShareStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true))
         val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(cameraStream, screenShareStream)
+        layoutSettingsFlow.value = StreamLayoutSettings(defaultCameraIsBack = true)
 
         autoLayout = AutoLayoutImpl(
             streamsFlow,
-            isOneToOneCallFlow,
-            isDefaultBackCamera = true,
-            maxMosaicStreams = maxMosaicStreamsFlow,
-            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            layoutConstraints = layoutConstraintsFlow,
+            layoutSettings = layoutSettingsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProvider,
             featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
@@ -209,14 +207,12 @@ class AutoLayoutImplTest {
         val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
         val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(remoteCameraStream, cameraStream)
-        isOneToOneCallFlow.value = true
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false, defaultCameraIsBack = true)
 
         autoLayout = AutoLayoutImpl(
             streamsFlow,
-            isOneToOneCallFlow,
-            isDefaultBackCamera = true,
-            maxMosaicStreams = maxMosaicStreamsFlow,
-            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            layoutConstraints = layoutConstraintsFlow,
+            layoutSettings = layoutSettingsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProvider,
             featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
@@ -237,7 +233,7 @@ class AutoLayoutImplTest {
         val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
         val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(cameraStream, remoteCameraStream)
-        isOneToOneCallFlow.value = true
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -256,12 +252,12 @@ class AutoLayoutImplTest {
         val backCamera = StreamUi("3", "stream3", isMine = true, video = VideoUi("3", isScreenShare = false))
         val remoteCamera = StreamUi("4", "stream4", video = VideoUi("4", isScreenShare = false))
 
+        layoutSettingsFlow.value = StreamLayoutSettings(defaultCameraIsBack = true)
+
         autoLayout = AutoLayoutImpl(
             streamsFlow,
-            isOneToOneCallFlow,
-            isDefaultBackCamera = true,
-            maxMosaicStreams = maxMosaicStreamsFlow,
-            maxThumbnailStreams = maxThumbnailStreamsFlow,
+            layoutConstraints = layoutConstraintsFlow,
+            layoutSettings = layoutSettingsFlow,
             mosaicStreamItemsProvider = mosaicStreamItemsProvider,
             featuredStreamItemsProvider = featuredStreamItemsProvider,
             coroutineScope = testScope
@@ -302,7 +298,7 @@ class AutoLayoutImplTest {
             StreamUi("3", "stream3"),
             StreamUi("4", "stream4")
         )
-        maxMosaicStreamsFlow.value = 2
+        layoutConstraintsFlow.value = StreamLayoutConstraints(mosaicStreamThreshold = 2)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -322,7 +318,10 @@ class AutoLayoutImplTest {
             StreamUi("3", "stream3"),
             StreamUi("4", "stream4")
         )
-        maxThumbnailStreamsFlow.value = 2
+        layoutConstraintsFlow.value = StreamLayoutConstraints(
+            featuredStreamThreshold = 2,
+            thumbnailStreamThreshold = 2
+        )
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
@@ -333,5 +332,17 @@ class AutoLayoutImplTest {
             ),
             streamItems
         )
+    }
+
+    @Test
+    fun `featured stream is not set when maximum number of featured is zero`() = runTest(testDispatcher) {
+        val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
+        val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
+        streamsFlow.value = listOf(cameraStream, remoteCameraStream)
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
+        layoutConstraintsFlow.value = StreamLayoutConstraints(featuredStreamThreshold = 0)
+
+        val streamItems = autoLayout.streamItems.first()
+        Assert.assertEquals(emptyList<StreamItem>(), streamItems)
     }
 }

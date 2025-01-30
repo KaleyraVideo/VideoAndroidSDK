@@ -29,7 +29,7 @@ import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.stream.model.HiddenStreamUserPreview
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -291,10 +291,10 @@ internal class CallScreenTest: CallScreenBaseTest() {
 
     @Test
     fun userClicksMoreParticipantsStreamOnSmallScreen_participantsModalSheetDisplayed() {
-        val streamItem = StreamItem.HiddenStreams(
+        val streamItem = StreamItem.MoreStreams(
             users = listOf(
-                HiddenStreamUserPreview("1", "user1", null),
-                HiddenStreamUserPreview("2", "user2", null),
+                MoreStreamsUserPreview("1", "user1", null),
+                MoreStreamsUserPreview("2", "user2", null),
                 )
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())

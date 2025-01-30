@@ -36,9 +36,7 @@ class PipStreamComponentViewModelTest {
         }
 
         verify(exactly = 1) {
-            streamViewModel.setMaxMosaicStreams(2)
-            streamViewModel.setMaxPinnedStreams(2)
-            streamViewModel.setMaxThumbnailStreams(0)
+            streamViewModel.setStreamLayoutConstraints(2, 2,0)
         }
     }
 }

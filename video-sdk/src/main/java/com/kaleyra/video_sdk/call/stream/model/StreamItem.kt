@@ -3,7 +3,6 @@ package com.kaleyra.video_sdk.call.stream.model
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamItemState
 
 @Stable
 internal sealed interface StreamItem {
@@ -18,9 +17,9 @@ internal sealed interface StreamItem {
     ) : StreamItem
 
     @Immutable
-    data class HiddenStreams(
+    data class MoreStreams(
         override val id: String = "moreItemId",
-        val users: List<HiddenStreamUserPreview>,
+        val users: List<MoreStreamsUserPreview>,
     ) : StreamItem
 
     fun isPinned(): Boolean {
