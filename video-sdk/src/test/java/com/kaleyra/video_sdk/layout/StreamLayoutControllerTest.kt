@@ -51,7 +51,7 @@ class StreamLayoutControllerTest {
 
     private val manualLayoutStreamItems = listOf(
         StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
-        StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail),
+        StreamItem.Stream("2", StreamUi("2", "stream2")),
     )
 
     private lateinit var testDispatcher: TestDispatcher

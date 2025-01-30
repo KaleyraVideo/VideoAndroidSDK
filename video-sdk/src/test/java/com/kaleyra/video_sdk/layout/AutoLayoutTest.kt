@@ -63,7 +63,7 @@ class AutoLayoutImplTest {
                     val stream = streams.firstOrNull { it.id == id } ?: StreamUi("id", "stream")
                     StreamItem.Stream(id, stream, state = StreamItemState.Featured)
                 } + streams.filter { stream -> stream.id !in featuredStreamIds }.take(maxThumbnailStreams).map { stream ->
-                    StreamItem.Stream(stream.id, stream, state = StreamItemState.Thumbnail)
+                    StreamItem.Stream(stream.id, stream)
                 }
             }
         }
@@ -113,7 +113,7 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
-                StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail)
+                StreamItem.Stream("2", StreamUi("2", "stream2"))
             ),
             streamItems
         )
@@ -130,7 +130,7 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true)), state = StreamItemState.Featured),
-                StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Thumbnail),
+                StreamItem.Stream("1", StreamUi("1", "stream1")),
             ),
             streamItems
         )
@@ -169,8 +169,8 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", stream2, state = StreamItemState.Featured),
-                StreamItem.Stream("3", stream3, state = StreamItemState.Thumbnail),
-                StreamItem.Stream("1", stream1, state = StreamItemState.Thumbnail),
+                StreamItem.Stream("3", stream3),
+                StreamItem.Stream("1", stream1),
             ),
             streamItems
         )
@@ -196,7 +196,7 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", screenShareStream, state = StreamItemState.Featured),
-                StreamItem.Stream("2", cameraStream, state = StreamItemState.Thumbnail),
+                StreamItem.Stream("2", cameraStream),
             ),
             streamItems
         )
@@ -222,7 +222,7 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("2", cameraStream, state = StreamItemState.Featured),
-                StreamItem.Stream("1", remoteCameraStream, state = StreamItemState.Thumbnail),
+                StreamItem.Stream("1", remoteCameraStream),
             ),
             streamItems
         )
@@ -239,7 +239,7 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", remoteCameraStream, state = StreamItemState.Featured),
-                StreamItem.Stream("2", cameraStream, state = StreamItemState.Thumbnail),
+                StreamItem.Stream("2", cameraStream),
             ),
             streamItems
         )
@@ -282,9 +282,9 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", remoteScreenShare1, state = StreamItemState.Featured),
-                StreamItem.Stream("2", remoteScreenShare2, state = StreamItemState.Thumbnail),
-                StreamItem.Stream("3", backCamera, state = StreamItemState.Thumbnail),
-                StreamItem.Stream("4", remoteCamera, state = StreamItemState.Thumbnail),
+                StreamItem.Stream("2", remoteScreenShare2),
+                StreamItem.Stream("3", backCamera),
+                StreamItem.Stream("4", remoteCamera),
             ),
             streamItems2
         )
@@ -327,8 +327,8 @@ class AutoLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true)), state = StreamItemState.Featured),
-                StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail),
-                StreamItem.Stream("3", StreamUi("3", "stream3"), state = StreamItemState.Thumbnail)
+                StreamItem.Stream("2", StreamUi("2", "stream2")),
+                StreamItem.Stream("3", StreamUi("3", "stream3"))
             ),
             streamItems
         )

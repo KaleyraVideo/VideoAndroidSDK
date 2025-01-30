@@ -22,6 +22,10 @@ internal sealed interface StreamItem {
         val users: List<MoreStreamsUserPreview>,
     ) : StreamItem
 
+    fun isFeatured(): Boolean {
+        return (this as? Stream)?.state is StreamItemState.Featured
+    }
+
     fun isPinned(): Boolean {
         return (this as? Stream)?.state == StreamItemState.Featured.Pinned
     }

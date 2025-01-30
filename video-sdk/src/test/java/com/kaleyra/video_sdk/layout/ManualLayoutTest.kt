@@ -63,7 +63,7 @@ class ManualLayoutImplTest {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map {
                     StreamItem.Stream(it, StreamUi(it, "stream$it"), state = featuredStreamItemState)
                 } + streams.filter { it.id !in featuredStreamIds }.take(maxThumbnailStreams).map {
-                    StreamItem.Stream(it.id, StreamUi(it.id, "stream${it.id}"), state = StreamItemState.Thumbnail)
+                    StreamItem.Stream(it.id, StreamUi(it.id, "stream${it.id}"))
                 }
             }
         }
@@ -350,8 +350,8 @@ class ManualLayoutImplTest {
         Assert.assertEquals(
             listOf(
                 StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("2", StreamUi("2", "stream2"), state = StreamItemState.Thumbnail),
-                StreamItem.Stream("3", StreamUi("3", "stream3"), state = StreamItemState.Thumbnail)
+                StreamItem.Stream("2", StreamUi("2", "stream2")),
+                StreamItem.Stream("3", StreamUi("3", "stream3"))
             ),
             streamItems
         )

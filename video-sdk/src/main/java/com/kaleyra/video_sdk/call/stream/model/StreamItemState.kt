@@ -9,7 +9,6 @@ package com.kaleyra.video_sdk.call.stream.model
  * The states are categorized into:
  * - [Standard]: The default state of a stream item.
  * - [Featured]: States that highlight a stream item, such as pinned or fullscreen.
- * - [Thumbnail]: A state where the stream item is displayed as a thumbnail.
  */
 sealed class StreamItemState {
 
@@ -50,11 +49,4 @@ sealed class StreamItemState {
          */
         data object Fullscreen : Featured()
     }
-
-    /**
-     * Represents the thumbnail state of a [StreamItem].
-     *
-     * In this state, the stream item is displayed as a small thumbnail.te
-     */
-    data object Thumbnail : StreamItemState()
 }

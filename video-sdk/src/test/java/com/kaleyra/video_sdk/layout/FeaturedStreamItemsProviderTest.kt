@@ -87,8 +87,8 @@ class FeaturedStreamItemsProviderTest {
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
-        Assert.assertEquals(StreamItem.Stream("3", StreamUi("3", "Stream 3"), StreamItemState.Thumbnail), result[2])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[1])
+        Assert.assertEquals(StreamItem.Stream("3", StreamUi("3", "Stream 3")), result[2])
     }
 
     @Test
@@ -108,7 +108,7 @@ class FeaturedStreamItemsProviderTest {
 
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[1])
         Assert.assertEquals(StreamItem.MoreStreams(users = listOf(MoreStreamsUserPreview("3", "Stream 3", avatar1), MoreStreamsUserPreview("4","Stream 4", avatar2))), result[2])
     }
 
@@ -127,7 +127,7 @@ class FeaturedStreamItemsProviderTest {
         Assert.assertEquals(3, result.size)
         Assert.assertEquals(StreamItem.Stream("3", StreamUi("3", "Stream 3"), StreamItemState.Featured), result[0])
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[1])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[2])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[2])
     }
 
     @Test
@@ -143,7 +143,7 @@ class FeaturedStreamItemsProviderTest {
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[1])
     }
 
     @Test
@@ -159,7 +159,7 @@ class FeaturedStreamItemsProviderTest {
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured), result[0])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[1])
     }
 
     @Test
@@ -175,6 +175,6 @@ class FeaturedStreamItemsProviderTest {
 
         Assert.assertEquals(2, result.size)
         Assert.assertEquals(StreamItem.Stream("1", StreamUi("1", "Stream 1"), StreamItemState.Featured.Pinned), result[0])
-        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2"), StreamItemState.Thumbnail), result[1])
+        Assert.assertEquals(StreamItem.Stream("2", StreamUi("2", "Stream 2")), result[1])
     }
 }

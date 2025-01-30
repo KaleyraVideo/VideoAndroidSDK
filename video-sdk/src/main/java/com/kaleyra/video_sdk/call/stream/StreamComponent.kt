@@ -238,7 +238,10 @@ internal fun StreamComponent(
                                                 is StreamItem.MoreStreams -> MoreStreamsItem(streamItem)
 
                                                 is StreamItem.Stream -> {
-                                                    val statusIconsAlignment = if (streamItem.state == StreamItemState.Thumbnail) Alignment.TopEnd else Alignment.BottomEnd
+                                                    val hasFeaturedStreamItems = remember(uiState) { uiState.streamItems.value.any { it.isFeatured() } }
+                                                    val statusIconsAlignment = remember(streamItem, hasFeaturedStreamItems) {
+                                                        if (streamItem.state !is StreamItemState.Featured && hasFeaturedStreamItems) Alignment.TopEnd else Alignment.BottomEnd
+                                                    }
 
                                                     StreamItem(
                                                         stream = streamItem.stream,

@@ -5,7 +5,7 @@ import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 
-internal interface FeaturedStreamItemsProvider: StreamItemsProvider {
+internal interface FeaturedStreamItemsProvider : StreamItemsProvider {
     fun buildStreamItems(
         streams: List<StreamUi>,
         featuredStreamIds: List<String>,
@@ -14,8 +14,7 @@ internal interface FeaturedStreamItemsProvider: StreamItemsProvider {
     ): List<StreamItem>
 }
 
-internal class FeaturedStreamItemsProviderImpl: FeaturedStreamItemsProvider {
-
+internal class FeaturedStreamItemsProviderImpl : FeaturedStreamItemsProvider {
     override fun buildStreamItems(
         streams: List<StreamUi>,
         featuredStreamIds: List<String>,
@@ -40,7 +39,7 @@ internal class FeaturedStreamItemsProviderImpl: FeaturedStreamItemsProvider {
             StreamItem.Stream(it.id, it, state = featuredStreamItemState)
         }
         val thumbnailStreamItems = thumbnailStreams.map {
-            StreamItem.Stream(it.id, it, state = StreamItemState.Thumbnail)
+            StreamItem.Stream(it.id, it)
         }
         val moreStreamsItems = moreStreams.takeIf { it.isNotEmpty() }?.let { streams ->
             StreamItem.MoreStreams(users = streams.map { MoreStreamsUserPreview(it.id, it.username, it.avatar) })
