@@ -65,9 +65,10 @@
     <item name="ic_kaleyra_participants_component_speaker_on" type="drawable">@drawable/kaleyra_f_speaker_on</item>
     <item name="ic_kaleyra_participants_component_speaker_off" type="drawable">@drawable/kaleyra_f_speaker_off</item>
     <item name="ic_kaleyra_participants_component_more" type="drawable">@drawable/kaleyra_f_more</item>
-    <item name="ic_kaleyra_participants_component_unpin" type="drawable">@drawable/kaleyra_f_unpin</item>
     <item name="ic_kaleyra_participants_component_pin" type="drawable">@drawable/kaleyra_f_pin</item>
-    <item name="ic_kaleyra_participants_component_grid" type="drawable">@drawable/kaleyra_f_grid</item>
+    <item name="ic_kaleyra_participants_component_unpin" type="drawable">@drawable/kaleyra_f_unpin</item>
+    <item name="ic_kaleyra_participants_component_auto_layout" type="drawable">@drawable/kaleyra_f_auto_layout</item>
+    <item name="ic_kaleyra_participants_component_mosaic_layout" type="drawable">@drawable/kaleyra_f_mosaic_layout</item>
     <item name="ic_kaleyra_participants_component_close" type="drawable">@drawable/kaleyra_f_close</item>
     <item name="ic_kaleyra_participants_component_kick" type="drawable">@drawable/kaleyra_f_kick</item>
 
