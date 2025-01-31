@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
@@ -58,7 +59,7 @@ internal interface StreamLayoutControllerInputs {
  * `StreamLayoutControllerOutput` defines the output provided by a stream layout controller.
  *
  * This interface specifies the data that a stream layout controller produces, which is the
- * list of `StreamItem`s to be displayed.
+ * list of `StreamItem`s to be displayed, and whether automatic layout mode is enabled.
  */
 internal interface StreamLayoutControllerOutput {
     /**
@@ -68,6 +69,17 @@ internal interface StreamLayoutControllerOutput {
      * changes in the input data, layout constraints, or user interactions.
      */
     val streamItems: Flow<List<StreamItem>>
+
+    /**
+     * A flow indicating whether automatic layout mode is enabled.
+     *
+     * When `true`, the stream layout controller automatically manages the arrangement
+     * and positioning of stream items. When `false`, the layout may be fixed or
+     * manually controlled.
+     *
+     * This flow emits updates whenever the auto mode status changes.
+     */
+    val isInAutoMode: Flow<Boolean>
 }
 
 /**
@@ -85,7 +97,7 @@ internal interface StreamLayoutController : StreamLayoutControllerInputs, Stream
      * In manual mode, the user has more control over the layout, such as pinning and
      * unpinning streams.
      */
-    fun switchToManualLayout()
+    fun switchToManualMode()
 
     /**
      * Switches the stream layout to automatic mode.
@@ -93,7 +105,7 @@ internal interface StreamLayoutController : StreamLayoutControllerInputs, Stream
      * In automatic mode, the layout is managed automatically based on the available
      * streams and layout constraints.
      */
-    fun switchToAutoLayout()
+    fun switchToAutoMode()
 
     /**
      * Pins a stream to the layout. Pinned streams are typically displayed prominently.
@@ -196,6 +208,8 @@ internal class StreamLayoutControllerImpl(
      */
     override val streamItems: Flow<List<StreamItem>> = _internalState.flatMapLatest { it.streamLayout.streamItems }
 
+    override val isInAutoMode: Flow<Boolean> = _internalState.map { it.streamLayout is AutoLayout }
+
     init {
         layoutStreams
             .onEach { streams ->
@@ -218,12 +232,12 @@ internal class StreamLayoutControllerImpl(
             }.launchIn(coroutineScope)
     }
 
-    override fun switchToManualLayout() {
+    override fun switchToManualMode() {
         manualLayout.clearPinnedStreams()
         updateInternalState(manualLayout)
     }
 
-    override fun switchToAutoLayout() {
+    override fun switchToAutoMode() {
         updateInternalState(autoLayout)
     }
 

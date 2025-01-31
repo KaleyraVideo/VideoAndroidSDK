@@ -106,23 +106,41 @@ class StreamLayoutControllerTest {
     }
 
     @Test
-    fun `switchToAutoLayout updates streamItems to the auto layout ones`() = runTest(testDispatcher) {
+    fun `isInAutoMode is true by default`() = runTest(testDispatcher) {
+        assertEquals(true, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun `isInAutoMode is false after switching to manual layout`() = runTest(testDispatcher) {
+        layoutController.switchToManualMode()
+        assertEquals(false, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun `isInAutoMode is true after switching to auto layout`() = runTest(testDispatcher) {
+        layoutController.switchToManualMode()
+        layoutController.switchToAutoMode()
+        assertEquals(true, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun `switchToAutoMode updates streamItems to the auto layout ones`() = runTest(testDispatcher) {
         val streamItemsValues = mutableListOf<List<StreamItem>>()
         backgroundScope.launch(UnconfinedTestDispatcher()) {
             layoutController.streamItems.toList(streamItemsValues)
         }
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
         assertEquals(autoLayoutStreamItems, streamItemsValues.last())
     }
 
     @Test
-    fun `switchToManualLayout updates streamItems to the manual layout ones`() = runTest(testDispatcher) {
+    fun `switchToManualMode updates streamItems to the manual layout ones`() = runTest(testDispatcher) {
         val streamItemsValues = mutableListOf<List<StreamItem>>()
         backgroundScope.launch(UnconfinedTestDispatcher()) {
             layoutController.streamItems.toList(streamItemsValues)
         }
 
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
         assertEquals(manualLayoutStreamItems, streamItemsValues.last())
         verify(exactly = 1) {
             constructedWith<ManualLayoutImpl>(
@@ -276,7 +294,7 @@ class StreamLayoutControllerTest {
             layoutController.streamItems.toList(streamItemsValues)
         }
 
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
         layoutController.setFullscreenStream("stream1")
         layoutController.clearFullscreenStream()
         assertEquals(manualLayoutStreamItems, streamItemsValues.last())
@@ -289,7 +307,7 @@ class StreamLayoutControllerTest {
             layoutController.streamItems.toList(streamItemsValues)
         }
 
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
         layoutController.setFullscreenStream("stream1")
         layoutController.clearFullscreenStream()
         assertEquals(autoLayoutStreamItems, streamItemsValues.last())
@@ -297,7 +315,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is triggered when there is a screen share stream and the manual layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
         verify(exactly = 1) {
@@ -307,7 +325,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is not triggered when there is a camera stream and the manual layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
         verify(exactly = 0) {
@@ -317,7 +335,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is not triggered when there is only one screen share stream and the auto layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
         verify(exactly = 0) {
@@ -327,7 +345,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is not triggered when there is a camera stream and the auto layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
         verify(exactly = 0) {
@@ -337,7 +355,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is triggered when there is a new screen share stream and the auto layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
         streamsFlow.value = listOf(
@@ -351,7 +369,7 @@ class StreamLayoutControllerTest {
 
     @Test
     fun `pin screen share user message is triggered when a video-less stream transitions to a screen share video`() = runTest(testDispatcher) {
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
 
         streamsFlow.value = listOf(StreamUi("1", username = "user1"))
         streamsFlow.value = listOf(
