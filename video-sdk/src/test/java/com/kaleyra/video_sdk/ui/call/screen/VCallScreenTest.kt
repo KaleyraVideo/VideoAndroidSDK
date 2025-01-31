@@ -1314,7 +1314,7 @@ class VCallScreenTest {
         composeTestRule.setUpVCallScreen()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(pinText, useUnmergedTree = true)
@@ -1337,7 +1337,7 @@ class VCallScreenTest {
         composeTestRule.waitForIdle()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(pinText, useUnmergedTree = true)
@@ -1360,7 +1360,7 @@ class VCallScreenTest {
         composeTestRule.waitForIdle()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(pinText, useUnmergedTree = true)

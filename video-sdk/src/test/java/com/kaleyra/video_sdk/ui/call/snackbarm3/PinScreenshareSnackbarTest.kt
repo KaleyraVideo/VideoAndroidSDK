@@ -25,7 +25,7 @@ class PinScreenshareSnackbarTest {
         val userDisplayName = "userDisplayName"
         composeTestRule.setContent { PinScreenshareSnackbarM3(userDisplayName, {}) }
         val message = composeTestRule.activity.resources.getString(R.string.kaleyra_stream_screenshare_received, userDisplayName)
-        val pin = composeTestRule.activity.resources.getString(R.string.kaleyra_participants_component_pin)
+        val pin = composeTestRule.activity.resources.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(message).assertIsDisplayed()
         composeTestRule.onNodeWithText(pin).assertIsDisplayed()
     }
@@ -43,7 +43,7 @@ class PinScreenshareSnackbarTest {
         var pinClicked = false
         val userDisplayName = "userDisplayName"
         composeTestRule.setContent { PinScreenshareSnackbarM3(userDisplayName, { pinClicked = true }) }
-        val pin = composeTestRule.activity.resources.getString(R.string.kaleyra_participants_component_pin)
+        val pin = composeTestRule.activity.resources.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(pin).performClick()
         Assert.assertEquals(true, pinClicked)
     }

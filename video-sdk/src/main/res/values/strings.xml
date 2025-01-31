@@ -67,8 +67,8 @@
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>
     <string name="kaleyra_participants_component_users_invited">Also invited</string>
-    <string name="kaleyra_participants_component_grid">Grid</string>
-    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_mosaic">Mosaic</string>
+    <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
     <string name="kaleyra_participants_component_unpin_stream">Unpin stream</string>
     <string name="kaleyra_participants_component_pin_stream_description">Pin %s\'s stream</string>
@@ -352,5 +352,7 @@
     <string name="kaleyra_input_text_default_error">Input text error</string>
     <string name="kaleyra_chat_deleted">The conversation has been deleted.</string>
     <string name="kaleyra_chat_creation_failed">Conversation creation failed</string>
+
+    <string name="kaleyra_user_message_pin">Pin</string>
 
 </resources>

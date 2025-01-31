@@ -51,8 +51,8 @@
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
     <string name="kaleyra_participants_component_users_in_call">Usuarios en llamada</string>
     <string name="kaleyra_participants_component_users_invited">También Invitados</string>
-    <string name="kaleyra_participants_component_grid">Rejilla</string>
-    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_mosaic">Mosaico</string>
+    <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fijar el stream</string>
     <string name="kaleyra_participants_component_unpin_stream">Desprender el stream</string>
     <string name="kaleyra_participants_component_pin_stream_description">Fijar el stream de %s</string>
@@ -302,5 +302,6 @@
     <string name="kaleyra_call_sheet_description_camera_warning">Advertencia de la cámara</string>
     <string name="kaleyra_call_sheet_description_camera_error">Error de la cámara</string>
     <string name="kaleyra_fullscreen">Pantalla completa</string>
+    <string name="kaleyra_user_message_pin">Fijar</string>
 
 </resources>

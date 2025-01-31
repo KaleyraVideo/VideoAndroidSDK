@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,32 +34,30 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun StreamsLayoutSelector(
     streamsLayout: StreamsLayout,
-    enableGridLayout: Boolean,
     onLayoutClick: (streamsLayout: StreamsLayout) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val gridInteractionSource = remember { MutableInteractionSource() }
-        val gridContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Grid) it.primary else it.surfaceVariant }
-        val gridText = stringResource(R.string.kaleyra_participants_component_grid)
+        val mosaicInteractionSource = remember { MutableInteractionSource() }
+        val mosaicContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Mosaic) it.primary else it.surfaceVariant }
+        val mosaicText = stringResource(R.string.kaleyra_participants_component_mosaic)
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = gridContainerColor,
-                contentColor = contentColorFor(backgroundColor = gridContainerColor)
+                containerColor = mosaicContainerColor,
+                contentColor = contentColorFor(backgroundColor = mosaicContainerColor)
             ),
-            enabled = enableGridLayout,
             modifier = Modifier
                 .weight(1f)
-                .highlightOnFocus(gridInteractionSource)
+                .highlightOnFocus(mosaicInteractionSource)
                 .semantics {
-                    contentDescription = gridText
+                    contentDescription = mosaicText
                 },
-            interactionSource = gridInteractionSource,
+            interactionSource = mosaicInteractionSource,
             contentPadding = PaddingValues(8.dp),
-            onClick = { onLayoutClick(StreamsLayout.Grid) }
+            onClick = { onLayoutClick(StreamsLayout.Mosaic) }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_grid),
@@ -69,7 +66,7 @@ internal fun StreamsLayoutSelector(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = gridText,
+                text = mosaicText,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -78,24 +75,24 @@ internal fun StreamsLayoutSelector(
 
         Spacer(Modifier.width(14.dp))
 
-        val pinInteractionSource = remember { MutableInteractionSource() }
-        val pinContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Pin) it.primary else it.surfaceVariant }
-        val pinText = stringResource(R.string.kaleyra_participants_component_pin)
+        val autoInteractionSource = remember { MutableInteractionSource() }
+        val autoContainerColor = MaterialTheme.colorScheme.let { if (streamsLayout == StreamsLayout.Auto) it.primary else it.surfaceVariant }
+        val autoText = stringResource(R.string.kaleyra_participants_component_auto)
         Button(
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = pinContainerColor,
-                contentColor = contentColorFor(backgroundColor = pinContainerColor)
+                containerColor = autoContainerColor,
+                contentColor = contentColorFor(backgroundColor = autoContainerColor)
             ),
             modifier = Modifier
                 .weight(1f)
-                .highlightOnFocus(pinInteractionSource)
+                .highlightOnFocus(autoInteractionSource)
                 .semantics {
-                    contentDescription = pinText
+                    contentDescription = autoText
                 },
-            interactionSource = pinInteractionSource,
+            interactionSource = autoInteractionSource,
             contentPadding = PaddingValues(8.dp),
-            onClick = { onLayoutClick(StreamsLayout.Pin) }
+            onClick = { onLayoutClick(StreamsLayout.Auto) }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_pin),
@@ -104,7 +101,7 @@ internal fun StreamsLayoutSelector(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = pinText,
+                text = autoText,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1
             )
@@ -117,6 +114,6 @@ internal fun StreamsLayoutSelector(
 @Composable
 internal fun StreamsLayoutSelectorPreview() {
     KaleyraTheme {
-        StreamsLayoutSelector(StreamsLayout.Grid, true, onLayoutClick = {})
+        StreamsLayoutSelector(StreamsLayout.Mosaic, onLayoutClick = {})
     }
 }
