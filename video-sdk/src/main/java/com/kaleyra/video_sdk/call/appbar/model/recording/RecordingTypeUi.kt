@@ -22,14 +22,14 @@ package com.kaleyra.video_sdk.call.appbar.model.recording
 enum class RecordingTypeUi {
 
     /**
-     * OnConnect Recording Type
+     * Automatic Recording Type
      */
-    OnConnect,
+    Automatic,
 
     /**
-     * OnDemand Recording Type
+     * Manual Recording Type
      */
-    OnDemand,
+    Manual,
 
     /**
      * Never Recording Type

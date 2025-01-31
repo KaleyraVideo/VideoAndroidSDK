@@ -187,7 +187,7 @@ object CallUserMessagesProvider {
     private fun MutableStateFlow<Set<AlertMessage>>.sendAutomaticRecordingAlertEvents(call: CallUI, scope: CoroutineScope) {
         call.recording.combine(call.toCallStateUi()) { recording, callStateUi ->
             recording to callStateUi
-        }.filter { it.first.type is Call.Recording.Type.OnConnect }.onEach {
+        }.filter { it.first.type is Call.Recording.Type.Automatic }.onEach {
             val callStateUi = it.second
 
             val mutableList = value.toMutableSet()

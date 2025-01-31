@@ -72,17 +72,17 @@ class RecordingMapperTest {
     }
 
     @Test
-    fun recordingTypeOnConnect_toRecordingTypeUi_onConnect() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+    fun recordingTypeAutomatic_toRecordingTypeUi_automatic() = runTest {
+        every { recordingMock.type } returns Call.Recording.Type.Automatic
         val result = callMock.toRecordingTypeUi()
-        Assert.assertEquals(RecordingTypeUi.OnConnect, result.first())
+        Assert.assertEquals(RecordingTypeUi.Automatic, result.first())
     }
 
     @Test
-    fun recordingTypeOnDemand_toRecordingTypeUi_onDemand() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnDemand
+    fun recordingTypeManual_toRecordingTypeUi_manual() = runTest {
+        every { recordingMock.type } returns Call.Recording.Type.Manual
         val result = callMock.toRecordingTypeUi()
-        Assert.assertEquals(RecordingTypeUi.OnDemand, result.first())
+        Assert.assertEquals(RecordingTypeUi.Manual, result.first())
     }
 
     @Test
@@ -129,24 +129,24 @@ class RecordingMapperTest {
 
     @Test
     fun callRecording_toRecordingUi_mappedRecordingUi() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+        every { recordingMock.type } returns Call.Recording.Type.Automatic
         every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
         val actual = callMock.toRecordingUi()
-        val expected = RecordingUi(RecordingTypeUi.OnConnect, RecordingStateUi.Started)
+        val expected = RecordingUi(RecordingTypeUi.Automatic, RecordingStateUi.Started)
         Assert.assertEquals(expected, actual.first())
     }
 
     @Test
-    fun recordingTypeOnConnect_mapToRecordingTypeUi_recordingTypeUiOnConnect() = runTest {
-        val expected = Call.Recording.Type.OnConnect.mapToRecordingTypeUi()
-        val actual = RecordingTypeUi.OnConnect
+    fun recordingTypeAutomatic_mapToRecordingTypeUi_recordingTypeUiOnConnect() = runTest {
+        val expected = Call.Recording.Type.Automatic.mapToRecordingTypeUi()
+        val actual = RecordingTypeUi.Automatic
         Assert.assertEquals(actual, expected)
     }
 
     @Test
-    fun recordingTypeOnDemand_mapToRecordingTypeUi_recordingTypeUiOnDemand() = runTest {
-        val expected = Call.Recording.Type.OnDemand.mapToRecordingTypeUi()
-        val actual = RecordingTypeUi.OnDemand
+    fun recordingTypeManual_mapToRecordingTypeUi_recordingTypeUiOnDemand() = runTest {
+        val expected = Call.Recording.Type.Manual.mapToRecordingTypeUi()
+        val actual = RecordingTypeUi.Manual
         Assert.assertEquals(actual, expected)
     }
 

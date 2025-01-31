@@ -33,7 +33,7 @@ class CallAppBarViewModel(configure: suspend () -> Configuration) : BaseViewMode
         viewModelScope.launch {
             val ongoingCall = call.first()
 
-            if (ongoingCall.recording.value.type is Call.Recording.Type.OnConnect)
+            if (ongoingCall.recording.value.type is Call.Recording.Type.Automatic)
                 _uiState.update { uiState ->
                     uiState.copy(automaticRecording = true)
                 }
