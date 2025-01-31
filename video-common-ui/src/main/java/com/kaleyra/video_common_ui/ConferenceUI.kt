@@ -22,6 +22,7 @@ import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityS
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
+import com.kaleyra.video_common_ui.notification.DisplayedChatActivity.Companion.chatId
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -88,7 +89,21 @@ class ConferenceUI(
      * @param userIDs to be called
      * @param options creation options
      */
-    fun call(userIDs: List<String>, options: (Conference.CreationOptions.() -> Unit)? = null): Result<CallUI> = create(userIDs, options).onSuccess { it.connect() }
+    fun call(
+        userIDs: List<String>,
+        options: (Conference.CreationOptions.() -> Unit)? = null
+    ): Result<CallUI> = create(userIDs, options, null).onSuccess { it.connect() }
+
+    /**
+     * Call
+     *
+     * @param userIDs to be called
+     * @param options creation options
+     */
+    fun call(
+        userIDs: List<String>,
+        options: (Conference.CreationOptions.() -> Unit)? = null,
+        chatId: String? = null): Result<CallUI> = create(userIDs, options, chatId).onSuccess { it.connect() }
 
     /**
      * Join an url
@@ -106,8 +121,10 @@ class ConferenceUI(
     /**
      * @suppress
      */
-    override fun create(userIDs: List<String>, conf: (Conference.CreationOptions.() -> Unit)?): Result<CallUI> =
-        conference.create(userIDs, conf).map { getOrCreateCallUI(it) }
+    override fun create(
+        userIDs: List<String>,
+        conf: (Conference.CreationOptions.() -> Unit)?,
+        chatId: String?): Result<CallUI> = conference.create(userIDs, conf, chatId).map { getOrCreateCallUI(it) }
 
     private fun getOrCreateCallUI(call: Call): CallUI = synchronized(this) {
         callUIMap[call.id] ?: CallUI(
