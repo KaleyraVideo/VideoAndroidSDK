@@ -1,5 +1,7 @@
 package com.kaleyra.video_sdk.call.stream
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -168,11 +170,14 @@ internal fun StreamComponent(
             }
         } else {
             Column(modifier) {
-                if (uiState.isScreenShareActive) {
-                    Box(Modifier.padding(6.dp)) {
-                        ActiveScreenShareIndicator(onStopClick = onStopScreenShareClick)
+                AnimatedVisibility(
+                    visible = uiState.isScreenShareActive,
+                    content = {
+                        Box(Modifier.padding(6.dp)) {
+                            ActiveScreenShareIndicator(onStopClick = onStopScreenShareClick)
+                        }
                     }
-                }
+                )
                 BoxWithConstraints(contentAlignment = Alignment.Center) {
                     // Calculate thumbnail size based on available space
                     val thumbnailSize = remember(maxWidth, maxHeight, maxThumbnailStreams, maxThumbnailSize) {
