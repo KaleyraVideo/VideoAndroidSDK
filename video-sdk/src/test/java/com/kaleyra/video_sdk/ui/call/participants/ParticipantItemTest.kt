@@ -269,19 +269,28 @@ class ParticipantItemTest {
     }
 
     @Test
-    fun localScreenShareStream_unpinButtonIsDisabled() {
+    fun localScreenShareStream_pinButtonDoesNotExists() {
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        pinned = false
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun localScreenShareStream_unpinButtonDoesNotExists() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
         pinned = true
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
         composeTestRule
             .onNodeWithContentDescription(description)
-            .assertHasClickAction()
-            .assertIsNotEnabled()
+            .assertDoesNotExist()
     }
 
     @Test
     fun pinLimitReached_pinButtonIsDisabled() {
-        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id"))
         pinLimitReached = true
         val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
         composeTestRule

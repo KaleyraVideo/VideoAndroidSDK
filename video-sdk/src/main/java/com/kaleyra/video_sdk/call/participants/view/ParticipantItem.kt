@@ -24,6 +24,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -118,12 +119,12 @@ internal fun ParticipantItem(
             }
         }
 
-        if (!amIAdmin || stream.isMine) {
+        if ((!amIAdmin || stream.isMine) && !stream.isLocalScreenShare()) {
             val interactionSource = remember { MutableInteractionSource() }
             IconButton(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                enabled = (!isPinLimitReached || isPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
+                enabled = !isPinLimitReached || isPinned,
                 onClick = { onPinStreamClick(stream.id, !isPinned) },
                 content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
             )
