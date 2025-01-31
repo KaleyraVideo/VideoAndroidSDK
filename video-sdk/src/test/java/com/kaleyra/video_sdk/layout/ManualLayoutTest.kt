@@ -57,12 +57,12 @@ class ManualLayoutImplTest {
             override fun buildStreamItems(
                 streams: List<StreamUi>,
                 featuredStreamIds: List<String>,
-                maxThumbnailStreams: Int,
+                maxNonFeaturedStreams: Int,
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map {
                     StreamItem.Stream(it, StreamUi(it, "stream$it"), state = featuredStreamItemState)
-                } + streams.filter { it.id !in featuredStreamIds }.take(maxThumbnailStreams).map {
+                } + streams.filter { it.id !in featuredStreamIds }.take(maxNonFeaturedStreams).map {
                     StreamItem.Stream(it.id, StreamUi(it.id, "stream${it.id}"))
                 }
             }

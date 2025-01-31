@@ -46,7 +46,7 @@ class FeaturedStreamItemsProviderTest {
     }
 
     @Test
-    fun `buildStreamItems returns empty list if maxThumbnailStreams is less than zero`() {
+    fun `buildStreamItems returns empty list if maxNonFeaturedStreams is less than zero`() {
         val streams = listOf(
             StreamUi("1", "Stream 1"),
             StreamUi("2", "Stream 2"),
@@ -59,7 +59,7 @@ class FeaturedStreamItemsProviderTest {
     }
 
     @Test
-    fun `buildStreamItems returns no thumbnails if maxThumbnailStreams is zero`() {
+    fun `buildStreamItems returns no thumbnails if maxNonFeaturedStreams is zero`() {
         val streams = listOf(
             StreamUi("1", "Stream 1"),
             StreamUi("2", "Stream 2"),
@@ -74,7 +74,7 @@ class FeaturedStreamItemsProviderTest {
     }
 
     @Test
-    fun `buildStreamItems returns featured and thumbnail streams when non featured streams are less or equal than maxThumbnailStreams`() {
+    fun `buildStreamItems returns featured and thumbnail streams when non featured streams are less or equal than maxNonFeaturedStreams`() {
         val streams = listOf(
             StreamUi("1", "Stream 1"),
             StreamUi("2", "Stream 2"),
@@ -92,7 +92,7 @@ class FeaturedStreamItemsProviderTest {
     }
 
     @Test
-    fun `buildStreamItems returns featured, thumbnail, and more when non featured streams are greater than maxThumbnailStreams`() {
+    fun `buildStreamItems returns featured, thumbnail, and more when non featured streams are greater than maxNonFeaturedStreams`() {
         val avatar1 = ImmutableUri(mockk())
         val avatar2 = ImmutableUri(mockk())
         val streams = listOf(

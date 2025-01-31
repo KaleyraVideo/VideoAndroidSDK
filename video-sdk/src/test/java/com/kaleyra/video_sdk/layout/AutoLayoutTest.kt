@@ -56,13 +56,13 @@ class AutoLayoutImplTest {
             override fun buildStreamItems(
                 streams: List<StreamUi>,
                 featuredStreamIds: List<String>,
-                maxThumbnailStreams: Int,
+                maxNonFeaturedStreams: Int,
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map { id ->
                     val stream = streams.firstOrNull { it.id == id } ?: StreamUi("id", "stream")
                     StreamItem.Stream(id, stream, state = StreamItemState.Featured)
-                } + streams.filter { stream -> stream.id !in featuredStreamIds }.take(maxThumbnailStreams).map { stream ->
+                } + streams.filter { stream -> stream.id !in featuredStreamIds }.take(maxNonFeaturedStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream)
                 }
             }
