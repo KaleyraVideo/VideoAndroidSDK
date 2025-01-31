@@ -119,28 +119,30 @@ internal fun ParticipantItem(
             }
         }
 
-        if ((!amIAdmin || stream.isMine) && !stream.isLocalScreenShare()) {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                enabled = !isPinLimitReached || isPinned,
-                onClick = { onPinStreamClick(stream.id, !isPinned) },
-                content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
-            )
-        } else {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = onMoreClick,
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
-                        contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
-                    )
-                }
-            )
+        if (!stream.isLocalScreenShare()) {
+            if (!amIAdmin || stream.isMine) {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    enabled = !isPinLimitReached || isPinned,
+                    onClick = { onPinStreamClick(stream.id, !isPinned) },
+                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
+                )
+            } else {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = onMoreClick,
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
+                            contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
+                        )
+                    }
+                )
+            }
         }
     }
 }

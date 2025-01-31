@@ -286,6 +286,16 @@ class ParticipantItemTest {
     }
 
     @Test
+    fun localScreenShareStream_moreButtonDoesNotExists() {
+        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
+        pinned = true
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_show_more_actions)
+        composeTestRule
+            .onNodeWithContentDescription(description)
+            .assertDoesNotExist()
+    }
+
+    @Test
     fun pinLimitReached_pinButtonIsDisabled() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id"))
         pinLimitReached = true
