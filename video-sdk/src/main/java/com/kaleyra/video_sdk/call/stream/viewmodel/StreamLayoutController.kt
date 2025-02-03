@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -28,7 +29,7 @@ internal interface StreamLayoutControllerInputs {
      *
      * This flow emits updates whenever the list of available streams changes.
      */
-    val layoutStreams: Flow<List<StreamUi>>
+    val layoutStreams: StateFlow<List<StreamUi>>
 
     /**
      * A flow of the constraints for the stream layout (`StreamLayoutConstraints`).
@@ -36,7 +37,7 @@ internal interface StreamLayoutControllerInputs {
      * This flow emits updates whenever the layout constraints change, such as the
      * maximum number of streams allowed in different layouts.
      */
-    val layoutConstraints: Flow<StreamLayoutConstraints>
+    val layoutConstraints: StateFlow<StreamLayoutConstraints>
 
     /**
      * A flow of the settings for the stream layout (`StreamLayoutSettings`).
@@ -44,7 +45,7 @@ internal interface StreamLayoutControllerInputs {
      * This flow emits updates whenever the layout settings change, such as whether
      * it's a group call or the default camera preference.
      */
-    val layoutSettings: Flow<StreamLayoutSettings>
+    val layoutSettings: StateFlow<StreamLayoutSettings>
 
     /**
      * A provider for call user messages (`CallUserMessagesProvider`).
@@ -83,19 +84,88 @@ internal interface StreamLayoutControllerOutput {
 }
 
 /**
- * `StreamLayoutController` combines the input and output interfaces for a stream layout controller
- * and defines the operations that can be performed on the layout.
+ * `StreamLayoutController` manages the layout and behavior of streams within a call or
+ * video conferencing interface.
  *
- * This interface represents a controller that manages the stream layout, including switching
- * between different layout modes (manual and auto), pinning and unpinning streams, and
- * setting streams to fullscreen.
+ * This interface combines the responsibilities of receiving input data (`StreamLayoutControllerInputs`),
+ * providing output data (`StreamLayoutControllerOutput`), and performing actions that modify the
+ * stream layout. It defines the operations that can be performed to control the arrangement,
+ * visibility, and behavior of streams.
+ *
+ * **Key Responsibilities:**
+ *
+ * -   **Receiving Input:** Receives updates about available streams, layout constraints, and
+ *     layout settings via the `StreamLayoutControllerInputs` interface.
+ * -   **Providing Output:** Exposes the current state of the layout, including the list of
+ *     visible streams, pinned streams, and the fullscreen stream, via the
+ *     `StreamLayoutControllerOutput` interface.
+ * -   **Applying Changes:** Allows external components to apply changes to the stream list,
+ *     constraints, and settings.
+ * -   **Layout Modes:** Supports switching between manual and automatic layout modes, offering
+ *     different levels of user control.
+ * -   **Stream Management:** Provides methods for pinning, unpinning, and setting streams to
+ *     fullscreen, allowing for dynamic control over stream visibility and prominence.
+ *
+ * **Layout Modes:**
+ *
+ * -   **Manual Mode:** In manual mode, the user has direct control over the layout. They can
+ *     pin and unpin streams, and the layout will primarily reflect these user-driven changes.
+ * -   **Automatic Mode:** In automatic mode, the layout is managed automatically based on the
+ *     available streams, layout constraints, and settings. The controller determines the best
+ *     arrangement of streams without direct user intervention.
+ *
+ * **Stream Management Operations:**
+ *
+ * -   **Pinning:** Pinned streams are given priority in the layout and are typically displayed
+ *     more prominently.
+ * -   **Unpinning:** Unpinned streams are no longer prioritized and may be hidden or displayed
+ *     in a less prominent manner.
+ * -   **Fullscreen:** A single stream can be set to fullscreen, maximizing its visibility and
+ *     hiding other streams.
+ *
+ * **Usage:**
+ *
+ * Components that need to control the stream layout should interact with this interface.
+ * Implementations of this interface are responsible for managing the internal state of the
+ * layout and updating the output accordingly.
  */
 internal interface StreamLayoutController : StreamLayoutControllerInputs, StreamLayoutControllerOutput {
+
+    /**
+     * Applies the given list of streams to the layout.
+     *
+     * This method updates the internal list of streams managed by the controller.
+     * The layout will be updated to reflect the new list of streams.
+     *
+     * @param streams The list of streams to apply.
+     */
+    fun applyStreams(streams: List<StreamUi>)
+
+    /**
+     * Applies the given layout constraints to the layout.
+     *
+     * This method updates the internal layout constraints used by the controller.
+     * The layout will be updated to adhere to the new constraints.
+     *
+     * @param constraints The layout constraints to apply.
+     */
+    fun applyConstraints(constraints: StreamLayoutConstraints)
+
+    /**
+     * Applies the given layout settings to the layout.
+     *
+     * This method updates the internal layout settings used by the controller.
+     * The layout will be updated to reflect the new settings.
+     *
+     * @param settings The layout settings to apply.
+     */
+    fun applySettings(settings: StreamLayoutSettings)
+
     /**
      * Switches the stream layout to manual mode.
      *
      * In manual mode, the user has more control over the layout, such as pinning and
-     * unpinning streams.
+     * unpinning streams. The layout will primarily reflect user-driven changes.
      */
     fun switchToManualMode()
 
@@ -103,7 +173,8 @@ internal interface StreamLayoutController : StreamLayoutControllerInputs, Stream
      * Switches the stream layout to automatic mode.
      *
      * In automatic mode, the layout is managed automatically based on the available
-     * streams and layout constraints.
+     * streams, layout constraints, and settings. The controller determines the best
+     * arrangement of streams without direct user intervention.
      */
     fun switchToAutoMode()
 
@@ -145,25 +216,10 @@ internal interface StreamLayoutController : StreamLayoutControllerInputs, Stream
     fun clearFullscreenStream()
 }
 
-/**
- * `StreamLayoutControllerImpl` is a concrete implementation of the `StreamLayoutController` interface.
- *
- * It manages the stream layout, including switching between automatic and manual layouts,
- * handling stream pinning and fullscreen, and sending messages related to screen sharing.
- *
- * @property layoutStreams A flow of the list of available streams (`StreamUi`).
- * @property layoutConstraints A flow of the constraints for the stream layout (`StreamLayoutConstraints`).
- * @property layoutSettings A flow of the settings for the stream layout (`StreamLayoutSettings`).
- * @property callUserMessageProvider A provider for sending messages to call users.
- * @property coroutineScope The coroutine scope used for launching coroutines.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StreamLayoutControllerImpl(
-    override val layoutStreams: Flow<List<StreamUi>>,
-    override val layoutConstraints: Flow<StreamLayoutConstraints>,
-    override val layoutSettings: Flow<StreamLayoutSettings>,
     override val callUserMessageProvider: CallUserMessagesProvider = CallUserMessagesProvider,
-    coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope
 ) : StreamLayoutController {
 
     /**
@@ -178,6 +234,15 @@ internal class StreamLayoutControllerImpl(
         val previousStreamLayout: StreamLayout? = null,
         val remoteScreenShareStreams: List<StreamUi> = emptyList(),
     )
+
+    private val _layoutStreams: MutableStateFlow<List<StreamUi>> = MutableStateFlow(emptyList())
+    override val layoutStreams: StateFlow<List<StreamUi>> = _layoutStreams
+
+    private val _layoutConstraints: MutableStateFlow<StreamLayoutConstraints> = MutableStateFlow(StreamLayoutConstraints())
+    override val layoutConstraints: StateFlow<StreamLayoutConstraints> = _layoutConstraints
+
+    private val _layoutSettings: MutableStateFlow<StreamLayoutSettings> = MutableStateFlow(StreamLayoutSettings())
+    override val layoutSettings: StateFlow<StreamLayoutSettings> = _layoutSettings
 
     /**
      * The automatic stream layout implementation.
@@ -218,8 +283,7 @@ internal class StreamLayoutControllerImpl(
                     // Check if a message should be sent to pin a new screen share.
                     if (shouldSendPinScreenShareMessage(state, remoteScreenShareStreams)) {
                         // Find the new remote screen shares.
-                        val screenShareToRequestPin =
-                            findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
+                        val screenShareToRequestPin = findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
                         // Send a message to pin the new screen share.
                         screenShareToRequestPin?.let {
                             callUserMessageProvider.sendUserMessage(PinScreenshareMessage(it.id, it.username))
@@ -228,8 +292,19 @@ internal class StreamLayoutControllerImpl(
                     // Update the list of remote screen share streams in the state.
                     state.copy(remoteScreenShareStreams = remoteScreenShareStreams)
                 }
-
             }.launchIn(coroutineScope)
+    }
+
+    override fun applyStreams(streams: List<StreamUi>) {
+        _layoutStreams.value = streams
+    }
+
+    override fun applyConstraints(constraints: StreamLayoutConstraints) {
+        _layoutConstraints.value = constraints
+    }
+
+    override fun applySettings(settings: StreamLayoutSettings) {
+        _layoutSettings.value = settings
     }
 
     override fun switchToManualMode() {

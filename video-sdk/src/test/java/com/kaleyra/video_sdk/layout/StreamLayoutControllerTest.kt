@@ -14,6 +14,7 @@ import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import io.mockk.AllAnyMatcher
 import io.mockk.EqMatcher
 import io.mockk.OfTypeMatcher
 import io.mockk.every
@@ -37,12 +38,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StreamLayoutControllerTest {
-
-    private val streamsFlow: MutableStateFlow<List<StreamUi>> = MutableStateFlow(emptyList())
-
-    private val layoutConstraintsFlow = MutableStateFlow(StreamLayoutConstraints())
-
-    private val layoutSettingsFlow = MutableStateFlow(StreamLayoutSettings())
 
     private val autoLayoutStreamItems = listOf(
         StreamItem.Stream("1", StreamUi("1", "stream1")),
@@ -69,34 +64,11 @@ class StreamLayoutControllerTest {
         testDispatcher = UnconfinedTestDispatcher()
         testScope = TestScope(UnconfinedTestDispatcher())
         callUserMessageProviderMock = mockk(relaxed = true)
-        every {
-            constructedWith<AutoLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                EqMatcher(layoutSettingsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).streamItems
-        } returns MutableStateFlow(autoLayoutStreamItems)
-        every {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).streamItems
-        } returns MutableStateFlow(manualLayoutStreamItems)
-        layoutController = spyk(
-            StreamLayoutControllerImpl(
-                layoutStreams = streamsFlow,
-                layoutConstraints = layoutConstraintsFlow,
-                layoutSettings = layoutSettingsFlow,
-                callUserMessageProvider = callUserMessageProviderMock,
-                coroutineScope = testScope
-            ),
-            recordPrivateCalls = true
+        every { anyConstructed<AutoLayoutImpl>().streamItems } returns MutableStateFlow(autoLayoutStreamItems)
+        every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(manualLayoutStreamItems)
+        layoutController = StreamLayoutControllerImpl(
+            callUserMessageProvider = callUserMessageProviderMock,
+            coroutineScope = testScope
         )
     }
 
@@ -108,6 +80,31 @@ class StreamLayoutControllerTest {
     @Test
     fun `isInAutoMode is true by default`() = runTest(testDispatcher) {
         assertEquals(true, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun `applyStreams updates layout controller's streams`() = runTest(testDispatcher) {
+        val streams = listOf(
+            StreamUi("1", "user1"),
+            StreamUi("2", "user2"),
+            StreamUi("3", "user3"),
+        )
+        layoutController.applyStreams(streams)
+        assertEquals(streams, layoutController.layoutStreams.value)
+    }
+
+    @Test
+    fun `applyConstraints updates layout controller's constraints`() = runTest(testDispatcher) {
+        val constraints = StreamLayoutConstraints(4, 5, 6)
+        layoutController.applyConstraints(constraints)
+        assertEquals(constraints, layoutController.layoutConstraints.value)
+    }
+
+    @Test
+    fun `applySettings updates layout controller's settings`() = runTest(testDispatcher) {
+        val settings = StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true)
+        layoutController.applySettings(settings)
+        assertEquals(settings, layoutController.layoutSettings.value)
     }
 
     @Test
@@ -142,15 +139,7 @@ class StreamLayoutControllerTest {
 
         layoutController.switchToManualMode()
         assertEquals(manualLayoutStreamItems, streamItemsValues.last())
-        verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).clearPinnedStreams()
-        }
+        verify(exactly = 1) { anyConstructed<ManualLayoutImpl>().clearPinnedStreams() }
     }
 
     @Test
@@ -179,13 +168,7 @@ class StreamLayoutControllerTest {
     fun `pinStream with prepend true`() = runTest(testDispatcher) {
         layoutController.pinStream("streamId", prepend = true)
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).pinStream("streamId", prepend = true)
+            anyConstructed<ManualLayoutImpl>().pinStream("streamId", prepend = true)
         }
     }
 
@@ -193,13 +176,7 @@ class StreamLayoutControllerTest {
     fun `pinStream with prepend false`() = runTest(testDispatcher) {
         layoutController.pinStream("streamId", prepend = false)
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).pinStream("streamId", prepend = false)
+            anyConstructed<ManualLayoutImpl>().pinStream("streamId", prepend = false)
         }
     }
 
@@ -207,13 +184,7 @@ class StreamLayoutControllerTest {
     fun `pinStream with force true`() = runTest(testDispatcher) {
         layoutController.pinStream("streamId", force = true)
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).pinStream("streamId", force = true)
+            anyConstructed<ManualLayoutImpl>().pinStream("streamId", force = true)
         }
     }
 
@@ -221,13 +192,7 @@ class StreamLayoutControllerTest {
     fun `pinStream with force false`() = runTest(testDispatcher) {
         layoutController.pinStream("streamId", force = false)
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).pinStream("streamId", force = false)
+            anyConstructed<ManualLayoutImpl>().pinStream("streamId", force = false)
         }
     }
 
@@ -235,13 +200,7 @@ class StreamLayoutControllerTest {
     fun `unpinStream invokes manual layout unpinStream method`() = runTest(testDispatcher) {
         layoutController.unpinStream("streamId")
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).unpinStream("streamId")
+            anyConstructed<ManualLayoutImpl>().unpinStream("streamId")
         }
     }
 
@@ -249,13 +208,7 @@ class StreamLayoutControllerTest {
     fun `clearPinnedStreams invokes manual layout clearPinnedStreams method`() = runTest(testDispatcher) {
         layoutController.clearPinnedStreams()
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).clearPinnedStreams()
+            anyConstructed<ManualLayoutImpl>().clearPinnedStreams()
         }
     }
 
@@ -263,13 +216,7 @@ class StreamLayoutControllerTest {
     fun `setFullscreenStream invokes manual layout setFullscreenStream method`() = runTest(testDispatcher) {
         layoutController.setFullscreenStream("streamId")
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).setFullscreenStream("streamId")
+            anyConstructed<ManualLayoutImpl>().setFullscreenStream("streamId")
         }
     }
 
@@ -277,13 +224,7 @@ class StreamLayoutControllerTest {
     fun `clearFullscreenStream invokes manual layout clearFullscreenStream method`() = runTest(testDispatcher) {
         layoutController.clearFullscreenStream()
         verify(exactly = 1) {
-            constructedWith<ManualLayoutImpl>(
-                EqMatcher(streamsFlow),
-                EqMatcher(layoutConstraintsFlow),
-                OfTypeMatcher<MosaicStreamItemsProvider>(MosaicStreamItemsProvider::class),
-                OfTypeMatcher<FeaturedStreamItemsProvider>(FeaturedStreamItemsProvider::class),
-                EqMatcher(testScope),
-            ).clearFullscreenStream()
+            anyConstructed<ManualLayoutImpl>().clearFullscreenStream()
         }
     }
 
@@ -317,7 +258,9 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is triggered when there is a screen share stream and the manual layout is active`() = runTest(testDispatcher) {
         layoutController.switchToManualMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+        layoutController.applyStreams(
+            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+        )
         verify(exactly = 1) {
             callUserMessageProviderMock.sendUserMessage(PinScreenshareMessage("1", "user1"))
         }
@@ -327,7 +270,9 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is not triggered when there is a camera stream and the manual layout is active`() = runTest(testDispatcher) {
         layoutController.switchToManualMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
+        layoutController.applyStreams(
+            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
+        )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
         }
@@ -337,7 +282,9 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is not triggered when there is only one screen share stream and the auto layout is active`() = runTest(testDispatcher) {
         layoutController.switchToAutoMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+        layoutController.applyStreams(
+            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+        )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
         }
@@ -347,7 +294,9 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is not triggered when there is a camera stream and the auto layout is active`() = runTest(testDispatcher) {
         layoutController.switchToAutoMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
+        layoutController.applyStreams(
+            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
+        )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
         }
@@ -357,10 +306,14 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is triggered when there is a new screen share stream and the auto layout is active`() = runTest(testDispatcher) {
         layoutController.switchToAutoMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
-        streamsFlow.value = listOf(
-            StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
-            StreamUi("2", username = "user2", video = VideoUi(id = "2", isScreenShare = true)),
+        layoutController.applyStreams(
+            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+        )
+        layoutController.applyStreams(
+            listOf(
+                StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
+                StreamUi("2", username = "user2", video = VideoUi(id = "2", isScreenShare = true)),
+            )
         )
         verify(exactly = 1) {
             callUserMessageProviderMock.sendUserMessage(PinScreenshareMessage("2", "user2"))
@@ -371,9 +324,11 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is triggered when a video-less stream transitions to a screen share video`() = runTest(testDispatcher) {
         layoutController.switchToManualMode()
 
-        streamsFlow.value = listOf(StreamUi("1", username = "user1"))
-        streamsFlow.value = listOf(
-            StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
+        layoutController.applyStreams(listOf(StreamUi("1", username = "user1")))
+        layoutController.applyStreams(
+            listOf(
+                StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
+            )
         )
         verify(exactly = 1) {
             callUserMessageProviderMock.sendUserMessage(PinScreenshareMessage("1", "user1"))
