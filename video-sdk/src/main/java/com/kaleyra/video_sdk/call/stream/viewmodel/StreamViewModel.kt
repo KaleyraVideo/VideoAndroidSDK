@@ -18,11 +18,16 @@ import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Com
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
+import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,15 +46,12 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class StreamViewModel(configure: suspend () -> Configuration) : BaseViewModel<StreamUiState>(configure) {
+internal class StreamViewModel(
+    configure: suspend () -> Configuration,
+    private val layoutController: StreamLayoutController
+) : BaseViewModel<StreamUiState>(configure) {
 
     override fun initialState() = StreamUiState()
-
-    private lateinit var layoutController: StreamLayoutController
-
-    private val streamLayoutConstraints: MutableStateFlow<StreamLayoutConstraints> = MutableStateFlow(StreamLayoutConstraints())
-
-    private val streamLayoutSettings: MutableStateFlow<StreamLayoutSettings> = MutableStateFlow(StreamLayoutSettings())
 
     private val availableInputs: Set<Input>?
         get() = call.getValue()?.inputs?.availableInputs?.value
@@ -60,20 +62,26 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
     init {
         viewModelScope.launch {
             val call = call.first()
-
             val companyIdFlow = company.flatMapLatest { it.id }
+
             call
                 .isGroupCall(companyIdFlow)
-                .onEach { isGroupCall -> streamLayoutSettings.update { it.copy(isGroupCall = isGroupCall) } }
+                .onEach { isGroupCall ->
+                    val currentSettings = layoutController.layoutSettings.value
+                    layoutController.applySettings(currentSettings.copy(isGroupCall = isGroupCall))
+                }
                 .launchIn(this)
 
-            layoutController = StreamLayoutControllerImpl(
-                // TODO filter local screen share out
-                layoutStreams = call.toStreamsUi(),
-                layoutConstraints = streamLayoutConstraints,
-                layoutSettings = streamLayoutSettings,
-                coroutineScope = this
-            )
+            call
+                .toStreamsUi()
+                .onEach { streams ->
+                    val controllerStreams = streams.filterNot { it.isLocalScreenShare() }
+                    layoutController.applyStreams(controllerStreams)
+                    _uiState.update { state ->
+                        state.copy(isScreenShareActive = controllerStreams.size != streams.size)
+                    }
+                }
+                .launchIn(this)
 
             val callStateFlow = call.toCallStateUi()
             combine(
@@ -124,62 +132,59 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
                 }
             }.launchIn(this)
 
-            // TODO add tests for this
             combine(
                 layoutController.streamItems,
-                streamLayoutConstraints
+                layoutController.layoutConstraints
                     .map { it.featuredStreamThreshold }
                     .distinctUntilChanged()
             ) { streamItems, featuredStreamThreshold ->
                 val hasReachedMaxPinnedStreams = streamItems.count { it.isPinned() } >= featuredStreamThreshold
                 _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = hasReachedMaxPinnedStreams)}
             }.launchIn(this)
+
+            layoutController.isInAutoMode
+                .onEach { isInAutoMode -> _uiState.update { it.copy(areStreamsInAutoMode = isInAutoMode) } }
+                .launchIn(this)
         }
     }
 
-    // TODO add test for this
     fun setStreamLayoutConstraints(
         mosaicStreamThreshold: Int,
         featuredStreamThreshold: Int,
         thumbnailStreamThreshold: Int
     ) {
-        streamLayoutConstraints.value = StreamLayoutConstraints(mosaicStreamThreshold, featuredStreamThreshold, thumbnailStreamThreshold)
+        layoutController.applyConstraints(
+            StreamLayoutConstraints(mosaicStreamThreshold, featuredStreamThreshold, thumbnailStreamThreshold)
+        )
     }
 
     fun switchToManualLayout() {
-        if (!::layoutController.isInitialized) return
-        layoutController.switchToManualLayout()
+        layoutController.switchToManualMode()
     }
 
     fun switchToAutoLayout() {
-        if (!::layoutController.isInitialized) return
-        layoutController.switchToAutoLayout()
+        layoutController.switchToAutoMode()
     }
 
     fun setFullscreenStream(streamId: String) {
-        if (!::layoutController.isInitialized) return
         layoutController.setFullscreenStream(streamId)
         viewModelScope.launch { userMessageChannel.send(FullScreenMessage.Enabled) }
     }
 
     fun clearFullscreenStream() {
-        if (!::layoutController.isInitialized) return
         layoutController.clearFullscreenStream()
         viewModelScope.launch { userMessageChannel.send(FullScreenMessage.Disabled) }
     }
 
     fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
-        if (!::layoutController.isInitialized) return false
         return layoutController.pinStream(streamId, prepend, force)
     }
 
     fun unpinStream(streamId: String) {
-        if (!::layoutController.isInitialized) return
         layoutController.unpinStream(streamId)
     }
 
     fun clearPinnedStreams() {
-        if (!::layoutController.isInitialized) return
         layoutController.clearPinnedStreams()
     }
 
@@ -228,7 +233,10 @@ internal class StreamViewModel(configure: suspend () -> Configuration) : BaseVie
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return StreamViewModel(configure) as T
+                    val layoutController = StreamLayoutControllerImpl(
+                        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+                    )
+                    return StreamViewModel(configure, layoutController) as T
                 }
             }
     }
