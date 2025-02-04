@@ -1,26 +1,20 @@
 package com.kaleyra.video_sdk.layout
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayoutImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import io.mockk.AllAnyMatcher
-import io.mockk.EqMatcher
-import io.mockk.OfTypeMatcher
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
-import io.mockk.spyk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.CoroutineScope
@@ -33,8 +27,10 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.lang.reflect.Field
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StreamLayoutControllerTest {
@@ -66,10 +62,18 @@ class StreamLayoutControllerTest {
         callUserMessageProviderMock = mockk(relaxed = true)
         every { anyConstructed<AutoLayoutImpl>().streamItems } returns MutableStateFlow(autoLayoutStreamItems)
         every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(manualLayoutStreamItems)
-        layoutController = StreamLayoutControllerImpl(
+        layoutController = StreamLayoutControllerImpl.getInstance(
             callUserMessageProvider = callUserMessageProviderMock,
             coroutineScope = testScope
         )
+    }
+
+    @After
+    fun tearDown() {
+        // Reset singleton instance
+        val instance: Field = StreamLayoutControllerImpl::class.java.getDeclaredField("instance")
+        instance.isAccessible = true
+        instance.set(null, null)
     }
 
     @Test
@@ -118,6 +122,32 @@ class StreamLayoutControllerTest {
         layoutController.switchToManualMode()
         layoutController.switchToAutoMode()
         assertEquals(true, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun `isPinnedStreamLimitReached is false when pinned streams items are less than featuredStreamThreshold`() = runTest(testDispatcher) {
+        every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "user1"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("2", StreamUi("2", "user2")),
+            )
+        )
+        layoutController.switchToManualMode()
+        layoutController.applyConstraints(StreamLayoutConstraints(featuredStreamThreshold = 2))
+        assertEquals(false, layoutController.isPinnedStreamLimitReached.first())
+    }
+
+    @Test
+    fun `isPinnedStreamLimitReached is true when pinned streams items are equals or more than featuredStreamThreshold`() = runTest(testDispatcher) {
+        every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "user1"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("2", StreamUi("2", "user2"), state = StreamItemState.Featured.Pinned),
+            )
+        )
+        layoutController.switchToManualMode()
+        layoutController.applyConstraints(StreamLayoutConstraints(featuredStreamThreshold = 1))
+        assertEquals(true, layoutController.isPinnedStreamLimitReached.first())
     }
 
     @Test

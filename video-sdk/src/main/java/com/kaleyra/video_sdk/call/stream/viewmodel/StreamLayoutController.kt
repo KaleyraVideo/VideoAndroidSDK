@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -57,10 +58,12 @@ internal interface StreamLayoutControllerInputs {
 }
 
 /**
- * `StreamLayoutControllerOutput` defines the output provided by a stream layout controller.
+ * `StreamLayoutControllerOutput` defines the output data provided by a stream layout controller.
  *
- * This interface specifies the data that a stream layout controller produces, which is the
- * list of `StreamItem`s to be displayed, and whether automatic layout mode is enabled.
+ * This interface specifies the information that a stream layout controller exposes to
+ * external components, allowing them to react to changes in the stream layout. This
+ * includes the list of stream items to be displayed, the current layout mode (automatic
+ * or manual), and whether the limit for pinned streams has been reached.
  */
 internal interface StreamLayoutControllerOutput {
     /**
@@ -68,6 +71,10 @@ internal interface StreamLayoutControllerOutput {
      *
      * This flow emits updates whenever the list of stream items changes, reflecting
      * changes in the input data, layout constraints, or user interactions.
+     *
+     * Each `StreamItem` represents a single stream to be displayed in the layout,
+     * and contains information about the stream's content, its position, and any
+     * special attributes (e.g., whether it's pinned or in fullscreen).
      */
     val streamItems: Flow<List<StreamItem>>
 
@@ -81,6 +88,20 @@ internal interface StreamLayoutControllerOutput {
      * This flow emits updates whenever the auto mode status changes.
      */
     val isInAutoMode: Flow<Boolean>
+
+    /**
+     * A flow indicating whether the limit for pinned streams has been reached.
+     *
+     * When `true`, the maximum number of streams that can be pinned in the layout
+     * has been reached. This typically means that no more streams can be pinned
+     * until one or more existing pinned streams are unpinned.
+     *
+     * When `false`, there is still capacity to pin additional streams.
+     *
+     * This flow emits updates whenever the pinned stream limit status changes, such as
+     * when a stream is pinned or unpinned, or when the layout constraints are updated.
+     */
+    val isPinnedStreamLimitReached: Flow<Boolean>
 }
 
 /**
@@ -217,10 +238,26 @@ internal interface StreamLayoutController : StreamLayoutControllerInputs, Stream
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class StreamLayoutControllerImpl(
+internal class StreamLayoutControllerImpl private constructor(
     override val callUserMessageProvider: CallUserMessagesProvider = CallUserMessagesProvider,
     coroutineScope: CoroutineScope
 ) : StreamLayoutController {
+
+    companion object {
+        @Volatile
+        private var instance: StreamLayoutControllerImpl? = null
+
+        fun getInstance(
+            callUserMessageProvider: CallUserMessagesProvider = CallUserMessagesProvider,
+            coroutineScope: CoroutineScope
+        ): StreamLayoutControllerImpl {
+            return instance ?: synchronized(this) {
+                val instance = StreamLayoutControllerImpl(callUserMessageProvider, coroutineScope)
+                this.instance = instance
+                instance
+            }
+        }
+    }
 
     /**
      * Represents the internal state of the controller.
@@ -268,12 +305,17 @@ internal class StreamLayoutControllerImpl(
      */
     private val _internalState: MutableStateFlow<ControllerState> = MutableStateFlow(ControllerState(autoLayout))
 
-    /**
+    /*
      * A flow of the list of stream items (`StreamItem`) derived from the current layout's stream items.
      */
     override val streamItems: Flow<List<StreamItem>> = _internalState.flatMapLatest { it.streamLayout.streamItems }
 
     override val isInAutoMode: Flow<Boolean> = _internalState.map { it.streamLayout is AutoLayout }
+
+    override val isPinnedStreamLimitReached: Flow<Boolean> = combine(
+        streamItems,
+        layoutConstraints.map { it.featuredStreamThreshold }
+    ) { streamItems, featuredStreamThreshold -> streamItems.count { it.isPinned() } >= featuredStreamThreshold }
 
     init {
         layoutStreams
