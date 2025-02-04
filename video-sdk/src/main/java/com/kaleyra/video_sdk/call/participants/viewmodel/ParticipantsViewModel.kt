@@ -52,7 +52,7 @@ internal class ParticipantsViewModel(
 
             inCallParticipantsFlow
                 .onEach { inCallParticipants ->
-                    _uiState.update { uiState -> uiState.copy(participantCount = inCallParticipants.size) }
+                    _uiState.update { uiState -> uiState.copy(joinedParticipantCount = inCallParticipants.size) }
                 }.launchIn(this)
 
             call
