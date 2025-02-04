@@ -141,10 +141,6 @@ internal class StreamViewModel(
                 val hasReachedMaxPinnedStreams = streamItems.count { it.isPinned() } >= featuredStreamThreshold
                 _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = hasReachedMaxPinnedStreams)}
             }.launchIn(this)
-
-            layoutController.isInAutoMode
-                .onEach { isInAutoMode -> _uiState.update { it.copy(areStreamsInAutoMode = isInAutoMode) } }
-                .launchIn(this)
         }
     }
 
@@ -156,14 +152,6 @@ internal class StreamViewModel(
         layoutController.applyConstraints(
             StreamLayoutConstraints(mosaicStreamThreshold, featuredStreamThreshold, thumbnailStreamThreshold)
         )
-    }
-
-    fun switchToManualLayout() {
-        layoutController.switchToManualMode()
-    }
-
-    fun switchToAutoLayout() {
-        layoutController.switchToAutoMode()
     }
 
     fun setFullscreenStream(streamId: String) {
@@ -233,7 +221,7 @@ internal class StreamViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val layoutController = StreamLayoutControllerImpl(
+                    val layoutController = StreamLayoutControllerImpl.getInstance(
                         coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
                     )
                     return StreamViewModel(configure, layoutController) as T

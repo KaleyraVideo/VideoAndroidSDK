@@ -17,7 +17,6 @@ import com.kaleyra.video_sdk.common.uistate.UiState
  * @property hasReachedMaxPinnedStreams `true` if the maximum number of pinned streams has
  * been reached, `false` otherwise.
  * @property isScreenShareActive `true` if screen sharing is currently active, `false` otherwise.
- * @property areStreamsInAutoMode `true` if the `streamItems` are being managed automatically by the system, `false` if they are being managed manually.
  * When in auto mode, the system may automatically populate, update, filter, or sort the `streamItems`.
  */
 @Immutable
@@ -26,5 +25,4 @@ internal data class StreamUiState(
     val streamItems: ImmutableList<StreamItem> = ImmutableList(),
     val hasReachedMaxPinnedStreams: Boolean = false,
     val isScreenShareActive: Boolean = false,
-    val areStreamsInAutoMode: Boolean = false,
 ) : UiState
