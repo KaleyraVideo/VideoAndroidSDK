@@ -132,15 +132,11 @@ internal class StreamViewModel(
                 }
             }.launchIn(this)
 
-            combine(
-                layoutController.streamItems,
-                layoutController.layoutConstraints
-                    .map { it.featuredStreamThreshold }
-                    .distinctUntilChanged()
-            ) { streamItems, featuredStreamThreshold ->
-                val hasReachedMaxPinnedStreams = streamItems.count { it.isPinned() } >= featuredStreamThreshold
-                _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = hasReachedMaxPinnedStreams)}
-            }.launchIn(this)
+            layoutController.isPinnedStreamLimitReached
+                .onEach { isPinnedStreamLimitReached ->
+                    _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = isPinnedStreamLimitReached)}
+                }
+                .launchIn(this)
         }
     }
 

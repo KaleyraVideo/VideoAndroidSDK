@@ -106,11 +106,8 @@ class StreamViewModelTest {
     }
 
     @Test
-    fun `hasReachedMaxPinnedStreams is false when pinned streams are less than featuredStreamThreshold constraint`() {
-        val layoutController = StreamLayoutControllerMock(
-            initialLayoutConstraints = StreamLayoutConstraints(featuredStreamThreshold = 3),
-            initialPinnedStreamIds = listOf("streamId1", "streamId2")
-        )
+    fun `hasReachedMaxPinnedStreams is false when layout controller isPinnedStreamLimitReached is true`() {
+        val layoutController = StreamLayoutControllerMock(initialIsPinnedStreamLimitReached = false)
         val viewModel = StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
             layoutController = layoutController
@@ -119,14 +116,8 @@ class StreamViewModelTest {
     }
 
     @Test
-    fun `hasReachedMaxPinnedStreams is true when pinned stream items reach featuredStreamThreshold constraint`() {
-        val layoutController = StreamLayoutControllerMock(
-            initialLayoutConstraints = StreamLayoutConstraints(featuredStreamThreshold = 2),
-            initialStreamItems = listOf(
-                StreamItem.Stream("1", StreamUi("1", "user1"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("2", StreamUi("2", "user2"), state = StreamItemState.Featured.Pinned),
-            )
-        )
+    fun `hasReachedMaxPinnedStreams is true when layout controller isPinnedStreamLimitReached is false`() {
+        val layoutController = StreamLayoutControllerMock(initialIsPinnedStreamLimitReached = true)
         val viewModel = StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
             layoutController = layoutController
