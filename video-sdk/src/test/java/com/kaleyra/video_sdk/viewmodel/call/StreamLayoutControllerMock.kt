@@ -19,6 +19,7 @@ internal class StreamLayoutControllerMock(
     initialFullscreenId: String? = null,
     initialStreamItems: List<StreamItem> = emptyList(),
     initialIsInAutoMode: Boolean = false,
+    initialIsPinnedStreamLimitReached: Boolean = false,
     override val callUserMessageProvider: CallUserMessagesProvider = mockk(relaxed = true),
 ) : StreamLayoutController {
 
@@ -36,6 +37,8 @@ internal class StreamLayoutControllerMock(
 
     private val _isInAutoMode: MutableStateFlow<Boolean> = MutableStateFlow(initialIsInAutoMode)
     override val isInAutoMode: Flow<Boolean> = _isInAutoMode
+
+    override val isPinnedStreamLimitReached: Flow<Boolean> = MutableStateFlow(initialIsPinnedStreamLimitReached)
 
     var fullscreenId: String? = initialFullscreenId
         private set

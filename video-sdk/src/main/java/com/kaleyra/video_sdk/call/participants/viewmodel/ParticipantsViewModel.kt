@@ -9,9 +9,16 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
+import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,8 +27,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
-    BaseViewModel<ParticipantsUiState>(configure) {
+internal class ParticipantsViewModel(
+    configure: suspend () -> Configuration,
+    private val layoutController: StreamLayoutController
+) : BaseViewModel<ParticipantsUiState>(configure) {
 
     override fun initialState() = ParticipantsUiState()
 
@@ -45,7 +54,43 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
                 .onEach { inCallParticipants ->
                     _uiState.update { uiState -> uiState.copy(participantCount = inCallParticipants.size) }
                 }.launchIn(this)
+
+            call
+                .toStreamsUi()
+                .onEach { streams ->
+                    _uiState.update { uiState -> uiState.copy(streams = streams.toImmutableList()) }
+                }
+                .launchIn(this)
+
+            layoutController.isPinnedStreamLimitReached
+                .onEach { isPinnedStreamLimitReached ->
+                    _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = isPinnedStreamLimitReached)}
+                }
+                .launchIn(this)
+
+            layoutController.isInAutoMode
+                .onEach { isInAutoMode ->
+                    val streamsLayout = if (isInAutoMode) StreamsLayout.Auto else StreamsLayout.Mosaic
+                    _uiState.update { it.copy(streamsLayout = streamsLayout) }
+                }
+                .launchIn(this)
         }
+    }
+
+    fun switchToManualLayout() {
+        layoutController.switchToManualMode()
+    }
+
+    fun switchToAutoLayout() {
+        layoutController.switchToAutoMode()
+    }
+
+    fun pinStream(streamId: String, prepend: Boolean = false, force: Boolean = false): Boolean {
+        return layoutController.pinStream(streamId, prepend, force)
+    }
+
+    fun unpinStream(streamId: String) {
+        layoutController.unpinStream(streamId)
     }
 
     // TODO remove code duplication in CallActionsViewModel
@@ -75,7 +120,10 @@ internal class ParticipantsViewModel(configure: suspend () -> Configuration) :
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return ParticipantsViewModel(configure) as T
+                    val layoutController = StreamLayoutControllerImpl.getInstance(
+                        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+                    )
+                    return ParticipantsViewModel(configure, layoutController) as T
                 }
             }
     }
