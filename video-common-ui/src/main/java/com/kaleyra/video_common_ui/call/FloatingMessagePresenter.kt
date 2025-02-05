@@ -1,4 +1,4 @@
-package com.kaleyra.video_common_ui.common
+package com.kaleyra.video_common_ui.call
 
 import com.kaleyra.video.utils.logger.PHONE_BOX
 import com.kaleyra.video_common_ui.model.FloatingMessage

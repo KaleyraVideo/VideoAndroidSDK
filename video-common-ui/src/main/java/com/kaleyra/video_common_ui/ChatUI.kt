@@ -16,17 +16,16 @@
 
 package com.kaleyra.video_common_ui
 
-import android.os.Parcelable
-import androidx.annotation.Keep
-import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.Conference
+import com.kaleyra.video.conversation.Chat
+import com.kaleyra.video_common_ui.chat.ChatUIButtonsProvider
+import com.kaleyra.video_common_ui.chat.DefaultChatUIButtonsProvider
+import com.kaleyra.video_common_ui.common.UIButton
 import com.kaleyra.video_common_ui.utils.extensions.mapToSharedFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.parcelize.Parcelize
 
 /**
  * The chat UI
@@ -38,10 +37,16 @@ import kotlinx.parcelize.Parcelize
  */
 class ChatUI(
     chat: Chat,
+    @Deprecated(
+        message = "Action mutable state flow is deprecated and it will be removed in a further release.\nPlease update ChatUI Buttons via buttonsProvider callback.",
+        replaceWith = ReplaceWith("buttonsProvider = { chatButtons ->\nchatButtons\n}"))
     val actions: MutableStateFlow<Set<Action>> = MutableStateFlow(Action.default),
     private val chatActivityClazz: Class<*>,
-    private val chatCustomNotificationActivityClazz: Class<*>? = null
-) : Chat by chat {
+    private val chatCustomNotificationActivityClazz: Class<*>? = null,
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    chatUIButtonsProvider: ChatUIButtonsProvider = DefaultChatUIButtonsProvider(actions, scope),
+) : Chat by chat,
+    ChatUIButtonsProvider by chatUIButtonsProvider {
 
     private var chatScope = CoroutineScope(Dispatchers.IO)
 
@@ -51,9 +56,58 @@ class ChatUI(
     override val messages: SharedFlow<MessagesUI> = chat.messages.mapToSharedFlow(chatScope) { MessagesUI(it, chatActivityClazz, chatCustomNotificationActivityClazz) }
 
     /**
+     * The chat button sealed class
+     */
+    sealed class Button : UIButton {
+        /**
+         * @suppress
+         */
+        companion object Collections {
+
+            /**
+             * A set of all tools
+             */
+            val all by lazy {
+                setOf(
+                    Participants,
+                    Call(preferredType = com.kaleyra.video.conference.Call.PreferredType.audioOnly()),
+                    Call(preferredType = com.kaleyra.video.conference.Call.PreferredType.audioUpgradable()),
+                    Call(preferredType = com.kaleyra.video.conference.Call.PreferredType.audioVideo())
+                )
+            }
+
+            val default by lazy {
+                setOf(
+                    Participants,
+                    Call(preferredType = com.kaleyra.video.conference.Call.PreferredType.audioUpgradable()),
+                    Call(preferredType = com.kaleyra.video.conference.Call.PreferredType.audioVideo())
+                )
+            }
+        }
+
+        /**
+         * The create call button
+         *
+         * @property preferredType The call type
+         * @property maxDuration Optional max duration of the call in seconds
+         * @property recordingType Optional call recording type, default recording type is set to Call.Recording.Type.Never
+         * @constructor
+         */
+        data class Call(
+            val preferredType: com.kaleyra.video.conference.Call.PreferredType = com.kaleyra.video.conference.Call.PreferredType.audioVideo(),
+            val maxDuration: Long? = 0,
+            val recordingType: com.kaleyra.video.conference.Call.Recording.Type? = com.kaleyra.video.conference.Call.Recording.Type.Never
+        ) : Button()
+
+        /**
+         * Show participants button
+         */
+        data object Participants : Button()
+    }
+
+    /**
      * The chat action sealed class
      */
-    @Keep
     sealed class Action {
         /**
          * @suppress
@@ -93,7 +147,7 @@ class ChatUI(
             val preferredType: Call.PreferredType = Call.PreferredType.audioVideo(),
             val maxDuration: Long? = 0,
             val recordingType: Call.Recording.Type? = Call.Recording.Type.Never
-            ) : Action()
+        ) : Action()
 
         /**
          * Show participants action

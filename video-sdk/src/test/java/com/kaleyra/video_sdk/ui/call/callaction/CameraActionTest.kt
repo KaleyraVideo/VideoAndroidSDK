@@ -53,8 +53,8 @@ class CameraActionTest {
     }
 
     @Test
-    fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+    fun cameraActionNotChecked_labelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_disable)
         composeTestRule.setContent {
             CameraAction(
                 label = true,
@@ -64,6 +64,20 @@ class CameraActionTest {
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
+
+    @Test
+    fun cameraActionIsChecked_labelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_enable)
+        composeTestRule.setContent {
+            CameraAction(
+                label = true,
+                checked = true,
+                onCheckedChange = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
 
     @Test
     fun testWarningBadge() {

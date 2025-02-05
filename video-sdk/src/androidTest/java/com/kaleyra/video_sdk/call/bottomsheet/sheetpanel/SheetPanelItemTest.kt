@@ -11,10 +11,12 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel.SheetPanelItem
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -24,7 +26,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class SheetPanelItemTest {
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -98,4 +99,38 @@ class SheetPanelItemTest {
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
+    @Test
+    fun micActionNotToggled_muteTextIsDisplayed() {
+        callAction = MicAction(isToggled = false)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_action_mic_mute)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun micActionToggled_unMuteTextIsDisplayed() {
+        callAction = MicAction(isToggled = true)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_action_mic_unmute)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraActionNotToggled_disableTextIsDisplayed() {
+        callAction = CameraAction(isToggled = false)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_disable)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun cameraActionToggled_enableTextIsDisplayed() {
+        callAction = CameraAction(isToggled = true)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_enable)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun hangUpAction_endTextIsDisplayed() {
+        callAction = HangUpAction()
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up_action)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
 }

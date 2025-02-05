@@ -67,10 +67,9 @@ import com.kaleyra.video.Synchronization
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video.conference.Call.Recording
+import com.kaleyra.video.conference.Conference
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.NavBackComponent
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_utils.ContextRetainer
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -318,6 +317,9 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             val callConfiguration: CallConfiguration = result.getParcelable("call_configuration") ?: return@setFragmentResultListener
             DefaultConfigurationManager.saveDefaultCallConfiguration(callConfiguration)
             saveAppConfiguration(result.getSerializable("app_configuration") as Configuration)
+            KaleyraVideo.conference.settings.camera =
+                if (callConfiguration.options.backCameraAsDefault) Conference.Settings.Camera.Back
+                else Conference.Settings.Camera.Front
         }
     }
 

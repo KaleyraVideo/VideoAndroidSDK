@@ -86,7 +86,7 @@ jobs:
     uses: KaleyraVideo/VideoHybridNativeBridge/.github/workflows/update_native_dep.yml@main
     with: 
       release_version: ${{ inputs.specific_release_version || needs.update_sdk_version.outputs.new_version }}
-      release_type: ${{ inputs.release_version }}
+      release_type: "patch"
       platform: 'android'
     secrets: inherit
 

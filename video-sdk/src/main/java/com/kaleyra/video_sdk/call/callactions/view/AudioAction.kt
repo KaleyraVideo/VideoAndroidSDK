@@ -54,3 +54,15 @@ internal fun AudioActionPreview() {
         }
     }
 }
+
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+internal fun DisabledAudioActionPreview() {
+    KaleyraTheme {
+        Surface {
+            AudioAction(AudioDeviceUi.LoudSpeaker, {}, enabled = false)
+        }
+    }
+}

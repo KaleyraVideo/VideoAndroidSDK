@@ -181,6 +181,7 @@ internal fun VCallScreen(
                                 onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
+                            inputPermissions = inputPermissions,
                             onAskInputPermissions = onAskInputPermissions,
                             modifier = Modifier.testTag(PanelTestTag)
                         )

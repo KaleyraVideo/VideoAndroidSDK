@@ -25,7 +25,7 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-internal class AudioCallSessionAudioProximityDelegateTest {
+internal class AudioCallSessionAudioOutputProximityDelegateTest {
 
     private val audioCallSessionMock = mockk<AudioCallSessionInstance>(relaxed = true)
 

@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
@@ -60,7 +61,8 @@ class ConferenceUI(
     /**
      * The call actions that will be set on every call
      */
-    var callActions: Set<CallUI.Action> = CallUI.Action.default
+    @Deprecated("CallActions have been deprecated and will be removed in a further release. Please add Call Buttons to the CallUI object in order to add/remove call actions to a call.")
+    var callActions: Set<CallUI.Action>? = null
 
     /**
      * The connection service option enabled by default
@@ -76,6 +78,7 @@ class ConferenceUI(
         configureCallSounds(logger, conferenceDispatcher)
         configureScreenShareOverlayProducer(conferenceDispatcher)
         configureCallActivityShow(conferenceDispatcher)
+        bindCallButtons(conferenceDispatcher)
     }
 
     internal fun dispose() {
@@ -113,8 +116,7 @@ class ConferenceUI(
         callUIMap[call.id] ?: CallUI(
             call = call,
             activityClazz = callActivityClazz,
-            actions = MutableStateFlow(callActions)
-        ).apply { callUIMap[id] = this }
+            actions = callActions?.let { MutableStateFlow(it) }
+            ).apply { callUIMap[id] = this }
     }
-
 }

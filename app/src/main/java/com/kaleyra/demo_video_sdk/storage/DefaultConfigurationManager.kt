@@ -21,7 +21,6 @@ import android.content.Context
 import com.kaleyra.demo_video_sdk.ui.custom_views.CallConfiguration
 import com.kaleyra.video_utils.ContextRetainer.Companion.context
 
-
 object DefaultConfigurationManager {
 
     private const val preferenceKey = "DefaultConfigurationPrefs"
@@ -29,7 +28,11 @@ object DefaultConfigurationManager {
 
     private val prefs by lazy { context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE) }
 
-    fun getDefaultCallConfiguration(): CallConfiguration = prefs.getString(callConfigurationKey, null)?.let { CallConfiguration.decode(it) } ?: CallConfiguration()
+    fun getDefaultCallConfiguration(): CallConfiguration {
+       return prefs.getString(callConfigurationKey, null)?.let {
+            kotlin.runCatching { CallConfiguration.decode(it) }.getOrNull()
+        } ?: CallConfiguration()
+    }
 
     @SuppressLint("ApplySharedPref")
     fun saveDefaultCallConfiguration(callConfiguration: CallConfiguration) = prefs.edit().apply {

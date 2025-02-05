@@ -50,7 +50,7 @@ import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class AudioOutputViewModelTest {
+class AudioOutputOutputViewModelTest {
 
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()

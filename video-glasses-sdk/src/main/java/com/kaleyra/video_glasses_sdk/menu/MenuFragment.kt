@@ -27,16 +27,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.kaleyra.video_common_ui.CallUI.Action
-import com.kaleyra.video_common_ui.CallUI.Action.ChangeVolume
-import com.kaleyra.video_common_ui.CallUI.Action.ChangeZoom
-import com.kaleyra.video_common_ui.CallUI.Action.OpenChat
-import com.kaleyra.video_common_ui.CallUI.Action.OpenWhiteboard
-import com.kaleyra.video_common_ui.CallUI.Action.ShowParticipants
-import com.kaleyra.video_common_ui.CallUI.Action.SwitchCamera
-import com.kaleyra.video_common_ui.CallUI.Action.ToggleCamera
-import com.kaleyra.video_common_ui.CallUI.Action.ToggleFlashlight
-import com.kaleyra.video_common_ui.CallUI.Action.ToggleMicrophone
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_glasses_sdk.bottom_navigation.BottomNavigationView
 import com.kaleyra.video_glasses_sdk.call.CallAction
@@ -220,18 +211,36 @@ internal class MenuFragment : BaseFragment(), TiltListener {
         hiddenActions.value = if (hide) hiddenActions.value + action else hiddenActions.value - action
     }
 
-    private fun getActions(actions: Set<Action>): List<CallAction> = CallAction.getActions(
+    private fun getActions(actions: Set<CallUI.Button>): List<CallAction> = CallAction.getActions(
         requireContext(),
-        withMicrophone = actions.any { it is ToggleMicrophone && viewModel.preferredCallType.value?.hasAudio() == true },
-        withCamera = actions.any { it is ToggleCamera && viewModel.preferredCallType.value?.hasVideo() == true },
-        withSwitchCamera = actions.any { it is SwitchCamera && viewModel.preferredCallType.value?.hasVideo() == true },
-        withFlashLight = actions.any { it is ToggleFlashlight },
-        withVolume = actions.any { it is ChangeVolume },
-        withZoom = actions.any { it is ChangeZoom },
-        withParticipants = actions.any { it is ShowParticipants },
-        withChat = actions.any { it is OpenChat },
-        withWhiteboard = actions.any { it is OpenWhiteboard }
-    )
+        withMicrophone = actions.any { it is CallUI.Button.Microphone && viewModel.preferredCallType.value?.hasAudio() == true },
+        withCamera = actions.any { it is CallUI.Button.Camera && viewModel.preferredCallType.value?.hasVideo() == true },
+        withSwitchCamera = actions.any { it is CallUI.Button.FlipCamera && viewModel.preferredCallType.value?.hasVideo() == true },
+        withFlashLight = actions.any { it is CallUI.Button.FlashLight },
+        withVolume = actions.any { it is CallUI.Button.Volume },
+        withZoom = actions.any { it is CallUI.Button.Zoom },
+        withParticipants = actions.any { it is CallUI.Button.Participants },
+        withChat = actions.any { it is CallUI.Button.Chat },
+        withWhiteboard = actions.any { it is CallUI.Button.Whiteboard }
+    ).toMutableList().apply actions@ {
+        actions.filterIsInstance<CallUI.Button.Custom>().forEach { customButton ->
+            this@actions.add(CallAction.CUSTOM(customButton.config.text ?: "", customButton.config.action))
+        }
+    }.sortedBy { action ->
+        when(action) {
+            is CallAction.MICROPHONE -> actions.firstOrNull { it is CallUI.Button.Microphone }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.CAMERA -> actions.firstOrNull { it is CallUI.Button.Camera }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.SWITCHCAMERA -> actions.firstOrNull { it is CallUI.Button.FlipCamera }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.FLASHLIGHT -> actions.firstOrNull { it is CallUI.Button.FlashLight }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.VOLUME -> actions.firstOrNull { it is CallUI.Button.Volume }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.ZOOM -> actions.firstOrNull { it is CallUI.Button.Zoom }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.PARTICIPANTS -> actions.firstOrNull { it is CallUI.Button.Participants }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.CHAT -> actions.firstOrNull { it is CallUI.Button.Chat }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.WHITEBOARD -> actions.firstOrNull { it is CallUI.Button.Whiteboard }?.let { actions.indexOf(it) } ?: 0
+            is CallAction.CUSTOM -> actions.firstOrNull { it is CallUI.Button.Custom }?.let { actions.indexOf(it) } ?: 0
+            else -> 0
+        }
+    }
 
     override fun onTap() = onTap(itemAdapter!!.getAdapterItem(currentMenuItemIndex).action)
 
@@ -271,6 +280,10 @@ internal class MenuFragment : BaseFragment(), TiltListener {
         is CallAction.WHITEBOARD -> true.also {
             onSwipeDown()
             (requireActivity() as GlassCallActivity).rvStreams.smoothScrollToPosition(0)
+        }
+        is CallAction.CUSTOM -> true.also {
+            onSwipeDown()
+            action.action()
         }
         else -> false
     }

@@ -77,16 +77,6 @@ internal object CallActionDefaults {
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface
 
-    val DisabledContainerColor: Color
-        @Composable
-        @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.surfaceContainerHighest.copy(.38f)
-
-    val DisabledContentColor: Color
-        @Composable
-        @ReadOnlyComposable
-        get() = MaterialTheme.colorScheme.onSurface.copy(.38f)
-
     val CheckedContainerColor: Color
         @Composable
         @ReadOnlyComposable
@@ -101,6 +91,16 @@ internal object CallActionDefaults {
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.primary
+
+    val DisabledContainerColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = ContainerColor.copy(.38f)
+
+    val DisabledContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = ContentColor.copy(.38f)
 
     @Composable
     fun iconButtonColors(
@@ -122,11 +122,15 @@ internal object CallActionDefaults {
         contentColor: Color = ContentColor,
         checkedContainerColor: Color = CheckedContainerColor,
         checkedContentColor: Color = CheckedContentColor,
+        disabledContainerColor: Color = DisabledContainerColor,
+        disabledContentColor: Color = DisabledContentColor,
     ): IconToggleButtonColors = IconButtonDefaults.filledIconToggleButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
         checkedContainerColor = checkedContainerColor,
-        checkedContentColor = checkedContentColor
+        checkedContentColor = checkedContentColor,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor
     )
 
     @Composable

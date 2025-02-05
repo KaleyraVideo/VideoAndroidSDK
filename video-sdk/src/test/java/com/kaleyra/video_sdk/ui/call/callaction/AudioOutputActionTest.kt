@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.callaction
+package com.kaleyra.video_sdk.ui.call.callaction
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
@@ -17,8 +17,11 @@ import com.kaleyra.video_sdk.call.callactions.view.AudioAction
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class AudioActionTest {
+@RunWith(RobolectricTestRunner::class)
+class AudioOutputActionTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()

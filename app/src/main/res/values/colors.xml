@@ -20,4 +20,5 @@
     <color name="stateDisconnecting">#92979D</color>
     <color name="stateDisconnected">#92979D</color>
     <color name="ongoingCallLabel">#1A7924</color>
+    <color name="customButtonColor">#2196F3</color>
 </resources>

@@ -171,6 +171,8 @@ internal class ChatFragment : BaseFragment(), TiltListener {
             viewModel.chat.onEach { chat ->
                 unreadMessagesIds =
                     chat.messages.replayCache.firstOrNull()?.other?.filter { it.state.value is Message.State.Received }?.map { it.id } ?: listOf()
+
+                if (chat.buttons.value.isEmpty()) binding.kaleyraBottomNavigation.hideSecondItem()
             }.launchIn(this@repeatOnStarted)
 
             viewModel.chat
@@ -225,6 +227,7 @@ internal class ChatFragment : BaseFragment(), TiltListener {
     override fun onTap() = true.also {
         val currentCall = viewModel.call.replayCache.firstOrNull()
         if (currentCall != null && currentCall.state.value !is Call.State.Disconnected) return@also
+        if (viewModel.chat.replayCache.firstOrNull()?.buttons?.value?.isEmpty() == true) return@also
         val action = ChatFragmentDirections.actionChatFragmentToChatMenuFragment(args.enableTilt)
         findNavController().navigate(action)
     }

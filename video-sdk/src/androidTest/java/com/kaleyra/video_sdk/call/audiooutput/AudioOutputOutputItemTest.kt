@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.ui.call.audiooutput
+package com.kaleyra.video_sdk.call.audiooutput
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
@@ -24,6 +24,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
@@ -33,10 +34,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class AudioOutputItemTest {
+@RunWith(AndroidJUnit4::class)
+class AudioOutputOutputItemTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()

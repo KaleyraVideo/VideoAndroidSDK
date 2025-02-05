@@ -89,5 +89,8 @@
     <string name="missed_call" translatable="false">Missed call</string>
     <string name="callback" translatable="false">Call back</string>
     <string name="chatback" translatable="false">Chat</string>
+    <string name="open_url_custom_button" translatable="false">Open url custom button</string>
+    <string name="open_url_floating_message_title" translatable="false">Open a sample url</string>
+    <string name="open_url_floating_message_action" translatable="false">Open</string>
 
 </resources>

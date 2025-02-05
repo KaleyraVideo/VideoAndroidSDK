@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Test
 
-internal class ConnectionAudioProximityDelegateTest {
+internal class ConnectionAudioOutputProximityDelegateTest {
 
     private val connection = mockk<KaleyraCallConnection>(relaxed = true)
 

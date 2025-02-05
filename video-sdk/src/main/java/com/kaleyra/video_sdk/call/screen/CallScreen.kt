@@ -95,7 +95,7 @@ internal fun CallScreen(
     isInPipMode: Boolean,
     enterPip: () -> Unit,
     onPipAspectRatio: (Rational) -> Unit,
-    onDisplayMode: (CallUI.DisplayMode) -> Unit,
+    onPresentationMode: (CallUI.PresentationMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onUsbCameraConnected: (Boolean) -> Unit,
@@ -208,8 +208,8 @@ internal fun CallScreen(
         }
     }
 
-    LaunchedEffect(onDisplayMode) {
-        viewModel.setOnDisplayMode(onDisplayMode)
+    LaunchedEffect(onPresentationMode) {
+        viewModel.setOnDisplayMode(onPresentationMode)
     }
 
     LaunchedEffect(onUsbCameraConnected) {

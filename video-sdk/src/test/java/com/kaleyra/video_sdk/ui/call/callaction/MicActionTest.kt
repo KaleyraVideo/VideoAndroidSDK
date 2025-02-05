@@ -54,12 +54,25 @@ class MicActionTest {
     }
 
     @Test
-    fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+    fun micActionIsNotChecked_labelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_action_mic_mute)
         composeTestRule.setContent {
             MicAction(
                 label = true,
                 checked = false,
+                onCheckedChange = {}
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun micActionIsChecked_labelIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_action_mic_unmute)
+        composeTestRule.setContent {
+            MicAction(
+                label = true,
+                checked = true,
                 onCheckedChange = {}
             )
         }

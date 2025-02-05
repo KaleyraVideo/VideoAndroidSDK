@@ -74,6 +74,8 @@ class FileShareMapperTest {
 
     private val sharedFileMock2 = mockk<SharedFile>()
 
+    private val mySharedFileMock = mockk<SharedFile>()
+
     private val sharedFileUi1 = SharedFileUi(
         id = "sharedFileId",
         name = "sharedFileName",
@@ -133,6 +135,16 @@ class FileShareMapperTest {
             every { uri } returns uriMock
             every { state } returns MutableStateFlow(SharedFile.State.Pending)
             every { sender } returns senderMock2
+        }
+
+        with(mySharedFileMock) {
+            every { id } returns "sharedFileMe"
+            every { name } returns "sharedFileName3"
+            every { size } returns 2048L
+            every { creationTime } returns 2345L
+            every { uri } returns uriMock
+            every { state } returns MutableStateFlow(SharedFile.State.Pending)
+            every { sender } returns meMock
         }
     }
 

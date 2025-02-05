@@ -93,10 +93,10 @@ class ChatViewModelTest {
     @Test
     fun getActions_getActionsInstance() = runTest {
         advanceUntilIdle()
-        val actions = setOf(ChatUI.Action.ShowParticipants)
-        every { chat.actions } returns MutableStateFlow(actions)
+        val actions = setOf(ChatUI.Button.Participants)
+        every { chat.buttons } returns MutableStateFlow(actions)
         viewModel.setChat("loggedUserId", "chatId")
-        assertEquals(viewModel.actions.first(), actions)
+        assertEquals(viewModel.buttons.first(), actions)
     }
 
     @Test

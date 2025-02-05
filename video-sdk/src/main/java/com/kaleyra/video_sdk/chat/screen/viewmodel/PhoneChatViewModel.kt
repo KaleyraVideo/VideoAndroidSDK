@@ -33,7 +33,7 @@ import com.kaleyra.video_sdk.chat.appbar.model.ConnectionState
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationItem
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
 import com.kaleyra.video_sdk.chat.mapper.CallStateMapper.hasActiveCall
-import com.kaleyra.video_sdk.chat.mapper.ChatActionsMapper.mapToChatActions
+import com.kaleyra.video_sdk.chat.mapper.ChatButtonsMapper.mapToChatActions
 import com.kaleyra.video_sdk.chat.mapper.ConversationStateMapper.toConnectionState
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.findFirstUnreadMessageId
 import com.kaleyra.video_sdk.chat.mapper.MessagesMapper.mapToConversationItems
@@ -185,7 +185,7 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
                 .launchIn(this)
         }
 
-        actions
+        buttons
             // mapNotNull instead of map because sometimes is received a null value causing crash
             .mapNotNull {
                 it.mapToChatActions(call = { preferredType, maxDuration, recordingType ->

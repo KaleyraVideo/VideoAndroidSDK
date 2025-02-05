@@ -20,15 +20,16 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 
-internal object ChatActionsMapper {
-    internal fun Set<ChatUI.Action>.mapToChatActions(
+internal object ChatButtonsMapper {
+
+    internal fun Set<ChatUI.Button>.mapToChatActions(
         call: (
             Call.PreferredType,
             Long?,
             Call.Recording.Type?) -> Unit
     ): Set<ChatAction> {
         val actionsSet = mutableSetOf<ChatAction>()
-        val actions = this@mapToChatActions.filterIsInstance<ChatUI.Action.CreateCall>()
+        val actions = this@mapToChatActions.filterIsInstance<ChatUI.Button.Call>()
         actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
             actionsSet.add(ChatAction.AudioCall {
                 call(action.preferredType, action.maxDuration, action.recordingType)

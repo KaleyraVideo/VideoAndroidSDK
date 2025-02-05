@@ -108,7 +108,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
             val call = call.first()
 
             val availableCallActionsFlow = call
-                .toCallActions(company.flatMapLatest { it.id })
+                .toCallActions()
                 .shareInEagerly(this)
 
             val isCallActiveFlow = call.state
@@ -166,12 +166,12 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                     when (action) {
                         is MicAction -> action.copy(
                             isToggled = !isMyMicEnabled,
-                            isEnabled = isMeParticipantsInitialed && !isCallEnded
+                            isEnabled = call.preferredType.value.hasAudio() && isMeParticipantsInitialed && !isCallEnded
                         )
 
                         is CameraAction -> action.copy(
                             isToggled = !isMyCameraEnabled,
-                            isEnabled = isMeParticipantsInitialed && !isCallEnded
+                            isEnabled = call.preferredType.value.hasVideo() && isMeParticipantsInitialed && !isCallEnded
                         )
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
@@ -191,7 +191,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             isEnabled = isCallActive && !isCallEnded
                         )
 
-                        is VirtualBackgroundAction -> action.copy(isToggled = isVirtualBackgroundEnabled, isEnabled = !isCallEnded)
+                        is VirtualBackgroundAction -> action.copy(isToggled = call.preferredType.value.hasVideo() && isVirtualBackgroundEnabled, isEnabled = call.preferredType.value.hasVideo() && !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
                         is HangUpAction -> action.copy(isEnabled = !isCallEnded)

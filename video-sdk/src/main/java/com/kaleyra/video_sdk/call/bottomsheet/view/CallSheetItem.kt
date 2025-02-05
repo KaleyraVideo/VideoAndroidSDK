@@ -9,6 +9,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -51,6 +52,7 @@ internal fun CallSheetItem(
     when(val ca = callAction) {
         is HangUpAction -> {
             HangUpAction(
+                label = label,
                 enabled = ca.isEnabled,
                 onClick = onHangUpClick,
                 extended = extended,
@@ -65,6 +67,7 @@ internal fun CallSheetItem(
             MicAction(
                 checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
+                label = label,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onMicToggle,
@@ -79,6 +82,7 @@ internal fun CallSheetItem(
             CameraAction(
                 checked = ca.isToggled || shouldToggleAction,
                 enabled = ca.isEnabled,
+                label = label,
                 warning = shouldShowPermissionWarning || ca.state == InputCallAction.State.Warning,
                 error = shouldShowPermissionError || ca.state == InputCallAction.State.Error,
                 onCheckedChange = onCameraToggle,
@@ -145,6 +149,17 @@ internal fun CallSheetItem(
                 checked = ca.isToggled,
                 onCheckedChange = onVirtualBackgroundToggle,
                 modifier = modifier
+            )
+        }
+        is CustomAction -> {
+            com.kaleyra.video_sdk.call.callactions.view.CustomAction(
+                label = label,
+                enabled = ca.isEnabled,
+                badgeText = ca.notificationCount.takeIf { it != 0 }?.toString(),
+                icon = ca.icon,
+                buttonTexts = ca.buttonTexts,
+                buttonColors = ca.buttonColors,
+                onClick = ca.onClick,
             )
         }
     }
