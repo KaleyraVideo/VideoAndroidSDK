@@ -188,7 +188,7 @@ class ParticipantsViewModelTest {
     }
 
     @Test
-    fun noInCallParticipants_participantsCountStateIsZero() = runTest {
+    fun noInCallParticipants_joinedParticipantsCountStateIsZero() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
 
         val viewModel = spyk(
@@ -199,11 +199,11 @@ class ParticipantsViewModelTest {
         )
         advanceUntilIdle()
 
-        assertEquals(0, viewModel.uiState.first().participantCount)
+        assertEquals(0, viewModel.uiState.first().joinedParticipantCount)
     }
 
     @Test
-    fun inCallParticipants_participantsCountStateIsUpdated() = runTest {
+    fun inCallParticipants_joinedParticipantsCountStateIsUpdated() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(otherMock1, otherMock2))
 
         val viewModel = spyk(
@@ -214,7 +214,7 @@ class ParticipantsViewModelTest {
         )
         advanceUntilIdle()
 
-        assertEquals(2, viewModel.uiState.first().participantCount)
+        assertEquals(2, viewModel.uiState.first().joinedParticipantCount)
     }
 
     @Test
