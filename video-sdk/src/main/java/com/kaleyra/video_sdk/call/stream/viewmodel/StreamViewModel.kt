@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.Conference
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -61,9 +63,12 @@ internal class StreamViewModel(
 
     init {
         viewModelScope.launch {
+            val conference = conference.first()
             val call = call.first()
             val companyIdFlow = company.flatMapLatest { it.id }
 
+            val defaultCameraIsBack = conference.settings.camera == Conference.Settings.Camera.Back
+            layoutController.applySettings(StreamLayoutSettings(defaultCameraIsBack = defaultCameraIsBack))
             call
                 .isGroupCall(companyIdFlow)
                 .onEach { isGroupCall ->

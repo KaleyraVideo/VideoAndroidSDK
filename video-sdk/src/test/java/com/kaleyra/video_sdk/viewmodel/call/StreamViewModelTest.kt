@@ -4,6 +4,7 @@ import android.net.Uri
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
+import com.kaleyra.video.conference.Conference
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.conference.StreamView
@@ -98,6 +99,7 @@ class StreamViewModelTest {
         mockkObject(AudioMapper)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
+        every { conferenceMock.settings } returns mockk(relaxed = true)
     }
 
     @After
@@ -128,15 +130,13 @@ class StreamViewModelTest {
     @Test
     fun `isGroupCall layout settings is true when the call is a many to many`() {
         every { callMock.isGroupCall(any()) } returns flowOf(true)
-        val layoutController = StreamLayoutControllerMock(
-            initialLayoutSettings = StreamLayoutSettings(defaultCameraIsBack = true),
-        )
+        val layoutController = StreamLayoutControllerMock()
         StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
             layoutController = layoutController
         )
         assertEquals(
-            StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true),
+            StreamLayoutSettings(isGroupCall = true),
             layoutController.layoutSettings.value
         )
     }
@@ -144,15 +144,62 @@ class StreamViewModelTest {
     @Test
     fun `isGroupCall layout settings is false when the call is a one to one`() {
         every { callMock.isGroupCall(any()) } returns flowOf(false)
-        val layoutController = StreamLayoutControllerMock(
-            initialLayoutSettings = StreamLayoutSettings(defaultCameraIsBack = true),
+        val layoutController = StreamLayoutControllerMock()
+        StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
         )
+        assertEquals(
+            StreamLayoutSettings(isGroupCall = false),
+            layoutController.layoutSettings.value
+        )
+    }
+
+    @Test
+    fun `defaultCameraIsBack setting is preserved on isGroupCall setting update`() {
+        val isGroupCallFlow = MutableStateFlow(false)
+        every { conferenceMock.settings } returns Conference.Settings(camera = Conference.Settings.Camera.Back)
+        every { callMock.isGroupCall(any()) } returns isGroupCallFlow
+        val layoutController = StreamLayoutControllerMock()
         StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
             layoutController = layoutController
         )
         assertEquals(
             StreamLayoutSettings(isGroupCall = false, defaultCameraIsBack = true),
+            layoutController.layoutSettings.value
+        )
+        isGroupCallFlow.value = true
+        assertEquals(
+            StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true),
+            layoutController.layoutSettings.value
+        )
+    }
+
+    @Test
+    fun `defaultCameraIsBack is true when the conference camera settings is the back camera`() = runTest {
+        every { conferenceMock.settings } returns Conference.Settings(camera = Conference.Settings.Camera.Back)
+        val layoutController = StreamLayoutControllerMock()
+        StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(
+            StreamLayoutSettings(defaultCameraIsBack = true),
+            layoutController.layoutSettings.value
+        )
+    }
+
+    @Test
+    fun `defaultCameraIsBack is false when the conference camera settings is the front camera`() = runTest {
+        every { conferenceMock.settings } returns Conference.Settings(camera = Conference.Settings.Camera.Front)
+        val layoutController = StreamLayoutControllerMock()
+        StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(
+            StreamLayoutSettings(defaultCameraIsBack = false),
             layoutController.layoutSettings.value
         )
     }
