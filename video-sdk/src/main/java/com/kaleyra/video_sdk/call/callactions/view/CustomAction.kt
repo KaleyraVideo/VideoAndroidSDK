@@ -15,7 +15,7 @@ internal fun CustomAction(
     buttonColors: CustomCallAction.ButtonsColors? = null,
     enabled: Boolean = true,
     label: Boolean = false,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     CallAction(
         modifier = modifier,
@@ -23,7 +23,7 @@ internal fun CustomAction(
         contentDescription = buttonTexts.contentDescription ?: buttonTexts.text ?: "",
         enabled = enabled,
         buttonText = buttonTexts.text,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         label = if (label) buttonTexts.text else null,
         buttonColor = buttonColors?.buttonColor?.let { Color(it) } ?: CallActionDefaults.ContainerColor,
         buttonContentColor = buttonColors?.buttonContentColor?.let { Color(it) } ?: CallActionDefaults.ContentColor,

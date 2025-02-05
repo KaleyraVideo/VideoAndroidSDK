@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -162,7 +163,7 @@ internal fun HSheetContent(
     inputPermissions: InputPermissions = InputPermissions(),
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
-    val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }
+    var moreNotificationCount by remember { mutableIntStateOf(0) }
 
     ReversibleRow(modifier, reverseLayout = true) {
         when {
@@ -173,7 +174,7 @@ internal fun HSheetContent(
 
             showMoreAction -> {
                 MoreAction(
-                    badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
+                    badgeCount = moreNotificationCount,
                     checked = isMoreToggled,
                     onCheckedChange = onMoreToggle,
                 )
@@ -184,6 +185,7 @@ internal fun HSheetContent(
         HSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = callActions.count() > itemsPlaced
+                moreNotificationCount = computeMoreActionNotificationCount(callActions, itemsPlaced)
                 onActionsPlaced(itemsPlaced)
             },
             maxItems = maxActions - when {

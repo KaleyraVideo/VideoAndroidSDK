@@ -136,6 +136,8 @@
 
     <string name="kaleyra_call_drag_to_expand">Drag to expand</string>
 
+    <string name="kaleyra_call_badge_count_overflow" translatable="false">99+</string>
+
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Type your message here</string>
     <string name="kaleyra_chat_channel_loading">Loading &#8230;</string>

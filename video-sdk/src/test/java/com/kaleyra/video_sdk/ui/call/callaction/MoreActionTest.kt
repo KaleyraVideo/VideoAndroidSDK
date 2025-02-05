@@ -53,14 +53,14 @@ class MoreActionTest {
 
     @Test
     fun testBadgeIsDisplayed() {
-        val badgeText = "badgeText"
+        val badgeCount = 10
         composeTestRule.setContent {
             MoreAction(
                 onCheckedChange = {},
                 checked = false,
-                badgeText = badgeText,
+                badgeCount = badgeCount,
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(badgeCount.toString()).assertIsDisplayed()
     }
 }

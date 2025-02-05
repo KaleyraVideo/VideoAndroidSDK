@@ -46,6 +46,7 @@ import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -608,15 +609,16 @@ class VSheetContentTest {
     }
 
     @Test
-    fun testMoreActionNotificationCountIsDisplayed() {
+    fun testMoreActionNotificationCountIsDisplayed() = runTest {
         composeTestRule.setContent {
             VSheetContent(
                 modifier = Modifier.height(150.dp),
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 2),
-                        WhiteboardAction(notificationCount = 3),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 3),
+                        ChatAction(notificationCount = 5),
                         FlipCameraAction()
                     )
                 ),
@@ -637,7 +639,7 @@ class VSheetContentTest {
                 onMoreToggle = { }
             )
         }
-        composeTestRule.onNodeWithText("5").assertIsDisplayed()
+        composeTestRule.onNodeWithText("8").assertIsDisplayed()
     }
 
     @Test
@@ -648,8 +650,8 @@ class VSheetContentTest {
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 0),
-                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction()
                     )
                 ),
@@ -671,6 +673,41 @@ class VSheetContentTest {
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun overNinetyNineNotificationCount_moreActionNotificationCountIsNinetyNinePlus() = runTest {
+        composeTestRule.setContent {
+            VSheetContent(
+                modifier = Modifier.height(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 2),
+                        FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 50),
+                        ChatAction(notificationCount = 50),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

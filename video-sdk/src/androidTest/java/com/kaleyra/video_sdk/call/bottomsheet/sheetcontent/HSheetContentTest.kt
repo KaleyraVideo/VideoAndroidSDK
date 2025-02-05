@@ -666,8 +666,9 @@ class HSheetContentTest {
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 2),
-                        WhiteboardAction(notificationCount = 3),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 3),
+                        ChatAction(notificationCount = 5),
                         FlipCameraAction()
                     )
                 ),
@@ -689,7 +690,7 @@ class HSheetContentTest {
                 onMoreToggle = { }
             )
         }
-        composeTestRule.onNodeWithText("5").assertIsDisplayed()
+        composeTestRule.onNodeWithText("8").assertIsDisplayed()
     }
 
     @Test
@@ -700,8 +701,8 @@ class HSheetContentTest {
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 0),
-                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction()
                     )
                 ),
@@ -724,6 +725,42 @@ class HSheetContentTest {
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun overNinetyNineNotificationCount_moreActionNotificationCountIsNinetyNinePlus() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.width(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 2),
+                        FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 50),
+                        ChatAction(notificationCount = 50),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

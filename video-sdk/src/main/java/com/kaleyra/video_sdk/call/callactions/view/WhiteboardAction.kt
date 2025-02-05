@@ -16,7 +16,7 @@ internal fun WhiteboardAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     label: Boolean = false,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_whiteboard)
     CallAction(
@@ -26,7 +26,7 @@ internal fun WhiteboardAction(
         enabled = enabled,
         buttonText = text,
         label = if (label) text else null,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         onClick = onClick
     )
 }
@@ -48,7 +48,7 @@ internal fun WhiteboardActionPreview() {
 internal fun WhiteboardActionBadgePreview() {
     KaleyraTheme {
         Surface {
-            WhiteboardAction({}, badgeText = "1")
+            WhiteboardAction({}, badgeCount = 1)
         }
     }
 }

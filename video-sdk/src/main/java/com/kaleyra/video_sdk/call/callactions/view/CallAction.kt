@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,14 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
 import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import kotlin.math.roundToInt
@@ -156,7 +154,7 @@ internal fun CallToggleAction(
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgePainter: Painter? = null,
     badgeDescription: String? = null,
-    badgeText: String? = null,
+    badgeCount: Int = 0,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
@@ -166,7 +164,7 @@ internal fun CallToggleAction(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
         badgePainter = badgePainter,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         badgeDescription = badgeDescription,
         badgeBackgroundColor = badgeBackgroundColor,
         badgeContentColor = badgeContentColor,
@@ -211,7 +209,7 @@ internal fun CallAction(
     buttonContentPadding: PaddingValues = CallActionDefaults.ButtonContentPadding,
     badgePainter: Painter? = null,
     badgeDescription: String? = null,
-    badgeText: String? = null,
+    badgeCount: Int = 0,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
@@ -221,7 +219,7 @@ internal fun CallAction(
         modifier = modifier,
         label = label.takeIf { !isButtonTextDisplayed },
         badgePainter = badgePainter,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         badgeDescription = badgeDescription,
         badgeBackgroundColor = badgeBackgroundColor,
         badgeContentColor = badgeContentColor,
@@ -261,7 +259,7 @@ private fun CallActionLayout(
     iconButton: @Composable () -> Unit,
     label: String? = null,
     badgePainter: Painter? = null,
-    badgeText: String? = null,
+    badgeCount: Int = 0,
     badgeDescription: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
@@ -308,15 +306,15 @@ private fun CallActionLayout(
                     IntOffset(offset, -offset)
                 }
             }
-        if (badgeText != null) {
-            CallActionTextBadge(
-                text = badgeText,
+        if (badgeCount != 0) {
+            CallActionBadgeCount(
+                count = badgeCount,
                 containerColor = badgeBackgroundColor,
                 contentColor = badgeContentColor,
                 modifier = badgeModifier
             )
         } else if (badgePainter != null) {
-            CallActionIconBadge(
+            CallActionBadgeIcon(
                 painter = badgePainter,
                 contentDescription = badgeDescription,
                 containerColor = badgeBackgroundColor,
@@ -365,8 +363,8 @@ private fun ButtonLayout(
 }
 
 @Composable
-internal fun CallActionTextBadge(
-    text: String,
+internal fun CallActionBadgeCount(
+    count: Int,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(containerColor),
@@ -377,15 +375,22 @@ internal fun CallActionTextBadge(
         contentColor = contentColor
     ) {
         Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = text,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 4.dp)
+            ,
+            text = when {
+                count > 99 -> stringResource(R.string.kaleyra_call_badge_count_overflow)
+                else -> count.toString()
+            },
+            maxLines = 1,
             style = MaterialTheme.typography.labelMedium.clearFontPadding()
         )
     }
 }
 
 @Composable
-internal fun CallActionIconBadge(
+internal fun CallActionBadgeIcon(
     painter: Painter,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
@@ -422,7 +427,8 @@ private fun CallActionBadge(
     ) {
         Box(
             modifier = Modifier
-                .size(CallActionDefaults.BadgeSize)
+                .defaultMinSize(CallActionDefaults.BadgeSize)
+                .height(CallActionDefaults.BadgeSize)
                 .align(Alignment.CenterHorizontally)
         ) {
             content()

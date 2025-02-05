@@ -12,6 +12,8 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -29,7 +31,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class SheetPanelItemTest {
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -136,5 +137,63 @@ class SheetPanelItemTest {
         callAction = HangUpAction()
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up_action)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun chatActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        callAction = ChatAction()
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun chatActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        callAction = ChatAction(notificationCount = 3)
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun fileShareActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        callAction = FileShareAction()
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun fileShareActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        callAction = FileShareAction(notificationCount = 3)
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun whiteboardActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        callAction = WhiteboardAction()
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun whiteboardActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        callAction = WhiteboardAction(notificationCount = 3)
+        composeTestRule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun customActionBadgeCountIsZero_actionBadgeDoesNotExists() {
+        callAction = CustomAction(
+            icon = R.drawable.ic_kaleyra_call_sheet_error,
+            buttonTexts = CustomCallAction.ButtonTexts(text = "testText", "descr"),
+            onClick = { },
+            notificationCount = 0
+        )
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun customActionBadgeCountIsHigherThanZero_actionBadgeIsDisplayed() {
+        callAction = CustomAction(
+            icon = R.drawable.ic_kaleyra_call_sheet_error,
+            buttonTexts = CustomCallAction.ButtonTexts(text = "testText", "descr"),
+            onClick = { },
+            notificationCount = 5
+        )
+        composeTestRule.onNodeWithText("5").assertIsDisplayed()
     }
 }
