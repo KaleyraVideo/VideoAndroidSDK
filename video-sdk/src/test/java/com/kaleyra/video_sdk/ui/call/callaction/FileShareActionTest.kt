@@ -62,14 +62,14 @@ class FileShareActionTest {
 
     @Test
     fun testBadgeIsDisplayed() {
-        val badgeText = "badgeText"
+        val badgeCount = 10
         composeTestRule.setContent {
             FileShareAction(
                 onClick = {},
-                badgeText = badgeText,
+                badgeCount = badgeCount,
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(badgeCount.toString()).assertIsDisplayed()
     }
 
     @Test

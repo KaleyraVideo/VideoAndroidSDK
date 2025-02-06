@@ -28,7 +28,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.callactions.view.CallActionTextBadge
+import com.kaleyra.video_sdk.call.callactions.view.CallActionBadgeCount
 import com.kaleyra.video_sdk.call.callactions.view.audioPainterFor
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
@@ -58,7 +58,7 @@ internal fun SheetPanelItem(
         )
         Spacer(modifier = Modifier.weight(1f))
         if (callAction is NotifiableCallAction && callAction.notificationCount != 0) {
-            CallActionTextBadge(text = "${callAction.notificationCount}")
+            CallActionBadgeCount(count = callAction.notificationCount)
         }
     }
 }

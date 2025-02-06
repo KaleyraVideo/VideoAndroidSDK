@@ -16,7 +16,7 @@ internal fun FileShareAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     label: Boolean = false,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_file_share)
     CallAction(
@@ -26,7 +26,7 @@ internal fun FileShareAction(
         buttonText = text,
         enabled = enabled,
         label = if (label) text else null,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         onClick = onClick
     )
 }
@@ -48,7 +48,7 @@ internal fun FileShareActionPreview() {
 internal fun FileShareActionBadgePreview() {
     KaleyraTheme {
         Surface {
-            FileShareAction({}, badgeText = "1")
+            FileShareAction({}, badgeCount = 1)
         }
     }
 }

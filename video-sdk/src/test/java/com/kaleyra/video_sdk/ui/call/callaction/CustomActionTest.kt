@@ -113,16 +113,16 @@ class CustomActionTest {
 
     @Test
     fun testBadgeIsDisplayed() {
-        val badgeText = "badgeText"
+        val badgeCount = 10
         composeTestRule.setContent {
             CustomAction(
                 icon = R.drawable.ic_kaleyra_call_sheet_error,
 
                 buttonTexts = CustomCallAction.ButtonTexts("test", null),
                 onClick = {},
-                badgeText = badgeText,
+                badgeCount = badgeCount,
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(badgeCount.toString()).assertIsDisplayed()
     }
 }

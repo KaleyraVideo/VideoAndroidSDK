@@ -110,7 +110,7 @@ internal fun CallSheetItem(
             ChatAction(
                 label = label,
                 enabled = ca.isEnabled,
-                badgeText = ca.notificationCount.takeIf { it != 0 }?.toString(),
+                badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
                 onClick = onChatClick,
                 modifier = modifier
             )
@@ -119,7 +119,7 @@ internal fun CallSheetItem(
             FileShareAction(
                 label = label,
                 enabled = ca.isEnabled,
-                badgeText = ca.notificationCount.takeIf { it != 0 }?.toString(),
+                badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
                 onClick = onFileShareClick,
                 modifier = modifier
             )
@@ -137,7 +137,7 @@ internal fun CallSheetItem(
             WhiteboardAction(
                 label = label,
                 enabled = ca.isEnabled,
-                badgeText = ca.notificationCount.takeIf { it != 0 }?.toString(),
+                badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
                 onClick = onWhiteboardClick,
                 modifier = modifier
             )
@@ -155,7 +155,7 @@ internal fun CallSheetItem(
             com.kaleyra.video_sdk.call.callactions.view.CustomAction(
                 label = label,
                 enabled = ca.isEnabled,
-                badgeText = ca.notificationCount.takeIf { it != 0 }?.toString(),
+                badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
                 icon = ca.icon,
                 buttonTexts = ca.buttonTexts,
                 buttonColors = ca.buttonColors,

@@ -87,8 +87,8 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = { overflowedActions = it },
                 onModularComponentRequest = {},
-                modifier = Modifier.width(300.dp),
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
+                modifier = Modifier.width(300.dp)
             )
         }
 
@@ -107,7 +107,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -131,7 +131,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -159,7 +159,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -187,7 +187,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -215,7 +215,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -243,7 +243,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -268,7 +268,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -295,7 +295,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -319,7 +319,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = {},
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -344,7 +344,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -369,7 +369,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -395,7 +395,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -420,7 +420,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -509,7 +509,7 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareUserChoiceWhenNotEnabled_onModularComponentRequestScreenShare() {
+    fun userClicksScreenUserChoiceShareWhenNotEnabled_onModularComponentRequestScreenShare() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.UserChoice()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns false
         var component: ModularComponent? = null
@@ -521,7 +521,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -535,7 +535,7 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareAppWhenNotEnabled_onModularComponentScreenShareNotRequested() {
+    fun userClicksScreenAppShareWhenNotEnabled_onModularScreenShareComponentNotRequested() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.App()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns false
         var component: ModularComponent? = null
@@ -547,7 +547,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = {}
+                onAskInputPermissions = {},
             )
         }
 
@@ -561,20 +561,21 @@ class HSheetContentTest {
     }
 
     @Test
-    fun userClicksScreenShareWholeDeviceWhenNotEnabled_onModularComponentScreenShareNotRequested() {
+    fun userClicksScreenWholeDeviceShareWhenNotEnabled_onModularScreenShareComponentNotRequested() {
         callActionsUiState.value = CallActionsUiState(actionList = listOf(ScreenShareAction.WholeDevice()).toImmutableList())
         every { callActionsViewModel.tryStopScreenShare() } returns false
         var component: ModularComponent? = null
-        var onAskingInputPermissions = false
+        var onAaskingInputPermissions = false
         composeTestRule.setContent {
             HSheetContent(
                 viewModel = callActionsViewModel,
+                screenShareViewModel = mockk(relaxed = true),
                 isLargeScreen = false,
                 isMoreToggled = false,
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = { onAskingInputPermissions = true }
+                onAskInputPermissions = { onAaskingInputPermissions = false },
             )
         }
 
@@ -584,7 +585,7 @@ class HSheetContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        assertEquals(true, onAskingInputPermissions)
+        assertEquals(true, onAaskingInputPermissions)
         TestCase.assertEquals(null, component)
     }
 
@@ -668,8 +669,9 @@ class HSheetContentTest {
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 2),
-                        WhiteboardAction(notificationCount = 3),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 3),
+                        ChatAction(notificationCount = 5),
                         FlipCameraAction()
                     )
                 ),
@@ -691,7 +693,7 @@ class HSheetContentTest {
                 onMoreToggle = { }
             )
         }
-        composeTestRule.onNodeWithText("5").assertIsDisplayed()
+        composeTestRule.onNodeWithText("8").assertIsDisplayed()
     }
 
     @Test
@@ -702,8 +704,8 @@ class HSheetContentTest {
                 callActions = ImmutableList(
                     listOf(
                         FileShareAction(notificationCount = 0),
-                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 0),
                         FlipCameraAction()
                     )
                 ),
@@ -726,6 +728,42 @@ class HSheetContentTest {
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun overNinetyNineNotificationCount_moreActionNotificationCountIsNinetyNinePlus() {
+        composeTestRule.setContent {
+            HSheetContent(
+                modifier = Modifier.width(150.dp),
+                callActions = ImmutableList(
+                    listOf(
+                        FileShareAction(notificationCount = 2),
+                        FlipCameraAction(),
+                        WhiteboardAction(notificationCount = 50),
+                        ChatAction(notificationCount = 50),
+                        FlipCameraAction()
+                    )
+                ),
+                showAnswerAction = false,
+                isMoreToggled = false,
+                isLargeScreen = false,
+                onActionsPlaced = { },
+                onAnswerClick = { },
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onVirtualBackgroundToggle = { },
+                onMoreToggle = { }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

@@ -15,13 +15,13 @@ internal fun MoreAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     CallToggleAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_more),
         contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_hide_actions else R.string.kaleyra_call_sheet_description_more_actions),
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         checked = checked,
         onCheckedChange = onCheckedChange,
     )

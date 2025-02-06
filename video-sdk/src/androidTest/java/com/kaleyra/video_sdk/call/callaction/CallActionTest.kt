@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.callaction
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -7,8 +8,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -22,7 +22,7 @@ import org.junit.Test
 class CallActionTest {
 
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun testLabelIsDisplayed() {
@@ -152,17 +152,32 @@ class CallActionTest {
     }
 
     @Test
-    fun testBadgeTextIsDisplayed() {
-        val badgeText = "badgeText"
+    fun testBadgeCountIsDisplayed() {
+        val badgeCount = 10
         composeTestRule.setContent {
             CallAction(
                 icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
                 contentDescription = "",
                 onClick = {},
-                badgeText = badgeText,
+                badgeCount = badgeCount,
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(badgeCount.toString()).assertIsDisplayed()
+    }
+
+    @Test
+    fun testBadgeCountOverflow() {
+        val badgeCount = 130
+        composeTestRule.setContent {
+            CallAction(
+                icon = painterResource(id = R.drawable.ic_kaleyra_mic_on),
+                contentDescription = "",
+                onClick = {},
+                badgeCount = badgeCount,
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

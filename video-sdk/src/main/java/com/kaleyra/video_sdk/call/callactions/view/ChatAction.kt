@@ -16,7 +16,7 @@ internal fun ChatAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     label: Boolean = false,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     val text = stringResource(id = R.string.kaleyra_call_sheet_chat)
     CallAction(
@@ -26,7 +26,7 @@ internal fun ChatAction(
         buttonText = text,
         enabled = enabled,
         label = if (label) text else null,
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         onClick = onClick
     )
 }
@@ -48,7 +48,7 @@ internal fun ChatActionPreview() {
 internal fun ChatActionBadgePreview() {
     KaleyraTheme {
         Surface {
-            ChatAction({}, badgeText = "1")
+            ChatAction({}, badgeCount = 1)
         }
     }
 }
