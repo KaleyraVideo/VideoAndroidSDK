@@ -15,9 +15,6 @@
  */
 package com.kaleyra.demo_video_sdk.ui.custom_views
 
-import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,7 +24,6 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -40,7 +36,6 @@ import com.kaleyra.demo_video_sdk.R
 import com.kaleyra.demo_video_sdk.storage.DefaultConfigurationManager
 import com.kaleyra.demo_video_sdk.ui.custom_views.CallOptionsDialogView.CallOptions
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_utils.ContextRetainer
 
 class CustomConfigurationDialog : DialogFragment() {
 
@@ -156,7 +151,7 @@ class CustomConfigurationDialog : DialogFragment() {
         actions += CallUI.Button.audioCall
         if (optionView.isChatChecked) actions += CallUI.Button.Chat
         if (optionView.isFileShareChecked) actions += CallUI.Button.FileShare
-        if (optionView.isScreenShareChecked) actions += CallUI.Button.ScreenShare.UserChoice
+        if (optionView.isScreenShareChecked) actions += CallUI.Button.ScreenShare()
         if (optionView.isWhiteboardChecked) actions += CallUI.Button.Whiteboard
         if (optionView.isCameraEffectsChecked) actions += CallUI.Button.CameraEffects
         val configActions = actions.mapToConfigActions().toMutableSet()

@@ -32,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -117,10 +116,10 @@ object CallExtensions {
         CallUI.Action.HangUp -> CallUI.Button.HangUp
         CallUI.Action.OpenChat.Full, CallUI.Action.OpenChat.ViewOnly -> CallUI.Button.Chat
         CallUI.Action.OpenWhiteboard.Full, CallUI.Action.OpenWhiteboard.ViewOnly -> CallUI.Button.Whiteboard
-        CallUI.Action.ScreenShare.App -> CallUI.Button.ScreenShare.App
-        CallUI.Action.ScreenShare -> CallUI.Button.ScreenShare.UserChoice
-        CallUI.Action.ScreenShare.UserChoice -> CallUI.Button.ScreenShare.UserChoice
-        CallUI.Action.ScreenShare.WholeDevice -> CallUI.Button.ScreenShare.WholeDevice
+        CallUI.Action.ScreenShare.App -> CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
+        CallUI.Action.ScreenShare,
+        CallUI.Action.ScreenShare.UserChoice -> CallUI.Button.ScreenShare()
+        CallUI.Action.ScreenShare.WholeDevice -> CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen)
         CallUI.Action.ShowParticipants -> CallUI.Button.Participants
         CallUI.Action.SwitchCamera -> CallUI.Button.FlipCamera
         CallUI.Action.ToggleCamera -> CallUI.Button.Camera

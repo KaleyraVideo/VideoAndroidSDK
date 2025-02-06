@@ -152,24 +152,21 @@ sealed class ConfigAction : Parcelable {
 
 fun Set<CallUI.Button>.mapToConfigActions(): Set<ConfigAction> {
     return mapNotNull { action ->
-        when (action) {
-            CallUI.Button.AudioOutput -> ConfigAction.Audio
-            CallUI.Button.Volume -> ConfigAction.ChangeVolume
-            CallUI.Button.Zoom -> ConfigAction.ChangeZoom
-            CallUI.Button.FileShare -> ConfigAction.FileShare
-            CallUI.Button.HangUp -> ConfigAction.HangUp
-            CallUI.Button.Chat -> ConfigAction.OpenChat
-            CallUI.Button.Whiteboard -> ConfigAction.OpenWhiteboard
-            CallUI.Button.ScreenShare.UserChoice,
-            CallUI.Button.ScreenShare.App,
-            CallUI.Button.ScreenShare.WholeDevice -> ConfigAction.ScreenShare
-
-            CallUI.Button.Participants -> ConfigAction.ShowParticipants
-            CallUI.Button.FlipCamera -> ConfigAction.SwitchCamera
-            CallUI.Button.Camera -> ConfigAction.ToggleCamera
-            CallUI.Button.FlashLight -> ConfigAction.ToggleFlashlight
-            CallUI.Button.Microphone -> ConfigAction.ToggleMicrophone
-            CallUI.Button.CameraEffects -> ConfigAction.CameraEffects
+        when {
+            action is CallUI.Button.AudioOutput -> ConfigAction.Audio
+            action is CallUI.Button.Volume -> ConfigAction.ChangeVolume
+            action is CallUI.Button.Zoom -> ConfigAction.ChangeZoom
+            action is CallUI.Button.FileShare -> ConfigAction.FileShare
+            action is CallUI.Button.HangUp -> ConfigAction.HangUp
+            action is CallUI.Button.Chat -> ConfigAction.OpenChat
+            action is CallUI.Button.Whiteboard -> ConfigAction.OpenWhiteboard
+            action is CallUI.Button.ScreenShare -> ConfigAction.ScreenShare
+            action is CallUI.Button.Participants -> ConfigAction.ShowParticipants
+            action is CallUI.Button.FlipCamera -> ConfigAction.SwitchCamera
+            action is CallUI.Button.Camera -> ConfigAction.ToggleCamera
+            action is CallUI.Button.FlashLight -> ConfigAction.ToggleFlashlight
+            action is CallUI.Button.Microphone -> ConfigAction.ToggleMicrophone
+            action is CallUI.Button.CameraEffects -> ConfigAction.CameraEffects
             else -> null
         }
     }.toSet()
@@ -185,7 +182,7 @@ fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
             ConfigAction.HangUp -> CallUI.Button.HangUp
             ConfigAction.OpenChat -> CallUI.Button.Chat
             ConfigAction.OpenWhiteboard -> CallUI.Button.Whiteboard
-            ConfigAction.ScreenShare -> CallUI.Button.ScreenShare.UserChoice
+            ConfigAction.ScreenShare -> CallUI.Button.ScreenShare()
             ConfigAction.ShowParticipants -> CallUI.Button.Participants
             ConfigAction.SwitchCamera -> CallUI.Button.FlipCamera
             ConfigAction.ToggleCamera -> CallUI.Button.Camera
@@ -220,7 +217,7 @@ fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
                     },
                     appearance = CallUI.Button.Custom.Configuration.Appearance(
                         background = ContextCompat.getColor(ContextRetainer.context, R.color.customButtonColor),
-                        tint = Color.WHITE
+                        content = Color.WHITE
                     )
                 )
             )

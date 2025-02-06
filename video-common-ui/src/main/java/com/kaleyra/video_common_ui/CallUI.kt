@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_common_ui
 
+import androidx.annotation.ColorInt
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallUIButtonsProvider
 import com.kaleyra.video_common_ui.call.CallUIFloatingMessagePresenter
@@ -223,7 +224,7 @@ class CallUI(
                     CameraEffects,
                     AudioOutput,
                     FileShare,
-                    ScreenShare.UserChoice,
+                    ScreenShare(),
                     Zoom,
                     Volume,
                     FlashLight,
@@ -296,22 +297,29 @@ class CallUI(
         /**
          * Screen share request button
          */
-        sealed class ScreenShare : Button() {
+        data class ScreenShare(val onTap: ScreenShareTapAction = ScreenShareTapAction.AskUser) : Button() {
 
             /**
-             * Screensharing UserChoice button will capture only app screens
+             * Class representing the action invoked once the ScreenShare button is tapped
              */
-            data object UserChoice : ScreenShare()
+            sealed class ScreenShareTapAction {
 
-            /**
-             * Screensharing App button will capture only app screens
-             */
-            data object App : ScreenShare()
+                /**
+                 * ScreenShare RecordAppOnly tap action is a class used to represent the action that will capture only the current application
+                 */
+                data object RecordAppOnly : ScreenShareTapAction()
 
-            /**
-             * Screensharing WholeDevice button will capture all device's screens
-             */
-            data object WholeDevice : ScreenShare()
+                /**
+                 * ScreenShare RecordEntireScreen tap action is a class used to represent the action that will capture entire screen
+                 * and all the applications that are displayed
+                 */
+                data object RecordEntireScreen : ScreenShareTapAction()
+
+                /**
+                 * ScreenShare AskUser tap action is a class used to represent the action that will capture only app screens
+                 */
+                data object AskUser : ScreenShareTapAction()
+            }
         }
 
         /**
@@ -374,7 +382,7 @@ class CallUI(
             /**
              * Custom Call Button Configuration
              * @property icon Int Custom Button icon resource identifier
-             * @property text String? Optional Custom Button text
+             * @property text String Custom Button text
              * @property action Function0<Unit> Custom Button click action
              * @property badgeValue Int Custom Button badge value
              * @property isEnabled Boolean Custom Button enable state representation, true to flag the button as enabled, false otherwise
@@ -384,7 +392,7 @@ class CallUI(
              */
             class Configuration(
                 icon: Int,
-                text: String? = null,
+                text: String,
                 action: () -> Unit,
                 badgeValue: Int = 0,
                 isEnabled: Boolean = true,
@@ -516,6 +524,10 @@ class CallUI(
     /**
      * Call Action triggered by the UI
      */
+    @Deprecated(
+        message = "Action is deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+        replaceWith = ReplaceWith("CallUI.Button")
+    )
     sealed class Action {
 
         /**
@@ -526,6 +538,10 @@ class CallUI(
             /**
              * A set of all tools
              */
+            @Deprecated(
+                message = "`all` actions are deprecated and will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Collections.all")
+            )
             val all by lazy {
                 setOf(
                     HangUp,
@@ -550,6 +566,10 @@ class CallUI(
             /**
              * Default set of Call Actions
              */
+            @Deprecated(
+                message = "`default` actions are deprecated and will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Collections.audioCall")
+            )
             val default by lazy {
                 setOf(
                     HangUp,
@@ -566,115 +586,199 @@ class CallUI(
         /**
          * Change volume action
          */
+        @Deprecated(
+            message = "ChangeVolume action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Volume")
+        )
         data object ChangeVolume : Action()
 
         /**
          * Toggle camera action
          */
+        @Deprecated(
+            message = "ToggleCamera action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Camera")
+        )
         data object ToggleCamera : Action()
 
         /**
          * Toggle microphone action
          */
+        @Deprecated(
+            message = "Microphone action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Microphone")
+        )
         data object ToggleMicrophone : Action()
 
         /**
          * Switch camera action
          */
+        @Deprecated(
+            message = "SwitchCamera action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.FlipCamera")
+        )
         data object SwitchCamera : Action()
 
         /**
          * HangUp action
          */
+        @Deprecated(
+            message = "HangUp action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.HangUp")
+        )
         data object HangUp : Action()
 
         /**
          * File Share open action
          */
+        @Deprecated(
+            message = "FileShare action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.FileShare")
+        )
         data object FileShare : Action()
 
         /**
          * Screen share request action
          */
+        @Deprecated(
+            message = "ScreenShare action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.ScreenShare()")
+        )
         sealed class ScreenShare : Action() {
 
             /**
              * User will be prompted to select in-app screensharing or whole device screensharing
              */
             @Deprecated(
-                message = "Screenshare Action is deprecated and it will be removed in a further release.\n" +
-                    "Please update using ScreenShare.UserChoice or ScreenShare.App or ScreenShare.WholeDevice.",
-                replaceWith = ReplaceWith("UserChoice"))
+                message = "ScreenShare Action is deprecated and it will be removed in a further release.",
+                replaceWith = ReplaceWith("CallUI.Button.Screenshare()")
+            )
             companion object : ScreenShare()
 
             /**
              * Screensharing will capture only app screens
              */
+            @Deprecated(
+                message = "ScreenShare UserChoice Action is deprecated and it will be removed in a further release.",
+                replaceWith = ReplaceWith("CallUI.Button.Screenshare(onTap: ScreenShareTapAction.AskUser)")
+            )
             data object UserChoice : ScreenShare()
 
             /**
              * Screensharing will capture only app screens
              */
+            @Deprecated(
+                message = "ScreenShare App Action is deprecated and it will be removed in a further release.",
+                replaceWith = ReplaceWith("CallUI.Button.Screenshare(onTap: ScreenShareTapAction.RecordAppOnly)")
+            )
             data object App : ScreenShare()
 
             /**
              * Screensharing will capture all device's screens
              */
+            @Deprecated(
+                message = "WholeDevice App Action is deprecated and it will be removed in a further release.",
+                replaceWith = ReplaceWith("CallUI.Button.Screenshare(onTap: ScreenShareTapAction.RecordEntireScreen)")
+            )
             data object WholeDevice : ScreenShare()
         }
 
         /**
          * Camera Effects action
          */
+        @Deprecated(
+            message = "CameraEffects action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.CameraEffects")
+        )
         data object CameraEffects : Action()
 
         /**
          * Audio switches displaying request
          */
+        @Deprecated(
+            message = "Audio action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.AudioOutput")
+        )
         data object Audio : Action()
 
         /**
          * Change zoom action
          */
+        @Deprecated(
+            message = "ChangeZoom action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Zoom")
+        )
         data object ChangeZoom : Action()
 
         /**
          * Toggle flashlight action
          */
+        @Deprecated(
+            message = "ToggleFlashLight action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.FlashLight")
+        )
         data object ToggleFlashlight : Action()
 
         /**
          * Show participants action
          */
+        @Deprecated(
+            message = "ShowParticipants action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Participants")
+        )
         data object ShowParticipants : Action()
 
         /**
          * Open chat action
          */
+        @Deprecated(
+            message = "OpenChat action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Chat")
+        )
         sealed class OpenChat : Action() {
             /**
              * Open chat action with view only
              */
+            @Deprecated(
+                message = "OpenChat action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Chat")
+            )
             data object ViewOnly : OpenChat()
 
             /**
              * Open chat action with view and send messages capabilities
              */
+            @Deprecated(
+                message = "OpenChat action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Chat")
+            )
             data object Full : OpenChat()
         }
 
         /**
          * Open whiteboard action
          */
+        @Deprecated(
+            message = "OpenWhiteboard action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+            replaceWith = ReplaceWith("CallUI.Button.Whiteboard")
+        )
         sealed class OpenWhiteboard : Action() {
             /**
              * Open whiteboard action with view only
              */
+            @Deprecated(
+                message = "OpenWhiteboard action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Whiteboard")
+            )
             data object ViewOnly : OpenWhiteboard()
 
             /**
              * Open whiteboard action with view and interaction capability
              */
+            @Deprecated(
+                message = "OpenWhiteboard action has been deprecated and it will be removed in a further release. Please update using CallUI.Button.",
+                replaceWith = ReplaceWith("CallUI.Button.Whiteboard")
+            )
             data object Full : OpenWhiteboard()
         }
     }
