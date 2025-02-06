@@ -456,12 +456,14 @@ class CallUI(
                 /**
                  * Custom Call Button Appearance configuration
                  * @property background Int Custom Button background color represented as integer value
-                 * @property tint Int Custom Button tint color, to be used for tinting icon and text, represented as integer value
+                 * @property content Int Custom Button tint color, to be used for tinting icon and text, represented as integer value
                  * @constructor
                  */
                 class Appearance(
+                    @ColorInt
                     background: Int,
-                    tint: Int
+                    @ColorInt
+                    content: Int
                 ) {
                     internal var onButtonUpdated: (() -> Unit)? = null
 
@@ -469,7 +471,7 @@ class CallUI(
                         set(value) {
                             field = value; onButtonUpdated?.invoke()
                         }
-                    var tint = tint
+                    var content = content
                         set(value) {
                             field = value; onButtonUpdated?.invoke()
                         }
@@ -479,14 +481,14 @@ class CallUI(
                         if (other !is Appearance) return false
 
                         if (background != other.background) return false
-                        if (tint != other.tint) return false
+                        if (content != other.content) return false
 
                         return true
                     }
 
                     override fun hashCode(): Int {
                         var result = background
-                        result = 31 * result + tint
+                        result = 31 * result + content
                         return result
                     }
                 }

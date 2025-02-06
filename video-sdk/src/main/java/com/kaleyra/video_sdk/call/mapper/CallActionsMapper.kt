@@ -38,8 +38,6 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackg
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 
 internal object CallActionsMapper {
@@ -64,9 +62,9 @@ internal object CallActionsMapper {
                     action is CallUI.Button.AudioOutput -> AudioAction()
                     action is CallUI.Button.Chat -> ChatAction()
                     action is CallUI.Button.FileShare -> FileShareAction()
-                    action is CallUI.Button.ScreenShare.UserChoice -> ScreenShareAction.UserChoice()
-                    action is CallUI.Button.ScreenShare.App -> ScreenShareAction.App()
-                    action is CallUI.Button.ScreenShare.WholeDevice -> ScreenShareAction.WholeDevice()
+                    action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser -> ScreenShareAction.UserChoice()
+                    action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly -> ScreenShareAction.App()
+                    action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen -> ScreenShareAction.WholeDevice()
                     action is CallUI.Button.Whiteboard -> WhiteboardAction()
                     action is CallUI.Button.CameraEffects -> VirtualBackgroundAction(isEnabled = hasVirtualBackground && !isAudioOnly)
                     action is CallUI.Button.Custom -> action.toUI()
@@ -86,9 +84,9 @@ private fun CallUI.Button.Custom.toUI(): CustomCallAction {
         buttonColors = config.appearance?.let {
             CustomCallAction.ButtonsColors(
                 buttonColor = it.background,
-                buttonContentColor = it.tint,
+                buttonContentColor = it.content,
                 disabledButtonColor = Color(it.background).copy(alpha = 0.38f).toArgb(),
-                disabledButtonContentColor = Color(it.tint).copy(alpha = 0.38f).toArgb()
+                disabledButtonContentColor = Color(it.content).copy(alpha = 0.38f).toArgb()
             )
         },
         onClick = config.action
