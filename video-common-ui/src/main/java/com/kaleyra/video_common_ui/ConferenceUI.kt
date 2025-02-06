@@ -110,7 +110,13 @@ class ConferenceUI(
      *
      * @param url to join
      */
-    fun joinUrl(url: String): Result<CallUI> = create(url).onSuccess { it.connect() }
+    @Deprecated(
+        message = ("joinUrl function has been deprecated and it will be removed in a further release."),
+        replaceWith = ReplaceWith("KaleyraVideo.conference.join(url)")
+    )
+    fun joinUrl(url: String): Result<CallUI> = join(url)
+
+    fun join(url: String): Result<CallUI> = create(url).onSuccess { it.connect() }
 
     /**
      * @suppress

@@ -264,7 +264,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
     private fun openJoinUrl(joinUrl: String) {
         lifecycleScope.launch {
             when {
-                !KaleyraVideo.isConfigured               -> {
+                !KaleyraVideo.isConfigured -> {
                     val loggedUserId = LoginManager.getLoggedUser(this@MainActivity)
                     KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }.await()
                 }
