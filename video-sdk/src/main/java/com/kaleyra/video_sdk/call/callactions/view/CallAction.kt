@@ -35,7 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
@@ -420,8 +423,17 @@ private fun CallActionBadge(
     contentColor: Color = contentColorFor(containerColor),
     content: @Composable BoxScope.() -> Unit
 ) {
+    val strokeColor = MaterialTheme.colorScheme.surfaceContainer
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .drawWithContent {
+                drawOval(
+                    color = strokeColor,
+                    blendMode = BlendMode.SrcIn,
+                    style = Stroke(width = 3.dp.toPx())
+                )
+                drawContent()
+            },
         colors = CallActionDefaults.badgeColors(containerColor, contentColor),
         shape = CallActionDefaults.BadgeShape
     ) {
