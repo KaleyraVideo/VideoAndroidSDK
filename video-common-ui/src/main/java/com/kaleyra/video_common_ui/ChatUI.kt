@@ -21,6 +21,7 @@ import androidx.annotation.Keep
 import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
+import com.kaleyra.video_common_ui.utils.extensions.CallTypeExtensions.toCallType
 import com.kaleyra.video_common_ui.utils.extensions.mapToSharedFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,17 +67,17 @@ class ChatUI(
             val all by lazy {
                 setOf(
                     ShowParticipants,
-                    CreateCall(preferredType = Call.PreferredType.audioOnly()),
-                    CreateCall(preferredType = Call.PreferredType.audioUpgradable()),
-                    CreateCall(preferredType = Call.PreferredType.audioVideo())
+                    CreateCall(callType = Call.Type.audioOnly()),
+                    CreateCall(callType = Call.Type.audioUpgradable()),
+                    CreateCall(callType = Call.Type.audioVideo())
                 )
             }
 
             val default by lazy {
                 setOf(
                     ShowParticipants,
-                    CreateCall(preferredType = Call.PreferredType.audioUpgradable()),
-                    CreateCall(preferredType = Call.PreferredType.audioVideo())
+                    CreateCall(callType = Call.Type.audioUpgradable()),
+                    CreateCall(callType = Call.Type.audioVideo())
                 )
             }
         }
@@ -84,16 +85,26 @@ class ChatUI(
         /**
          * The create call action
          *
-         * @property preferredType The call PreferredType
+         * @property callType The call type
          * @property maxDuration Optional max duration of the call in seconds
          * @property recordingType Optional call recording type, default recording type is set to Call.Recording.Type.Never
          * @constructor
          */
-        data class CreateCall(
-            val preferredType: Call.PreferredType = Call.PreferredType.audioVideo(),
+        class CreateCall(
+            val callType: Call.Type = Call.Type.audioVideo(),
             val maxDuration: Long? = 0,
             val recordingType: Call.Recording.Type? = Call.Recording.Type.Never
-            ) : Action()
+            ) : Action() {
+
+                @Deprecated(
+                    message = "This constructor has been deprecated and it will be removed in a further release.",
+                    replaceWith = ReplaceWith("CreateCall(callType, maxDuration, recordingType)")
+                )
+                constructor(preferredType: Call.PreferredType = Call.PreferredType.audioVideo(),
+                            maxDuration: Long? = 0,
+                            recordingType: Call.Recording.Type? = Call.Recording.Type.Never
+                ) : this(preferredType.toCallType(), maxDuration, recordingType)
+            }
 
         /**
          * Show participants action

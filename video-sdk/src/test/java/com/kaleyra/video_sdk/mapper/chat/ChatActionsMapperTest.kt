@@ -73,9 +73,9 @@ class ChatActionsMapperTest {
     @Test
     fun allActions_mapToUiActions_onClickCalledCallOptionsReceived() {
         val actions = setOf(
-            ChatUI.Action.CreateCall(Call.PreferredType.audioOnly(), 1, Call.Recording.Type.Never),
-            ChatUI.Action.CreateCall(Call.PreferredType.audioUpgradable(), 2, Call.Recording.Type.Manual),
-            ChatUI.Action.CreateCall(Call.PreferredType.audioVideo(), 3, Call.Recording.Type.Manual)
+            ChatUI.Action.CreateCall(Call.Type.audioOnly(), 1, Call.Recording.Type.Never),
+            ChatUI.Action.CreateCall(Call.Type.audioUpgradable(), 2, Call.Recording.Type.Manual),
+            ChatUI.Action.CreateCall(Call.Type.audioVideo(), 3, Call.Recording.Type.Automatic)
         )
         var duration = 0L
         var recType: Call.Recording.Type? = null

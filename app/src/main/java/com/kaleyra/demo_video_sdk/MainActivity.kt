@@ -65,12 +65,9 @@ import com.kaleyra.video.State
 import com.kaleyra.video.State.Disconnected
 import com.kaleyra.video.Synchronization
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.Call.PreferredType
 import com.kaleyra.video.conference.Call.Recording
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.NavBackComponent
-import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_utils.ContextRetainer
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -274,9 +271,9 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
                     KaleyraVideo.connect(loggedUserId) { requestToken(loggedUserId) }.await()
                 }
 
-                else                                     -> Unit
+                else -> Unit
             }
-            val result = KaleyraVideo.conference.joinUrl(joinUrl)
+            val result = KaleyraVideo.conference.join(joinUrl)
             val exception = result.exceptionOrNull()
             if (exception != null) {
                 Toast.makeText(ContextRetainer.context, exception.message, Toast.LENGTH_SHORT).show()
@@ -449,15 +446,15 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         hideKeyboard(this)
         val demoAppConfiguration = ConfigurationPrefsManager.getConfiguration(this)
         val type = when (demoAppConfiguration.defaultCallType) {
-            CallOptionsType.AUDIO_ONLY       -> PreferredType.audioOnly()
-            CallOptionsType.AUDIO_UPGRADABLE -> PreferredType.audioUpgradable()
-            CallOptionsType.AUDIO_VIDEO      -> PreferredType.audioVideo()
+            CallOptionsType.AUDIO_ONLY       -> Call.Type.audioOnly()
+            CallOptionsType.AUDIO_UPGRADABLE -> Call.Type.audioUpgradable()
+            CallOptionsType.AUDIO_VIDEO      -> Call.Type.audioVideo()
         }
 
         val configuration = DefaultConfigurationManager.getDefaultCallConfiguration()
         KaleyraVideo.conference.call(calleeSelected) {
-            preferredType = type
-            recordingType = if (configuration.options.recordingEnabled) Call.Recording.automatic() else Call.Recording.disabled()
+            callType = type
+            recordingType = if (configuration.options.recordingEnabled) Call.Recording.Type.Automatic else Call.Recording.Type.Never
         }.getOrNull()
     }
 

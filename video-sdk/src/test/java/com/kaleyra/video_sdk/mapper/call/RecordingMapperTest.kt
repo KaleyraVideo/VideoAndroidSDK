@@ -33,6 +33,7 @@ import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -43,12 +44,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
 class RecordingMapperTest {
-
-    @get:Rule
-    var mainDispatcherRule = MainDispatcherRule()
 
     private val callMock = mockk<Call>()
 
@@ -73,14 +69,22 @@ class RecordingMapperTest {
 
     @Test
     fun recordingTypeAutomatic_toRecordingTypeUi_automatic() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.Automatic
+        every { callMock.recording } returns MutableStateFlow(
+            object : Call.Recording {
+                override val type: Call.Recording.Type = Call.Recording.Type.Automatic
+                override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            }
+        )
         val result = callMock.toRecordingTypeUi()
         Assert.assertEquals(RecordingTypeUi.Automatic, result.first())
     }
 
     @Test
     fun recordingTypeManual_toRecordingTypeUi_manual() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.Manual
+        every { callMock.recording } returns MutableStateFlow(object : Call.Recording {
+            override val type: Call.Recording.Type = Call.Recording.Type.Manual
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+        })
         val result = callMock.toRecordingTypeUi()
         Assert.assertEquals(RecordingTypeUi.Manual, result.first())
     }
@@ -129,8 +133,10 @@ class RecordingMapperTest {
 
     @Test
     fun callRecording_toRecordingUi_mappedRecordingUi() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.Automatic
-        every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
+        every { callMock.recording } returns MutableStateFlow(object : Call.Recording {
+            override val type: Call.Recording.Type = Call.Recording.Type.Automatic
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+        })
         val actual = callMock.toRecordingUi()
         val expected = RecordingUi(RecordingTypeUi.Automatic, RecordingStateUi.Started)
         Assert.assertEquals(expected, actual.first())

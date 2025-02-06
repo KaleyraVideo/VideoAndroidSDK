@@ -125,8 +125,8 @@ internal class ChatMenuFragment : BaseFragment(), TiltListener {
 
     private fun getActions(actions: Set<ChatUI.Action>): List<ChatAction> = ChatAction.getActions(
         withParticipants = actions.any { it is ChatUI.Action.ShowParticipants },
-        withVideoCall = actions.any { it is ChatUI.Action.CreateCall && it.preferredType.isVideoEnabled() },
-        withCall = actions.any { it is ChatUI.Action.CreateCall  && !it.preferredType.isVideoEnabled() },
+        withVideoCall = actions.any { it is ChatUI.Action.CreateCall && it.callType.isVideoEnabled() },
+        withCall = actions.any { it is ChatUI.Action.CreateCall  && !it.callType.isVideoEnabled() },
     )
 
     /**
