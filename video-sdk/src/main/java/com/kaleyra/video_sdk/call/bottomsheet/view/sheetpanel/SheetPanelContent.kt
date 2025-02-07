@@ -3,10 +3,15 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel
 
 import android.content.res.Configuration
+import android.widget.Space
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,11 +34,13 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -138,25 +145,25 @@ internal fun SheetPanelContent(
 ) {
     Surface(
         modifier = Modifier.width(320.dp),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 2.dp
     ) {
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 12.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
             modifier = modifier
         ) {
             items(items = callActions.value, key = { it.id }) {
-                SheetPanelItem(
-                    callAction = it,
-                    modifier = Modifier
-                        .clickable(
-                            role = Role.Button,
-                            onClick = { onItemClick(it) }
-                        )
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp, vertical = 12.dp)
-                )
+                    SheetPanelItem(
+                        callAction = it,
+                        modifier = Modifier.height(36.dp)
+                            .clickable(
+                                role = Role.Button,
+                                onClick = { onItemClick(it) }
+                            )
+                            .padding(start = 0.dp, end = 9.dp, top = 0.dp, bottom = 0.dp)
+                    )
+                    Spacer(Modifier.size(16.dp))
             }
         }
     }
@@ -180,7 +187,8 @@ internal fun SheetPanelContentPreview() {
                         VirtualBackgroundAction(),
                         MicAction(),
                         CameraAction(),
-                        HangUpAction()
+                        HangUpAction(),
+                        CustomAction(icon = R.drawable.kaleyra_icon_reply, buttonTexts = CustomCallAction.ButtonTexts("Custom", "Custom")),
                     )
                 ),
                 onItemClick = { }
