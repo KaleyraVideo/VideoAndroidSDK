@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -20,6 +21,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
@@ -46,6 +48,9 @@ internal fun SheetPanelItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
+            modifier = Modifier
+                .size(24.dp)
+                .then(modifier),
             painter = painterFor(callAction),
             contentDescription = null,
             tint = if (callAction.isEnabled) contentColor else disabledContentColor
@@ -75,9 +80,11 @@ private fun painterFor(callAction: CallActionUI) =
         is MicAction ->
             if (callAction.isToggled) painterResource(id = R.drawable.ic_kaleyra_mic_off)
             else painterResource(id = R.drawable.ic_kaleyra_mic_on)
+
         is CameraAction ->
             if (callAction.isToggled) painterResource(id = R.drawable.ic_kaleyra_camera_off)
             else painterResource(id = R.drawable.ic_kaleyra_camera_on)
+
         is HangUpAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_hang_up)
         is CustomAction -> painterResource(id = callAction.icon)
         else -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_virtual_background)
@@ -101,9 +108,11 @@ private fun textFor(callAction: CallActionUI) =
         is MicAction ->
             if (callAction.isToggled) stringResource(R.string.kaleyra_call_action_mic_unmute)
             else stringResource(R.string.kaleyra_call_action_mic_mute)
+
         is CameraAction ->
             if (callAction.isToggled) stringResource(R.string.kaleyra_call_sheet_enable)
             else stringResource(R.string.kaleyra_call_sheet_disable)
+
         is HangUpAction -> stringResource(id = R.string.kaleyra_call_sheet_hang_up_action)
         is CustomAction -> callAction.buttonTexts.text ?: ""
         else -> ""
@@ -259,6 +268,17 @@ internal fun SheetPanelVirtualBackgroundItemDisabledPreview() {
     KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = VirtualBackgroundAction(isEnabled = false))
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun SheetPanelCustomItemPreview() {
+    KaleyraTheme {
+        Surface {
+            SheetPanelItem(callAction = CustomAction(icon = R.drawable.kaleyra_icon_reply, buttonTexts = CustomCallAction.ButtonTexts("Custom", "Custom")))
         }
     }
 }
