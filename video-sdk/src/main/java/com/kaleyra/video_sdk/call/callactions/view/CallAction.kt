@@ -302,13 +302,13 @@ private fun CallActionLayout(
             }
         }
         val badgeModifier = Modifier.offset {
-                with(density) {
-                    val offset = CallActionDefaults.BadgeOffset
-                        .toPx()
-                        .roundToInt()
-                    IntOffset(offset, -offset)
-                }
+            with(density) {
+                val offset = CallActionDefaults.BadgeOffset
+                    .toPx()
+                    .roundToInt()
+                IntOffset(offset, -offset)
             }
+        }
         if (badgeCount != 0) {
             CallActionBadgeCount(
                 count = badgeCount,
@@ -380,14 +380,13 @@ internal fun CallActionBadgeCount(
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 4.dp)
-            ,
+                .padding(horizontal = 4.dp),
             text = when {
                 count > 99 -> stringResource(R.string.kaleyra_call_badge_count_overflow)
                 else -> count.toString()
             },
             maxLines = 1,
-            style = MaterialTheme.typography.labelMedium.clearFontPadding()
+            style = MaterialTheme.typography.labelSmall.clearFontPadding()
         )
     }
 }
