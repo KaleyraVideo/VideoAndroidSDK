@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import java.util.Objects
 import java.util.UUID
 
 /**
@@ -320,6 +321,14 @@ class CallUI(
                  */
                 data object AskUser : ScreenShareTapAction()
             }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is ScreenShare) return false
+                return true
+            }
+
+            override fun hashCode() = Objects.hash(this::class.java.name)
         }
 
         /**
@@ -452,8 +461,7 @@ class CallUI(
 
                 override fun hashCode(): Int {
                     var result = icon
-                    result = 31 * result + (text?.hashCode() ?: 0)
-                    // result = 31 * result + action.hashCode() // Handle function hashCode carefully
+                    result = 31 * result + text.hashCode()
                     result = 31 * result + badgeValue
                     result = 31 * result + isEnabled.hashCode()
                     result = 31 * result + (accessibilityLabel?.hashCode() ?: 0)

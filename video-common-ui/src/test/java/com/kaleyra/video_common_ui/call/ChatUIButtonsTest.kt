@@ -90,7 +90,7 @@ class ChatUIButtonsTest {
         )
         var callbackCalled = false
         customButton.onButtonUpdated = { callbackCalled = true }
-        customButton.config.appearance?.tint = 3
+        customButton.config.appearance?.content = 3
         Assert.assertEquals(true, callbackCalled)
     }
 
@@ -114,5 +114,23 @@ class ChatUIButtonsTest {
         customButton.onButtonUpdated = { callbackCalled = true }
         customButton.config = CallUI.Button.Custom.Configuration(icon = 1, text = "2", action = {})
         Assert.assertEquals(true, callbackCalled)
+    }
+
+    @Test
+    fun testAllCallUIButtonScreenShareAreEquals() {
+        val buttonScreenShareAskUser = CallUI.Button.ScreenShare()
+        val buttonScreenShareAskUser2 = CallUI.Button.ScreenShare()
+        Assert.assertEquals(buttonScreenShareAskUser, buttonScreenShareAskUser2)
+
+        val buttonScreenShareRecordAppOnly = CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
+        val buttonScreenShareRecordAppOnly2 = CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
+        Assert.assertEquals(buttonScreenShareRecordAppOnly, buttonScreenShareRecordAppOnly2)
+
+        val buttonScreenShareRecordEntireScreenOnly = CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
+        val buttonScreenShareRecordEntireScreenOnly2 = CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
+        Assert.assertEquals(buttonScreenShareRecordEntireScreenOnly, buttonScreenShareRecordEntireScreenOnly2)
+
+        Assert.assertEquals(buttonScreenShareAskUser, buttonScreenShareRecordAppOnly)
+        Assert.assertEquals(buttonScreenShareAskUser, buttonScreenShareRecordEntireScreenOnly)
     }
 }
