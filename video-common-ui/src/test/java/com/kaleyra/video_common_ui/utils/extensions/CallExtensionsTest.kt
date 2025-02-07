@@ -455,15 +455,14 @@ class CallExtensionsTest {
         assertEquals(CallUI.Action.OpenChat.ViewOnly.toCallUIButton(), CallUI.Button.Chat)
         assertEquals(CallUI.Action.OpenWhiteboard.Full.toCallUIButton(), CallUI.Button.Whiteboard)
         assertEquals(CallUI.Action.OpenWhiteboard.ViewOnly.toCallUIButton(), CallUI.Button.Whiteboard)
-        assertEquals(CallUI.Action.ScreenShare.App.toCallUIButton(), CallUI.Button.ScreenShare.App)
-        assertEquals(CallUI.Action.ScreenShare.toCallUIButton(), CallUI.Button.ScreenShare.UserChoice)
-        assertEquals(CallUI.Action.ScreenShare.UserChoice.toCallUIButton(), CallUI.Button.ScreenShare.UserChoice)
-        assertEquals(CallUI.Action.ScreenShare.WholeDevice.toCallUIButton(), CallUI.Button.ScreenShare.WholeDevice)
+        assertEquals(CallUI.Action.ScreenShare.App.toCallUIButton(), CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly))
+        assertEquals(CallUI.Action.ScreenShare.toCallUIButton(), CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser))
+        assertEquals(CallUI.Action.ScreenShare.UserChoice.toCallUIButton(), CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser))
+        assertEquals(CallUI.Action.ScreenShare.WholeDevice.toCallUIButton(), CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen))
         assertEquals(CallUI.Action.ShowParticipants.toCallUIButton(), CallUI.Button.Participants)
         assertEquals(CallUI.Action.SwitchCamera.toCallUIButton(), CallUI.Button.FlipCamera)
         assertEquals(CallUI.Action.ToggleCamera.toCallUIButton(), CallUI.Button.Camera)
         assertEquals(CallUI.Action.ToggleFlashlight.toCallUIButton(), CallUI.Button.FlashLight)
         assertEquals(CallUI.Action.ToggleMicrophone.toCallUIButton(), CallUI.Button.Microphone)
     }
-
 }
