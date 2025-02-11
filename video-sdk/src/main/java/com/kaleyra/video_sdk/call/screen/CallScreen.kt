@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.screen
 
 import android.util.Rational
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -361,7 +363,9 @@ internal fun CallScreen(
     if (isInPipMode) {
         PipScreen(
             onPipAspectRatio = onPipAspectRatio,
-            modifier = Modifier.testTag(PipScreenTestTag)
+            modifier = Modifier
+                .testTag(PipScreenTestTag)
+                .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
         )
     } else {
         if (isCompactHeight) {
