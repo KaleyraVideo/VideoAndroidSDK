@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -59,7 +60,7 @@ class StreamComponentTest {
         composeTestRule.setContent {
             StreamComponent(
                 uiState = streamUiState,
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = selectedStreamId,
                 onStreamClick = { streamItemClicked = it },
                 onStopScreenShareClick = { stopScreenShareClicked = true },

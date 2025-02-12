@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.ui.call.stream
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -43,7 +44,7 @@ class StreamComponentViewModelTest {
         composeTestRule.setContent {
             StreamComponent(
                 viewModel = streamViewModel,
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 onStreamItemClick = { },
                 onMoreParticipantClick = { }
             )

@@ -85,6 +85,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.reflect.KClass
 
+// Test for the VCallScreen using a tablet (both in portrait and landscape)
 class VCallScreenExpandedTest {
 
     @get:Rule

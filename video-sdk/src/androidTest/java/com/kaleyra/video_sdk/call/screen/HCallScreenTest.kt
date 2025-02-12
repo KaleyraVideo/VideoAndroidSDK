@@ -1364,7 +1364,7 @@ class HCallScreenTest {
     }
 
     @Test
-    fun compactDevice_companyLogoSet_callConnected_brandLogoDisplayed() = runTest {
+    fun compactDevice_companyLogoSet_callConnected_brandLogoNotDisplayed() = runTest {
         val logo = Logo(light = Uri.parse("https://www.example.com/light.png"), dark = Uri.parse("https://www.example.com/dark.png"))
         brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = logo))
 

@@ -196,7 +196,7 @@ internal fun HCallScreen(
 
         val leftPadding = paddingValues.calculateLeftPadding(layoutDirection) - StreamItemSpacing
         val topPadding = paddingValues.calculateTopPadding() + contentSpacing - StreamItemSpacing
-        val bottomPadding = 0.dp
+        val bottomPadding =  paddingValues.calculateBottomPadding() + contentSpacing - StreamItemSpacing
         val rightPadding = horizontalPaddingValues.calculateRightPadding(layoutDirection) + contentSpacing + StreamItemSpacing + when {
             selectedStreamId != null -> StreamMenuEstimatedWidth
             hasSheetDragContent -> CallSheetEstimatedWidthWithHandle
@@ -245,12 +245,16 @@ internal fun HCallScreen(
                     )
             )
 
-            Column(Modifier.padding(top = topPadding, end = rightPadding)) {
+            Column(
+                modifier = Modifier.padding(
+                    top = topPadding,
+                    start = leftPadding,
+                    bottom = bottomPadding,
+                    end = rightPadding
+                )
+            ) {
                 CallInfoComponent(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .navigationBarsPadding()
-                        .displayCutoutPadding()
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
                 if (modalSheetComponent != ModularComponent.FileShare && modalSheetComponent != ModularComponent.Whiteboard) {
                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)

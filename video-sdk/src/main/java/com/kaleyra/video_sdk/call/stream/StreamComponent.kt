@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.stream
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
@@ -45,13 +46,8 @@ import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.items.ActiveScreenShareIndicator
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasCompactHeight
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasExpandedWidth
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.hasMediumWidth
-import com.kaleyra.video_sdk.call.utils.WindowSizeClassExts.isCompactInAnyDimension
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
@@ -61,8 +57,14 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasCompactHeight
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasExpandedWidth
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasMediumWidth
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
 
-internal val StreamItemSpacing = 6.dp
+internal val StreamItemExpandedSpacing = 6.dp
+internal val StreamItemSpacing = 4.dp
 
 internal object StreamComponentDefaults {
 
@@ -170,10 +172,11 @@ internal fun StreamComponent(
             }
         } else {
             Column(modifier) {
+                val itemSpacing = if (windowSizeClass.isLargeScreen()) StreamItemExpandedSpacing else StreamItemSpacing
                 AnimatedVisibility(
                     visible = uiState.isScreenShareActive,
                     content = {
-                        Box(Modifier.padding(6.dp)) {
+                        Box(Modifier.padding(itemSpacing)) {
                             ActiveScreenShareIndicator(onStopClick = onStopScreenShareClick)
                         }
                     }
@@ -192,7 +195,7 @@ internal fun StreamComponent(
                     LookaheadScope {
                         val itemModifier = Modifier
                             .fillMaxSize()
-                            .padding(StreamItemSpacing)
+                            .padding(itemSpacing)
                             .animateConstraints()
                             .animatePlacement(this@LookaheadScope)
 
@@ -315,7 +318,7 @@ internal fun StreamComponentPreview() {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(streamItems = previewStreams),
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
@@ -337,7 +340,7 @@ internal fun StreamComponentFeaturedPreview() {
                         StreamItem.Stream("id9", streamUiMock, state = StreamItemState.Featured)
                     )).toImmutableList()
                 ),
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
@@ -357,7 +360,7 @@ internal fun StreamComponentActiveScreenSharePreview() {
                     streamItems = previewStreams,
                     isScreenShareActive = true
                 ),
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},
@@ -375,7 +378,7 @@ internal fun StreamComponentPreCallPreview() {
         Surface {
             StreamComponent(
                 uiState = StreamUiState(preview = StreamPreview()),
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = null,
                 onStreamClick = {},
                 onStopScreenShareClick = {},

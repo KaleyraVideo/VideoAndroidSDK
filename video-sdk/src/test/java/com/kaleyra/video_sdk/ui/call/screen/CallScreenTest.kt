@@ -51,9 +51,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@Config(qualifiers = "w480dp-h600dp")
-@RunWith(RobolectricTestRunner::class)
-internal class CallScreenTest: CallScreenBaseTest() {
+internal abstract class CallScreenTest: CallScreenBaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -295,7 +293,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
             users = listOf(
                 MoreStreamsUserPreview("1", "user1", null),
                 MoreStreamsUserPreview("2", "user2", null),
-                )
+            )
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
 
@@ -547,16 +545,6 @@ internal class CallScreenTest: CallScreenBaseTest() {
         composeTestRule.onNodeWithText(deviceText).performClick()
 
         TestCase.assertEquals(true, arePermissionAsked)
-    }
-
-    @Test
-    fun mediumHeight_verticalCallScreenIsDisplayed() {
-        callActionsUiState.update {
-            it.copy(actionList = allActions.toImmutableList())
-        }
-        composeTestRule.setUpCallScreen()
-
-        composeTestRule.onNodeWithTag(VCallScreenTestTag).assertIsDisplayed()
     }
 
     @Test

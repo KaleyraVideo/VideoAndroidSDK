@@ -92,6 +92,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.reflect.KClass
 
+// Test for the VCallScreen using a smartphone (both in portrait and landscape)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 class VCallScreenTest {
 
@@ -1421,7 +1422,7 @@ class VCallScreenTest {
     }
 
     @Test
-    fun compactDevice_companyLogoSet_callConnected_brandLogoDisplayed() = runTest {
+    fun compactDevice_companyLogoSet_callConnected_brandLogoNotDisplayed() = runTest {
         brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = companyLogo))
 
         composeTestRule.setUpVCallScreen()

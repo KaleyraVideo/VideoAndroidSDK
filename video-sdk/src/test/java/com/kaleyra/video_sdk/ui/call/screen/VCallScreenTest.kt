@@ -91,13 +91,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
-@RunWith(RobolectricTestRunner::class)
-class VCallScreenTest {
+abstract class VCallScreenTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -135,7 +133,10 @@ class VCallScreenTest {
     }
 
     private val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
+        every { uiState } returns MutableStateFlow(
+            CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(
+                R.string.kaleyra_call_status_connecting))
+        )
     }
 
     private val callAppBarViewModel = mockk<CallAppBarViewModel>(relaxed = true) {
@@ -914,7 +915,9 @@ class VCallScreenTest {
 
     @Test
     fun testSheetDragActions_virtualBackgroundComponentChange() {
-        val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(CompactScreenMaxActions)
+        val actions = allActions.filterNot { it is VirtualBackgroundAction }.take(
+            CompactScreenMaxActions
+        )
         var component: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
@@ -1331,7 +1334,11 @@ class VCallScreenTest {
 
     @Test
     fun userClicksScreenShareMessagePin_streamPinIsInvoked() {
-        every { userMessagesViewModel.userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("streamId", "username"))))
+        every { userMessagesViewModel.userMessage } returns flowOf(
+            ImmutableList(listOf(
+                PinScreenshareMessage("streamId", "username")
+            ))
+        )
         composeTestRule.setUpVCallScreen()
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_received, "username")
@@ -1425,7 +1432,7 @@ class VCallScreenTest {
     }
 
     @Test
-    fun compactDevice_companyLogoSet_callConnected_brandLogoDisplayed() = runTest {
+    fun compactDevice_companyLogoSet_callConnected_brandLogoNotDisplayed() = runTest {
         brandLogoUiState.emit(BrandLogoState(callStateUi = CallStateUi.Connected, logo = companyLogo))
 
         composeTestRule.setUpVCallScreen()

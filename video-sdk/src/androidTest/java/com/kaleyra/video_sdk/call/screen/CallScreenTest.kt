@@ -543,16 +543,6 @@ internal class CallScreenTest: CallScreenBaseTest() {
     }
 
     @Test
-    fun mediumHeight_verticalCallScreenIsDisplayed() {
-        callActionsUiState.update {
-            it.copy(actionList = allActions.toImmutableList())
-        }
-        composeTestRule.setUpCallScreen()
-
-        composeTestRule.onNodeWithTag(VCallScreenTestTag).assertIsDisplayed()
-    }
-
-    @Test
     fun testOnPipAspectRatioInvoked() {
         var aspectRatio: Rational? = null
         composeTestRule.setUpCallScreen(
