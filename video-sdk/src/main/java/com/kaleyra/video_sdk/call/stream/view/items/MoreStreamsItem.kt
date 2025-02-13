@@ -52,11 +52,9 @@ internal fun MoreStreamsItem(
     modifier: Modifier = Modifier,
 ) {
     val count = remember(moreStreamsItem) { moreStreamsItem.users.count() }
-    val elevation = 2.dp
 
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = elevation
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -65,7 +63,7 @@ internal fun MoreStreamsItem(
                 .fillMaxSize()
                 .testTag(MoreStreamsItemTag)
         ) {
-            Avatars(moreStreamsItem, elevation)
+            Avatars(moreStreamsItem)
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(id = R.string.kaleyra_stream_other_participants, count),
@@ -79,11 +77,8 @@ internal fun MoreStreamsItem(
 }
 
 @Composable
-private fun Avatars(
-    moreStreamsItem: StreamItem.MoreStreams,
-    elevation: Dp
-) {
-    val color = MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
+private fun Avatars(moreStreamsItem: StreamItem.MoreStreams) {
+    val color = MaterialTheme.colorScheme.surfaceContainerLow
     BoxWithConstraints {
         val avatarSize = (maxWidth / AvatarCount).coerceIn(MinAvatarSize, MaxAvatarSize)
 
