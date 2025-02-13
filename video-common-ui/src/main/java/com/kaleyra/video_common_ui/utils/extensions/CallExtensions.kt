@@ -136,7 +136,7 @@ object CallExtensions {
             .onEach { (whiteboardEvent, _) ->
                 if (whiteboardEvent is Whiteboard.Event.Request.Hide) return@onEach
                 buttonsProvider
-                    ?.invoke((preferredType.value.toCallButtons(actions?.value)
+                    ?.invoke((type.value.toCallButtons(actions?.value)
                         + CallUI.Button.Whiteboard)
                         .toMutableSet()
                     )
@@ -152,7 +152,7 @@ object CallExtensions {
             .onEach {
                 buttonsProvider
                     ?.invoke((
-                        preferredType.value.toCallButtons(actions?.value)
+                        type.value.toCallButtons(actions?.value)
                             + CallUI.Button.FileShare)
                         .toMutableSet()
                     )

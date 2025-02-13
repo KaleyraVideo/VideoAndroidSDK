@@ -74,7 +74,7 @@ class CallUI(
     val actions: MutableStateFlow<Set<Action>>? = null,
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     floatingMessagePresenter: FloatingMessagePresenter = CallUIFloatingMessagePresenter(isGlassesSDK = KaleyraVideo.isGlassesSdk, logger = KaleyraVideo.logger),
-    callUIButtonsProvider: CallUIButtonsProvider = DefaultCallUIButtonsProvider(call.preferredType, call.state, actions, scope),
+    callUIButtonsProvider: CallUIButtonsProvider = DefaultCallUIButtonsProvider(call.type, call.state, actions, scope),
 ) : Call by call,
     FloatingMessagePresenter by floatingMessagePresenter,
     CallUIButtonsProvider by callUIButtonsProvider {

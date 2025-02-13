@@ -164,8 +164,8 @@ class PhoneChatViewModelTest {
             )
             every { buttons } returns MutableStateFlow(
                 setOf(
-                    ChatUI.Button.Call(preferredType = Call.PreferredType.audioUpgradable()),
-                    ChatUI.Button.Call(preferredType = Call.PreferredType.audioVideo())
+                    ChatUI.Button.Call(callType = Call.Type.audioUpgradable()),
+                    ChatUI.Button.Call(callType = Call.Type.audioVideo())
                 )
             )
         }

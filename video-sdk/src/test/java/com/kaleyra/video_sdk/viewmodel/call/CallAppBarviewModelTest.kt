@@ -61,7 +61,7 @@ class CallAppBarViewModelTest {
 
     private val recordingMock: MutableStateFlow<Call.Recording> = MutableStateFlow(object : Call.Recording {
         override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
-        override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
+        override val type: Call.Recording.Type = Call.Recording.Type.Automatic
     })
 
     private val elapsedMock: MutableStateFlow<Long> = MutableStateFlow(10L)
@@ -145,7 +145,7 @@ class CallAppBarViewModelTest {
     fun testAutomaticRecordingStoppedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
-            override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
+            override val type: Call.Recording.Type = Call.Recording.Type.Automatic
         })
         viewModel = CallAppBarViewModel {
             CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
@@ -159,7 +159,7 @@ class CallAppBarViewModelTest {
     fun testAutomaticRecordingStartedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
-            override val type: Call.Recording.Type = Call.Recording.Type.OnConnect
+            override val type: Call.Recording.Type = Call.Recording.Type.Automatic
         })
         viewModel = CallAppBarViewModel {
             CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
@@ -173,7 +173,7 @@ class CallAppBarViewModelTest {
     fun testManualRecordingStoppedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
-            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+            override val type: Call.Recording.Type = Call.Recording.Type.Manual
         })
         viewModel = CallAppBarViewModel {
             CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))
@@ -187,7 +187,7 @@ class CallAppBarViewModelTest {
     fun testManualRecordingStartedUpdated() = runTest {
         recordingMock.emit(object : Call.Recording {
             override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
-            override val type: Call.Recording.Type = Call.Recording.Type.OnDemand
+            override val type: Call.Recording.Type = Call.Recording.Type.Manual
         })
         viewModel = CallAppBarViewModel {
             CollaborationViewModel.Configuration.Success(conference, mockk(), companyMock, MutableStateFlow(mockk(relaxed = true)))

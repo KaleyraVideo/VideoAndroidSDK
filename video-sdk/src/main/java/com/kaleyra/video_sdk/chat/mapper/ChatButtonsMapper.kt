@@ -24,25 +24,25 @@ internal object ChatButtonsMapper {
 
     internal fun Set<ChatUI.Button>.mapToChatActions(
         call: (
-            Call.PreferredType,
+            Call.Type,
             Long?,
             Call.Recording.Type?) -> Unit
     ): Set<ChatAction> {
         val actionsSet = mutableSetOf<ChatAction>()
         val actions = this@mapToChatActions.filterIsInstance<ChatUI.Button.Call>()
-        actions.firstOrNull { !it.preferredType.hasVideo() }?.also { action ->
+        actions.firstOrNull { !it.callType.hasVideo() }?.also { action ->
             actionsSet.add(ChatAction.AudioCall {
-                call(action.preferredType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType)
             })
         }
-        actions.firstOrNull { it.preferredType.hasVideo() && !it.preferredType.isVideoEnabled() }?.also { action ->
+        actions.firstOrNull { it.callType.hasVideo() && !it.callType.isVideoEnabled() }?.also { action ->
             actionsSet.add(ChatAction.AudioUpgradableCall {
-                call(action.preferredType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType)
             })
         }
-        actions.firstOrNull { it.preferredType.isVideoEnabled() }?.also { action ->
+        actions.firstOrNull { it.callType.isVideoEnabled() }?.also { action ->
             actionsSet.add(ChatAction.VideoCall {
-                call(action.preferredType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType)
             })
         }
         return actionsSet

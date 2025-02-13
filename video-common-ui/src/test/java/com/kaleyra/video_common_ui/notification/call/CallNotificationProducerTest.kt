@@ -121,7 +121,7 @@ class CallNotificationProducerTest {
             every { participants } returns MutableStateFlow(participantsMock)
         }
         with(recordingMock) {
-            every { type } returns Call.Recording.Type.OnConnect
+            every { type } returns Call.Recording.Type.Manual
             every { state } returns MutableStateFlow(Call.Recording.State.Started)
         }
         every { inputsMock.availableInputs } returns MutableStateFlow(setOf())
@@ -454,16 +454,16 @@ class CallNotificationProducerTest {
     }
 
     @Test
-    fun callRecordingOnConnect_buildOngoingCallNotification_isCallRecordedTrue() = runTest(UnconfinedTestDispatcher()) {
+    fun callRecordingAutomatic_buildOngoingCallNotification_isCallRecordedTrue() = runTest(UnconfinedTestDispatcher()) {
         every { CallExtensions.isOngoing(any(), any()) } returns true
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+        every { recordingMock.type } returns Call.Recording.Type.Automatic
         val callNotificationProducer = CallNotificationProducer(backgroundScope)
         callNotificationProducer.bind(callMock, mockk())
         verify(exactly = 1) { NotificationManager.buildOngoingCallNotification(any(), any(), any(), isCallRecorded = true, any(), any(), any(), any()) }
     }
 
     @Test
-    fun callRecordingNotOnConnect_buildOngoingCallNotification_isCallRecordedFalse() = runTest(UnconfinedTestDispatcher()) {
+    fun callRecordingNotAutomatic_buildOngoingCallNotification_isCallRecordedFalse() = runTest(UnconfinedTestDispatcher()) {
         every { CallExtensions.isOngoing(any(), any()) } returns true
         every { recordingMock.type } returns mockk(relaxed = true)
         val callNotificationProducer = CallNotificationProducer(backgroundScope)

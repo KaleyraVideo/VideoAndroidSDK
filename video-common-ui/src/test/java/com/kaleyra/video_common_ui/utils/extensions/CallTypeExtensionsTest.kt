@@ -1,32 +1,24 @@
 package com.kaleyra.video_common_ui.utils.extensions
 
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.utils.extensions.CallTypeExtensions.toCallButtons
+import com.kaleyra.video_common_ui.utils.extensions.CallTypeExtensions.toCallType
 import org.junit.Assert
 import org.junit.Test
 
 class CallTypeExtensionsTest {
 
     @Test
-    fun legacyActions_toCallUIButtons_legacyActionsMappedToCallButtons() {
-        val callButtons = Call.PreferredType.audioVideo().toCallButtons(setOf(CallUI.Action.HangUp))
-
-        Assert.assertEquals(1, callButtons.size)
-        Assert.assertEquals(CallUI.Button.HangUp, callButtons.first())
+    fun preferredTypeAudioVideo_toCallType_CallTypeAudioVideo() {
+        Assert.assertEquals(Call.Type.audioVideo(), Call.PreferredType.audioVideo().toCallType())
     }
 
     @Test
-    fun audioCall_toCallUIButtons_legacyActionsMappedToCallButtons() {
-        val callButtons = Call.PreferredType.audioOnly().toCallButtons()
-
-        Assert.assertEquals(CallUI.Button.Collections.audioCall, callButtons)
+    fun preferredTypeAudioUpgradable_toCallType_CallTypeAudioUpgradable() {
+        Assert.assertEquals(Call.Type.audioUpgradable(), Call.PreferredType.audioUpgradable().toCallType())
     }
 
     @Test
-    fun videoCall_toCallUIButtons_legacyActionsMappedToCallButtons() {
-        val callButtons = Call.PreferredType.audioVideo().toCallButtons()
-
-        Assert.assertEquals(CallUI.Button.Collections.videoCall, callButtons)
+    fun preferredTypeAudioOnly_toCallType_CallTypeAudioOnly() {
+        Assert.assertEquals(Call.Type.audioOnly(), Call.PreferredType.audioOnly().toCallType())
     }
 }

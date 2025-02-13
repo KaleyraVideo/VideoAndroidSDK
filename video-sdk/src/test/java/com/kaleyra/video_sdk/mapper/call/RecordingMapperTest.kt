@@ -33,6 +33,7 @@ import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -43,12 +44,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
 class RecordingMapperTest {
-
-    @get:Rule
-    var mainDispatcherRule = MainDispatcherRule()
 
     private val callMock = mockk<Call>()
 
@@ -72,17 +68,25 @@ class RecordingMapperTest {
     }
 
     @Test
-    fun recordingTypeOnConnect_toRecordingTypeUi_onConnect() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+    fun recordingTypeAutomatic_toRecordingTypeUi_automatic() = runTest {
+        every { callMock.recording } returns MutableStateFlow(
+            object : Call.Recording {
+                override val type: Call.Recording.Type = Call.Recording.Type.Automatic
+                override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+            }
+        )
         val result = callMock.toRecordingTypeUi()
-        Assert.assertEquals(RecordingTypeUi.OnConnect, result.first())
+        Assert.assertEquals(RecordingTypeUi.Automatic, result.first())
     }
 
     @Test
-    fun recordingTypeOnDemand_toRecordingTypeUi_onDemand() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnDemand
+    fun recordingTypeManual_toRecordingTypeUi_manual() = runTest {
+        every { callMock.recording } returns MutableStateFlow(object : Call.Recording {
+            override val type: Call.Recording.Type = Call.Recording.Type.Manual
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+        })
         val result = callMock.toRecordingTypeUi()
-        Assert.assertEquals(RecordingTypeUi.OnDemand, result.first())
+        Assert.assertEquals(RecordingTypeUi.Manual, result.first())
     }
 
     @Test
@@ -129,24 +133,26 @@ class RecordingMapperTest {
 
     @Test
     fun callRecording_toRecordingUi_mappedRecordingUi() = runTest {
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
-        every { recordingMock.state } returns MutableStateFlow(Call.Recording.State.Started)
+        every { callMock.recording } returns MutableStateFlow(object : Call.Recording {
+            override val type: Call.Recording.Type = Call.Recording.Type.Automatic
+            override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Started)
+        })
         val actual = callMock.toRecordingUi()
-        val expected = RecordingUi(RecordingTypeUi.OnConnect, RecordingStateUi.Started)
+        val expected = RecordingUi(RecordingTypeUi.Automatic, RecordingStateUi.Started)
         Assert.assertEquals(expected, actual.first())
     }
 
     @Test
-    fun recordingTypeOnConnect_mapToRecordingTypeUi_recordingTypeUiOnConnect() = runTest {
-        val expected = Call.Recording.Type.OnConnect.mapToRecordingTypeUi()
-        val actual = RecordingTypeUi.OnConnect
+    fun recordingTypeAutomatic_mapToRecordingTypeUi_recordingTypeUiOnConnect() = runTest {
+        val expected = Call.Recording.Type.Automatic.mapToRecordingTypeUi()
+        val actual = RecordingTypeUi.Automatic
         Assert.assertEquals(actual, expected)
     }
 
     @Test
-    fun recordingTypeOnDemand_mapToRecordingTypeUi_recordingTypeUiOnDemand() = runTest {
-        val expected = Call.Recording.Type.OnDemand.mapToRecordingTypeUi()
-        val actual = RecordingTypeUi.OnDemand
+    fun recordingTypeManual_mapToRecordingTypeUi_recordingTypeUiOnDemand() = runTest {
+        val expected = Call.Recording.Type.Manual.mapToRecordingTypeUi()
+        val actual = RecordingTypeUi.Manual
         Assert.assertEquals(actual, expected)
     }
 

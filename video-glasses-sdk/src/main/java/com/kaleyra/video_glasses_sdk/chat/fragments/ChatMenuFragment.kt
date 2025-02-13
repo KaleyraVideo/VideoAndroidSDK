@@ -124,8 +124,8 @@ internal class ChatMenuFragment : BaseFragment(), TiltListener {
 
     private fun getActions(actions: Set<ChatUI.Button>): List<ChatAction> = ChatAction.getActions(
         withParticipants = actions.any { it is ChatUI.Button.Participants },
-        withVideoCall = actions.any { it is ChatUI.Button.Call && it.preferredType.isVideoEnabled() },
-        withCall = actions.any { it is ChatUI.Button.Call  && !it.preferredType.isVideoEnabled() },
+        withVideoCall = actions.any { it is ChatUI.Button.Call && it.callType.isVideoEnabled() },
+        withCall = actions.any { it is ChatUI.Button.Call  && !it.callType.isVideoEnabled() }
     )
 
     /**
@@ -154,9 +154,9 @@ internal class ChatMenuFragment : BaseFragment(), TiltListener {
         is ChatAction.VIDEOCALL, is ChatAction.CALL -> true.also {
             val userId = viewModel.chat.replayCache.first().participants.value.others.first().userId
             val conference = viewModel.conference.replayCache.firstOrNull() ?: return@also
-            conference.call(listOf(userId)) {
+            conference.call(listOf(userId), {
                 if (action is ChatAction.CALL) preferredType = Call.PreferredType.audioUpgradable()
-            }
+            })
             findNavController().popBackStack()
         }
         else -> false

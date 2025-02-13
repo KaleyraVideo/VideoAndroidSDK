@@ -188,8 +188,8 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         buttons
             // mapNotNull instead of map because sometimes is received a null value causing crash
             .mapNotNull {
-                it.mapToChatActions(call = { preferredType, maxDuration, recordingType ->
-                    call(preferredType, maxDuration, recordingType)
+                it.mapToChatActions(call = { callType, maxDuration, recordingType ->
+                    call(callType, maxDuration, recordingType)
                 })
             }
             .onEach { actions -> viewModelState.update { it.copy(actions = ImmutableSet(actions)) } }
@@ -283,17 +283,19 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
         }
     }
 
-    private fun call(preferredType: Call.PreferredType, maxDuration: Long? = null, recordingType: Call.Recording.Type? = null) {
+    private fun call(callType: Call.Type, maxDuration: Long? = null, recordingType: Call.Recording.Type? = null) {
         val conference = conference.getValue() ?: return
         if (conference.state.value !is State.Connected) return
         val chat = chat.getValue() ?: return
         val userId = chat.participants.value.others.map { it.userId }
-        conference.call(userId) {
-            this.preferredType = preferredType
-            this.chatId = chat.id
-            this.maxDuration = maxDuration
-            this.recordingType = recordingType ?: Call.Recording.Type.Never
-        }
+        conference.call(
+            userIDs = userId,
+            options = {
+                this.callType = callType
+                this.maxDuration = maxDuration
+                this.recordingType = recordingType ?: Call.Recording.Type.Never
+            },
+            chatId = chat.id)
     }
 
     companion object {

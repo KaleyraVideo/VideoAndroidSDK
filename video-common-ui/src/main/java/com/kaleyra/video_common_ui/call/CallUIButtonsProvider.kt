@@ -29,7 +29,7 @@ interface CallUIButtonsProvider : UIButtonsProvider<Button> {
 }
 
 internal class DefaultCallUIButtonsProvider(
-    val callType: StateFlow<Call.PreferredType>,
+    val callType: StateFlow<Call.Type>,
     val callState: StateFlow<Call.State>,
     val legacyActions: MutableStateFlow<Set<CallUI.Action>>? = null,
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)) : CallUIButtonsProvider {
