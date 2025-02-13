@@ -572,7 +572,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = { onAaskingInputPermissions = true },
+                onAskInputPermissions = { onAaskingInputPermissions = it },
             )
         }
 
@@ -585,7 +585,7 @@ class HSheetContentTest {
         assertEquals(true, onAaskingInputPermissions)
         TestCase.assertEquals(null, component)
     }
-
+    
     @Test
     fun testMoreActionNotToggled() {
         composeTestRule.setContent {

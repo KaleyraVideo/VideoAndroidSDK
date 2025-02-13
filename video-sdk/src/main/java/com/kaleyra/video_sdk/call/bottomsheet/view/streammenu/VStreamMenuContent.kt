@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,18 +43,13 @@ internal fun VStreamMenuContent(
 
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
         if (!isFullscreen) {
-            viewModel.fullscreen(null)
+            viewModel.clearFullscreenStream()
             showFullscreenMenu = false
             onDismiss()
         } else {
-            viewModel.fullscreen(selectedStreamId)
+            viewModel.setFullscreenStream(selectedStreamId)
             showFullscreenMenu = true
             onFullscreen()
-        }
-    }
-    val isPinLimitReached by remember(viewModel) {
-        derivedStateOf {
-            uiState.pinnedStreams.count() >= viewModel.maxPinnedStreams
         }
     }
 
@@ -64,15 +58,15 @@ internal fun VStreamMenuContent(
     }
     
     VStreamMenuContent(
-        isFullscreen = uiState.fullscreenStream?.id == selectedStreamId,
-        hasVideo = uiState.streams.value.firstOrNull { it.id == selectedStreamId }?.video?.isEnabled == true,
-        isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
-        isPinLimitReached = isPinLimitReached,
+        isFullscreen = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.isFullscreen() },
+        hasVideo = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.hasVideoEnabled() },
+        isPinned = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.isPinned() },
+        isPinLimitReached = uiState.hasReachedMaxPinnedStreams,
         onCancelClick = onDismiss,
         onFullscreenClick = { isFullscreen -> onFullscreenClick(!isFullscreen) },
         onPinClick = { isPinned ->
-            if (isPinned) viewModel.unpin(selectedStreamId)
-            else viewModel.pin(selectedStreamId)
+            if (isPinned) viewModel.unpinStream(selectedStreamId)
+            else viewModel.pinStream(selectedStreamId)
             onDismiss()
         },
         onZoomClick = { viewModel.zoom(selectedStreamId) },

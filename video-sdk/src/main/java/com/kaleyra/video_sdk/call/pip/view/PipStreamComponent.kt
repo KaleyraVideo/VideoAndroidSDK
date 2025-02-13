@@ -2,6 +2,10 @@ package com.kaleyra.video_sdk.call.pip.view
 
 import android.util.Rational
 import android.util.Size
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,27 +15,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.MathUtils
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
-import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
-import com.kaleyra.video_sdk.call.stream.view.items.MoreParticipantsItem
-import com.kaleyra.video_sdk.call.stream.view.items.NonDisplayedParticipantData
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 
 internal val DefaultPipAspectRatio = Rational(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
@@ -46,6 +49,14 @@ internal fun PipStreamComponent(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.setStreamLayoutConstraints(
+            mosaicStreamThreshold = 2,
+            featuredStreamThreshold = 2,
+            thumbnailStreamThreshold = 0
+        )
+    }
+
     PipStreamComponent(
         uiState = uiState,
         onPipAspectRatio = onPipAspectRatio,
@@ -59,12 +70,12 @@ internal fun PipStreamComponent(
     onPipAspectRatio: (Rational) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val streamsToDisplay = remember(uiState) { streamsToDisplayFor(uiState) }
-    val aspectRatioView = remember(streamsToDisplay) {
-        if (streamsToDisplay.size == 1) {
-            streamsToDisplay[0].video?.view?.value as? VideoStreamView
-        } else null
+    val streamItems = remember(uiState) { uiState.streamItems.value }
+    val aspectRatioView = remember(streamItems) {
+        val streamItem = streamItems.takeIf { it.size == 1 }?.firstOrNull() as? StreamItem.Stream
+        streamItem?.stream?.video?.view?.value
     }
+    var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(aspectRatioView) {
         if (aspectRatioView == null) onPipAspectRatio.invoke(DefaultPipAspectRatio)
@@ -75,65 +86,64 @@ internal fun PipStreamComponent(
         }
     }
 
-    val nonDisplayedParticipantsData = remember(uiState, streamsToDisplay) {
-        val nonDisplayedStreams = uiState.streams.value.filterNot { it.isMine && it.video?.isScreenShare == true } - streamsToDisplay.toSet()
-        nonDisplayedStreams.map { NonDisplayedParticipantData(it.id, it.username, it.avatar) }.toImmutableList()
+    // Ensures a smooth layout transition between the default screen and PiP mode.
+    // It prevents visual artifacts on the streams when entering PiP mode.
+    LaunchedEffect(Unit) {
+        visible = true
     }
 
-    val shouldDisplayMoreParticipantItem = nonDisplayedParticipantsData.isNotEmpty() && streamsToDisplay.size > 1 && uiState.pinnedStreams.count() == 0
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.testTag(PipStreamComponentTag)
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(tween(500)),
+        exit = fadeOut()
     ) {
-        if (uiState.preview != null) {
-            val video = uiState.preview.video
-            Stream(
-                streamView = video?.view?.preCallStreamViewSettings(),
-                avatar = uiState.preview.avatar,
-                username = uiState.preview.username ?: "",
-                showStreamView = video?.view != null && video.isEnabled
-            )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.testTag(PipStreamComponentTag)
+        ) {
+            if (uiState.preview != null) {
+                val video = uiState.preview.video
+                Stream(
+                    streamView = video?.view?.preCallStreamViewSettings(),
+                    avatar = uiState.preview.avatar,
+                    username = uiState.preview.username ?: "",
+                    showStreamView = video?.view != null && video.isEnabled
+                )
 
-            StreamStatusIcons(
-                uiState.preview.audio,
-                uiState.preview.video,
-                fullscreen = false,
-                mine = true,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-            )
-        } else {
-            Box(modifier = modifier) {
-                AdaptiveStreamLayout(
-                    thumbnailSize = 0.dp,
-                    thumbnailsCount = 0
-                ) {
-                    streamsToDisplay.fastForEachIndexed { index, stream ->
-                        key(stream.id) {
-                            val displayAsMoreParticipantsItem = shouldDisplayMoreParticipantItem && index == streamsToDisplay.size - 1
+                StreamStatusIcons(
+                    uiState.preview.audio,
+                    uiState.preview.video,
+                    fullscreen = false,
+                    mine = true,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                )
+            } else {
+                Box(modifier = modifier) {
+                    AdaptiveStreamLayout(
+                        thumbnailSize = 0.dp,
+                        thumbnailsCount = 0
+                    ) {
+                        streamItems.fastForEach { streamItem ->
+                            key(streamItem.id) {
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    modifier = Modifier.testTag(streamItem.id)
+                                ) {
+                                    Box {
+                                        when (streamItem) {
+                                            is StreamItem.MoreStreams -> MoreStreamsItem(streamItem)
 
-                            Surface(
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                                modifier = Modifier.testTag(stream.id)
-                            ) {
-                                Box {
-                                    when {
-                                        displayAsMoreParticipantsItem -> {
-                                            // Add this participant to the list of non displayed participants
-                                            val participants = listOf(NonDisplayedParticipantData(stream.id, stream.username, stream.avatar)) + nonDisplayedParticipantsData.value
-                                            MoreParticipantsItem(participants.toImmutableList())
-                                        }
-
-                                        else -> {
-                                            StreamItem(
-                                                stream = stream,
-                                                fullscreen = false,
-                                                pin = false,
-                                                statusIconsAlignment = Alignment.TopEnd
-                                            )
+                                            is StreamItem.Stream -> {
+                                                StreamItem(
+                                                    stream = streamItem.stream,
+                                                    fullscreen = false,
+                                                    pin = false,
+                                                    statusIconsAlignment = Alignment.TopEnd,
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -143,18 +153,6 @@ internal fun PipStreamComponent(
                 }
             }
         }
-    }
-}
-
-private fun streamsToDisplayFor(uiState: StreamUiState): List<StreamUi> {
-    val streams = uiState.streams.value.filterNot { it.isMine && it.video?.isScreenShare == true }
-    val pinnedStreams = uiState.pinnedStreams.value.filterNot { it.isMine && it.video?.isScreenShare == true }
-    val fullscreenStream = uiState.fullscreenStream
-
-    return when {
-        fullscreenStream != null -> listOf(fullscreenStream)
-        pinnedStreams.isNotEmpty() -> pinnedStreams.take(2)
-        else -> streams.take(2)
     }
 }
 

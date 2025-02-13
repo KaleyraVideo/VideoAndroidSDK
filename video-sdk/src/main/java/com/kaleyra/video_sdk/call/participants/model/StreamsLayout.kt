@@ -4,6 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal enum class StreamsLayout {
-    Grid,
-    Pin
+    Mosaic,
+    Auto
 }

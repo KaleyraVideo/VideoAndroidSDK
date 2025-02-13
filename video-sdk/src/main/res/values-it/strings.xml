@@ -22,7 +22,7 @@
     <string name="kaleyra_call_sheet_file_share">Condivisione file</string>
     <string name="kaleyra_call_sheet_screen_share">Condivisione schermo</string>
     <string name="kaleyra_call_sheet_virtual_background">Virtual background</string>
-    <string name="kaleyra_call_sheet_pin">Pin</string>
+    <string name="kaleyra_call_sheet_pin">Fissa</string>
     <string name="kaleyra_call_sheet_unpin">Rimuovi pin</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Espandi</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Esci</string>
@@ -62,8 +62,8 @@
     <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>
     <string name="kaleyra_participants_component_users_invited">Altri Invitati</string>
-    <string name="kaleyra_participants_component_grid">Griglia</string>
-    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_mosaic">Mosaico</string>
+    <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fissa lo stream</string>
     <string name="kaleyra_participants_component_unpin_stream">Togli lo stream</string>
     <string name="kaleyra_participants_component_pin_stream_description">Fissa lo stream di %s</string>
@@ -351,6 +351,9 @@
     <string name="kaleyra_app_icon">Icona dell\'app</string>
     <string name="kaleyra_call_sheet_description_camera_warning">Avviso fotocamera</string>
     <string name="kaleyra_call_sheet_description_camera_error">Errore della fotocamera</string>
+
+    <string name="kaleyra_user_message_pin">Fissa</string>
+
     <string name="kaleyra_call_action_mic_unmute">Riattiva</string>
     <string name="kaleyra_call_sheet_enable">Abilita</string>
     <string name="kaleyra_call_sheet_disable">Disabilita</string>

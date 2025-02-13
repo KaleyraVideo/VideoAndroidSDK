@@ -15,6 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -23,6 +25,8 @@ import com.kaleyra.video_sdk.call.callactions.view.CancelAction
 import com.kaleyra.video_sdk.call.callactions.view.FullscreenAction
 import com.kaleyra.video_sdk.call.callactions.view.PinAction
 import com.kaleyra.video_sdk.call.callactions.view.ZoomAction
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
@@ -43,18 +47,13 @@ internal fun HStreamMenuContent(
 
     val onFullscreenClick: (Boolean) -> Unit = { isFullscreen ->
         if (!isFullscreen) {
-            viewModel.fullscreen(null)
+            viewModel.clearFullscreenStream()
             showFullscreenMenu = false
             onDismiss()
         } else {
-            viewModel.fullscreen(selectedStreamId)
+            viewModel.setFullscreenStream(selectedStreamId)
             showFullscreenMenu = true
             onFullscreen()
-        }
-    }
-    val isPinLimitReached by remember(viewModel) {
-        derivedStateOf {
-            uiState.pinnedStreams.count() >= viewModel.maxPinnedStreams
         }
     }
 
@@ -63,15 +62,15 @@ internal fun HStreamMenuContent(
     }
 
     HStreamMenuContent(
-        isFullscreen = uiState.fullscreenStream?.id == selectedStreamId,
-        hasVideo = uiState.streams.value.firstOrNull { it.id == selectedStreamId }?.video?.isEnabled == true,
-        isPinned = uiState.pinnedStreams.value.fastAny { stream -> stream.id == selectedStreamId },
-        isPinLimitReached = isPinLimitReached,
+        isFullscreen = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.isFullscreen() },
+        hasVideo = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.hasVideoEnabled() },
+        isPinned = uiState.streamItems.value.fastAny { it.id == selectedStreamId && it.isPinned() },
+        isPinLimitReached = uiState.hasReachedMaxPinnedStreams,
         onCancelClick = onDismiss,
         onFullscreenClick = { isFullscreen -> onFullscreenClick(isFullscreen) },
         onPinClick = { isPinned ->
-            if (isPinned) viewModel.unpin(selectedStreamId)
-            else viewModel.pin(selectedStreamId)
+            if (isPinned) viewModel.unpinStream(selectedStreamId)
+            else viewModel.pinStream(selectedStreamId)
             onDismiss()
         },
         onZoomClick = { viewModel.zoom(selectedStreamId) },

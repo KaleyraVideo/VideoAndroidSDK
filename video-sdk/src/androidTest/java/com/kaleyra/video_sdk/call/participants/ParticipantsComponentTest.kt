@@ -35,7 +35,7 @@ class ParticipantsComponentTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var streamsLayout by mutableStateOf(StreamsLayout.Grid)
+    private var streamsLayout by mutableStateOf(StreamsLayout.Mosaic)
 
     private var streams by mutableStateOf(ImmutableList<StreamUi>())
 
@@ -48,8 +48,6 @@ class ParticipantsComponentTest {
     private var amIAdmin by mutableStateOf(false)
 
     private var isPinLimitReached by mutableStateOf(false)
-
-    private var enableGridLayout by mutableStateOf(true)
 
     private var participantsCount by mutableStateOf(0)
 
@@ -77,7 +75,6 @@ class ParticipantsComponentTest {
                 adminsStreamsIds = adminStreamsIds,
                 pinnedStreamsIds = pinnedStreamsIds,
                 amIAdmin = amIAdmin,
-                enableGridLayout = enableGridLayout,
                 isPinLimitReached = isPinLimitReached,
                 participantsCount = participantsCount,
                 onLayoutClick = { layoutClicked = it },
@@ -101,13 +98,12 @@ class ParticipantsComponentTest {
 
     @After
     fun tearDown() {
-        streamsLayout = StreamsLayout.Grid
+        streamsLayout = StreamsLayout.Mosaic
         streams = ImmutableList()
         adminStreamsIds = ImmutableList()
         pinnedStreamsIds = ImmutableList()
         invited = ImmutableList()
         amIAdmin = false
-        enableGridLayout = true
         layoutClicked = null
         isStreamMuted = null
         isStreamMicDisabled = null
@@ -132,15 +128,15 @@ class ParticipantsComponentTest {
     }
 
     @Test
-    fun testGridButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
+    fun testMosaicButtonIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mosaic)
         composeTestRule.onNodeWithText(text).assertHasClickAction()
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
-    fun testPinButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+    fun testAutoButtonIsDisplayed() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_auto)
         composeTestRule.onNodeWithText(text).assertHasClickAction()
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
@@ -370,19 +366,19 @@ class ParticipantsComponentTest {
     }
 
     @Test
-    fun testOnClickGridButton() {
-        streamsLayout = StreamsLayout.Pin
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
+    fun testOnClickMosaicButton() {
+        streamsLayout = StreamsLayout.Auto
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mosaic)
         composeTestRule.onNodeWithText(text).performClick()
-        Assert.assertEquals(StreamsLayout.Grid, layoutClicked)
+        Assert.assertEquals(StreamsLayout.Mosaic, layoutClicked)
     }
 
     @Test
-    fun testOnClickPinButton() {
-        streamsLayout = StreamsLayout.Grid
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+    fun testOnClickAutoButton() {
+        streamsLayout = StreamsLayout.Mosaic
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_auto)
         composeTestRule.onNodeWithText(text).performClick()
-        Assert.assertEquals(StreamsLayout.Pin, layoutClicked)
+        Assert.assertEquals(StreamsLayout.Auto, layoutClicked)
     }
 
     @Test
@@ -578,13 +574,6 @@ class ParticipantsComponentTest {
         invited = ImmutableList()
         val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
-    }
-
-    @Test
-    fun testEnabledGridLayoutFalse_gridLayoutButtonIsDisabled() {
-        enableGridLayout = false
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_grid)
-        composeTestRule.onNodeWithText(text).assertHasClickAction().assertIsNotEnabled()
     }
 
     @Test

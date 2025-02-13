@@ -12,16 +12,18 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.HStreamMenuContent
 import com.kaleyra.video_sdk.call.bottomsheet.view.streammenu.VStreamMenuContent
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
 import io.mockk.mockk
@@ -44,7 +46,6 @@ class HStreamMenuContentTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
     private val streamUiState = MutableStateFlow(StreamUiState())
 
     private val streamViewModel = mockk<StreamViewModel>(relaxed = true) {
@@ -66,12 +67,16 @@ class HStreamMenuContentTest {
 
     @Test
     fun testExitFullscreen() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = stream)
+        val streamItem = StreamItem.Stream(
+            "1",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Fullscreen
+        )
+        streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
         var fullscreen = true
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { fullscreen = false },
                 onFullscreen = { }
             )
@@ -83,18 +88,16 @@ class HStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.fullscreen(null) }
+        verify(exactly = 1) { streamViewModel.clearFullscreenStream() }
         assertEquals(false, fullscreen)
     }
 
     @Test
     fun testEnterFullscreen() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
         var fullscreen = false
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { },
                 onFullscreen = { fullscreen = true },
             )
@@ -106,18 +109,16 @@ class HStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.fullscreen(stream.id) }
+        verify(exactly = 1) { streamViewModel.setFullscreenStream("streamId") }
         assertEquals(true, fullscreen)
     }
 
     @Test
     fun fullScreeEntered_backPressed_menuDismissed() {
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(fullscreenStream = null)
         var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -136,15 +137,20 @@ class HStreamMenuContentTest {
 
     @Test
     fun testUnPin() {
-        every { streamViewModel.maxPinnedStreams } returns 2
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        val streamItem = StreamItem.Stream(
+            "1",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Pinned
+        )
+        streamUiState.value = StreamUiState(
+            streamItems = listOf(streamItem).toImmutableList(),
+            hasReachedMaxPinnedStreams = false
+        )
 
         var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -156,21 +162,18 @@ class HStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.unpin(stream.id) }
+        verify(exactly = 1) { streamViewModel.unpinStream(streamItem.id) }
         assertEquals(true, dismissed)
     }
 
     @Test
     fun testPin() {
-        every { streamViewModel.maxPinnedStreams } returns 2
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState()
+        streamUiState.value = StreamUiState(hasReachedMaxPinnedStreams = false)
 
         var dismissed = false
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { dismissed = true },
                 onFullscreen = { }
             )
@@ -182,16 +185,15 @@ class HStreamMenuContentTest {
             .assertIsDisplayed()
             .performClick()
 
-        verify(exactly = 1) { streamViewModel.pin(stream.id) }
+        verify(exactly = 1) { streamViewModel.pinStream("streamId") }
         assertEquals(true, dismissed)
     }
 
     @Test
     fun testPinLimitReached_pinButtonIsNotEnabled() {
-        every { streamViewModel.maxPinnedStreams } returns 1
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        streamUiState.value = StreamUiState(
+            hasReachedMaxPinnedStreams = true
+        )
 
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -210,14 +212,19 @@ class HStreamMenuContentTest {
 
     @Test
     fun testPinLimitReached_unpinButtonIsEnabled() {
-        every { streamViewModel.maxPinnedStreams } returns 1
-
-        val stream = StreamUi(id = "streamId", username = "username")
-        streamUiState.value = StreamUiState(pinnedStreams = listOf(stream).toImmutableList())
+        val streamItem = StreamItem.Stream(
+            "streamId",
+            StreamUi("1", "user1"),
+            state = StreamItemState.Featured.Pinned
+        )
+        streamUiState.value = StreamUiState(
+            streamItems = listOf(streamItem).toImmutableList(),
+            hasReachedMaxPinnedStreams = true
+        )
 
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = "streamId",
                 onDismiss = { },
                 onFullscreen = { }
             )
@@ -269,6 +276,27 @@ class HStreamMenuContentTest {
     }
 
     @Test
+    fun fullscreenFalse_fullscreenActionClicked_onCancelClickCalled() {
+        var onFullscreenClicked = false
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
+        composeTestRule.setContent {
+            VStreamMenuContent(
+                isFullscreen = false,
+                hasVideo = false,
+                isPinned = false,
+                isPinLimitReached = false,
+                onCancelClick = {},
+                onFullscreenClick = { onFullscreenClicked = true },
+                onPinClick = {},
+                onZoomClick = {}
+            )
+        }
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(text).performClick()
+        assert(onFullscreenClicked)
+    }
+
+    @Test
     fun fullscreenFalse_fullscreenActionIsDisplayed() {
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
         composeTestRule.setContent {
@@ -302,27 +330,6 @@ class HStreamMenuContentTest {
             )
         }
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
-    }
-
-    @Test
-    fun fullscreenFalse_fullscreenActionClicked_onCancelClickCalled() {
-        var onFullscreenClicked = false
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_fullscreen_on)
-        composeTestRule.setContent {
-            VStreamMenuContent(
-                isFullscreen = false,
-                hasVideo = false,
-                isPinned = false,
-                isPinLimitReached = false,
-                onCancelClick = {},
-                onFullscreenClick = { onFullscreenClicked = true },
-                onPinClick = {},
-                onZoomClick = {}
-            )
-        }
-        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(text).performClick()
-        assert(onFullscreenClicked)
     }
 
     @Test
@@ -478,7 +485,7 @@ class HStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        with( composeTestRule.onNodeWithContentDescription(text)) {
+        with(composeTestRule.onNodeWithContentDescription(text)) {
             assertIsDisplayed()
             assertIsEnabled()
         }
@@ -500,7 +507,7 @@ class HStreamMenuContentTest {
                 onPinClick = {}
             )
         }
-        with( composeTestRule.onNodeWithContentDescription(text)) {
+        with(composeTestRule.onNodeWithContentDescription(text)) {
             assertIsDisplayed()
             assertIsEnabled()
             performClick()
@@ -531,20 +538,23 @@ class HStreamMenuContentTest {
     @Test
     fun testZoomCalledOnViewModel() {
         composeTestRule.setContent {
-            val stream = StreamUi(
+            val streamItem = StreamItem.Stream(
                 id = "streamId",
-                username = "username",
-                video = VideoUi(
-                    "streamId",
-                    ImmutableView(VideoStreamView(LocalContext.current)),
-                    isEnabled = true
+                stream = StreamUi(
+                    id = "streamId",
+                    username = "username",
+                    video = VideoUi(
+                        "streamId",
+                        ImmutableView(VideoStreamView(LocalContext.current)),
+                        isEnabled = true
+                    )
                 )
             )
             LaunchedEffect(Unit) {
-                streamUiState.value = StreamUiState(streams = listOf(stream).toImmutableList())
+                streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
             }
             VStreamMenuContent(
-                selectedStreamId = stream.id,
+                selectedStreamId = streamItem.id,
                 onDismiss = { },
                 onFullscreen = { }
             )

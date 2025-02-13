@@ -4,10 +4,10 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -17,13 +17,20 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
+import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import org.junit.After
@@ -42,25 +49,22 @@ class StreamComponentTest {
 
     private var selectedStreamId by mutableStateOf<String?>(null)
 
-    private var maxFeaturedStreams by mutableStateOf(Int.MAX_VALUE)
-
     private var moreParticipantClicked = false
 
     private var stopScreenShareClicked = false
 
-    private var streamClicked: StreamUi? = null
+    private var streamItemClicked: StreamItem.Stream? = null
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
             StreamComponent(
                 uiState = streamUiState,
-                windowSizeClass = currentWindowAdaptiveInfo(),
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = selectedStreamId,
-                onStreamClick = { streamClicked = it },
+                onStreamClick = { streamItemClicked = it },
                 onStopScreenShareClick = { stopScreenShareClicked = true },
                 onMoreParticipantClick = { moreParticipantClicked = true },
-                maxFeaturedStreams = maxFeaturedStreams
             )
         }
     }
@@ -69,149 +73,65 @@ class StreamComponentTest {
     fun tearDown() {
         streamUiState = StreamUiState()
         selectedStreamId = null
-        maxFeaturedStreams = Int.MAX_VALUE
         moreParticipantClicked = false
         stopScreenShareClicked = false
-        streamClicked = null
+        streamItemClicked = null
     }
 
     @Test
-    fun testStreamsAreDisplayedUpToMaxFeaturedStreams() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList()
-        )
-        maxFeaturedStreams = 2
-        composeTestRule.onNodeWithTag(stream1.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream2.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream3.id).assertDoesNotExist()
+    fun emptyStreamItems_noStreamItemIsDisplayed() {
+        streamUiState = StreamUiState(streamItems = ImmutableList())
+        composeTestRule.onNodeWithTag(StreamItemTag, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun maxFeaturedStreamsIsExceed_moreParticipantItemIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
+    fun streamItem_streamItemIsDisplayed() {
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList()
+            streamItems = listOf(StreamItem.Stream("1", stream = streamUiMock)).toImmutableList()
         )
-        maxFeaturedStreams = 2
-
         composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertIsDisplayed()
-        composeTestRule.onNodeWithText("J").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(StreamItemTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
-    fun maxThumbnailStreamsIsExceed_moreParticipantItemIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        val stream4 = defaultStreamUi(username = "francesca")
-        val stream5 = defaultStreamUi(username = "luke")
+    fun hiddenStreamsItem_hiddenStreamsItemIsDisplayed() {
         streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4, stream5).toImmutableList(),
-            pinnedStreams = listOf(stream1).toImmutableList(),
+            streamItems = listOf(
+                StreamItem.MoreStreams(users = listOf(MoreStreamsUserPreview("1", "user", null)))
+            ).toImmutableList()
         )
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("alice").assertIsDisplayed()
-        composeTestRule.onNodeWithText("john").assertIsDisplayed()
-        composeTestRule.onNodeWithText("F").assertIsDisplayed()
-        composeTestRule.onNodeWithText("L").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
-    fun fullscreenIsSet_fullscreenStreamIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList(),
-            fullscreenStream = stream2
-        )
-
-        val fullscreenDescription = composeTestRule.activity.getString(R.string.kaleyra_stream_fullscreen)
-        composeTestRule.onNodeWithText("mario").assertDoesNotExist()
-        composeTestRule.onNodeWithText("john").assertDoesNotExist()
-        composeTestRule.onNodeWithText("alice").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(fullscreenDescription).assertIsDisplayed()
-    }
-
-    @Test
-    fun pinnedStreams_onlyPinnedAndThumbnailStreamsAreDisplayed() {
-        val stream1 = defaultStreamUi(id = "id1")
-        val stream2 = defaultStreamUi(id = "id2")
-        val stream3 = defaultStreamUi(id = "id3")
-        val stream4 = defaultStreamUi(id = "id4")
-        val stream5 = defaultStreamUi(id = "id5")
-        val stream6 = defaultStreamUi(id = "id6")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3, stream4, stream5, stream6).toImmutableList(),
-            pinnedStreams = listOf(stream1, stream2).toImmutableList()
-        )
-
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_stream_pin)
-        // Check pinned streams
-        composeTestRule.onAllNodesWithContentDescription(pinText).assertCountEquals(2)
-        composeTestRule.onAllNodesWithContentDescription(pinText)[0].assertIsDisplayed()
-        composeTestRule.onAllNodesWithContentDescription(pinText)[1].assertIsDisplayed()
-        // Check thumbnail streams
-        composeTestRule.onNodeWithTag(stream3.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream4.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream5.id).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(stream6.id).assertDoesNotExist()
-    }
-
-    @Test
-    fun localScreenShareStream_screenShareItemIsDisplayed() {
-        val stream1 = defaultStreamUi(id = "id1", video = VideoUi(id = "screenShare", isScreenShare = true), mine = true)
-        streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList(),
-            pinnedStreams = listOf(stream1).toImmutableList()
-        )
+    fun isScreenShareActiveTrue_activeScreenShareIndicatorIsDisplayed() {
+        streamUiState = StreamUiState(isScreenShareActive = true)
 
         val text =  composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_message)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
-        composeTestRule
-            .onNodeWithTag(stream1.id)
-            .assertHasClickAction()
-            .assertIsNotEnabled()
     }
 
     @Test
-    fun localScreenShareStream_screenShareItemIsNotClickable() {
-        val stream1 = defaultStreamUi(id = "id1", video = VideoUi(id = "screenShare", isScreenShare = true), mine = true)
-        streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList(),
-            pinnedStreams = listOf(stream1).toImmutableList()
-        )
+    fun isScreenShareActiveFalse_activeScreenShareIndicatorDoesNotExists() {
+        streamUiState = StreamUiState(isScreenShareActive = false)
 
-        composeTestRule
-            .onNodeWithTag(stream1.id)
-            .assertHasClickAction()
-            .assertIsNotEnabled()
+        val text =  composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_message)
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 
     @Test
-    fun testOnMoreParticipantClick() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "john")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList()
+    fun testOnHiddenStreamsClick() {
+        val stream1 = defaultStreamItem(username = "mario")
+        val stream2 = StreamItem.MoreStreams(
+            users = listOf(
+                MoreStreamsUserPreview("id1", "user1", null),
+                MoreStreamsUserPreview("id2", "user2", null),
+            )
         )
-        maxFeaturedStreams = 2
+        streamUiState = StreamUiState(
+            streamItems = listOf(stream1, stream2).toImmutableList()
+        )
 
         composeTestRule.waitForIdle()
 
@@ -225,11 +145,7 @@ class StreamComponentTest {
 
     @Test
     fun testOnStopScreenShareClick() {
-        val stream1 = defaultStreamUi(id = "id1", video = VideoUi(id = "screenShare", isScreenShare = true), mine = true)
-        streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList(),
-            pinnedStreams = listOf(stream1).toImmutableList()
-        )
+        streamUiState = StreamUiState(isScreenShareActive = true)
 
         val text =  composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
         composeTestRule
@@ -241,69 +157,33 @@ class StreamComponentTest {
 
     @Test
     fun testOnStreamClick() {
-        val stream = defaultStreamUi(username = "luke")
-        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
+        val stream = defaultStreamItem(username = "luke")
+        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
 
         composeTestRule
             .onNodeWithText("luke")
             .assertHasClickAction()
             .performClick()
-        assertEquals(stream, streamClicked)
+        assertEquals(stream, streamItemClicked)
     }
 
     @Test
     fun selectedStreamIsValid_nonSelectedStreamsAreDimmed() {
-        val stream1 = defaultStreamUi()
-        val stream2 = defaultStreamUi()
-        val stream3 = defaultStreamUi()
+        val stream1 = defaultStreamItem()
+        val stream2 = defaultStreamItem()
+        val stream3 = defaultStreamItem()
         selectedStreamId = stream1.id
-        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
+        streamUiState = StreamUiState(streamItems = listOf(stream1, stream2, stream3).toImmutableList())
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_stream_dimmed)
         composeTestRule.onAllNodesWithContentDescription(text).assertCountEquals(2)
     }
 
     @Test
-    fun fullscreenStream_moreParticipantItemDoesNotExists() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        val stream3 = defaultStreamUi(username = "luke")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2, stream3).toImmutableList(),
-            fullscreenStream = stream1
-        )
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 3)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("A").assertDoesNotExist()
-        composeTestRule.onNodeWithText("L").assertDoesNotExist()
-        composeTestRule.onNodeWithText(otherText).assertDoesNotExist()
-    }
-
-    @Test
-    fun streamsAreExactlyAtMaxCapacity_moreParticipantItemDoesNotExists() {
-        val stream1 = defaultStreamUi(username = "mario")
-        val stream2 = defaultStreamUi(username = "alice")
-        streamUiState = StreamUiState(
-            streams = listOf(stream1, stream2).toImmutableList()
-        )
-        maxFeaturedStreams = 2
-
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText("mario").assertIsDisplayed()
-        composeTestRule.onNodeWithText("alice").assertIsDisplayed()
-        composeTestRule.onNodeWithText(otherText).assertDoesNotExist()
-    }
-
-    @Test
     fun streamMicDisabled_micDisabledIconIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false))
+        val stream1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = false))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -315,9 +195,9 @@ class StreamComponentTest {
 
     @Test
     fun streamMicEnabled_micDisabledIconIsNotDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = true))
+        val stream1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -329,9 +209,9 @@ class StreamComponentTest {
 
     @Test
     fun streamAudioNull_micDisabledIconDoesNotExits() {
-        val stream1 = defaultStreamUi(username = "mario", audio = null)
+        val stream1 = defaultStreamItem(username = "mario", audio = null)
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -343,9 +223,9 @@ class StreamComponentTest {
 
     @Test
     fun streamMutedForYou_mutedForYouIconIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = true, isMutedForYou = true))
+        val stream1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = true, isMutedForYou = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -357,9 +237,9 @@ class StreamComponentTest {
 
     @Test
     fun streamMicDisabledAndMutedForYou_micMutedForYouIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
+        val stream1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true))
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -371,9 +251,9 @@ class StreamComponentTest {
 
     @Test
     fun localStreamMicDisabledAndMutedForYou_micDisabledIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true), mine = true)
+        val stream1 = defaultStreamItem(username = "mario", audio = AudioUi(id = "audio", isEnabled = false, isMutedForYou = true), mine = true)
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -388,9 +268,9 @@ class StreamComponentTest {
 
     @Test
     fun localStream_youAsUsernameIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario", mine = true)
+        val stream1 = defaultStreamItem(username = "mario", mine = true)
         streamUiState = StreamUiState(
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
 
         composeTestRule.waitForIdle()
@@ -401,10 +281,10 @@ class StreamComponentTest {
 
     @Test
     fun previewStreamNotNull_previewIsDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
+        val stream1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
             preview = StreamPreview(username = "previewUsername"),
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
         composeTestRule.waitForIdle()
 
@@ -413,10 +293,10 @@ class StreamComponentTest {
 
     @Test
     fun previewStreamNotNull_streamIsNotDisplayed() {
-        val stream1 = defaultStreamUi(username = "mario")
+        val stream1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
             preview = StreamPreview(username = "previewUsername"),
-            streams = listOf(stream1).toImmutableList()
+            streamItems = listOf(stream1).toImmutableList()
         )
         composeTestRule.waitForIdle()
 
@@ -473,37 +353,26 @@ class StreamComponentTest {
         composeTestRule.onNodeWithText("M").assertIsDisplayed()
     }
 
-    fun participantItemIsAddedAfterwards_onClickBehaviourIsSetCorrectly() {
-        val stream1 = defaultStreamUi()
-        val stream2 = defaultStreamUi()
-        val stream3 = defaultStreamUi()
-        streamUiState = StreamUiState(streams = listOf(stream1, stream2, stream3).toImmutableList())
-        composeTestRule.waitForIdle()
-
-        maxFeaturedStreams = 2
-        composeTestRule.waitForIdle()
-
-        val otherText = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
-        composeTestRule.onNodeWithText(otherText).performClick()
-
-        assertEquals(true, moreParticipantClicked)
-    }
-
-    fun defaultStreamUi(
+    private fun defaultStreamItem(
         id: String = UUID.randomUUID().toString(),
         username: String = "username",
         mine: Boolean = false,
         audio: AudioUi? = null,
         video: VideoUi? = null,
-        avatar: ImmutableUri? = null
-    ): StreamUi {
-        return StreamUi(
+        avatar: ImmutableUri? = null,
+        streamItemState: StreamItemState = StreamItemState.Standard
+    ): StreamItem {
+        return StreamItem.Stream(
             id = id,
-            username = username,
-            isMine = mine,
-            audio = audio,
-            video = video,
-            avatar = avatar
+            stream = StreamUi(
+                id = id,
+                username = username,
+                isMine = mine,
+                audio = audio,
+                video = video,
+                avatar = avatar
+            ),
+            state = streamItemState
         )
     }
 

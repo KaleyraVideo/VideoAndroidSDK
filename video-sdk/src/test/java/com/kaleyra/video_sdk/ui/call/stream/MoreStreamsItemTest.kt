@@ -8,9 +8,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.view.items.MoreParticipantsItem
-import com.kaleyra.video_sdk.call.stream.view.items.NonDisplayedParticipantData
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -19,41 +19,41 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class MoreParticipantsItemTest {
+class MoreStreamsItemTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private var nonDisplayedParticipantList by mutableStateOf(ImmutableList<NonDisplayedParticipantData>())
+    private var moreStreamsItem by mutableStateOf(StreamItem.MoreStreams(users = listOf()))
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            MoreParticipantsItem(nonDisplayedParticipantList = nonDisplayedParticipantList)
+            MoreStreamsItem(moreStreamsItem = moreStreamsItem)
         }
     }
 
     @After
     fun tearDown() {
-        nonDisplayedParticipantList = ImmutableList()
+        moreStreamsItem = StreamItem.MoreStreams(users = listOf())
     }
 
     @Test
     fun testAvatarIsDisplayed() {
-        nonDisplayedParticipantList = ImmutableList(
-            listOf(NonDisplayedParticipantData("id1", "john", null))
+        moreStreamsItem = StreamItem.MoreStreams(
+            users = listOf(MoreStreamsUserPreview("1","john", null),)
         )
         composeTestRule.onNodeWithText("J").assertIsDisplayed()
     }
 
     @Test
     fun testMaxThreeAvatarsAreDisplayed() {
-        nonDisplayedParticipantList = ImmutableList(
-            listOf(
-                NonDisplayedParticipantData("id1", "john", null),
-                NonDisplayedParticipantData("id2", "mary", null),
-                NonDisplayedParticipantData("id3", "alice", null),
-                NonDisplayedParticipantData("id4", "harry", null)
+        moreStreamsItem = StreamItem.MoreStreams(
+            users = listOf(
+                MoreStreamsUserPreview("1", "john", null),
+                MoreStreamsUserPreview("2", "mary", null),
+                MoreStreamsUserPreview("3", "alice", null),
+                MoreStreamsUserPreview("4", "harry", null),
             )
         )
         composeTestRule.onNodeWithText("J").assertIsDisplayed()
@@ -64,13 +64,13 @@ class MoreParticipantsItemTest {
 
     @Test
     fun testOthersCountIsDisplayed() {
-        nonDisplayedParticipantList = ImmutableList(
-            listOf(
-                NonDisplayedParticipantData("id1", "john", null),
-                NonDisplayedParticipantData("id2", "mary", null)
+        moreStreamsItem = StreamItem.MoreStreams(
+            users = listOf(
+                MoreStreamsUserPreview("1", "john", null),
+                MoreStreamsUserPreview("2", "mary", null)
             )
         )
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, nonDisplayedParticipantList.count())
+        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_other_participants, 2)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 }

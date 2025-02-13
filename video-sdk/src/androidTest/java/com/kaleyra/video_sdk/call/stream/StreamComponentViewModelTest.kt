@@ -2,16 +2,19 @@ package com.kaleyra.video_sdk.call.stream
 
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults.MaxMosaicStreamsCompact
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults.MaxMosaicStreamsExpanded
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults.MaxPinnedStreamsCompact
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults.MaxPinnedStreamsExpanded
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults.MaxThumbnailStreams
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
-import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import io.mockk.every
 import io.mockk.mockk
@@ -33,17 +36,14 @@ class StreamComponentViewModelTest {
 
     @Test
     fun userClicksStopScreenShare_tryStopScreenShareInvoked() {
-        val stream1 = StreamUi(id = "id1", username = "username", video = VideoUi(id = "screenShare", isScreenShare = true), isMine = true)
-        streamUiState.value = StreamUiState(
-            streams = listOf(stream1).toImmutableList(),
-            pinnedStreams = listOf(stream1).toImmutableList()
-        )
+        streamUiState.value = StreamUiState(isScreenShareActive = true)
         composeTestRule.setContent {
             StreamComponent(
                 viewModel = streamViewModel,
-                windowSizeClass = currentWindowAdaptiveInfo(),
-                onStreamClick = { },
-                onMoreParticipantClick = { })
+                windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
+                onStreamItemClick = { },
+                onMoreParticipantClick = { }
+            )
         }
 
         val text =  composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
@@ -55,7 +55,7 @@ class StreamComponentViewModelTest {
     }
 
     @Test
-    fun compactWindowSizeClass_setMaxPinnedStreamsWithMaxPinnedStreamsCompact() {
+    fun compactWindowSizeClass_setMaxStreamsCompact() {
         val configuration = Configuration().apply {
             screenWidthDp = 300
             screenHeightDp = 480
@@ -64,15 +64,18 @@ class StreamComponentViewModelTest {
             StreamComponent(
                 viewModel = streamViewModel,
                 windowSizeClass = currentWindowAdaptiveInfo(configuration),
-                onStreamClick = { },
-                onMoreParticipantClick = { })
+                onStreamItemClick = { },
+                onMoreParticipantClick = { }
+            )
         }
 
-        verify(exactly = 1) { streamViewModel.maxPinnedStreams = MaxPinnedStreamsCompact  }
+        verify(exactly = 1) {
+            streamViewModel.setStreamLayoutConstraints(MaxMosaicStreamsCompact, MaxPinnedStreamsCompact, MaxThumbnailStreams)
+        }
     }
 
     @Test
-    fun largeWindowSizeClass_setMaxPinnedStreamsWithMaxPinnedStreamsCompact() {
+    fun largeWindowSizeClass_setMaxStreamsExpanded() {
         val configuration = Configuration().apply {
             screenWidthDp = 800
             screenHeightDp = 480
@@ -81,11 +84,14 @@ class StreamComponentViewModelTest {
             StreamComponent(
                 viewModel = streamViewModel,
                 windowSizeClass = currentWindowAdaptiveInfo(configuration),
-                onStreamClick = { },
-                onMoreParticipantClick = { })
+                onStreamItemClick = { },
+                onMoreParticipantClick = { }
+            )
         }
 
-        verify(exactly = 1) { streamViewModel.maxPinnedStreams = MaxPinnedStreamsExpanded }
+        verify(exactly = 1) {
+            streamViewModel.setStreamLayoutConstraints(MaxMosaicStreamsExpanded, MaxPinnedStreamsExpanded, MaxThumbnailStreams)
+        }
     }
 
 }

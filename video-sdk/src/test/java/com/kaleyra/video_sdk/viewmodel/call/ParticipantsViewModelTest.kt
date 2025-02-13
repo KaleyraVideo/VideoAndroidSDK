@@ -13,8 +13,13 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.call.mapper.StreamMapper
+import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
+import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
+import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,6 +32,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -43,7 +49,7 @@ import org.robolectric.RobolectricTestRunner
 class ParticipantsViewModelTest {
 
     @get:Rule
-    var mainDispatcherRule = MainDispatcherRule()
+    var mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
     private val conferenceMock = mockk<ConferenceUI>()
 
@@ -69,6 +75,7 @@ class ParticipantsViewModelTest {
     fun setUp() {
         mockkObject(ParticipantMapper)
         mockkObject(ContactDetailsManager)
+        mockkObject(StreamMapper)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
@@ -102,6 +109,7 @@ class ParticipantsViewModelTest {
             every { others } returns listOf(otherMock1, otherMock2)
         }
         every { callMock.participants } returns MutableStateFlow(participantsMock)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(emptyList())
     }
 
     @After
@@ -110,12 +118,69 @@ class ParticipantsViewModelTest {
     }
 
     @Test
+    fun `streams updated on new streams ui`() {
+        val streams = listOf(
+            StreamUi("1", "user1"),
+            StreamUi("2", "user2"),
+        )
+        every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        assertEquals(streams.toImmutableList(), viewModel.uiState.value.streams)
+    }
+
+    @Test
+    fun `streamsLayout is Auto when layout controller is in auto mode`() {
+        val layoutController = StreamLayoutControllerMock(initialIsInAutoMode = true)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(StreamsLayout.Auto, viewModel.uiState.value.streamsLayout)
+    }
+
+    @Test
+    fun `streamsLayout is Mosaic when layout controller is in manual mode`() {
+        val layoutController = StreamLayoutControllerMock(initialIsInAutoMode = false)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(StreamsLayout.Mosaic, viewModel.uiState.value.streamsLayout)
+    }
+
+    @Test
+    fun `hasReachedMaxPinnedStreams is false when layout controller isPinnedStreamLimitReached is true`() {
+        val layoutController = StreamLayoutControllerMock(initialIsPinnedStreamLimitReached = false)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(false, viewModel.uiState.value.hasReachedMaxPinnedStreams)
+    }
+
+    @Test
+    fun `hasReachedMaxPinnedStreams is true when layout controller isPinnedStreamLimitReached is false`() {
+        val layoutController = StreamLayoutControllerMock(initialIsPinnedStreamLimitReached = true)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(true, viewModel.uiState.value.hasReachedMaxPinnedStreams)
+    }
+
+    @Test
     fun testInvitedParticipantsUpdated() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(otherMock1))
 
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
         val expected = ImmutableList(listOf("displayName1", "displayName3"))
@@ -123,29 +188,55 @@ class ParticipantsViewModelTest {
     }
 
     @Test
-    fun noInCallParticipants_participantsCountStateIsZero() = runTest {
+    fun noInCallParticipants_joinedParticipantsCountStateIsZero() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf())
 
-
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
-        assertEquals(0, viewModel.uiState.first().participantCount)
+        assertEquals(0, viewModel.uiState.first().joinedParticipantCount)
     }
 
     @Test
-    fun inCallParticipants_participantsCountStateIsUpdated() = runTest {
+    fun inCallParticipants_joinedParticipantsCountStateIsUpdated() = runTest {
         every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(otherMock1, otherMock2))
 
-
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
-        assertEquals(2, viewModel.uiState.first().participantCount)
+        assertEquals(2, viewModel.uiState.first().joinedParticipantCount)
+    }
+
+    @Test
+    fun testSwitchToManualLayout() = runTest {
+        val layoutController = StreamLayoutControllerMock(initialIsInAutoMode = true)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToManualLayout()
+        assertEquals(false, layoutController.isInAutoMode.first())
+    }
+
+    @Test
+    fun testSwitchToAutoLayout() = runTest {
+        val layoutController = StreamLayoutControllerMock(initialIsInAutoMode = false)
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToAutoLayout()
+        assertEquals(true, layoutController.isInAutoMode.first())
     }
 
     @Test
@@ -159,9 +250,12 @@ class ParticipantsViewModelTest {
         every { callMock.inputs } returns inputs
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) }, 
+                layoutController = StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
         viewModel.toggleMic(activity)
@@ -182,9 +276,12 @@ class ParticipantsViewModelTest {
         every { callMock.inputs } returns inputs
         coEvery { inputs.request(any(), any()) } returns Inputs.RequestResult.Success(audio)
 
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
         viewModel.toggleMic(activity)
@@ -198,9 +295,12 @@ class ParticipantsViewModelTest {
     fun testMuteStreamAudio() = runTest {
         every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled.Both)
 
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
         viewModel.muteStreamAudio(streamMock2.id)
@@ -212,9 +312,12 @@ class ParticipantsViewModelTest {
     fun testUnmuteStreamAudio() = runTest {
         every { audioMock2.enabled } returns MutableStateFlow(Input.Enabled.None)
 
-        val viewModel = spyk(ParticipantsViewModel{
-            mockkSuccessfulConfiguration(conference = conferenceMock)
-        })
+        val viewModel = spyk(
+            ParticipantsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+                layoutController =  StreamLayoutControllerMock()
+            )
+        )
         advanceUntilIdle()
 
         viewModel.muteStreamAudio(streamMock2.id)

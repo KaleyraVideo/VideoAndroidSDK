@@ -83,7 +83,7 @@ internal fun FeedbackForm(
     var isEditTextFocused by remember { mutableStateOf(false) }
     var sliderValue by remember { mutableStateOf(feedbackUiState.rating) }
     val orientation = LocalConfiguration.current.orientation
-    val windowSizeClass = currentWindowAdaptiveInfo()
+    val windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier

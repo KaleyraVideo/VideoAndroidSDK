@@ -54,7 +54,7 @@ class UserMessageSnackbarM3Test {
 
     @Test
     fun testActionClicked() {
-        val actionTextRef = TextRef.StringResource(R.string.kaleyra_participants_component_pin)
+        val actionTextRef = TextRef.StringResource(R.string.kaleyra_user_message_pin)
         val actionLabel = actionTextRef.resolve(composeTestRule.activity)
         var actionClicked = false
         composeTestRule.setContent {

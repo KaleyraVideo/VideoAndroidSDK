@@ -19,23 +19,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
@@ -49,9 +44,7 @@ import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
@@ -64,76 +57,45 @@ internal const val AdminBottomSheetTag = "AdminBottomSheetTag"
 @Composable
 internal fun ParticipantsComponent(
     modifier: Modifier = Modifier,
-    participantsViewModel: ParticipantsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+    viewModel: ParticipantsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ParticipantsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
-    ),
-    streamViewModel: StreamViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = StreamViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onDismiss: () -> Unit,
     isLargeScreen: Boolean = false
 ) {
     val activity = LocalContext.current.findActivity()
-    val participantsUiState by participantsViewModel.uiState.collectAsStateWithLifecycle()
-    val streamsUiState by streamViewModel.uiState.collectAsStateWithLifecycle()
-
-    val streamsLayout by remember {
-        derivedStateOf {
-            if (streamsUiState.pinnedStreams.count() > 0) StreamsLayout.Pin else StreamsLayout.Grid
-        }
-    }
-    val pinnedStreamsIds by remember {
-        derivedStateOf {
-            streamsUiState.pinnedStreams.value.map { it.id }.toImmutableList()
-        }
-    }
-    val firstStreamNotMine by remember {
-        derivedStateOf {
-            streamsUiState.streams.value.firstOrNull { !it.isMine }
-        }
-    }
-    val isLocalScreenShareEnabled by remember {
-        derivedStateOf {
-            streamsUiState.streams.value.find { it.video?.isScreenShare == true && it.isMine } != null
-        }
-    }
-    val isPinLimitReached by remember(streamViewModel) {
-        derivedStateOf {
-            streamsUiState.pinnedStreams.count() >= streamViewModel.maxPinnedStreams
-        }
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ParticipantsComponent(
-        streamsLayout = streamsLayout,
-        streams = streamsUiState.streams,
-        invited = participantsUiState.invitedParticipants,
-        adminsStreamsIds = participantsUiState.adminsStreamsIds,
-        pinnedStreamsIds = pinnedStreamsIds,
-        amIAdmin = participantsUiState.isLocalParticipantAdmin,
-        enableGridLayout = !isLocalScreenShareEnabled,
-        isPinLimitReached = isPinLimitReached,
-        participantsCount = participantsUiState.participantCount,
-        onLayoutClick = remember(streamViewModel, firstStreamNotMine) {
+        streamsLayout = uiState.streamsLayout,
+        streams = uiState.streams,
+        invited = uiState.invitedParticipants,
+        adminsStreamsIds = uiState.adminsStreamIds,
+        pinnedStreamsIds = uiState.pinnedStreamIds,
+        amIAdmin = uiState.isLocalParticipantAdmin,
+        isPinLimitReached = uiState.hasReachedMaxPinnedStreams,
+        participantsCount = uiState.joinedParticipantCount,
+        onLayoutClick = remember(viewModel) {
             { layout ->
-                if (layout == StreamsLayout.Grid) streamViewModel.unpinAll()
-                else firstStreamNotMine?.let { streamViewModel.pin(it.id) }
+                when (layout) {
+                    StreamsLayout.Auto -> viewModel.switchToAutoLayout()
+                    else -> viewModel.switchToManualLayout()
+                }
             }
         },
-        onMuteStreamClick = remember(participantsViewModel) {
-            { streamId, _ ->
-                participantsViewModel.muteStreamAudio(streamId)
-            }
+        onMuteStreamClick = remember(viewModel) {
+            { streamId, _ -> viewModel.muteStreamAudio(streamId) }
         },
-        onDisableMicClick = remember(participantsViewModel) {
+        onDisableMicClick = remember(viewModel) {
             { streamId, _ ->
                 val isMyStream = streamId == CameraStreamConstants.CAMERA_STREAM_ID
-                if (isMyStream) participantsViewModel.toggleMic(activity)
+                if (isMyStream) viewModel.toggleMic(activity)
             }
         },
-        onPinStreamClick = remember(streamViewModel) {
+        onPinStreamClick = remember(viewModel) {
             { streamId, pin ->
-                if (pin) streamViewModel.pin(streamId)
-                else streamViewModel.unpin(streamId)
+                if (pin) viewModel.pinStream(streamId)
+                else viewModel.unpinStream(streamId)
             }
         } ,
         onKickParticipantClick = {},
@@ -152,7 +114,6 @@ internal fun ParticipantsComponent(
     adminsStreamsIds: ImmutableList<String>,
     pinnedStreamsIds: ImmutableList<String>,
     amIAdmin: Boolean,
-    enableGridLayout: Boolean,
     isPinLimitReached: Boolean,
     participantsCount: Int,
     onLayoutClick: (layout: StreamsLayout) -> Unit,
@@ -236,7 +197,6 @@ internal fun ParticipantsComponent(
                 Spacer(Modifier.height(8.dp))
                 StreamsLayoutSelector(
                     streamsLayout = streamsLayout,
-                    enableGridLayout = enableGridLayout,
                     onLayoutClick = onLayoutClick
                 )
                 Spacer(Modifier.height(16.dp))
@@ -306,7 +266,7 @@ internal fun ParticipantsComponent(
 internal fun ParticipantsComponentPreview() {
     KaleyraTheme {
         ParticipantsComponent(
-            streamsLayout = StreamsLayout.Grid,
+            streamsLayout = StreamsLayout.Mosaic,
             adminsStreamsIds = ImmutableList(listOf("id1")),
             amIAdmin = true,
             streams = ImmutableList(
@@ -316,7 +276,6 @@ internal fun ParticipantsComponentPreview() {
                 )
             ),
             pinnedStreamsIds = ImmutableList(),
-            enableGridLayout = true,
             isPinLimitReached = false,
             participantsCount = 2,
             invited = ImmutableList(

@@ -170,7 +170,7 @@ fun UserMessageInfoSnackbarPreviewLongText() = KaleyraTheme {
         UserMessageSnackbarM3(
             iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
             message = "very very very very very very very very very very long info",
-            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), R.drawable.ic_kaleyra_stream_pin, {}),
+            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_user_message_pin), R.drawable.ic_kaleyra_stream_pin, {}),
             onDismissClick = {},
             backgroundColor = MaterialTheme.colorScheme.inverseSurface)
     }
@@ -189,7 +189,7 @@ fun UserMessageInfoSnackbarPreviewShortText() = KaleyraTheme {
         UserMessageSnackbarM3(
             iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
             message = "info",
-            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_participants_component_pin), R.drawable.ic_kaleyra_stream_pin, {}),
+            actionConfig = UserMessageSnackbarActionConfig(TextRef.StringResource(R.string.kaleyra_user_message_pin), R.drawable.ic_kaleyra_stream_pin, {}),
             onDismissClick = {},
             backgroundColor = MaterialTheme.colorScheme.inverseSurface)
     }
