@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.MathUtils
@@ -104,6 +104,7 @@ internal fun PipStreamComponent(
             if (uiState.preview != null) {
                 val video = uiState.preview.video
                 Stream(
+                    modifier = Modifier.padding(all = 3.dp),
                     streamView = video?.view?.preCallStreamViewSettings(),
                     avatar = uiState.preview.avatar,
                     username = uiState.preview.username ?: "",
@@ -120,17 +121,19 @@ internal fun PipStreamComponent(
                         .padding(8.dp)
                 )
             } else {
-                Box(modifier = modifier) {
+                Box(modifier = modifier.padding(all = 3.dp)) {
                     AdaptiveStreamLayout(
                         thumbnailSize = 0.dp,
                         thumbnailsCount = 0
                     ) {
-                        streamItems.fastForEach { streamItem ->
+                        streamItems.fastForEachIndexed { index, streamItem ->
                             key(streamItem.id) {
                                 Surface(
                                     shape = RoundedCornerShape(4.dp),
                                     color = MaterialTheme.colorScheme.surfaceContainerLow,
-                                    modifier = Modifier.testTag(streamItem.id)
+                                    modifier = Modifier
+                                        .testTag(streamItem.id)
+                                        .padding(bottom = if (streamItems.size > 1 && index < (streamItems.size - 1)) 3.dp else 0.dp)
                                 ) {
                                     Box {
                                         when (streamItem) {

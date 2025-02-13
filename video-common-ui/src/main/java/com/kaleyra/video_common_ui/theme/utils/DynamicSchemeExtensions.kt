@@ -4,7 +4,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import com.kaleyra.material_color_utilities.dynamiccolor.DynamicScheme
 
-internal object DynamicSchemeExtensions {
+object DynamicSchemeExtensions {
 
     fun DynamicScheme.toColorScheme(): ColorScheme {
         return ColorScheme(
