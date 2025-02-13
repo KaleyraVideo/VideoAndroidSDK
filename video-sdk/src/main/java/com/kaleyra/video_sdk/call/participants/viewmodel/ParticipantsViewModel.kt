@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,6 +73,13 @@ internal class ParticipantsViewModel(
                 .onEach { isInAutoMode ->
                     val streamsLayout = if (isInAutoMode) StreamsLayout.Auto else StreamsLayout.Mosaic
                     _uiState.update { it.copy(streamsLayout = streamsLayout) }
+                }
+                .launchIn(this)
+
+            layoutController.streamItems
+                .onEach { items ->
+                    val ids = items.filter { it.isPinned() }.map { it.id }
+                    _uiState.update { it.copy(pinnedStreamIds = ids.toImmutableList()) }
                 }
                 .launchIn(this)
         }

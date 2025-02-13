@@ -17,6 +17,8 @@ import com.kaleyra.video_sdk.call.mapper.StreamMapper
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -169,6 +171,23 @@ class ParticipantsViewModelTest {
             layoutController = layoutController
         )
         assertEquals(true, viewModel.uiState.value.hasReachedMaxPinnedStreams)
+    }
+
+    @Test
+    fun `pinnedStreamIds are the layout's controller pinned stream ids`() {
+        val layoutController = StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("id1", StreamUi("id1", "user1"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id2", StreamUi("id2", "user2"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id3", StreamUi("id3", "user3"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id4", StreamUi("id4", "user4")),
+            )
+        )
+        val viewModel = ParticipantsViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        assertEquals(listOf("id1", "id2", "id3").toImmutableList(), viewModel.uiState.value.pinnedStreamIds)
     }
 
     @Test
