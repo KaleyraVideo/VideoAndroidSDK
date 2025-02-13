@@ -92,7 +92,8 @@ class StreamMapperTest {
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
-        avatar = ImmutableUri(uriMock)
+        avatar = ImmutableUri(uriMock),
+        createdAt = 9384839L
     )
 
     private val streamUi2 = StreamUi(
@@ -100,7 +101,8 @@ class StreamMapperTest {
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
-        avatar = ImmutableUri(uriMock)
+        avatar = ImmutableUri(uriMock),
+        createdAt = 948384L
     )
 
     private val streamUi3 = StreamUi(
@@ -108,7 +110,8 @@ class StreamMapperTest {
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "displayName",
-        avatar = ImmutableUri(uriMock)
+        avatar = ImmutableUri(uriMock),
+        createdAt = 76094743L
     )
 
     private val myStreamUi1 = StreamUi(
@@ -117,7 +120,8 @@ class StreamMapperTest {
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "myDisplayName",
         avatar = ImmutableUri(uriMock),
-        isMine = true
+        isMine = true,
+        createdAt = 4473847383L
     )
 
     private val myStreamUi2 = StreamUi(
@@ -126,7 +130,8 @@ class StreamMapperTest {
         audio = AudioUi(id = "audioId", isEnabled = true),
         username = "myDisplayName",
         avatar = ImmutableUri(uriMock),
-        isMine = true
+        isMine = true,
+        createdAt = 85729487459L
     )
 
     @Before
@@ -160,26 +165,31 @@ class StreamMapperTest {
             every { id } returns "streamId1"
             every { video } returns MutableStateFlow(videoMock)
             every { audio } returns MutableStateFlow(audioMock)
+            every { createdAt } returns 9384839L
         }
         with(streamMock2) {
             every { id } returns "streamId2"
             every { video } returns MutableStateFlow(videoMock)
             every { audio } returns MutableStateFlow(audioMock)
+            every { createdAt } returns 948384L
         }
         with(streamMock3) {
             every { id } returns "streamId3"
             every { video } returns MutableStateFlow(videoMock)
             every { audio } returns MutableStateFlow(audioMock)
+            every { createdAt } returns 76094743L
         }
         with(myStreamMock1) {
             every { id } returns "myStreamId"
             every { video } returns MutableStateFlow(myVideoMock)
             every { audio } returns MutableStateFlow(audioMock)
+            every { createdAt } returns 4473847383L
         }
         with(myStreamMock2) {
             every { id } returns "myStreamId2"
             every { video } returns MutableStateFlow(myVideoMock)
             every { audio } returns MutableStateFlow(audioMock)
+            every { createdAt } returns 85729487459L
         }
         with(myVideoMock) {
             every { id } returns "myVideoId"
@@ -512,13 +522,15 @@ class StreamMapperTest {
             every { id } returns "modifiedStreamId"
             every { this@mockk.video } returns modifiedStreamVideoFlow
             every { this@mockk.audio } returns MutableStateFlow(audioMock)
+            every { this@mockk.createdAt } returns 434552L
         }
         val modifiedStreamUi = StreamUi(
             id = "modifiedStreamId",
             video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true),
             username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            avatar = ImmutableUri(uriMock),
+            createdAt = 434552L
         )
 
         val streams = MutableStateFlow(listOf(streamMock1, modifiedStreamMock, streamMock3))
@@ -557,13 +569,15 @@ class StreamMapperTest {
             every { id } returns "modifiedStreamId"
             every { this@mockk.video } returns MutableStateFlow(videoMock)
             every { this@mockk.audio } returns modifiedStreamAudioFlow
+            every { this@mockk.createdAt } returns 434552L
         }
         val modifiedStreamUi = StreamUi(
             id = "modifiedStreamId",
             video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false),
             username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            avatar = ImmutableUri(uriMock),
+            createdAt = 434552L
         )
 
         val streams = MutableStateFlow(listOf(streamMock1, modifiedStreamMock, streamMock3))

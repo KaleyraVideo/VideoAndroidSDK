@@ -1,7 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.viewmodel
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteCameraStream
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 /**
@@ -66,12 +65,7 @@ internal class AutoLayoutImpl(
      */
     private val _internalState: MutableStateFlow<LayoutState> = MutableStateFlow(LayoutState())
 
-    /**
-     * A mutable state flow holding the current list of [StreamItem] objects.
-     */
-    private val _streamItems: MutableStateFlow<List<StreamItem>> = MutableStateFlow(emptyList())
-
-    override val streamItems: Flow<List<StreamItem>> = _streamItems
+    override val streamItems: Flow<List<StreamItem>> = _internalState.map(::mapToStreamItems)
 
     init {
         // Combine the input flows and update the internal state.
@@ -88,65 +82,35 @@ internal class AutoLayoutImpl(
                 )
             }
         }.launchIn(coroutineScope)
-
-        // Update the stream items whenever the internal state changes.
-        _internalState
-            .onEach { internalState ->
-                _streamItems.update { streamItems -> mapToStreamItems(internalState, streamItems) }
-            }
-            .launchIn(coroutineScope)
-    }
-
-    /**
-     * Finds the currently featured stream item, if any.
-     *
-     * @param items The list of [StreamItem] objects to search.
-     * @return The featured [StreamItem.Stream] if found, `null` otherwise.
-     */
-    private fun findCurrentFeaturedStreamItem(items: List<StreamItem>): StreamItem.Stream? {
-        return items
-            .filterIsInstance<StreamItem.Stream>()
-            .firstOrNull { it.state == StreamItemState.Featured }
     }
 
     /**
      * Determines whether to arrange streams by priority based on the current state and stream items.
      *
      * @param state The current layout state.
-     * @param currentStreamItems The current list of stream items.
      * @return `true` if streams should be arranged by priority, `false` otherwise.
      */
-    private fun shouldArrangeByPriority(
-        state: LayoutState,
-        currentStreamItems: List<StreamItem>,
-    ): Boolean {
-        val newRemoteScreenShareCount = state.allStreams.count { it.isRemoteScreenShare() }
-        val previousRemoteScreenShareCount = currentStreamItems
-            .filterIsInstance<StreamItem.Stream>()
-            .count { it.stream.isRemoteScreenShare() }
-
-        val hasOneRemoteScreenShare = newRemoteScreenShareCount == 1
-        val hasTwoRemoteScreensWithStreamItems = newRemoteScreenShareCount > 1 && previousRemoteScreenShareCount != 0
-        return !state.layoutSettings.isGroupCall || hasOneRemoteScreenShare || hasTwoRemoteScreensWithStreamItems
+    private fun shouldArrangeByPriority(state: LayoutState): Boolean = with(state) {
+        val hasOneRemoteScreenShare = allStreams.count { it.isRemoteScreenShare() } == 1
+        val screenSharesGroupedByCreation = allStreams.filter { it.isRemoteScreenShare() }.groupBy { it.createdAt }
+        return layoutConstraints.featuredStreamThreshold > 0 &&
+                (!layoutSettings.isGroupCall || hasOneRemoteScreenShare || screenSharesGroupedByCreation.values.size > 1)
     }
 
     /**
      * Sorts the streams based on a defined priority order.
      *
      * @param streams The list of [StreamUi] objects to sort.
-     * @param featuredStreamId The ID of the currently featured stream, if any.
      * @param defaultCameraIsBack Indicates if the default camera is the back camera.
      * @return The sorted list of [StreamUi] objects.
      */
     private fun sortStreamsByPriority(
         streams: List<StreamUi>,
-        featuredStreamId: String? = null,
         defaultCameraIsBack: Boolean
     ): List<StreamUi> {
         return streams
             .sortedWith(
-                compareByDescending<StreamUi> { it.id == featuredStreamId }
-                    .thenByDescending { it.isRemoteScreenShare() }
+                compareByDescending<StreamUi> { it.isRemoteScreenShare() }
                     .thenByDescending { it.isMyCameraStream() && defaultCameraIsBack }
                     .thenByDescending { it.isRemoteCameraStream() }
             )
@@ -159,21 +123,21 @@ internal class AutoLayoutImpl(
      * based on the current constraints and settings.
      *
      * @param state The current layout state.
-     * @param currentStreamItems The current list of stream items.
      * @return The new list of [StreamItem] objects.
      */
-    private fun mapToStreamItems(state: LayoutState, currentStreamItems: List<StreamItem>): List<StreamItem> {
-        return if (state.layoutConstraints.featuredStreamThreshold > 0 && shouldArrangeByPriority(state, currentStreamItems)) {
-            val featuredStreamId = findCurrentFeaturedStreamItem(currentStreamItems)?.takeIf { it.stream.video?.isScreenShare == true }?.id
+    private fun mapToStreamItems(state: LayoutState): List<StreamItem> {
+        return if (shouldArrangeByPriority(state)) {
+            val remoteScreenShares = state.allStreams.filter { it.isRemoteScreenShare() }
+            val lastRemoteScreenShare = remoteScreenShares.maxByOrNull { it.createdAt }
             val sortedStreams = sortStreamsByPriority(
                 streams = state.allStreams,
-                featuredStreamId = featuredStreamId,
                 defaultCameraIsBack = state.layoutSettings.defaultCameraIsBack
             )
+            val featuredStreamIds = lastRemoteScreenShare?.id ?: sortedStreams.firstOrNull()?.id
 
             featuredStreamItemsProvider.buildStreamItems(
                 streams = sortedStreams,
-                featuredStreamIds = listOfNotNull(sortedStreams.firstOrNull()?.id),
+                featuredStreamIds = listOfNotNull(featuredStreamIds),
                 maxNonFeaturedStreams = state.layoutConstraints.thumbnailStreamThreshold
             )
         } else {

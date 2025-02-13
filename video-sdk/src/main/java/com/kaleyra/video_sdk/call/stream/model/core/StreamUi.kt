@@ -27,6 +27,7 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
  * @property audio AudioUi? optional audio component
  * @property video VideoUi? optional video component
  * @property avatar ImmutableUri? optional participant's avatar uri
+ * @property createdAt Long optional stream creation time
  * @constructor
  */
 @Immutable
@@ -36,5 +37,6 @@ data class StreamUi(
     val isMine: Boolean = false,
     val audio: AudioUi? = null,
     val video: VideoUi? = null,
-    val avatar: ImmutableUri? = null
+    val avatar: ImmutableUri? = null,
+    val createdAt: Long = 0L
 )

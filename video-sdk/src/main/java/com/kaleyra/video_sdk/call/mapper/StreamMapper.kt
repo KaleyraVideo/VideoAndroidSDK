@@ -107,7 +107,8 @@ internal object StreamMapper {
                             audio = audio,
                             username = name ?: userId,
                             avatar = image?.let { ImmutableUri(it) },
-                            isMine = isLocalParticipant
+                            isMine = isLocalParticipant,
+                            createdAt = stream.createdAt
                         )
                     }
                 }
