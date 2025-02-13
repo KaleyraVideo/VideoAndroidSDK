@@ -280,7 +280,7 @@ private fun calculateThumbnailsSize(
     maxThumbnailSize: Dp
 ): Dp {
     val maxAvailableSize = min(maxHeight, maxWidth) * 0.9f
-    return if (maxAvailableSize < maxThumbnailSize) maxAvailableSize
+    return if (maxAvailableSize < maxThumbnailSize) maxAvailableSize / maxThumbnailsStreams
     else min(maxAvailableSize / maxThumbnailsStreams, maxThumbnailSize)
 }
 
