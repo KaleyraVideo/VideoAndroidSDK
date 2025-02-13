@@ -58,12 +58,12 @@ class ChatButtonsMapperTest {
 
     @Test
     fun emptyActions_mapToUiActions_emptyUiActions() {
-        assertEquals(setOf<ChatUI.Action>().mapToChatActions { preferredType, maxDuration, recordingType -> }, setOf<ChatAction>())
+        assertEquals(setOf<ChatUI.Button>().mapToChatActions { preferredType, maxDuration, recordingType -> }, setOf<ChatAction>())
     }
 
     @Test
     fun allActions_mapToUiActions_allUiActions() {
-        val actions = ChatUI.Action.all
+        val actions = ChatUI.Button.all
         val result = actions.mapToChatActions { preferredType, maxDuration, recordingType -> }
         assert(result.filterIsInstance<ChatAction.AudioCall>().isNotEmpty())
         assert(result.filterIsInstance<ChatAction.AudioUpgradableCall>().isNotEmpty())
@@ -73,9 +73,9 @@ class ChatButtonsMapperTest {
     @Test
     fun allActions_mapToUiActions_onClickCalledCallOptionsReceived() {
         val actions = setOf(
-            ChatUI.Action.CreateCall(Call.PreferredType.audioOnly(), 1, Call.Recording.Type.Never),
-            ChatUI.Action.CreateCall(Call.PreferredType.audioUpgradable(), 2, Call.Recording.Type.OnDemand),
-            ChatUI.Action.CreateCall(Call.PreferredType.audioVideo(), 3, Call.Recording.Type.OnConnect)
+            ChatUI.Button.Call(Call.PreferredType.audioOnly(), 1, Call.Recording.Type.Never),
+            ChatUI.Button.Call(Call.PreferredType.audioUpgradable(), 2, Call.Recording.Type.OnDemand),
+            ChatUI.Button.Call(Call.PreferredType.audioVideo(), 3, Call.Recording.Type.OnConnect)
         )
         var duration = 0L
         var recType: Call.Recording.Type? = null

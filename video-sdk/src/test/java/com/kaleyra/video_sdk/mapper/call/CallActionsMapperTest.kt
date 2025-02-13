@@ -91,7 +91,7 @@ class CallActionsMapperTest {
 
     @Test
     fun fileShareActionDoesNotExists_isFileSharingSupported_true() = runTest {
-        every { callMock.buttons } returns MutableStateFlow(setOf(CallUI.Button.ScreenShare.UserChoice))
+        every { callMock.buttons } returns MutableStateFlow(setOf(CallUI.Button.ScreenShare(onTap = CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser)))
         val result = callMock.isFileSharingSupported()
         val actual = result.first()
         assertEquals(false, actual)
@@ -120,9 +120,9 @@ class CallActionsMapperTest {
                 CallUI.Button.Whiteboard,
                 CallUI.Button.AudioOutput,
                 CallUI.Button.FileShare,
-                CallUI.Button.ScreenShare.UserChoice,
-                CallUI.Button.ScreenShare.App,
-                CallUI.Button.ScreenShare.WholeDevice
+                CallUI.Button.ScreenShare(onTap = CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser),
+                CallUI.Button.ScreenShare(onTap = CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly),
+                CallUI.Button.ScreenShare(onTap = CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen)
             )
         )
         val result = callMock.toCallActions()
@@ -138,8 +138,6 @@ class CallActionsMapperTest {
             AudioAction(),
             FileShareAction(),
             ScreenShareAction.UserChoice(),
-            ScreenShareAction.App(),
-            ScreenShareAction.WholeDevice(),
         )
         assertEquals(expected, actual)
     }
@@ -167,7 +165,7 @@ class CallActionsMapperTest {
                 onClick = customAction.config.action,
                 notificationCount = customAction.config.badgeValue,
                 buttonColors = customAction.config.appearance?.let {
-                    CustomCallAction.ButtonsColors(it.background, it.tint, Color(it.background).copy(alpha = 0.38f).toArgb(), Color(it.tint).copy(alpha = 0.38f).toArgb(),)
+                    CustomCallAction.ButtonsColors(it.background, it.content, Color(it.background).copy(alpha = 0.38f).toArgb(), Color(it.content).copy(alpha = 0.38f).toArgb(),)
                 },
                 isEnabled = customAction.config.isEnabled
             )

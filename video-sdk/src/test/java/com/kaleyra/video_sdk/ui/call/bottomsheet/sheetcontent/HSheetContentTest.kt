@@ -575,7 +575,7 @@ class HSheetContentTest {
                 onMoreToggle = {},
                 onActionsOverflow = {},
                 onModularComponentRequest = { component = it },
-                onAskInputPermissions = { onAaskingInputPermissions = false },
+                onAskInputPermissions = { onAaskingInputPermissions = true },
             )
         }
 
