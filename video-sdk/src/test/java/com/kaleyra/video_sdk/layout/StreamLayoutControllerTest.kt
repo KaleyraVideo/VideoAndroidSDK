@@ -158,6 +158,7 @@ class StreamLayoutControllerTest {
         }
         layoutController.switchToAutoMode()
         assertEquals(autoLayoutStreamItems, streamItemsValues.last())
+        verify(exactly = 1) { anyConstructed<ManualLayoutImpl>().clearPinnedStreams() }
     }
 
     @Test

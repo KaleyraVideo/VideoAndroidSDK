@@ -355,6 +355,7 @@ internal class StreamLayoutControllerImpl private constructor(
     }
 
     override fun switchToAutoMode() {
+        manualLayout.clearPinnedStreams()
         updateInternalState(autoLayout)
     }
 
