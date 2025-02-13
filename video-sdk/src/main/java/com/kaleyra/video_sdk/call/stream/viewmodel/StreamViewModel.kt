@@ -70,10 +70,10 @@ internal class StreamViewModel(
             val defaultCameraIsBack = conference.settings.camera == Conference.Settings.Camera.Back
             layoutController.applySettings(StreamLayoutSettings(defaultCameraIsBack = defaultCameraIsBack))
             call
-                .isGroupCall(companyIdFlow)
-                .onEach { isGroupCall ->
+                .toInCallParticipants()
+                .onEach { inCallParticipants ->
                     val currentSettings = layoutController.layoutSettings.value
-                    layoutController.applySettings(currentSettings.copy(isGroupCall = isGroupCall))
+                    layoutController.applySettings(currentSettings.copy(isGroupCall = inCallParticipants.size > 2))
                 }
                 .launchIn(this)
 

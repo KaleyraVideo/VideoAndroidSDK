@@ -34,8 +34,6 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel.Companion.DEFAULT_DEBOUNCE_MILLIS
@@ -51,9 +49,7 @@ import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -129,7 +125,7 @@ class StreamViewModelTest {
 
     @Test
     fun `isGroupCall layout settings is true when the call is a many to many`() {
-        every { callMock.isGroupCall(any()) } returns flowOf(true)
+        every { callMock.toInCallParticipants() } returns flowOf(listOf(mockk(), mockk(), mockk()))
         val layoutController = StreamLayoutControllerMock()
         StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
@@ -143,7 +139,7 @@ class StreamViewModelTest {
 
     @Test
     fun `isGroupCall layout settings is false when the call is a one to one`() {
-        every { callMock.isGroupCall(any()) } returns flowOf(false)
+        every { callMock.toInCallParticipants() } returns flowOf(listOf(mockk(), mockk()))
         val layoutController = StreamLayoutControllerMock()
         StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
@@ -157,9 +153,9 @@ class StreamViewModelTest {
 
     @Test
     fun `defaultCameraIsBack setting is preserved on isGroupCall setting update`() {
-        val isGroupCallFlow = MutableStateFlow(false)
+        val toInCallParticipantsFlow = MutableStateFlow(listOf<CallParticipant>(mockk(), mockk()))
         every { conferenceMock.settings } returns Conference.Settings(camera = Conference.Settings.Camera.Back)
-        every { callMock.isGroupCall(any()) } returns isGroupCallFlow
+        every { callMock.toInCallParticipants() } returns toInCallParticipantsFlow
         val layoutController = StreamLayoutControllerMock()
         StreamViewModel(
             configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
@@ -169,7 +165,7 @@ class StreamViewModelTest {
             StreamLayoutSettings(isGroupCall = false, defaultCameraIsBack = true),
             layoutController.layoutSettings.value
         )
-        isGroupCallFlow.value = true
+        toInCallParticipantsFlow.value = listOf(mockk(), mockk(), mockk())
         assertEquals(
             StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true),
             layoutController.layoutSettings.value
