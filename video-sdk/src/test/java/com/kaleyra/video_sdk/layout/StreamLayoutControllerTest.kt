@@ -310,7 +310,7 @@ class StreamLayoutControllerTest {
     }
 
     @Test
-    fun `pin screen share user message is not triggered when there is only one screen share stream and the auto layout is active`() = runTest(testDispatcher) {
+    fun `pin screen share user message is not triggered when the auto layout is active`() = runTest(testDispatcher) {
         layoutController.switchToAutoMode()
 
         layoutController.applyStreams(
@@ -318,36 +318,6 @@ class StreamLayoutControllerTest {
         )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
-        }
-    }
-
-    @Test
-    fun `pin screen share user message is not triggered when there is a camera stream and the auto layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToAutoMode()
-
-        layoutController.applyStreams(
-            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
-        )
-        verify(exactly = 0) {
-            callUserMessageProviderMock.sendUserMessage(any())
-        }
-    }
-
-    @Test
-    fun `pin screen share user message is triggered when there is a new screen share stream and the auto layout is active`() = runTest(testDispatcher) {
-        layoutController.switchToAutoMode()
-
-        layoutController.applyStreams(
-            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
-        )
-        layoutController.applyStreams(
-            listOf(
-                StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
-                StreamUi("2", username = "user2", video = VideoUi(id = "2", isScreenShare = true)),
-            )
-        )
-        verify(exactly = 1) {
-            callUserMessageProviderMock.sendUserMessage(PinScreenshareMessage("2", "user2"))
         }
     }
 

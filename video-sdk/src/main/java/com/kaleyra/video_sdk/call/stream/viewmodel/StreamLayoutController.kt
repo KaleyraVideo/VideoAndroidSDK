@@ -320,10 +320,10 @@ internal class StreamLayoutControllerImpl private constructor(
     init {
         layoutStreams
             .onEach { streams ->
-                val remoteScreenShareStreams = streams.filter { it.isRemoteScreenShare() }
                 _internalState.update { state ->
+                    val remoteScreenShareStreams = streams.filter { it.isRemoteScreenShare() }
                     // Check if a message should be sent to pin a new screen share.
-                    if (shouldSendPinScreenShareMessage(state, remoteScreenShareStreams)) {
+                    if (shouldSendPinScreenShareMessage(state)) {
                         // Find the new remote screen shares.
                         val screenShareToRequestPin = findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
                         // Send a message to pin the new screen share.
@@ -389,15 +389,13 @@ internal class StreamLayoutControllerImpl private constructor(
      * Checks if a message should be sent to pin a new screen share.
      *
      * @param state The current controller state.
-     * @param remoteScreenShareStreams The list of remote screen share streams.
      * @return `true` if a message should be sent, `false` otherwise.
      */
     private fun shouldSendPinScreenShareMessage(
         state: ControllerState,
-        remoteScreenShareStreams: List<StreamUi>,
     ): Boolean {
-        // A message should be sent if the layout is manual or if the layout is auto and there is more than one remote screen share.
-        return state.streamLayout is ManualLayout || (state.streamLayout is AutoLayout && remoteScreenShareStreams.size > 1)
+        // A message should be sent if the layout is manual.
+        return state.streamLayout is ManualLayout
     }
 
     /**
