@@ -266,6 +266,23 @@ class AutoLayoutImplTest {
     }
 
     @Test
+    fun `remote stream is featured over local stream when video are null`() = runTest {
+        val remoteStream = StreamUi("1", "stream1")
+        val localStream = StreamUi("2", "stream2", isMine = true)
+        streamsFlow.value = listOf(localStream, remoteStream)
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
+
+        val streamItems = autoLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", remoteStream, state = StreamItemState.Featured),
+                StreamItem.Stream("2", localStream),
+            ),
+            streamItems
+        )
+    }
+
+    @Test
     fun `streamItems featured priority`() = runTest {
         val remoteScreenShare1 = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true), createdAt = 500L)
         val remoteScreenShare2 = StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 300L)

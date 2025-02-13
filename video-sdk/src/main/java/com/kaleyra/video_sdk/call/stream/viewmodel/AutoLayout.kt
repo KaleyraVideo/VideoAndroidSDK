@@ -112,7 +112,7 @@ internal class AutoLayoutImpl(
             .sortedWith(
                 compareByDescending<StreamUi> { it.isRemoteScreenShare() }
                     .thenByDescending { it.isMyCameraStream() && defaultCameraIsBack }
-                    .thenByDescending { it.isRemoteCameraStream() }
+                    .thenByDescending { !it.isMine }
             )
     }
 
