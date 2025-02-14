@@ -105,6 +105,22 @@ class AutoLayoutImplTest {
     }
 
     @Test
+    fun `streamItems are in featured mode when default camera is back`() = runTest(testDispatcher) {
+        streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
+        layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true)
+
+        val streamItems = autoLayout.streamItems.first()
+        Assert.assertEquals(
+            listOf(
+                StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
+                StreamItem.Stream("2", StreamUi("2", "stream2"))
+            ),
+            streamItems
+        )
+    }
+
+
+    @Test
     fun `streamItems are in featured mode when in one to one call`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)

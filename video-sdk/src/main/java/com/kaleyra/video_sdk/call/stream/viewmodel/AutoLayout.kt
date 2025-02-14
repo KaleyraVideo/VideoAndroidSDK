@@ -94,7 +94,7 @@ internal class AutoLayoutImpl(
         val hasOneRemoteScreenShare = allStreams.count { it.isRemoteScreenShare() } == 1
         val screenSharesGroupedByCreation = allStreams.filter { it.isRemoteScreenShare() }.groupBy { it.createdAt }
         return layoutConstraints.featuredStreamThreshold > 0 &&
-                (!layoutSettings.isGroupCall || hasOneRemoteScreenShare || screenSharesGroupedByCreation.values.size > 1)
+                (!layoutSettings.isGroupCall || hasOneRemoteScreenShare || screenSharesGroupedByCreation.values.size > 1 || layoutSettings.defaultCameraIsBack)
     }
 
     /**
