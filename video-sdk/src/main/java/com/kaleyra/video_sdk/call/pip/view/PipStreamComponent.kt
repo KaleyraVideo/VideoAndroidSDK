@@ -104,7 +104,7 @@ internal fun PipStreamComponent(
             if (uiState.preview != null) {
                 val video = uiState.preview.video
                 Stream(
-                    modifier = Modifier.padding(all = 3.dp),
+                    modifier = Modifier,
                     streamView = video?.view?.preCallStreamViewSettings(),
                     avatar = uiState.preview.avatar,
                     username = uiState.preview.username ?: "",
@@ -121,7 +121,10 @@ internal fun PipStreamComponent(
                         .padding(8.dp)
                 )
             } else {
-                Box(modifier = modifier.padding(all = 3.dp)) {
+                val streamsLayoutPadding = remember(streamItems.size) { if (streamItems.size > 1) 3.dp else 0.dp }
+                val streamCornerRadius = remember(streamItems.size) { if (streamItems.size > 1) 4.dp else 0.dp }
+
+                Box(modifier = modifier.padding(all = streamsLayoutPadding)) {
                     AdaptiveStreamLayout(
                         thumbnailSize = 0.dp,
                         thumbnailsCount = 0
@@ -129,7 +132,7 @@ internal fun PipStreamComponent(
                         streamItems.fastForEachIndexed { index, streamItem ->
                             key(streamItem.id) {
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
+                                    shape = RoundedCornerShape(streamCornerRadius),
                                     color = MaterialTheme.colorScheme.surfaceContainerLow,
                                     modifier = Modifier
                                         .testTag(streamItem.id)
