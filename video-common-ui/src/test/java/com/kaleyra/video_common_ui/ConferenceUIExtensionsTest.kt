@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -415,11 +414,12 @@ class ConferenceUIExtensionsTest {
 
     @Test
     fun whiteboardRequestReceived_buttonsProviderCalledWithWhiteboardButton() = runTest {
-        var receivedCallButtons: MutableStateFlow<MutableSet<CallUI.Button>> = MutableStateFlow(mutableSetOf())
+        val receivedCallButtons: MutableStateFlow<MutableSet<CallUI.Button>> = MutableStateFlow(mutableSetOf())
         val buttonsProvider: ((MutableSet<CallUI. Button>) -> Set<CallUI. Button>) = { callButtons ->
             receivedCallButtons.tryEmit(callButtons)
             callButtons
         }
+        every { callMock.type } returns MutableStateFlow(Call.Type.audioVideo())
         every { callMock.actions } returns MutableStateFlow(setOf())
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         every { callMock.buttonsProvider } returns buttonsProvider
@@ -435,12 +435,13 @@ class ConferenceUIExtensionsTest {
 
 
     @Test
-    fun shredFileReceived_buttonsProviderCalledWithFileShareButton() = runTest {
+    fun sharedFileReceived_buttonsProviderCalledWithFileShareButton() = runTest {
         val receivedCallButtons: MutableStateFlow<MutableSet<CallUI.Button>> = MutableStateFlow(mutableSetOf())
         val buttonsProvider: ((MutableSet<CallUI. Button>) -> Set<CallUI. Button>) = { callButtons ->
             receivedCallButtons.tryEmit(callButtons)
             callButtons
         }
+        every { callMock.type } returns MutableStateFlow(Call.Type.audioVideo())
         every { callMock.actions } returns MutableStateFlow(setOf())
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
         every { callMock.participants } returns MutableStateFlow(mockk<CallParticipants> {

@@ -32,19 +32,25 @@ internal object ChatButtonsMapper {
         val actions = this@mapToChatActions.filterIsInstance<ChatUI.Button.Call>()
         actions.firstOrNull { !it.callType.hasVideo() }?.also { action ->
             actionsSet.add(ChatAction.AudioCall {
-                call(action.callType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType?.toNewApi())
             })
         }
         actions.firstOrNull { it.callType.hasVideo() && !it.callType.isVideoEnabled() }?.also { action ->
             actionsSet.add(ChatAction.AudioUpgradableCall {
-                call(action.callType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType?.toNewApi())
             })
         }
         actions.firstOrNull { it.callType.isVideoEnabled() }?.also { action ->
             actionsSet.add(ChatAction.VideoCall {
-                call(action.callType, action.maxDuration, action.recordingType)
+                call(action.callType, action.maxDuration, action.recordingType?.toNewApi())
             })
         }
         return actionsSet
+    }
+
+    private fun Call.Recording.Type?.toNewApi() = when (this) {
+        Call.Recording.Type.OnConnect -> Call.Recording.Type.Automatic
+        Call.Recording.Type.OnDemand -> Call.Recording.Type.Manual
+        else -> this
     }
 }

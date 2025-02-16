@@ -371,6 +371,7 @@ class StreamMapperTest {
     fun streamList_mapStreamsToVideos_videoList() = runTest {
         val stream1 = object : Stream {
             override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
+            override val createdAt: Long = 123L
             override val id: String = "id1"
             override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
             override val video: StateFlow<Input.Video?> = MutableStateFlow(videoMock)
@@ -380,6 +381,7 @@ class StreamMapperTest {
         val stream2 = object : Stream {
             override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
             override val id: String = "id2"
+            override val createdAt: Long = 123L
             override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
             override val video: StateFlow<Input.Video?> = MutableStateFlow(myVideoMock)
             override fun close() = Unit
@@ -394,6 +396,7 @@ class StreamMapperTest {
     fun streamWithNullVideo_mapStreamsToVideos_listOfNull() = runTest {
         val stream3 = object : Stream {
             override val audio: StateFlow<Input.Audio?> = MutableStateFlow(null)
+            override val createdAt: Long = 123L
             override val id: String = "id3"
             override val state: StateFlow<Stream.State> = MutableStateFlow(Stream.State.Open)
             override val video: StateFlow<Input.Video?> = MutableStateFlow(null)

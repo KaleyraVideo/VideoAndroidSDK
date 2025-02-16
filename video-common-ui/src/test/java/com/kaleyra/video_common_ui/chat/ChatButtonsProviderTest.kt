@@ -2,6 +2,7 @@
 
 package com.kaleyra.video_common_ui.chat
 
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.ChatUI
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,7 @@ class ChatButtonsProviderTest {
         runCurrent()
         Assert.assertEquals(ChatUI.Button.Participants, chatIButtonsProvider.buttons.value.first())
 
-        legacyActions.value = setOf(ChatUI.Action.CreateCall())
+        legacyActions.emit(setOf(ChatUI.Action.CreateCall(Call.PreferredType.audioVideo())))
         runCurrent()
 
         Assert.assertEquals(1, chatIButtonsProvider.buttons.value.size)

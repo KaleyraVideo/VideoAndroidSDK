@@ -16,7 +16,7 @@ class CallButtonsProviderTest {
     @Test
     fun testLegacyActionsMapped() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
             scope = backgroundScope
@@ -31,7 +31,7 @@ class CallButtonsProviderTest {
     fun testLegacyActionsUpdatedButtonsUpdated() = runTest {
         val legacyActions: MutableStateFlow<Set<CallUI.Action>> = MutableStateFlow(setOf(CallUI.Action.HangUp))
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = legacyActions,
             scope = backgroundScope
@@ -49,7 +49,7 @@ class CallButtonsProviderTest {
     @Test
     fun testCallTypeAudioVideoCameraButtonsSet() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = null,
             scope = backgroundScope
@@ -63,7 +63,7 @@ class CallButtonsProviderTest {
     @Test
     fun testCallTypeAudioUpgradableCameraButtonsSet() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioUpgradable()),
+            callType = MutableStateFlow(Call.Type.audioUpgradable()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = null,
             scope = backgroundScope
@@ -77,7 +77,7 @@ class CallButtonsProviderTest {
     @Test
     fun testCallTypeAudioOnlyCameraButtonsSet() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioOnly()),
+            callType = MutableStateFlow(Call.Type.audioOnly()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = null,
             scope = backgroundScope
@@ -91,7 +91,7 @@ class CallButtonsProviderTest {
     @Test
     fun testExternalButtonProviderReturnsValues() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioOnly()),
+            callType = MutableStateFlow(Call.Type.audioOnly()),
             callState = MutableStateFlow(Call.State.Disconnected),
             legacyActions = null,
             scope = backgroundScope
@@ -107,7 +107,7 @@ class CallButtonsProviderTest {
 
     @Test
     fun testCallTypeUpdatedButtonsUpdated() = runTest {
-        val callType = MutableStateFlow(Call.PreferredType.audioOnly())
+        val callType = MutableStateFlow(Call.Type.audioOnly())
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
             callType = callType,
             callState = MutableStateFlow(Call.State.Disconnected),
@@ -118,7 +118,7 @@ class CallButtonsProviderTest {
         Assert.assertEquals(true, CallUI.Button.Collections.audioCall.all { it in callUIButtonsProvider.buttons.value })
         Assert.assertEquals(true, CallUI.Button.Collections.audioCall.size == callUIButtonsProvider.buttons.value.size)
 
-        callType.value = Call.PreferredType.audioVideo()
+        callType.value = Call.Type.audioVideo()
         runCurrent()
 
         Assert.assertEquals(true, CallUI.Button.Collections.videoCall.all { it in callUIButtonsProvider.buttons.value })
@@ -128,7 +128,7 @@ class CallButtonsProviderTest {
     @Test
     fun testCallEndedLegacyActionsNotMapped() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = MutableStateFlow(Call.State.Disconnected.Ended),
             legacyActions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
             scope = backgroundScope
@@ -143,7 +143,7 @@ class CallButtonsProviderTest {
     fun testCallEndedButtonsProviderRemoved() = runTest {
         val callState: MutableStateFlow<Call.State> = MutableStateFlow(Call.State.Disconnected)
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = callState,
             legacyActions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
             scope = backgroundScope
@@ -160,7 +160,7 @@ class CallButtonsProviderTest {
     fun testCallEndedButtonsSetToNullDuringCallDefaultButtonProviderSet() = runTest {
         val callState = MutableStateFlow(Call.State.Connected)
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = callState,
             legacyActions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
             scope = backgroundScope
@@ -176,7 +176,7 @@ class CallButtonsProviderTest {
     @Test
     fun testCustomButtonsProviderInvocationUpdatedButtons() = runTest {
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
-            callType = MutableStateFlow(Call.PreferredType.audioVideo()),
+            callType = MutableStateFlow(Call.Type.audioVideo()),
             callState = MutableStateFlow(Call.State.Connected),
             legacyActions = MutableStateFlow(setOf(CallUI.Action.HangUp)),
             scope = backgroundScope
