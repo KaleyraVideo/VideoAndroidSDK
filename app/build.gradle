@@ -83,6 +83,15 @@ dependencies {
     implementation(platform("com.kaleyra:video-sdk-bom:$kaleyraVideoSdkVersion"))
 
     implementation project(":video-sdk")
+    implementation kaleyraCatalog.kaleyraMaterialColorUtilities
+    implementation platform(sampleAppCatalog.androidxComposeBom)
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material3:material3-window-size-class'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.compose.runtime:runtime'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose'
 
     // define this dependency only if you desire to handle usb camera input in a video call
     implementation "com.kaleyra:video-extension-external-camera"

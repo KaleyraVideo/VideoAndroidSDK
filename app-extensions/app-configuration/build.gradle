@@ -83,7 +83,14 @@ dependencies {
     implementation sampleAppCatalog.appcompat
     implementation sampleAppCatalog.androidxCoreKtx
     implementation sampleAppCatalog.androidxLifecycleViewModel
+    implementation sampleAppCatalog.colorPicker
+
     api sampleAppCatalog.googleGson
+    implementation sampleAppCatalog.appcompat
+    implementation sampleAppCatalog.material
+    implementation sampleAppCatalog.androidxActivity
+    implementation sampleAppCatalog.androidxConstraintLayout
+
     testImplementation sampleAppCatalog.junit
     androidTestImplementation sampleAppCatalog.junitTestExt
     androidTestImplementation sampleAppCatalog.androidxTestEspressoCore

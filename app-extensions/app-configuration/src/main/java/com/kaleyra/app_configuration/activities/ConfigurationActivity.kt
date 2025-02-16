@@ -17,12 +17,20 @@ package com.kaleyra.app_configuration.activities
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.kaleyra.app_configuration.R
+import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.CUSTOM_COLOR
+import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.PICK_CUSTOM_BRAND_COLOR
 import com.kaleyra.app_configuration.databinding.ActivityConfigurationBinding
 import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_configuration.model.ConfigurationFieldChangeListener
@@ -31,6 +39,7 @@ import com.kaleyra.app_configuration.model.UserDetailsProviderMode
 import com.kaleyra.app_configuration.model.bindToConfigurationProperty
 import com.kaleyra.app_configuration.model.getMockConfiguration
 import com.kaleyra.app_configuration.utils.MediaStorageUtils
+import kotlinx.serialization.json.Json.Default.configuration
 
 open class ConfigurationActivity : BaseConfigurationActivity() {
 
@@ -101,6 +110,20 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
         }
         binding.mockUserDetails.setSubtitle(configuration.userDetailsProviderMode.name)
         binding.leakCanary.setValue(configuration.useLeakCanary)
+        setBrandColorSummary()
+    }
+
+    private fun setBrandColorSummary() {
+        binding.brandColor.setSubtitle(currentConfiguration!!.customBrandColor?.toHex()?.plus(" ⬤") ?: "REMOTE")
+        binding.brandColor.subtitleTextView?.setTextColor(
+            currentConfiguration!!.customBrandColor
+                ?: if (this@ConfigurationActivity.isDarkTheme()) Color.WHITE else Color.BLACK
+        )
+    }
+
+    private fun AppCompatActivity.isDarkTheme(): Boolean {
+        val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
     }
 
     private fun addPreferencesListeners() {
@@ -126,6 +149,9 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
                     Uri.parse(currentConfiguration?.logoUrl ?: ""),
                     currentConfiguration!!.logoName ?: "",
                     BRAND_IMAGE_TEXT_REQUEST)
+        }
+        binding.brandColor.setOnClickListener {
+            BrandColorConfigurationActivity.showForResult(this, PICK_CUSTOM_BRAND_COLOR, currentConfiguration!!.customBrandColor)
         }
         binding.mockUserDetails.setOnClickListener {
             MockUserDetailsSettingsActivity.showForResult(
@@ -164,6 +190,9 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
             currentConfiguration!!.customUserDetailsName = customDisplayName
             currentConfiguration!!.userDetailsProviderMode = mockProviderMode
             binding.mockUserDetails.setSubtitle(mockProviderMode.toString())
+        } else if (requestCode == PICK_CUSTOM_BRAND_COLOR && resultCode == 2) {
+            currentConfiguration!!.customBrandColor = data!!.getIntExtra(CUSTOM_COLOR, -1).takeIf { it != -1 }
+            setBrandColorSummary()
         }
     }
 

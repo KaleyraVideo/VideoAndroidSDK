@@ -146,6 +146,15 @@
 
     <string name="file_sharing" translatable="false">File sharing</string>
 
+    <!-- THEME -->
+    <string name="brand_color" translatable="false">Brand color</string>
+    <string name="brand_color_enter_hex_color_rrggbb" translatable="false">Enter Hex Color (#RRGGBB)</string>
+    <string name="brand_color_option_summary" translatable="false">Select how the Kaleyra Video SDK theme will be initialized.</string>
+    <string name="brand_color_remote_summary" translatable="false">The default company colors will be used to generate a theme for Kaleyra Video SDK</string>
+    <string name="brand_color_custom_summary" translatable="false">A custom color will be used to generate a consistent color palette for Kaleyra Video SDK\'s theme</string>
+    <string name="brand_color_invalid_hex_color_format">Invalid hex color format</string>
+    <string name="brand_color_invalid_hex_color">Invalid hex color</string>
+
     <!-- CONFIGURATION -->
     <string name="settings_are_not_correctly_set" translatable="false">"Settings are not correctly set!"</string>
     <string name="settings_dialog_positive_button" translatable="false">OK</string>

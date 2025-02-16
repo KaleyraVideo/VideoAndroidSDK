@@ -15,6 +15,8 @@
  */
 package com.kaleyra.app_configuration.model
 
+import android.graphics.Color
+import android.text.SpannableString
 import android.view.View
 import android.widget.TextView
 

@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.theme.Theme
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
@@ -56,11 +57,22 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val appConfiguration = ConfigurationPrefsManager.getConfiguration(applicationContext)
                 val logoUri = appConfiguration.logoUrl?.takeIf { it.isNotEmpty() }
                     ?.let { getUriFromString(appConfiguration.logoUrl) }
-                KaleyraVideo.theme = Theme(
+
+                val theme = Theme(
                     logo = logoUri?.let { Theme.Logo(URIResource(it, it)) },
                     typography = Theme.Typography(fontFamily = KaleyraFontFamily.default),
-                    config = Theme.Config(style = Theme.Config.Style.System)
+                    config = Theme.Config(style = Theme.Config.Style.System),
                 )
+
+                KaleyraVideo.theme = appConfiguration.customBrandColor?.let { customBrandColor ->
+                    theme.copy(
+                        palette = Theme.Palette(
+                            seed = ColorResource(
+                                light = customBrandColor,
+                                dark = customBrandColor
+                        ))
+                    )
+                } ?: theme
             }
 
             if (getCallConfiguration().options.backCameraAsDefault)
