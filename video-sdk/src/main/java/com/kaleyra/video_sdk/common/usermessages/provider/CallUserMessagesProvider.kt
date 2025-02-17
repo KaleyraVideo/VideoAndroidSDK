@@ -33,7 +33,6 @@ import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_utils.MutableSharedStateFlow
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -152,7 +151,12 @@ object CallUserMessagesProvider {
             .launchIn(scope)
 
         call.toCallStateUi()
-            .filterNot { it is CallStateUi.Ringing || it is CallStateUi.RingingRemotely || it is CallStateUi.Dialing }
+            .filterNot {
+                it is CallStateUi.Disconnected.Ended ||
+                    it is CallStateUi.Ringing ||
+                    it is CallStateUi.RingingRemotely ||
+                    it is CallStateUi.Dialing
+            }
             .combine(call.doOthersHaveStreams()) { _, doOthersHaveStreams -> doOthersHaveStreams }
             .dropWhile { !it }
             .debounce { doOthersHaveStreams -> if (!doOthersHaveStreams) AM_I_LEFT_ALONE_DEBOUNCE_MILLIS else 0L }
