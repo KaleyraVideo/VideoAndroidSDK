@@ -53,8 +53,8 @@ internal object RecordingMapper {
 
     fun Call.Recording.Type.mapToRecordingTypeUi(): RecordingTypeUi =
         when (this) {
-            Call.Recording.Type.OnConnect -> RecordingTypeUi.OnConnect
-            Call.Recording.Type.OnDemand -> RecordingTypeUi.OnDemand
+            Call.Recording.Type.OnConnect, Call.Recording.Type.Automatic -> RecordingTypeUi.Automatic
+            Call.Recording.Type.OnDemand, Call.Recording.Type.Manual -> RecordingTypeUi.Manual
             else -> RecordingTypeUi.Never
         }
 

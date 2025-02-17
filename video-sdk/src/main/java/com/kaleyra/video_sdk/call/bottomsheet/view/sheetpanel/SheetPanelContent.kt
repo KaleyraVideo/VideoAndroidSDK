@@ -1,10 +1,17 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel
 
 import android.content.res.Configuration
+import android.widget.Space
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,18 +28,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
+import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CustomCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
+import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
+import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -46,18 +64,22 @@ internal fun SheetPanelContent(
     callActions: ImmutableList<CallActionUI>,
     onModularComponentRequest: (ModularComponent) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
+    inputPermissions: InputPermissions = InputPermissions(),
     modifier: Modifier = Modifier
 ) {
     val activity = LocalContext.current.findActivity()
     var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
     screenShareMode = callActions.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     SheetPanelContent(
         modifier = modifier,
         callActions = callActions,
         onItemClick = remember(viewModel) {
             { callAction ->
-                when (callAction) {
+                if (!callAction.isEnabled) Unit
+                else when (callAction) {
                     is ScreenShareAction -> {
                         if (!viewModel.tryStopScreenShare()) {
 
@@ -93,6 +115,22 @@ internal fun SheetPanelContent(
                     is FileShareAction -> onModularComponentRequest(ModularComponent.FileShare)
                     is WhiteboardAction -> onModularComponentRequest(ModularComponent.Whiteboard)
                     is VirtualBackgroundAction -> onModularComponentRequest(ModularComponent.VirtualBackground)
+                    is HangUpAction -> viewModel.hangUp()
+                    is MicAction -> {
+                        if (inputPermissions.micPermission == null) Unit
+                        else if (inputPermissions.micPermission!!.status.isGranted) viewModel.toggleMic(activity)
+                        else inputPermissions.micPermission!!.launchPermissionRequest()
+                    }
+
+                    is CameraAction -> {
+                        if (inputPermissions.cameraPermission == null) Unit
+                        else if (uiState.isCameraUsageRestricted || inputPermissions.cameraPermission!!.status.isGranted) viewModel.toggleCamera(activity)
+                        else inputPermissions.cameraPermission!!.launchPermissionRequest()
+                    }
+
+                    is CustomAction -> {
+                        callAction.onClick()
+                    }
                 }
             }
         }
@@ -107,25 +145,25 @@ internal fun SheetPanelContent(
 ) {
     Surface(
         modifier = Modifier.width(320.dp),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 2.dp
     ) {
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 12.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
             modifier = modifier
         ) {
             items(items = callActions.value, key = { it.id }) {
-                SheetPanelItem(
-                    callAction = it,
-                    modifier = Modifier
-                        .clickable(
-                            role = Role.Button,
-                            onClick = { onItemClick(it) }
-                        )
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp, vertical = 12.dp)
-                )
+                    SheetPanelItem(
+                        callAction = it,
+                        modifier = Modifier.height(36.dp)
+                            .clickable(
+                                role = Role.Button,
+                                onClick = { onItemClick(it) }
+                            )
+                            .padding(start = 0.dp, end = 9.dp, top = 0.dp, bottom = 0.dp)
+                    )
+                    Spacer(Modifier.size(16.dp))
             }
         }
     }
@@ -146,7 +184,11 @@ internal fun SheetPanelContentPreview() {
                         FileShareAction(notificationCount = 2),
                         WhiteboardAction(notificationCount = 3),
                         ScreenShareAction.WholeDevice(),
-                        VirtualBackgroundAction()
+                        VirtualBackgroundAction(),
+                        MicAction(),
+                        CameraAction(),
+                        HangUpAction(),
+                        CustomAction(icon = R.drawable.kaleyra_icon_reply, buttonTexts = CustomCallAction.ButtonTexts("Custom", "Custom")),
                     )
                 ),
                 onItemClick = { }

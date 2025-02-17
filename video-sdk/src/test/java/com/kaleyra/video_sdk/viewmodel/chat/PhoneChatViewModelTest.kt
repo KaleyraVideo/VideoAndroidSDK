@@ -162,6 +162,12 @@ class PhoneChatViewModelTest {
                     ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioVideo())
                 )
             )
+            every { buttons } returns MutableStateFlow(
+                setOf(
+                    ChatUI.Button.Call(callType = Call.Type.audioUpgradable()),
+                    ChatUI.Button.Call(callType = Call.Type.audioVideo())
+                )
+            )
         }
         chatParticipantsFlow.value = oneToOneChatParticipantsFlow
         viewModel = spyk(PhoneChatViewModel {

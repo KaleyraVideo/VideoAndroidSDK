@@ -38,7 +38,7 @@ internal data class WhiteboardUiState(
     val whiteboardView: View? = null,
     val isLoading: Boolean = false,
     val isOffline: Boolean = false,
-    val isFileSharingSupported: Boolean = false,
+    val isFileSharingSupported: Boolean = true,
     val upload: WhiteboardUploadUi? = null,
 ) : UiState
 

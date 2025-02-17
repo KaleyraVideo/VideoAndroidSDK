@@ -205,7 +205,7 @@ internal class CallNotificationProducer(private val coroutineScope: CoroutineSco
             calleeDescription,
             isLink = participants.creator() == null,
             isGroupCall,
-            isCallRecorded = recording.type == Call.Recording.Type.OnConnect,
+            isCallRecorded = recording.type == Call.Recording.Type.Automatic,
             isSharingScreen = isAnyScreenInputActive,
             callState is Call.State.Connecting,
             activityClazz,

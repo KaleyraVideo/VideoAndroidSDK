@@ -73,7 +73,7 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.highlightOnFocus(interactionSource),
                 text = pinnedTextFor(isStreamPinned, stream.username),
                 painter = pinnedPainterFor(isStreamPinned),
-                enabled = (!isPinLimitReached || isStreamPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
+                enabled = !isPinLimitReached || isStreamPinned,
                 onClick = { onPinStreamClick(stream.id, !isStreamPinned)  }
             )
         }

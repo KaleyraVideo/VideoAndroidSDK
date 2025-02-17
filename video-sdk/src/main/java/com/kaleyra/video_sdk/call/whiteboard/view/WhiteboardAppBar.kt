@@ -21,6 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -51,10 +54,15 @@ internal fun WhiteboardAppBar(
                 androidx.compose.material3.IconButton(
                     modifier = Modifier.padding(4.dp),
                     onClick = onUploadClick,
-                    ) {
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_add),
-                        contentDescription = stringResource(id = R.string.kaleyra_upload_file))
+                        contentDescription = stringResource(id = R.string.kaleyra_upload_file)
+                    )
                 }
             } else {
                 Spacer(Modifier.width(56.dp))

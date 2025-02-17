@@ -22,7 +22,6 @@ import androidx.fragment.app.FragmentActivity
 import com.kaleyra.video.Company
 import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Inputs
@@ -30,8 +29,8 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration.Success
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
-import com.kaleyra.video_common_ui.DisplayModeEvent
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.PresentationModeEvent
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceSupported
@@ -46,6 +45,7 @@ import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isUsbCameraWaitingPermission
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper
@@ -106,7 +106,12 @@ class MainViewModelTest {
         mockkObject(TelecomManagerExtensions)
         mockkObject(CallExtensions)
         mockkObject(WhiteboardMapper)
+        mockkObject(ContactDetailsManager)
+        mockkObject(FileShareMapper)
 
+        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.actions } returns null
+        every { callMock.buttonsProvider } returns { it }
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
         every { callMock.isUsbCameraWaitingPermission() } returns flowOf(false)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
@@ -646,10 +651,10 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `if the onDisplayMode callback is set after the displayModeEvent is received, the lambda is immediately invoked`() = runTest {
-        every { callMock.displayModeEvent } returns MutableStateFlow(DisplayModeEvent("id", CallUI.DisplayMode.PictureInPicture))
+    fun `if the onDisplayMode callback is set after the presentationModeEvent is received, the lambda is immediately invoked`() = runTest {
+        every { callMock.presentationModeEvent } returns MutableStateFlow(PresentationModeEvent("id", CallUI.PresentationMode.PictureInPicture))
         advanceUntilIdle()
-        var actual: CallUI.DisplayMode? = null
+        var actual: CallUI.PresentationMode? = null
 
         val viewModel = MainViewModel { Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
 
@@ -657,7 +662,7 @@ class MainViewModelTest {
             actual = displayMode
         }
         advanceUntilIdle()
-        assertEquals(CallUI.DisplayMode.PictureInPicture, actual)
+        assertEquals(CallUI.PresentationMode.PictureInPicture, actual)
     }
 
     @Test

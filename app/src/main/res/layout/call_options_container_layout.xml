@@ -78,6 +78,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/camera_effects" />
 
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/call_options_custom_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open_url_custom_button" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

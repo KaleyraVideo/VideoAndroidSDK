@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2023 Kaleyra @ https://www.kaleyra.com
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,16 +17,17 @@
     package="com.kaleyra.app_configuration">
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="true" />
-    <application>
 
+    <application>
         <activity
             android:name=".activities.ConfigurationActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -41,17 +42,17 @@
                     android:scheme="bandyer" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".activities.BrandColorConfigurationActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:exported="false" />
         <activity
             android:name=".activities.QRConfigurationActivity"
             android:launchMode="singleTask" />
-
         <activity android:name=".activities.ImageTextEditActivity" />
-
         <activity
             android:name=".activities.MockUserDetailsSettingsActivity"
             android:windowSoftInputMode="adjustResize" />
-
     </application>
 
 </manifest>

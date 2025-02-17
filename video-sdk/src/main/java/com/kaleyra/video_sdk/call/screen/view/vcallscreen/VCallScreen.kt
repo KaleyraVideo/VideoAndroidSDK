@@ -56,7 +56,6 @@ import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.CameraMessageText
-import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessage
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.FullScreenMessageText
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessageHost
 import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.MicMessageText
@@ -87,8 +86,10 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
-import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -97,6 +98,9 @@ internal val StreamMenuContentTestTag = "StreamMenuContentTestTag"
 private val CallSheetEstimatedHeight = 76.dp
 private val CallSheetEstimatedHeightWithHandle = 87.dp
 private val StreamMenuEstimatedHeight = 100.dp
+
+private val ContentSpacing = 8.dp
+private val ContentExpandedSpacing = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -125,8 +129,8 @@ internal fun VCallScreen(
     val callActionsUiState by callActionsViewModel.uiState.collectAsStateWithLifecycle()
     val isRinging by remember { derivedStateOf { callActionsUiState.isRinging } }
 
-    val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isAtLeastMediumWidth() }
-    val isLargeScreenLandscape = remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
+    val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isLargeScreen() }
+    val isAtLeastExpandedWidth = remember(windowSizeClass) { windowSizeClass.isAtLeastExpandedWidth() }
 
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(isLargeScreen, selectedStreamId) {
@@ -147,7 +151,7 @@ internal fun VCallScreen(
         else onModalSheetComponentRequest(component)
     }
 
-    val contentSpacing = if (isLargeScreen) 16.dp else 8.dp
+    val contentSpacing = if (isLargeScreen) ContentExpandedSpacing else ContentSpacing
     var hasConnectedCallOnce by remember { mutableStateOf(false) }
     val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
     val isDarkTheme = isSystemInDarkTheme()
@@ -182,6 +186,7 @@ internal fun VCallScreen(
                                 onSideBarSheetComponentRequest(component)
                                 showSheetPanelContent = false
                             },
+                            inputPermissions = inputPermissions,
                             onAskInputPermissions = onAskInputPermissions,
                             modifier = Modifier.testTag(PanelTestTag)
                         )
@@ -203,14 +208,12 @@ internal fun VCallScreen(
             }
         },
         brandLogo = {
-            if (windowSizeClass.isAtLeastExpandedWidth()
-                || windowSizeClass.isAtLeastMediumWidth()
-                && with(brandLogoUiState.callStateUi) {
-                    this is CallStateUi.Connected
-                        || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
-                        || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
-                }
-            ) {
+            val shouldShowBrandLogoWithLargeScreen = with(brandLogoUiState.callStateUi) {
+                this is CallStateUi.Connected
+                    || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
+                    || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
+            }
+            if (!windowSizeClass.isCompactInAnyDimension() || (windowSizeClass.isLargeScreen() && shouldShowBrandLogoWithLargeScreen)) {
                 val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start).asPaddingValues()
                 BrandLogoComponent(
                     modifier = Modifier
@@ -318,7 +321,7 @@ internal fun VCallScreen(
                 { message: UserMessage ->
                     when (message) {
                         is PinScreenshareMessage -> {
-                            streamViewModel.pin(message.streamId, prepend = true, force = true); Unit
+                            streamViewModel.pinStream(message.streamId, prepend = true, force = true); Unit
                         }
 
                         else -> Unit
@@ -331,10 +334,10 @@ internal fun VCallScreen(
                     val constraints = constraints
 
                     Row {
-                        val sidePanelWeight = remember(sidePanelComponent, isLargeScreenLandscape) {
+                        val sidePanelWeight = remember(sidePanelComponent, isAtLeastExpandedWidth) {
                             when {
                                 sidePanelComponent == ModularComponent.Whiteboard -> 4f
-                                isLargeScreenLandscape -> 1f
+                                isAtLeastExpandedWidth -> 1f
                                 else -> 2f
                             }
                         }
@@ -348,7 +351,7 @@ internal fun VCallScreen(
                                 viewModel = streamViewModel,
                                 windowSizeClass = windowSizeClass,
                                 selectedStreamId = selectedStreamId,
-                                onStreamClick = { stream -> onStreamSelected(stream.id) },
+                                onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
                                 onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -363,7 +366,7 @@ internal fun VCallScreen(
                             )
 
                             Column(Modifier.padding(top = topPadding)) {
-                                val displayBrandLogo = !isLargeScreenLandscape && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
+                                val displayBrandLogo = windowSizeClass.isCompactInAnyDimension() && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
                                 if (displayBrandLogo) {
                                     val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
                                     val brandlogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()

@@ -114,7 +114,9 @@ internal fun ChatUserInput(
                 enabled = textState.text.isNotBlank(),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    disabledContainerColor = Color.Transparent
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 shape = RoundedCornerShape(8.dp),
                 interactionSource = buttonInteractionSource,

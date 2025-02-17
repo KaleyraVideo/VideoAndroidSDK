@@ -28,7 +28,10 @@ internal fun CameraAction(
         checked = checked,
         onCheckedChange = onCheckedChange,
         enabled = enabled,
-        label = if (label) stringResource(R.string.kaleyra_call_sheet_camera) else null,
+        label = if (label) {
+            if (checked) stringResource(R.string.kaleyra_call_sheet_enable)
+            else stringResource(R.string.kaleyra_call_sheet_disable)
+        } else null,
         badgePainter = when {
             warning -> painterResource(R.drawable.ic_kaleyra_call_sheet_warning)
             error -> painterResource(R.drawable.ic_kaleyra_call_sheet_error)

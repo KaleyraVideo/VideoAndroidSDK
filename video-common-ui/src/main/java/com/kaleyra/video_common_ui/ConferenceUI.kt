@@ -18,10 +18,12 @@ package com.kaleyra.video_common_ui
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
+import com.kaleyra.video_common_ui.notification.DisplayedChatActivity.Companion.chatId
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -60,7 +62,8 @@ class ConferenceUI(
     /**
      * The call actions that will be set on every call
      */
-    var callActions: Set<CallUI.Action> = CallUI.Action.default
+    @Deprecated("CallActions have been deprecated and will be removed in a further release. Please add Call Buttons to the CallUI object in order to add/remove call actions to a call.")
+    var callActions: Set<CallUI.Action>? = null
 
     /**
      * The connection service option enabled by default
@@ -76,6 +79,7 @@ class ConferenceUI(
         configureCallSounds(logger, conferenceDispatcher)
         configureScreenShareOverlayProducer(conferenceDispatcher)
         configureCallActivityShow(conferenceDispatcher)
+        bindCallButtons(conferenceDispatcher)
     }
 
     internal fun dispose() {
@@ -88,14 +92,34 @@ class ConferenceUI(
      * @param userIDs to be called
      * @param options creation options
      */
-    fun call(userIDs: List<String>, options: (Conference.CreationOptions.() -> Unit)? = null): Result<CallUI> = create(userIDs, options).onSuccess { it.connect() }
+    fun call(
+        userIDs: List<String>,
+        options: (Conference.CreationOptions.() -> Unit)? = null
+    ): Result<CallUI> = create(userIDs, options, null).onSuccess { it.connect() }
+
+    /**
+     * Call
+     *
+     * @param userIDs to be called
+     * @param options creation options
+     */
+    fun call(
+        userIDs: List<String>,
+        options: (Conference.CreationOptions.() -> Unit)? = null,
+        chatId: String? = null): Result<CallUI> = create(userIDs, options, chatId).onSuccess { it.connect() }
 
     /**
      * Join an url
      *
      * @param url to join
      */
-    fun joinUrl(url: String): Result<CallUI> = create(url).onSuccess { it.connect() }
+    @Deprecated(
+        message = ("joinUrl function has been deprecated and it will be removed in a further release."),
+        replaceWith = ReplaceWith("KaleyraVideo.conference.join(url)")
+    )
+    fun joinUrl(url: String): Result<CallUI> = join(url)
+
+    fun join(url: String): Result<CallUI> = create(url).onSuccess { it.connect() }
 
     /**
      * @suppress
@@ -106,15 +130,16 @@ class ConferenceUI(
     /**
      * @suppress
      */
-    override fun create(userIDs: List<String>, conf: (Conference.CreationOptions.() -> Unit)?): Result<CallUI> =
-        conference.create(userIDs, conf).map { getOrCreateCallUI(it) }
+    override fun create(
+        userIDs: List<String>,
+        conf: (Conference.CreationOptions.() -> Unit)?,
+        chatId: String?): Result<CallUI> = conference.create(userIDs, conf, chatId).map { getOrCreateCallUI(it) }
 
     private fun getOrCreateCallUI(call: Call): CallUI = synchronized(this) {
         callUIMap[call.id] ?: CallUI(
             call = call,
             activityClazz = callActivityClazz,
-            actions = MutableStateFlow(callActions)
-        ).apply { callUIMap[id] = this }
+            actions = callActions?.let { MutableStateFlow(it) }
+            ).apply { callUIMap[id] = this }
     }
-
 }

@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.call.whiteboard.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,16 +25,20 @@ import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video.whiteboard.WhiteboardView
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.isFileSharingSupported
-import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.isWhiteboardLoading
 import com.kaleyra.video_sdk.call.mapper.WhiteboardMapper.toWhiteboardUploadUi
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -63,11 +66,6 @@ internal class WhiteboardViewModel(configure: suspend () -> Configuration, white
                     if (it !is Call.State.Disconnected.Ended) return@onEach
                     whiteboard.getValue()?.unload()
                 }.launchIn(viewModelScope)
-
-            call
-                .isFileSharingSupported()
-                .onEach { isFileSharingSupported -> _uiState.update { it.copy(isFileSharingSupported = isFileSharingSupported) } }
-                .launchIn(viewModelScope)
 
             call
                 .isWhiteboardLoading()

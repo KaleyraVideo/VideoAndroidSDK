@@ -16,18 +16,24 @@
 package com.kaleyra.demo_video_sdk.ui.custom_views
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.text.InputType
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import com.kaleyra.app_configuration.model.CallOptionsType
+import com.kaleyra.app_utilities.utils.Utils
 import com.kaleyra.demo_video_sdk.R
+import com.kaleyra.video_utils.ContextRetainer
 import com.robertlevonyan.views.expandable.Expandable
 
 @SuppressLint("ViewConstructor")
@@ -194,6 +200,7 @@ class CallOptionsDialogView(
 
         fun applyCallOptionsPreferences() {
             callConfiguration?.let { setCallCapabilities(it) }
+            enableOptionClickListeners(enableOpenUrlDialog = true)
         }
 
         private fun setCallCapabilities(callConfiguration: CallConfiguration) = with(callConfiguration) {
@@ -204,6 +211,7 @@ class CallOptionsDialogView(
                     is ConfigAction.OpenChat -> setChecked(R.id.call_options_chat, true)
                     is ConfigAction.ScreenShare -> setChecked(R.id.call_options_screen_sharing, true)
                     is ConfigAction.CameraEffects -> setChecked(R.id.call_options_camera_effects, true)
+                    is ConfigAction.OpenUrl -> setChecked(R.id.call_options_custom_button, true)
                     else -> Unit
                 }
             }
@@ -212,7 +220,7 @@ class CallOptionsDialogView(
             setChecked(R.id.call_options_feedback, options.feedbackEnabled)
         }
 
-        private fun enableOptionClickListeners() {
+        private fun enableOptionClickListeners(enableOpenUrlDialog: Boolean = false) {
             val checkedChangeListener = CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
                 if (isChecked && !titleView.isChecked) {
                     titleView.isChecked = true
@@ -226,6 +234,18 @@ class CallOptionsDialogView(
             addCheckedChangeListener(R.id.call_options_back_camera, checkedChangeListener)
             addCheckedChangeListener(R.id.call_options_feedback, checkedChangeListener)
             addCheckedChangeListener(R.id.call_options_camera_effects, checkedChangeListener)
+            addCheckedChangeListener(R.id.call_options_custom_button, CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
+                if (enableOpenUrlDialog && isChecked) getCustomButtonOpenUrl(
+                    context,
+                    ContextRetainer.context.getString(R.string.open_url_custom_button),
+                    null,
+                    onOkClicked = { url ->
+                        if (url.isEmpty()) buttonView?.isChecked = false
+                        else _openUrl = url
+                    }
+                )
+                checkedChangeListener.onCheckedChanged(buttonView, isChecked)
+            })
         }
 
         private fun addCheckedChangeListener(id: Int, checkedChangeListener: CompoundButton.OnCheckedChangeListener) {
@@ -266,6 +286,38 @@ class CallOptionsDialogView(
             setChecked(R.id.call_options_feedback, false)
         }
 
+        private fun getCustomButtonOpenUrl(
+            context: Context,
+            title: String,
+            message: String?,
+            initialText: String = "",
+            onOkClicked: (String) -> Unit
+        ) {
+            val builder = androidx.appcompat.app.AlertDialog.Builder(context, com.kaleyra.app_configuration.R.style.ThemeOverlay_App_MaterialAlertDialog)
+            builder.setTitle(title)
+            message?.let { builder.setMessage(it) }
+
+            val layout = LinearLayout(context)
+            val padding = Utils.dpToPx(context, 16f)
+            layout.setPadding(padding, padding, padding, padding)
+            val input = EditText(context)
+            layout.addView(input, ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            input.inputType = InputType.TYPE_CLASS_TEXT
+            input.setText(initialText)
+            builder.setView(layout)
+
+            builder.setPositiveButton("OK") { dialog, which ->
+                val inputText = input.text.toString()
+                onOkClicked(inputText)
+            }
+            builder.setNegativeButton("Cancel") { dialog, which ->
+                dialog.cancel()
+                onOkClicked("")
+            }
+
+            builder.show()
+        }
+
         val isRecordingChecked: Boolean
             get() = isChecked(R.id.call_options_recording)
 
@@ -280,6 +332,13 @@ class CallOptionsDialogView(
 
         val isChatChecked: Boolean
             get() = isChecked(R.id.call_options_chat)
+
+        val isOpenUrlChecked: Boolean
+            get() = isChecked(R.id.call_options_custom_button)
+
+        private var _openUrl: String? = null
+        val openUrl: String?
+            get() = _openUrl ?: (callConfiguration?.actions?.firstOrNull { it is ConfigAction.OpenUrl } as? ConfigAction.OpenUrl)?.url
 
         val isBackCameraChecked: Boolean
             get() = isChecked(R.id.call_options_back_camera)

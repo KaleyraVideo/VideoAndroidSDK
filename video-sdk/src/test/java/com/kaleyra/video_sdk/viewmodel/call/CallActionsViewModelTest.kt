@@ -139,7 +139,7 @@ class CallActionsViewModelTest {
         mockkObject(VirtualBackgroundViewModel)
         mockkObject(FileShareVisibilityObserver)
 
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf())
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf())
         every { callMock.chatId } returns MutableSharedFlow<String>(replay = 1).apply { runBlocking { emit("chatId") } }
         every { callMock.isMyMicEnabled() } returns MutableStateFlow(true)
         every { callMock.isMyCameraEnabled() } returns MutableStateFlow(true)
@@ -270,7 +270,7 @@ class CallActionsViewModelTest {
     @Test
     fun testCallActionsUiState_actionsUpdated() = runTest {
         val actions = MutableStateFlow(listOf<CallActionUI>())
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -290,7 +290,7 @@ class CallActionsViewModelTest {
     @Test
     fun testCallActionsUiState_cameraActionKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(CameraAction(), HangUpAction()))
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -314,7 +314,7 @@ class CallActionsViewModelTest {
     @Test
     fun testCallActionsUiState_micActionKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(MicAction(), HangUpAction()))
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.isMyMicEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -338,7 +338,7 @@ class CallActionsViewModelTest {
     @Test
     fun testCallActionsUiState_audioActionKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(AudioAction(), HangUpAction()))
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.LoudSpeaker)
 
         viewModel = spyk(CallActionsViewModel{
@@ -361,7 +361,7 @@ class CallActionsViewModelTest {
     @Test
     fun testCallActionsUiState_virtualBackgroundKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(VirtualBackgroundAction(), HangUpAction()))
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -401,7 +401,7 @@ class CallActionsViewModelTest {
             every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
         }
         val audioFlow = MutableStateFlow<Input.Audio?>(null)
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 
         viewModel = spyk(CallActionsViewModel{
@@ -428,7 +428,7 @@ class CallActionsViewModelTest {
             every { state } returns MutableStateFlow(Input.State.Closed.Error)
         }
         val audioFlow = MutableStateFlow<Input.Audio?>(null)
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 
         viewModel = spyk(CallActionsViewModel{
@@ -455,7 +455,7 @@ class CallActionsViewModelTest {
             every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
         }
         val videoFlow = MutableStateFlow<Input.Video.Camera.Internal?>(null)
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toCameraVideoInput() } returns videoFlow
 
         viewModel = spyk(CallActionsViewModel{
@@ -482,7 +482,7 @@ class CallActionsViewModelTest {
             every { state } returns MutableStateFlow(Input.State.Closed.Error)
         }
         val videoFlow = MutableStateFlow<Input.Video.Camera.Internal?>(null)
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toCameraVideoInput() } returns videoFlow
 
         viewModel = spyk(CallActionsViewModel{
@@ -509,7 +509,7 @@ class CallActionsViewModelTest {
             every { state } returns MutableStateFlow(Input.State.Active)
         }
         val hasUsageRestricted = MutableStateFlow(false)
-        every { callMock.toCallActions(any()) } returns actions
+        every { callMock.toCallActions() } returns actions
         every { callMock.toCameraVideoInput() } returns MutableStateFlow(videoInput)
         every { callMock.hasCameraUsageRestriction() } returns hasUsageRestricted
 
@@ -532,7 +532,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun cameraEnabled_cameraActionStateNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isToggled = true)))
         every { callMock.isMyCameraEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -547,7 +547,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun cameraDisabled_cameraActionStateToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -562,7 +562,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun localParticipantInitialized_cameraActionStateEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isEnabled = false)))
         every { callMock.isMeParticipantInitialized() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -577,7 +577,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun localParticipantNotInitialized_cameraActionStateDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isEnabled = true)))
         every { callMock.isMeParticipantInitialized() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -592,7 +592,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun micEnabled_micActionStateNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isToggled = true)))
         every { callMock.isMyMicEnabled() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -607,7 +607,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun micDisabled_micActionStateToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
         every { callMock.isMyMicEnabled() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -624,7 +624,7 @@ class CallActionsViewModelTest {
     fun isMyMicEnabledNotEmitting_preferredTypeAudioVideo_uiStateMicNotToggled() = runTest {
         every { callMock.isMyMicEnabled() } returns flowOf()
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -640,7 +640,7 @@ class CallActionsViewModelTest {
     fun isMyMicEnabledNotEmitting_preferredTypeAudioUpgradable_uiStateMicNotToggled() = runTest {
         every { callMock.isMyMicEnabled() } returns flowOf()
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -656,7 +656,7 @@ class CallActionsViewModelTest {
     fun isMyMicEnabledNotEmitting_preferredTypeAudioOnly_uiStateMicNotToggled() = runTest {
         every { callMock.isMyMicEnabled() } returns flowOf()
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -672,7 +672,7 @@ class CallActionsViewModelTest {
     fun isMyCameraEnabledNotEmitting_preferredTypeAudioVideo_uiStateCameraNotToggled() = runTest {
         every { callMock.isMyCameraEnabled() } returns flowOf()
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -688,7 +688,7 @@ class CallActionsViewModelTest {
     fun isMyCameraEnabledNotEmitting_preferredTypeAudioUpgradable_uiStateCameraNotToggled() = runTest {
         every { callMock.isMyCameraEnabled() } returns flowOf()
         every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -702,7 +702,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun localParticipantInitialized_micActionStateEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isEnabled = false)))
         every { callMock.isMeParticipantInitialized() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -717,7 +717,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun localParticipantNotInitialized_micActionStateDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(MicAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(MicAction(isEnabled = true)))
         every { callMock.isMeParticipantInitialized() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -732,7 +732,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun audioDeviceLoudSpeaker_audioActionDeviceUpdateToLoudSpeaker() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(AudioAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(AudioAction()))
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.LoudSpeaker)
 
         viewModel = spyk(CallActionsViewModel{
@@ -747,7 +747,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun audioDeviceEarpiece_audioActionDeviceUpdateToEarPiece() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(AudioAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(AudioAction()))
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.EarPiece)
 
         viewModel = spyk(CallActionsViewModel{
@@ -762,7 +762,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun audioDeviceWiredHeadset_audioActionDeviceUpdateToWiredHeadset() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(AudioAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(AudioAction()))
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.WiredHeadset)
 
         viewModel = spyk(CallActionsViewModel{
@@ -777,7 +777,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun audioDeviceMuted_audioActionDeviceUpdateToMuted() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(AudioAction(audioDevice = AudioDeviceUi.WiredHeadset)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(AudioAction(audioDevice = AudioDeviceUi.WiredHeadset)))
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.Muted)
 
         viewModel = spyk(CallActionsViewModel{
@@ -792,7 +792,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun audioDeviceBluetooth_audioActionDeviceUpdateToBluetooth() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(AudioAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(AudioAction()))
         every { callMock.toCurrentAudioDeviceUi() } returns flowOf(AudioDeviceUi.Bluetooth("id", null, null, null))
 
         viewModel = spyk(CallActionsViewModel{
@@ -807,7 +807,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun virtualBackgroundEnabled_virtualBackgroundActionToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(
             VirtualBackgroundAction(isToggled = false)
         ))
         every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
@@ -824,7 +824,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun virtualBackgroundDisabled_virtualBackgroundActionNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(
             VirtualBackgroundAction(isToggled = true)
         ))
         every { callMock.isVirtualBackgroundEnabled() } returns flowOf(false)
@@ -854,7 +854,7 @@ class CallActionsViewModelTest {
             CameraAction(),
             ScreenShareAction.UserChoice()
         )
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
+        every { callMock.toCallActions() } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
@@ -899,7 +899,7 @@ class CallActionsViewModelTest {
             CameraAction(),
             ScreenShareAction.UserChoice()
         )
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(actions)
+        every { callMock.toCallActions() } returns MutableStateFlow(actions)
         every { callMock.state } returns callState
 
         viewModel = spyk(CallActionsViewModel{
@@ -931,7 +931,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsNotConnected_fileShareActionDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(FileShareAction(isEnabled = true)))
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
@@ -946,7 +946,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsNotConnected_screenShareActionDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = true)))
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
@@ -961,7 +961,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsNotConnected_whiteboardActionDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(WhiteboardAction(isEnabled = true)))
         every { callMock.state } returns MutableStateFlow(mockk(relaxed = true))
 
         viewModel = spyk(CallActionsViewModel{
@@ -976,7 +976,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsConnected_fileShareActionEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(FileShareAction(isEnabled = false)))
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
@@ -991,7 +991,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsConnected_screenShareActionEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isEnabled = false)))
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1006,7 +1006,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun callIsConnected_whiteboardActionEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(WhiteboardAction(isEnabled = false)))
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1021,7 +1021,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun screenSharingEnabled_screenShareActionToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = false)))
         every { callMock.isSharingScreen() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1036,7 +1036,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun screenSharingDisabled_screenShareActionNotToggled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(ScreenShareAction.UserChoice(isToggled = true)))
         every { callMock.isSharingScreen() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1051,7 +1051,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun usbCameraConnected_switchCameraDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = true)))
         every { callMock.hasUsbCamera() } returns flowOf(true)
 
         viewModel = spyk(CallActionsViewModel{
@@ -1066,7 +1066,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun usbCameraNotConnectedAndCameraEnable_switchCameraEnabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = false)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = false)))
         every { callMock.hasUsbCamera() } returns flowOf(false)
         every { callMock.isMyCameraEnabled() } returns flowOf(true)
 
@@ -1082,7 +1082,7 @@ class CallActionsViewModelTest {
 
     @Test
     fun usbCameraNotConnectedAndCameraDisable_switchCameraDisabled() = runTest {
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = true)))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(FlipCameraAction(isEnabled = true)))
         every { callMock.hasUsbCamera() } returns flowOf(false)
         every { callMock.isMyCameraEnabled() } returns flowOf(false)
 
@@ -1802,7 +1802,7 @@ class CallActionsViewModelTest {
     @Test
     fun noFileShared_fileShareActionNotificationCountIsZero() = runTest {
         with(callMock) {
-            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { toCallActions() } returns MutableStateFlow(listOf(FileShareAction()))
             every { toOtherFilesCreationTimes() } returns MutableStateFlow(listOf())
         }
 
@@ -1818,7 +1818,7 @@ class CallActionsViewModelTest {
     @Test
     fun nFilesShared_fileShareActionNotificationIsN() = runTest {
         with(callMock) {
-            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { toCallActions() } returns MutableStateFlow(listOf(FileShareAction()))
             every { toOtherFilesCreationTimes() } returns MutableStateFlow(listOf(100L, 200L))
         }
 
@@ -1835,7 +1835,7 @@ class CallActionsViewModelTest {
     fun testFileShareActionNotificationCountWhenFileShareIsDisplayed() = runTest {
         val creationTimesFlow = MutableStateFlow(listOf(100L))
         with(callMock) {
-            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { toCallActions() } returns MutableStateFlow(listOf(FileShareAction()))
             every { toOtherFilesCreationTimes() } returns creationTimesFlow
         }
 
@@ -1871,7 +1871,7 @@ class CallActionsViewModelTest {
     fun testClearFileShareBadge() = runTest {
         val creationTimesFlow = MutableStateFlow(listOf(100L, 200L))
         with(callMock) {
-            every { toCallActions(any()) } returns MutableStateFlow(listOf(FileShareAction()))
+            every { toCallActions() } returns MutableStateFlow(listOf(FileShareAction()))
             every { toOtherFilesCreationTimes() } returns creationTimesFlow
         }
 
@@ -1915,7 +1915,7 @@ class CallActionsViewModelTest {
         val participantsMock = mockk<CallParticipants> {
             every { others } returns listOf(otherParticipant, companyParticipant)
         }
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(ChatAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(ChatAction()))
         every { callMock.participants } returns MutableStateFlow(participantsMock)
         every { conversationMock.chats } returns MutableStateFlow(listOf(chatMock))
         every { conversationMock.find(any<String>()) } returns CompletableDeferred(Result.success(chatMock))
@@ -1940,7 +1940,7 @@ class CallActionsViewModelTest {
     fun testWhiteboardActionBadgeCount() = runTest {
         val unreadMessageCountFlow = MutableStateFlow(0)
         every { whiteboardMock.notificationCount } returns unreadMessageCountFlow
-        every { callMock.toCallActions(any()) } returns MutableStateFlow(listOf(WhiteboardAction()))
+        every { callMock.toCallActions() } returns MutableStateFlow(listOf(WhiteboardAction()))
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
         })

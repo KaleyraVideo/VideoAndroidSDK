@@ -84,7 +84,11 @@ internal fun ChatUserInputText(
             minHeight = 40.dp,
             colors = OutlinedTextFieldDefaults.colors().copy(
                 focusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.outline.copy(alpha = .16f)
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.outline.copy(alpha = .16f),
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 12.dp),
             modifier = Modifier

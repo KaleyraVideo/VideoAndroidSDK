@@ -1,12 +1,14 @@
 package com.kaleyra.video_sdk.call.callactions.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -15,13 +17,13 @@ internal fun MoreAction(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    badgeText: String? = null
+    badgeCount: Int = 0
 ) {
     CallToggleAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_more),
         contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_hide_actions else R.string.kaleyra_call_sheet_description_more_actions),
-        badgeText = badgeText,
+        badgeCount = badgeCount,
         checked = checked,
         onCheckedChange = onCheckedChange,
     )
@@ -32,8 +34,14 @@ internal fun MoreAction(
 @Composable
 internal fun MoreActionPreview() {
     KaleyraTheme {
-        Surface {
-            MoreAction(checked = false, {})
-        }
+        Surface(
+
+        ) {
+            MoreAction(
+                modifier = Modifier.padding(all = 50.dp),
+                onCheckedChange = {},
+                badgeCount = 30,
+                checked = false
+            )}
     }
 }

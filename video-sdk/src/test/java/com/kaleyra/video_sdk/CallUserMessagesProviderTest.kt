@@ -41,6 +41,7 @@ import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -238,10 +239,12 @@ class CallUserMessagesProviderTest {
     fun testAutomaticRecordingAlertMessage() = runTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connecting)
         every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
-        every { callMock.recording } returns MutableStateFlow<Call.Recording>(mockk {
-            every { type } returns Call.Recording.automatic()
-            every { state } returns MutableStateFlow(Call.Recording.State.Stopped)
-        })
+        every { callMock.recording } returns MutableStateFlow<Call.Recording>(
+            object : Call.Recording {
+                override val type: Call.Recording.Type = Call.Recording.Type.Automatic
+                override val state: StateFlow<Call.Recording.State> = MutableStateFlow(Call.Recording.State.Stopped)
+            }
+        )
 
         CallUserMessagesProvider.start(callMock, backgroundScope)
         CallUserMessagesProvider.alertMessages.first { it.contains(AlertMessage.AutomaticRecordingMessage) }

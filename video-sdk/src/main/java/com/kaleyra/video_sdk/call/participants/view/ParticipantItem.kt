@@ -24,6 +24,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -118,28 +119,30 @@ internal fun ParticipantItem(
             }
         }
 
-        if (!amIAdmin || stream.isMine) {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                enabled = (!isPinLimitReached || isPinned) && (!stream.isMine || stream.video == null || !stream.video.isScreenShare),
-                onClick = { onPinStreamClick(stream.id, !isPinned) },
-                content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
-            )
-        } else {
-            val interactionSource = remember { MutableInteractionSource() }
-            IconButton(
-                interactionSource = interactionSource,
-                modifier = Modifier.highlightOnFocus(interactionSource),
-                onClick = onMoreClick,
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
-                        contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
-                    )
-                }
-            )
+        if (!stream.isLocalScreenShare()) {
+            if (!amIAdmin || stream.isMine) {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    enabled = !isPinLimitReached || isPinned,
+                    onClick = { onPinStreamClick(stream.id, !isPinned) },
+                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
+                )
+            } else {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    onClick = onMoreClick,
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_kaleyra_participants_component_more),
+                            contentDescription = stringResource(id = R.string.kaleyra_participants_component_show_more_actions)
+                        )
+                    }
+                )
+            }
         }
     }
 }

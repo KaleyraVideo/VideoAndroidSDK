@@ -15,6 +15,8 @@
   -->
 
 <resources>
+    <string name="kaleyra_call_sheet_enable">Enable</string>
+    <string name="kaleyra_call_sheet_disable">Disable</string>
     <string name="kaleyra_call_sheet_answer">Join</string>
     <string name="kaleyra_call_sheet_chat">Chat</string>
     <string name="kaleyra_call_sheet_whiteboard">Whiteboard</string>
@@ -28,7 +30,7 @@
     <string name="kaleyra_call_sheet_fullscreen_on">Fullscreen</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Exit</string>
     <string name="kaleyra_call_sheet_zoom" translatable="false">Zoom</string>
-    <string name="kaleyra_call_sheet_flip_camera">Flip cam</string>
+    <string name="kaleyra_call_sheet_flip_camera">Flip</string>
     <string name="kaleyra_call_sheet_recording">Recording</string>
     <string name="kaleyra_call_sheet_cancel">Cancel</string>
     <string name="kaleyra_call_sheet_microphone">Microphone</string>
@@ -38,6 +40,7 @@
     <string name="kaleyra_call_sheet_active">Active</string>
     <string name="kaleyra_call_sheet_disabled">Disabled</string>
     <string name="kaleyra_call_sheet_hang_up">Hang up</string>
+    <string name="kaleyra_call_sheet_hang_up_action">End</string>
     <string name="kaleyra_call_sheet_description_more_actions">Show more actions</string>
     <string name="kaleyra_call_sheet_description_hide_actions">Hide actions</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Enable microphone</string>
@@ -67,8 +70,8 @@
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>
     <string name="kaleyra_participants_component_users_invited">Also invited</string>
-    <string name="kaleyra_participants_component_grid">Grid</string>
-    <string name="kaleyra_participants_component_pin">Pin</string>
+    <string name="kaleyra_participants_component_mosaic">Mosaic</string>
+    <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Pin stream</string>
     <string name="kaleyra_participants_component_unpin_stream">Unpin stream</string>
     <string name="kaleyra_participants_component_pin_stream_description">Pin %s\'s stream</string>
@@ -111,10 +114,11 @@
     <!-- Action labels -->
     <string name="kaleyra_call_action_muted">Muted</string>
     <string name="kaleyra_call_action_mic_mute">Mute</string>
+    <string name="kaleyra_call_action_mic_unmute">Unmute</string>
     <string name="kaleyra_call_action_video_disable">Disable</string>
     <string name="kaleyra_call_action_screen_share">Screen Share</string>
     <string name="kaleyra_call_action_virtual_background">Background</string>
-    <string name="kaleyra_call_action_switch_camera">Switch</string>
+    <string name="kaleyra_call_action_switch_camera">Flip</string>
     <string name="kaleyra_call_action_chat">Chat</string>
     <string name="kaleyra_call_action_whiteboard">Whiteboard</string>
     <string name="kaleyra_call_action_file_share">File Share</string>
@@ -131,6 +135,8 @@
     <string name="kaleyra_call_action_more">More</string>
 
     <string name="kaleyra_call_drag_to_expand">Drag to expand</string>
+
+    <string name="kaleyra_call_badge_count_overflow" translatable="false">99+</string>
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Type your message here</string>
@@ -352,5 +358,7 @@
     <string name="kaleyra_input_text_default_error">Input text error</string>
     <string name="kaleyra_chat_deleted">The conversation has been deleted.</string>
     <string name="kaleyra_chat_creation_failed">Conversation creation failed</string>
+
+    <string name="kaleyra_user_message_pin">Pin</string>
 
 </resources>

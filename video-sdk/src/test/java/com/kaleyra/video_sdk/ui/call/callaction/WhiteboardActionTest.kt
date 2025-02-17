@@ -62,14 +62,14 @@ class WhiteboardActionTest {
 
     @Test
     fun testBadgeIsDisplayed() {
-        val badgeText = "badgeText"
+        val badgeCount = 10
         composeTestRule.setContent {
             WhiteboardAction(
                 onClick = {},
-                badgeText = badgeText,
+                badgeCount = badgeCount,
             )
         }
-        composeTestRule.onNodeWithText(badgeText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(badgeCount.toString()).assertIsDisplayed()
     }
 
     @Test

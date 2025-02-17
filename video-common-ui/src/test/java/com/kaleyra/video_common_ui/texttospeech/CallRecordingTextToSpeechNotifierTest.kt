@@ -68,10 +68,10 @@ class CallRecordingTextToSpeechNotifierTest {
     }
 
     @Test
-    fun `test recording on connect utterance`() = runTest {
+    fun `test automatic recording utterance`() = runTest {
         createNotifier()
         val recordingMock = mockk<Call.Recording>(relaxed = true)
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+        every { recordingMock.type } returns Call.Recording.Type.Automatic
         every { callMock.recording } returns MutableStateFlow(recordingMock)
         every { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) } returns "text"
         notifier.start(backgroundScope)
@@ -84,11 +84,11 @@ class CallRecordingTextToSpeechNotifierTest {
     }
 
     @Test
-    fun `test recording on connect utterance with callRecordingUtteranceOptionDisabled not notified`() = runTest {
+    fun `test automatic recording utterance with callRecordingUtteranceOptionDisabled not notified`() = runTest {
         every { KaleyraVideo.voicePrompts } returns VoicePrompts.Disabled
         createNotifier()
         val recordingMock = mockk<Call.Recording>(relaxed = true)
-        every { recordingMock.type } returns Call.Recording.Type.OnConnect
+        every { recordingMock.type } returns Call.Recording.Type.Automatic
         every { callMock.recording } returns MutableStateFlow(recordingMock)
         every { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) } returns "text"
         notifier.start(backgroundScope)

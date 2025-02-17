@@ -2,10 +2,9 @@ package com.kaleyra.video_common_ui
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.telecom.TelecomManager
-import androidx.core.app.NotificationManagerCompat
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
@@ -15,6 +14,7 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal object ConferenceUIExtensions {
@@ -166,6 +165,14 @@ internal object ConferenceUIExtensions {
                     call.isLink -> call.showOnAppResumed(coroutineScope)
                     call.shouldShowAsActivity() -> call.show()
                 }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun ConferenceUI.bindCallButtons(coroutineScope: CoroutineScope) {
+        call
+            .onEach { ongoingCall ->
+                ongoingCall.bindCallButtons(coroutineScope)
             }
             .launchIn(coroutineScope)
     }

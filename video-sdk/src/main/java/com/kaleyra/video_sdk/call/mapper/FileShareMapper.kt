@@ -21,8 +21,8 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -43,21 +43,21 @@ internal object FileShareMapper {
             .flatMapLatest { (files, me) ->
                 if (files.isEmpty()) flowOf(setOf())
                 else files
-                   .map { it.mapToSharedFileUi(me.userId) }
-                   .merge()
-                   .transform { sharedFileUi ->
-                       if (!sharedFileUi.isCancelledUpload()) {
-                           sharedFiles[sharedFileUi.id] = sharedFileUi
-                       } else {
-                           sharedFiles.remove(sharedFileUi.id)
-                           cancelledUploads[sharedFileUi.id] = sharedFileUi
-                       }
+                    .map { it.mapToSharedFileUi(me.userId) }
+                    .merge()
+                    .transform { sharedFileUi ->
+                        if (!sharedFileUi.isCancelledUpload()) {
+                            sharedFiles[sharedFileUi.id] = sharedFileUi
+                        } else {
+                            sharedFiles.remove(sharedFileUi.id)
+                            cancelledUploads[sharedFileUi.id] = sharedFileUi
+                        }
 
-                       val values = sharedFiles.values
-                       if (values.size + cancelledUploads.values.size == files.size) {
-                           emit(values.toSet())
-                       }
-                   }
+                        val values = sharedFiles.values
+                        if (values.size + cancelledUploads.values.size == files.size) {
+                            emit(values.toSet())
+                        }
+                    }
             }.distinctUntilChanged()
     }
 

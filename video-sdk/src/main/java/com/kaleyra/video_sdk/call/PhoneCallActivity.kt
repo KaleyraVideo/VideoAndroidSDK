@@ -122,7 +122,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
                 enterPip = ::enterPipModeIfSupported,
                 onFileShareVisibility = ::onFileShareVisibility,
                 onWhiteboardVisibility = { isWhiteboardDisplayed = it },
-                onDisplayMode = ::onDisplayMode,
+                onPresentationMode = ::onPresentationMode,
                 onPipAspectRatio = ::onAspectRatio,
                 onUsbCameraConnected = ::onUsbConnecting,
                 onActivityFinishing = { isActivityFinishing = true },
@@ -254,9 +254,9 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
         updatePipParams()?.let { setPictureInPictureParams(it) }
     }
 
-    private fun onDisplayMode(displayMode: CallUI.DisplayMode) {
+    private fun onPresentationMode(displayMode: CallUI.PresentationMode) {
         when (displayMode) {
-            is CallUI.DisplayMode.PictureInPicture -> {
+            is CallUI.PresentationMode.PictureInPicture -> {
                 when {
                     isInPipMode.value -> return
                     isInForeground -> enterPipModeIfSupported()
@@ -264,12 +264,12 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
                 }
             }
 
-            is CallUI.DisplayMode.Foreground -> {
+            is CallUI.PresentationMode.Foreground -> {
                 if (isInForeground) return
                 moveToFront()
             }
 
-            is CallUI.DisplayMode.Background -> moveTaskToBack(true)
+            is CallUI.PresentationMode.Background -> moveTaskToBack(true)
 
             else -> Unit
         }

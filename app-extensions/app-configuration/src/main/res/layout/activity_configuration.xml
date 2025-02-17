@@ -122,8 +122,15 @@
             android:id="@+id/watermark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:summary="@string/summary_watermark"
+            app:summary="@string/brand_color_option_summary"
             app:title="@string/pref_watermark_title" />
+
+        <com.kaleyra.app_configuration.views.ConfigurationTextViewPreference
+            android:id="@+id/brand_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:summary="@string/brand_color_option_summary"
+            app:title="@string/brand_color" />
 
         <com.kaleyra.app_configuration.views.ConfigurationTextViewPreference
             android:id="@+id/mock_user_details"

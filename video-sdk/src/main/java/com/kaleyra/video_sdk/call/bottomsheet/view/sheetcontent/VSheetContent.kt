@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,6 +21,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
+import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
@@ -150,7 +153,7 @@ internal fun VSheetContent(
     inputPermissions: InputPermissions = InputPermissions()
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
-    val moreNotificationCount = remember(callActions) { callActions.value.filterIsInstance<NotifiableCallAction>().sumOf { it.notificationCount } }
+    var moreNotificationCount by remember { mutableIntStateOf(0) }
 
     Column(modifier) {
         when {
@@ -163,7 +166,7 @@ internal fun VSheetContent(
             }
             showMoreAction -> {
                 MoreAction(
-                    badgeText = if (moreNotificationCount != 0) "$moreNotificationCount" else null,
+                    badgeCount = moreNotificationCount,
                     checked = isMoreToggled,
                     onCheckedChange = onMoreToggle,
                 )
@@ -174,6 +177,7 @@ internal fun VSheetContent(
         VSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = callActions.count() > itemsPlaced
+                moreNotificationCount = computeMoreActionNotificationCount(callActions, itemsPlaced)
                 onActionsPlaced(itemsPlaced)
             },
             maxItems = maxActions - if (showAnswerAction || showMoreAction) 1 else 0,

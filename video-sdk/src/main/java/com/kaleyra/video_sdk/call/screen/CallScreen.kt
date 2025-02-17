@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.screen
 
 import android.util.Rational
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -12,8 +13,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +58,8 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.CameraPermission
 import com.kaleyra.video_sdk.call.utils.ConnectionServicePermissions
@@ -67,7 +70,8 @@ import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.CollaborationTheme
-import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasCompactHeight
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -93,7 +97,7 @@ internal fun CallScreen(
     isInPipMode: Boolean,
     enterPip: () -> Unit,
     onPipAspectRatio: (Rational) -> Unit,
-    onDisplayMode: (CallUI.DisplayMode) -> Unit,
+    onPresentationMode: (CallUI.PresentationMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
     onUsbCameraConnected: (Boolean) -> Unit,
@@ -206,8 +210,8 @@ internal fun CallScreen(
         }
     }
 
-    LaunchedEffect(onDisplayMode) {
-        viewModel.setOnDisplayMode(onDisplayMode)
+    LaunchedEffect(onPresentationMode) {
+        viewModel.setOnDisplayMode(onPresentationMode)
     }
 
     LaunchedEffect(onUsbCameraConnected) {
@@ -267,12 +271,9 @@ internal fun CallScreen(
     modifier: Modifier = Modifier,
     isInPipMode: Boolean = false
 ) {
-    val isCompactHeight = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-    val isLargeScreen = windowSizeClass.isAtLeastMediumWidth()
-
-    val scope = rememberCoroutineScope()
-
+    val isLargeScreen = remember(windowSizeClass) { windowSizeClass.isLargeScreen() }
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
     val onChangeCallSheetState: (Boolean) -> Unit = remember(callSheetState) {
         { isSheetCollapsed: Boolean ->
@@ -359,10 +360,12 @@ internal fun CallScreen(
     if (isInPipMode) {
         PipScreen(
             onPipAspectRatio = onPipAspectRatio,
-            modifier = Modifier.testTag(PipScreenTestTag)
+            modifier = Modifier
+                .testTag(PipScreenTestTag)
+                .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
         )
     } else {
-        if (isCompactHeight) {
+        if (windowSizeClass.hasCompactHeight()) {
             HCallScreen(
                 windowSizeClass = windowSizeClass,
                 sheetState = callSheetState,
@@ -464,9 +467,9 @@ private fun BackHandler(
         isCallEnded -> BackHandler(onBack = onCallEndedBack)
         sheetState.targetValue == CallSheetValue.Expanded -> BackHandler(onBack = collapseSheet)
         isAnyStreamSelected -> BackHandler(onBack = onDismissSelectedStream)
-        streamUiState.fullscreenStream != null -> BackHandler(onBack = {
-            streamViewModel.fullscreen(null)
-            streamViewModel.unpinAll()
+        streamUiState.streamItems.value.firstOrNull { it is StreamItem.Stream && it.state == StreamItemState.Featured.Fullscreen } != null -> BackHandler(onBack = {
+            streamViewModel.clearFullscreenStream()
+            streamViewModel.clearPinnedStreams()
         })
     }
 }

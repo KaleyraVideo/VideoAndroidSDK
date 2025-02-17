@@ -88,7 +88,7 @@ internal fun UserFeedbackDialog(
     if (!activity.isAtLeastResumed()) return
 
     val orientation = LocalConfiguration.current.orientation
-    val windowSizeClass = currentWindowAdaptiveInfo()
+    val windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current)
     Box(
         modifier = Modifier
             .fillMaxSize()

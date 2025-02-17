@@ -44,7 +44,8 @@ data class Configuration(
     var firebaseProjectId: String? = null,
     var firebaseMobileAppId: String? = null,
     var firebaseApiKey: String? = null,
-    var hmsAppId: String? = null): java.io.Serializable {
+    var hmsAppId: String? = null,
+    var customBrandColor: Int? = null) : java.io.Serializable {
 
     fun toJson(): String = json.encodeToString(this)
 

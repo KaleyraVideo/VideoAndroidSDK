@@ -178,17 +178,6 @@ class AdminBottomSheetContentTest {
     }
 
     @Test
-    fun localScreenShareStream_unpinButtonIsDisabled() {
-        stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
-        streamPinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream, stream.username)
-        composeTestRule
-            .onNodeWithText(description)
-            .assertHasClickAction()
-            .assertIsNotEnabled()
-    }
-
-    @Test
     fun pinLimitReached_pinButtonIsDisabled() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
         pinLimitReached = true

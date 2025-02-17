@@ -440,7 +440,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(pinText)
@@ -463,7 +463,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
-        val pinText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin)
+        val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(pinText)

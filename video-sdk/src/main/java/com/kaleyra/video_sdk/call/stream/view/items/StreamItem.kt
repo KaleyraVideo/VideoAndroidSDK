@@ -42,6 +42,8 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 internal val StreamItemPadding = 8.dp
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 
+internal val StreamItemTag = "StreamItemTag"
+
 @Composable
 internal fun StreamItem(
     stream: StreamUi,
@@ -53,7 +55,7 @@ internal fun StreamItem(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
+        modifier = modifier.testTag(StreamItemTag)
     ) {
         PointerStreamWrapper(
             streamView = stream.video?.view,

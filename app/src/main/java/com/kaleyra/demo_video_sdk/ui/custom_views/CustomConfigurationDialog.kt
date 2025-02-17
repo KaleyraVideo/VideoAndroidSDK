@@ -22,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -138,7 +137,7 @@ class CustomConfigurationDialog : DialogFragment() {
             callOptionsDialogView.isAudioOnlyCallChecked       -> getCallCapabilities(callOptionsDialogView.audioOnlyCallOptionsView!!)
             callOptionsDialogView.isAudioUpgradableCallChecked -> getCallCapabilities(callOptionsDialogView.audioUpgradableCallOptionsView!!)
             callOptionsDialogView.isAudioVideoCallChecked      -> getCallCapabilities(callOptionsDialogView.audioVideoCallOptionsView!!)
-            else                                               -> CallUI.Action.default.mapToConfigActions()
+            else                                               -> CallUI.Button.audioCall.mapToConfigActions()
         }, when {
             callOptionsDialogView.isAudioOnlyCallChecked       -> getOptions(callOptionsDialogView.audioOnlyCallOptionsView!!)
             callOptionsDialogView.isAudioUpgradableCallChecked -> getOptions(callOptionsDialogView.audioUpgradableCallOptionsView!!)
@@ -148,14 +147,16 @@ class CustomConfigurationDialog : DialogFragment() {
     )
 
     private fun getCallCapabilities(optionView: CallOptions): Set<ConfigAction> {
-        val actions = mutableSetOf<CallUI.Action>()
-        actions += CallUI.Action.default
-        if (optionView.isChatChecked) actions += CallUI.Action.OpenChat.Full
-        if (optionView.isFileShareChecked) actions += CallUI.Action.FileShare
-        if (optionView.isScreenShareChecked) actions += CallUI.Action.ScreenShare
-        if (optionView.isWhiteboardChecked) actions += CallUI.Action.OpenWhiteboard.Full
-        if (optionView.isCameraEffectsChecked) actions += CallUI.Action.CameraEffects
-        return actions.mapToConfigActions()
+        val actions = mutableSetOf<CallUI.Button>()
+        actions += CallUI.Button.audioCall
+        if (optionView.isChatChecked) actions += CallUI.Button.Chat
+        if (optionView.isFileShareChecked) actions += CallUI.Button.FileShare
+        if (optionView.isScreenShareChecked) actions += CallUI.Button.ScreenShare()
+        if (optionView.isWhiteboardChecked) actions += CallUI.Button.Whiteboard
+        if (optionView.isCameraEffectsChecked) actions += CallUI.Button.CameraEffects
+        val configActions = actions.mapToConfigActions().toMutableSet()
+        if (optionView.isOpenUrlChecked && optionView.openUrl != null) configActions.add(ConfigAction.OpenUrl(optionView.openUrl!!))
+        return configActions
     }
 
     private fun getOptions(optionView: CallOptions) = CallConfiguration.CallOptions(

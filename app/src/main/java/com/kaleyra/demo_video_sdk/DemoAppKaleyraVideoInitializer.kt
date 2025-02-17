@@ -23,7 +23,10 @@ import com.kaleyra.app_configuration.utils.MediaStorageUtils.getUriFromString
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.app_utilities.storage.LoginManager
 import com.kaleyra.demo_video_sdk.storage.DefaultConfigurationManager
-import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIActions
+import com.kaleyra.demo_video_sdk.ui.custom_views.CallConfiguration
+import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIButtons
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Conference
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -32,11 +35,13 @@ import com.kaleyra.video_common_ui.PushNotificationHandlingStrategy
 import com.kaleyra.video_common_ui.model.UserDetails
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
 import com.kaleyra.video_common_ui.theme.Theme
+import com.kaleyra.video_common_ui.theme.resource.ColorResource
 import com.kaleyra.video_common_ui.theme.resource.URIResource
-import com.kaleyra.video_common_ui.utils.InputsExtensions.useBackCamera
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
 
 class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
 
@@ -52,20 +57,44 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val appConfiguration = ConfigurationPrefsManager.getConfiguration(applicationContext)
                 val logoUri = appConfiguration.logoUrl?.takeIf { it.isNotEmpty() }
                     ?.let { getUriFromString(appConfiguration.logoUrl) }
-                KaleyraVideo.theme = Theme(
+
+                val theme = Theme(
                     logo = logoUri?.let { Theme.Logo(URIResource(it, it)) },
                     typography = Theme.Typography(fontFamily = KaleyraFontFamily.default),
-                    config = Theme.Config(style = Theme.Config.Style.System)
+                    config = Theme.Config(style = Theme.Config.Style.System),
                 )
+
+                KaleyraVideo.theme = appConfiguration.customBrandColor?.let { customBrandColor ->
+                    theme.copy(
+                        palette = Theme.Palette(
+                            seed = ColorResource(
+                                light = customBrandColor,
+                                dark = customBrandColor
+                        ))
+                    )
+                } ?: theme
             }
 
-            KaleyraVideo.conference.call.onEach {
-                val callConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
-                it.actions.emit(callConfiguration.actions.mapToCallUIActions())
-                it.withFeedback = callConfiguration.options.feedbackEnabled
-                if (callConfiguration.options.backCameraAsDefault) it.inputs.useBackCamera()
+            if (getCallConfiguration().options.backCameraAsDefault)
+                KaleyraVideo.conference.settings.camera = Conference.Settings.Camera.Back
+
+            KaleyraVideo.conference.call.onEach { ongoingCall ->
+                val callConfiguration = getCallConfiguration()
+
+                ongoingCall.buttonsProvider = { callButtons ->
+                    callButtons + getCallConfiguration().actions.mapToCallUIButtons()
+                }
+
+                ongoingCall.state
+                    .takeWhile { it !is Call.State.Disconnected.Ended }
+                    .onCompletion { ongoingCall.buttonsProvider = null }
+                    .launchIn(MainScope())
+
+                ongoingCall.withFeedback = callConfiguration.options.feedbackEnabled
             }.launchIn(MainScope())
         }
+
+        fun getCallConfiguration(): CallConfiguration = DefaultConfigurationManager.getDefaultCallConfiguration()
 
         fun connect(applicationContext: Context) {
             val loggedUserId = LoginManager.getLoggedUser(applicationContext)
