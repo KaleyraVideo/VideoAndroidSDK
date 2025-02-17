@@ -88,6 +88,7 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
+import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
 
@@ -208,12 +209,32 @@ internal fun VCallScreen(
             }
         },
         brandLogo = {
-            val shouldShowBrandLogoWithLargeScreen = with(brandLogoUiState.callStateUi) {
+
+
+            (windowSizeClass.isAtLeastExpandedWidth()
+                || windowSizeClass.isAtLeastMediumWidth()
+                && with(brandLogoUiState.callStateUi) {
                 this is CallStateUi.Connected
                     || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
                     || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
             }
-            if (!windowSizeClass.isCompactInAnyDimension() || (windowSizeClass.isLargeScreen() && shouldShowBrandLogoWithLargeScreen)) {
+                )
+
+//            val shouldShowBrandLogoWithLargeScreen = with(brandLogoUiState.callStateUi) {
+//                this is CallStateUi.Connected
+//                    || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
+//                    || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
+//            }
+//            if (!windowSizeClass.isCompactInAnyDimension() || (windowSizeClass.isLargeScreen() && shouldShowBrandLogoWithLargeScreen)) {
+
+            if (windowSizeClass.isAtLeastExpandedWidth()
+                || windowSizeClass.isAtLeastMediumWidth()
+                && with(brandLogoUiState.callStateUi) {
+                    this is CallStateUi.Connected
+                        || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
+                        || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
+                }
+            ) {
                 val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start).asPaddingValues()
                 BrandLogoComponent(
                     modifier = Modifier
@@ -366,7 +387,7 @@ internal fun VCallScreen(
                             )
 
                             Column(Modifier.padding(top = topPadding)) {
-                                val displayBrandLogo = windowSizeClass.isCompactInAnyDimension() && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
+                                val displayBrandLogo = !windowSizeClass.isAtLeastExpandedWidth() && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)
                                 if (displayBrandLogo) {
                                     val brandLogoViewModel: BrandLogoViewModel = viewModel(factory = BrandLogoViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
                                     val brandlogoUiState by brandLogoViewModel.uiState.collectAsStateWithLifecycle()
