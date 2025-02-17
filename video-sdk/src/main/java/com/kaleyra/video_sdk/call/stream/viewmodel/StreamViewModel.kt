@@ -63,6 +63,8 @@ internal class StreamViewModel(
 
     init {
         viewModelScope.launch {
+            layoutController.switchToAutoMode()
+
             val conference = conference.first()
             val call = call.first()
             val companyIdFlow = company.flatMapLatest { it.id }

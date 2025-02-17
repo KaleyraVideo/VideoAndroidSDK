@@ -104,6 +104,16 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun `stream auto mode set by default`() {
+        val layoutController = spyk(StreamLayoutControllerMock())
+        StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        verify(exactly = 1) { layoutController.switchToAutoMode() }
+    }
+
+    @Test
     fun `hasReachedMaxPinnedStreams is false when layout controller isPinnedStreamLimitReached is true`() {
         val layoutController = StreamLayoutControllerMock(initialIsPinnedStreamLimitReached = false)
         val viewModel = StreamViewModel(
