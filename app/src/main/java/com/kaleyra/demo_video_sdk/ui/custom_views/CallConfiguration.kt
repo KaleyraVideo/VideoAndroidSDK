@@ -34,7 +34,16 @@ import kotlinx.serialization.json.Json
 @Serializable
 @Parcelize
 data class CallConfiguration(
-    val actions: Set<ConfigAction> = CallUI.Button.all.mapToConfigActions(),
+    val actions: Set<ConfigAction> = setOf(
+        CallUI.Button.FileShare,
+        CallUI.Button.ScreenShare(),
+        CallUI.Button.Zoom,
+        CallUI.Button.Volume,
+        CallUI.Button.FlashLight,
+        CallUI.Button.Chat,
+        CallUI.Button.Participants,
+        CallUI.Button.Whiteboard,
+    ).mapToConfigActions(),
     val options: CallOptions = CallOptions()
 ) : Parcelable {
 
