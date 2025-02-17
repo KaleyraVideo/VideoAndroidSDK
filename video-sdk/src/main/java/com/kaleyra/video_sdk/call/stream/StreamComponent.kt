@@ -93,7 +93,7 @@ internal object StreamComponentDefaults {
     fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
         return when {
             windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
-            windowSizeClass.hasExpandedWidth() || windowSizeClass.hasMediumWidth() -> ThumbnailsArrangement.Start
+            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
             else -> ThumbnailsArrangement.Bottom
         }
     }
