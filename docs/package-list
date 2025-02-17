@@ -6,6 +6,7 @@ com.kaleyra.video_common_ui
 com.kaleyra.video_common_ui.call
 com.kaleyra.video_common_ui.call.widget
 com.kaleyra.video_common_ui.callservice
+com.kaleyra.video_common_ui.chat
 com.kaleyra.video_common_ui.common
 com.kaleyra.video_common_ui.connectionservice
 com.kaleyra.video_common_ui.contactdetails
@@ -40,7 +41,6 @@ com.kaleyra.video_sdk.call.appbar.model.recording
 com.kaleyra.video_sdk.call.appbar.viewmodel
 com.kaleyra.video_sdk.call.audiooutput.model
 com.kaleyra.video_sdk.call.bottomsheet
-com.kaleyra.video_sdk.call.bottomsheet.model
 com.kaleyra.video_sdk.call.brandlogo.model
 com.kaleyra.video_sdk.call.brandlogo.view
 com.kaleyra.video_sdk.call.brandlogo.viewmodel
@@ -62,9 +62,11 @@ com.kaleyra.video_sdk.call.pointer.model
 com.kaleyra.video_sdk.call.pointer.view
 com.kaleyra.video_sdk.call.screen.model
 com.kaleyra.video_sdk.call.screenshare.model
+com.kaleyra.video_sdk.call.stream.model
 com.kaleyra.video_sdk.call.stream.model.core
 com.kaleyra.video_sdk.call.stream.view.core
 com.kaleyra.video_sdk.call.stream.view.items
+com.kaleyra.video_sdk.call.stream.viewmodel
 com.kaleyra.video_sdk.call.viewmodel
 com.kaleyra.video_sdk.call.virtualbackground.model
 com.kaleyra.video_sdk.call.whiteboard.model

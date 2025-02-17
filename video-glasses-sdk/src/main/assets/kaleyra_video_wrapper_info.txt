@@ -1,1 +1,1 @@
-VideoAndroidGlassesSDK/4.4.0
+VideoAndroidGlassesSDK/4.5.0
