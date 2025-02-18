@@ -1,5 +1,5 @@
 ext.moduleGroupId = "com.kaleyra"
-ext.moduleVersion = "4.5.0"
+ext.moduleVersion = "4.5.1"
 
 if (project.hasProperty("dryRun")) {
     project.ext.setProperty("isPublishing", true)

@@ -62,11 +62,11 @@ com.kaleyra.video_sdk.call.pointer.model
 com.kaleyra.video_sdk.call.pointer.view
 com.kaleyra.video_sdk.call.screen.model
 com.kaleyra.video_sdk.call.screenshare.model
-com.kaleyra.video_sdk.call.stream.model
+com.kaleyra.video_sdk.call.stream.layoutsystem.config
+com.kaleyra.video_sdk.call.stream.layoutsystem.model
 com.kaleyra.video_sdk.call.stream.model.core
 com.kaleyra.video_sdk.call.stream.view.core
 com.kaleyra.video_sdk.call.stream.view.items
-com.kaleyra.video_sdk.call.stream.viewmodel
 com.kaleyra.video_sdk.call.viewmodel
 com.kaleyra.video_sdk.call.virtualbackground.model
 com.kaleyra.video_sdk.call.whiteboard.model
