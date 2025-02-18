@@ -1,10 +1,15 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.layout
 
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
-import com.kaleyra.video_sdk.call.stream.utils.isRemoteCameraStream
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProvider
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProviderImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProvider
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProviderImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

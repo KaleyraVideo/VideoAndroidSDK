@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.config
 
 /**
  * `StreamLayoutConstraints` defines the constraints for a stream layout.

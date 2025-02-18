@@ -2,9 +2,9 @@ package com.kaleyra.video_sdk.viewmodel.call
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.mockk
 import kotlinx.coroutines.flow.Flow

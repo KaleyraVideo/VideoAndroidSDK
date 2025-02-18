@@ -33,8 +33,8 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel.Companion.DEFAULT_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS

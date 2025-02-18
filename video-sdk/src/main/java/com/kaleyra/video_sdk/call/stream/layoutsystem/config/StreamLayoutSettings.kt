@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.config
 
 /**
  * `StreamLayoutSettings` defines the settings that influence the behavior of a stream layout.

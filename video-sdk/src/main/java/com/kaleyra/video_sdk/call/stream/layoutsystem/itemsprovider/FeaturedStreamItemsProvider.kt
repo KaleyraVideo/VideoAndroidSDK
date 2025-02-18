@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider
 
 import com.kaleyra.video_sdk.call.stream.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview

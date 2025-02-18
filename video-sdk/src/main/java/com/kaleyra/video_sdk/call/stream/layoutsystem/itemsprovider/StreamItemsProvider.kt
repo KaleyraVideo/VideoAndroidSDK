@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider
 
 /**
  * `StreamItemsProvider` is a marker interface that indicates a class is capable of providing
