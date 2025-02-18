@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.model
 
 import androidx.compose.runtime.Immutable
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.uistate.UiState
 

@@ -1,6 +1,6 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
 import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController

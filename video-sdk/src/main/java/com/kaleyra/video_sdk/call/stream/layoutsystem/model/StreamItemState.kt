@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.model
+package com.kaleyra.video_sdk.call.stream.layoutsystem.model
 
 /**
  * Represents the different states a [StreamItem] can be in.

@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.layout
+package com.kaleyra.video_sdk.ui.call.stream
 
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi

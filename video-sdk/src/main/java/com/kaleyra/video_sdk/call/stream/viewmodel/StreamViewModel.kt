@@ -20,7 +20,7 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstra
 import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController
 import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare

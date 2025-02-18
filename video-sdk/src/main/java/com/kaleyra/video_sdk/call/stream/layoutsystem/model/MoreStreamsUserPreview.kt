@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream.model
+package com.kaleyra.video_sdk.call.stream.layoutsystem.model
 
 import androidx.compose.runtime.Immutable
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri

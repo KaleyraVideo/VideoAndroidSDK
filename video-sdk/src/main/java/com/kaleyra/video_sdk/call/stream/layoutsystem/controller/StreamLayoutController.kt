@@ -7,7 +7,7 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.ManualLayoutImpl
 import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.StreamLayout
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage

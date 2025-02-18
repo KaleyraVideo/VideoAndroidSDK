@@ -3,7 +3,7 @@ package com.kaleyra.video_sdk.call.stream.layoutsystem.layout
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
 import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import kotlinx.coroutines.flow.Flow
 

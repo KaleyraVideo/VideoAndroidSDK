@@ -1,9 +1,9 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.kaleyra.video_sdk.layout
+package com.kaleyra.video_sdk.layoutsystem.layout
 
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProvider
 import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.ManualLayoutImpl
