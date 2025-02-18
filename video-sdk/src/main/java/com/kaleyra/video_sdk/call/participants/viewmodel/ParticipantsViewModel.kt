@@ -12,8 +12,8 @@ import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.model.StreamsLayout
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController
+import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

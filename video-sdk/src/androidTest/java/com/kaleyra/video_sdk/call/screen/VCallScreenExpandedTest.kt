@@ -11,7 +11,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAncestors
 import androidx.compose.ui.test.onChildAt
@@ -86,137 +85,7 @@ import org.junit.Test
 import kotlin.reflect.KClass
 
 // Test for the VCallScreen using a tablet (both in portrait and landscape)
-class VCallScreenExpandedTest {
-
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
-    private val callActionsUiState = MutableStateFlow(CallActionsUiState())
-
-    private val streamUiState = MutableStateFlow(StreamUiState())
-
-    private val callViewModel = mockk<CallActionsViewModel>(relaxed = true) {
-        every { uiState } returns callActionsUiState
-    }
-
-    private val streamViewModel = mockk<StreamViewModel>(relaxed = true) {
-        every { uiState } returns streamUiState
-    }
-
-    private val audioOutputViewModel = mockk<AudioOutputViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(AudioOutputUiState())
-    }
-
-    private val screenShareViewModel = mockk<ScreenShareViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(ScreenShareUiState())
-    }
-
-    private val fileShareViewModel = mockk<FileShareViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(FileShareUiState())
-    }
-
-    private val whiteboardViewModel = mockk<WhiteboardViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(WhiteboardUiState())
-    }
-
-    private val virtualBackgroundViewModel = mockk<VirtualBackgroundViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(VirtualBackgroundUiState())
-    }
-
-    private val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
-    }
-
-    private val callAppBarViewModel = mockk<CallAppBarViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(CallAppBarUiState())
-    }
-
-    private val userMessagesViewModel = mockk<UserMessagesViewModel>(relaxed = true) {
-        every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
-    }
-
-    private val companyLogo = Logo(light = Uri.parse("https://www.example.com/light.png"), dark = Uri.parse("https://www.example.com/dark.png"))
-    private val brandLogoUiState = MutableStateFlow(BrandLogoState())
-    private val brandLogoViewModel = mockk<BrandLogoViewModel>(relaxed = true) {
-        every { uiState } returns brandLogoUiState
-    }
-
-    private val allActions = listOf(
-        HangUpAction(),
-        FlipCameraAction(),
-        AudioAction(),
-        ChatAction(),
-        FileShareAction(),
-        WhiteboardAction(),
-        VirtualBackgroundAction(),
-        MicAction(),
-        CameraAction(),
-        ScreenShareAction.UserChoice(),
-    )
-
-    @Before
-    fun setUp() {
-        mockkObject(CallActionsViewModel)
-        mockkObject(StreamViewModel)
-        mockkObject(AudioOutputViewModel)
-        mockkObject(ScreenShareViewModel)
-        mockkObject(FileShareViewModel)
-        mockkObject(WhiteboardViewModel)
-        mockkObject(VirtualBackgroundViewModel)
-        mockkObject(CallInfoViewModel)
-        mockkObject(CallAppBarViewModel)
-        mockkObject(ParticipantsViewModel)
-        mockkObject(UserMessagesViewModel)
-        mockkObject(BrandLogoViewModel)
-
-        every { CallActionsViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<CallActionsViewModel>>(), any()) } returns callViewModel
-        }
-
-        every { StreamViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<StreamViewModel>>(), any()) } returns streamViewModel
-        }
-        every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<AudioOutputViewModel>>(), any()) } returns audioOutputViewModel
-        }
-        every { ScreenShareViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<ScreenShareViewModel>>(), any()) } returns screenShareViewModel
-        }
-        every { FileShareViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create(any<KClass<FileShareViewModel>>(), any()) } returns fileShareViewModel
-        }
-        every { WhiteboardViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create(any<KClass<WhiteboardViewModel>>(), any()) } returns whiteboardViewModel
-        }
-        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
-            every {
-                create(any<KClass<VirtualBackgroundViewModel>>(), any())
-            } returns virtualBackgroundViewModel
-        }
-        every { CallInfoViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<CallInfoViewModel>>(), any()) } returns callInfoViewModel
-        }
-        every { CallAppBarViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<CallAppBarViewModel>>(), any()) } returns callAppBarViewModel
-        }
-        every { ParticipantsViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<ParticipantsViewModel>>(), any()) } returns mockk(relaxed = true) {
-                every { uiState } returns MutableStateFlow(ParticipantsUiState())
-            }
-        }
-        every { UserMessagesViewModel.provideFactory(any(), any()) } returns mockk {
-            every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns userMessagesViewModel
-        }
-
-        every { BrandLogoViewModel.provideFactory(any()) } returns mockk {
-            every { create(any<KClass<BrandLogoViewModel>>(), any()) } returns brandLogoViewModel
-        }
-    }
-
-    @After
-    fun tearDown() {
-        unmockkAll()
-    }
+internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
 
     @Test
     fun testRinging_sheetDragActionsAreDisplayed() {
@@ -781,43 +650,5 @@ class VCallScreenExpandedTest {
 
         val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
         composeTestRule.onNodeWithContentDescription(companyLogo).assertDoesNotExist()
-    }
-
-
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
-    private fun AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>.setUpVCallScreen(
-        sheetState: CallSheetState = CallSheetState(),
-        onChangeSheetState: (Boolean) -> Unit = {},
-        selectedStreamId: String? = null,
-        onStreamSelected: (String?) -> Unit = {},
-        modalSheetComponent: ModularComponent? = null,
-        sidePanelComponent: ModularComponent? = null,
-        onModalSheetComponentRequest: (ModularComponent?) -> Unit = { },
-        onSidePanelComponentRequest: (ModularComponent?) -> Unit = { },
-        onModularComponentDisplayed: (ModularComponent?) -> Unit = { },
-        onAskInputPermissions: (Boolean) -> Unit = {},
-        onBackPressed: () -> Unit = { },
-        inputPermissions: InputPermissions = InputPermissions()
-    ) {
-        setContent {
-            VCallScreen(
-                windowSizeClass = calculateWindowSizeClass(activity),
-                sheetState = sheetState,
-                modalSheetComponent = modalSheetComponent,
-                sidePanelComponent = sidePanelComponent,
-                onChangeSheetState = onChangeSheetState,
-                selectedStreamId = selectedStreamId,
-                onStreamSelected = onStreamSelected,
-                inputPermissions = inputPermissions,
-                modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                onModalSheetComponentRequest = onModalSheetComponentRequest,
-                onSidePanelComponentRequest = onSidePanelComponentRequest,
-                onModularComponentDisplayed = onModularComponentDisplayed,
-                onAskInputPermissions = onAskInputPermissions,
-                onBackPressed = onBackPressed,
-                onChatDeleted = {},
-                onChatCreationFailed = {}
-            )
-        }
     }
 }

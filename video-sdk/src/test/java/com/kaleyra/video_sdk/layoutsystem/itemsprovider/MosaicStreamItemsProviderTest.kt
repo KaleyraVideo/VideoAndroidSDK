@@ -1,9 +1,9 @@
-package com.kaleyra.video_sdk.layout
+package com.kaleyra.video_sdk.layoutsystem.itemsprovider
 
-import com.kaleyra.video_sdk.call.stream.model.MoreStreamsUserPreview
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProviderImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProviderImpl
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import io.mockk.mockk
 import org.junit.Assert

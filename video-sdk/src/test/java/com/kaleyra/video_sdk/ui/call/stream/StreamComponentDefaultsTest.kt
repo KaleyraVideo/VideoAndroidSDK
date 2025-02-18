@@ -98,10 +98,10 @@ class StreamComponentDefaultsTest {
     }
 
     @Test
-    fun windowWidthSizeClassMedium_thumbnailsArrangementFor_thumbnailsArrangementStart() {
+    fun windowWidthSizeClassMedium_thumbnailsArrangementFor_thumbnailsArrangementBottom() {
         val sizeClass = WindowSizeClass.calculateFromSize(DpSize(600.dp, 480.dp))
         assertEquals(
-            ThumbnailsArrangement.Start,
+            ThumbnailsArrangement.Bottom,
             StreamComponentDefaults.thumbnailsArrangementFor(sizeClass)
         )
     }

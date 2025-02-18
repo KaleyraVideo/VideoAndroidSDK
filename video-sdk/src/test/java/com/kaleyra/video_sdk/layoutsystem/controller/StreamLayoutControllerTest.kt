@@ -1,15 +1,15 @@
-package com.kaleyra.video_sdk.layout
+package com.kaleyra.video_sdk.layoutsystem.controller
 
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayoutImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.ManualLayoutImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutController
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutControllerImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.AutoLayoutImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.ManualLayoutImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController
+import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutControllerImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every

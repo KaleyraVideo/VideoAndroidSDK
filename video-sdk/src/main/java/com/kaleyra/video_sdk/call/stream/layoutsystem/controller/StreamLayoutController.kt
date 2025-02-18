@@ -1,6 +1,13 @@
-package com.kaleyra.video_sdk.call.stream.viewmodel
+package com.kaleyra.video_sdk.call.stream.layoutsystem.controller
 
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.AutoLayout
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.AutoLayoutImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.ManualLayout
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.ManualLayoutImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.StreamLayout
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.utils.isRemoteScreenShare
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
@@ -150,7 +157,8 @@ internal interface StreamLayoutControllerOutput {
  * Implementations of this interface are responsible for managing the internal state of the
  * layout and updating the output accordingly.
  */
-internal interface StreamLayoutController : StreamLayoutControllerInputs, StreamLayoutControllerOutput {
+internal interface StreamLayoutController : StreamLayoutControllerInputs,
+    StreamLayoutControllerOutput {
 
     /**
      * Applies the given list of streams to the layout.
@@ -253,7 +261,7 @@ internal class StreamLayoutControllerImpl private constructor(
         ): StreamLayoutControllerImpl {
             return instance ?: synchronized(this) {
                 val instance = StreamLayoutControllerImpl(callUserMessageProvider, coroutineScope)
-                this.instance = instance
+                Companion.instance = instance
                 instance
             }
         }
@@ -275,10 +283,14 @@ internal class StreamLayoutControllerImpl private constructor(
     private val _layoutStreams: MutableStateFlow<List<StreamUi>> = MutableStateFlow(emptyList())
     override val layoutStreams: StateFlow<List<StreamUi>> = _layoutStreams
 
-    private val _layoutConstraints: MutableStateFlow<StreamLayoutConstraints> = MutableStateFlow(StreamLayoutConstraints())
+    private val _layoutConstraints: MutableStateFlow<StreamLayoutConstraints> = MutableStateFlow(
+        StreamLayoutConstraints()
+    )
     override val layoutConstraints: StateFlow<StreamLayoutConstraints> = _layoutConstraints
 
-    private val _layoutSettings: MutableStateFlow<StreamLayoutSettings> = MutableStateFlow(StreamLayoutSettings())
+    private val _layoutSettings: MutableStateFlow<StreamLayoutSettings> = MutableStateFlow(
+        StreamLayoutSettings()
+    )
     override val layoutSettings: StateFlow<StreamLayoutSettings> = _layoutSettings
 
     /**

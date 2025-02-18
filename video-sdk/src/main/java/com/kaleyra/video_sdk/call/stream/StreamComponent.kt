@@ -35,8 +35,8 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
@@ -59,7 +59,6 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasCompactHeight
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasExpandedWidth
-import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
 
@@ -93,7 +92,7 @@ internal object StreamComponentDefaults {
     fun thumbnailsArrangementFor(windowSizeClass: WindowSizeClass): ThumbnailsArrangement {
         return when {
             windowSizeClass.hasCompactHeight() -> ThumbnailsArrangement.End
-            windowSizeClass.hasExpandedWidth() || windowSizeClass.hasMediumWidth() -> ThumbnailsArrangement.Start
+            windowSizeClass.hasExpandedWidth() -> ThumbnailsArrangement.Start
             else -> ThumbnailsArrangement.Bottom
         }
     }

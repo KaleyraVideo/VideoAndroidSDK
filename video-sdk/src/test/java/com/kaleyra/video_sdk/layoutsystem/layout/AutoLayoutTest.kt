@@ -1,15 +1,15 @@
-package com.kaleyra.video_sdk.layout
+package com.kaleyra.video_sdk.layoutsystem.layout
 
-import com.kaleyra.video_sdk.call.stream.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayout
-import com.kaleyra.video_sdk.call.stream.viewmodel.AutoLayoutImpl
-import com.kaleyra.video_sdk.call.stream.viewmodel.FeaturedStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.viewmodel.MosaicStreamItemsProvider
-import com.kaleyra.video_sdk.call.stream.model.StreamItemState
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamLayoutSettings
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.AutoLayout
+import com.kaleyra.video_sdk.call.stream.layoutsystem.layout.AutoLayoutImpl
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProvider
+import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProvider
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
