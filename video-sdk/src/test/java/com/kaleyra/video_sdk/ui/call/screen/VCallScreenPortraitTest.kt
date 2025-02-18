@@ -6,4 +6,4 @@ import org.robolectric.annotation.Config
 
 @Config(qualifiers = "w360dp-h640dp")
 @RunWith(RobolectricTestRunner::class)
-class VCallScreenPortraitTest: VCallScreenTest()
+internal class VCallScreenPortraitTest: VCallScreenTest()

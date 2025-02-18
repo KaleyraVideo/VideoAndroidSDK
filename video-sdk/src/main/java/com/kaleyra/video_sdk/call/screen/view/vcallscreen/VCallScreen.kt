@@ -209,32 +209,12 @@ internal fun VCallScreen(
             }
         },
         brandLogo = {
-
-
-            (windowSizeClass.isAtLeastExpandedWidth()
-                || windowSizeClass.isAtLeastMediumWidth()
-                && with(brandLogoUiState.callStateUi) {
+            val shouldShowBrandLogoWithLargeScreen = with(brandLogoUiState.callStateUi) {
                 this is CallStateUi.Connected
                     || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
                     || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
             }
-                )
-
-//            val shouldShowBrandLogoWithLargeScreen = with(brandLogoUiState.callStateUi) {
-//                this is CallStateUi.Connected
-//                    || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
-//                    || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
-//            }
-//            if (!windowSizeClass.isCompactInAnyDimension() || (windowSizeClass.isLargeScreen() && shouldShowBrandLogoWithLargeScreen)) {
-
-            if (windowSizeClass.isAtLeastExpandedWidth()
-                || windowSizeClass.isAtLeastMediumWidth()
-                && with(brandLogoUiState.callStateUi) {
-                    this is CallStateUi.Connected
-                        || (this is CallStateUi.Disconnecting && hasConnectedCallOnce)
-                        || (this is CallStateUi.Disconnected.Ended && hasConnectedCallOnce)
-                }
-            ) {
+            if (!windowSizeClass.isCompactInAnyDimension() && (windowSizeClass.isAtLeastExpandedWidth() || (windowSizeClass.isAtLeastMediumWidth() && shouldShowBrandLogoWithLargeScreen))) {
                 val windowInsets = WindowInsets.displayCutout.only(WindowInsetsSides.Start).asPaddingValues()
                 BrandLogoComponent(
                     modifier = Modifier
