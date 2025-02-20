@@ -23,7 +23,9 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -65,7 +67,7 @@ class HStreamMenuContentTest {
     fun testExitFullscreen() {
         val streamItem = StreamItem.Stream(
             "1",
-            StreamUi("1", "user1"),
+            StreamUi("1", UserInfo("userId1", "user1", ImmutableUri())),
             state = StreamItemState.Featured.Fullscreen
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
@@ -135,7 +137,7 @@ class HStreamMenuContentTest {
     fun testUnPin() {
         val streamItem = StreamItem.Stream(
             "1",
-            StreamUi("1", "user1"),
+            StreamUi("1", UserInfo("userId", "user1", ImmutableUri())),
             state = StreamItemState.Featured.Pinned
         )
         streamUiState.value = StreamUiState(
@@ -210,7 +212,7 @@ class HStreamMenuContentTest {
     fun testPinLimitReached_unpinButtonIsEnabled() {
         val streamItem = StreamItem.Stream(
             "streamId",
-            StreamUi("1", "user1"),
+            StreamUi("1", UserInfo("userId1", "user1", ImmutableUri())),
             state = StreamItemState.Featured.Pinned
         )
         streamUiState.value = StreamUiState(
@@ -220,7 +222,7 @@ class HStreamMenuContentTest {
 
         composeTestRule.setContent {
             HStreamMenuContent(
-                selectedStreamId = streamItem.id,
+                selectedStreamId = "streamId",
                 onDismiss = { },
                 onFullscreen = { }
             )
@@ -538,7 +540,7 @@ class HStreamMenuContentTest {
                 id = "streamId",
                 stream = StreamUi(
                     id = "streamId",
-                    username = "username",
+                    userInfo = UserInfo("userId1", "username", ImmutableUri()),
                     video = VideoUi(
                         "streamId",
                         ImmutableView(VideoStreamView(LocalContext.current)),

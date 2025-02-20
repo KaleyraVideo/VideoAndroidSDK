@@ -19,6 +19,7 @@ import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
@@ -28,10 +29,10 @@ import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -283,7 +284,9 @@ class StreamComponentTest {
     fun previewStreamNotNull_previewIsDisplayed() {
         val stream1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "previewUsername"),
+            preview = StreamPreview(
+                userInfos = listOf(UserInfo("userId", "previewUsername", ImmutableUri())).toImmutableList(),
+            ),
             streamItems = listOf(stream1).toImmutableList()
         )
         composeTestRule.waitForIdle()
@@ -295,7 +298,9 @@ class StreamComponentTest {
     fun previewStreamNotNull_streamIsNotDisplayed() {
         val stream1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "previewUsername"),
+            preview = StreamPreview(
+                userInfos = listOf(UserInfo("userId", "previewUsername", ImmutableUri())).toImmutableList(),
+            ),
             streamItems = listOf(stream1).toImmutableList()
         )
         composeTestRule.waitForIdle()
@@ -304,19 +309,29 @@ class StreamComponentTest {
     }
 
     @Test
-    fun previewIsGroupCallTrue_avatarIsNotDisplayed() {
+    fun previewMultipleUserInfos_multipleAvatarsAreDisplayed() {
         streamUiState = StreamUiState(
-            preview = StreamPreview(isGroupCall = true, username = "mario"),
+            preview = StreamPreview(
+                userInfos = listOf(
+                    UserInfo("userId1", "user", ImmutableUri()),
+                    UserInfo("userId2", "name", ImmutableUri())
+                ).toImmutableList(),
+            ),
         )
         composeTestRule.waitForIdle()
 
-        composeTestRule.onNodeWithText("M").assertDoesNotExist()
+        composeTestRule.onNodeWithText("U").assertIsDisplayed()
+        composeTestRule.onNodeWithText("N").assertIsDisplayed()
     }
 
     @Test
     fun previewIsStartingWithVideoTrueAndVideoIsNull_avatarIsNotDisplayed() {
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "mario", video = null, isStartingWithVideo = true),
+            preview = StreamPreview(
+                userInfos = listOf(UserInfo("userId", "mario", ImmutableUri())).toImmutableList(),
+                video = null,
+                isStartingWithVideo = true
+            ),
         )
         composeTestRule.waitForIdle()
 
@@ -326,7 +341,10 @@ class StreamComponentTest {
     @Test
     fun previewIsStartingWithVideoFalse_avatarIsDisplayed() {
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "mario", isStartingWithVideo = false),
+            preview = StreamPreview(
+                userInfos = listOf(UserInfo("userId", "mario", ImmutableUri())).toImmutableList(),
+                isStartingWithVideo = false
+            ),
         )
         composeTestRule.waitForIdle()
 
@@ -339,7 +357,7 @@ class StreamComponentTest {
         instrumentation.runOnMainSync {
             streamUiState = StreamUiState(
                 preview = StreamPreview(
-                    username = "mario",
+                    userInfos = listOf(UserInfo("userId", "mario", ImmutableUri())).toImmutableList(),
                     video = VideoUi(
                         id = "videoId",
                         view = ImmutableView(VideoStreamView(instrumentation.context))
@@ -366,11 +384,10 @@ class StreamComponentTest {
             id = id,
             stream = StreamUi(
                 id = id,
-                username = username,
+                userInfo = UserInfo("userId", username, avatar ?: ImmutableUri()),
                 isMine = mine,
                 audio = audio,
                 video = video,
-                avatar = avatar
             ),
             state = streamItemState
         )

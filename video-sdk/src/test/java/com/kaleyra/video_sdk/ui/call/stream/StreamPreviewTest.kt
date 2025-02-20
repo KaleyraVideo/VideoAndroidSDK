@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.stream
+package com.kaleyra.video_sdk.ui.call.stream
 
 import android.graphics.Matrix
 import androidx.activity.ComponentActivity
@@ -15,9 +15,10 @@ import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebouceMillis
-import com.kaleyra.video_sdk.call.stream.view.core.Stream
+import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_utils.MutableSharedStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,10 +26,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class StreamTest {
+@RunWith(RobolectricTestRunner::class)
+class StreamPreviewTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -41,13 +45,17 @@ class StreamTest {
 
     private var showStreamView by mutableStateOf(true)
 
+    private var userInfos by mutableStateOf(
+        ImmutableList(listOf(UserInfo("userId", "username", ImmutableUri())))
+    )
+
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            Stream(
+            StreamPreview(
                 streamView = streamView,
-                userInfo = UserInfo("userId", "username", ImmutableUri()),
                 showStreamView = showStreamView,
+                userInfos = userInfos
             )
         }
     }
@@ -72,9 +80,35 @@ class StreamTest {
     }
 
     @Test
-    fun showStreamViewFalse_avatarIsDisplayed() {
+    fun showStreamViewFalse_multiAvatarIsDisplayed() {
+        userInfos = ImmutableList(
+            listOf(
+                UserInfo("userId1", "Alice", ImmutableUri()),
+                UserInfo("userId2", "John", ImmutableUri()),
+                UserInfo("userId3", "Mario", ImmutableUri())
+            )
+        )
         showStreamView = false
-        composeTestRule.onNodeWithText("U").assertIsDisplayed()
+        composeTestRule.onNodeWithText("A").assertIsDisplayed()
+        composeTestRule.onNodeWithText("J").assertIsDisplayed()
+        composeTestRule.onNodeWithText("M").assertIsDisplayed()
+    }
+
+    @Test
+    fun showStreamViewFalse_multiAvatarOverflowIsDisplayed() {
+        userInfos = ImmutableList(
+            listOf(
+                UserInfo("userId1", "Alice", ImmutableUri()),
+                UserInfo("userId2", "John", ImmutableUri()),
+                UserInfo("userId3", "Mario", ImmutableUri()),
+                UserInfo("userId4", "Oliver", ImmutableUri()),
+                UserInfo("userId5", "Federico", ImmutableUri())
+            )
+        )
+        showStreamView = false
+        composeTestRule.onNodeWithText("A").assertIsDisplayed()
+        composeTestRule.onNodeWithText("J").assertIsDisplayed()
+        composeTestRule.onNodeWithText("+3").assertIsDisplayed()
     }
 
     @Test
@@ -126,4 +160,5 @@ class StreamTest {
         composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
     }
+
 }

@@ -48,13 +48,13 @@ internal fun AdminBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 24.dp)
             ) {
                 Avatar(
-                    username = stream.username,
+                    username = stream.userInfo?.username ?: "",
                     size = 40.dp,
-                    uri = stream.avatar,
+                    uri = stream.userInfo?.image,
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = stream.username,
+                    text = stream.userInfo?.username ?: "",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium
@@ -71,7 +71,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = pinnedTextFor(isStreamPinned, stream.username),
+                text = pinnedTextFor(isStreamPinned, stream.userInfo?.username ?: ""),
                 painter = pinnedPainterFor(isStreamPinned),
                 enabled = !isPinLimitReached || isStreamPinned,
                 onClick = { onPinStreamClick(stream.id, !isStreamPinned)  }
@@ -83,7 +83,7 @@ internal fun AdminBottomSheetContent(
             AdminBottomSheetItem(
                 interactionSource = interactionSource,
                 modifier = Modifier.highlightOnFocus(interactionSource),
-                text = muteTextFor(stream.audio, stream.username),
+                text = muteTextFor(stream.audio, stream.userInfo?.username ?: ""),
                 painter = mutePainterFor(stream.audio),
                 enabled = stream.video == null || !stream.video.isScreenShare,
                 onClick = { if (stream.audio != null) onMuteStreamClick(stream.id, !stream.audio.isMutedForYou) else Unit }

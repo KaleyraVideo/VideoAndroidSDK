@@ -37,8 +37,10 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import io.mockk.every
@@ -52,7 +54,7 @@ import org.junit.Test
 
 // Test for the VCallScreen using a smartphone (both in portrait and landscape)
 @OptIn(ExperimentalPermissionsApi::class)
-internal class VCallScreenTest: VCallScreenBaseTest() {
+internal abstract class VCallScreenTest: VCallScreenBaseTest() {
 
     @Test
     fun testSheetActions_accept() {
@@ -919,7 +921,7 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     fun selectedStreamIdSet_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -938,7 +940,7 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     fun selectedStreamIdNotSet_onSelectedStreamIdInvoked() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -961,7 +963,7 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     fun userClicksOnStreamMenuCancel_onStreamSelectedCallbackToNull() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1000,7 +1002,7 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     fun selectedStreamIdSet_dragHandleIsNotDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()

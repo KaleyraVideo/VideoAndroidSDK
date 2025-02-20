@@ -49,8 +49,8 @@ internal fun ParticipantItem(
         modifier = modifier
     ) {
         Avatar(
-            username = stream.username,
-            uri = stream.avatar,
+            username = stream.userInfo?.username ?: "",
+            uri = stream.userInfo?.image,
             size = ParticipantItemAvatarSize
         )
         Spacer(Modifier.width(12.dp))
@@ -59,9 +59,9 @@ internal fun ParticipantItem(
                 text = if (stream.isMine) {
                     stringResource(
                         id = R.string.kaleyra_participants_component_you,
-                        stream.username
+                        stream.userInfo?.username ?: ""
                     )
-                } else stream.username,
+                } else stream.userInfo?.username ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium
@@ -97,7 +97,7 @@ internal fun ParticipantItem(
                     content = {
                         Icon(
                             disableMicPainterFor(stream.audio),
-                            disableContentDescriptionFor(stream.audio, stream.username)
+                            disableContentDescriptionFor(stream.audio, stream.userInfo?.username ?: "")
                         )
                     }
                 )
@@ -114,7 +114,7 @@ internal fun ParticipantItem(
                             !stream.audio.isMutedForYou
                         )
                     },
-                    content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.username)) }
+                    content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.userInfo?.username ?: "")) }
                 )
             }
         }
@@ -127,7 +127,7 @@ internal fun ParticipantItem(
                     modifier = Modifier.highlightOnFocus(interactionSource),
                     enabled = !isPinLimitReached || isPinned,
                     onClick = { onPinStreamClick(stream.id, !isPinned) },
-                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
+                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.userInfo?.username ?: "")) }
                 )
             } else {
                 val interactionSource = remember { MutableInteractionSource() }

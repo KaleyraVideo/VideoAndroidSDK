@@ -32,7 +32,9 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.findBackButton
@@ -46,7 +48,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-internal class CallScreenTest: CallScreenBaseTest() {
+internal abstract class CallScreenTest: CallScreenBaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -69,7 +71,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
     fun streamMenuDisplayed_userPerformsBack_streamMenuIsDismissed() {
         val streams = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username")
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri()))
         )
 
         streamUiState.value = StreamUiState(
@@ -288,7 +290,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
             users = listOf(
                 MoreStreamsUserPreview("1", "user1", null),
                 MoreStreamsUserPreview("2", "user2", null),
-                )
+            )
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
 
@@ -314,7 +316,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
     fun selectedStream_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()

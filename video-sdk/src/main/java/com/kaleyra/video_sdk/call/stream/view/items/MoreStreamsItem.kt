@@ -33,6 +33,7 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private const val AvatarCount = 3
@@ -90,15 +91,7 @@ private fun Avatars(moreStreamsItem: StreamItem.MoreStreams) {
                             uri = uri,
                             size = avatarSize,
                             modifier = Modifier
-                                // Using drawWithContent modifier to get better result than using border modifier
-                                .drawWithContent {
-                                    drawCircle(
-                                        color,
-                                        blendMode = BlendMode.SrcIn,
-                                        style = Stroke(width = 4.dp.toPx())
-                                    )
-                                    drawContent()
-                                }
+                                .drawCircleBorder(color, 4.dp)
                         )
                     }
                 }

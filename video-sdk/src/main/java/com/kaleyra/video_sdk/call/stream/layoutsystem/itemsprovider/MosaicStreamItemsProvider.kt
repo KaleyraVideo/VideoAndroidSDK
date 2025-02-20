@@ -67,8 +67,8 @@ internal class MosaicStreamItemsProviderImpl : MosaicStreamItemsProvider {
                 users = remainingStreams.map {
                     MoreStreamsUserPreview(
                         it.value.id,
-                        it.value.username,
-                        it.value.avatar
+                        it.value.userInfo?.username ?: "",
+                        it.value.userInfo?.image
                     )
                 }
             )
