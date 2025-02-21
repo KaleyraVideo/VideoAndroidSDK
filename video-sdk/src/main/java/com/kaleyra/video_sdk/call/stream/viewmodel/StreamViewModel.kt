@@ -9,9 +9,7 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherUserInfo
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -25,7 +23,6 @@ import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -118,17 +115,13 @@ internal class StreamViewModel(
                 call.preferredType
             ) { shouldShowStreamPreview, video, audio, preferredType ->
                 if (shouldShowStreamPreview) {
-                    val isGroupCall = call.isGroupCall(companyIdFlow).first()
-                    val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
-                    val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
+                    val usersPreview = call.toOtherUserInfo().first()
                     _uiState.update {
                         it.copy(
                             preview = StreamPreview(
-                                isGroupCall = isGroupCall,
                                 video = video,
                                 audio = audio,
-                                username = otherUsername,
-                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) },
+                                userInfos = usersPreview.toImmutableList(),
                                 isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
                             )
                         )

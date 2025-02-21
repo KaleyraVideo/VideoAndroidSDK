@@ -67,25 +67,25 @@ class StreamItemTest {
 
     @Test
     fun testUsernameIsDisplayed() {
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username).assertIsDisplayed()
     }
 
     @Test
     fun viewNull_avatarIsDisplayed() {
         stream = stream.copy(video = stream.video?.copy(view = null))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertIsDisplayed()
     }
 
     @Test
     fun videoNotEnabled_avatarIsDisplayed() {
         stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertIsDisplayed()
     }
 
     @Test
     fun videoEnabled_avatarIsNotDisplayed() {
         stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = true))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertDoesNotExist()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertDoesNotExist()
     }
 
     @Test

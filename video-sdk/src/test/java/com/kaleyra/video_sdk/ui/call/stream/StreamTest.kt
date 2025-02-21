@@ -17,6 +17,8 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebouceMillis
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_utils.MutableSharedStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
@@ -47,8 +49,7 @@ class StreamTest {
         composeTestRule.setContent {
             Stream(
                 streamView = streamView,
-                username = "username",
-                avatar = null,
+                userInfo = UserInfo("userId", "username", ImmutableUri()),
                 showStreamView = showStreamView,
             )
         }

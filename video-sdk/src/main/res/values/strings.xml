@@ -361,5 +361,6 @@
     <string name="kaleyra_chat_creation_failed">Conversation creation failed</string>
 
     <string name="kaleyra_user_message_pin">Pin</string>
+    <string name="kaleyra_users_avatars_overflow" translatable="false">+%1$d</string>
 
 </resources>

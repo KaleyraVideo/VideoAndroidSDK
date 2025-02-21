@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.layoutsystem.layout
 
+import android.net.Uri
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
@@ -10,6 +11,9 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStream
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
+import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +41,8 @@ class AutoLayoutImplTest {
     private val streamsFlow = MutableStateFlow<List<StreamUi>>(emptyList())
     private val layoutSettingsFlow = MutableStateFlow(StreamLayoutSettings(isGroupCall = true))
     private val layoutConstraintsFlow = MutableStateFlow(StreamLayoutConstraints(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE))
+    
+    private val uriMock = mockk<Uri>()
 
     @Before
     fun setUp() {
@@ -60,7 +66,7 @@ class AutoLayoutImplTest {
                 featuredStreamItemState: StreamItemState.Featured,
             ): List<StreamItem> {
                 return featuredStreamIds.filter { id -> id in streams.map { it.id } }.map { id ->
-                    val stream = streams.firstOrNull { it.id == id } ?: StreamUi("id", "stream")
+                    val stream = streams.firstOrNull { it.id == id } ?: StreamUi("id", UserInfo("userId", "stream", ImmutableUri(uriMock)))
                     StreamItem.Stream(id, stream, state = StreamItemState.Featured)
                 } + streams.filter { stream -> stream.id !in featuredStreamIds }.take(maxNonFeaturedStreams).map { stream ->
                     StreamItem.Stream(stream.id, stream)
@@ -91,14 +97,14 @@ class AutoLayoutImplTest {
 
     @Test
     fun `streamItems are in mosaic mode when not in one to one call and no screen share`() = runTest(testDispatcher) {
-        streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
+        streamsFlow.value = listOf(StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))), StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = true)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)))),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
             ),
             streamItems
         )
@@ -106,14 +112,14 @@ class AutoLayoutImplTest {
 
     @Test
     fun `streamItems are in featured mode when default camera is back`() = runTest(testDispatcher) {
-        streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
+        streamsFlow.value = listOf(StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))), StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = true, defaultCameraIsBack = true)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))), state = StreamItemState.Featured),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
             ),
             streamItems
         )
@@ -122,14 +128,14 @@ class AutoLayoutImplTest {
 
     @Test
     fun `streamItems are in featured mode when in one to one call`() = runTest(testDispatcher) {
-        streamsFlow.value = listOf(StreamUi("1", "stream1"), StreamUi("2", "stream2"))
+        streamsFlow.value = listOf(StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))), StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))), state = StreamItemState.Featured),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
             ),
             streamItems
         )
@@ -138,15 +144,15 @@ class AutoLayoutImplTest {
     @Test
     fun `streamItems are in featured mode when has one initial remote screen share`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(
-            StreamUi("1", "stream1", createdAt = 500L),
-            StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 500L)
+            StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), createdAt = 500L),
+            StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 500L)
         )
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("2", StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 500L), state = StreamItemState.Featured),
-                StreamItem.Stream("1", StreamUi("1", "stream1", createdAt = 500L)),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 500L), state = StreamItemState.Featured),
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), createdAt = 500L)),
             ),
             streamItems
         )
@@ -155,18 +161,18 @@ class AutoLayoutImplTest {
     @Test
     fun `streamItems are in mosaic mode when there are two initial remote screen shares`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(
-            StreamUi("1", "stream1", createdAt = 300L),
-            StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 535L),
-            StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true), createdAt = 535L)
+            StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), createdAt = 300L),
+            StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 535L),
+            StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock)), video = VideoUi("3", isScreenShare = true), createdAt = 535L)
         )
         layoutConstraintsFlow.value = StreamLayoutConstraints(mosaicStreamThreshold = 4, featuredStreamThreshold = 2)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1", createdAt = 300L)),
-                StreamItem.Stream("2", StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 535L)),
-                StreamItem.Stream("3", StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true), createdAt = 535L)),
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), createdAt = 300L)),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 535L)),
+                StreamItem.Stream("3", StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock)), video = VideoUi("3", isScreenShare = true), createdAt = 535L)),
             ),
             streamItems
         )
@@ -174,9 +180,9 @@ class AutoLayoutImplTest {
 
     @Test
     fun `remote screen share is featured when it arrives after initial streams`() = runTest(testDispatcher) {
-        val stream1 = StreamUi("1", "stream1")
-        val stream2 = StreamUi("2", "stream2", createdAt = 300L)
-        val stream3 = StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true), createdAt = 400L)
+        val stream1 = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)))
+        val stream2 = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), createdAt = 300L)
+        val stream3 = StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock)), video = VideoUi("3", isScreenShare = true), createdAt = 400L)
         streamsFlow.value = listOf(stream1, stream2)
 
         streamsFlow.value = listOf(stream1, stream2, stream3)
@@ -194,9 +200,9 @@ class AutoLayoutImplTest {
 
     @Test
     fun `existing featured screen share item is replaced when another screen share join the call`() = runTest(testDispatcher) {
-        val stream1 = StreamUi("1", "stream1")
-        val stream2 = StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 300L)
-        val stream3 = StreamUi("3", "stream3", video = VideoUi("3", isScreenShare = true), createdAt = 400L)
+        val stream1 = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)))
+        val stream2 = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 300L)
+        val stream3 = StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock)), video = VideoUi("3", isScreenShare = true), createdAt = 400L)
         streamsFlow.value = listOf(stream1, stream2)
 
         streamsFlow.value = listOf(stream1, stream2, stream3)
@@ -214,8 +220,8 @@ class AutoLayoutImplTest {
 
     @Test
     fun `remote screen share is featured over local camera stream when isDefaultBackCamera is true`() = runTest(testDispatcher) {
-        val screenShareStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true))
-        val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
+        val screenShareStream = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = true))
+        val cameraStream = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(cameraStream, screenShareStream)
         layoutSettingsFlow.value = StreamLayoutSettings(defaultCameraIsBack = true)
 
@@ -240,8 +246,8 @@ class AutoLayoutImplTest {
 
     @Test
     fun `local camera stream is featured over remote camera stream when isDefaultBackCamera is true`() = runTest(testDispatcher) {
-        val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
-        val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
+        val remoteCameraStream = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = false))
+        val cameraStream = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(remoteCameraStream, cameraStream)
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false, defaultCameraIsBack = true)
 
@@ -266,8 +272,8 @@ class AutoLayoutImplTest {
 
     @Test
     fun `remote camera stream is featured over local camera stream when isDefaultBackCamera is false`() = runTest {
-        val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
-        val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
+        val remoteCameraStream = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = false))
+        val cameraStream = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(cameraStream, remoteCameraStream)
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
 
@@ -283,8 +289,8 @@ class AutoLayoutImplTest {
 
     @Test
     fun `remote stream is featured over local stream when video are null`() = runTest {
-        val remoteStream = StreamUi("1", "stream1")
-        val localStream = StreamUi("2", "stream2", isMine = true)
+        val remoteStream = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)))
+        val localStream = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), isMine = true)
         streamsFlow.value = listOf(localStream, remoteStream)
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
 
@@ -300,10 +306,10 @@ class AutoLayoutImplTest {
 
     @Test
     fun `streamItems featured priority`() = runTest {
-        val remoteScreenShare1 = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true), createdAt = 500L)
-        val remoteScreenShare2 = StreamUi("2", "stream2", video = VideoUi("2", isScreenShare = true), createdAt = 300L)
-        val backCamera = StreamUi("3", "stream3", isMine = true, video = VideoUi("3", isScreenShare = false))
-        val remoteCamera = StreamUi("4", "stream4", video = VideoUi("4", isScreenShare = false))
+        val remoteScreenShare1 = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = true), createdAt = 500L)
+        val remoteScreenShare2 = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), video = VideoUi("2", isScreenShare = true), createdAt = 300L)
+        val backCamera = StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock)), isMine = true, video = VideoUi("3", isScreenShare = false))
+        val remoteCamera = StreamUi("4", UserInfo("userId4", "stream4", ImmutableUri(uriMock)), video = VideoUi("4", isScreenShare = false))
 
         layoutSettingsFlow.value = StreamLayoutSettings(defaultCameraIsBack = true)
 
@@ -338,18 +344,18 @@ class AutoLayoutImplTest {
     @Test
     fun `mosaic stream sizes are constrained by the maximum number of mosaic streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(
-            StreamUi("1", "stream1"),
-            StreamUi("2", "stream2"),
-            StreamUi("3", "stream3"),
-            StreamUi("4", "stream4")
+            StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock))),
+            StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))),
+            StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock))),
+            StreamUi("4", UserInfo("userId4", "stream4", ImmutableUri(uriMock)))
         )
         layoutConstraintsFlow.value = StreamLayoutConstraints(mosaicStreamThreshold = 2)
 
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1")),
-                StreamItem.Stream("2", StreamUi("2", "stream2"))
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)))),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))))
             ),
             streamItems
         )
@@ -358,10 +364,10 @@ class AutoLayoutImplTest {
     @Test
     fun `thumbnail stream sizes are constrained by the maximum number of thumbnail streams`() = runTest(testDispatcher) {
         streamsFlow.value = listOf(
-            StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true)),
-            StreamUi("2", "stream2"),
-            StreamUi("3", "stream3"),
-            StreamUi("4", "stream4")
+            StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = true)),
+            StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock))),
+            StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock))),
+            StreamUi("4", UserInfo("userId4", "stream4", ImmutableUri(uriMock)))
         )
         layoutConstraintsFlow.value = StreamLayoutConstraints(
             featuredStreamThreshold = 2,
@@ -371,9 +377,9 @@ class AutoLayoutImplTest {
         val streamItems = autoLayout.streamItems.first()
         Assert.assertEquals(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = true)), state = StreamItemState.Featured),
-                StreamItem.Stream("2", StreamUi("2", "stream2")),
-                StreamItem.Stream("3", StreamUi("3", "stream3"))
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = true)), state = StreamItemState.Featured),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)))),
+                StreamItem.Stream("3", StreamUi("3", UserInfo("userId3", "stream3", ImmutableUri(uriMock))))
             ),
             streamItems
         )
@@ -381,8 +387,8 @@ class AutoLayoutImplTest {
 
     @Test
     fun `featured stream is not set when maximum number of featured is zero`() = runTest(testDispatcher) {
-        val remoteCameraStream = StreamUi("1", "stream1", video = VideoUi("1", isScreenShare = false))
-        val cameraStream = StreamUi("2", "stream2", isMine = true, video = VideoUi("2", isScreenShare = false))
+        val remoteCameraStream = StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(uriMock)), video = VideoUi("1", isScreenShare = false))
+        val cameraStream = StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(uriMock)), isMine = true, video = VideoUi("2", isScreenShare = false))
         streamsFlow.value = listOf(cameraStream, remoteCameraStream)
         layoutSettingsFlow.value = StreamLayoutSettings(isGroupCall = false)
         layoutConstraintsFlow.value = StreamLayoutConstraints(featuredStreamThreshold = 0)

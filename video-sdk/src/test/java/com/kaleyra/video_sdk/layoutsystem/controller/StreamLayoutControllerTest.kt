@@ -10,6 +10,8 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstra
 import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutController
 import com.kaleyra.video_sdk.call.stream.layoutsystem.controller.StreamLayoutControllerImpl
 import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every
@@ -36,13 +38,13 @@ import java.lang.reflect.Field
 class StreamLayoutControllerTest {
 
     private val autoLayoutStreamItems = listOf(
-        StreamItem.Stream("1", StreamUi("1", "stream1")),
-        StreamItem.Stream("2", StreamUi("2", "stream2")),
+        StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(mockk())))),
+        StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(mockk())))),
     )
 
     private val manualLayoutStreamItems = listOf(
-        StreamItem.Stream("1", StreamUi("1", "stream1"), state = StreamItemState.Featured),
-        StreamItem.Stream("2", StreamUi("2", "stream2")),
+        StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "stream1", ImmutableUri(mockk()))), state = StreamItemState.Featured),
+        StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "stream2", ImmutableUri(mockk())))),
     )
 
     private lateinit var testDispatcher: TestDispatcher
@@ -89,9 +91,9 @@ class StreamLayoutControllerTest {
     @Test
     fun `applyStreams updates layout controller's streams`() = runTest(testDispatcher) {
         val streams = listOf(
-            StreamUi("1", "user1"),
-            StreamUi("2", "user2"),
-            StreamUi("3", "user3"),
+            StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk()))),
+            StreamUi("2", UserInfo("userId2", "user2", ImmutableUri(mockk()))),
+            StreamUi("3", UserInfo("userId3", "user3", ImmutableUri(mockk()))),
         )
         layoutController.applyStreams(streams)
         assertEquals(streams, layoutController.layoutStreams.value)
@@ -128,8 +130,8 @@ class StreamLayoutControllerTest {
     fun `isPinnedStreamLimitReached is false when pinned streams items are less than featuredStreamThreshold`() = runTest(testDispatcher) {
         every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "user1"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("2", StreamUi("2", "user2")),
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk()))), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "user2", ImmutableUri(mockk())))),
             )
         )
         layoutController.switchToManualMode()
@@ -141,8 +143,8 @@ class StreamLayoutControllerTest {
     fun `isPinnedStreamLimitReached is true when pinned streams items are equals or more than featuredStreamThreshold`() = runTest(testDispatcher) {
         every { anyConstructed<ManualLayoutImpl>().streamItems } returns MutableStateFlow(
             listOf(
-                StreamItem.Stream("1", StreamUi("1", "user1"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("2", StreamUi("2", "user2"), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("1", StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk()))), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("2", StreamUi("2", UserInfo("userId2", "user2", ImmutableUri(mockk()))), state = StreamItemState.Featured.Pinned),
             )
         )
         layoutController.switchToManualMode()
@@ -290,7 +292,7 @@ class StreamLayoutControllerTest {
         layoutController.switchToManualMode()
 
         layoutController.applyStreams(
-            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+            listOf(StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk())), video = VideoUi(id = "1", isScreenShare = true)))
         )
         verify(exactly = 1) {
             callUserMessageProviderMock.sendUserMessage(PinScreenshareMessage("1", "user1"))
@@ -302,7 +304,7 @@ class StreamLayoutControllerTest {
         layoutController.switchToManualMode()
 
         layoutController.applyStreams(
-            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1")))
+            listOf(StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk())), video = VideoUi(id = "1")))
         )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
@@ -314,7 +316,7 @@ class StreamLayoutControllerTest {
         layoutController.switchToAutoMode()
 
         layoutController.applyStreams(
-            listOf(StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+            listOf(StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk())), video = VideoUi(id = "1", isScreenShare = true)))
         )
         verify(exactly = 0) {
             callUserMessageProviderMock.sendUserMessage(any())
@@ -325,10 +327,10 @@ class StreamLayoutControllerTest {
     fun `pin screen share user message is triggered when a video-less stream transitions to a screen share video`() = runTest(testDispatcher) {
         layoutController.switchToManualMode()
 
-        layoutController.applyStreams(listOf(StreamUi("1", username = "user1")))
+        layoutController.applyStreams(listOf(StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk())))))
         layoutController.applyStreams(
             listOf(
-                StreamUi("1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)),
+                StreamUi("1", UserInfo("userId1", "user1", ImmutableUri(mockk())), video = VideoUi(id = "1", isScreenShare = true)),
             )
         )
         verify(exactly = 1) {

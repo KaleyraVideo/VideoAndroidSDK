@@ -12,7 +12,9 @@ import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -66,7 +68,7 @@ class ParticipantsComponentViewModelTest {
 
     @Test
     fun userClicksMuteStream_muteStreamAudioIsInvoked() {
-        val stream = StreamUi(id = "id1", username = "username1", audio = AudioUi(id = "audioId", isMutedForYou = false))
+        val stream = StreamUi(id = "id1", userInfo = UserInfo("userId", "username1", ImmutableUri()), audio = AudioUi(id = "audioId", isMutedForYou = false))
         uiState.value = ParticipantsUiState(
             streams = ImmutableList(listOf(stream))
         )
@@ -77,7 +79,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.muteStreamAudio(stream.id) }
@@ -85,7 +87,7 @@ class ParticipantsComponentViewModelTest {
 
     @Test
     fun userClicksUnmuteStream_muteStreamAudioIsInvoked() {
-        val stream = StreamUi(id = "id1", username = "username1", audio = AudioUi(id = "audioId", isMutedForYou = true))
+        val stream = StreamUi(id = "id1", userInfo = UserInfo("userId", "username1", ImmutableUri()), audio = AudioUi(id = "audioId", isMutedForYou = true))
         uiState.value = ParticipantsUiState(
             streams = ImmutableList(listOf(stream))
         )
@@ -96,7 +98,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.muteStreamAudio(stream.id) }
@@ -104,7 +106,7 @@ class ParticipantsComponentViewModelTest {
 
     @Test
     fun userClicksDisableMicOnLocalCameraStream_toggleMicInvoked() {
-        val stream = StreamUi(id = CameraStreamConstants.CAMERA_STREAM_ID, username = "username1", isMine = true, audio = AudioUi(id = "audioId", isEnabled = true))
+        val stream = StreamUi(id = CameraStreamConstants.CAMERA_STREAM_ID, userInfo = UserInfo("userId", "username1", ImmutableUri()), isMine = true, audio = AudioUi(id = "audioId", isEnabled = true))
         uiState.value = ParticipantsUiState(
             streams = ImmutableList(listOf(stream))
         )
@@ -115,7 +117,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.toggleMic(any()) }
@@ -123,7 +125,7 @@ class ParticipantsComponentViewModelTest {
 
     @Test
     fun userClicksPinStream_streamPinIsInvoked() {
-        val stream = StreamUi(id = "id1", username = "username1")
+        val stream = StreamUi(id = "id1", userInfo = UserInfo("userId", "username1", ImmutableUri()))
         uiState.value = ParticipantsUiState(
             streams = ImmutableList(listOf(stream))
         )
@@ -134,7 +136,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.pinStream(stream.id) }
@@ -142,7 +144,7 @@ class ParticipantsComponentViewModelTest {
 
     @Test
     fun userClicksUnpinStream_streamUnpinIsInvoked() {
-        val stream = StreamUi(id = "id1", username = "username1")
+        val stream = StreamUi(id = "id1", userInfo = UserInfo("userId", "username1", ImmutableUri()))
         uiState.value = ParticipantsUiState(
             streams = ImmutableList(listOf(stream)),
             pinnedStreamIds = ImmutableList(listOf(stream.id))
@@ -154,7 +156,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.unpinStream(stream.id) }

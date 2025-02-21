@@ -27,6 +27,8 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -205,7 +207,9 @@ class PipStreamComponentTest {
     fun previewStreamNotNull_previewIsDisplayed() {
         val streamItem1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "previewUsername"),
+            preview = StreamPreview(
+                userInfos = listOf(UserInfo("userId", "previewUsername", mockk(relaxed = true))).toImmutableList()
+            ),
             streamItems = listOf(streamItem1).toImmutableList()
         )
         composeTestRule.waitForIdle()
@@ -263,7 +267,7 @@ class PipStreamComponentTest {
     fun previewStreamNotNull_streamIsNotDisplayed() {
         val streamItem1 = defaultStreamItem(username = "mario")
         streamUiState = StreamUiState(
-            preview = StreamPreview(username = "previewUsername"),
+            preview = StreamPreview(userInfos = listOf(UserInfo("userId", "previewUsername", mockk(relaxed = true))).toImmutableList()),
             streamItems = listOf(streamItem1).toImmutableList()
         )
         composeTestRule.waitForIdle()
@@ -284,11 +288,10 @@ class PipStreamComponentTest {
             id = id,
             stream = StreamUi(
                 id = id,
-                username = username,
+                userInfo = UserInfo("userId", username, avatar ?: ImmutableUri()),
                 isMine = mine,
                 audio = audio,
                 video = video,
-                avatar = avatar
             ),
             state = streamItemState
         )

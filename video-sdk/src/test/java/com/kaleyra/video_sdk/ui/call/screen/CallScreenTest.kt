@@ -33,7 +33,9 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.findBackButton
@@ -70,7 +72,7 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     fun streamMenuDisplayed_userPerformsBack_streamMenuIsDismissed() {
         val streams = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username")
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri()))
         )
 
         streamUiState.value = StreamUiState(
@@ -315,7 +317,7 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     fun selectedStream_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()

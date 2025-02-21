@@ -48,10 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -68,6 +70,7 @@ import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -262,6 +265,27 @@ internal object ModifierExtensions {
                 }
                 anim.value - targetOffset
             }
+    }
+
+    /**
+     * Draws a circle border with enhanced rendering compared to the standard border
+     *
+     * @receiver Modifier
+     * @param color Color
+     * @param width Dp
+     */
+    internal fun Modifier.drawCircleBorder(
+        color: Color,
+        width: Dp
+    ): Modifier {
+        return drawWithContent {
+            drawCircle(
+                color,
+                blendMode = BlendMode.SrcIn,
+                style = Stroke(width = width.toPx())
+            )
+            drawContent()
+        }
     }
 
     /**

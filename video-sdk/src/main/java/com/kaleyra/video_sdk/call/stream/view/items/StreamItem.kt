@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -62,6 +63,8 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamItemPadding = 8.dp
@@ -95,8 +98,7 @@ internal fun StreamItem(
         ) { _ ->
             Stream(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
-                avatar = stream.avatar,
-                username = stream.username,
+                userInfo = stream.userInfo,
                 showStreamView = stream.video?.view != null && stream.video.isEnabled,
                 onClick = onClick
             )
@@ -113,7 +115,7 @@ internal fun StreamItem(
         )
 
         UserLabel(
-            username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
+            username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.userInfo?.username ?: "",
             pin = pin,
             modifier = Modifier
                 .padding(StreamItemPadding)
@@ -368,7 +370,7 @@ internal fun StreamItemPreview() {
             StreamItem(
                 stream = StreamUi(
                     id = "id",
-                    username = "Viola J. Allen",
+                    userInfo = UserInfo("userId", "Viola J. Allen", ImmutableUri(Uri.EMPTY)),
                     video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`),
                     audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true, level = 0.99f),
                 ),

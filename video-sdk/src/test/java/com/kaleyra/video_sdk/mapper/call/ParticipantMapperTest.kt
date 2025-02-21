@@ -29,13 +29,15 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitia
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toMyParticipantState
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherUserInfo
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -292,6 +294,132 @@ class ParticipantMapperTest {
         every { participantMeMock.state } returns MutableStateFlow(CallParticipant.State.InCall)
         val actual = callMock.toMyParticipantState().first()
         assertEquals(CallParticipant.State.InCall, actual)
+    }
+
+    @Test
+    fun emptyOtherParticipants_toOtherUserInfo_emptyList() = runTest {
+        every { callParticipantsMock.others } returns listOf()
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf<String>()
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun filledOtherParticipants_toOtherUserInfo_userInfosList() = runTest {
+        every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId2","displayName2", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun addOtherParticipant_toOtherUserInfo_userInfosAdded() = runTest {
+        val participants = MutableStateFlow(callParticipantsMock)
+        every { callMock.participants } returns participants
+        every { callParticipantsMock.others } returns listOf(participantMock1)
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf(UserInfo("userId1","displayName1", ImmutableUri(uriMock1)))
+        Assert.assertEquals(expected, actual)
+
+        val newCallParticipantsMock = mockk<CallParticipants> {
+            every { others } returns listOf(participantMock1, participantMock2)
+        }
+        participants.value = newCallParticipantsMock
+        val newActual = result.first()
+        val newExpected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId2","displayName2", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun removeOtherParticipant_toOtherUserInfo_userInfosRemoved() = runTest {
+        val participants = MutableStateFlow(callParticipantsMock)
+        every { callMock.participants } returns participants
+        every { callParticipantsMock.others } returns listOf(participantMock1, participantMock2)
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId2","displayName2", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(expected, actual)
+
+        val newCallParticipantsMock = mockk<CallParticipants> {
+            every { others } returns listOf(participantMock1)
+        }
+        participants.value = newCallParticipantsMock
+        val newActual = result.first()
+        val newExpected = listOf(UserInfo("userId1","displayName1", ImmutableUri(uriMock1)))
+        Assert.assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun displayNameUpdate_toOtherUserInfo_userInfosUpdated() = runTest {
+        val displayNameFlow = MutableStateFlow("displayName2")
+        val participantMock3 = mockk<CallParticipant> {
+            every { userId } returns "userId3"
+            every { combinedDisplayName } returns displayNameFlow
+            every { combinedDisplayImage } returns MutableStateFlow(uriMock2)
+        }
+        every { callParticipantsMock.others } returns listOf(participantMock1, participantMock3)
+        every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId3","displayName2", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(expected, actual)
+
+        displayNameFlow.value = "displayNameModified"
+        val newActual = result.first()
+        val newExpected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId3","displayNameModified", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(newExpected, newActual)
+    }
+
+    @Test
+    fun displayImageUpdate_toOtherUserInfo_userInfosUpdated() = runTest {
+        val displayImageFlow = MutableStateFlow(uriMock2)
+        val participantMock3 = mockk<CallParticipant> {
+            every { userId } returns "userId3"
+            every { combinedDisplayName } returns MutableStateFlow("displayName2")
+            every { combinedDisplayImage } returns displayImageFlow
+        }
+        every { callParticipantsMock.others } returns listOf(participantMock1, participantMock3)
+        every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
+
+        val result = callMock.toOtherUserInfo()
+        val actual = result.first()
+        val expected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId3","displayName2", ImmutableUri(uriMock2))
+        )
+        Assert.assertEquals(expected, actual)
+
+        val uriMock3 = mockk<Uri>()
+        displayImageFlow.value = uriMock3
+        val newActual = result.first()
+        val newExpected = listOf(
+            UserInfo("userId1","displayName1", ImmutableUri(uriMock1)),
+            UserInfo("userId3","displayName2", ImmutableUri(uriMock3))
+        )
+        Assert.assertEquals(newExpected, newActual)
     }
 
 }

@@ -79,7 +79,7 @@ internal class FeaturedStreamItemsProviderImpl : FeaturedStreamItemsProvider {
         }
         // If there are remaining streams, create a "More Streams" item.
         val moreStreamsItem = remainingStreams.takeIf { it.isNotEmpty() }?.let { streams ->
-            StreamItem.MoreStreams(users = streams.map { MoreStreamsUserPreview(it.id, it.username, it.avatar) })
+            StreamItem.MoreStreams(users = streams.map { MoreStreamsUserPreview(it.id, it.userInfo?.username ?: "", it.userInfo?.image) })
         }
 
         // Combine the featured stream items, visible non-featured stream items, and the optional "More Streams" item.

@@ -37,12 +37,11 @@ import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
-import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
-import com.kaleyra.video_sdk.call.stream.view.core.Stream
+import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
 import com.kaleyra.video_sdk.call.stream.view.items.ActiveScreenShareIndicator
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
@@ -151,18 +150,10 @@ internal fun StreamComponent(
         if (uiState.preview != null) {
             val video = uiState.preview.video
             if (video?.view != null || !uiState.preview.isStartingWithVideo) {
-                val avatar = if (uiState.preview.isGroupCall) null else uiState.preview.avatar
-                val avatarPlaceholder =
-                    if (uiState.preview.isGroupCall) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar_bold
-                val username =
-                    if (uiState.preview.isGroupCall) "" else uiState.preview.username ?: ""
-
                 LookaheadScope {
-                    Stream(
+                    StreamPreview(
                         streamView = video?.view?.preCallStreamViewSettings(),
-                        avatar = avatar,
-                        avatarPlaceholder = avatarPlaceholder,
-                        username = username,
+                        userInfos = uiState.preview.userInfos,
                         showStreamView = video?.view != null && video.isEnabled,
                         avatarModifier = modifier,
                         modifier = Modifier
@@ -378,7 +369,7 @@ internal fun StreamComponentPreCallPreview() {
     KaleyraTheme {
         Surface {
             StreamComponent(
-                uiState = StreamUiState(preview = StreamPreview()),
+                uiState = StreamUiState(preview = com.kaleyra.video_sdk.call.stream.model.StreamPreview()),
                 windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current),
                 selectedStreamId = null,
                 onStreamClick = {},

@@ -16,11 +16,17 @@
 
 package com.kaleyra.video_sdk.call.stream.model.core
 
-import android.net.Uri
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 
 /**
  * Stream Ui Mock representation
  */
-val streamUiMock = StreamUi("streamId", "username", isMine = false, AudioUi("1", false, false, 1f), VideoUi("1",null, null, false, false, ImmutableList(emptyList())), ImmutableUri(Uri.EMPTY))
+val streamUiMock = StreamUi(
+    id = "streamId",
+    userInfo = UserInfo("userId", "username", ImmutableUri()),
+    isMine = false,
+    audio = AudioUi(id = "1", isEnabled = false, isMutedForYou = false, level = 1f),
+    video = VideoUi(id = "1", view = null, zoomLevelUi = null, isEnabled = false, isScreenShare = false, pointers = ImmutableList(emptyList()))
+)

@@ -44,10 +44,12 @@ import com.kaleyra.video_sdk.call.participants.view.ParticipantsTopAppBar
 import com.kaleyra.video_sdk.call.participants.view.StreamsLayoutSelector
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.launch
@@ -271,8 +273,8 @@ internal fun ParticipantsComponentPreview() {
             amIAdmin = true,
             streams = ImmutableList(
                 listOf(
-                    StreamUi("id1", "Marina", true, null, null),
-                    StreamUi("id2", "Viola Allen", false, null, null),
+                    StreamUi("id1", UserInfo("userId1", "Marina", ImmutableUri()), true, null, null),
+                    StreamUi("id2", UserInfo("userId2", "Viola Allen", ImmutableUri()), false, null, null),
                 )
             ),
             pinnedStreamsIds = ImmutableList(),

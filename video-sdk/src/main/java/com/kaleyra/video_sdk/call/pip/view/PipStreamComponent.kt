@@ -29,7 +29,7 @@ import com.kaleyra.video_common_ui.utils.MathUtils
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
-import com.kaleyra.video_sdk.call.stream.view.core.Stream
+import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
@@ -103,11 +103,10 @@ internal fun PipStreamComponent(
         ) {
             if (uiState.preview != null) {
                 val video = uiState.preview.video
-                Stream(
+                StreamPreview(
                     modifier = Modifier,
                     streamView = video?.view?.preCallStreamViewSettings(),
-                    avatar = uiState.preview.avatar,
-                    username = uiState.preview.username ?: "",
+                    userInfos = uiState.preview.userInfos,
                     showStreamView = video?.view != null && video.isEnabled
                 )
 
