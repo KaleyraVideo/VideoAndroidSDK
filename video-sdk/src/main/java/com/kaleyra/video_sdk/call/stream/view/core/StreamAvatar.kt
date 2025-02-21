@@ -72,7 +72,7 @@ internal fun StreamAvatar(
                             uri = uri,
                             size = avatarSize,
                             placeholder = avatarPlaceholder,
-                            color = if (id == "ste1") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.drawCircleBorder(borderColor, borderWidth)
                         )
                     }
