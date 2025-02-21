@@ -20,7 +20,8 @@ internal object AudioMapper {
                 AudioUi(
                     id = audio.id,
                     isEnabled = audio.enabled.value.isAtLeastRemotelyEnabled(),
-                    isMutedForYou = !audio.enabled.value.isAtLeastLocallyEnabled()
+                    isMutedForYou = !audio.enabled.value.isAtLeastLocallyEnabled(),
+                    level = audio.level.value
                 )
             }
             emit(initialValue)
@@ -29,11 +30,13 @@ internal object AudioMapper {
             combine(
                 flow.map { it.id },
                 flow.flatMapLatest { it.enabled },
-            ) { id, enabled ->
+                flow.flatMapLatest { it.level }
+            ) { id, enabled, level ->
                 AudioUi(
                     id = id,
                     isEnabled = enabled.isAtLeastRemotelyEnabled(),
-                    isMutedForYou = !enabled.isAtLeastLocallyEnabled())
+                    isMutedForYou = !enabled.isAtLeastLocallyEnabled(),
+                    level = level)
             }.collect {
                 emit(it)
             }

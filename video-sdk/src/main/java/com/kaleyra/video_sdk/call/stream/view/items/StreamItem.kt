@@ -1,22 +1,46 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -31,6 +55,7 @@ import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.prettyPrint
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -41,8 +66,8 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamItemPadding = 8.dp
 internal val ZoomIconTestTag = "ZoomIconTestTag"
-
 internal val StreamItemTag = "StreamItemTag"
+internal val AudioLevelIconTag = "AudioLevelIconTag"
 
 @Composable
 internal fun StreamItem(
@@ -53,9 +78,16 @@ internal fun StreamItem(
     statusIconsAlignment: Alignment = Alignment.BottomEnd,
     onClick: (() -> Unit)? = null
 ) {
+    val audioLevelStrokeColor = MaterialTheme.colorScheme.primary
+    val audioLevelStrokeAlpha by animateFloatAsState(
+        targetValue = stream.audio?.level ?: 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "animatedAudioLevelStrokeAlpha"
+    )
+
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.testTag(StreamItemTag)
+        modifier = modifier.testTag(StreamItemTag),
     ) {
         PointerStreamWrapper(
             streamView = stream.video?.view,
@@ -88,6 +120,21 @@ internal fun StreamItem(
                 .height(24.dp)
                 .align(Alignment.BottomStart)
         )
+
+        Box(
+            modifier = Modifier
+                .padding(1.dp)
+                .fillMaxSize()
+                .drawWithContent {
+                    drawRoundRect(
+                        color = audioLevelStrokeColor,
+                        alpha = audioLevelStrokeAlpha,
+                        cornerRadius = CornerRadius(StreamComponentDefaults.CornerRadius.toPx()),
+                        blendMode = BlendMode.SrcOver,
+                        style = Stroke(width = 3.dp.toPx())
+                    )
+                },
+        )
     }
 }
 
@@ -106,6 +153,9 @@ internal fun StreamStatusIcons(
     ) {
         streamVideoUi?.takeIf { it.isEnabled }?.zoomLevelUi?.prettyPrint()?.takeIf { it.isNotBlank() }?.let {
             ZoomIcon(text = it)
+        }
+        streamAudioUi?.level?.takeIf { it > 0f }?.let { audioLevel ->
+            StreamAudioLevelIcon(audioLevel = audioLevel)
         }
         when {
             streamAudioUi == null -> Unit
@@ -164,9 +214,11 @@ private fun ZoomIcon(modifier: Modifier = Modifier, text: String) {
     ) {
         val zoomContentDescription = "${stringResource(R.string.kaleyra_call_sheet_zoom)} $text"
         Text(
-            modifier = Modifier.semantics {
-                contentDescription = zoomContentDescription
-            }.testTag(ZoomIconTestTag),
+            modifier = Modifier
+                .semantics {
+                    contentDescription = zoomContentDescription
+                }
+                .testTag(ZoomIconTestTag),
             text = text,
             maxLines = 1,
             style = MaterialTheme.typography.labelMedium
@@ -202,6 +254,92 @@ private fun FullscreenIcon(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun StreamAudioLevelIcon(
+    modifier: Modifier? = Modifier,
+    audioLevel: Float,
+) {
+    val leftMeterMultiplier by rememberInfiniteTransition().animateFloat(
+        initialValue = 0.45f,
+        targetValue = 0.72f,
+        animationSpec = infiniteRepeatable(
+            repeatMode = RepeatMode.Reverse,
+            animation = tween(
+                durationMillis = 250,
+                easing = LinearEasing
+            )
+        )
+    )
+
+    val rightMeterMultiplier by remember {
+        derivedStateOf {
+            0.45f + 0.72f - leftMeterMultiplier
+        }
+    }
+
+    val animatedAudioLevel by animateFloatAsState(
+        targetValue = audioLevel,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "animatedAudioLevel"
+    )
+
+    val audioLevelContentDescription = stringResource(R.string.kaleyra_stream_audio_level)
+
+    Surface(
+        modifier = Modifier
+            .size(24.dp)
+            .then(modifier!!)
+            .semantics { contentDescription = audioLevelContentDescription }
+            .testTag(AudioLevelIconTag),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(4.dp),
+    ) {
+        Row(modifier = Modifier
+            .padding(4.dp)
+            .fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically) {
+            val audioLevelMeterModifier = Modifier.width(3.5.dp).fillMaxHeight()
+            val leftAudioLevel = animatedAudioLevel * leftMeterMultiplier
+            val rightAudioLevel = animatedAudioLevel * rightMeterMultiplier
+
+            AudioLevelMeter(audioLevelMeterModifier, leftAudioLevel)
+            AudioLevelMeter(audioLevelMeterModifier, animatedAudioLevel)
+            AudioLevelMeter(audioLevelMeterModifier, rightAudioLevel)
+        }
+    }
+}
+
+@Composable
+fun AudioLevelMeter(
+    modifier: Modifier,
+    level: Float,
+    meterColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+    Canvas(modifier = modifier) {
+        val width = size.width
+        val cornerRadius = CornerRadius(x = size.width, y = size.width)
+        val relativeHeight = size.height * level
+        val relativeTop = (size.height - relativeHeight) / 2f
+        clipRect(
+            left = 0f,
+            top = relativeTop,
+            right = width,
+            bottom = relativeHeight + relativeTop
+        ) {
+            drawRoundRect(
+                topLeft = Offset(x = 0f, y = relativeTop),
+                color = meterColor,
+                size = Size(width, relativeHeight),
+                cornerRadius = cornerRadius
+            )
+        }
+    }
+}
+
+@Composable
 private fun StreamStatusIcon(
     painter: Painter,
     contentDescription: String,
@@ -232,7 +370,7 @@ internal fun StreamItemPreview() {
                     id = "id",
                     username = "Viola J. Allen",
                     video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`),
-                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true),
+                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true, level = 0.99f),
                 ),
                 fullscreen = true,
                 pin = true

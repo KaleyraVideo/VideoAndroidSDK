@@ -1,22 +1,43 @@
 package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,15 +65,45 @@ internal fun ParticipantItem(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val audioLevelInnerStrokeColor = MaterialTheme.colorScheme.surfaceContainerLowest
+    val audioLevelStrokeColor = MaterialTheme.colorScheme.primary
+    val audioLevelStrokeAlpha by animateFloatAsState(
+        targetValue = stream.audio?.level ?: 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "animatedAudioLevelStrokeAlpha"
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        Avatar(
-            username = stream.username,
-            uri = stream.avatar,
-            size = ParticipantItemAvatarSize
-        )
+        Box(modifier = Modifier.size(ParticipantItemAvatarSize + 4.dp),
+            contentAlignment = Alignment.Center) {
+            Avatar(
+                username = stream.username,
+                uri = stream.avatar,
+                size = ParticipantItemAvatarSize
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .drawWithContent {
+
+                        drawCircle(
+                            color = audioLevelInnerStrokeColor,
+                            alpha = audioLevelStrokeAlpha,
+                            blendMode = BlendMode.SrcOver,
+                            style = Stroke(width = 8.dp.toPx())
+                        )
+
+                        drawCircle(
+                            color = audioLevelStrokeColor,
+                            alpha = audioLevelStrokeAlpha,
+                            blendMode = BlendMode.SrcOver,
+                            style = Stroke(width = 3.dp.toPx())
+                        )
+                    },
+            )
+        }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
@@ -64,7 +115,7 @@ internal fun ParticipantItem(
                 } else stream.username,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = if ((stream.audio?.level ?: 0f) > 0f) FontWeight.SemiBold else FontWeight.Medium)
             )
             Text(
                 text = stringResource(

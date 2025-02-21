@@ -66,6 +66,7 @@
     <string name="kaleyra_stream_show_participants">Show participants</string>
     <string name="kaleyra_stream_show_actions">Show the stream\'s actions</string>
     <string name="kaleyra_stream_dimmed">Stream not selected</string>
+    <string name="kaleyra_stream_audio_level">Audio level</string>
 
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>

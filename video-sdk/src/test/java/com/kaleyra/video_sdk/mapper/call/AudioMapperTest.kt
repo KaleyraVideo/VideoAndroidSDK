@@ -86,6 +86,14 @@ class AudioMapperTest {
     }
 
     @Test
+    fun audioLevel1f_mapToAudioUi_AudioUiLevel1f() = runTest {
+        every { audioMock.level } returns MutableStateFlow(1f)
+        val flow = MutableStateFlow(audioMock)
+        val audioUi = flow.mapToAudioUi().first()
+        Assert.assertEquals(1f, audioUi!!.level)
+    }
+
+    @Test
     fun cameraStreamAudioEnabled_toMyCameraAudioUi_cameraAudioUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)

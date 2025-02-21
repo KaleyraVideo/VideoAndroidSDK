@@ -48,6 +48,7 @@
     <string name="kaleyra_call_sheet_description_mic_error">Error del micrófono</string>
     <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
     <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
+    <string name="kaleyra_stream_audio_level">Nivel de audio</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
     <string name="kaleyra_participants_component_users_in_call">Usuarios en llamada</string>
     <string name="kaleyra_participants_component_users_invited">También Invitados</string>

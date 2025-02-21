@@ -77,6 +77,8 @@ internal object StreamComponentDefaults {
 
     val MaxThumbnailSize = 180.dp
 
+    val CornerRadius = 4.dp
+
     fun maxMosaicStreamsFor(windowSizeClass: WindowSizeClass): Int {
         return if (windowSizeClass.isCompactInAnyDimension()) {
             MaxMosaicStreamsCompact
@@ -227,7 +229,7 @@ internal fun StreamComponent(
                                     }
 
                                     Surface(
-                                        shape = RoundedCornerShape(4.dp),
+                                        shape = RoundedCornerShape(StreamComponentDefaults.CornerRadius),
                                         color = MaterialTheme.colorScheme.surfaceContainerLow,
                                         modifier = itemModifier
                                             .pin(isFeatured)

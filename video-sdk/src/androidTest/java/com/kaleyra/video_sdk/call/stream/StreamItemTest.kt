@@ -128,6 +128,20 @@ class StreamItemTest {
     }
 
     @Test
+    fun streamAudioLevelZero_audioLevelStreamIconDoesNotExists() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = false))
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_audio_level)
+        composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun streamAudioLevelMoreThanZero_audioLevelStreamIconIsDisplayed() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = false, level = 0.64f))
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_audio_level)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
+    }
+
+    @Test
     fun streamMutedForYouAndNotMine_mutedForYouIconIsDisplayed() {
         stream = stream.copy(audio = AudioUi("1", isEnabled = false, isMutedForYou = true))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_muted_for_you)
