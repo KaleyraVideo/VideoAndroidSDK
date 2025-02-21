@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -18,6 +19,8 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
@@ -44,16 +47,19 @@ internal val StreamAvatarSpacing = (-40).dp
 internal fun StreamAvatar(
     userInfos: ImmutableList<UserInfo>,
     avatarCount: Int,
+    maxAvatarSize: Dp = MaxStreamAvatarSize,
+    minAvatarSize: Dp = MinStreamAvatarSize,
     avatarSpacing: Dp = StreamAvatarSpacing,
+    borderColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    borderWidth: Dp = 0.dp,
     @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
     modifier: Modifier = Modifier
 ) {
-    val color = MaterialTheme.colorScheme.surfaceContainerLow
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
-        val avatarSize = computeStreamAvatarSize(maxWidth, maxHeight)
+        val avatarSize = computeStreamAvatarSize(maxAvatarSize, minAvatarSize)
 
         Row(horizontalArrangement = Arrangement.spacedBy(avatarSpacing)) {
             val avatarToDisplayCount = if (userInfos.count() > avatarCount) avatarCount - 1 else avatarCount
@@ -66,7 +72,8 @@ internal fun StreamAvatar(
                             uri = uri,
                             size = avatarSize,
                             placeholder = avatarPlaceholder,
-                            modifier = Modifier.drawCircleBorder(color, 4.dp)
+                            color = if (id == "ste1") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.drawCircleBorder(borderColor, borderWidth)
                         )
                     }
                 }
@@ -77,14 +84,16 @@ internal fun StreamAvatar(
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
+                            .drawCircleBorder(borderColor, borderWidth)
                             .clip(CircleShape)
                             .size(avatarSize)
                             .background(MaterialTheme.colorScheme.primary)
-                            .drawCircleBorder(color, 4.dp)
                     ) {
+                        val fontSize = with(LocalDensity.current) { avatarSize.toSp() / 3 }
                         Text(
                             text = stringResource(R.string.kaleyra_users_avatars_overflow, overflowCount, overflowCount),
                             style = MaterialTheme.typography.titleLarge,
+                            fontSize = fontSize,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -95,9 +104,9 @@ internal fun StreamAvatar(
     }
 }
 
-private fun computeStreamAvatarSize(maxWidth: Dp, maxHeight: Dp): Dp {
+private fun BoxWithConstraintsScope.computeStreamAvatarSize(maxAvatarSize: Dp, minAvatarSize: Dp): Dp {
     val min = min(maxWidth, maxHeight)
-    return (min / 2).coerceIn(MinStreamAvatarSize, MaxStreamAvatarSize)
+    return (min / 2).coerceIn(minAvatarSize, maxAvatarSize)
 }
 
 @DayModePreview

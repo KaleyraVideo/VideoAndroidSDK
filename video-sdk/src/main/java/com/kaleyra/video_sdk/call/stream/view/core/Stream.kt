@@ -12,6 +12,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +63,7 @@ internal fun Stream(
             StreamAvatar(
                 userInfos = userInfos,
                 avatarCount = 1,
-                modifier = avatarModifier
+                modifier = avatarModifier.fillMaxSize()
             )
         }
     )

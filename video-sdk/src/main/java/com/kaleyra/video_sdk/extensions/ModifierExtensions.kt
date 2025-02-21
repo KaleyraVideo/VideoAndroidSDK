@@ -278,6 +278,7 @@ internal object ModifierExtensions {
         color: Color,
         width: Dp
     ): Modifier {
+        if (width == 0.dp) return this
         return drawWithContent {
             drawCircle(
                 color,
