@@ -46,6 +46,7 @@ internal fun Stream(
     streamView: ImmutableView<VideoStreamView>?,
     userInfo: UserInfo?,
     showStreamView: Boolean,
+    isMine: Boolean,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     avatarModifier: Modifier = Modifier
@@ -60,6 +61,7 @@ internal fun Stream(
             StreamAvatar(
                 userInfos = userInfos,
                 avatarCount = 1,
+                isMine = isMine,
                 modifier = avatarModifier.fillMaxSize()
             )
         }
@@ -140,6 +142,7 @@ internal fun StreamPreview() {
             Stream(
                 streamView = null,
                 showStreamView = true,
+                isMine = false,
                 userInfo = UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY))
             )
         }

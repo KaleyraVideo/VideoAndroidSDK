@@ -40,14 +40,18 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 internal val MaxStreamAvatarSize = 96.dp
 internal val MinStreamAvatarSize = 28.dp
 
+private val DefaultAvatarCount = 1
+private val DefaultAvatarPlaceholder = R.drawable.ic_kaleyra_avatar
+
 @Composable
 internal fun StreamAvatar(
     userInfos: ImmutableList<UserInfo>,
-    avatarCount: Int,
+    avatarCount: Int = DefaultAvatarCount,
+    isMine: Boolean = false,
     avatarSize: Dp? = null,
     borderColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     borderWidth: Dp = 0.dp,
-    @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
+    @DrawableRes avatarPlaceholder: Int = DefaultAvatarPlaceholder,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -71,7 +75,7 @@ internal fun StreamAvatar(
                             uri = uri,
                             size = size,
                             placeholder = avatarPlaceholder,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.drawCircleBorder(borderColor, borderWidth)
                         )
                     }
