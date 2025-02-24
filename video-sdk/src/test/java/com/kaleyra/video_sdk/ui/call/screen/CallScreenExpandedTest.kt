@@ -18,11 +18,12 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import kotlinx.coroutines.flow.update
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -205,10 +206,10 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
     @Test
     fun userClicksMoreParticipantsStream_participantsSidePanelDisplayed() {
         val streamItem = StreamItem.MoreStreams(
-            users = listOf(
-                MoreStreamsUserPreview("1", "user1", null),
-                MoreStreamsUserPreview("2", "user2", null)
-            )
+            userInfos = listOf(
+                UserInfo("1", "user1", ImmutableUri()),
+                UserInfo("2", "user2", ImmutableUri())
+            ).toImmutableList()
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
 

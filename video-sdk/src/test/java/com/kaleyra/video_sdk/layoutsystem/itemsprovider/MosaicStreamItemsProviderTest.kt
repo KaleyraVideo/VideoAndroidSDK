@@ -1,10 +1,10 @@
 package com.kaleyra.video_sdk.layoutsystem.itemsprovider
 
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.MosaicStreamItemsProviderImpl
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.mockk
 import org.junit.Assert
@@ -62,11 +62,11 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("2", stream2), result[1])
         Assert.assertEquals(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("3", "stream3", avatar1),
-                    MoreStreamsUserPreview("4", "stream4", avatar2),
-                    MoreStreamsUserPreview("5", "stream5", avatar3)
-                )
+                userInfos = listOf(
+                    UserInfo("3", "stream3", avatar1),
+                    UserInfo("4", "stream4", avatar2),
+                    UserInfo("5", "stream5", avatar3)
+                ).toImmutableList()
             ),
             result[2]
         )
@@ -104,10 +104,10 @@ class MosaicStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("1", stream1), result[1])
         Assert.assertEquals(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("3", "stream3", avatar1),
-                    MoreStreamsUserPreview("4", "stream4", avatar2),
-                )
+                userInfos = listOf(
+                    UserInfo("3", "stream3", avatar1),
+                    UserInfo("4", "stream4", avatar2),
+                ).toImmutableList()
             ),
             result[2]
         )

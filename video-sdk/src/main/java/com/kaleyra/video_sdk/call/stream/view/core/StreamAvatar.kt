@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -39,17 +38,13 @@ import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val MaxStreamAvatarSize = 96.dp
-internal val MinStreamAvatarSize = 48.dp
-
-internal val StreamAvatarSpacing = (-40).dp
+internal val MinStreamAvatarSize = 28.dp
 
 @Composable
 internal fun StreamAvatar(
     userInfos: ImmutableList<UserInfo>,
     avatarCount: Int,
-    maxAvatarSize: Dp = MaxStreamAvatarSize,
-    minAvatarSize: Dp = MinStreamAvatarSize,
-    avatarSpacing: Dp = StreamAvatarSpacing,
+    avatarSize: Dp? = null,
     borderColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     borderWidth: Dp = 0.dp,
     @DrawableRes avatarPlaceholder: Int = R.drawable.ic_kaleyra_avatar,
@@ -59,9 +54,13 @@ internal fun StreamAvatar(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        val avatarSize = computeStreamAvatarSize(maxAvatarSize, minAvatarSize)
+        val size = avatarSize ?: computeStreamAvatarSize(MaxStreamAvatarSize, MinStreamAvatarSize)
+        val spacing = - size * .25f
 
-        Row(horizontalArrangement = Arrangement.spacedBy(avatarSpacing)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             val avatarToDisplayCount = if (userInfos.count() > avatarCount) avatarCount - 1 else avatarCount
             userInfos.value
                 .take(avatarToDisplayCount)
@@ -70,7 +69,7 @@ internal fun StreamAvatar(
                         Avatar(
                             username = username,
                             uri = uri,
-                            size = avatarSize,
+                            size = size,
                             placeholder = avatarPlaceholder,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.drawCircleBorder(borderColor, borderWidth)
@@ -81,20 +80,21 @@ internal fun StreamAvatar(
             if (avatarToDisplayCount < avatarCount) {
                 val overflowCount = userInfos.value.drop(avatarToDisplayCount).size
                 key("overflowId") {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .drawCircleBorder(borderColor, borderWidth)
-                            .clip(CircleShape)
-                            .size(avatarSize)
-                            .background(MaterialTheme.colorScheme.primary)
-                    ) {
-                        val fontSize = with(LocalDensity.current) { avatarSize.toSp() / 3 }
+                    Box(contentAlignment = Alignment.Center) {
+                        val fontSize = with(LocalDensity.current) { size.toSp() / 2 }
+                        Box(
+                            modifier = Modifier
+                                .drawCircleBorder(borderColor, borderWidth)
+                                .clip(CircleShape)
+                                .size(size)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
                         Text(
                             text = stringResource(R.string.kaleyra_users_avatars_overflow, overflowCount, overflowCount),
                             style = MaterialTheme.typography.titleLarge,
                             fontSize = fontSize,
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier
                         )
                     }
                 }
@@ -117,7 +117,6 @@ internal fun StreamAvatarPreview() {
         Surface {
             StreamAvatar(
                 avatarCount = 4,
-                avatarSpacing = (-40).dp,
                 userInfos = listOf(
                     UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY)),
                     UserInfo("userId2", "Mario", ImmutableUri(Uri.EMPTY)),

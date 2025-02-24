@@ -2,11 +2,11 @@ package com.kaleyra.video_sdk.layoutsystem.itemsprovider
 
 import android.net.Uri
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider.FeaturedStreamItemsProviderImpl
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -162,13 +162,13 @@ class FeaturedStreamItemsProviderTest {
         Assert.assertEquals(StreamItem.Stream("2",      StreamUi("2", UserInfo("userId2", "Stream 2", ImmutableUri(uriMock))),      ), result[1])
         Assert.assertEquals(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview(
+                userInfos = listOf(
+                    UserInfo(
                         "3",
                         "Stream 3",
                         avatar1
-                    ), MoreStreamsUserPreview("4", "Stream 4", avatar2)
-                )
+                    ), UserInfo("4", "Stream 4", avatar2)
+                ).toImmutableList()
             ), result[2]
         )
     }

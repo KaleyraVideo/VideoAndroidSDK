@@ -27,7 +27,6 @@ import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -48,7 +47,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-internal abstract class CallScreenTest: CallScreenBaseTest() {
+internal class CallScreenTest: CallScreenBaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -287,10 +286,10 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     @Test
     fun userClicksMoreParticipantsStreamOnSmallScreen_participantsModalSheetDisplayed() {
         val streamItem = StreamItem.MoreStreams(
-            users = listOf(
-                MoreStreamsUserPreview("1", "user1", null),
-                MoreStreamsUserPreview("2", "user2", null),
-            )
+            userInfos = listOf(
+                UserInfo("1", "user1", ImmutableUri()),
+                UserInfo("2", "user2", ImmutableUri()),
+            ).toImmutableList()
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
 

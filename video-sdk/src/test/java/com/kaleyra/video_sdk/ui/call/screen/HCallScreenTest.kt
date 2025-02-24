@@ -19,7 +19,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
-import com.kaleyra.video.User
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -58,7 +57,6 @@ import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandle
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -1162,10 +1160,10 @@ class HCallScreenTest {
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("1", "user1", null),
-                    MoreStreamsUserPreview("2", "user2", null),
-                )
+                userInfos = listOf(
+                    UserInfo("1", "user1", ImmutableUri()),
+                    UserInfo("2", "user2", ImmutableUri()),
+                ).toImmutableList()
             )
         )
         streamUiState.value = StreamUiState(streamItems = streams.toImmutableList())

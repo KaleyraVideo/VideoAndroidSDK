@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -83,7 +82,7 @@ class PipStreamComponentTest {
     fun hiddenStreamsItem_hiddenStreamsItemIsDisplayed() {
         streamUiState = StreamUiState(
             streamItems = listOf(
-                StreamItem.MoreStreams(users = listOf(MoreStreamsUserPreview("1", "user", null)))
+                StreamItem.MoreStreams(userInfos = listOf(UserInfo("1", "user", ImmutableUri())).toImmutableList())
             ).toImmutableList()
         )
         composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()

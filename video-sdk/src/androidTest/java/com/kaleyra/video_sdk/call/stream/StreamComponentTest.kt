@@ -17,7 +17,6 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
@@ -99,7 +98,7 @@ class StreamComponentTest {
     fun hiddenStreamsItem_hiddenStreamsItemIsDisplayed() {
         streamUiState = StreamUiState(
             streamItems = listOf(
-                StreamItem.MoreStreams(users = listOf(MoreStreamsUserPreview("1", "user", null)))
+                StreamItem.MoreStreams(userInfos = listOf(UserInfo("1", "user", ImmutableUri())).toImmutableList())
             ).toImmutableList()
         )
         composeTestRule.onNodeWithTag(MoreStreamsItemTag, useUnmergedTree = true).assertIsDisplayed()
@@ -125,10 +124,10 @@ class StreamComponentTest {
     fun testOnHiddenStreamsClick() {
         val stream1 = defaultStreamItem(username = "mario")
         val stream2 = StreamItem.MoreStreams(
-            users = listOf(
-                MoreStreamsUserPreview("id1", "user1", null),
-                MoreStreamsUserPreview("id2", "user2", null),
-            )
+            userInfos = listOf(
+                UserInfo("id1", "user1", ImmutableUri()),
+                UserInfo("id2", "user2", ImmutableUri()),
+            ).toImmutableList()
         )
         streamUiState = StreamUiState(
             streamItems = listOf(stream1, stream2).toImmutableList()
