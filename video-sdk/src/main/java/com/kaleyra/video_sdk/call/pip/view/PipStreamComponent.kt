@@ -7,6 +7,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,6 +33,7 @@ import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
+import com.kaleyra.video_sdk.call.stream.view.core.StreamPreviewAvatarCount
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
@@ -97,17 +101,20 @@ internal fun PipStreamComponent(
         enter = fadeIn(tween(500)),
         exit = fadeOut()
     ) {
-        Box(
+        BoxWithConstraints(
             contentAlignment = Alignment.Center,
             modifier = Modifier.testTag(PipStreamComponentTag)
         ) {
             if (uiState.preview != null) {
                 val video = uiState.preview.video
+                val avatarSize = ( this@BoxWithConstraints.maxWidth / StreamPreviewAvatarCount).coerceIn(28.dp, 72.dp)
                 StreamPreview(
                     modifier = Modifier,
                     streamView = video?.view?.preCallStreamViewSettings(),
                     userInfos = uiState.preview.userInfos,
-                    showStreamView = video?.view != null && video.isEnabled
+                    showStreamView = video?.view != null && video.isEnabled,
+                    avatarSize = avatarSize,
+                    avatarModifier = Modifier.fillMaxSize()
                 )
 
                 StreamStatusIcons(

@@ -309,7 +309,7 @@
     <string name="kaleyra_stream_mic_disabled">O microfone está desativado</string>
     <string name="kaleyra_stream_muted_for_you">A transmissão está sem áudio para você</string>
     <string name="kaleyra_stream_you">Você</string>
-    <string name="kaleyra_stream_other_participants">%d outros</string>
+    <string name="kaleyra_stream_other_participants">outros</string>
     <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
     <string name="kaleyra_stream_show_actions">Mostrar as ações da transmissão</string>
     <string name="kaleyra_stream_dimmed">Transmissão não selecionada</string>

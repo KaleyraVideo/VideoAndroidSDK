@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
+import com.kaleyra.video.User
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
@@ -32,7 +33,6 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -54,7 +54,7 @@ import org.junit.Test
 
 // Test for the VCallScreen using a smartphone (both in portrait and landscape)
 @OptIn(ExperimentalPermissionsApi::class)
-internal abstract class VCallScreenTest: VCallScreenBaseTest() {
+internal class VCallScreenTest: VCallScreenBaseTest() {
 
     @Test
     fun testSheetActions_accept() {
@@ -1094,10 +1094,10 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("1", "user1", null),
-                    MoreStreamsUserPreview("2", "user2", null),
-                )
+                userInfos = listOf(
+                    UserInfo("1", "user1", ImmutableUri()),
+                    UserInfo("2", "user2", ImmutableUri()),
+                ).toImmutableList()
             )
         )
         streamUiState.value = StreamUiState(streamItems = streams.toImmutableList())

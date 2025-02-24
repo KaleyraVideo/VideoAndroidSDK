@@ -53,7 +53,7 @@
     <string name="kaleyra_stream_mic_disabled">Il microfono è disabilitato</string>
     <string name="kaleyra_stream_muted_for_you">Lo stream è mutato per te</string>
     <string name="kaleyra_stream_you">Tu</string>
-    <string name="kaleyra_stream_other_participants">%d altri</string>
+    <string name="kaleyra_stream_other_participants">altri</string>
     <string name="kaleyra_stream_show_participants">Mostra partecipanti</string>
     <string name="kaleyra_stream_show_actions">Mostra le azioni dello stream</string>
     <string name="kaleyra_stream_dimmed">Stream non selezionato</string>

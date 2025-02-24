@@ -1,9 +1,11 @@
 package com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider
 
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 
 /**
  * Interface for providing a list of [StreamItem]s, with a focus on featured streams.
@@ -79,7 +81,10 @@ internal class FeaturedStreamItemsProviderImpl : FeaturedStreamItemsProvider {
         }
         // If there are remaining streams, create a "More Streams" item.
         val moreStreamsItem = remainingStreams.takeIf { it.isNotEmpty() }?.let { streams ->
-            StreamItem.MoreStreams(users = streams.map { MoreStreamsUserPreview(it.id, it.userInfo?.username ?: "", it.userInfo?.image) })
+            StreamItem.MoreStreams(
+                userInfos = streams.map {
+                    UserInfo(it.id, it.userInfo?.username ?: "", it.userInfo?.image ?: ImmutableUri())
+                }.toImmutableList())
         }
 
         // Combine the featured stream items, visible non-featured stream items, and the optional "More Streams" item.

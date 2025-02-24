@@ -33,7 +33,6 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -1095,10 +1094,10 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("1", "user1", null),
-                    MoreStreamsUserPreview("2", "user2", null),
-                )
+                userInfos = listOf(
+                    UserInfo("1", "user1", ImmutableUri()),
+                    UserInfo("2", "user2", ImmutableUri()),
+                ).toImmutableList()
             )
         )
         streamUiState.value = StreamUiState(streamItems = streams.toImmutableList())
