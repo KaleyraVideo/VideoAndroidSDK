@@ -99,6 +99,7 @@ internal fun StreamItem(
             Stream(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
                 userInfo = stream.userInfo,
+                isMine = stream.isMine,
                 showStreamView = stream.video?.view != null && stream.video.isEnabled,
                 onClick = onClick
             )

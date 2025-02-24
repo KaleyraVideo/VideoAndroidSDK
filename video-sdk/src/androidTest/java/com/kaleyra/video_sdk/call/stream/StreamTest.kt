@@ -47,6 +47,7 @@ class StreamTest {
             Stream(
                 streamView = streamView,
                 userInfo = UserInfo("userId", "username", ImmutableUri()),
+                isMine = false,
                 showStreamView = showStreamView,
             )
         }
