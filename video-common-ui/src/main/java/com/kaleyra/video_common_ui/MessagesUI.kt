@@ -17,7 +17,6 @@
 package com.kaleyra.video_common_ui
 
 import android.net.Uri
-import com.kaleyra.video.conversation.Chat
 import com.kaleyra.video.conversation.ChatParticipants
 import com.kaleyra.video.conversation.Message
 import com.kaleyra.video.conversation.Messages
@@ -28,7 +27,6 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.notification.ChatNotificationMessage
 import com.kaleyra.video_common_ui.notification.CustomChatNotificationManager
 import com.kaleyra.video_common_ui.notification.DisplayedChatActivity
-import com.kaleyra.video_common_ui.notification.DisplayedChatActivity.Companion.chatId
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import kotlinx.coroutines.flow.filterNotNull
@@ -84,7 +82,7 @@ class MessagesUI(
             me.combinedDisplayName.filterNotNull().firstOrNull() ?: me.userId,
             me.combinedDisplayImage.filterNotNull().firstOrNull() ?: Uri.EMPTY,
             // Set the chatId not null if it is a one to one chat
-            chatUI.id,
+            chatUI.serverId.replayCache.firstOrNull() ?: chatUI.id,
             chatUI.isGroup,
             if (chatUI.isGroup) {
                 when {
@@ -98,7 +96,8 @@ class MessagesUI(
             chatCustomNotificationActivity
         )
         if (DisplayedChatActivity.chatId.value == chatUI.id) return
-        NotificationManager.notify(chatUI.id.hashCode(), notification)
+        val hash = chatUI.id.hashCode()
+        NotificationManager.notify(hash, notification)
     }
 
     private suspend fun OtherMessage.toChatNotificationMessage(chatParticipants: ChatParticipants): ChatNotificationMessage {
