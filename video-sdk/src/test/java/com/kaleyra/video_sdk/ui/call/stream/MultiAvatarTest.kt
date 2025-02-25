@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.kaleyra.video.User
-import com.kaleyra.video_sdk.call.stream.view.core.StreamAvatar
+import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.call.stream.view.core.MultiAvatar
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class StreamAvatarTest {
+class MultiAvatarTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -34,9 +34,10 @@ class StreamAvatarTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            StreamAvatar(
+            MultiAvatar(
                 userInfos = userInfos,
-                avatarCount = avatarCount
+                avatarCount = avatarCount,
+                avatarSize = 40.dp
             )
         }
     }

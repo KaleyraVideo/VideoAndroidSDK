@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +33,7 @@ import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
 import com.kaleyra.video_sdk.call.stream.view.core.StreamPreviewAvatarCount
+import com.kaleyra.video_sdk.call.stream.view.core.computeStreamAvatarSize
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
@@ -42,6 +42,8 @@ import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSett
 
 internal val DefaultPipAspectRatio = Rational(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
+
+internal val MaxPipStreamAvatarSize = 72.dp
 
 @Composable
 internal fun PipStreamComponent(
@@ -107,13 +109,17 @@ internal fun PipStreamComponent(
         ) {
             if (uiState.preview != null) {
                 val video = uiState.preview.video
-                val avatarSize = ( this@BoxWithConstraints.maxWidth / StreamPreviewAvatarCount).coerceIn(28.dp, 72.dp)
                 StreamPreview(
                     modifier = Modifier,
                     streamView = video?.view?.preCallStreamViewSettings(),
                     userInfos = uiState.preview.userInfos,
                     showStreamView = video?.view != null && video.isEnabled,
-                    avatarSize = avatarSize,
+                    avatarSize = computeStreamAvatarSize(
+                        maxWidth = maxWidth,
+                        maxHeight = maxHeight,
+                        maxAvatarSize = MaxPipStreamAvatarSize,
+                        sizeRatio = StreamPreviewAvatarCount
+                    ),
                     avatarModifier = Modifier.fillMaxSize()
                 )
 

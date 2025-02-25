@@ -49,9 +49,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -94,12 +94,11 @@ internal fun OtherMessageItem(
             when {
                 isLastChainMessage && uri != null -> {
                     Avatar(
-                        uri = uri,
-                        contentDescription = stringResource(id = R.string.kaleyra_avatar),
+                        username = participantDetails.username,
+                        uri = participantDetails.image,
                         placeholder = R.drawable.ic_kaleyra_avatar,
-                        error = R.drawable.ic_kaleyra_avatar,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        backgroundColor = colorResource(R.color.kaleyra_color_grey_light),
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
                         size = MessageItemAvatarSize
                     )
                     Spacer(modifier = Modifier.width(OtherBubbleAvatarSpacing))
@@ -208,7 +207,8 @@ internal fun Bubble(
             if (username != null) {
                 Text(
                     text = username,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }

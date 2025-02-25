@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
@@ -49,12 +48,11 @@ internal fun ChatAppBarContent(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(
+            username = if (!isGroup) title else "",
             uri = image,
-            contentDescription = stringResource(id = R.string.kaleyra_chat_avatar_desc),
             placeholder = if (isGroup) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar,
-            error = if (isGroup) R.drawable.ic_kaleyra_avatars_bold else R.drawable.ic_kaleyra_avatar,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
+            backgroundColor = MaterialTheme.colorScheme.secondary,
             size = 40.dp
         )
         Column(Modifier.padding(start = 12.dp)) {

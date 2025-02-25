@@ -80,7 +80,6 @@
     <string name="kaleyra_chat_msg_status_seen">Mensagem vista</string>
     <string name="kaleyra_chat_unread_messages">Mensagens não lidas</string>
     <string name="kaleyra_chat_no_messages_title">Ainda sem mensagens</string>
-    <string name="kaleyra_chat_avatar_desc">Imagem do chat</string>
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
     <!-- Chamada -->

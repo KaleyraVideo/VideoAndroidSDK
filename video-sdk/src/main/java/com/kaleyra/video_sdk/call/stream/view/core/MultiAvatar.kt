@@ -1,14 +1,9 @@
 package com.kaleyra.video_sdk.call.stream.view.core
 
 import android.net.Uri
-import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,8 +11,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,9 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.util.fastForEach
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -40,40 +33,20 @@ import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
-internal val MaxStreamAvatarSize = 96.dp
-internal val MinStreamAvatarSize = 28.dp
-internal val SpeakingStreamAvatarSizeFactor = 1.34f
-internal val SpeakingAnimationDuration = 750
-
-private val DefaultAvatarCount = 1
-private val DefaultAvatarPlaceholder = R.drawable.ic_kaleyra_avatar
-
 @Composable
-internal fun StreamAvatar(
+internal fun MultiAvatar(
     userInfos: ImmutableList<UserInfo>,
-    avatarCount: Int = DefaultAvatarCount,
-    isMine: Boolean = false,
-    isSpeaking: Boolean = false,
-    avatarSize: Dp? = null,
+    avatarSize: Dp,
+    avatarCount: Int,
     borderColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     borderWidth: Dp = 0.dp,
-    @DrawableRes avatarPlaceholder: Int = DefaultAvatarPlaceholder,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(
+    Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        val size = avatarSize ?: computeStreamAvatarSize(MaxStreamAvatarSize, MinStreamAvatarSize)
-        val targetSize = size.times(if (isSpeaking) SpeakingStreamAvatarSizeFactor else 1f)
-        val animatedSize by animateDpAsState(
-            targetValue = targetSize,
-            animationSpec = tween(SpeakingAnimationDuration),
-            label = "animatedSize"
-        )
-
-        val spacing = - size * .25f
-
+        val spacing = remember(avatarSize) { - avatarSize * .25f }
         Row(
             horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalAlignment = Alignment.CenterVertically
@@ -86,10 +59,11 @@ internal fun StreamAvatar(
                         Avatar(
                             username = username,
                             uri = uri,
-                            size = animatedSize,
-                            placeholder = avatarPlaceholder,
-                            color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.drawCircleBorder(borderColor, borderWidth)
+                            size = avatarSize,
+                            placeholder =  R.drawable.ic_kaleyra_avatar,
+                            borderWidth = borderWidth,
+                            borderColor = borderColor,
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
                         )
                     }
                 }
@@ -98,20 +72,19 @@ internal fun StreamAvatar(
                 val overflowCount = userInfos.value.drop(avatarToDisplayCount).size
                 key("overflowId") {
                     Box(contentAlignment = Alignment.Center) {
-                        val fontSize = with(LocalDensity.current) { size.toSp() / 2 }
+                        val fontSize = with(LocalDensity.current) { avatarSize.toSp() / 2.5 }
                         Box(
                             modifier = Modifier
                                 .drawCircleBorder(borderColor, borderWidth)
                                 .clip(CircleShape)
-                                .size(size)
+                                .size(avatarSize)
                                 .background(MaterialTheme.colorScheme.primary)
                         )
                         Text(
                             text = stringResource(R.string.kaleyra_users_avatars_overflow, overflowCount, overflowCount),
                             style = MaterialTheme.typography.titleLarge,
                             fontSize = fontSize,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -121,19 +94,13 @@ internal fun StreamAvatar(
     }
 }
 
-private fun BoxWithConstraintsScope.computeStreamAvatarSize(maxAvatarSize: Dp, minAvatarSize: Dp): Dp {
-    val min = min(maxWidth, maxHeight)
-    return (min / 2).coerceIn(minAvatarSize, maxAvatarSize)
-}
-
 @DayModePreview
 @NightModePreview
 @Composable
 internal fun StreamAvatarPreview() {
     KaleyraTheme {
         Surface {
-            StreamAvatar(
-                avatarCount = 4,
+            MultiAvatar(
                 userInfos = listOf(
                     UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY)),
                     UserInfo("userId2", "Mario", ImmutableUri(Uri.EMPTY)),
@@ -141,22 +108,8 @@ internal fun StreamAvatarPreview() {
                     UserInfo("userId3", "Alice", ImmutableUri(Uri.EMPTY)),
                     UserInfo("userId3", "Alice", ImmutableUri(Uri.EMPTY)),
                 ).toImmutableList(),
-            )
-        }
-    }
-}
-
-@DayModePreview
-@NightModePreview
-@Composable
-internal fun StreamAvatarSpeakingPreview() {
-    KaleyraTheme {
-        Surface {
-            StreamAvatar(
-                userInfos = listOf(
-                    UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY)),
-                ).toImmutableList(),
-                isSpeaking = true
+                avatarSize = 40.dp,
+                avatarCount = 4,
             )
         }
     }

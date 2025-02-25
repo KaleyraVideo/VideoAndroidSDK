@@ -14,7 +14,7 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebouceMillis
+import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebounceMillis
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -50,9 +50,9 @@ class StreamTest {
             Stream(
                 streamView = streamView,
                 userInfo = UserInfo("userId", "username", ImmutableUri()),
-                showStreamView = showStreamView,
                 isMine = false,
-                isSpeaking = false
+                isSpeaking = false,
+                showStreamView = showStreamView,
             )
         }
     }
@@ -96,14 +96,14 @@ class StreamTest {
             streamView = ImmutableView(videoStreamView)
         }
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertIsDisplayed()
 
         renderingFlow.value = StreamView.State.Rendering(
             definition = MutableStateFlow(Input.Video.Quality.Definition.HD),
             matrix = MutableStateFlow(Matrix())
         )
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
     }
 
@@ -128,7 +128,7 @@ class StreamTest {
             streamView = ImmutableView(videoStreamView)
         }
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
     }
 }

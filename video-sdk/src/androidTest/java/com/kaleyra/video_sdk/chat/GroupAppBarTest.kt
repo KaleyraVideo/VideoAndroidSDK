@@ -43,6 +43,8 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.topappbar.ActionsTag
 import com.kaleyra.video_sdk.findBackButton
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -50,7 +52,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
 
-@RunWith(AndroidJUnit4::class)
 class GroupAppBarTest {
 
     @get:Rule
@@ -97,10 +98,15 @@ class GroupAppBarTest {
         isActionClicked = false
     }
 
-    // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
         composeTestRule.onNodeWithText("chatName").assertIsDisplayed()
+    }
+
+    @Test
+    fun testChatAvatarLetterIsNotDisplayed() {
+        composeTestRule.onNodeWithText("chatName").assertIsDisplayed()
+        composeTestRule.onNodeWithText("C").assertDoesNotExist()
     }
 
     @Test
@@ -165,7 +171,8 @@ class GroupAppBarTest {
     fun oneParticipantOnline_isOnlineTextDisplayed() {
         val users = listOf("mary")
         participantsState = ChatParticipantsState(online = ImmutableList(users))
-        getSubtitle().assertContentDescriptionEquals(users.first() + " " + composeTestRule.activity.getString(R.string.kaleyra_chat_participants_is_online))
+        composeTestRule.waitForIdle()
+        getSubtitle().assertTextEquals(users.first() + " " + composeTestRule.activity.getString(R.string.kaleyra_chat_participants_is_online))
     }
 
     @Test

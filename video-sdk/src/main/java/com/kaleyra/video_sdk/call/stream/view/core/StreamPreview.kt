@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -18,17 +19,16 @@ import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamPreviewAvatarCount = 3
-private val StreamPreviewAvatarBorderWidth = 4.dp
 
 @Composable
 internal fun StreamPreview(
     streamView: ImmutableView<VideoStreamView>?,
     showStreamView: Boolean,
     userInfos: ImmutableList<UserInfo>,
+    avatarSize: Dp,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     avatarModifier: Modifier = Modifier,
-    avatarSize: Dp? = null,
 ) {
     StreamLayout(
         modifier = modifier,
@@ -36,12 +36,13 @@ internal fun StreamPreview(
         showStreamView = showStreamView,
         onClick = onClick,
         avatar = {
-            StreamAvatar(
+            val borderWidth = remember(avatarSize) { avatarSize * .05f }
+            MultiAvatar(
                 userInfos = userInfos,
                 avatarCount = StreamPreviewAvatarCount,
                 modifier = avatarModifier,
                 avatarSize = avatarSize,
-                borderWidth = StreamPreviewAvatarBorderWidth,
+                borderWidth = borderWidth,
                 borderColor = MaterialTheme.colorScheme.surfaceContainerLowest
             )
         }
@@ -57,6 +58,7 @@ internal fun StreamPreviewPreview() {
             StreamPreview(
                 streamView = null,
                 showStreamView = true,
+                avatarSize = 40.dp,
                 userInfos = listOf(
                     UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY)),
                     UserInfo("userId2", "Mario", ImmutableUri(Uri.EMPTY)),

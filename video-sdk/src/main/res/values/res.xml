@@ -45,7 +45,7 @@
 
     <!-- call app bar -->
     <item name="ic_kaleyra_arrow_back_new" type="drawable">@drawable/kaleyra_f_arrow_left</item>
-    <item name="ic_kaleyra_participants_new" type="drawable">@drawable/kaleyra_f_avatars</item>
+    <item name="ic_kaleyra_participants_new" type="drawable">@drawable/kaleyra_f_multi_avatar</item>
     <item name="ic_kaleyra_recording_dot_new" type="drawable">@drawable/kaleyra_f_rec</item>
 
     <!-- stream -->
@@ -78,7 +78,7 @@
     <item name="ic_kaleyra_video_call" type="drawable">@drawable/kaleyra_z_cam_22</item>
 
     <!-- CHAT -->
-    <item name="ic_kaleyra_avatar" type="drawable">@drawable/kaleyra_z_user_075</item>
+    <item name="ic_kaleyra_avatar" type="drawable">@drawable/kaleyra_f_avatar</item>
     <item name="ic_kaleyra_send" type="drawable">@drawable/kaleyra_z_send</item>
     <item name="ic_kaleyra_double_arrow_down" type="drawable">@drawable/kaleyra_z_double_chevron</item>
     <item name="ic_kaleyra_single_tick" type="drawable">@drawable/kaleyra_z_check</item>
@@ -86,8 +86,8 @@
     <item name="ic_kaleyra_clock" type="drawable">@drawable/kaleyra_z_clock</item>
 
     <!-- CALL -->
-    <item name="ic_kaleyra_avatar_bold" type="drawable">@drawable/kaleyra_z_user_1</item>
-    <item name="ic_kaleyra_avatars_bold" type="drawable">@drawable/kaleyra_z_users_1</item>
+    <item name="ic_kaleyra_avatar_bold" type="drawable">@drawable/kaleyra_f_avatar</item>
+    <item name="ic_kaleyra_avatars_bold" type="drawable">@drawable/kaleyra_f_multi_avatar</item>
     <item name="ic_kaleyra_hangup" type="drawable">@drawable/kaleyra_z_end_call_24</item>
     <item name="ic_kaleyra_camera_off" type="drawable">@drawable/kaleyra_z_camera_off</item>
     <item name="ic_kaleyra_camera_on" type="drawable">@drawable/kaleyra_z_camera_on</item>
@@ -98,7 +98,7 @@
     <item name="ic_kaleyra_snapshot" type="drawable">@drawable/kaleyra_z_snapshot</item>
     <item name="ic_kaleyra_mic_off" type="drawable">@drawable/kaleyra_z_mic_off</item>
     <item name="ic_kaleyra_mic_on" type="drawable">@drawable/kaleyra_z_mic_on</item>
-    <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_z_users</item>
+    <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_f_multi_avatar</item>
     <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
     <item name="ic_kaleyra_more" type="drawable">@drawable/kaleyra_z_more</item>
 

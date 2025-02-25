@@ -9,12 +9,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import androidx.test.platform.app.InstrumentationRegistry
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
-import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebouceMillis
+import com.kaleyra.video_sdk.call.stream.view.core.RenderingDebounceMillis
 import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
 import com.kaleyra.video_sdk.call.stream.view.core.StreamViewTestTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -55,7 +56,8 @@ class StreamPreviewTest {
             StreamPreview(
                 streamView = streamView,
                 showStreamView = showStreamView,
-                userInfos = userInfos
+                userInfos = userInfos,
+                avatarSize = 40.dp
             )
         }
     }
@@ -125,14 +127,14 @@ class StreamPreviewTest {
             streamView = ImmutableView(videoStreamView)
         }
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertIsDisplayed()
 
         renderingFlow.value = StreamView.State.Rendering(
             definition = MutableStateFlow(Input.Video.Quality.Definition.HD),
             matrix = MutableStateFlow(Matrix())
         )
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
     }
 
@@ -157,7 +159,7 @@ class StreamPreviewTest {
             streamView = ImmutableView(videoStreamView)
         }
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
-        composeTestRule.mainClock.advanceTimeBy(RenderingDebouceMillis)
+        composeTestRule.mainClock.advanceTimeBy(RenderingDebounceMillis)
         composeTestRule.onNodeWithText("U").assertDoesNotExist()
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,7 @@ class AvatarTest {
             Avatar(
                 username = "us",
                 uri = ImmutableUri(uri),
-                color = Color.Black,
+                backgroundColor = Color.Black,
                 onSuccess = { success.value = true }
             )
         }
@@ -47,10 +48,23 @@ class AvatarTest {
             Avatar(
                 username = "us",
                 uri = null,
-                color = Color.Black
+                backgroundColor = Color.Black
             )
         }
         composeTestRule.onNodeWithText("U").assertIsDisplayed()
+    }
+
+    @Test
+    fun imageNotLoadedAndTextBlank_placeholderIsDisplayed() {
+        composeTestRule.setContent {
+            Avatar(
+                username = "",
+                uri = null,
+                backgroundColor = Color.Black
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -59,7 +73,7 @@ class AvatarTest {
             Avatar(
                 username = "",
                 uri = null,
-                color = Color.Black
+                backgroundColor = Color.Black
             )
         }
     }
@@ -72,7 +86,7 @@ class AvatarTest {
                 username = "username",
                 uri = null,
                 size = size,
-                color = Color.Black
+                backgroundColor = Color.Black
             )
         }
         val avatar = composeTestRule.onNodeWithText("U").onParent()

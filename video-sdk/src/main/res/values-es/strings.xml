@@ -144,7 +144,6 @@
     <string name="kaleyra_call_drag_to_expand">Arrastrar paraexpandir</string>
     <string name="kaleyra_call_answer">Participar</string>
     <string name="kaleyra_cancel_message">No</string>
-    <string name="kaleyra_chat_avatar_desc">Imagen del chat</string>
     <string name="kaleyra_chat_channel_loading">Cargando…</string>
     <string name="kaleyra_chat_group_title">Chat de grupo</string>
     <string name="kaleyra_chat_msg_status_pending">Mensaje pendiente</string>

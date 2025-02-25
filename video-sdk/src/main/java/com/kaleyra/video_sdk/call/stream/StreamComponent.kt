@@ -42,6 +42,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.AdaptiveStreamLayout
 import com.kaleyra.video_sdk.call.stream.view.ThumbnailsArrangement
 import com.kaleyra.video_sdk.call.stream.view.core.StreamPreview
+import com.kaleyra.video_sdk.call.stream.view.core.computeStreamAvatarSize
 import com.kaleyra.video_sdk.call.stream.view.items.ActiveScreenShareIndicator
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
@@ -150,16 +151,19 @@ internal fun StreamComponent(
         if (uiState.preview != null) {
             val video = uiState.preview.video
             if (video?.view != null || !uiState.preview.isStartingWithVideo) {
-                LookaheadScope {
-                    StreamPreview(
-                        streamView = video?.view?.preCallStreamViewSettings(),
-                        userInfos = uiState.preview.userInfos,
-                        showStreamView = video?.view != null && video.isEnabled,
-                        avatarModifier = modifier,
-                        modifier = Modifier
-                            .animateConstraints()
-                            .animatePlacement(this)
-                    )
+                    LookaheadScope {
+                        BoxWithConstraints {
+                            StreamPreview(
+                                streamView = video?.view?.preCallStreamViewSettings(),
+                                userInfos = uiState.preview.userInfos,
+                                showStreamView = video?.view != null && video.isEnabled,
+                                avatarModifier = modifier,
+                                avatarSize = computeStreamAvatarSize(maxWidth, maxHeight),
+                                modifier = Modifier
+                                    .animateConstraints()
+                                    .animatePlacement(this@LookaheadScope)
+                            )
+                    }
                 }
             }
         } else {
