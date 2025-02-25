@@ -307,15 +307,17 @@ internal object ModifierExtensions {
      */
     internal fun Modifier.drawCircleBorder(
         color: Color,
-        width: Dp
+        width: Dp,
+        alpha: Float = 1f
     ): Modifier {
         if (width == 0.dp) return this
         return drawWithContent {
             drawContent()
             drawCircle(
                 color,
-                blendMode = BlendMode.SrcIn,
-                style = Stroke(width = width.toPx())
+                blendMode = BlendMode.SrcOver,
+                style = Stroke(width = width.toPx()),
+                alpha = alpha
             )
         }
     }
