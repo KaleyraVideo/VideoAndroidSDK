@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -21,14 +21,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
@@ -36,10 +35,15 @@ import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlin.math.roundToInt
 
-internal val ParticipantItemAvatarSize = 40.dp
+private val AvatarStroke = 6.dp
+private val SpeakingAvatarStroke = 2.dp
+
+private val ParticipantItemAvatarSize = 40.dp + AvatarStroke
 
 @Composable
 internal fun ParticipantItem(
@@ -54,44 +58,32 @@ internal fun ParticipantItem(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val audioLevelInnerStrokeColor = MaterialTheme.colorScheme.surfaceContainerLowest
-    val audioLevelStrokeColor = MaterialTheme.colorScheme.primary
-    val audioLevelStrokeAlpha by animateFloatAsState(
+    val speakingAvatarStrokeAlpha by animateFloatAsState(
         targetValue = stream.audio?.level ?: 0f,
         animationSpec = tween(durationMillis = 200),
         label = "animatedAudioLevelStrokeAlpha"
     )
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        Box(modifier = Modifier.size(ParticipantItemAvatarSize + 4.dp),
-            contentAlignment = Alignment.Center) {
-            Avatar(
-                username = stream.userInfo?.username ?: "",
-                uri = stream.userInfo?.image,
-                size = ParticipantItemAvatarSize
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .drawWithContent {
-                        drawCircle(
-                            color = audioLevelInnerStrokeColor,
-                            alpha = audioLevelStrokeAlpha,
-                            blendMode = BlendMode.SrcOver,
-                            style = Stroke(width = 8.dp.toPx())
-                        )
-
-                        drawCircle(
-                            color = audioLevelStrokeColor,
-                            alpha = audioLevelStrokeAlpha,
-                            blendMode = BlendMode.SrcOver,
-                            style = Stroke(width = 3.dp.toPx())
-                        )
-                    },
-            )
-        }
+        Avatar(
+            username = stream.userInfo?.username ?: "",
+            uri = stream.userInfo?.image,
+            size = ParticipantItemAvatarSize,
+            borderColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            borderWidth = AvatarStroke,
+            modifier = Modifier
+                .offset {
+                    IntOffset(- AvatarStroke.toPx().roundToInt() / 2, 0)
+                }
+                .drawCircleBorder(
+                    width = SpeakingAvatarStroke,
+                    color = MaterialTheme.colorScheme.primary,
+                    alpha = speakingAvatarStrokeAlpha
+                )
+        )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
