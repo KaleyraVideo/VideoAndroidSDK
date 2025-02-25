@@ -79,7 +79,7 @@ class StreamUIExtensionsTest {
     }
 
     @Test
-    fun `isAudioLevelAboveZero returns false when audio is disabled`() {
+    fun `isAudioLevelAboveZero returns true when audio is disabled and audio level is above zero`() {
         val streamUi = StreamUi(
             id = "1",
             audio = AudioUi(
