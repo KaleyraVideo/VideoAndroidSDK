@@ -30,10 +30,15 @@ import com.kaleyra.app_configuration.utils.hideKeyboard
 class BrandColorConfigurationActivity : BaseConfigurationActivity() {
 
     companion object {
-        const val PICK_CUSTOM_BRAND_COLOR = 796
+        const val PICK_CUSTOM_BRAND_DARK_COLOR = 796
+        const val PICK_CUSTOM_BRAND_LIGHT_COLOR = 797
         const val CUSTOM_COLOR = "CUSTOM_COLOR"
-        fun showForResult(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
-            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_COLOR)
+        fun displayDarkSeedColorPicker(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
+            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_DARK_COLOR)
+        }
+
+        fun displayLightSeedColorPicker(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
+            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_LIGHT_COLOR)
         }
 
         private fun buildIntent(context: Context?, @ColorInt customColor: Int? = null): Intent {
@@ -204,7 +209,7 @@ class BrandColorConfigurationActivity : BaseConfigurationActivity() {
 
     private fun saveSettings() {
         val resultDataIntent = Intent()
-        resultDataIntent.putExtra(CUSTOM_COLOR, if (custom!!.isChecked) Color.parseColor(currentColor) else null)
+        resultDataIntent.putExtra(CUSTOM_COLOR, if (custom.isChecked) Color.parseColor(currentColor) else null)
         setResult(2, resultDataIntent)
     }
 

@@ -80,8 +80,7 @@
                 android:id="@+id/brand_color_sample"
                 android:layout_margin="32dp"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="@string/brand_color"/>
+                android:layout_height="100dp" />
 
             <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
                 android:id="@+id/hueSeekBar"
