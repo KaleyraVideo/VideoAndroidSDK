@@ -36,7 +36,7 @@ internal fun StreamPreview(
         showStreamView = showStreamView,
         onClick = onClick,
         avatar = {
-            val borderWidth = remember(avatarSize) { avatarSize * .05f }
+            val borderWidth = remember(avatarSize) { avatarSize * .025f }
             MultiAvatar(
                 userInfos = userInfos,
                 avatarCount = StreamPreviewAvatarCount,
