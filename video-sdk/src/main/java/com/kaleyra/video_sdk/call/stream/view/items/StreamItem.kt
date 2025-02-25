@@ -3,7 +3,8 @@ package com.kaleyra.video_sdk.call.stream.view.items
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -70,10 +71,12 @@ import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawRoundedCornerBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlin.random.Random
 
 internal val StreamItemPadding = 8.dp
 internal val StreamItemAudioLevelBorderWidth = 3.dp
 internal val StreamItemAudioLevelAnimationDuration = 500
+internal val StreamItemAudioLevelMeterAnimationDuration = 250
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
 internal val AudioLevelIconTag = "AudioLevelIconTag"
@@ -278,14 +281,29 @@ fun StreamAudioLevelIcon(
     modifier: Modifier? = Modifier,
     audioLevel: Float,
 ) {
+
+    val audioLevelMeterMultiplier by rememberInfiniteTransition().animateFloat(
+        initialValue = 0.25f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            repeatMode = RepeatMode.Reverse,
+            animation = tween(
+                durationMillis = StreamItemAudioLevelMeterAnimationDuration,
+                easing = remember { createRandomEasing() }
+            )
+        )
+    )
+
+    val audioLevel = audioLevel * audioLevelMeterMultiplier
+
     val leftMeterMultiplier by rememberInfiniteTransition().animateFloat(
         initialValue = 0.45f,
         targetValue = 0.72f,
         animationSpec = infiniteRepeatable(
             repeatMode = RepeatMode.Reverse,
             animation = tween(
-                durationMillis = 250,
-                easing = LinearEasing
+                durationMillis = StreamItemAudioLevelMeterAnimationDuration,
+                easing = remember { createRandomEasing() }
             )
         )
     )
@@ -333,6 +351,14 @@ fun StreamAudioLevelIcon(
             AudioLevelMeter(audioLevelMeterModifier, rightAudioLevel)
         }
     }
+}
+
+private fun createRandomEasing(): Easing {
+    val x1 = Random.nextFloat()
+    val y1 = Random.nextFloat()
+    val x2 = Random.nextFloat()
+    val y2 = Random.nextFloat()
+    return CubicBezierEasing(x1, y1, x2, y2)
 }
 
 @Composable
