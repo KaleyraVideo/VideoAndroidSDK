@@ -76,7 +76,6 @@ internal fun ParticipantItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .drawWithContent {
-
                         drawCircle(
                             color = audioLevelInnerStrokeColor,
                             alpha = audioLevelStrokeAlpha,

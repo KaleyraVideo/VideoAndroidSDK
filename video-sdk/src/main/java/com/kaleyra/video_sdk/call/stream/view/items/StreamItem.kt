@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -11,6 +12,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,13 +37,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -61,16 +61,24 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.utils.isAudioLevelAboveZero
+import com.kaleyra.video_sdk.call.stream.utils.isVideoEnabled
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.user.UserInfo
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawRoundedCornerBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 internal val StreamItemPadding = 8.dp
+internal val StreamItemAudioLevelBorderWidth = 3.dp
+internal val StreamItemAudioLevelAnimationDuration = 500
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
 internal val AudioLevelIconTag = "AudioLevelIconTag"
+internal val AudioLevelBackgroundTag = "AudioLevelBackgroundTag"
+
 
 @Composable
 internal fun StreamItem(
@@ -81,17 +89,40 @@ internal fun StreamItem(
     statusIconsAlignment: Alignment = Alignment.BottomEnd,
     onClick: (() -> Unit)? = null
 ) {
+    val audioLevelTweenAnimation = tween<Float>(StreamItemAudioLevelAnimationDuration)
     val audioLevelStrokeColor = MaterialTheme.colorScheme.primary
     val audioLevelStrokeAlpha by animateFloatAsState(
         targetValue = stream.audio?.level ?: 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = audioLevelTweenAnimation,
         label = "animatedAudioLevelStrokeAlpha"
     )
+    val isAudioLevelAboveZero = remember(stream) { stream.isAudioLevelAboveZero() }
+    val isVideoEnabled = remember(stream) { stream.isVideoEnabled() }
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.testTag(StreamItemTag),
+        modifier = modifier
+            .testTag(StreamItemTag)
+            .drawRoundedCornerBorder(
+                width = if (isVideoEnabled) StreamItemAudioLevelBorderWidth else 0.dp,
+                color = audioLevelStrokeColor,
+                alpha = audioLevelStrokeAlpha,
+                cornerRadius = CornerRadius(StreamComponentDefaults.CornerRadius.toPixel),
+            )
     ) {
+
+        AnimatedVisibility(
+            visible = !isVideoEnabled && isAudioLevelAboveZero,
+            enter = fadeIn(audioLevelTweenAnimation),
+            exit = fadeOut(audioLevelTweenAnimation)
+        ) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.primary.copy(alpha = .16f))
+                .testTag(AudioLevelBackgroundTag)
+            )
+        }
+
         PointerStreamWrapper(
             streamView = stream.video?.view,
             pointerList = stream.video?.pointers
@@ -100,7 +131,8 @@ internal fun StreamItem(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
                 userInfo = stream.userInfo,
                 isMine = stream.isMine,
-                showStreamView = stream.video?.view != null && stream.video.isEnabled,
+                isSpeaking = isAudioLevelAboveZero,
+                showStreamView = stream.video?.view != null && isVideoEnabled,
                 onClick = onClick
             )
         }
@@ -122,21 +154,6 @@ internal fun StreamItem(
                 .padding(StreamItemPadding)
                 .height(24.dp)
                 .align(Alignment.BottomStart)
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(1.dp)
-                .fillMaxSize()
-                .drawWithContent {
-                    drawRoundRect(
-                        color = audioLevelStrokeColor,
-                        alpha = audioLevelStrokeAlpha,
-                        cornerRadius = CornerRadius(StreamComponentDefaults.CornerRadius.toPx()),
-                        blendMode = BlendMode.SrcOver,
-                        style = Stroke(width = 3.dp.toPx())
-                    )
-                },
         )
     }
 }
@@ -305,7 +322,9 @@ fun StreamAudioLevelIcon(
             .fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
-            val audioLevelMeterModifier = Modifier.width(3.5.dp).fillMaxHeight()
+            val audioLevelMeterModifier = Modifier
+                .width(3.5.dp)
+                .fillMaxHeight()
             val leftAudioLevel = animatedAudioLevel * leftMeterMultiplier
             val rightAudioLevel = animatedAudioLevel * rightMeterMultiplier
 

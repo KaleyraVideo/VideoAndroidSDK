@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
@@ -76,6 +77,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -195,7 +198,7 @@ internal object ModifierExtensions {
         animationSpec: FiniteAnimationSpec<IntOffset> = spring()
     ) = composed {
         val coroutineScope = rememberCoroutineScope()
-        val offsetAnimation = remember { DeferredTargetAnimation(IntOffset.VectorConverter)  }
+        val offsetAnimation = remember { DeferredTargetAnimation(IntOffset.VectorConverter) }
         this.approachLayout(
             isMeasurementApproachInProgress = { false },
             isPlacementApproachInProgress = { lookaheadCoordinates ->
@@ -268,6 +271,34 @@ internal object ModifierExtensions {
     }
 
     /**
+     * Draws a rounder corner border with enhanced rendering compared to the standard border
+     * @receiver Modifier
+     * @param width Dp border width
+     * @param color Color border color
+     * @param alpha Float border alpha
+     * @param cornerRadius CornerRadius border corner radius
+     * @return Modifier
+     */
+    internal fun Modifier.drawRoundedCornerBorder(
+        width: Dp,
+        color: Color,
+        alpha: Float,
+        cornerRadius: CornerRadius
+    ): Modifier {
+        if (width == 0.dp) return this
+        return drawWithContent {
+            drawContent()
+            drawRoundRect(
+                color = color,
+                alpha = alpha,
+                cornerRadius = cornerRadius,
+                blendMode = BlendMode.SrcOver,
+                style = Stroke(width = width.toPx())
+            )
+        }
+    }
+
+    /**
      * Draws a circle border with enhanced rendering compared to the standard border
      *
      * @receiver Modifier
@@ -280,12 +311,12 @@ internal object ModifierExtensions {
     ): Modifier {
         if (width == 0.dp) return this
         return drawWithContent {
+            drawContent()
             drawCircle(
                 color,
                 blendMode = BlendMode.SrcIn,
                 style = Stroke(width = width.toPx())
             )
-            drawContent()
         }
     }
 

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,9 +21,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.RadialGradientShader
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
@@ -39,7 +51,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 const val StreamViewTestTag = "StreamViewTestTag"
-internal const val RenderingDebouceMillis = 1000L
+internal const val RenderingDebounceMillis = 1000L
+private const val StreamElevationShadowAnimationDuration = 750
+private val StreamMaxElevation = 30.dp
 
 @Composable
 internal fun Stream(
@@ -47,22 +61,41 @@ internal fun Stream(
     userInfo: UserInfo?,
     showStreamView: Boolean,
     isMine: Boolean,
+    isSpeaking: Boolean,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     avatarModifier: Modifier = Modifier
 ) {
+    val shadowElevation by animateDpAsState(
+        targetValue = if (isSpeaking) StreamMaxElevation else 0.dp,
+        animationSpec = tween(StreamElevationShadowAnimationDuration),
+        label = "shadowElevation"
+    )
+
     StreamLayout(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         streamView = streamView,
         showStreamView = showStreamView,
         onClick = onClick,
         avatar = {
+            val shadowColor = MaterialTheme.colorScheme.surfaceContainerLow
             val userInfos = remember(userInfo) { ImmutableList(listOfNotNull(userInfo)) }
             StreamAvatar(
                 userInfos = userInfos,
                 avatarCount = 1,
                 isMine = isMine,
-                modifier = avatarModifier.fillMaxSize()
+                isSpeaking = isSpeaking,
+                modifier = avatarModifier
+                    .drawWithContent {
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                listOf(shadowColor, Color.Transparent),
+                                radius = (size.width /2f) + shadowElevation.toPx()
+                            ),
+                            radius = (size.width /2f) + shadowElevation.toPx(),
+                        )
+                        drawContent()
+                    }
             )
         }
     )
@@ -84,7 +117,10 @@ internal fun StreamLayout(
         label = "stream view alpha"
     )
 
-    Box(modifier) {
+    Box(
+        modifier,
+        contentAlignment = Alignment.Center
+    ) {
         // Do not remove the stream view if forceDisplayAvatar is true,
         // otherwise the stream view's rendering state would be always StreamView.State.NotRendering,
         // since the view need to be attached in order to start rendering
@@ -126,7 +162,7 @@ internal fun StreamLayout(
                 .map { it is StreamView.State.Rendering }
                 .onEach { isRendering = it }
                 // If the view doesn't render within the timeout period, the avatar is displayed as a fallback.
-                .debounce { if (it) 0 else RenderingDebouceMillis }
+                .debounce { if (it) 0 else RenderingDebounceMillis }
                 .onEach { forceDisplayAvatar = !it }
                 .launchIn(this)
         }
@@ -143,6 +179,7 @@ internal fun StreamPreview() {
                 streamView = null,
                 showStreamView = true,
                 isMine = false,
+                isSpeaking = false,
                 userInfo = UserInfo("userId1", "John", ImmutableUri(Uri.EMPTY))
             )
         }
