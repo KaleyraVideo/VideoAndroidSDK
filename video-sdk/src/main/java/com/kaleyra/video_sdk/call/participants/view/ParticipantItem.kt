@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +45,7 @@ private val AvatarStroke = 6.dp
 private val SpeakingAvatarStroke = 2.dp
 
 private val ParticipantItemAvatarSize = 40.dp + AvatarStroke
+private val ParticipantItemHeight = 64.dp
 
 @Composable
 internal fun ParticipantItem(
@@ -66,7 +68,7 @@ internal fun ParticipantItem(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier.height(ParticipantItemHeight)
     ) {
         Avatar(
             username = stream.userInfo?.username ?: "",
@@ -84,7 +86,7 @@ internal fun ParticipantItem(
                     alpha = speakingAvatarStrokeAlpha
                 )
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
             Text(
                 text = if (stream.isMine) {
@@ -97,6 +99,7 @@ internal fun ParticipantItem(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = if ((stream.audio?.level ?: 0f) > 0f) FontWeight.SemiBold else FontWeight.Medium)
             )
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(
                     when {

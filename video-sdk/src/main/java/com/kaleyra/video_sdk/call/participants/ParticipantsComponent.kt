@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.participants
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -99,7 +98,7 @@ internal fun ParticipantsComponent(
                 if (pin) viewModel.pinStream(streamId)
                 else viewModel.unpinStream(streamId)
             }
-        } ,
+        },
         onKickParticipantClick = {},
         onCloseClick = onDismiss,
         isLargeScreen = isLargeScreen,
@@ -187,40 +186,45 @@ internal fun ParticipantsComponent(
             val bottom = contentPadding.calculateBottomPadding()
 
             Column(
-                modifier = Modifier
-                    .padding(start = start, top = top, end = end)
-                    .padding(horizontal = 38.dp)
+                modifier = Modifier.padding(start = start, top = top, end = end)
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_participants_component_change_layout),
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 32.dp, top = 16.dp)
                 )
                 Spacer(Modifier.height(8.dp))
                 StreamsLayoutSelector(
                     streamsLayout = streamsLayout,
-                    onLayoutClick = onLayoutClick
+                    onLayoutClick = onLayoutClick,
+                    modifier = Modifier
+                        .padding(horizontal = 40.dp)
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(32.dp))
             }
-            Box(Modifier.weight(1f)) {
+            Box(Modifier
+                .weight(1f)
+                .padding(horizontal = 32.dp)) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = start, end = end, bottom = bottom),
-                    contentPadding = PaddingValues(start = 38.dp, end = 38.dp, bottom = 38.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentPadding = PaddingValues(bottom = 32.dp, top = 8.dp),
                 ) {
                     item {
                         Text(
                             text = stringResource(id = R.string.kaleyra_participants_component_users_in_call),
                             style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
                         )
                     }
-
                     items(items = streams.value, key = { it.id }) { stream ->
                         ParticipantItem(
+                            modifier = Modifier.padding(start = 8.dp),
                             stream = stream,
                             isPinned = pinnedStreamsIds.value.contains(stream.id),
                             isAdminStream = adminsStreamsIds.value.contains(stream.id),
@@ -235,14 +239,16 @@ internal fun ParticipantsComponent(
 
                     if (invited.count() > 0) {
                         item {
-                            Spacer(Modifier.height(16.dp))
+                            Spacer(Modifier.height(32.dp))
                         }
 
                         item {
                             Text(
                                 text = stringResource(R.string.kaleyra_participants_component_users_invited),
                                 style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp)
                             )
                         }
 
@@ -250,7 +256,9 @@ internal fun ParticipantsComponent(
                             Text(
                                 text = username,
                                 style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 8.dp, bottom = 16.dp)
                             )
                         }
                     }

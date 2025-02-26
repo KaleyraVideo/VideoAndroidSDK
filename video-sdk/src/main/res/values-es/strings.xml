@@ -51,7 +51,7 @@
     <string name="kaleyra_stream_audio_level">Nivel de audio</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
     <string name="kaleyra_participants_component_users_in_call">Usuarios en llamada</string>
-    <string name="kaleyra_participants_component_users_invited">También Invitados</string>
+    <string name="kaleyra_participants_component_users_invited">Invitados</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fijar el stream</string>

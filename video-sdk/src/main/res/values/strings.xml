@@ -70,7 +70,7 @@
 
     <string name="kaleyra_participants_component_change_layout">Change Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Users in call</string>
-    <string name="kaleyra_participants_component_users_invited">Also invited</string>
+    <string name="kaleyra_participants_component_users_invited">Invited</string>
     <string name="kaleyra_participants_component_mosaic">Mosaic</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Pin stream</string>

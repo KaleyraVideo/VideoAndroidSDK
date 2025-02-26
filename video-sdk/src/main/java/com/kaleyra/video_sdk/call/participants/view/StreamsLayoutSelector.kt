@@ -37,10 +37,11 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 @Composable
 internal fun StreamsLayoutSelector(
     streamsLayout: StreamsLayout,
-    onLayoutClick: (streamsLayout: StreamsLayout) -> Unit
+    onLayoutClick: (streamsLayout: StreamsLayout) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().then(modifier),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         LayoutButton(

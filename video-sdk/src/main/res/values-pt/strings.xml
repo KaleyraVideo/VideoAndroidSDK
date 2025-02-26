@@ -318,7 +318,7 @@
     <string name="kaleyra_stream_audio_level">Nível de som</string>
     <string name="kaleyra_participants_component_change_layout">Mudar layout</string>
     <string name="kaleyra_participants_component_users_in_call">Usuários na chamada</string>
-    <string name="kaleyra_participants_component_users_invited">Também convidados</string>
+    <string name="kaleyra_participants_component_users_invited">Convidados</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fixar a live</string>
