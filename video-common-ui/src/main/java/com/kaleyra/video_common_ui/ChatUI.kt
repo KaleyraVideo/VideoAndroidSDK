@@ -144,7 +144,7 @@ class ChatUI(
          * @property recordingType Optional call recording type, default recording type is set to Call.Recording.Type.Never
          * @constructor
          */
-        class CreateCall(
+        data class CreateCall(
             val callType: Call.Type = Call.Type.audioVideo(),
             val maxDuration: Long? = 0,
             val recordingType: Call.Recording.Type? = Call.Recording.Type.Never
