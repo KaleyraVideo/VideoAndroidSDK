@@ -74,6 +74,8 @@ internal fun ParticipantItem(
             username = stream.userInfo?.username ?: "",
             uri = stream.userInfo?.image,
             size = ParticipantItemAvatarSize,
+            backgroundColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+            contentColor = if (stream.isMine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,
             borderColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             borderWidth = AvatarStroke,
             modifier = Modifier
