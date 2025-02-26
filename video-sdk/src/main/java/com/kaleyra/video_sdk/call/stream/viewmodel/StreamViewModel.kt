@@ -112,16 +112,16 @@ internal class StreamViewModel(
                 shouldShowStreamPreviewFlow,
                 call.toMyCameraVideoUi(),
                 call.toMyCameraStreamAudioUi(),
+                call.toOtherUserInfo(),
                 call.preferredType
-            ) { shouldShowStreamPreview, video, audio, preferredType ->
+            ) { shouldShowStreamPreview, video, audio, otherUserInfo, preferredType ->
                 if (shouldShowStreamPreview) {
-                    val usersPreview = call.toOtherUserInfo().first()
                     _uiState.update {
                         it.copy(
                             preview = StreamPreview(
                                 video = video,
                                 audio = audio,
-                                userInfos = usersPreview.toImmutableList(),
+                                userInfos = otherUserInfo.toImmutableList(),
                                 isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
                             )
                         )

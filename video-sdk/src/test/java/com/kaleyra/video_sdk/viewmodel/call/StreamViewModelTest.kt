@@ -510,6 +510,60 @@ class StreamViewModelTest {
         }
 
     @Test
+    fun `stream preview refreshes avatars on other user info update`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        val otherUserInfo = MutableStateFlow(
+            listOf(
+                UserInfo("userId1", "Alice", ImmutableUri(uriMock)),
+                UserInfo("userId2", "John", ImmutableUri(uriMock))
+            )
+        )
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
+            every { toOtherUserInfo() } returns otherUserInfo
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+        val expected1 = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(
+                    UserInfo("userId1", "Alice", ImmutableUri(uriMock)),
+                    UserInfo("userId2", "John", ImmutableUri(uriMock))
+                )
+            ),
+        )
+        assertEquals(expected1, viewModel.uiState.first().preview)
+
+        val uriMock2 = mockk<Uri>()
+        otherUserInfo.value = listOf(
+            UserInfo("userId1", "Maria", ImmutableUri(uriMock2)),
+            UserInfo("userId2", "Franco", ImmutableUri(uriMock2))
+        )
+        val expected2 = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(
+                    UserInfo("userId1", "Maria", ImmutableUri(uriMock2)),
+                    UserInfo("userId2", "Franco", ImmutableUri(uriMock2))
+                )
+            ),
+        )
+        assertEquals(expected2, viewModel.uiState.first().preview)
+    }
+
+    @Test
     fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() =
         runTest {
             every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1))
