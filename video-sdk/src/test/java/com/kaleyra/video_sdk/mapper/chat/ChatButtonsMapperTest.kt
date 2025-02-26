@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.mapper.ChatButtonsMapper.mapToChatActions
 import io.mockk.*
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -93,5 +94,24 @@ class ChatButtonsMapperTest {
         result.first { it is ChatAction.VideoCall }.onClick()
         assertEquals(3, duration)
         assertEquals(Call.Recording.Type.Automatic, recType)
+    }
+
+    @Test
+    fun createCallAction_createMultipleInstances_differentInstancesWithSameTimeAreEquals() {
+        val createCall1 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioVideo(), recordingType = Call.Recording.automatic())
+        val createCall2 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioVideo(), recordingType = Call.Recording.automatic())
+        assertEquals(createCall1, createCall2)
+
+        val createCall3 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioVideo())
+        val createCall4 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioVideo())
+        assertEquals(createCall3, createCall4)
+
+        val createCall5 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioUpgradable())
+        val createCall6 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioUpgradable())
+        assertEquals(createCall5, createCall6)
+
+        val createCall7 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioOnly())
+        val createCall8 = ChatUI.Action.CreateCall(preferredType = Call.PreferredType.audioOnly())
+        assertEquals(createCall7, createCall8)
     }
 }
