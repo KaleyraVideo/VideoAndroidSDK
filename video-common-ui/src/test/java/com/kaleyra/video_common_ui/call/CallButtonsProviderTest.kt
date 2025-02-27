@@ -107,7 +107,7 @@ class CallButtonsProviderTest {
 
     @Test
     fun testCallTypeUpdatedButtonsUpdated() = runTest {
-        val callType = MutableStateFlow(Call.Type.audioOnly())
+        val callType = MutableStateFlow<Call.Type>(Call.Type.audioOnly())
         val callUIButtonsProvider = DefaultCallUIButtonsProvider(
             callType = callType,
             callState = MutableStateFlow(Call.State.Disconnected),
