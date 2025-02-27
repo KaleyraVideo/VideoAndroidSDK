@@ -31,11 +31,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -59,13 +59,14 @@ internal class StreamViewModel(
     private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
     val userMessage: Flow<UserMessage> = userMessageChannel.receiveAsFlow()
 
+    private val isSingleStreamLayout: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     init {
         viewModelScope.launch {
             layoutController.switchToAutoMode()
 
             val conference = conference.first()
             val call = call.first()
-            val companyIdFlow = company.flatMapLatest { it.id }
 
             val defaultCameraIsBack = conference.settings.camera == Conference.Settings.Camera.Back
             layoutController.applySettings(StreamLayoutSettings(defaultCameraIsBack = defaultCameraIsBack))
@@ -79,14 +80,20 @@ internal class StreamViewModel(
 
             call
                 .toStreamsUi()
-                .onEach { streams ->
+                .map { streams ->
                     val controllerStreams = streams.filterNot { it.isLocalScreenShare() }
-                    layoutController.applyStreams(controllerStreams)
                     _uiState.update { state ->
                         state.copy(isScreenShareActive = controllerStreams.size != streams.size)
                     }
+                    controllerStreams
                 }
-                .launchIn(this)
+                .combine(isSingleStreamLayout) { streams, isSingleStreamLayout ->
+                    val layoutStreams = if (isSingleStreamLayout) {
+                        streams.sortedBy { it.isMine }.take(1)
+                    } else streams
+                    layoutController.applyStreams(layoutStreams)
+                }
+                .launchIn(viewModelScope)
 
             val callStateFlow = call.toCallStateUi()
             combine(
@@ -171,6 +178,19 @@ internal class StreamViewModel(
 
     fun clearPinnedStreams() {
         layoutController.clearPinnedStreams()
+    }
+
+    fun switchToPipStreamLayout() {
+        viewModelScope.launch {
+            val hasFeaturedStreams = layoutController.streamItems.first().any { it.isFeatured() }
+            // If it has any stream in featured state (featured, pinned or fullscreen) return
+            if (hasFeaturedStreams) return@launch
+            isSingleStreamLayout.value = true
+        }
+    }
+
+    fun switchToDefaultStreamLayout() {
+        isSingleStreamLayout.value = false
     }
 
     fun zoom(streamId: String) {

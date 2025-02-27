@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.pip.view
 
+import android.util.Log
 import android.util.Rational
 import android.util.Size
 import androidx.compose.animation.AnimatedVisibility
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -39,6 +41,9 @@ import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.sample
 
 internal val DefaultPipAspectRatio = Rational(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
@@ -61,6 +66,13 @@ internal fun PipStreamComponent(
             featuredStreamThreshold = 2,
             thumbnailStreamThreshold = 0
         )
+    }
+
+    DisposableEffect(Unit) {
+        viewModel.switchToPipStreamLayout()
+        onDispose {
+            viewModel.switchToDefaultStreamLayout()
+        }
     }
 
     PipStreamComponent(
@@ -86,9 +98,11 @@ internal fun PipStreamComponent(
     LaunchedEffect(aspectRatioView) {
         if (aspectRatioView == null) onPipAspectRatio.invoke(DefaultPipAspectRatio)
         else {
-            aspectRatioView.videoSize.collect { size ->
-                onPipAspectRatio.invoke(computePipAspectRatio(size))
-            }
+            aspectRatioView.videoSize
+                .collect { size ->
+                    onPipAspectRatio.invoke(computePipAspectRatio(size))
+                    Log.e("PipStreamComponent", "size: $size")
+                }
         }
     }
 

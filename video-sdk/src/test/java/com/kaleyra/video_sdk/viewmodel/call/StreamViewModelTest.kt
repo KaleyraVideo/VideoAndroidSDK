@@ -48,6 +48,7 @@ import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
+import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -1017,6 +1018,134 @@ class StreamViewModelTest {
         viewModel.zoom("streamId2")
 
         verify(exactly = 0) { videoStreamView.zoom() }
+    }
+    
+    @Test
+    fun switchToPipStreamLayout_withFeaturedStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withPinnedStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured.Pinned),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withFullscreenStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured.Fullscreen),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withNoFeaturedStream_singleStreamIsAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withNoFeaturedStream_remoteStreamHasHigherPriority() = runTest {
+        val stream1 = streamMock1.copy(isMine = true)
+        val stream2 = streamMock2.copy(isMine = false)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(stream1, stream2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", stream1),
+                StreamItem.Stream("2", stream2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(stream1, stream2)) }
+        verify(exactly = 1) { layoutController.applyStreams(listOf(stream2)) }
+    }
+
+    @Test
+    fun switchToDefaultStreamLayout_allStreamRestoredToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        viewModel.switchToDefaultStreamLayout()
+        advanceUntilIdle()
+
+        verifyOrder {
+            layoutController.applyStreams(listOf(streamMock1, streamMock2))
+            layoutController.applyStreams(listOf(streamMock1))
+            layoutController.applyStreams(listOf(streamMock1, streamMock2))
+        }
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {
