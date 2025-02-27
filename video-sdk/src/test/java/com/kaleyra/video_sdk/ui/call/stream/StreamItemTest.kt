@@ -113,12 +113,12 @@ class StreamItemTest {
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
-
+    
     @Test
-    fun streamAudioNull_muteIconDoesNotExists() {
+    fun streamAudioNull_muteIconIsDisplayed() {
         stream = stream.copy(audio = null)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
-        composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test

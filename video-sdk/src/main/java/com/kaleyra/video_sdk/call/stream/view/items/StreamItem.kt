@@ -181,7 +181,7 @@ internal fun StreamStatusIcons(
             StreamAudioLevelIcon(audioLevel = audioLevel)
         }
         when {
-            streamAudioUi == null -> Unit
+            streamAudioUi == null -> MicDisabledIcon()
             streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
             !streamAudioUi.isEnabled -> MicDisabledIcon()
         }
