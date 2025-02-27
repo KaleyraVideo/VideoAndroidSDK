@@ -33,9 +33,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -71,6 +74,7 @@ import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawRoundedCornerBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 internal val StreamItemPadding = 8.dp
@@ -282,46 +286,18 @@ fun StreamAudioLevelIcon(
     audioLevel: Float,
 ) {
 
-    val audioLevelMeterMultiplier by rememberInfiniteTransition().animateFloat(
-        initialValue = 0.25f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            repeatMode = RepeatMode.Reverse,
-            animation = tween(
-                durationMillis = StreamItemAudioLevelMeterAnimationDuration,
-                easing = remember { createRandomEasing() }
-            )
-        )
-    )
+    var leftAudioLevel by remember { mutableFloatStateOf(0f) }
+    var centerAudioLevel by remember { mutableFloatStateOf(0f) }
+    var rightAudioLevel by remember { mutableFloatStateOf(0f) }
 
-    val audioLevel = audioLevel * audioLevelMeterMultiplier
-
-    val leftMeterMultiplier by rememberInfiniteTransition().animateFloat(
-        initialValue = 0.45f,
-        targetValue = 0.72f,
-        animationSpec = infiniteRepeatable(
-            repeatMode = RepeatMode.Reverse,
-            animation = tween(
-                durationMillis = StreamItemAudioLevelMeterAnimationDuration,
-                easing = remember { createRandomEasing() }
-            )
-        )
-    )
-
-    val rightMeterMultiplier by remember {
-        derivedStateOf {
-            0.45f + 0.72f - leftMeterMultiplier
+    LaunchedEffect(audioLevel) {
+        while (true) {
+            delay(100)
+            leftAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f) * Random.nextFloatInRange(1.25f, 1.4f)).coerceAtMost(1f)
+            centerAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f)  * Random.nextFloatInRange(2f, 2.2f)).coerceAtMost(1f)
+            rightAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f)  * Random.nextFloatInRange(1.25f, 1.4f)).coerceAtMost(1f)
         }
     }
-
-    val animatedAudioLevel by animateFloatAsState(
-        targetValue = audioLevel,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "animatedAudioLevel"
-    )
 
     val audioLevelContentDescription = stringResource(R.string.kaleyra_stream_audio_level)
 
@@ -343,22 +319,17 @@ fun StreamAudioLevelIcon(
             val audioLevelMeterModifier = Modifier
                 .width(3.5.dp)
                 .fillMaxHeight()
-            val leftAudioLevel = animatedAudioLevel * leftMeterMultiplier
-            val rightAudioLevel = animatedAudioLevel * rightMeterMultiplier
 
             AudioLevelMeter(audioLevelMeterModifier, leftAudioLevel)
-            AudioLevelMeter(audioLevelMeterModifier, animatedAudioLevel)
+            AudioLevelMeter(audioLevelMeterModifier, centerAudioLevel)
             AudioLevelMeter(audioLevelMeterModifier, rightAudioLevel)
         }
     }
 }
 
-private fun createRandomEasing(): Easing {
-    val x1 = Random.nextFloat()
-    val y1 = Random.nextFloat()
-    val x2 = Random.nextFloat()
-    val y2 = Random.nextFloat()
-    return CubicBezierEasing(x1, y1, x2, y2)
+private fun Random.nextFloatInRange(min: Float, max: Float): Float {
+    require(min < max) { "min must be less than max" }
+    return nextFloat() * (max - min) + min
 }
 
 @Composable
@@ -369,7 +340,7 @@ fun AudioLevelMeter(
     Canvas(modifier = modifier) {
         val width = size.width
         val cornerRadius = CornerRadius(x = size.width, y = size.width)
-        val relativeHeight = size.height * level
+        val relativeHeight = (size.height * level).coerceAtLeast(size.width)
         val relativeTop = (size.height - relativeHeight) / 2f
         clipRect(
             left = 0f,
