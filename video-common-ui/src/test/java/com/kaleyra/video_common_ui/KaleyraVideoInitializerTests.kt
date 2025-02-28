@@ -37,7 +37,9 @@ class KaleyraVideoInitializerTests {
         mockkObject(KaleyraVideo)
         val contextMock = mockk<Context>(relaxed = true)
         every { contextMock.getSystemService(Context.NOTIFICATION_SERVICE) } returns mockk<NotificationManager>(relaxed = true)
-        ContextRetainer().create(mockk(relaxed = true))
+        mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns contextMock
+
     }
 
     @Test

@@ -450,9 +450,9 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
         hideKeyboard(this)
         val demoAppConfiguration = ConfigurationPrefsManager.getConfiguration(this)
         val type = when (demoAppConfiguration.defaultCallType) {
-            CallOptionsType.AUDIO_ONLY       -> Call.Type.audioOnly()
-            CallOptionsType.AUDIO_UPGRADABLE -> Call.Type.audioUpgradable()
-            CallOptionsType.AUDIO_VIDEO      -> Call.Type.audioVideo()
+            CallOptionsType.AUDIO_ONLY       -> Call.Type.AudioOnly
+            CallOptionsType.AUDIO_UPGRADABLE -> Call.Type.AudioUpgradable
+            CallOptionsType.AUDIO_VIDEO      -> Call.Type.AudioVideo
         }
 
         val configuration = DefaultConfigurationManager.getDefaultCallConfiguration()
