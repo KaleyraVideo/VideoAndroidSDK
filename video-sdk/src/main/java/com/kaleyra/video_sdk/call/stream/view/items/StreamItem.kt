@@ -3,15 +3,8 @@ package com.kaleyra.video_sdk.call.stream.view.items
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -20,32 +13,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -78,14 +69,15 @@ import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 internal val StreamItemPadding = 8.dp
-internal val StreamItemAudioLevelBorderWidth = 3.dp
-internal val StreamItemAudioLevelAnimationDuration = 500
-internal val StreamItemAudioLevelMeterAnimationDuration = 250
+internal val StreamItemSpeakingBorderWidth = 3.dp
+
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
 internal val AudioLevelIconTag = "AudioLevelIconTag"
 internal val AudioLevelBackgroundTag = "AudioLevelBackgroundTag"
 
+private val SpeakingAnimationDuration = 500
+private val StopSpeakingAnimationDelay = 1000
 
 @Composable
 internal fun StreamItem(
@@ -96,37 +88,41 @@ internal fun StreamItem(
     statusIconsAlignment: Alignment = Alignment.BottomEnd,
     onClick: (() -> Unit)? = null
 ) {
-    val audioLevelTweenAnimation = tween<Float>(StreamItemAudioLevelAnimationDuration)
-    val audioLevelStrokeColor = MaterialTheme.colorScheme.primary
-    val audioLevelStrokeAlpha by animateFloatAsState(
-        targetValue = stream.audio?.level ?: 0f,
-        animationSpec = audioLevelTweenAnimation,
+    val isSpeaking = remember(stream) { stream.isAudioLevelAboveZero() }
+    val isVideoEnabled = remember(stream) { stream.isVideoEnabled() }
+
+    val borderColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    val borderAlpha by animateFloatAsState(
+        targetValue = if (isSpeaking) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = SpeakingAnimationDuration,
+            delayMillis = if (isSpeaking) 0 else StopSpeakingAnimationDelay
+        ),
         label = "animatedAudioLevelStrokeAlpha"
     )
-    val isAudioLevelAboveZero = remember(stream) { stream.isAudioLevelAboveZero() }
-    val isVideoEnabled = remember(stream) { stream.isVideoEnabled() }
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .testTag(StreamItemTag)
             .drawRoundedCornerBorder(
-                width = if (isVideoEnabled) StreamItemAudioLevelBorderWidth else 0.dp,
-                color = audioLevelStrokeColor,
-                alpha = audioLevelStrokeAlpha,
+                width = if (isVideoEnabled) StreamItemSpeakingBorderWidth else 0.dp,
+                color = borderColor,
+                alpha = borderAlpha,
                 cornerRadius = CornerRadius(StreamComponentDefaults.CornerRadius.toPixel),
             )
     ) {
-
+        // Background when speaking
         AnimatedVisibility(
-            visible = !isVideoEnabled && isAudioLevelAboveZero,
-            enter = fadeIn(audioLevelTweenAnimation),
-            exit = fadeOut(audioLevelTweenAnimation)
+            visible = !isVideoEnabled && isSpeaking,
+            enter = fadeIn(tween(SpeakingAnimationDuration)),
+            exit = fadeOut(tween(SpeakingAnimationDuration, StopSpeakingAnimationDelay))
         ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primary.copy(alpha = .16f))
-                .testTag(AudioLevelBackgroundTag)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = borderColor.copy(alpha = .12f))
+                    .testTag(AudioLevelBackgroundTag)
             )
         }
 
@@ -138,7 +134,7 @@ internal fun StreamItem(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
                 userInfo = stream.userInfo,
                 isMine = stream.isMine,
-                isSpeaking = isAudioLevelAboveZero,
+                isSpeaking = isSpeaking,
                 showStreamView = stream.video?.view != null && isVideoEnabled,
                 onClick = onClick
             )
@@ -149,6 +145,7 @@ internal fun StreamItem(
             streamVideoUi = stream.video,
             fullscreen = fullscreen,
             mine = stream.isMine,
+            isSpeaking = isSpeaking,
             modifier = Modifier
                 .align(statusIconsAlignment)
                 .padding(StreamItemPadding)
@@ -171,6 +168,7 @@ internal fun StreamStatusIcons(
     streamVideoUi: VideoUi?,
     fullscreen: Boolean,
     mine: Boolean,
+    isSpeaking: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -181,9 +179,8 @@ internal fun StreamStatusIcons(
         streamVideoUi?.takeIf { it.isEnabled }?.zoomLevelUi?.prettyPrint()?.takeIf { it.isNotBlank() }?.let {
             ZoomIcon(text = it)
         }
-        streamAudioUi?.level?.takeIf { it > 0f }?.let { audioLevel ->
-            StreamAudioLevelIcon(audioLevel = audioLevel)
-        }
+        StreamAudioLevelIcon(isSpeaking = isSpeaking, mine = mine)
+
         when {
             streamAudioUi == null -> MicDisabledIcon()
             streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
@@ -283,23 +280,23 @@ private fun FullscreenIcon(modifier: Modifier = Modifier) {
 @Composable
 fun StreamAudioLevelIcon(
     modifier: Modifier? = Modifier,
-    audioLevel: Float,
+    isSpeaking: Boolean,
+    mine: Boolean
 ) {
-
-    var leftAudioLevel by remember { mutableFloatStateOf(0f) }
-    var centerAudioLevel by remember { mutableFloatStateOf(0f) }
-    var rightAudioLevel by remember { mutableFloatStateOf(0f) }
-
-    LaunchedEffect(audioLevel) {
-        while (true) {
-            delay(100)
-            leftAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f) * Random.nextFloatInRange(1.25f, 1.4f)).coerceAtMost(1f)
-            centerAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f)  * Random.nextFloatInRange(2f, 2.2f)).coerceAtMost(1f)
-            rightAudioLevel = (Random.nextFloatInRange(0.3f, 0.7f)  * Random.nextFloatInRange(1.25f, 1.4f)).coerceAtMost(1f)
-        }
-    }
+//    var showAudioLevel by remember { mutableStateOf(false) }
+//
+//    if (!isSpeaking) {
+//        LaunchedEffect(Unit) {
+//            delay(1000)
+//            showAudioLevel = false
+//        }
+//    } else {
+//        showAudioLevel = true
+//    }
 
     val audioLevelContentDescription = stringResource(R.string.kaleyra_stream_audio_level)
+    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val contentColor = if (mine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
     Surface(
         modifier = Modifier
@@ -307,23 +304,14 @@ fun StreamAudioLevelIcon(
             .then(modifier!!)
             .semantics { contentDescription = audioLevelContentDescription }
             .testTag(AudioLevelIconTag),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.surfaceVariant,
+        color = backgroundColor,
+        contentColor = contentColor,
         shape = RoundedCornerShape(4.dp),
     ) {
-        Row(modifier = Modifier
-            .padding(4.dp)
-            .fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-            val audioLevelMeterModifier = Modifier
-                .width(3.5.dp)
-                .fillMaxHeight()
-
-            AudioLevelMeter(audioLevelMeterModifier, leftAudioLevel)
-            AudioLevelMeter(audioLevelMeterModifier, centerAudioLevel)
-            AudioLevelMeter(audioLevelMeterModifier, rightAudioLevel)
-        }
+        AudioVisualizer(
+            enable = isSpeaking,
+            lineCount = 3
+        )
     }
 }
 
@@ -333,27 +321,65 @@ private fun Random.nextFloatInRange(min: Float, max: Float): Float {
 }
 
 @Composable
-fun AudioLevelMeter(
-    modifier: Modifier,
-    level: Float,
-    meterColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+fun AudioVisualizer(
+    modifier: Modifier = Modifier,
+    enable: Boolean = true,
+    lineCount: Int = 3,
+    color: Color = LocalContentColor.current
+) {
+    val random = remember { Random(System.currentTimeMillis()) }
+    var reset by remember { mutableStateOf(false) }
+
+    LaunchedEffect(reset) {
+        delay(100)
+        reset = !reset
+    }
+
+    val animatedHeights = mutableListOf<State<Float>>()
+    val heights = remember(reset) {
+        mutableListOf<Float>().apply {
+            val seed = random.nextFloatInRange(0.3f, 0.7f)
+            repeat(lineCount) { index ->
+                val multiplier  = if (index % 2 == 0) random.nextFloatInRange(1.25f, 1.4f) else random.nextFloatInRange(2f, 2.2f)
+                this += (seed * multiplier).coerceAtMost(1f)
+            }
+        }
+    }
+    val heightMultiplier by animateFloatAsState(
+        targetValue = if (enable) 1f else 0f,
+        animationSpec = tween(500, easing = LinearEasing),
+        finishedListener = {
+
+        }
+    )
+
+    repeat(lineCount) { index ->
+        animatedHeights += animateFloatAsState(
+            targetValue = heights[index],
+            animationSpec = tween(durationMillis = 80)
+        )
+    }
+
     Canvas(modifier = modifier) {
-        val width = size.width
-        val cornerRadius = CornerRadius(x = size.width, y = size.width)
-        val relativeHeight = (size.height * level).coerceAtLeast(size.width)
-        val relativeTop = (size.height - relativeHeight) / 2f
-        clipRect(
-            left = 0f,
-            top = relativeTop,
-            right = width,
-            bottom = relativeHeight + relativeTop
-        ) {
-            drawRoundRect(
-                topLeft = Offset(x = 0f, y = relativeTop),
-                color = meterColor,
-                size = Size(width, relativeHeight),
-                cornerRadius = cornerRadius
+        val barWidthFloat = 3.5.dp.toPx()
+        val gapWidthFloat = 4.dp.toPx()
+        val count = (size.width / (barWidthFloat + gapWidthFloat)).toInt().coerceAtMost(lineCount)
+
+        val animatedVolumeWidth = count * (barWidthFloat + gapWidthFloat)
+        var startOffset = (size.width - animatedVolumeWidth) / 2
+
+        val barMaxHeight = (size.height / 2f) * heightMultiplier
+
+        repeat(count) { index ->
+            val barHeight = animatedHeights[index].value * barMaxHeight
+            drawLine(
+                color = color,
+                start = Offset(startOffset, center.y - barHeight / 2),
+                end = Offset(startOffset, center.y + barHeight / 2),
+                strokeWidth = barWidthFloat,
+                cap = StrokeCap.Round,
             )
+            startOffset += barWidthFloat + gapWidthFloat
         }
     }
 }
