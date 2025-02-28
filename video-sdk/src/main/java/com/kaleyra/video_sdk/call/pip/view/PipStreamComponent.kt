@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.pip.view
 
-import android.util.Log
 import android.util.Rational
 import android.util.Size
 import androidx.compose.animation.AnimatedVisibility
@@ -22,6 +21,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -41,11 +41,15 @@ import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamStatusIcons
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.preCallStreamViewSettings
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.flow.transform
 
-internal val DefaultPipAspectRatio = Rational(9, 16)
+internal val PipStreamViewSizeSampleTime = 250L
+internal val DefaultPipSize = Size(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
 
 internal val MaxPipStreamAvatarSize = 72.dp
@@ -82,6 +86,7 @@ internal fun PipStreamComponent(
     )
 }
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @Composable
 internal fun PipStreamComponent(
     uiState: StreamUiState,
@@ -96,14 +101,21 @@ internal fun PipStreamComponent(
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(aspectRatioView) {
-        if (aspectRatioView == null) onPipAspectRatio.invoke(DefaultPipAspectRatio)
-        else {
-            aspectRatioView.videoSize
-                .collect { size ->
-                    onPipAspectRatio.invoke(computePipAspectRatio(size))
-                    Log.e("PipStreamComponent", "size: $size")
-                }
-        }
+        var lastEmittedAspectRatio = 0f
+        snapshotFlow { aspectRatioView }
+            .sample(PipStreamViewSizeSampleTime)
+            .flatMapLatest { it?.videoSize ?: flowOf(DefaultPipSize) }
+            .transform { size ->
+                // Compute the aspect ratio of the stream view.
+                val aspectRatio = size.width.toFloat() / size.height
+                // Round the aspect ratio to two decimal places.
+                val roundedAspectRatio = (aspectRatio * 100).toInt() / 100f
+                // Check if the rounded aspect ratio is different from the last emitted one.
+                // This prevents emitting duplicate or redundant aspect ratio changes.
+                if (roundedAspectRatio != lastEmittedAspectRatio) emit(size)
+                lastEmittedAspectRatio = roundedAspectRatio
+            }
+            .collect { size -> onPipAspectRatio.invoke(computePipAspectRatio(size)) }
     }
 
     // Ensures a smooth layout transition between the default screen and PiP mode.

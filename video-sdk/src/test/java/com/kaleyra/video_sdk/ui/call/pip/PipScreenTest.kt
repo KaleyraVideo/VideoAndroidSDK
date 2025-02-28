@@ -4,7 +4,6 @@ import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
@@ -14,7 +13,7 @@ import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
 import com.kaleyra.video_sdk.call.pip.PipScreen
-import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipSize
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponentTag
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
@@ -97,6 +96,6 @@ class PipScreenTest {
         var aspectRatio: Rational? = null
         composeTestRule.setContent { PipScreen(onPipAspectRatio = { aspectRatio = it }) }
 
-        assertEquals(DefaultPipAspectRatio, aspectRatio)
+        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatio)
     }
 }

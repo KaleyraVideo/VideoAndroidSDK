@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.pip
 
 import android.util.Rational
+import android.util.Size
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,24 +11,30 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipSize
 import com.kaleyra.video_sdk.call.pip.view.PipStreamComponent
+import com.kaleyra.video_sdk.call.pip.view.PipStreamViewSizeSampleTime
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
+import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
+import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.user.UserInfo
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -45,14 +52,14 @@ class PipStreamComponentTest {
 
     private var streamUiState by mutableStateOf(StreamUiState())
 
-    private var aspectRatio: Rational = Rational(1, 1)
+    private var aspectRatios = mutableListOf<Rational>()
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
             PipStreamComponent(
                 uiState = streamUiState,
-                onPipAspectRatio = { aspectRatio = it }
+                onPipAspectRatio = { aspectRatios += it }
             )
         }
     }
@@ -60,6 +67,7 @@ class PipStreamComponentTest {
     @After
     fun tearDown() {
         streamUiState = StreamUiState()
+        aspectRatios.clear()
     }
 
     @Test
@@ -96,23 +104,48 @@ class PipStreamComponentTest {
             streamItems = listOf(streamItem1, streamItem2).toImmutableList()
         )
 
-        assertEquals(DefaultPipAspectRatio, aspectRatio)
+        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatios.last())
     }
 
-//    No way found to run this test on instrumented test
-//    @Test
-//    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
-//        val view = spyk(VideoStreamView(composeTestRule.activity)) {
-//            every { videoSize } returns MutableStateFlow(Size(500, 300))
-//        }
-//
-//        val video = VideoUi(id = "videoId", view = ImmutableView(view))
-//        val stream = defaultStreamItem(username = "mario", video = video)
-//        streamUiState = StreamUiState(streams = listOf(stream).toImmutableList())
-//        composeTestRule.waitForIdle()
-//
-//        assertEquals(Rational(5, 3), aspectRatio)
-//    }
+    //    No way found to run this test on instrumented test
+    @Test
+    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
+        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+            every { videoSize } returns MutableStateFlow(Size(500, 300))
+        }
+        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+        val stream = defaultStreamItem(username = "mario", video = video)
+        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
+
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
+
+        assertEquals(Rational(5, 3), aspectRatios.last())
+    }
+
+    @Test
+    fun singleStream_rationalAspectRatioIsSampled() {
+        val videSizeFlow = MutableStateFlow(Size(500, 300))
+        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+            every { videoSize } returns videSizeFlow
+        }
+        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+        val stream = defaultStreamItem(username = "mario", video = video)
+        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
+
+        videSizeFlow.value = Size(300, 200)
+
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(100)
+
+        videSizeFlow.value = Size(500, 500)
+
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
+
+        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatios[0])
+        assertEquals(Rational(1, 1), aspectRatios[1])
+    }
 
     @Test
     fun streamsAreExactlyAtMaxCapacity_moreParticipantItemDoesNotExists() {

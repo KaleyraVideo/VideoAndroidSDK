@@ -22,7 +22,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
-import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipSize
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
@@ -552,6 +552,6 @@ internal class CallScreenTest: CallScreenBaseTest() {
         )
         composeTestRule.waitForIdle()
 
-        assertEquals(DefaultPipAspectRatio, aspectRatio)
+        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatio)
     }
 }
