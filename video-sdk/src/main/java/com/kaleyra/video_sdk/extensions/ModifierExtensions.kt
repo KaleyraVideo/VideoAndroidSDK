@@ -55,6 +55,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -77,8 +78,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
-import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
-import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -319,6 +318,35 @@ internal object ModifierExtensions {
                 style = Stroke(width = width.toPx()),
                 alpha = alpha
             )
+        }
+    }
+
+    /**
+     * Draws a radial gradient shadow around the composable element.
+     *
+     * This modifier draws a radial gradient that fades from the specified [color] at the center
+     * to transparent at the edges. The gradient's radius is calculated based on the width of the
+     * composable element and the provided [radius] parameter.
+     *
+     * @param color The color of the shadow at its center.
+     * @param radius The additional radius to extend the shadow beyond the element's bounds.
+     *               A larger radius will result in a more diffused shadow.
+     * @return A [Modifier] that draws the radial gradient shadow.
+     */
+    internal fun Modifier.drawGradientShadow(
+        color: Color,
+        radius: Dp
+    ): Modifier {
+        return drawWithContent {
+            val gradientRadius = (this.size.width / 2f) + radius.toPx()
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(color, Color.Transparent),
+                    radius = gradientRadius
+                ),
+                radius = gradientRadius,
+            )
+            drawContent()
         }
     }
 

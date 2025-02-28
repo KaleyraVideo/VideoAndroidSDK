@@ -24,9 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
@@ -42,6 +39,7 @@ import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.common.user.UserInfo
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawGradientShadow
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -57,6 +55,7 @@ private val MinStreamAvatarSize = 28.dp
 
 private val SpeakingAvatarSizeFactor = 1.34f
 private val SpeakingAnimationDuration = 750
+private val StopSpeakingAnimationDelay = 1000
 private val SpeakingShadowRadius = 30.dp
 
 @Composable
@@ -76,43 +75,52 @@ internal fun Stream(
         showStreamView = showStreamView,
         onClick = onClick,
         avatar = {
-            val color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            DetectBooleanChange(isSpeaking) { isSpeaking, isChanged ->
+                val color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
-            val size = computeStreamAvatarSize(maxWidth, maxHeight)
-            val targetSize = size.times(if (isSpeaking) SpeakingAvatarSizeFactor else 1f)
-            val animatedSize by animateDpAsState(
-                targetValue = targetSize,
-                animationSpec = tween(SpeakingAnimationDuration),
-                label = "animatedSize"
-            )
+                val size = remember(maxWidth, maxHeight) { computeStreamAvatarSize(maxWidth, maxHeight) }
+                val targetSize = size * if (isSpeaking) SpeakingAvatarSizeFactor else 1f
+                val animationSpec = tween<Dp>(
+                    durationMillis = SpeakingAnimationDuration,
+                    delayMillis = if (isSpeaking || !isChanged) 0 else StopSpeakingAnimationDelay
+                )
 
-            val shadowColor = MaterialTheme.colorScheme.surfaceContainerLow
-            val shadowRadius by animateDpAsState(
-                targetValue = if (isSpeaking) SpeakingShadowRadius else 0.dp,
-                animationSpec = tween(SpeakingAnimationDuration),
-                label = "shadowElevation"
-            )
+                val animatedSize by animateDpAsState(
+                    targetValue = targetSize,
+                    animationSpec = animationSpec,
+                    label = "animatedSize"
+                )
 
-            Avatar(
-                username = userInfo?.username ?: "",
-                uri = userInfo?.image,
-                size = animatedSize,
-                backgroundColor = color,
-                modifier = avatarModifier
-                    .drawWithContent {
-                        val radius = (this.size.width / 2f) + shadowRadius.toPx()
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                listOf(shadowColor, Color.Transparent),
-                                radius = radius
-                            ),
-                            radius = radius,
-                        )
-                        drawContent()
-                    }
-            )
+                val shadowColor = MaterialTheme.colorScheme.surfaceContainerLow
+                val shadowRadius by animateDpAsState(
+                    targetValue = if (isSpeaking) SpeakingShadowRadius else 0.dp,
+                    animationSpec = animationSpec,
+                    label = "shadowElevation"
+                )
+
+                Avatar(
+                    username = userInfo?.username ?: "",
+                    uri = userInfo?.image,
+                    size = animatedSize,
+                    backgroundColor = color,
+                    modifier = avatarModifier.drawGradientShadow(
+                        radius = shadowRadius,
+                        color = shadowColor
+                    )
+                )
+            }
         }
     )
+}
+
+@Composable
+internal fun DetectBooleanChange(
+    value: Boolean,
+    content: @Composable (value: Boolean, isChanged: Boolean) -> Unit
+) {
+    var previousValue by remember { mutableStateOf(false) }
+    content(value, value != previousValue)
+    previousValue = value
 }
 
 @Composable
