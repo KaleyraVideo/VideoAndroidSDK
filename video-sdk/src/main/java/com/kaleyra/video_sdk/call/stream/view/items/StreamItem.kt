@@ -66,7 +66,7 @@ internal val StreamItemSpeakingBorderWidth = 3.dp
 
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
-internal val AudioLevelIconTag = "AudioLevelIconTag"
+internal val AudioVisualizerTag = "AudioLevelIconTag"
 internal val AudioLevelBackgroundTag = "AudioLevelBackgroundTag"
 
 private val SpeakingAnimationDuration = 500
@@ -293,7 +293,7 @@ fun StreamAudioLevelIcon(
             modifier = modifier
                 .size(24.dp)
                 .semantics { contentDescription = audioLevelContentDescription }
-                .testTag(AudioLevelIconTag),
+                .testTag(AudioVisualizerTag),
             color = backgroundColor,
             contentColor = contentColor,
             shape = RoundedCornerShape(4.dp),

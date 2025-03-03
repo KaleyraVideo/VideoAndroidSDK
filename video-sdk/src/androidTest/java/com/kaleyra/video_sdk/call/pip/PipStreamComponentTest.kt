@@ -21,6 +21,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.AudioVisualizerTag
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -296,6 +297,19 @@ class PipStreamComponentTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("mario").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewHasAudioLevel_audioVisualizerIsNotDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(
+                audio = AudioUi(id = "id", isEnabled = true, level = 1.0f),
+                userInfos = ImmutableList()
+            )
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     private fun defaultStreamItem(

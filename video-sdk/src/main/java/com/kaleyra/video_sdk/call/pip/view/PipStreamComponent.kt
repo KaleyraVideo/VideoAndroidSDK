@@ -52,6 +52,8 @@ internal val PipStreamViewSizeSampleTime = 250L
 internal val DefaultPipSize = Size(9, 16)
 internal const val PipStreamComponentTag = "PipStreamComponentTag"
 
+internal val PipFadeInDelay = 500
+
 internal val MaxPipStreamAvatarSize = 72.dp
 
 @Composable
@@ -126,7 +128,7 @@ internal fun PipStreamComponent(
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(tween(500)),
+        enter = fadeIn(tween(PipFadeInDelay)),
         exit = fadeOut()
     ) {
         BoxWithConstraints(
@@ -154,6 +156,7 @@ internal fun PipStreamComponent(
                     uiState.preview.video,
                     fullscreen = false,
                     mine = true,
+                    isSpeaking = false,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)

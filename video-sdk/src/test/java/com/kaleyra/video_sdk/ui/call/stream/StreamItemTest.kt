@@ -23,7 +23,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.items.AudioLevelBackgroundTag
-import com.kaleyra.video_sdk.call.stream.view.items.AudioLevelIconTag
+import com.kaleyra.video_sdk.call.stream.view.items.AudioVisualizerTag
 import com.kaleyra.video_sdk.call.stream.view.items.StopSpeakingAudioAnimationDelay
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
@@ -407,70 +407,70 @@ class StreamItemTest {
     @Test
     fun audioNullAndVideoNotEnabled_audioVisualizerNotExists() {
         stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = false))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioNullAndVideoEnabled_audioVisualizerNotExists() {
         stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = true))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioNullAndVideoNull_audioVisualizerNotExists() {
         stream = stream.copy(audio = null, video = null)
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioLevelGreaterThanZeroAndVideoNotEnabled_audioVisualizerDisplayed() {
         stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0.5f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
     }
 
     @Test
     fun audioLevelGreaterThanZeroAndVideoEnabled_audioVisualizerDisplayed() {
         stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0.5f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
     }
 
     @Test
     fun audioLevelGreaterThanZeroAndVideoNull_audioVisualizerDisplayed() {
         stream = stream.copy(video = null, audio = AudioUi("a1", level = 0.5f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
     }
 
     @Test
     fun audioLevelZeroAndVideoNotEnabled_audioVisualizerDoesNotExists() {
         stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioLevelZeroAndVideoEnabled_audioVisualizerDoesNotExists() {
         stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioLevelZeroAndVideoNull_audioVisualizerDoesNotExists() {
         stream = stream.copy(video = null, audio = AudioUi("a1", level = 0f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     @Test
     fun audioLevelBecomesZero_audioVisualizerIsNotDisplayedAfterDelay() {
         stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0.5f))
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
 
         composeTestRule.mainClock.autoAdvance = false
 
         stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = .0f))
 
         composeTestRule.mainClock.advanceTimeBy(StopSpeakingAudioAnimationDelay)
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
 
         composeTestRule.mainClock.advanceTimeBy(50)
-        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 }

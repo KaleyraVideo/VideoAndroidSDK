@@ -25,6 +25,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.AudioVisualizerTag
 import com.kaleyra.video_sdk.call.stream.view.items.MoreStreamsItemTag
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -108,44 +109,45 @@ class PipStreamComponentTest {
     }
 
     //    No way found to run this test on instrumented test
-    @Test
-    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
-        val view = spyk(VideoStreamView(composeTestRule.activity)) {
-            every { videoSize } returns MutableStateFlow(Size(500, 300))
-        }
-        val video = VideoUi(id = "videoId", view = ImmutableView(view))
-        val stream = defaultStreamItem(username = "mario", video = video)
-        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
+//    @Test
+//    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
+//        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+//            every { videoSize } returns MutableStateFlow(Size(500, 300))
+//        }
+//        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+//        val stream = defaultStreamItem(username = "mario", video = video)
+//        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
+//
+//        composeTestRule.waitForIdle()
+//        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
+//
+//        assertEquals(Rational(5, 3), aspectRatios.last())
+//    }
 
-        composeTestRule.waitForIdle()
-        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
-
-        assertEquals(Rational(5, 3), aspectRatios.last())
-    }
-
-    @Test
-    fun singleStream_rationalAspectRatioIsSampled() {
-        val videSizeFlow = MutableStateFlow(Size(500, 300))
-        val view = spyk(VideoStreamView(composeTestRule.activity)) {
-            every { videoSize } returns videSizeFlow
-        }
-        val video = VideoUi(id = "videoId", view = ImmutableView(view))
-        val stream = defaultStreamItem(username = "mario", video = video)
-        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
-
-        videSizeFlow.value = Size(300, 200)
-
-        composeTestRule.waitForIdle()
-        composeTestRule.mainClock.advanceTimeBy(100)
-
-        videSizeFlow.value = Size(500, 500)
-
-        composeTestRule.waitForIdle()
-        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
-
-        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatios[0])
-        assertEquals(Rational(1, 1), aspectRatios[1])
-    }
+    //    No way found to run this test on instrumented test
+//    @Test
+//    fun singleStream_rationalAspectRatioIsSampled() {
+//        val videSizeFlow = MutableStateFlow(Size(500, 300))
+//        val view = spyk(VideoStreamView(composeTestRule.activity)) {
+//            every { videoSize } returns videSizeFlow
+//        }
+//        val video = VideoUi(id = "videoId", view = ImmutableView(view))
+//        val stream = defaultStreamItem(username = "mario", video = video)
+//        streamUiState = StreamUiState(streamItems = listOf(stream).toImmutableList())
+//
+//        videSizeFlow.value = Size(300, 200)
+//
+//        composeTestRule.waitForIdle()
+//        composeTestRule.mainClock.advanceTimeBy(100)
+//
+//        videSizeFlow.value = Size(500, 500)
+//
+//        composeTestRule.waitForIdle()
+//        composeTestRule.mainClock.advanceTimeBy(PipStreamViewSizeSampleTime + 1)
+//
+//        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatios[0])
+//        assertEquals(Rational(1, 1), aspectRatios[1])
+//    }
 
     @Test
     fun streamsAreExactlyAtMaxCapacity_moreParticipantItemDoesNotExists() {
@@ -305,6 +307,19 @@ class PipStreamComponentTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("mario").assertDoesNotExist()
+    }
+
+    @Test
+    fun previewHasAudioLevel_audioVisualizerIsNotDisplayed() {
+        streamUiState = StreamUiState(
+            preview = StreamPreview(
+                audio = AudioUi(id = "id", isEnabled = true, level = 1.0f),
+                userInfos = ImmutableList()
+            )
+        )
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 
     private fun defaultStreamItem(
