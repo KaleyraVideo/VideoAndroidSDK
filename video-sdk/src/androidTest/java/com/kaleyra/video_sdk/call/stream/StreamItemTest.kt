@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.stream
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,16 +19,17 @@ import androidx.compose.ui.test.onParent
 import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.assertBottomPositionInRootIsEqualTo
 import com.kaleyra.video_sdk.assertRightPositionInRootIsEqualTo
+import com.kaleyra.video_sdk.call.screen.LocalIsInTestMode
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.view.items.AudioLevelBackgroundTag
+import com.kaleyra.video_sdk.call.stream.view.items.AudioLevelIconTag
+import com.kaleyra.video_sdk.call.stream.view.items.StopSpeakingAudioAnimationDelay
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
 import com.kaleyra.video_sdk.call.stream.view.items.ZoomIconTestTag
-import com.kaleyra.video_sdk.utils.MainDispatcherRule
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -49,12 +51,14 @@ class StreamItemTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            StreamItem(
-                stream = stream,
-                fullscreen = fullscreen,
-                pin = pin,
-                statusIconsAlignment = statusIconsAlignment
-            )
+            CompositionLocalProvider(LocalIsInTestMode provides true) {
+                StreamItem(
+                    stream = stream,
+                    fullscreen = fullscreen,
+                    pin = pin,
+                    statusIconsAlignment = statusIconsAlignment
+                )
+            }
         }
     }
 
@@ -344,44 +348,126 @@ class StreamItemTest {
     }
 
     @Test
-    fun audioNull_audioLevelBackgroundNotExists() {
-        stream = stream.copy(audio = null)
+    fun audioNullAndVideoNotEnabled_audioLevelBackgroundNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = false))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
     }
 
     @Test
-    fun audioNotEnabled_audioLevelBackgroundNotExists() {
-        stream = stream.copy(video = null, audio = AudioUi("a1", isEnabled = false, level = 0.5f))
+    fun audioNullAndVideoEnabled_audioLevelBackgroundNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = true))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
     }
 
     @Test
-    fun audioEnabledLevelGreaterThanZero_videoNull_audioLevelBackgroundDisplayed() {
-        stream = stream.copy(video = null, audio = AudioUi("a1", isEnabled = true, level = 0.5f))
+    fun audioNullAndVideoNull_audioLevelBackgroundNotExists() {
+        stream = stream.copy(audio = null, video = null)
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelGreaterThanZeroAndVideoNotEnabled_audioLevelBackgroundDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0.5f))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertIsDisplayed()
     }
 
     @Test
-    fun audioEnabled_videoNotEnabled_audioLevelBackgroundDisplayed() {
-        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", isEnabled = true, level = .5f))
+    fun audioLevelGreaterThanZeroAndVideoEnabled_audioLevelBackgroundDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0.5f))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelGreaterThanZeroAndVideoNull_audioLevelBackgroundDisplayed() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", level = 0.5f))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertIsDisplayed()
     }
 
     @Test
-    fun audioEnabled_videoEnabled_audioLevelBackgroundNotDisplayed() {
-        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isEnabled = true, level = .5f))
+    fun audioLevelZeroAndVideoNotEnabled_audioLevelBackgroundDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0f))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
     }
 
     @Test
-    fun audioNotEnabledWithLevelGreaterThanZero_audioLevelBackgroundNotDisplayed() {
-        stream = stream.copy(audio = AudioUi("a1", isEnabled = false, level = .5f))
+    fun audioLevelZeroAndVideoEnabled_audioLevelBackgroundDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0f))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
     }
 
     @Test
-    fun audioNotEnabled_videoEnabled_audioLevelBackgroundNotExists() {
-        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isEnabled = false))
+    fun audioLevelZeroAndVideoNull_audioLevelBackgroundDoesNotExists() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", level = 0f))
         composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNullAndVideoNotEnabled_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = false))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNullAndVideoEnabled_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = true))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNullAndVideoNull_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = null)
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelGreaterThanZeroAndVideoNotEnabled_audioVisualizerDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0.5f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioLevelGreaterThanZeroAndVideoEnabled_audioVisualizerDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0.5f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioLevelGreaterThanZeroAndVideoNull_audioVisualizerDisplayed() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", level = 0.5f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioLevelZeroAndVideoNotEnabled_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", level = 0f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelZeroAndVideoEnabled_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelZeroAndVideoNull_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", level = 0f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioLevelBecomesZero_audioVisualizerIsNotDisplayedAfterDelay() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = 0.5f))
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+
+        composeTestRule.mainClock.autoAdvance = false
+
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", level = .0f))
+
+        composeTestRule.mainClock.advanceTimeBy(StopSpeakingAudioAnimationDelay)
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertIsDisplayed()
+
+        composeTestRule.mainClock.advanceTimeBy(50)
+        composeTestRule.onNodeWithTag(AudioLevelIconTag).assertDoesNotExist()
     }
 }

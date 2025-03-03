@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video.conference.StreamView
 import com.kaleyra.video.conference.VideoStreamView
+import com.kaleyra.video_sdk.call.screen.LocalIsInTestMode
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
@@ -178,7 +179,7 @@ internal fun StreamLayout(
         }
     }
 
-    if (streamView != null) {
+    if (streamView != null && !LocalIsInTestMode.current) {
         LaunchedEffect(streamView) {
             streamView.value.state
                 .map { it is StreamView.State.Rendering }

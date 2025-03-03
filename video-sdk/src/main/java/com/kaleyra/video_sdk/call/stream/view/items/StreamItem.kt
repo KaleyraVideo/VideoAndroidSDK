@@ -290,9 +290,8 @@ fun StreamAudioLevelIcon(
 
     if (showAudioVisualizer) {
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .size(24.dp)
-                .then(modifier)
                 .semantics { contentDescription = audioLevelContentDescription }
                 .testTag(AudioLevelIconTag),
             color = backgroundColor,

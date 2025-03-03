@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -85,6 +86,8 @@ internal const val LargeScreenMaxActions = 7
 
 private const val ActivityFinishDelay = 1100L
 private const val ActivityFinishErrorDelay = 1500L
+
+internal val LocalIsInTestMode = staticCompositionLocalOf { false }
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
