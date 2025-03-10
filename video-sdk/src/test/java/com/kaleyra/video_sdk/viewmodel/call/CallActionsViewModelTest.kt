@@ -362,7 +362,7 @@ class CallActionsViewModelTest {
     fun testCallActionsUiState_virtualBackgroundKeepsStateAfterCallActionsUpdate() = runTest {
         val actions = MutableStateFlow(listOf(VirtualBackgroundAction(), HangUpAction()))
         every { callMock.toCallActions() } returns actions
-        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
+        every { callMock.hasActiveVirtualBackground() } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -810,7 +810,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions() } returns MutableStateFlow(listOf(
             VirtualBackgroundAction(isToggled = false)
         ))
-        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(true)
+        every { callMock.hasActiveVirtualBackground() } returns MutableStateFlow(true)
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)

@@ -111,9 +111,7 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.None)
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
-        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.None, uiStateBackground)
-        assertEquals(false, isVirtualBackgroundEnabled)
         verify { myVideoMock.tryApplyEffect(Effect.Video.None) }
     }
 
@@ -123,9 +121,7 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
-        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.Blur("blurId"), uiStateBackground)
-        assertEquals(true, isVirtualBackgroundEnabled)
         verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Blur)
@@ -139,9 +135,7 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.Image("imageId"))
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
-        val isVirtualBackgroundEnabled = VirtualBackgroundViewModel.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.Image("imageId"), uiStateBackground)
-        assertEquals(true, isVirtualBackgroundEnabled)
         verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Image)

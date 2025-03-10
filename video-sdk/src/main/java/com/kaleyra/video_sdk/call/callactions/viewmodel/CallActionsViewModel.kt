@@ -31,6 +31,7 @@ import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
@@ -135,7 +136,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .isSharingScreen()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isVirtualBackgroundEnabledFlow = VirtualBackgroundViewModel.isVirtualBackgroundEnabled
+            val isVirtualBackgroundEnabledFlow = call
+                .hasActiveVirtualBackground()
+                .stateIn(this, SharingStarted.Eagerly, false)
 
             val isLocalParticipantInitializedFlow = call
                 .isMeParticipantInitialized()
