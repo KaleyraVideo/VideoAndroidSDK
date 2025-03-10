@@ -63,7 +63,6 @@ import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitia
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
@@ -122,11 +121,11 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             val isMyMicEnabledFlow = call
                 .isMyMicEnabled()
-                .stateIn(this, SharingStarted.Eagerly, call.preferredType.value.isAudioEnabled())
+                .stateIn(this, SharingStarted.Eagerly, call.type.value.isAudioEnabled())
 
             val isMyCameraEnabledFlow = call
                 .isMyCameraEnabled()
-                .stateIn(this, SharingStarted.Eagerly, call.preferredType.value.isVideoEnabled())
+                .stateIn(this, SharingStarted.Eagerly, call.type.value.isVideoEnabled())
 
             val hasUsbCameraFlow = call
                 .hasUsbCamera()
@@ -169,12 +168,12 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                     when (action) {
                         is MicAction -> action.copy(
                             isToggled = !isMyMicEnabled,
-                            isEnabled = call.preferredType.value.hasAudio() && isMeParticipantsInitialed && !isCallEnded
+                            isEnabled = call.type.value.hasAudio() && isMeParticipantsInitialed && !isCallEnded
                         )
 
                         is CameraAction -> action.copy(
                             isToggled = !isMyCameraEnabled,
-                            isEnabled = call.preferredType.value.hasVideo() && isMeParticipantsInitialed && !isCallEnded
+                            isEnabled = call.type.value.hasVideo() && isMeParticipantsInitialed && !isCallEnded
                         )
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
@@ -194,7 +193,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                             isEnabled = isCallActive && !isCallEnded
                         )
 
-                        is VirtualBackgroundAction -> action.copy(isToggled = call.preferredType.value.hasVideo() && isVirtualBackgroundEnabled, isEnabled = call.preferredType.value.hasVideo() && !isCallEnded)
+                        is VirtualBackgroundAction -> action.copy(isToggled = call.type.value.hasVideo() && isVirtualBackgroundEnabled, isEnabled = call.type.value.hasVideo() && !isCallEnded)
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
                         is HangUpAction -> action.copy(isEnabled = !isCallEnded)
