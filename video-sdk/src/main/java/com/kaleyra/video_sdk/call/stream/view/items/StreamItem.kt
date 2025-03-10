@@ -49,7 +49,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.utils.isAudioLevelAboveZero
+import com.kaleyra.video_sdk.call.stream.utils.isSpeaking
 import com.kaleyra.video_sdk.call.stream.utils.isVideoEnabled
 import com.kaleyra.video_sdk.call.stream.view.audio.AudioVisualizer
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
@@ -82,7 +82,7 @@ internal fun StreamItem(
     statusIconsAlignment: Alignment = Alignment.BottomEnd,
     onClick: (() -> Unit)? = null
 ) {
-    val isSpeaking = remember(stream) { stream.isAudioLevelAboveZero() }
+    val isSpeaking = remember(stream) { stream.isSpeaking() }
     val isVideoEnabled = remember(stream) { stream.isVideoEnabled() }
 
     val borderColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
@@ -339,7 +339,7 @@ internal fun StreamItemPreview() {
                     id = "id",
                     userInfo = UserInfo("userId", "Viola J. Allen", ImmutableUri(Uri.EMPTY)),
                     video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`),
-                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true, level = 0.99f),
+                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true, isSpeaking = true),
                 ),
                 fullscreen = true,
                 pin = true

@@ -21,12 +21,12 @@ internal fun StreamUi.isVideoEnabled(): Boolean = video != null && video.isEnabl
 
 
 /**
- * Checks if the [StreamUi] has audio level greater than 0f.
+ * Checks if the [StreamUi] has audio with a level greater than zero
  *
  * @receiver The [StreamUi] instance to check.
- * @return `true` if the stream has an [AudioUi] object with a level greater than 0f, `false` otherwise.
+ * @return `true` if the stream has an [AudioUi] object with parameter isSpeaking set to true, false otherwise
  */
-internal fun StreamUi.isAudioLevelAboveZero(): Boolean = (audio?.level ?: 0f) > 0f
+internal fun StreamUi.isSpeaking(): Boolean = audio?.isSpeaking == true
 
 
 /**

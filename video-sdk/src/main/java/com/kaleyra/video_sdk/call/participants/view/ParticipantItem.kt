@@ -60,8 +60,10 @@ internal fun ParticipantItem(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isSpeaking = stream.audio?.isSpeaking == true
+
     val speakingAvatarStrokeAlpha by animateFloatAsState(
-        targetValue = stream.audio?.level ?: 0f,
+        targetValue = if (isSpeaking) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
         label = "animatedAudioLevelStrokeAlpha"
     )
@@ -99,7 +101,7 @@ internal fun ParticipantItem(
                 } else stream.userInfo?.username ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = if ((stream.audio?.level ?: 0f) > 0f) FontWeight.SemiBold else FontWeight.Medium)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = if (isSpeaking) FontWeight.SemiBold else FontWeight.Medium)
             )
             Spacer(Modifier.height(4.dp))
             Text(

@@ -27,6 +27,6 @@ val streamUiMock = StreamUi(
     id = "streamId",
     userInfo = UserInfo("userId", "username", ImmutableUri()),
     isMine = false,
-    audio = AudioUi(id = "1", isEnabled = false, isMutedForYou = false, level = 1f),
+    audio = AudioUi(id = "1", isEnabled = false, isMutedForYou = false, isSpeaking = true),
     video = VideoUi(id = "1", view = null, zoomLevelUi = null, isEnabled = false, isScreenShare = false, pointers = ImmutableList(emptyList()))
 )

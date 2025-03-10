@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.stream.model.core
 
-import androidx.annotation.FloatRange
 import androidx.compose.runtime.Immutable
 
 /**
@@ -8,7 +7,7 @@ import androidx.compose.runtime.Immutable
  * @property id String audio ui identifier
  * @property isEnabled Boolean flag identifying if the audio ui is enabled, true if enabled, false otherwise
  * @property isMutedForYou Boolean flag identifying if the audio ui is muted for you, true if muted, false otherwise
- * @property level Float parameter indicating the volume level of the audio component, ranging from 0f for the lowest volume to 1f for the maximum volume
+ * @property isSpeaking Boolean parameter indicating that the owner of the audio ui instance, represented by a call participant, is speaking or not
  * @constructor
  */
 @Immutable
@@ -16,5 +15,5 @@ data class AudioUi(
     val id: String,
     val isEnabled: Boolean = false,
     val isMutedForYou: Boolean = false,
-    @FloatRange(from = 0.0, to = 1.0) val level: Float = 0f
+    val isSpeaking: Boolean = false
 )
