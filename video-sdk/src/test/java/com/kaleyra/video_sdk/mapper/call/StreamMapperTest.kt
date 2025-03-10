@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.mapper.call
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.*
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
@@ -134,6 +135,7 @@ class StreamMapperTest {
     fun setUp() {
         mockkObject(ContactDetailsManager)
         // only needed for toCallStateUi function
+        every { audioMock.speaking } returns MutableStateFlow(false)
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
         with(callParticipantsMock) {
             every { me } returns participantMeMock
@@ -589,6 +591,7 @@ class StreamMapperTest {
         val newStreamAudioMock = mockk<Input.Audio>(relaxed = true) {
             every { id } returns "audioId2"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { speaking } returns MutableStateFlow(false)
         }
         modifiedStreamAudioFlow.value = newStreamAudioMock
         val newActual = result.first()

@@ -16,14 +16,20 @@
 
 package com.kaleyra.video_sdk.ui.chat
 
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
@@ -37,12 +43,8 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.ui.performScrollUp
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

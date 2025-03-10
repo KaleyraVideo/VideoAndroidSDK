@@ -313,7 +313,7 @@ class PipStreamComponentTest {
     fun previewHasAudioLevel_audioVisualizerIsNotDisplayed() {
         streamUiState = StreamUiState(
             preview = StreamPreview(
-                audio = AudioUi(id = "id", isEnabled = true, level = 1.0f),
+                audio = AudioUi(id = "id", isEnabled = true, isSpeaking = true),
                 userInfos = ImmutableList()
             )
         )

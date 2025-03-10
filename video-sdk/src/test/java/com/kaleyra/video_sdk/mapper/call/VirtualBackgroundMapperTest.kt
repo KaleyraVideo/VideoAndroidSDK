@@ -26,7 +26,6 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.hasVirtualBackground
-import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toCurrentVirtualBackgroundUi
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgroundsUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
@@ -130,22 +129,6 @@ class VirtualBackgroundMapperTest {
         every { effectsMock.available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(factor = 1f)))
 
         val actual = callMock.hasVirtualBackground().first()
-        Assert.assertEquals(true, actual)
-    }
-
-    @Test
-    fun cameraEffectIsNone_isVirtualBackgroundEnabled_false() = runTest {
-        every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.None)
-        
-        val actual = callMock.isVirtualBackgroundEnabled().first()
-        Assert.assertEquals(false, actual)
-    }
-
-    @Test
-    fun cameraHasABackgroundEffect_isVirtualBackgroundEnabled_true() = runTest {
-        every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur(factor = 1f))
-        
-        val actual = callMock.isVirtualBackgroundEnabled().first()
         Assert.assertEquals(true, actual)
     }
 }

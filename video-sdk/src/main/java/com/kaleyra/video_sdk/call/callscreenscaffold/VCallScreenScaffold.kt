@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.callscreenscaffold
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetDefaults
 import com.kaleyra.video_sdk.call.bottomsheet.CallBottomSheetNestedScrollConnection
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
@@ -141,7 +144,7 @@ internal fun VCallScreenScaffold(
     var sheetContentPosition by remember(windowSizeClass.widthSizeClass) { mutableStateOf(DpSize(0.dp, 0.dp)) }
     var brandLogoPosition by remember { mutableStateOf(DpSize(0.dp, 0.dp)) }
     var hasSufficientSpaceForBrandLogo by remember(windowSizeClass.widthSizeClass) { mutableStateOf(true) }
-
+    
     if (sheetPanelContent != null) {
         LaunchedEffect(Unit) {
             sheetState.collapse()
@@ -206,7 +209,7 @@ internal fun VCallScreenScaffold(
                 CallBottomSheetLayout(
                     modifier = Modifier
                         .onSizeChanged {
-                            val height = it.height.dp
+                            val height = it.height.div(density.density).dp
                             bottomSheetPadding = height - (sheetDragContentHeight.takeIf { sheetDragHandle != null } ?: 0.dp)
                         }
                         .padding(start = startPadding, bottom = bottomPadding, end = endPadding)

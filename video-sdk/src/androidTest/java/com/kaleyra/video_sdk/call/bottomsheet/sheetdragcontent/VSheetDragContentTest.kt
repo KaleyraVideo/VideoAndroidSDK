@@ -61,7 +61,7 @@ class VSheetDragContentTest {
     private val callActionsViewModel = mockk<CallActionsViewModel>(relaxed = true) {
         every { uiState } returns callActionsUiState
     }
-    
+
     @Test
     fun userClicksHangUp_hangUpInvoked() {
         composeTestRule.setContent {
@@ -385,7 +385,7 @@ class VSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                screenShareViewModel = mockk(relaxed = true),
+                screenShareViewModel = mockk(),
                 callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
                 isLargeScreen = false,
                 onAskInputPermissions = {},
@@ -440,7 +440,7 @@ class VSheetDragContentTest {
         composeTestRule.setContent {
             HSheetDragContent(
                 viewModel = callActionsViewModel,
-                screenShareViewModel = mockk(),
+                screenShareViewModel = mockk(relaxed = true),
                 callActions = ImmutableList(listOf(ScreenShareAction.WholeDevice())),
                 isLargeScreen = false,
                 onAskInputPermissions = { isAskingInputPermission = true },

@@ -36,7 +36,7 @@ class KaleyraVideoInitializerTests {
         every { NotificationManager.cancelAll() } returns Unit
         mockkObject(KaleyraVideo)
         val contextMock = mockk<Context>(relaxed = true)
-        every { contextMock.getSystemService(Context.NOTIFICATION_SERVICE) } returns mockk<NotificationManager>(relaxed = true)
+        every { contextMock.getSystemService(Context.NOTIFICATION_SERVICE) } returns mockk<android.app.NotificationManager>(relaxed = true)
         mockkObject(ContextRetainer)
         every { ContextRetainer.context } returns contextMock
 

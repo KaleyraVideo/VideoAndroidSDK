@@ -37,6 +37,7 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
@@ -71,7 +72,6 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
-import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.isVirtualBackgroundEnabled
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
@@ -145,12 +145,11 @@ class CallActionsViewModelTest {
         every { callMock.isMyCameraEnabled() } returns MutableStateFlow(true)
         every { callMock.hasUsbCamera() } returns MutableStateFlow(false)
         every { callMock.isSharingScreen() } returns MutableStateFlow(false)
-        every { VirtualBackgroundViewModel.isVirtualBackgroundEnabled } returns MutableStateFlow(false)
         every { callMock.isMeParticipantInitialized() } returns MutableStateFlow(true)
         every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.Muted)
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected)
-        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        every { callMock.type } returns MutableStateFlow(Call.Type.audioVideo())
         every { callMock.inputs.release(any()) } returns Unit
         every { callMock.hasCameraUsageRestriction() } returns MutableStateFlow(false)
         every { callMock.participants } returns MutableStateFlow(mockk(relaxed = true))
@@ -687,7 +686,7 @@ class CallActionsViewModelTest {
     @Test
     fun isMyCameraEnabledNotEmitting_preferredTypeAudioUpgradable_uiStateCameraNotToggled() = runTest {
         every { callMock.isMyCameraEnabled() } returns flowOf()
-        every { callMock.preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
+        every { callMock.type } returns MutableStateFlow(Call.Type.audioUpgradable())
         every { callMock.toCallActions() } returns MutableStateFlow(listOf(CameraAction(isToggled = false)))
 
         viewModel = spyk(CallActionsViewModel{
@@ -827,7 +826,7 @@ class CallActionsViewModelTest {
         every { callMock.toCallActions() } returns MutableStateFlow(listOf(
             VirtualBackgroundAction(isToggled = true)
         ))
-        every { callMock.isVirtualBackgroundEnabled() } returns flowOf(false)
+        every { callMock.hasActiveVirtualBackground() } returns flowOf(false)
 
         viewModel = spyk(CallActionsViewModel{
             mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
@@ -1173,7 +1172,7 @@ class CallActionsViewModelTest {
         verify(exactly = 1) { audio.tryDisable() }
         assertEquals(MicMessage.Disabled, inputMessage)
     }
-    
+
     @Test
     fun tryDisableMicFails_inputMessageNotSent() = runTest {
         val activity = mockk<FragmentActivity>()
@@ -1913,6 +1912,7 @@ class CallActionsViewModelTest {
             every { userId } returns "companyId"
         }
         val participantsMock = mockk<CallParticipants> {
+            every { me } returns  mockk(relaxed = true)
             every { others } returns listOf(otherParticipant, companyParticipant)
         }
         every { callMock.toCallActions() } returns MutableStateFlow(listOf(ChatAction()))

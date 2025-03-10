@@ -4,7 +4,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.utils.hasVideo
-import com.kaleyra.video_sdk.call.stream.utils.isAudioLevelAboveZero
+import com.kaleyra.video_sdk.call.stream.utils.isSpeaking
 import com.kaleyra.video_sdk.call.stream.utils.isVideoEnabled
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.call.stream.utils.isMyCameraStream
@@ -19,77 +19,61 @@ import org.junit.Test
 class StreamUIExtensionsTest {
 
     @Test
-    fun `isAudioLevelAboveZero returns true when audio level is above zero`() {
+    fun `isSpeaking returns true when audio level is above zero`() {
         val streamUi = StreamUi(
             id = "1",
             audio = AudioUi(
                 id = "a1",
                 isEnabled = true,
-                level = 0.5f
+                isSpeaking = true
             )
         )
 
-        val result = streamUi.isAudioLevelAboveZero()
+        val result = streamUi.isSpeaking()
 
         Assert.assertTrue(result)
     }
 
     @Test
-    fun `isAudioLevelAboveZero returns false when audio level is zero`() {
+    fun `isSpeaking returns false when audio level is zero`() {
         val streamUi = StreamUi(
             id = "1",
             audio = AudioUi(
                 id = "a1",
                 isEnabled = true,
-                level = 0f
+                isSpeaking = false
             )
         )
 
-        val result = streamUi.isAudioLevelAboveZero()
+        val result = streamUi.isSpeaking()
 
         Assert.assertFalse(result)
     }
 
     @Test
-    fun `isAudioLevelAboveZero returns false when audio is null`() {
+    fun `isSpeaking returns false when audio is null`() {
         val streamUi = StreamUi(
             id = "1",
             audio = null
         )
 
-        val result = streamUi.isAudioLevelAboveZero()
+        val result = streamUi.isSpeaking()
 
         Assert.assertFalse(result)
     }
 
     @Test
-    fun `isAudioLevelAboveZero returns false when audio level is negative`() {
-        val streamUi = StreamUi(
-            id = "1",
-            audio = AudioUi(
-                id = "a1",
-                isEnabled = true,
-                level = -0.5f
-            )
-        )
-
-        val result = streamUi.isAudioLevelAboveZero()
-
-        Assert.assertFalse(result)
-    }
-
-    @Test
-    fun `isAudioLevelAboveZero returns true when audio is disabled and audio level is above zero`() {
+    fun `isSpeaking returns true when audio is disabled and audio level is above zero`() {
         val streamUi = StreamUi(
             id = "1",
             audio = AudioUi(
                 id = "a1",
                 isEnabled = false,
-                level = 0.5f
+                isSpeaking = true
             )
         )
 
-        val result = streamUi.isAudioLevelAboveZero()
+        val result = streamUi.isSpeaking()
 
         Assert.assertTrue(result)
     }
@@ -219,5 +203,4 @@ class StreamUIExtensionsTest {
         val streamUi = StreamUi("1", UserInfo("userId", "user1", ImmutableUri(mockk())), isMine = false, video = VideoUi("1", isScreenShare = true))
         Assert.assertFalse(streamUi.isRemoteCameraStream())
     }
-
 }

@@ -34,7 +34,9 @@ class AudioMapperTest {
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
 
-    private val audioMock = mockk<Input.Audio>(relaxed = true)
+    private val audioMock = mockk<Input.Audio>(relaxed = true) {
+        every { speaking } returns MutableStateFlow(false)
+    }
 
     @Before
     fun setUp() {
@@ -87,10 +89,10 @@ class AudioMapperTest {
 
     @Test
     fun audioLevel1f_mapToAudioUi_AudioUiLevel1f() = runTest {
-        every { audioMock.level } returns MutableStateFlow(1f)
+        every { audioMock.speaking } returns MutableStateFlow(true)
         val flow = MutableStateFlow(audioMock)
         val audioUi = flow.mapToAudioUi().first()
-        Assert.assertEquals(1f, audioUi!!.level)
+        Assert.assertTrue(audioUi!!.isSpeaking)
     }
 
     @Test
@@ -101,6 +103,7 @@ class AudioMapperTest {
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { speaking } returns MutableStateFlow(false)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID
@@ -121,6 +124,7 @@ class AudioMapperTest {
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.None)
+            every { speaking } returns MutableStateFlow(false)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID
@@ -141,6 +145,7 @@ class AudioMapperTest {
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Local)
+            every { speaking } returns MutableStateFlow(false)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID
@@ -161,6 +166,7 @@ class AudioMapperTest {
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Remote)
+            every { speaking } returns MutableStateFlow(false)
         }
         val stream = mockk<Stream.Mutable>(relaxed = true) {
             every { id } returns CAMERA_STREAM_ID
