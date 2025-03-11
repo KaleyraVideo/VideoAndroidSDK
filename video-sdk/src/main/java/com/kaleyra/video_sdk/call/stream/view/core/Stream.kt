@@ -51,12 +51,13 @@ import kotlinx.coroutines.flow.onEach
 internal const val StreamViewTestTag = "StreamViewTestTag"
 internal const val RenderingDebounceMillis = 1000L
 
+internal val SpeakingAnimationDuration = 300
+internal val StopSpeakingStreamAnimationDelay = 2000
+
 private val MaxStreamAvatarSize = 96.dp
 private val MinStreamAvatarSize = 28.dp
 
 private val SpeakingAvatarSizeFactor = 1.34f
-private val SpeakingAnimationDuration = 750
-private val StopSpeakingAnimationDelay = 1000
 private val SpeakingShadowRadius = 30.dp
 
 @Composable
@@ -76,52 +77,40 @@ internal fun Stream(
         showStreamView = showStreamView,
         onClick = onClick,
         avatar = {
-            DetectBooleanChange(isSpeaking) { isSpeaking, isChanged ->
-                val color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            val color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
-                val size = remember(maxWidth, maxHeight) { computeStreamAvatarSize(maxWidth, maxHeight) }
-                val targetSize = size * if (isSpeaking) SpeakingAvatarSizeFactor else 1f
-                val animationSpec = tween<Dp>(
-                    durationMillis = SpeakingAnimationDuration,
-                    delayMillis = if (isSpeaking || !isChanged) 0 else StopSpeakingAnimationDelay
-                )
+            val size = remember(maxWidth, maxHeight) { computeStreamAvatarSize(maxWidth, maxHeight) }
+            val targetSize = size * if (isSpeaking) SpeakingAvatarSizeFactor else 1f
+            val animationSpec = tween<Dp>(
+                durationMillis = SpeakingAnimationDuration,
+                delayMillis = if (isSpeaking) 0 else StopSpeakingStreamAnimationDelay
+            )
 
-                val animatedSize by animateDpAsState(
-                    targetValue = targetSize,
-                    animationSpec = animationSpec,
-                    label = "animatedSize"
-                )
+            val animatedSize by animateDpAsState(
+                targetValue = targetSize,
+                animationSpec = animationSpec,
+                label = "animatedSize"
+            )
 
-                val shadowColor = MaterialTheme.colorScheme.surfaceContainerLow
-                val shadowRadius by animateDpAsState(
-                    targetValue = if (isSpeaking) SpeakingShadowRadius else 0.dp,
-                    animationSpec = animationSpec,
-                    label = "shadowElevation"
-                )
+            val shadowColor = MaterialTheme.colorScheme.surfaceContainerLow
+            val shadowRadius by animateDpAsState(
+                targetValue = if (isSpeaking) SpeakingShadowRadius else 0.dp,
+                animationSpec = animationSpec,
+                label = "shadowElevation"
+            )
 
-                Avatar(
-                    username = userInfo?.username ?: "",
-                    uri = userInfo?.image,
-                    size = animatedSize,
-                    backgroundColor = color,
-                    modifier = avatarModifier.drawGradientShadow(
-                        radius = shadowRadius,
-                        color = shadowColor
-                    )
+            Avatar(
+                username = userInfo?.username ?: "",
+                uri = userInfo?.image,
+                size = animatedSize,
+                backgroundColor = color,
+                modifier = avatarModifier.drawGradientShadow(
+                    radius = shadowRadius,
+                    color = shadowColor
                 )
-            }
+            )
         }
     )
-}
-
-@Composable
-internal fun DetectBooleanChange(
-    value: Boolean,
-    content: @Composable (value: Boolean, isChanged: Boolean) -> Unit
-) {
-    var previousValue by remember { mutableStateOf(false) }
-    content(value, value != previousValue)
-    previousValue = value
 }
 
 @Composable

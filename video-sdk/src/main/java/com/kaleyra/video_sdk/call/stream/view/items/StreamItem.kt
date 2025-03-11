@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,6 +53,8 @@ import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.utils.isSpeaking
 import com.kaleyra.video_sdk.call.stream.utils.isVideoEnabled
 import com.kaleyra.video_sdk.call.stream.view.audio.AudioVisualizer
+import com.kaleyra.video_sdk.call.stream.view.core.SpeakingAnimationDuration
+import com.kaleyra.video_sdk.call.stream.view.core.StopSpeakingStreamAnimationDelay
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
@@ -62,16 +65,15 @@ import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.delay
 
 internal val StreamItemPadding = 8.dp
-internal val StreamItemSpeakingBorderWidth = 3.dp
+internal val StreamItemSpeakingBorderWidth = 5.dp
 
 internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
 internal val AudioVisualizerTag = "AudioLevelIconTag"
 internal val AudioLevelBackgroundTag = "AudioLevelBackgroundTag"
 
-private val SpeakingAnimationDuration = 500
-private val StopSpeakingAnimationDelay = 1000
-internal val StopSpeakingAudioAnimationDelay = 1500L
+internal val SpeakingStreamItemAnimationDuration = SpeakingAnimationDuration
+internal val StopSpeakingStreamItemAnimationDelay = StopSpeakingStreamAnimationDelay
 
 @Composable
 internal fun StreamItem(
@@ -89,8 +91,8 @@ internal fun StreamItem(
     val borderAlpha by animateFloatAsState(
         targetValue = if (isSpeaking) 1f else 0f,
         animationSpec = tween(
-            durationMillis = SpeakingAnimationDuration,
-            delayMillis = if (isSpeaking) 0 else StopSpeakingAnimationDelay
+            durationMillis = SpeakingStreamItemAnimationDuration,
+            delayMillis = if (isSpeaking) 0 else StopSpeakingStreamItemAnimationDelay
         ),
         label = "animatedAudioLevelStrokeAlpha"
     )
@@ -109,8 +111,8 @@ internal fun StreamItem(
         // Background when speaking
         AnimatedVisibility(
             visible = !isVideoEnabled && isSpeaking,
-            enter = fadeIn(tween(SpeakingAnimationDuration)),
-            exit = fadeOut(tween(SpeakingAnimationDuration, StopSpeakingAnimationDelay))
+            enter = fadeIn(tween(SpeakingStreamItemAnimationDuration)),
+            exit = fadeOut(tween(SpeakingStreamItemAnimationDuration, StopSpeakingStreamItemAnimationDelay))
         ) {
             Box(
                 modifier = Modifier
@@ -280,7 +282,7 @@ fun StreamAudioLevelIcon(
     var showAudioVisualizer by remember { mutableStateOf(false) }
 
     LaunchedEffect(isSpeaking) {
-        if (!isSpeaking) delay(StopSpeakingAudioAnimationDelay)
+        if (!isSpeaking) delay(StopSpeakingStreamItemAnimationDelay.toLong())
         showAudioVisualizer = isSpeaking
     }
 
@@ -299,8 +301,8 @@ fun StreamAudioLevelIcon(
             shape = RoundedCornerShape(4.dp),
         ) {
             AudioVisualizer(
-                barWidth = 3.5.dp,
-                barSpacing = 3.dp,
+                barWidth = 4.dp,
+                barSpacing = 2.dp,
                 barCount = 3,
                 enable = isSpeaking
             )

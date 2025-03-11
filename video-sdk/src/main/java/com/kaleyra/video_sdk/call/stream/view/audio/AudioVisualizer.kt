@@ -4,6 +4,8 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,11 +19,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 internal val AudioVisualizerHeightAnimationDuration = 80
 internal val AudioVisualizerEnableAnimationDuration = 500
+
+internal val AudioVisualizerBarHeightRatio = .5f
 
 @Composable
 internal fun AudioVisualizer(
@@ -70,7 +75,7 @@ internal fun AudioVisualizer(
         val animatedVolumeWidth = barWidthFloat * count + barSpacingFloat * (count - 1)
         var startOffset = (size.width - animatedVolumeWidth) / 2 + barWidthFloat / 2
 
-        val barMaxHeight = (size.height / 2f) * heightMultiplier
+        val barMaxHeight = (size.height / 2f) * AudioVisualizerBarHeightRatio * heightMultiplier
 
         repeat(count) { index ->
             val barHeight = animatedHeights[index].value * barMaxHeight

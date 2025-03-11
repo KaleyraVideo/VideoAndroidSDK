@@ -35,6 +35,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
+import com.kaleyra.video_sdk.call.stream.view.core.StopSpeakingStreamAnimationDelay
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
@@ -46,6 +47,8 @@ private val SpeakingAvatarStroke = 2.dp
 
 private val ParticipantItemAvatarSize = 40.dp + AvatarStroke
 private val ParticipantItemHeight = 64.dp
+
+internal val StopSpeakingParticipantAnimationDelay = StopSpeakingStreamAnimationDelay
 
 @Composable
 internal fun ParticipantItem(
@@ -64,7 +67,9 @@ internal fun ParticipantItem(
 
     val speakingAvatarStrokeAlpha by animateFloatAsState(
         targetValue = if (isSpeaking) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = tween(
+            durationMillis = 200,
+            delayMillis = if (!isSpeaking) StopSpeakingParticipantAnimationDelay else 0),
         label = "animatedAudioLevelStrokeAlpha"
     )
 
