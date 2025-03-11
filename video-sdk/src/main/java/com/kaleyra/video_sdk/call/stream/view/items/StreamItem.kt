@@ -2,18 +2,15 @@ package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
 import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -109,18 +107,17 @@ internal fun StreamItem(
             )
     ) {
         // Background when speaking
-        AnimatedVisibility(
-            visible = !isVideoEnabled && isSpeaking,
-            enter = fadeIn(tween(SpeakingStreamItemAnimationDuration)),
-            exit = fadeOut(tween(SpeakingStreamItemAnimationDuration, StopSpeakingStreamItemAnimationDelay))
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = borderColor.copy(alpha = .12f))
-                    .testTag(AudioLevelBackgroundTag)
-            )
-        }
+        val shouldDisplaySpeakingBackground = remember(isVideoEnabled, isSpeaking) { !isVideoEnabled && isSpeaking }
+        val animatedColor by animateColorAsState(
+            targetValue = if (shouldDisplaySpeakingBackground) borderColor.copy(alpha = .12f) else Color.Transparent,
+            animationSpec = tween(SpeakingStreamItemAnimationDuration, if (shouldDisplaySpeakingBackground) 0 else StopSpeakingStreamItemAnimationDelay)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = animatedColor)
+                .testTag(AudioLevelBackgroundTag)
+        )
 
         PointerStreamWrapper(
             streamView = stream.video?.view,
@@ -172,10 +169,11 @@ internal fun StreamStatusIcons(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
+        StreamAudioLevelIcon(isSpeaking = isSpeaking, mine = mine)
+
         streamVideoUi?.takeIf { it.isEnabled }?.zoomLevelUi?.prettyPrint()?.takeIf { it.isNotBlank() }?.let {
             ZoomIcon(text = it)
         }
-        StreamAudioLevelIcon(isSpeaking = isSpeaking, mine = mine)
 
         when {
             streamAudioUi == null -> MicDisabledIcon()

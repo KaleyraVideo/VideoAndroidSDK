@@ -4,13 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,10 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -35,6 +33,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
+import com.kaleyra.video_sdk.call.stream.view.core.SpeakingAnimationDuration
 import com.kaleyra.video_sdk.call.stream.view.core.StopSpeakingStreamAnimationDelay
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
@@ -48,7 +47,10 @@ private val SpeakingAvatarStroke = 2.dp
 private val ParticipantItemAvatarSize = 40.dp + AvatarStroke
 private val ParticipantItemHeight = 64.dp
 
+internal val SpeakingParticipantStrokeAnimationDuration = SpeakingAnimationDuration
 internal val StopSpeakingParticipantAnimationDelay = StopSpeakingStreamAnimationDelay
+
+internal val SpeakingParticipantFontAnimationDuration = 100
 
 @Composable
 internal fun ParticipantItem(
@@ -68,7 +70,7 @@ internal fun ParticipantItem(
     val speakingAvatarStrokeAlpha by animateFloatAsState(
         targetValue = if (isSpeaking) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 200,
+            durationMillis = SpeakingParticipantStrokeAnimationDuration,
             delayMillis = if (!isSpeaking) StopSpeakingParticipantAnimationDelay else 0),
         label = "animatedAudioLevelStrokeAlpha"
     )
@@ -97,6 +99,16 @@ internal fun ParticipantItem(
         )
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
+            val animatedWeightFraction by animateFloatAsState(
+                targetValue = if (isSpeaking) 1f else 0f,
+                animationSpec = tween(
+                    durationMillis = SpeakingParticipantFontAnimationDuration,
+                    delayMillis = if (isSpeaking) 0 else StopSpeakingParticipantAnimationDelay
+                ),
+                label = "FontWeightAnimation"
+            )
+            val interpolatedFontWeight = lerp(FontWeight.Normal, FontWeight.SemiBold, animatedWeightFraction)
+
             Text(
                 text = if (stream.isMine) {
                     stringResource(
@@ -106,7 +118,7 @@ internal fun ParticipantItem(
                 } else stream.userInfo?.username ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = if (isSpeaking) FontWeight.SemiBold else FontWeight.Medium)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = interpolatedFontWeight)
             )
             Spacer(Modifier.height(4.dp))
             Text(
