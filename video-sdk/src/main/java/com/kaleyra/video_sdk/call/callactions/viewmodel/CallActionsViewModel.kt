@@ -232,9 +232,13 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 }
             }.launchIn(this)
 
-            call
-                .toCallStateUi()
-                .onEach { state -> _uiState.update { it.copy(isRinging = state == CallStateUi.Ringing) } }
+            // To ensure that the answer call button is hidden when the user answers the call
+            // from the notification, it's needed to check both the call state and the derived state.
+            combine(
+                call.state,
+                call.toCallStateUi()
+            ) { callState, callStateUi -> callStateUi == CallStateUi.Ringing && callState != Call.State.Connecting }
+                .onEach { isRinging -> _uiState.update { it.copy(isRinging = isRinging) } }
                 .launchIn(this)
 
             hasCameraUsageRestrictionFlow

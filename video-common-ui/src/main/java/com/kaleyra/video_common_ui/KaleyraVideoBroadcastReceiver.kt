@@ -27,7 +27,7 @@ abstract class KaleyraVideoBroadcastReceiver : BroadcastReceiver() {
      * Checking if the CollaborationUI is configured. If it is not, it is requesting a new configuration.
      * @return true if is configured, false otherwise
      **/
-    suspend fun requestConfigure(): Boolean {
+    fun requestConfigure(): Boolean {
         requestConfiguration()
         return KaleyraVideo.isConfigured
     }

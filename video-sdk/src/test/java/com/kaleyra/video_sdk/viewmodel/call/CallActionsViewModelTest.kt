@@ -233,7 +233,26 @@ class CallActionsViewModelTest {
     }
 
     @Test
-    fun callStateRinging_isRingingIsTrue() = runTest {
+    fun callStateUiRingingAndCallStateConnecting_isRingingIsFalse() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connecting)
+        every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+
+        viewModel = spyk(CallActionsViewModel{
+            mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock)
+        })
+
+        val current = viewModel.uiState.first().isRinging
+        assertEquals(false, current)
+
+        advanceUntilIdle()
+
+        val new = viewModel.uiState.first().isRinging
+        assertEquals(false, new)
+    }
+
+    @Test
+    fun callStateUiRingingAndCallStateDisconnected_isRingingIsFalse() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Disconnected)
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
 
         viewModel = spyk(CallActionsViewModel{
