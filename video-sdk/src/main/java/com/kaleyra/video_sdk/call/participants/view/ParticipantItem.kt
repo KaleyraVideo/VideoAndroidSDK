@@ -15,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ internal fun ParticipantItem(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val avatarBackgroundColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
     val isSpeaking = stream.audio?.isSpeaking == true
 
     val speakingAvatarStrokeAlpha by animateFloatAsState(
@@ -83,8 +85,8 @@ internal fun ParticipantItem(
             username = stream.userInfo?.username ?: "",
             uri = stream.userInfo?.image,
             size = ParticipantItemAvatarSize,
-            backgroundColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-            contentColor = if (stream.isMine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,
+            backgroundColor = avatarBackgroundColor,
+            contentColor = contentColorFor(avatarBackgroundColor),
             borderColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             borderWidth = AvatarStroke,
             modifier = Modifier
@@ -93,7 +95,7 @@ internal fun ParticipantItem(
                 }
                 .drawCircleBorder(
                     width = SpeakingAvatarStroke,
-                    color = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                    color = avatarBackgroundColor,
                     alpha = speakingAvatarStrokeAlpha
                 )
         )
