@@ -93,7 +93,7 @@ internal fun ParticipantItem(
                 }
                 .drawCircleBorder(
                     width = SpeakingAvatarStroke,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                     alpha = speakingAvatarStrokeAlpha
                 )
         )
