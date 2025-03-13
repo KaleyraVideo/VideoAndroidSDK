@@ -22,7 +22,6 @@ import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
 import com.kaleyra.video.configuration.Configuration
 import com.kaleyra.video.configuration.Environment
 import com.kaleyra.video.configuration.Region
-import com.kaleyra.video.conversation.internal.chat_client.utils.CHAT
 import com.kaleyra.video.utils.logger.CHAT_BOX
 import com.kaleyra.video.utils.logger.COLLABORATION
 import com.kaleyra.video.utils.logger.INPUTS
@@ -48,7 +47,7 @@ fun Context.configuration(): Configuration {
         Environment.create(appConfiguration.environment),
         Region.create(appConfiguration.region),
         httpStack = MultiDexApplication.okHttpClient,
-        logger = androidPrioryLogger(BaseLogger.DEBUG, COLLABORATION or PHONE_CALL or PHONE_BOX or CHAT_BOX or CHAT or STREAMS or INPUTS)
+        logger = androidPrioryLogger(BaseLogger.DEBUG, COLLABORATION or PHONE_CALL or PHONE_BOX or CHAT_BOX or STREAMS or INPUTS)
     )
 }
 
