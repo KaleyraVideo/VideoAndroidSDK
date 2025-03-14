@@ -112,7 +112,7 @@ internal fun StreamItem(
             targetValue = if (shouldDisplaySpeakingBackground) borderColor.copy(alpha = .12f) else Color.Transparent,
             animationSpec = tween(SpeakingStreamItemAnimationDuration, if (shouldDisplaySpeakingBackground) 0 else StopSpeakingStreamItemAnimationDelay)
         )
-        Box(
+        if (!isVideoEnabled) Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = animatedColor)
