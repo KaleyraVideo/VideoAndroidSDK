@@ -108,6 +108,22 @@ class PipStreamComponentTest {
         assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatios.last())
     }
 
+    @Test
+    fun multipleStreams_localScreenShareActive_localScreenShareItemDisplayed() {
+        val streamItem1 = defaultStreamItem(username = "mario")
+        val streamItem2 = defaultStreamItem(username = "alice")
+        streamUiState = StreamUiState(
+            isScreenShareActive = true,
+            streamItems = listOf(streamItem1, streamItem2).toImmutableList()
+        )
+
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_participants_component_screenshare)
+        composeTestRule.onNodeWithContentDescription(screenShareText, useUnmergedTree = true).assertIsDisplayed()
+
+        val youText = composeTestRule.activity.getString(R.string.kaleyra_stream_you)
+        composeTestRule.onNodeWithText(youText, useUnmergedTree = true).assertIsDisplayed()
+    }
+
     //    No way found to run this test on instrumented test
 //    @Test
 //    fun singleStream_rationalIsVideoStreamViewAspectRatio() {
