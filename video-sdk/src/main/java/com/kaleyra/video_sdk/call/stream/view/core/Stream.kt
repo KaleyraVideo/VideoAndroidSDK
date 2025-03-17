@@ -80,9 +80,12 @@ internal fun Stream(
             val color = if (isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
             val size = remember(maxWidth, maxHeight) { computeStreamAvatarSize(maxWidth, maxHeight) }
+            var previousSize by remember { mutableStateOf(size) }
+
             val targetSize = size * if (isSpeaking) SpeakingAvatarSizeFactor else 1f
+            // Immediately resize the avatar if the available space changes (size != previousSize)
             val animationSpec = tween<Dp>(
-                durationMillis = SpeakingAnimationDuration,
+                durationMillis = if (size != previousSize) 0 else SpeakingAnimationDuration,
                 delayMillis = if (isSpeaking) 0 else StopSpeakingStreamAnimationDelay
             )
 
@@ -98,6 +101,12 @@ internal fun Stream(
                 animationSpec = animationSpec,
                 label = "shadowElevation"
             )
+
+            LaunchedEffect(size) {
+                if (size != previousSize) {
+                    previousSize = size
+                }
+            }
 
             Avatar(
                 username = userInfo?.username ?: "",
