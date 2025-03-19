@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -101,15 +100,15 @@ internal fun ParticipantItem(
         )
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
-            val animatedWeightFraction by animateFloatAsState(
-                targetValue = if (isSpeaking) 1f else 0f,
+            val animatedWeightFraction by animateIntAsState(
+                targetValue = if (isSpeaking) 1 else 0,
                 animationSpec = tween(
                     durationMillis = SpeakingParticipantFontAnimationDuration,
                     delayMillis = if (isSpeaking) 0 else StopSpeakingParticipantAnimationDelay
                 ),
                 label = "FontWeightAnimation"
             )
-            val interpolatedFontWeight = lerp(FontWeight.Normal, FontWeight.SemiBold, animatedWeightFraction)
+            val interpolatedFontStyle = if (animatedWeightFraction == 1) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
 
             Text(
                 text = if (stream.isMine) {
@@ -120,7 +119,7 @@ internal fun ParticipantItem(
                 } else stream.userInfo?.username ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = interpolatedFontWeight)
+                style = interpolatedFontStyle
             )
             Spacer(Modifier.height(4.dp))
             Text(
