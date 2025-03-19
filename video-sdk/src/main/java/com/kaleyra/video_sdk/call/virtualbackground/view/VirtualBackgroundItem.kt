@@ -63,8 +63,7 @@ internal fun VirtualBackgroundItem(
             text = textFor(background),
             maxLines = 1,
             color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
+            style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
         )
     }
 }
