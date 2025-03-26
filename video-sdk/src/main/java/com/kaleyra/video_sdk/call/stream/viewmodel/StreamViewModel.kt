@@ -9,9 +9,7 @@ import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherUserInfo
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
@@ -25,7 +23,6 @@ import com.kaleyra.video_sdk.call.stream.model.StreamPreview
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -34,11 +31,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -62,13 +59,14 @@ internal class StreamViewModel(
     private val userMessageChannel = Channel<UserMessage>(Channel.BUFFERED)
     val userMessage: Flow<UserMessage> = userMessageChannel.receiveAsFlow()
 
+    private val isSingleStreamLayout: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     init {
         viewModelScope.launch {
             layoutController.switchToAutoMode()
 
             val conference = conference.first()
             val call = call.first()
-            val companyIdFlow = company.flatMapLatest { it.id }
 
             val defaultCameraIsBack = conference.settings.camera == Conference.Settings.Camera.Back
             layoutController.applySettings(StreamLayoutSettings(defaultCameraIsBack = defaultCameraIsBack))
@@ -82,14 +80,20 @@ internal class StreamViewModel(
 
             call
                 .toStreamsUi()
-                .onEach { streams ->
+                .map { streams ->
                     val controllerStreams = streams.filterNot { it.isLocalScreenShare() }
-                    layoutController.applyStreams(controllerStreams)
                     _uiState.update { state ->
                         state.copy(isScreenShareActive = controllerStreams.size != streams.size)
                     }
+                    controllerStreams
                 }
-                .launchIn(this)
+                .combine(isSingleStreamLayout) { streams, isSingleStreamLayout ->
+                    val layoutStreams = if (isSingleStreamLayout) {
+                        streams.sortedBy { it.isMine }.take(1)
+                    } else streams
+                    layoutController.applyStreams(layoutStreams)
+                }
+                .launchIn(viewModelScope)
 
             val callStateFlow = call.toCallStateUi()
             combine(
@@ -115,20 +119,16 @@ internal class StreamViewModel(
                 shouldShowStreamPreviewFlow,
                 call.toMyCameraVideoUi(),
                 call.toMyCameraStreamAudioUi(),
+                call.toOtherUserInfo(),
                 call.preferredType
-            ) { shouldShowStreamPreview, video, audio, preferredType ->
+            ) { shouldShowStreamPreview, video, audio, otherUserInfo, preferredType ->
                 if (shouldShowStreamPreview) {
-                    val isGroupCall = call.isGroupCall(companyIdFlow).first()
-                    val otherUsername = call.toOtherDisplayNames().first().firstOrNull()
-                    val otherAvatar = call.toOtherDisplayImages().first().firstOrNull()
                     _uiState.update {
                         it.copy(
                             preview = StreamPreview(
-                                isGroupCall = isGroupCall,
                                 video = video,
                                 audio = audio,
-                                username = otherUsername,
-                                avatar = otherAvatar?.let { avatar -> ImmutableUri(avatar) },
+                                userInfos = otherUserInfo.toImmutableList(),
                                 isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
                             )
                         )
@@ -178,6 +178,19 @@ internal class StreamViewModel(
 
     fun clearPinnedStreams() {
         layoutController.clearPinnedStreams()
+    }
+
+    fun switchToPipStreamLayout() {
+        viewModelScope.launch {
+            val hasFeaturedStreams = layoutController.streamItems.first().any { it.isFeatured() }
+            // If it has any stream in featured state (featured, pinned or fullscreen) return
+            if (hasFeaturedStreams) return@launch
+            isSingleStreamLayout.value = true
+        }
+    }
+
+    fun switchToDefaultStreamLayout() {
+        isSingleStreamLayout.value = false
     }
 
     fun zoom(streamId: String) {

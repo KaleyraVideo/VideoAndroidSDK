@@ -1,17 +1,24 @@
 package com.kaleyra.video_sdk.call.participants.view
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,17 +26,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
 import com.kaleyra.video_sdk.call.stream.utils.isLocalScreenShare
+import com.kaleyra.video_sdk.call.stream.view.core.SpeakingAnimationDuration
+import com.kaleyra.video_sdk.call.stream.view.core.StopSpeakingStreamAnimationDelay
 import com.kaleyra.video_sdk.common.avatar.view.Avatar
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlin.math.roundToInt
 
-internal val ParticipantItemAvatarSize = 40.dp
+private val AvatarStroke = 6.dp
+private val SpeakingAvatarStroke = 2.dp
+
+private val ParticipantItemAvatarSize = 40.dp + AvatarStroke
+private val ParticipantItemHeight = 64.dp
+
+internal val SpeakingParticipantStrokeAnimationDuration = SpeakingAnimationDuration
+internal val StopSpeakingParticipantAnimationDelay = StopSpeakingStreamAnimationDelay
+
+internal val SpeakingParticipantFontAnimationDuration = 100
 
 @Composable
 internal fun ParticipantItem(
@@ -44,28 +65,63 @@ internal fun ParticipantItem(
     onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val avatarBackgroundColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    val isSpeaking = stream.audio?.isSpeaking == true
+
+    val speakingAvatarStrokeAlpha by animateFloatAsState(
+        targetValue = if (isSpeaking) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = SpeakingParticipantStrokeAnimationDuration,
+            delayMillis = if (!isSpeaking) StopSpeakingParticipantAnimationDelay else 0),
+        label = "animatedAudioLevelStrokeAlpha"
+    )
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier.height(ParticipantItemHeight)
     ) {
         Avatar(
-            username = stream.username,
-            uri = stream.avatar,
-            size = ParticipantItemAvatarSize
+            username = stream.userInfo?.username ?: "",
+            uri = stream.userInfo?.image,
+            size = ParticipantItemAvatarSize,
+            backgroundColor = avatarBackgroundColor,
+            contentColor = contentColorFor(avatarBackgroundColor),
+            borderColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            borderWidth = AvatarStroke,
+            modifier = Modifier
+                .offset {
+                    IntOffset(- AvatarStroke.toPx().roundToInt() / 2, 0)
+                }
+                .drawCircleBorder(
+                    width = SpeakingAvatarStroke,
+                    color = avatarBackgroundColor,
+                    alpha = speakingAvatarStrokeAlpha
+                )
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
+            val animatedWeightFraction by animateIntAsState(
+                targetValue = if (isSpeaking) 1 else 0,
+                animationSpec = tween(
+                    durationMillis = SpeakingParticipantFontAnimationDuration,
+                    delayMillis = if (isSpeaking) 0 else StopSpeakingParticipantAnimationDelay
+                ),
+                label = "FontWeightAnimation"
+            )
+            val interpolatedFontStyle = if (animatedWeightFraction == 1) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+
             Text(
                 text = if (stream.isMine) {
                     stringResource(
                         id = R.string.kaleyra_participants_component_you,
-                        stream.username
+                        stream.userInfo?.username ?: ""
                     )
-                } else stream.username,
+                } else stream.userInfo?.username ?: "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium
+                style = interpolatedFontStyle
             )
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(
                     when {
@@ -97,11 +153,12 @@ internal fun ParticipantItem(
                     content = {
                         Icon(
                             disableMicPainterFor(stream.audio),
-                            disableContentDescriptionFor(stream.audio, stream.username)
+                            disableContentDescriptionFor(stream.audio, stream.userInfo?.username ?: "")
                         )
                     }
                 )
             }
+
             else -> {
                 val interactionSource = remember { MutableInteractionSource() }
                 IconButton(
@@ -114,7 +171,7 @@ internal fun ParticipantItem(
                             !stream.audio.isMutedForYou
                         )
                     },
-                    content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.username)) }
+                    content = { Icon(mutePainterFor(stream.audio), muteContentDescriptionFor(stream.audio, stream.userInfo?.username ?: "")) }
                 )
             }
         }
@@ -127,7 +184,7 @@ internal fun ParticipantItem(
                     modifier = Modifier.highlightOnFocus(interactionSource),
                     enabled = !isPinLimitReached || isPinned,
                     onClick = { onPinStreamClick(stream.id, !isPinned) },
-                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.username)) }
+                    content = { Icon(pinnedPainterFor(isPinned), pinnedContentDescriptionFor(isPinned, stream.userInfo?.username ?: "")) }
                 )
             } else {
                 val interactionSource = remember { MutableInteractionSource() }

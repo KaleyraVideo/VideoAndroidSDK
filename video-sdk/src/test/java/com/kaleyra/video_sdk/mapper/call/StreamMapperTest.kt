@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.mapper.call
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import com.kaleyra.video.conference.*
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
@@ -33,6 +34,7 @@ import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -91,8 +93,7 @@ class StreamMapperTest {
         id = "streamId1",
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
-        username = "displayName",
-        avatar = ImmutableUri(uriMock),
+        userInfo = UserInfo("userId", "displayName", ImmutableUri(uriMock)),
         createdAt = 9384839L
     )
 
@@ -100,8 +101,7 @@ class StreamMapperTest {
         id = "streamId2",
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
-        username = "displayName",
-        avatar = ImmutableUri(uriMock),
+        userInfo = UserInfo("userId", "displayName", ImmutableUri(uriMock)),
         createdAt = 948384L
     )
 
@@ -109,8 +109,7 @@ class StreamMapperTest {
         id = "streamId3",
         video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
-        username = "displayName",
-        avatar = ImmutableUri(uriMock),
+        userInfo = UserInfo("userId", "displayName", ImmutableUri(uriMock)),
         createdAt = 76094743L
     )
 
@@ -118,8 +117,7 @@ class StreamMapperTest {
         id = "myStreamId",
         video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
-        username = "myDisplayName",
-        avatar = ImmutableUri(uriMock),
+        userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock)),
         isMine = true,
         createdAt = 4473847383L
     )
@@ -128,8 +126,7 @@ class StreamMapperTest {
         id = "myStreamId2",
         video = VideoUi(id = "myVideoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
         audio = AudioUi(id = "audioId", isEnabled = true),
-        username = "myDisplayName",
-        avatar = ImmutableUri(uriMock),
+        userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock)),
         isMine = true,
         createdAt = 85729487459L
     )
@@ -138,6 +135,7 @@ class StreamMapperTest {
     fun setUp() {
         mockkObject(ContactDetailsManager)
         // only needed for toCallStateUi function
+        every { audioMock.speaking } returns MutableStateFlow(false)
         every { callMock.participants } returns MutableStateFlow(callParticipantsMock)
         with(callParticipantsMock) {
             every { me } returns participantMeMock
@@ -230,9 +228,9 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
     }
@@ -257,8 +255,8 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
         )
         Assert.assertEquals(expected, actual)
 
@@ -270,9 +268,9 @@ class StreamMapperTest {
         participants.value = newCallParticipantsMock
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -285,9 +283,9 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
 
@@ -299,8 +297,8 @@ class StreamMapperTest {
         participants.value = newCallParticipantsMock
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -312,10 +310,10 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            myStreamUi1.copy(username = "myDisplayName"),
-            myStreamUi2.copy(username = "myDisplayName"),
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock))),
         )
         Assert.assertEquals(expected, actual)
     }
@@ -328,9 +326,9 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
 
@@ -338,9 +336,9 @@ class StreamMapperTest {
         displayNameParticipant1.value = "displayNameModified"
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(username = "displayNameModified"),
-            streamUi2.copy(username = "displayNameModified"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayNameModified", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayNameModified", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -353,9 +351,9 @@ class StreamMapperTest {
         val result = callMock.toStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            streamUi1.copy(username = "displayName1"),
-            streamUi2.copy(username = "displayName1"),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
 
@@ -364,9 +362,9 @@ class StreamMapperTest {
         displayImageParticipant1.value = newUriMock
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(username = "displayName1", avatar = ImmutableUri(newUriMock)),
-            streamUi2.copy(username = "displayName1", avatar = ImmutableUri(newUriMock)),
-            streamUi3.copy(username = "displayName2")
+            streamUi1.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(newUriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId1", "displayName1", ImmutableUri(newUriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId2", "displayName2", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -386,8 +384,8 @@ class StreamMapperTest {
         val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            myStreamUi1.copy(username = "myDisplayName"),
-            myStreamUi2.copy(username = "myDisplayName")
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
     }
@@ -400,8 +398,8 @@ class StreamMapperTest {
         val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            myStreamUi1.copy(username = "displayName1"),
-            myStreamUi2.copy(username = "displayName1")
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "displayName1", ImmutableUri(uriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "displayName1", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
 
@@ -409,8 +407,8 @@ class StreamMapperTest {
         myDisplayName.value = "displayNameModified"
         val newActual = result.first()
         val newExpected = listOf(
-            myStreamUi1.copy(username = "displayNameModified"),
-            myStreamUi2.copy(username = "displayNameModified")
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "displayNameModified", ImmutableUri(uriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "displayNameModified", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -423,8 +421,8 @@ class StreamMapperTest {
         val result = callMock.toMyStreamsUi()
         val actual = result.first()
         val expected = listOf(
-            myStreamUi1.copy(username = "myDisplayName"),
-            myStreamUi2.copy(username = "myDisplayName")
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(expected, actual)
 
@@ -433,8 +431,8 @@ class StreamMapperTest {
         myDisplayImage.value = newUriMock
         val newActual = result.first()
         val newExpected = listOf(
-            myStreamUi1.copy(username = "myDisplayName", avatar = ImmutableUri(newUriMock)),
-            myStreamUi2.copy(username = "myDisplayName", avatar = ImmutableUri(newUriMock))
+            myStreamUi1.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(newUriMock))),
+            myStreamUi2.copy(userInfo = UserInfo("myUserId", "myDisplayName", ImmutableUri(newUriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -528,8 +526,7 @@ class StreamMapperTest {
             id = "modifiedStreamId",
             video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true),
-            username = "displayName",
-            avatar = ImmutableUri(uriMock),
+            userInfo = UserInfo("userId", "displayName", ImmutableUri(uriMock)),
             createdAt = 434552L
         )
 
@@ -575,8 +572,7 @@ class StreamMapperTest {
             id = "modifiedStreamId",
             video = VideoUi(id = "videoId", view = ImmutableView(viewMock), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true),
             audio = AudioUi(id = "audioId", isEnabled = true, isMutedForYou = false),
-            username = "displayName",
-            avatar = ImmutableUri(uriMock),
+            userInfo = UserInfo("userId", "displayName", ImmutableUri(uriMock)),
             createdAt = 434552L
         )
 
@@ -595,6 +591,7 @@ class StreamMapperTest {
         val newStreamAudioMock = mockk<Input.Audio>(relaxed = true) {
             every { id } returns "audioId2"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
+            every { speaking } returns MutableStateFlow(false)
         }
         modifiedStreamAudioFlow.value = newStreamAudioMock
         val newActual = result.first()
@@ -620,9 +617,9 @@ class StreamMapperTest {
         displayNameFlow.value = "newDisplayName"
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(username = "newDisplayName"),
-            streamUi2.copy(username = "newDisplayName"),
-            streamUi3.copy(username = "newDisplayName")
+            streamUi1.copy(userInfo = UserInfo("userId", "newDisplayName", ImmutableUri(uriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId", "newDisplayName", ImmutableUri(uriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId", "newDisplayName", ImmutableUri(uriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -640,9 +637,9 @@ class StreamMapperTest {
         displayImageFlow.value = newUriMock
         val newActual = result.first()
         val newExpected = listOf(
-            streamUi1.copy(avatar = ImmutableUri(newUriMock)),
-            streamUi2.copy(avatar = ImmutableUri(newUriMock)),
-            streamUi3.copy(avatar = ImmutableUri(newUriMock))
+            streamUi1.copy(userInfo = UserInfo("userId", "displayName", ImmutableUri(newUriMock))),
+            streamUi2.copy(userInfo = UserInfo("userId", "displayName", ImmutableUri(newUriMock))),
+            streamUi3.copy(userInfo = UserInfo("userId", "displayName", ImmutableUri(newUriMock)))
         )
         Assert.assertEquals(newExpected, newActual)
     }
@@ -657,7 +654,7 @@ class StreamMapperTest {
 
     @Test
     fun participantHasVideoEnabled_hasAtLeastAVideoEnabled_true() = runTest {
-        val flow = flowOf(listOf(StreamUi(id = "streamId", username = "username", video = VideoUi(id = "videoId", isEnabled = true))))
+        val flow = flowOf(listOf(StreamUi(id = "streamId", userInfo = UserInfo("userId1", "username", ImmutableUri(uriMock)), video = VideoUi(id = "videoId", isEnabled = true))))
         val result = flow.hasAtLeastAVideoEnabled()
         val actual = result.first()
         Assert.assertEquals(true, actual)
@@ -665,7 +662,7 @@ class StreamMapperTest {
 
     @Test
     fun participantHasVideoDisabled_hasAtLeastAVideoEnabled_false() = runTest {
-        val flow = flowOf(listOf(StreamUi(id = "streamId", username = "username", video = VideoUi(id = "videoId", isEnabled = false))))
+        val flow = flowOf(listOf(StreamUi(id = "streamId", userInfo = UserInfo("userId1", "username", ImmutableUri(uriMock)), video = VideoUi(id = "videoId", isEnabled = false))))
         val result = flow.hasAtLeastAVideoEnabled()
         val actual = result.first()
         Assert.assertEquals(false, actual)

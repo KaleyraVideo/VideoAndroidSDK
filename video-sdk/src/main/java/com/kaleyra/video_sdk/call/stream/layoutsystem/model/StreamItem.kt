@@ -3,6 +3,8 @@ package com.kaleyra.video_sdk.call.stream.layoutsystem.model
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 
 @Stable
 internal sealed interface StreamItem {
@@ -19,7 +21,7 @@ internal sealed interface StreamItem {
     @Immutable
     data class MoreStreams(
         override val id: String = "moreItemId",
-        val users: List<MoreStreamsUserPreview>,
+        val userInfos: ImmutableList<UserInfo>,
     ) : StreamItem
 
     fun isFeatured(): Boolean {

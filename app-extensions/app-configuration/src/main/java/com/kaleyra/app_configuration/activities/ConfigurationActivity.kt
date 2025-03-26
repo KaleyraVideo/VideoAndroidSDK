@@ -18,19 +18,16 @@ package com.kaleyra.app_configuration.activities
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.kaleyra.app_configuration.R
 import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.CUSTOM_COLOR
-import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.PICK_CUSTOM_BRAND_COLOR
+import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.PICK_CUSTOM_BRAND_DARK_COLOR
+import com.kaleyra.app_configuration.activities.BrandColorConfigurationActivity.Companion.PICK_CUSTOM_BRAND_LIGHT_COLOR
 import com.kaleyra.app_configuration.databinding.ActivityConfigurationBinding
 import com.kaleyra.app_configuration.model.Configuration
 import com.kaleyra.app_configuration.model.ConfigurationFieldChangeListener
@@ -39,7 +36,6 @@ import com.kaleyra.app_configuration.model.UserDetailsProviderMode
 import com.kaleyra.app_configuration.model.bindToConfigurationProperty
 import com.kaleyra.app_configuration.model.getMockConfiguration
 import com.kaleyra.app_configuration.utils.MediaStorageUtils
-import kotlinx.serialization.json.Json.Default.configuration
 
 open class ConfigurationActivity : BaseConfigurationActivity() {
 
@@ -114,9 +110,14 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
     }
 
     private fun setBrandColorSummary() {
-        binding.brandColor.setSubtitle(currentConfiguration!!.customBrandColor?.toHex()?.plus(" ⬤") ?: "REMOTE")
-        binding.brandColor.subtitleTextView?.setTextColor(
-            currentConfiguration!!.customBrandColor
+        binding.brandColorDark.setSubtitle(currentConfiguration!!.customBrandDarkColor?.toHex()?.plus(" ⬤") ?: "REMOTE")
+        binding.brandColorDark.subtitleTextView?.setTextColor(
+            currentConfiguration!!.customBrandDarkColor
+                ?: if (this@ConfigurationActivity.isDarkTheme()) Color.WHITE else Color.BLACK
+        )
+        binding.brandColorLight.setSubtitle(currentConfiguration!!.customBrandLightColor?.toHex()?.plus(" ⬤") ?: "REMOTE")
+        binding.brandColorLight.subtitleTextView?.setTextColor(
+            currentConfiguration!!.customBrandLightColor
                 ?: if (this@ConfigurationActivity.isDarkTheme()) Color.WHITE else Color.BLACK
         )
     }
@@ -150,8 +151,11 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
                     currentConfiguration!!.logoName ?: "",
                     BRAND_IMAGE_TEXT_REQUEST)
         }
-        binding.brandColor.setOnClickListener {
-            BrandColorConfigurationActivity.showForResult(this, PICK_CUSTOM_BRAND_COLOR, currentConfiguration!!.customBrandColor)
+        binding.brandColorDark.setOnClickListener {
+            BrandColorConfigurationActivity.displayDarkSeedColorPicker(this, PICK_CUSTOM_BRAND_DARK_COLOR, currentConfiguration!!.customBrandDarkColor)
+        }
+        binding.brandColorLight.setOnClickListener {
+            BrandColorConfigurationActivity.displayLightSeedColorPicker(this, PICK_CUSTOM_BRAND_LIGHT_COLOR, currentConfiguration!!.customBrandLightColor)
         }
         binding.mockUserDetails.setOnClickListener {
             MockUserDetailsSettingsActivity.showForResult(
@@ -190,8 +194,19 @@ open class ConfigurationActivity : BaseConfigurationActivity() {
             currentConfiguration!!.customUserDetailsName = customDisplayName
             currentConfiguration!!.userDetailsProviderMode = mockProviderMode
             binding.mockUserDetails.setSubtitle(mockProviderMode.toString())
-        } else if (requestCode == PICK_CUSTOM_BRAND_COLOR && resultCode == 2) {
-            currentConfiguration!!.customBrandColor = data!!.getIntExtra(CUSTOM_COLOR, -1).takeIf { it != -1 }
+        } else if (requestCode == PICK_CUSTOM_BRAND_DARK_COLOR && resultCode == 2) {
+            currentConfiguration!!.customBrandDarkColor = data!!.getIntExtra(CUSTOM_COLOR, -1).takeIf { it != -1 }
+            if (currentConfiguration!!.customBrandDarkColor == null && currentConfiguration!!.customBrandLightColor != null)
+                currentConfiguration!!.customBrandLightColor = null
+            if (currentConfiguration!!.customBrandDarkColor != null && currentConfiguration!!.customBrandLightColor == null)
+                currentConfiguration!!.customBrandLightColor = currentConfiguration!!.customBrandDarkColor
+            setBrandColorSummary()
+        } else if (requestCode == PICK_CUSTOM_BRAND_LIGHT_COLOR && resultCode == 2) {
+            currentConfiguration!!.customBrandLightColor = data!!.getIntExtra(CUSTOM_COLOR, -1).takeIf { it != -1 }
+            if (currentConfiguration!!.customBrandLightColor == null && currentConfiguration!!.customBrandDarkColor != null)
+                currentConfiguration!!.customBrandDarkColor = null
+            if (currentConfiguration!!.customBrandLightColor != null && currentConfiguration!!.customBrandDarkColor == null)
+                currentConfiguration!!.customBrandDarkColor = currentConfiguration!!.customBrandLightColor
             setBrandColorSummary()
         }
     }

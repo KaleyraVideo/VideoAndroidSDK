@@ -20,8 +20,10 @@ import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -122,8 +124,8 @@ class ParticipantsViewModelTest {
     @Test
     fun `streams updated on new streams ui`() {
         val streams = listOf(
-            StreamUi("1", "user1"),
-            StreamUi("2", "user2"),
+            StreamUi("1", UserInfo("userId", "user1", ImmutableUri())),
+            StreamUi("2", UserInfo("userI", "user2", ImmutableUri())),
         )
         every { callMock.toStreamsUi() } returns MutableStateFlow(streams)
         val viewModel = ParticipantsViewModel(
@@ -177,10 +179,10 @@ class ParticipantsViewModelTest {
     fun `pinnedStreamIds are the layout's controller pinned stream ids`() {
         val layoutController = StreamLayoutControllerMock(
             initialStreamItems = listOf(
-                StreamItem.Stream("id1", StreamUi("id1", "user1"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("id2", StreamUi("id2", "user2"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("id3", StreamUi("id3", "user3"), state = StreamItemState.Featured.Pinned),
-                StreamItem.Stream("id4", StreamUi("id4", "user4")),
+                StreamItem.Stream("id1", StreamUi("id1", UserInfo("userId", "user1", ImmutableUri())), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id2", StreamUi("id2", UserInfo("userId2", "user2", ImmutableUri())), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id3", StreamUi("id3", UserInfo("userId3", "user3", ImmutableUri())), state = StreamItemState.Featured.Pinned),
+                StreamItem.Stream("id4", StreamUi("id4", UserInfo("userId4", "user4", ImmutableUri()))),
             )
         )
         val viewModel = ParticipantsViewModel(

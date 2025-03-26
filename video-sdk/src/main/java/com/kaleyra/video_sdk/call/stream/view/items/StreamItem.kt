@@ -1,10 +1,15 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
 import android.content.res.Configuration
+import android.net.Uri
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -15,8 +20,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -31,18 +43,35 @@ import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.prettyPrint
 import com.kaleyra.video_sdk.call.pointer.view.PointerStreamWrapper
+import com.kaleyra.video_sdk.call.stream.StreamComponentDefaults
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
+import com.kaleyra.video_sdk.call.stream.utils.isSpeaking
+import com.kaleyra.video_sdk.call.stream.utils.isVideoEnabled
+import com.kaleyra.video_sdk.call.stream.view.audio.AudioVisualizer
+import com.kaleyra.video_sdk.call.stream.view.core.SpeakingAnimationDuration
+import com.kaleyra.video_sdk.call.stream.view.core.StopSpeakingStreamAnimationDelay
 import com.kaleyra.video_sdk.call.stream.view.core.Stream
 import com.kaleyra.video_sdk.call.utils.StreamViewSettings.defaultStreamViewSettings
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
+import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawRoundedCornerBorder
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlinx.coroutines.delay
 
 internal val StreamItemPadding = 8.dp
-internal val ZoomIconTestTag = "ZoomIconTestTag"
+internal val StreamItemSpeakingBorderWidth = 5.dp
 
+internal val ZoomIconTestTag = "ZoomIconTestTag"
 internal val StreamItemTag = "StreamItemTag"
+internal val AudioVisualizerTag = "AudioLevelIconTag"
+internal val AudioLevelBackgroundTag = "AudioLevelBackgroundTag"
+
+internal val SpeakingStreamItemAnimationDuration = SpeakingAnimationDuration
+internal val StopSpeakingStreamItemAnimationDelay = StopSpeakingStreamAnimationDelay
 
 @Composable
 internal fun StreamItem(
@@ -53,19 +82,53 @@ internal fun StreamItem(
     statusIconsAlignment: Alignment = Alignment.BottomEnd,
     onClick: (() -> Unit)? = null
 ) {
+    val isSpeaking = remember(stream) { stream.isSpeaking() }
+    val isVideoEnabled = remember(stream) { stream.isVideoEnabled() }
+
+    val borderColor = if (stream.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    val borderAlpha by animateFloatAsState(
+        targetValue = if (isSpeaking) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = SpeakingStreamItemAnimationDuration,
+            delayMillis = if (isSpeaking) 0 else StopSpeakingStreamItemAnimationDelay
+        ),
+        label = "animatedAudioLevelStrokeAlpha"
+    )
+
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.testTag(StreamItemTag)
+        modifier = modifier
+            .testTag(StreamItemTag)
+            .drawRoundedCornerBorder(
+                width = if (isVideoEnabled) StreamItemSpeakingBorderWidth else 0.dp,
+                color = borderColor,
+                alpha = borderAlpha,
+                cornerRadius = CornerRadius(StreamComponentDefaults.CornerRadius.toPixel),
+            )
     ) {
+        // Background when speaking
+        val shouldDisplaySpeakingBackground = remember(isVideoEnabled, isSpeaking) { !isVideoEnabled && isSpeaking }
+        val animatedColor by animateColorAsState(
+            targetValue = if (shouldDisplaySpeakingBackground) borderColor.copy(alpha = .12f) else Color.Transparent,
+            animationSpec = tween(SpeakingStreamItemAnimationDuration, if (shouldDisplaySpeakingBackground) 0 else StopSpeakingStreamItemAnimationDelay)
+        )
+        if (!isVideoEnabled) Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = animatedColor)
+                .testTag(AudioLevelBackgroundTag)
+        )
+
         PointerStreamWrapper(
             streamView = stream.video?.view,
             pointerList = stream.video?.pointers
         ) { _ ->
             Stream(
                 streamView = stream.video?.view?.defaultStreamViewSettings(),
-                avatar = stream.avatar,
-                username = stream.username,
-                showStreamView = stream.video?.view != null && stream.video.isEnabled,
+                userInfo = stream.userInfo,
+                isMine = stream.isMine,
+                isSpeaking = isSpeaking,
+                showStreamView = stream.video?.view != null && isVideoEnabled,
                 onClick = onClick
             )
         }
@@ -75,13 +138,14 @@ internal fun StreamItem(
             streamVideoUi = stream.video,
             fullscreen = fullscreen,
             mine = stream.isMine,
+            isSpeaking = isSpeaking,
             modifier = Modifier
                 .align(statusIconsAlignment)
                 .padding(StreamItemPadding)
         )
 
         UserLabel(
-            username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.username,
+            username = if (stream.isMine) stringResource(id = R.string.kaleyra_stream_you) else stream.userInfo?.username ?: "",
             pin = pin,
             modifier = Modifier
                 .padding(StreamItemPadding)
@@ -97,6 +161,7 @@ internal fun StreamStatusIcons(
     streamVideoUi: VideoUi?,
     fullscreen: Boolean,
     mine: Boolean,
+    isSpeaking: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -104,11 +169,14 @@ internal fun StreamStatusIcons(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
+        StreamAudioLevelIcon(isSpeaking = isSpeaking, mine = mine)
+
         streamVideoUi?.takeIf { it.isEnabled }?.zoomLevelUi?.prettyPrint()?.takeIf { it.isNotBlank() }?.let {
             ZoomIcon(text = it)
         }
+
         when {
-            streamAudioUi == null -> Unit
+            streamAudioUi == null -> MicDisabledIcon()
             streamAudioUi.isMutedForYou && !mine -> AudioMutedForYouIcon()
             !streamAudioUi.isEnabled -> MicDisabledIcon()
         }
@@ -164,9 +232,11 @@ private fun ZoomIcon(modifier: Modifier = Modifier, text: String) {
     ) {
         val zoomContentDescription = "${stringResource(R.string.kaleyra_call_sheet_zoom)} $text"
         Text(
-            modifier = Modifier.semantics {
-                contentDescription = zoomContentDescription
-            }.testTag(ZoomIconTestTag),
+            modifier = Modifier
+                .semantics {
+                    contentDescription = zoomContentDescription
+                }
+                .testTag(ZoomIconTestTag),
             text = text,
             maxLines = 1,
             style = MaterialTheme.typography.labelMedium
@@ -202,6 +272,43 @@ private fun FullscreenIcon(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun StreamAudioLevelIcon(
+    modifier: Modifier = Modifier,
+    isSpeaking: Boolean,
+    mine: Boolean
+) {
+    var showAudioVisualizer by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isSpeaking) {
+        if (!isSpeaking) delay(StopSpeakingStreamItemAnimationDelay.toLong())
+        showAudioVisualizer = isSpeaking
+    }
+
+    val audioLevelContentDescription = stringResource(R.string.kaleyra_stream_audio_level)
+    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val contentColor = if (mine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+
+    if (showAudioVisualizer) {
+        Surface(
+            modifier = modifier
+                .size(24.dp)
+                .semantics { contentDescription = audioLevelContentDescription }
+                .testTag(AudioVisualizerTag),
+            color = backgroundColor,
+            contentColor = contentColor,
+            shape = RoundedCornerShape(4.dp),
+        ) {
+            AudioVisualizer(
+                barWidth = 4.dp,
+                barSpacing = 2.dp,
+                barCount = 3,
+                enable = isSpeaking
+            )
+        }
+    }
+}
+
+@Composable
 private fun StreamStatusIcon(
     painter: Painter,
     contentDescription: String,
@@ -230,9 +337,9 @@ internal fun StreamItemPreview() {
             StreamItem(
                 stream = StreamUi(
                     id = "id",
-                    username = "Viola J. Allen",
+                    userInfo = UserInfo("userId", "Viola J. Allen", ImmutableUri(Uri.EMPTY)),
                     video = VideoUi(id = "id", view = ImmutableView(VideoStreamView(LocalContext.current)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`),
-                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true),
+                    audio = AudioUi(id = "id", isEnabled = true, isMutedForYou = true, isSpeaking = true),
                 ),
                 fullscreen = true,
                 pin = true

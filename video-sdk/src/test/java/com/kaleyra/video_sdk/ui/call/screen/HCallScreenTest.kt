@@ -57,7 +57,6 @@ import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandle
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -66,8 +65,10 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -987,7 +988,7 @@ class HCallScreenTest {
     fun selectedStreamIdSet_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1006,7 +1007,7 @@ class HCallScreenTest {
     fun selectedStreamIdNotSet_onSelectedStreamIdInvoked() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1029,7 +1030,7 @@ class HCallScreenTest {
     fun userClicksOnStreamMenuCancel_onStreamSelectedCallbackToNull() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1068,7 +1069,7 @@ class HCallScreenTest {
     fun selectedStreamIdSet_dragHandleIsNotDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1159,10 +1160,10 @@ class HCallScreenTest {
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("1", "user1", null),
-                    MoreStreamsUserPreview("2", "user2", null),
-                )
+                userInfos = listOf(
+                    UserInfo("1", "user1", ImmutableUri()),
+                    UserInfo("2", "user2", ImmutableUri()),
+                ).toImmutableList()
             )
         )
         streamUiState.value = StreamUiState(streamItems = streams.toImmutableList())

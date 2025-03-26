@@ -80,7 +80,6 @@
     <string name="kaleyra_chat_msg_status_seen">Mensagem vista</string>
     <string name="kaleyra_chat_unread_messages">Mensagens não lidas</string>
     <string name="kaleyra_chat_no_messages_title">Ainda sem mensagens</string>
-    <string name="kaleyra_chat_avatar_desc">Imagem do chat</string>
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
     <!-- Chamada -->
@@ -309,16 +308,17 @@
     <string name="kaleyra_stream_mic_disabled">O microfone está desativado</string>
     <string name="kaleyra_stream_muted_for_you">A transmissão está sem áudio para você</string>
     <string name="kaleyra_stream_you">Você</string>
-    <string name="kaleyra_stream_other_participants">%d outros</string>
+    <string name="kaleyra_stream_other_participants">outros</string>
     <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
     <string name="kaleyra_stream_show_actions">Mostrar as ações da transmissão</string>
     <string name="kaleyra_stream_dimmed">Transmissão não selecionada</string>
 
     <!-- participant panel -->
 
+    <string name="kaleyra_stream_audio_level">Nível de som</string>
     <string name="kaleyra_participants_component_change_layout">Mudar layout</string>
     <string name="kaleyra_participants_component_users_in_call">Usuários na chamada</string>
-    <string name="kaleyra_participants_component_users_invited">Também convidados</string>
+    <string name="kaleyra_participants_component_users_invited">Convidados</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fixar a live</string>

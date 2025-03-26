@@ -123,7 +123,7 @@
     <!-- WATERMARK -->
     <string name="watermark_label" />
     <string name="pref_watermark_title" translatable="false">Watermark Info</string>
-    <string name="summary_watermark" translatable="false">Watermark to setup on calls to brandify your application.\nThis is useful to ensure the final user that the caller is receiving a call from a known source.</string>
+    <string name="summary_watermark" translatable="false">Set up a watermark on calls to brand your application.\nThis helps reassure the end user that the call is coming from a trusted source.</string>
     <string name="summary_custom_user_details" translatable="false">Custom display name and image of users displayed in call.</string>
 
     <string name="mock_user_authentication_failed" translatable="false">Biometric user authentication failed.</string>
@@ -147,9 +147,11 @@
     <string name="file_sharing" translatable="false">File sharing</string>
 
     <!-- THEME -->
-    <string name="brand_color" translatable="false">Brand color</string>
+    <string name="brand_color_light" translatable="false">Light mode brand color</string>
+    <string name="brand_color_dark" translatable="false">Dark mode brand color</string>
     <string name="brand_color_enter_hex_color_rrggbb" translatable="false">Enter Hex Color (#RRGGBB)</string>
-    <string name="brand_color_option_summary" translatable="false">Select how the Kaleyra Video SDK theme will be initialized.</string>
+    <string name="brand_color_option_summary_dark" translatable="false">Select how the Kaleyra Video SDK theme will be initialized for dark color schemes.</string>
+    <string name="brand_color_option_summary_light" translatable="false">Select how the Kaleyra Video SDK theme will be initialized for light color schemes.</string>
     <string name="brand_color_remote_summary" translatable="false">The default company colors will be used to generate a theme for Kaleyra Video SDK</string>
     <string name="brand_color_custom_summary" translatable="false">A custom color will be used to generate a consistent color palette for Kaleyra Video SDK\'s theme</string>
     <string name="brand_color_invalid_hex_color_format">Invalid hex color format</string>

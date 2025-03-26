@@ -102,10 +102,15 @@ class GroupAppBarTest {
         isActionClicked = false
     }
 
-    // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
         composeTestRule.onNodeWithText("chatName").assertIsDisplayed()
+    }
+
+    @Test
+    fun testChatAvatarLetterIsNotDisplayed() {
+        composeTestRule.onNodeWithText("chatName").assertIsDisplayed()
+        composeTestRule.onNodeWithText("C").assertDoesNotExist()
     }
 
     @Test
@@ -149,11 +154,11 @@ class GroupAppBarTest {
     @Test
     fun defaultSubtitle_usernamesAreDisplayed() {
         participantsDetails = ImmutableMap(
-                mapOf(
-                    "userId1" to ChatParticipantDetails("John Smith"),
-                    "userId2" to ChatParticipantDetails("Jack Daniels")
-                )
+            mapOf(
+                "userId1" to ChatParticipantDetails("John Smith"),
+                "userId2" to ChatParticipantDetails("Jack Daniels")
             )
+        )
         val subtitle = participantsDetails.value.values.joinToString(", ") { it.username }
         getSubtitle().assertTextEquals(subtitle)
     }
@@ -163,13 +168,14 @@ class GroupAppBarTest {
         getBouncingDots().assertDoesNotExist()
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(typing = ImmutableList(users))
-        getBouncingDots().assertExists()
+        getBouncingDots().assertIsDisplayed()
     }
 
     @Test
     fun oneParticipantOnline_isOnlineTextDisplayed() {
         val users = listOf("mary")
         participantsState = ChatParticipantsState(online = ImmutableList(users))
+        composeTestRule.waitForIdle()
         getSubtitle().assertTextEquals(users.first() + " " + composeTestRule.activity.getString(R.string.kaleyra_chat_participants_is_online))
     }
 

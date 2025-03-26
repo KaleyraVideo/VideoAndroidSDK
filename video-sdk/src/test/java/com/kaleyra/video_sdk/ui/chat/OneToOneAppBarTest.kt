@@ -60,7 +60,7 @@ class OneToOneAppBarTest {
 
     private val chatParticipantState = MutableStateFlow<ChatParticipantState>(ChatParticipantState.Unknown)
 
-    private var connectionState by mutableStateOf<ConnectionState>(ConnectionState.Connected)
+    private var connectionState by mutableStateOf<ConnectionState>(ConnectionState.Unknown)
 
     private var chatParticipantsDetails by mutableStateOf(ChatParticipantDetails(username = "recipientUser", state = chatParticipantState))
 
@@ -88,18 +88,30 @@ class OneToOneAppBarTest {
 
     @After
     fun tearDown() {
-        connectionState = ConnectionState.Connected
-        ChatParticipantDetails(username = "recipientUser", state = chatParticipantState)
+        connectionState = ConnectionState.Unknown
+        chatParticipantsDetails = ChatParticipantDetails(username = "recipientUser", state = chatParticipantState)
         chatParticipantState.value = ChatParticipantState.Unknown
         isInCall = false
         isBackPressed = false
         isActionClicked = false
     }
 
-    // Check the content description instead of the text because the title and subtitle views are AndroidViews
     @Test
     fun title_set() {
         composeTestRule.onNodeWithText(chatParticipantsDetails.username).assertIsDisplayed()
+    }
+
+
+    @Test
+    fun usernameNotBlank_avatarLetterIsDisplayed() {
+        composeTestRule.onNodeWithText(chatParticipantsDetails.username[0].uppercase()).assertIsDisplayed()
+    }
+
+    @Test
+    fun blankUsername_avatarPlaceholderIsDisplayed() {
+        chatParticipantsDetails = ChatParticipantDetails(username = "", state = chatParticipantState)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_avatar)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -155,7 +167,7 @@ class OneToOneAppBarTest {
         chatParticipantState.value = ChatParticipantState.Typing
         val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_typing)
         getSubtitle().assertTextEquals(typing)
-        getBouncingDots().assertExists()
+        getBouncingDots().assertIsDisplayed()
     }
 
     @Test

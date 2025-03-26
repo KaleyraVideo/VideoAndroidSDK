@@ -122,15 +122,22 @@
             android:id="@+id/watermark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:summary="@string/brand_color_option_summary"
+            app:summary="@string/summary_watermark"
             app:title="@string/pref_watermark_title" />
 
         <com.kaleyra.app_configuration.views.ConfigurationTextViewPreference
-            android:id="@+id/brand_color"
+            android:id="@+id/brand_color_light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:summary="@string/brand_color_option_summary"
-            app:title="@string/brand_color" />
+            app:summary="@string/brand_color_option_summary_light"
+            app:title="@string/brand_color_light" />
+
+        <com.kaleyra.app_configuration.views.ConfigurationTextViewPreference
+            android:id="@+id/brand_color_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:summary="@string/brand_color_option_summary_dark"
+            app:title="@string/brand_color_dark" />
 
         <com.kaleyra.app_configuration.views.ConfigurationTextViewPreference
             android:id="@+id/mock_user_details"

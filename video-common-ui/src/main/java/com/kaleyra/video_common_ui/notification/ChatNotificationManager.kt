@@ -114,10 +114,10 @@ internal interface ChatNotificationManager {
     }
 
     private fun contentPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
+        createChatActivityPendingIntent(context, CONTENT_REQUEST_CODE + chatId.hashCode(), activityClazz, myUserId, chatId)
 
     private fun fullScreenPendingIntent(context: Context, activityClazz: Class<*>, myUserId: String, userIds: List<String>, chatId: String?) =
-        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + userIds.hashCode(), activityClazz, myUserId, chatId)
+        createChatActivityPendingIntent(context, FULL_SCREEN_REQUEST_CODE + chatId.hashCode(), activityClazz, myUserId, chatId)
 
     private fun <T> createChatActivityPendingIntent(
         context: Context,

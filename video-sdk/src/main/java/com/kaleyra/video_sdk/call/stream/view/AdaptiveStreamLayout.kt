@@ -88,7 +88,7 @@ internal fun AdaptiveStreamLayout(
 
         val (rows, columns, featuredSize) = calculateGridAndFeaturedSize(constraints, featuredContainerWidth, featuredContainerHeight, featuredCount)
 
-        val featuredConstraints = constraints.copy(maxWidth = featuredSize.width, maxHeight = featuredSize.height)
+        val featuredConstraints = constraints.copy(minHeight = featuredSize.height, maxWidth = featuredSize.width, maxHeight = featuredSize.height)
         val thumbnailConstraints = Constraints.fixed(thumbnailSizePx, thumbnailSizePx)
 
         val (featuredPlaceables, thumbnailPlaceables) = measure(measurables, featuredConstraints, thumbnailConstraints)

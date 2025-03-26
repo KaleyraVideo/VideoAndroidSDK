@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -29,6 +31,7 @@ internal fun AdminBottomSheetItem(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = LocalContentColor.current,
+    fontStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit
 ) {
     TextButton(
@@ -51,7 +54,7 @@ internal fun AdminBottomSheetItem(
         Spacer(modifier = Modifier.width(26.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.titleSmall,
+            style = fontStyle,
             modifier = Modifier.weight(1f)
         )
     }

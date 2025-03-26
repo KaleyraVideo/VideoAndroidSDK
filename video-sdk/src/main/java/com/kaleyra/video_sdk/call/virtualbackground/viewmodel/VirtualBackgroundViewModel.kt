@@ -28,8 +28,6 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -64,7 +62,6 @@ internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration
 
     fun setEffect(background: VirtualBackgroundUi) {
         _uiState.update { it.copy(currentBackground = background) }
-        _isVirtualBackgroundEnabled.update { background != VirtualBackgroundUi.None }
 
         val call = call.getValue()
         val me = call?.participants?.value?.me
@@ -84,9 +81,6 @@ internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration
     }
 
     companion object {
-
-        private val _isVirtualBackgroundEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
-        val isVirtualBackgroundEnabled: StateFlow<Boolean> = _isVirtualBackgroundEnabled
 
         fun provideFactory(configure: suspend () -> Configuration) =
             object : ViewModelProvider.Factory {

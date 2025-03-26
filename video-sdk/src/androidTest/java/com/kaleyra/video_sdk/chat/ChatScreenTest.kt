@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -225,7 +226,7 @@ class ChatScreenTest {
     @Test
     fun chatHasFailedCreation_onBackPressedInvoked() {
         uiState.update { it.copy(hasFailedCreation = true) }
-        composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsNotDisplayed()
         assert(onChatCreationFailed)
     }
 

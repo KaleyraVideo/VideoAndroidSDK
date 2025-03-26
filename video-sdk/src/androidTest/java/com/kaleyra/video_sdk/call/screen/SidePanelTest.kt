@@ -36,7 +36,6 @@ import kotlin.reflect.KClass
 
 class SidePanelTest {
 
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -154,7 +153,7 @@ class SidePanelTest {
         component = ModularComponent.Chat
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_chat)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TextFieldTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TextFieldTag).assertIsNotDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.Chat)
         assert(isChatCreationFailed)
     }

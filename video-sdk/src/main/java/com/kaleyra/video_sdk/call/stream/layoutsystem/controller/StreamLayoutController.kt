@@ -340,7 +340,7 @@ internal class StreamLayoutControllerImpl private constructor(
                         val screenShareToRequestPin = findNewRemoteScreenShares(state, remoteScreenShareStreams).firstOrNull()
                         // Send a message to pin the new screen share.
                         screenShareToRequestPin?.let {
-                            callUserMessageProvider.sendUserMessage(PinScreenshareMessage(it.id, it.username))
+                            callUserMessageProvider.sendUserMessage(PinScreenshareMessage(it.id, it.userInfo?.username ?: ""))
                         }
                     }
                     // Update the list of remote screen share streams in the state.

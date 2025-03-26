@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.ui.call.stream
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,16 +11,21 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
 import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import com.kaleyra.video.conference.VideoStreamView
+import com.kaleyra.video_sdk.call.screen.LocalIsInTestMode
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.stream.view.items.AudioLevelBackgroundTag
+import com.kaleyra.video_sdk.call.stream.view.items.AudioVisualizerTag
+import com.kaleyra.video_sdk.call.stream.view.items.StopSpeakingStreamItemAnimationDelay
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItem
 import com.kaleyra.video_sdk.call.stream.view.items.StreamItemPadding
 import com.kaleyra.video_sdk.call.stream.view.items.ZoomIconTestTag
@@ -49,12 +55,14 @@ class StreamItemTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            StreamItem(
-                stream = stream,
-                fullscreen = fullscreen,
-                pin = pin,
-                statusIconsAlignment = statusIconsAlignment
-            )
+            CompositionLocalProvider(LocalIsInTestMode provides true) {
+                StreamItem(
+                    stream = stream,
+                    fullscreen = fullscreen,
+                    pin = pin,
+                    statusIconsAlignment = statusIconsAlignment
+                )
+            }
         }
     }
 
@@ -67,25 +75,29 @@ class StreamItemTest {
 
     @Test
     fun testUsernameIsDisplayed() {
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username).assertIsDisplayed()
     }
 
     @Test
     fun viewNull_avatarIsDisplayed() {
         stream = stream.copy(video = stream.video?.copy(view = null))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertIsDisplayed()
     }
 
     @Test
     fun videoNotEnabled_avatarIsDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertIsDisplayed()
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
+        }
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertIsDisplayed()
     }
 
     @Test
     fun videoEnabled_avatarIsNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = true))
-        composeTestRule.onNodeWithText(stream.username[0].uppercase()).assertDoesNotExist()
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = true))
+        }
+        composeTestRule.onNodeWithText(stream.userInfo!!.username[0].uppercase()).assertDoesNotExist()
     }
 
     @Test
@@ -110,10 +122,10 @@ class StreamItemTest {
     }
 
     @Test
-    fun streamAudioNull_muteIconDoesNotExists() {
+    fun streamAudioNull_muteIconIsDisplayed() {
         stream = stream.copy(audio = null)
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_mic_disabled)
-        composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -128,6 +140,20 @@ class StreamItemTest {
         stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = false))
         val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_muted_for_you)
         composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun streamAudioLevelZero_audioLevelStreamIconDoesNotExists() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = false))
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_audio_level)
+        composeTestRule.onNodeWithContentDescription(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun streamAudioSpeaking_audioLevelStreamIconIsDisplayed() {
+        stream = stream.copy(audio = AudioUi("1", isEnabled = true, isMutedForYou = false, isSpeaking = true))
+        val text = composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_stream_audio_level)
+        composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
@@ -243,25 +269,33 @@ class StreamItemTest {
 
     @Test
     fun videoDisabled_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), isEnabled = false))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
     }
 
     @Test
     fun videoPresent_zoomLevelFit_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fit, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
     }
 
     @Test
     fun videoPresent_zoomLevelFill_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fill, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.Fill, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsNotDisplayed()
     }
 
     @Test
     fun videoPresent_zoomLevel2x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`2x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`2x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("2x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 2x").assertIsDisplayed()
@@ -269,7 +303,9 @@ class StreamItemTest {
 
     @Test
     fun videoPresent_zoomLevel3x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`3x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("3x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 3x").assertIsDisplayed()
@@ -277,7 +313,9 @@ class StreamItemTest {
 
     @Test
     fun videoPresent_zoomLevel4x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`4x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`4x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("4x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 4x").assertIsDisplayed()
@@ -285,7 +323,9 @@ class StreamItemTest {
 
     @Test
     fun videoPresent_zoomLevel5x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`5x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`5x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("5x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 5x").assertIsDisplayed()
@@ -293,7 +333,9 @@ class StreamItemTest {
 
     @Test
     fun videoPresent_zoomLevel6x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`6x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`6x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("6x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 6x").assertIsDisplayed()
@@ -301,9 +343,135 @@ class StreamItemTest {
 
     @Test
     fun videoPresent_zoomLevel7x_zoomIconNotDisplayed() {
-        stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`7x`, isEnabled = true))
+        composeTestRule.runOnUiThread {
+            stream = stream.copy(video = stream.video?.copy(view = ImmutableView(VideoStreamView(composeTestRule.activity)), zoomLevelUi = VideoUi.ZoomLevelUi.`7x`, isEnabled = true))
+        }
         composeTestRule.onNodeWithTag(ZoomIconTestTag).assertIsDisplayed()
         composeTestRule.onNodeWithText("7x").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Zoom 7x").assertIsDisplayed()
+    }
+
+    @Test
+    fun audioNullAndVideoNotEnabled_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = false))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioNullAndVideoEnabled_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = true))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioNullAndVideoNull_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(audio = null, video = null)
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoNotEnabled_audioLevelBackgroundDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoEnabled_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoNull_audioLevelBackgroundDisplayed() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoNotEnabled_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoEnabled_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoNull_audioLevelBackgroundIsNotDisplayed() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioLevelBackgroundTag).isNotDisplayed()
+    }
+
+    @Test
+    fun audioNullAndVideoNotEnabled_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = false))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNullAndVideoEnabled_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = VideoUi("v1", isEnabled = true))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNullAndVideoNull_audioVisualizerNotExists() {
+        stream = stream.copy(audio = null, video = null)
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoNotEnabled_audioVisualizerDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoEnabled_audioVisualizerDisplayed() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioSpeakingAndVideoNull_audioVisualizerDisplayed() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoNotEnabled_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = false), audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoEnabled_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioNotSpeakingAndVideoNull_audioVisualizerDoesNotExists() {
+        stream = stream.copy(video = null, audio = AudioUi("a1", isSpeaking = false))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
+    }
+
+    @Test
+    fun audioFromSpeakingToNotSpeaking_audioVisualizerIsNotDisplayedAfterDelay() {
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = true))
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
+
+        composeTestRule.mainClock.autoAdvance = false
+
+        stream = stream.copy(video = VideoUi("v1", isEnabled = true), audio = AudioUi("a1", isSpeaking = false))
+
+        composeTestRule.mainClock.advanceTimeBy(StopSpeakingStreamItemAnimationDelay.toLong())
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertIsDisplayed()
+
+        composeTestRule.mainClock.advanceTimeBy(50)
+        composeTestRule.onNodeWithTag(AudioVisualizerTag).assertDoesNotExist()
     }
 }

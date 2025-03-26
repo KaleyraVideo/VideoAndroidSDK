@@ -61,7 +61,6 @@
     <color name="kaleyra_color_link_night">#0069a9</color>
 
     <color name="kaleyra_color_grey">#80000000</color>
-    <color name="kaleyra_color_grey_light">#1E000000</color>
 
     <!-- streams -->
     <color name="kaleyra_color_featured_stream_overlay">#80000000</color>

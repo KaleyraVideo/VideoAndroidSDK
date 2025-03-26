@@ -26,6 +26,7 @@ import com.kaleyra.video_sdk.call.mapper.AudioMapper.mapToAudioUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.mapToVideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -105,8 +106,11 @@ internal object StreamMapper {
                             id = id,
                             video = video,
                             audio = audio,
-                            username = name ?: userId,
-                            avatar = image?.let { ImmutableUri(it) },
+                            userInfo = UserInfo(
+                                userId = userId,
+                                username = name ?: userId,
+                                image = ImmutableUri(image ?: Uri.EMPTY)
+                            ),
                             isMine = isLocalParticipant,
                             createdAt = stream.createdAt
                         )

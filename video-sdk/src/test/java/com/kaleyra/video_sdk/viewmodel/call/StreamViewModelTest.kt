@@ -17,15 +17,15 @@ import com.kaleyra.video_sdk.call.mapper.AudioMapper
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isGroupCall
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayImages
-import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherDisplayNames
+import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherUserInfo
 import com.kaleyra.video_sdk.call.mapper.StreamMapper
 import com.kaleyra.video_sdk.call.mapper.StreamMapper.toStreamsUi
 import com.kaleyra.video_sdk.call.mapper.VideoMapper
 import com.kaleyra.video_sdk.call.mapper.VideoMapper.toMyCameraVideoUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
+import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItemState
 import com.kaleyra.video_sdk.call.stream.model.StreamPreview
@@ -33,12 +33,12 @@ import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.ImmutableView
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
-import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutConstraints
-import com.kaleyra.video_sdk.call.stream.layoutsystem.config.StreamLayoutSettings
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel.Companion.DEFAULT_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel.Companion.SINGLE_STREAM_DEBOUNCE_MILLIS
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
@@ -48,6 +48,7 @@ import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
+import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -75,11 +76,11 @@ class StreamViewModelTest {
 
     private val callMock = mockk<CallUI>(relaxed = true)
 
-    private val streamMock1 = StreamUi(id = "streamId1", username = "username")
+    private val streamMock1 = StreamUi(id = "streamId1", userInfo = UserInfo("userId", "username", ImmutableUri()))
 
-    private val streamMock2 = StreamUi(id = "streamId2", username = "username")
+    private val streamMock2 = StreamUi(id = "streamId2", userInfo = UserInfo("userId", "username", ImmutableUri()))
 
-    private val streamMock3 = StreamUi(id = "streamId3", username = "username")
+    private val streamMock3 = StreamUi(id = "streamId3", userInfo = UserInfo("userId", "username", ImmutableUri()))
 
     private val participantMock1 = mockk<CallParticipant>()
 
@@ -214,9 +215,9 @@ class StreamViewModelTest {
     fun `the layout controller's stream list does not include the local screen share`() {
         every { callMock.toStreamsUi() } returns flowOf(
             listOf(
-                StreamUi(id = "1", username = "user1"),
-                StreamUi(id = "2", username = "user2", isMine = true, video = VideoUi(id = "1", isScreenShare = true)),
-                StreamUi(id = "3", username = "user3", video = VideoUi(id = "2", isScreenShare = true))
+                StreamUi(id = "1", userInfo = UserInfo("userId", "user1", ImmutableUri())),
+                StreamUi(id = "2", userInfo = UserInfo("userId2", "user2", ImmutableUri()), isMine = true, video = VideoUi(id = "1", isScreenShare = true)),
+                StreamUi(id = "3", userInfo = UserInfo("userId3", "user3", ImmutableUri()), video = VideoUi(id = "2", isScreenShare = true))
             )
         )
         val layoutController = StreamLayoutControllerMock()
@@ -226,8 +227,8 @@ class StreamViewModelTest {
         )
         assertEquals(
             listOf(
-                StreamUi(id = "1", username = "user1"),
-                StreamUi(id = "3", username = "user3", video = VideoUi(id = "2", isScreenShare = true))
+                StreamUi(id = "1", userInfo = UserInfo("userId", "user1", ImmutableUri())),
+                StreamUi(id = "3", userInfo = UserInfo("userId3", "user3", ImmutableUri()), video = VideoUi(id = "2", isScreenShare = true))
             ),
             layoutController.layoutStreams.value
         )
@@ -236,7 +237,7 @@ class StreamViewModelTest {
     @Test
     fun `isScreenShareActive is true when the local screen share stream exists`() {
         every { callMock.toStreamsUi() } returns flowOf(
-            listOf(StreamUi(id = "1", username = "user1", isMine = true, video = VideoUi(id = "1", isScreenShare = true)))
+            listOf(StreamUi(id = "1", userInfo = UserInfo("userId", "user1", ImmutableUri()), isMine = true, video = VideoUi(id = "1", isScreenShare = true)))
         )
         val layoutController = StreamLayoutControllerMock()
         val viewModel = StreamViewModel(
@@ -252,7 +253,7 @@ class StreamViewModelTest {
     @Test
     fun `isScreenShareActive is false when the local screen share stream does not exists`() {
         every { callMock.toStreamsUi() } returns flowOf(
-            listOf(StreamUi(id = "1", username = "user1", video = VideoUi(id = "1", isScreenShare = true)))
+            listOf(StreamUi(id = "1", userInfo = UserInfo("userId", "user1", ImmutableUri()), video = VideoUi(id = "1", isScreenShare = true)))
         )
         val layoutController = StreamLayoutControllerMock()
         val viewModel = StreamViewModel(
@@ -274,9 +275,9 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
@@ -287,11 +288,11 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio,
-            username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -305,9 +306,9 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
@@ -318,11 +319,11 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio,
-            username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -336,9 +337,9 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
@@ -349,11 +350,11 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio,
-            username = "displayName",
-            avatar = ImmutableUri(uriMock),
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
             isStartingWithVideo = false
         )
         assertEquals(expected, viewModel.uiState.first().preview)
@@ -368,9 +369,9 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Reconnecting)
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
@@ -381,11 +382,11 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio,
-            username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
         )
         assertEquals(expected, viewModel.uiState.first().preview)
     }
@@ -398,9 +399,7 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf())
-            every { toOtherDisplayImages() } returns flowOf(listOf())
+            every { toOtherUserInfo() } returns flowOf(listOf())
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
         }
 
@@ -411,7 +410,6 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio
         )
@@ -429,9 +427,9 @@ class StreamViewModelTest {
                 every { toCallStateUi() } returns callState
                 every { toMyCameraVideoUi() } returns flowOf(video)
                 every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-                every { isGroupCall(any()) } returns flowOf(true)
-                every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-                every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+                every { toOtherUserInfo() } returns flowOf(
+                    listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+                )
                 every { toInCallParticipants() } returns MutableStateFlow(
                     listOf(participantMock1, participantMock2)
                 )
@@ -446,12 +444,12 @@ class StreamViewModelTest {
             advanceUntilIdle()
 
             val expected = StreamPreview(
-                isGroupCall = true,
                 video = video,
                 audio = audio,
-                username = "displayName",
-                avatar = ImmutableUri(uriMock),
-                isStartingWithVideo = false
+                isStartingWithVideo = false,
+                userInfos = ImmutableList(
+                    listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+                ),
             )
             assertEquals(expected, viewModel.uiState.first().preview)
 
@@ -477,9 +475,7 @@ class StreamViewModelTest {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
                 every { toMyCameraVideoUi() } returns flowOf(null)
                 every { toMyCameraStreamAudioUi() } returns flowOf(null)
-                every { isGroupCall(any()) } returns flowOf(false)
-                every { toOtherDisplayNames() } returns flowOf(listOf())
-                every { toOtherDisplayImages() } returns flowOf(listOf())
+                every { toOtherUserInfo() } returns flowOf(listOf())
                 every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
             }
 
@@ -500,9 +496,7 @@ class StreamViewModelTest {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
                 every { toMyCameraVideoUi() } returns flowOf(null)
                 every { toMyCameraStreamAudioUi() } returns flowOf(null)
-                every { isGroupCall(any()) } returns flowOf(false)
-                every { toOtherDisplayNames() } returns flowOf(listOf())
-                every { toOtherDisplayImages() } returns flowOf(listOf())
+                every { toOtherUserInfo() } returns flowOf(listOf())
                 every { preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
             }
 
@@ -515,6 +509,60 @@ class StreamViewModelTest {
             val expected = StreamPreview(isStartingWithVideo = false)
             assertEquals(expected, viewModel.uiState.first().preview)
         }
+
+    @Test
+    fun `stream preview refreshes avatars on other user info update`() = runTest {
+        val video = VideoUi(id = "videoId")
+        val audio = AudioUi(id = "audioId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        val otherUserInfo = MutableStateFlow(
+            listOf(
+                UserInfo("userId1", "Alice", ImmutableUri(uriMock)),
+                UserInfo("userId2", "John", ImmutableUri(uriMock))
+            )
+        )
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
+            every { toOtherUserInfo() } returns otherUserInfo
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+        val expected1 = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(
+                    UserInfo("userId1", "Alice", ImmutableUri(uriMock)),
+                    UserInfo("userId2", "John", ImmutableUri(uriMock))
+                )
+            ),
+        )
+        assertEquals(expected1, viewModel.uiState.first().preview)
+
+        val uriMock2 = mockk<Uri>()
+        otherUserInfo.value = listOf(
+            UserInfo("userId1", "Maria", ImmutableUri(uriMock2)),
+            UserInfo("userId2", "Franco", ImmutableUri(uriMock2))
+        )
+        val expected2 = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(
+                    UserInfo("userId1", "Maria", ImmutableUri(uriMock2)),
+                    UserInfo("userId2", "Franco", ImmutableUri(uriMock2))
+                )
+            ),
+        )
+        assertEquals(expected2, viewModel.uiState.first().preview)
+    }
 
     @Test
     fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() =
@@ -719,9 +767,9 @@ class StreamViewModelTest {
             every { toCallStateUi() } returns callState
             every { toMyCameraVideoUi() } returns flowOf(video)
             every { toMyCameraStreamAudioUi() } returns flowOf(audio)
-            every { isGroupCall(any()) } returns flowOf(true)
-            every { toOtherDisplayNames() } returns flowOf(listOf("displayName"))
-            every { toOtherDisplayImages() } returns flowOf(listOf(uriMock))
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
             every { toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1, participantMock2))
             every { toStreamsUi() } returns MutableStateFlow(listOf())
             every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
@@ -734,11 +782,11 @@ class StreamViewModelTest {
         advanceUntilIdle()
 
         val expected = StreamPreview(
-            isGroupCall = true,
             video = video,
             audio = audio,
-            username = "displayName",
-            avatar = ImmutableUri(uriMock)
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
         )
         assertEquals(expected, viewModel.uiState.first().preview)
 
@@ -929,7 +977,7 @@ class StreamViewModelTest {
             every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
         }
         val videoMock = StreamUi(
-            id = "streamId", username = "username",
+            id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri()),
             video = VideoUi(id = "videoId", view = ImmutableView(videoStreamView), isEnabled = true)
         )
         val streamItems = listOf(videoMock.toStreamItem())
@@ -953,7 +1001,7 @@ class StreamViewModelTest {
             every { zoomLevel } returns MutableStateFlow(StreamView.ZoomLevel.Fit)
         }
         val videoMock = StreamUi(
-            id = "streamId", username = "username",
+            id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri()),
             video = VideoUi(id = "videoId", view = ImmutableView(videoStreamView), isEnabled = true)
         )
         val streams = MutableStateFlow(listOf(videoMock))
@@ -970,6 +1018,134 @@ class StreamViewModelTest {
         viewModel.zoom("streamId2")
 
         verify(exactly = 0) { videoStreamView.zoom() }
+    }
+    
+    @Test
+    fun switchToPipStreamLayout_withFeaturedStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withPinnedStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured.Pinned),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withFullscreenStream_singleStreamIsNotAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2, state = StreamItemState.Featured.Fullscreen),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 0) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withNoFeaturedStream_singleStreamIsAppliedToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1, streamMock2)) }
+        verify(exactly = 1) { layoutController.applyStreams(listOf(streamMock1)) }
+    }
+
+    @Test
+    fun switchToPipStreamLayout_withNoFeaturedStream_remoteStreamHasHigherPriority() = runTest {
+        val stream1 = streamMock1.copy(isMine = true)
+        val stream2 = streamMock2.copy(isMine = false)
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(stream1, stream2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", stream1),
+                StreamItem.Stream("2", stream2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { layoutController.applyStreams(listOf(stream1, stream2)) }
+        verify(exactly = 1) { layoutController.applyStreams(listOf(stream2)) }
+    }
+
+    @Test
+    fun switchToDefaultStreamLayout_allStreamRestoredToLayoutController() = runTest {
+        every { callMock.toStreamsUi() } returns MutableStateFlow(listOf(streamMock1, streamMock2))
+        val layoutController = spyk(StreamLayoutControllerMock(
+            initialStreamItems = listOf(
+                StreamItem.Stream("1", streamMock1),
+                StreamItem.Stream("2", streamMock2),
+            )
+        ))
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = layoutController
+        )
+        viewModel.switchToPipStreamLayout()
+        advanceUntilIdle()
+
+        viewModel.switchToDefaultStreamLayout()
+        advanceUntilIdle()
+
+        verifyOrder {
+            layoutController.applyStreams(listOf(streamMock1, streamMock2))
+            layoutController.applyStreams(listOf(streamMock1))
+            layoutController.applyStreams(listOf(streamMock1, streamMock2))
+        }
     }
 
     private fun testTryStopScreenShare(screenShareVideoMock: Input.Video) = runTest {

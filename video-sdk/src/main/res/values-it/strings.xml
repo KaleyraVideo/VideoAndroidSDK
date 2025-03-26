@@ -53,15 +53,16 @@
     <string name="kaleyra_stream_mic_disabled">Il microfono è disabilitato</string>
     <string name="kaleyra_stream_muted_for_you">Lo stream è mutato per te</string>
     <string name="kaleyra_stream_you">Tu</string>
-    <string name="kaleyra_stream_other_participants">%d altri</string>
+    <string name="kaleyra_stream_other_participants">altri</string>
     <string name="kaleyra_stream_show_participants">Mostra partecipanti</string>
     <string name="kaleyra_stream_show_actions">Mostra le azioni dello stream</string>
     <string name="kaleyra_stream_dimmed">Stream non selezionato</string>
     <string name="kaleyra_stream_screenshare_received">%s sta condividendo il suo schermo</string>
 
+    <string name="kaleyra_stream_audio_level">Livello audio</string>
     <string name="kaleyra_participants_component_change_layout">Cambia Layout</string>
     <string name="kaleyra_participants_component_users_in_call">Utenti nella chiamata</string>
-    <string name="kaleyra_participants_component_users_invited">Altri Invitati</string>
+    <string name="kaleyra_participants_component_users_invited">Invitati</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fissa lo stream</string>
@@ -151,7 +152,6 @@
     <string name="kaleyra_chat_msg_status_seen">Messaggio letto</string>
     <string name="kaleyra_chat_unread_messages">Messaggi non letti</string>
     <string name="kaleyra_chat_no_messages_title">Nessun messaggio</string>
-    <string name="kaleyra_chat_avatar_desc">Immagine della chat</string>
     <string name="kaleyra_chat_group_title">Chat di gruppo</string>
     <string name="kaleyra_chat_creation_failed">Creazione della chat fallita.</string>
     <string name="kaleyra_chat_deleted">La conversazione è stata cancellata.</string>

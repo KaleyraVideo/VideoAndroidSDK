@@ -22,18 +22,19 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.kicked.model.KickedMessageUiState
-import com.kaleyra.video_sdk.call.pip.view.DefaultPipAspectRatio
+import com.kaleyra.video_sdk.call.pip.view.DefaultPipSize
 import com.kaleyra.video_sdk.call.screen.PipScreenTestTag
 import com.kaleyra.video_sdk.call.screen.model.MainUiState
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.SidePanelTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardRequest
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.findBackButton
@@ -70,7 +71,7 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     fun streamMenuDisplayed_userPerformsBack_streamMenuIsDismissed() {
         val streams = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username")
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri()))
         )
 
         streamUiState.value = StreamUiState(
@@ -286,10 +287,10 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     @Test
     fun userClicksMoreParticipantsStreamOnSmallScreen_participantsModalSheetDisplayed() {
         val streamItem = StreamItem.MoreStreams(
-            users = listOf(
-                MoreStreamsUserPreview("1", "user1", null),
-                MoreStreamsUserPreview("2", "user2", null),
-            )
+            userInfos = listOf(
+                UserInfo("1", "user1", ImmutableUri()),
+                UserInfo("2", "user2", ImmutableUri()),
+            ).toImmutableList()
         )
         streamUiState.value = StreamUiState(streamItems = listOf(streamItem).toImmutableList())
 
@@ -315,7 +316,7 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
     fun selectedStream_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -552,6 +553,6 @@ internal abstract class CallScreenTest: CallScreenBaseTest() {
         )
         composeTestRule.waitForIdle()
 
-        assertEquals(DefaultPipAspectRatio, aspectRatio)
+        assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatio)
     }
 }

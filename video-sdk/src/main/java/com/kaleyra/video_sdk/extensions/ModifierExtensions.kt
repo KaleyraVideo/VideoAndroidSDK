@@ -48,10 +48,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -68,6 +72,7 @@ import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -192,7 +197,7 @@ internal object ModifierExtensions {
         animationSpec: FiniteAnimationSpec<IntOffset> = spring()
     ) = composed {
         val coroutineScope = rememberCoroutineScope()
-        val offsetAnimation = remember { DeferredTargetAnimation(IntOffset.VectorConverter)  }
+        val offsetAnimation = remember { DeferredTargetAnimation(IntOffset.VectorConverter) }
         this.approachLayout(
             isMeasurementApproachInProgress = { false },
             isPlacementApproachInProgress = { lookaheadCoordinates ->
@@ -262,6 +267,87 @@ internal object ModifierExtensions {
                 }
                 anim.value - targetOffset
             }
+    }
+
+    /**
+     * Draws a rounder corner border with enhanced rendering compared to the standard border
+     * @receiver Modifier
+     * @param width Dp border width
+     * @param color Color border color
+     * @param alpha Float border alpha
+     * @param cornerRadius CornerRadius border corner radius
+     * @return Modifier
+     */
+    internal fun Modifier.drawRoundedCornerBorder(
+        width: Dp,
+        color: Color,
+        alpha: Float,
+        cornerRadius: CornerRadius
+    ): Modifier {
+        if (width == 0.dp) return this
+        return drawWithContent {
+            drawContent()
+            drawRoundRect(
+                color = color,
+                alpha = alpha,
+                cornerRadius = cornerRadius,
+                blendMode = BlendMode.SrcOver,
+                style = Stroke(width = width.toPx())
+            )
+        }
+    }
+
+    /**
+     * Draws a circle border with enhanced rendering compared to the standard border
+     *
+     * @receiver Modifier
+     * @param color Color
+     * @param width Dp
+     */
+    internal fun Modifier.drawCircleBorder(
+        color: Color,
+        width: Dp,
+        alpha: Float = 1f
+    ): Modifier {
+        if (width == 0.dp) return this
+        return drawWithContent {
+            drawContent()
+            drawCircle(
+                color,
+                blendMode = BlendMode.SrcOver,
+                style = Stroke(width = width.toPx()),
+                alpha = alpha
+            )
+        }
+    }
+
+    /**
+     * Draws a radial gradient shadow around the composable element.
+     *
+     * This modifier draws a radial gradient that fades from the specified [color] at the center
+     * to transparent at the edges. The gradient's radius is calculated based on the width of the
+     * composable element and the provided [radius] parameter.
+     *
+     * @param color The color of the shadow at its center.
+     * @param radius The additional radius to extend the shadow beyond the element's bounds.
+     *               A larger radius will result in a more diffused shadow.
+     * @return A [Modifier] that draws the radial gradient shadow.
+     */
+    internal fun Modifier.drawGradientShadow(
+        color: Color,
+        radius: Dp
+    ): Modifier {
+        return drawWithContent {
+            val gradientRadius = (this.size.width / 2f) + radius.toPx()
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(color, Color.Transparent),
+                    radius = gradientRadius
+                ),
+                radius = gradientRadius,
+            )
+            drawContent()
+        }
     }
 
     /**

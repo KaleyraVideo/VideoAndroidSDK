@@ -17,6 +17,8 @@ import com.kaleyra.video_sdk.call.participants.view.ParticipantItem
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -88,20 +90,20 @@ class ParticipantItemTest {
 
     @Test
     fun avatarFailsToLoad_letterIsDisplayed() {
-        stream = streamUiMock.copy(username = "username", avatar = null)
+        stream = streamUiMock.copy(userInfo = UserInfo("userId", "username", ImmutableUri()))
         composeTestRule.onNodeWithText("U").assertIsDisplayed()
     }
 
     @Test
     fun testYouIsDisplayed() {
         stream = streamUiMock.copy(isMine = true)
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_you, stream.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_you, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun testUsernameIsDisplayed() {
-        composeTestRule.onNodeWithText(stream.username).assertIsDisplayed()
+        composeTestRule.onNodeWithText(stream.userInfo?.username ?: "").assertIsDisplayed()
     }
 
     @Test
@@ -135,8 +137,8 @@ class ParticipantItemTest {
     @Test
     fun streamAudioNull_micButtonDoesNotExists() {
         stream = streamUiMock.copy(audio = null)
-        val enableMicDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.username)
-        val disableMicDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val enableMicDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.userInfo?.username ?: "")
+        val disableMicDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(enableMicDescr).assertDoesNotExist()
         composeTestRule.onNodeWithContentDescription(disableMicDescr).assertDoesNotExist()
     }
@@ -144,8 +146,8 @@ class ParticipantItemTest {
     @Test
     fun streamAudioNull_muteForYouButtonDoesNotExists() {
         stream = streamUiMock.copy(audio = null)
-        val muteForYouDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
-        val unmuteForYouDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.username)
+        val muteForYouDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.userInfo?.username ?: "")
+        val unmuteForYouDescr = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(muteForYouDescr).assertDoesNotExist()
         composeTestRule.onNodeWithContentDescription(unmuteForYouDescr).assertDoesNotExist()
     }
@@ -153,7 +155,7 @@ class ParticipantItemTest {
     @Test
     fun streamIsMineAndAudioIsDisabled_enableMicButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -161,7 +163,7 @@ class ParticipantItemTest {
     @Test
     fun streamIsMineAndAudioIsEnabled_disableMicButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -169,7 +171,7 @@ class ParticipantItemTest {
     @Test
     fun iAmAdminAndAudioIsDisabled_enableMicButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -177,7 +179,7 @@ class ParticipantItemTest {
     @Test
     fun iAmAdminAndAudioIsEnabled_disableMicButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -186,7 +188,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndStreamIsNotMineAndAudioIsNotMuted_muteAudioForMeButtonIsDisplayed() {
         amIAdmin = false
         stream = streamUiMock.copy(isMine = false, audio = AudioUi("id", isMutedForYou = false))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -195,7 +197,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndStreamIsNotMineAndAudioIsMuted_unmuteAudioForMeButtonIsDisplayed() {
         amIAdmin = false
         stream = streamUiMock.copy(isMine = false, audio = AudioUi("id", isMutedForYou = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -204,7 +206,7 @@ class ParticipantItemTest {
     fun streamIsMineAndIsPinned_unpinButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true)
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -213,7 +215,7 @@ class ParticipantItemTest {
     fun streamIsMineAndIsNotPinned_pinButtonIsDisplayed() {
         stream = streamUiMock.copy(isMine = true)
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -222,7 +224,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndIsPinned_unpinButtonIsDisplayed() {
         amIAdmin = false
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -231,7 +233,7 @@ class ParticipantItemTest {
     fun iAmNotAdminAndIsNotPinned_pinButtonIsDisplayed() {
         amIAdmin = false
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -240,7 +242,7 @@ class ParticipantItemTest {
     fun iAmAdminAndStreamIsNotMine_showMoreActionsButtonIsDisplayed() {
         amIAdmin = true
         stream = streamUiMock.copy(isMine = false)
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_show_more_actions, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_show_more_actions, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -248,7 +250,7 @@ class ParticipantItemTest {
     @Test
     fun localScreenShareStream_micButtonIsNotEnabled() {
         stream = streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true), video = VideoUi(id = "id", isEnabled = false, isScreenShare = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertHasClickAction()
@@ -258,7 +260,7 @@ class ParticipantItemTest {
     @Test
     fun remoteScreenShareStream_muteForYouIsNotEnabled() {
         stream = streamUiMock.copy(isMine = false, audio = AudioUi(id = "id", isEnabled = true), video = VideoUi(id = "id", isEnabled = false, isScreenShare = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertHasClickAction()
@@ -269,7 +271,7 @@ class ParticipantItemTest {
     fun localScreenShareStream_pinButtonDoesNotExists() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertDoesNotExist()
@@ -279,7 +281,7 @@ class ParticipantItemTest {
     fun localScreenShareStream_unpinButtonDoesNotExists() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id", isEnabled = true, isScreenShare = true))
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertDoesNotExist()
@@ -299,7 +301,7 @@ class ParticipantItemTest {
     fun pinLimitReached_pinButtonIsDisabled() {
         stream = streamUiMock.copy(isMine = true, video = VideoUi(id = "id"))
         pinLimitReached = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertHasClickAction()
@@ -311,7 +313,7 @@ class ParticipantItemTest {
         stream = streamUiMock.copy(video = VideoUi(id = "id", isEnabled = true))
         pinned = true
         pinLimitReached = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule
             .onNodeWithContentDescription(description)
             .assertHasClickAction()
@@ -322,7 +324,7 @@ class ParticipantItemTest {
     fun testOnMuteStreamClick() {
         amIAdmin = false
         stream = streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = false))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_mute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(true, isStreamMuted)
@@ -332,7 +334,7 @@ class ParticipantItemTest {
     fun testOnUnMuteStreamClick() {
         amIAdmin = false
         stream = streamUiMock.copy(id = "customStreamId", isMine = false, audio = AudioUi("id", isMutedForYou = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unmute_for_you_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(false, isStreamMuted)
@@ -341,7 +343,7 @@ class ParticipantItemTest {
     @Test
     fun testOnDisableMicClick() {
         stream = streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = true))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(true, isStreamMicDisabled)
@@ -350,7 +352,7 @@ class ParticipantItemTest {
     @Test
     fun testOnEnableMicClick() {
         stream = streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = false))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(false, isStreamMicDisabled)
@@ -360,7 +362,7 @@ class ParticipantItemTest {
     fun testOnUnpinStreamClick() {
         stream = streamUiMock.copy(id = "customStreamId", isMine = true)
         pinned = true
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_unpin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(false, isStreamPinned)
@@ -370,7 +372,7 @@ class ParticipantItemTest {
     fun testOnPinStreamClick() {
         stream = streamUiMock.copy(id = "customStreamId", isMine = true)
         pinned = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_pin_stream_description, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithContentDescription(description).performClick()
         assertEquals("customStreamId", streamId)
         assertEquals(true, isStreamPinned)

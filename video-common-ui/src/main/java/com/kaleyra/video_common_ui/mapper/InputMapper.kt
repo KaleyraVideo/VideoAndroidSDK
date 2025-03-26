@@ -19,10 +19,10 @@
 package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Effect
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
-import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toMe
 import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +46,7 @@ object InputMapper {
      * @receiver Flow<Call> the call flow
      * @return Flow<Boolean> flow emitting true whenever a phone call input is active
      */
-    inline fun <reified T:Input> Call.isInputActive(): Flow<Boolean> =
+    inline fun <reified T : Input> Call.isInputActive(): Flow<Boolean> =
         this.inputs.availableInputs
             .map { inputs -> inputs.firstOrNull { it is T } }
             .flatMapLatest { it?.state ?: flowOf(null) }
@@ -75,7 +75,7 @@ object InputMapper {
     fun Call.isAnyScreenInputActive(): Flow<Boolean> =
         combine(isDeviceScreenInputActive(), isAppScreenInputActive()) { isDeviceScreenInputActive, isAppScreenInputActive ->
             isDeviceScreenInputActive || isAppScreenInputActive
-    }
+        }
 
     /**
      * Utility function to detect whenever an audio mute event has been sent
@@ -142,4 +142,11 @@ object InputMapper {
         this.participants
             .flatMapLatestNotNull { it.me?.streams }
             .mapNotNull { streams -> streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+
+    fun Call.hasActiveVirtualBackground() =
+        this.toMyCameraStream()
+            .flatMapLatest { it.video }
+            .flatMapLatest { it?.currentEffect ?: flowOf(null) }
+            .map { it !is Effect.Video.None }
+            .distinctUntilChanged()
 }

@@ -16,12 +16,15 @@
 
 package com.kaleyra.video_common_ui.mapper
 
+import android.net.Uri
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
+import com.kaleyra.video.conference.Effect
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasInternalCameraInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.hasScreenSharingInput
@@ -42,6 +45,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.robolectric.shadows.ShadowLog.stream
 
 class InputMapperTests {
 
@@ -328,5 +332,39 @@ class InputMapperTests {
         val result = callMock.toMyCameraStream()
         val actual = result.first()
         Assert.assertEquals(stream, actual)
+    }
+
+    @Test
+    fun cameraStreamHasNoneVideoEffect_hasActiveVirtualBackground_false() = runTest {
+        val videoEffect = Effect.Video.None
+        val myVideo = mockk<Input.Video.My> {
+            every { this@mockk.currentEffect } returns MutableStateFlow(videoEffect)
+        }
+        val stream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(myVideo)
+        }
+        every { participantMeMock.streams } returns MutableStateFlow(listOf(stream))
+
+        val hasActiveVirtualBackground = callMock.hasActiveVirtualBackground().first()
+
+        Assert.assertFalse(hasActiveVirtualBackground)
+    }
+
+    @Test
+    fun cameraStreamHasVideoEffect_hasActiveVirtualBackground_true() = runTest {
+        val videoEffect = Effect.Video.Background.Image(id = "id", image = mockk<Uri>())
+        val myVideo = mockk<Input.Video.My> {
+            every { this@mockk.currentEffect } returns MutableStateFlow(videoEffect)
+        }
+        val stream = mockk<Stream.Mutable> {
+            every { id } returns CAMERA_STREAM_ID
+            every { video } returns MutableStateFlow(myVideo)
+        }
+        every { participantMeMock.streams } returns MutableStateFlow(listOf(stream))
+
+        val hasActiveVirtualBackground = callMock.hasActiveVirtualBackground().first()
+
+        Assert.assertTrue(hasActiveVirtualBackground)
     }
 }

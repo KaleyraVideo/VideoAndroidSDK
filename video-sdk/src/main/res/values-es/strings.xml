@@ -48,9 +48,10 @@
     <string name="kaleyra_call_sheet_description_mic_error">Error del micrófono</string>
     <string name="kaleyra_stream_screenshare_message">Los participantes de la reunión están viendo tu pantalla</string>
     <string name="kaleyra_stream_screenshare_action">Detener compartir pantalla</string>
+    <string name="kaleyra_stream_audio_level">Nivel de audio</string>
     <string name="kaleyra_participants_component_change_layout">Cambiar Diseño</string>
     <string name="kaleyra_participants_component_users_in_call">Usuarios en llamada</string>
-    <string name="kaleyra_participants_component_users_invited">También Invitados</string>
+    <string name="kaleyra_participants_component_users_invited">Invitados</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fijar el stream</string>
@@ -143,7 +144,6 @@
     <string name="kaleyra_call_drag_to_expand">Arrastrar paraexpandir</string>
     <string name="kaleyra_call_answer">Participar</string>
     <string name="kaleyra_cancel_message">No</string>
-    <string name="kaleyra_chat_avatar_desc">Imagen del chat</string>
     <string name="kaleyra_chat_channel_loading">Cargando…</string>
     <string name="kaleyra_chat_group_title">Chat de grupo</string>
     <string name="kaleyra_chat_msg_status_pending">Mensaje pendiente</string>
@@ -289,7 +289,7 @@
     <string name="kaleyra_stream_mic_disabled">El micrófono está desactivado</string>
     <string name="kaleyra_stream_muted_for_you">La transmisión está silenciada para ti</string>
     <string name="kaleyra_stream_you">Tú</string>
-    <string name="kaleyra_stream_other_participants">%d otros</string>
+    <string name="kaleyra_stream_other_participants">otros</string>
     <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
     <string name="kaleyra_stream_show_actions">Mostrar las acciones de la transmisión</string>
     <string name="kaleyra_stream_dimmed">Transmisión no seleccionada</string>

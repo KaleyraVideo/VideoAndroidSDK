@@ -30,10 +30,15 @@ import com.kaleyra.app_configuration.utils.hideKeyboard
 class BrandColorConfigurationActivity : BaseConfigurationActivity() {
 
     companion object {
-        const val PICK_CUSTOM_BRAND_COLOR = 796
+        const val PICK_CUSTOM_BRAND_DARK_COLOR = 796
+        const val PICK_CUSTOM_BRAND_LIGHT_COLOR = 797
         const val CUSTOM_COLOR = "CUSTOM_COLOR"
-        fun showForResult(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
-            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_COLOR)
+        fun displayDarkSeedColorPicker(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
+            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_DARK_COLOR)
+        }
+
+        fun displayLightSeedColorPicker(activity: Activity, requestCode: Int, @ColorInt customColor: Int? = null) {
+            activity.startActivityForResult(buildIntent(activity, customColor), PICK_CUSTOM_BRAND_LIGHT_COLOR)
         }
 
         private fun buildIntent(context: Context?, @ColorInt customColor: Int? = null): Intent {
@@ -102,7 +107,7 @@ class BrandColorConfigurationActivity : BaseConfigurationActivity() {
                 lightnessSeekBar,
             )
         }
-         val colorHsl = IntegerHSLColor()
+        val colorHsl = IntegerHSLColor()
         colorHsl.setFromColorInt(customColor)
         colorSample.background = ColorDrawable(customColor)
         group.setColor(colorHsl)
@@ -122,38 +127,37 @@ class BrandColorConfigurationActivity : BaseConfigurationActivity() {
                     colorEditText.setSelection(input.length + 1)
                 }
                 colorEditText.addTextChangedListener(this)
+
                 if (!validateHexColor(input)) return
-                kotlin.runCatching {
-                    val fallbackColor = currentColor?.let { Color.parseColor(it) }
-                    currentColor = s.toString()
-                    val colorInt = Color.parseColor(currentColor)
-                    colorSample.background = ColorDrawable(colorInt)
-                    val colorHsl = IntegerHSLColor()
-                    var hasParsedColor = true
-                    runCatching { colorHsl.setFromColorInt(colorInt) }.onFailure { hasParsedColor = false }
-                    if (!hasParsedColor && fallbackColor != null) runCatching {
-                        fallbackColor.let { colorHsl.setFromColorInt(it) }
-                        hasParsedColor = true
-                    }.onFailure { hasParsedColor = false }
-                    if (hasParsedColor) group.setColor(colorHsl)
-                }.onFailure {
-                    println(it)
+
+                val fallbackColor = currentColor?.let { Color.parseColor(it) }
+                currentColor = s.toString()
+                val colorHsl = IntegerHSLColor()
+                var hasParsedColor = true
+                val currentColorInt = Color.parseColor(currentColor)
+                runCatching { colorHsl.setFromColorInt(currentColorInt) }.onFailure { hasParsedColor = false }
+                if (!hasParsedColor && fallbackColor != null) runCatching {
+                    colorHsl.setFromColorInt(fallbackColor)
+                    hasParsedColor = true
+                }.onFailure { hasParsedColor = false }
+                if (hasParsedColor) {
+                    colorSample.background = ColorDrawable(currentColorInt)
+                    group.setColor(colorHsl)
                 }
             }
-
         })
-        hueSeekBar.mode = HSLColorPickerSeekBar.Mode.MODE_HUE
-        hueSeekBar.coloringMode = HSLColorPickerSeekBar.ColoringMode.PURE_COLOR
 
         group.addListener(object : ColorSeekBar.DefaultOnColorPickListener<ColorSeekBar<IntegerHSLColor>, IntegerHSLColor>() {
             override fun onColorPicked(picker: ColorSeekBar<IntegerHSLColor>, color: IntegerHSLColor, value: Int, fromUser: Boolean) {
-                val hexString = color.toColorInt().toHex()
-                if (currentColor == hexString) return
-                colorEditText.setText(hexString)
+                if (!fromUser) return
+                val pickedColorInt = color.toColorInt()
+                val pickedColorHex = pickedColorInt.toHex()
+                currentColor = pickedColorHex
+                colorSample.background = ColorDrawable(pickedColorInt)
+                colorEditText.setText(pickedColorHex)
             }
-            override fun onColorChanged(picker: ColorSeekBar<IntegerHSLColor>, color: IntegerHSLColor, value: Int) {
-                colorSample.background = ColorDrawable(color.toColorInt())
-            }
+
+            override fun onColorChanged(picker: ColorSeekBar<IntegerHSLColor>, color: IntegerHSLColor, value: Int) = Unit
         })
     }
 
@@ -204,7 +208,7 @@ class BrandColorConfigurationActivity : BaseConfigurationActivity() {
 
     private fun saveSettings() {
         val resultDataIntent = Intent()
-        resultDataIntent.putExtra(CUSTOM_COLOR, if (custom!!.isChecked) Color.parseColor(currentColor) else null)
+        resultDataIntent.putExtra(CUSTOM_COLOR, if (custom.isChecked) Color.parseColor(currentColor) else null)
         setResult(2, resultDataIntent)
     }
 

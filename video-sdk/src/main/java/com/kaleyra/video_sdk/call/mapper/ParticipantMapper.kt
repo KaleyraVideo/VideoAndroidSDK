@@ -22,6 +22,8 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayImage
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -34,7 +36,7 @@ import kotlinx.coroutines.flow.transform
 /**
  * Utility functions for the call participants
  */
-object ParticipantMapper {
+internal object ParticipantMapper {
 
     /**
      * Utility function to be used to receive a flag representing the current initialized state of the logged participants
@@ -112,6 +114,42 @@ object ParticipantMapper {
                     }
             }
             .distinctUntilChanged()
+
+    fun Call.toOtherUserInfo(): Flow<List<UserInfo>> {
+        return this.participants
+            .flatMapLatest { participants ->
+                val others = participants.others
+                val map = mutableMapOf<String, Pair<String, Uri>>()
+
+                if (others.isEmpty()) flowOf(listOf())
+                else others
+                    .map { participant ->
+                        combine(
+                            participant.combinedDisplayName,
+                            participant.combinedDisplayImage
+                        ) { name, image ->
+                            Triple(
+                                participant.userId,
+                                name ?: "",
+                                image ?: Uri.EMPTY
+                            )
+                        }
+                    }
+                    .merge()
+                    .transform { (userId, name, image) ->
+                        map[userId] = name to image
+                        val entries = map.entries.toList()
+                        if (entries.size == others.size) {
+                            emit(
+                                entries.map {
+                                    UserInfo(it.key, it.value.first, ImmutableUri(it.value.second))
+                                }
+                            )
+                        }
+                    }
+            }
+            .distinctUntilChanged()
+    }
 
     /**
      * Utility function to be used to retrieve current logged participant's state

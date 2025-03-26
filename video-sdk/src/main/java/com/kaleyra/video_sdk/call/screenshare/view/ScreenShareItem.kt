@@ -57,7 +57,7 @@ internal fun ScreenShareItem(
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = textFor(screenShareTarget),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }

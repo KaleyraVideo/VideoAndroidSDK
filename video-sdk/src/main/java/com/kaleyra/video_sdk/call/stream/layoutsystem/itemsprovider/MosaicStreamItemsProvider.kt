@@ -1,8 +1,10 @@
 package com.kaleyra.video_sdk.call.stream.layoutsystem.itemsprovider
 
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 
 /**
  * `MosaicStreamItemsProvider` is an interface responsible for building a list of `StreamItem`s
@@ -64,13 +66,13 @@ internal class MosaicStreamItemsProviderImpl : MosaicStreamItemsProvider {
             } + localStream.map { StreamItem.Stream(it.id, it) } // Add the local stream to the list of stream items.
             // Create a "MoreStreams" item to represent the remaining streams.
             val moreStreamsItem = StreamItem.MoreStreams(
-                users = remainingStreams.map {
-                    MoreStreamsUserPreview(
+                userInfos = remainingStreams.map {
+                    UserInfo(
                         it.value.id,
-                        it.value.username,
-                        it.value.avatar
+                        it.value.userInfo?.username ?: "",
+                        it.value.userInfo?.image ?: ImmutableUri()
                     )
-                }
+                }.toImmutableList()
             )
 
             // Return the list of stream items plus the "MoreStreams" item.

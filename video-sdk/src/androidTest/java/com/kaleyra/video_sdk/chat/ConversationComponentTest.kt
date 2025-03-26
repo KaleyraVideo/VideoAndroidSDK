@@ -136,12 +136,21 @@ class ConversationComponentTest {
     }
 
     @Test
-    fun participantDetailsProvided_latestGroupMessageOfOtherUser_avatarIsDisplayed() {
+    fun participantDetailsProvidedWithEmptyUsername_latestGroupMessageOfOtherUser_avatarIsDisplayed() {
         setContent(
             ConversationState(conversationItems = ImmutableList(listOf(ConversationItem.Message(otherMessage, isLastChainMessage = true)))),
-            participantsDetails = ImmutableMap(mapOf("userId4" to ChatParticipantDetails("username")))
+            participantsDetails = ImmutableMap(mapOf("userId4" to ChatParticipantDetails("")))
         )
         composeTestRule.findAvatar().assertIsDisplayed()
+    }
+
+    @Test
+    fun participantDetailsProvided_latestGroupMessageOfOtherUser_avatarLetterIsDisplayed() {
+        setContent(
+            ConversationState(conversationItems = ImmutableList(listOf(ConversationItem.Message(otherMessage, isLastChainMessage = true)))),
+            participantsDetails = ImmutableMap(mapOf("userId4" to ChatParticipantDetails("John")))
+        )
+        composeTestRule.onNodeWithText("J").assertIsDisplayed()
     }
 
     @Test

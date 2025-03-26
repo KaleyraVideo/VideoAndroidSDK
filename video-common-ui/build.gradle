@@ -95,8 +95,10 @@ dependencies {
 
     implementation sampleAppCatalog.androidxWorkRuntime
     implementation sampleAppCatalog.androidxWorkRuntimeKtx
+
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
+
     compileOnly kaleyraCatalog.kaleyraVideo
     compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
 }

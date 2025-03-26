@@ -1,33 +1,23 @@
-@file:OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-
 package com.kaleyra.video_sdk.call.callscreenscaffold
 
 import android.content.res.Resources
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEqualTo
 import androidx.compose.ui.test.getBoundsInRoot
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -35,25 +25,10 @@ import androidx.compose.ui.unit.width
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.performVerticalSwipe
-import io.mockk.mockk
 import org.junit.Assert.assertEquals
-import org.junit.Rule
 import org.junit.Test
 
-class VCallScreenScaffoldTest {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
-    private val sheetHandleTag = "SheetHandleTag"
-
-    private val sheetDragContentTag = "sheetDragContentTag"
-
-    private val sheetContentTag = "SheetContentTag"
-
-    private val sheetWidth = 200.dp
-
-    private val sheetDragContentHeight = 50.dp
+internal class VCallScreenScaffoldTest: VCallScreenScaffoldBaseTest() {
 
     @Test
     fun testTopAppBarIsDisplayed() {
@@ -150,7 +125,10 @@ class VCallScreenScaffoldTest {
                         .height(topBarHeight))
             },
             paddingValues = PaddingValues(0.dp),
-            content = { paddingValues = it }
+            content = {
+                paddingValues = it
+                Spacer(Modifier.padding(it).fillMaxSize().background(Color.Red))
+            }
         )
         val sheetTop = composeTestRule.onNodeWithTag(sheetHandleTag, useUnmergedTree = true).getBoundsInRoot().top
         val sheetBottom = composeTestRule.onNodeWithTag(sheetContentTag, useUnmergedTree = true).getBoundsInRoot().bottom
@@ -279,10 +257,8 @@ class VCallScreenScaffoldTest {
 
     @Test
     fun testBrandLogoComposableCalled() {
-        val sheetState = CallSheetState(initialValue = CallSheetValue.Expanded)
         var hasCalledBrandLogo = false
         composeTestRule.setCallScreenScaffold(
-            sheetState = sheetState,
             brandLogo = {
                 hasCalledBrandLogo = true
             }
@@ -291,49 +267,5 @@ class VCallScreenScaffoldTest {
         composeTestRule.waitForIdle()
 
         assertEquals(true, hasCalledBrandLogo)
-    }
-
-    private fun ComposeContentTestRule.setCallScreenScaffold(
-        sheetState: CallSheetState = CallSheetState(),
-        topAppBar: @Composable () -> Unit = {},
-        panelContent: @Composable (ColumnScope.() -> Unit)? = null,
-        paddingValues: PaddingValues = CallScreenScaffoldDefaults.PaddingValues,
-        content: @Composable (PaddingValues) -> Unit = {},
-        brandLogo: @Composable (BoxScope) -> Unit = {},
-    ) {
-        setContent {
-            VCallScreenScaffold(
-                sheetState = sheetState,
-                windowSizeClass = mockk(),
-                topAppBar = topAppBar,
-                sheetPanelContent = panelContent,
-                sheetContent = {
-                    Spacer(
-                        Modifier
-                            .width(sheetWidth)
-                            .height(80.dp)
-                            .testTag(sheetContentTag)
-                    )
-                },
-                sheetDragContent = {
-                    Spacer(
-                        Modifier
-                            .width(100.dp)
-                            .height(sheetDragContentHeight)
-                            .testTag(sheetDragContentTag))
-                },
-                sheetDragHandle = {
-                    Spacer(
-                        Modifier
-                            .width(150.dp)
-                            .height(30.dp)
-                            .testTag(sheetHandleTag)
-                    )
-                },
-                paddingValues = paddingValues,
-                content = content,
-                brandLogo = brandLogo,
-            )
-        }
     }
 }

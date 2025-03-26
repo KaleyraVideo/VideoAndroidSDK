@@ -12,6 +12,24 @@ import com.kaleyra.video_sdk.call.stream.model.core.VideoUi
 internal fun StreamUi.hasVideo(): Boolean = video != null
 
 /**
+ * Checks if the [StreamUi] has any video content associated with it and is enabled.
+ *
+ * @receiver The [StreamUi] instance to check.
+ * @return `true` if the stream has an enabled [VideoUi] object, `false` otherwise.
+ */
+internal fun StreamUi.isVideoEnabled(): Boolean = video != null && video.isEnabled
+
+
+/**
+ * Checks if the [StreamUi] has audio with a level greater than zero
+ *
+ * @receiver The [StreamUi] instance to check.
+ * @return `true` if the stream has an [AudioUi] object with parameter isSpeaking set to true, false otherwise
+ */
+internal fun StreamUi.isSpeaking(): Boolean = audio?.isSpeaking == true
+
+
+/**
  * Checks if the [StreamUi] represents a remote user's screen share.
  *
  * @receiver The [StreamUi] instance to check.

@@ -64,16 +64,15 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     config = Theme.Config(style = Theme.Config.Style.System),
                 )
 
-                KaleyraVideo.theme = appConfiguration.customBrandColor?.let { customBrandColor ->
-                    theme.copy(
-                        palette = Theme.Palette(
-                            seed = ColorResource(
-                                light = customBrandColor,
-                                dark = customBrandColor
+                if (appConfiguration.customBrandDarkColor != null && appConfiguration.customBrandLightColor != null) KaleyraVideo.theme = theme.copy(
+                    palette = Theme.Palette(
+                        seed = ColorResource(
+                            light = appConfiguration.customBrandLightColor!!,
+                            dark = appConfiguration.customBrandDarkColor!!
                         ))
-                    )
-                } ?: theme
+                )
             }
+
 
             if (getCallConfiguration().options.backCameraAsDefault)
                 KaleyraVideo.conference.settings.camera = Conference.Settings.Camera.Back

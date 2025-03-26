@@ -19,6 +19,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
+import com.kaleyra.video.User
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -56,7 +57,6 @@ import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandle
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.layoutsystem.model.MoreStreamsUserPreview
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -65,8 +65,10 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
+import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -559,7 +561,7 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
 
-        )
+            )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + HangUpAction()).toImmutableList()
         )
@@ -685,7 +687,7 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
 
-        )
+            )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + FlipCameraAction()).toImmutableList()
         )
@@ -707,7 +709,7 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
 
-        )
+            )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ChatAction()).toImmutableList()
         )
@@ -729,7 +731,7 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(
             sheetState = CallSheetState(CallSheetValue.Expanded),
 
-        )
+            )
         callActionsUiState.value = CallActionsUiState(
             actionList = (actions + ScreenShareAction.UserChoice(isToggled = true)).toImmutableList()
         )
@@ -767,7 +769,7 @@ class HCallScreenTest {
             .assertIsDisplayed()
             .performClick()
 
-       assertEquals(ModularComponent.ScreenShare, component)
+        assertEquals(ModularComponent.ScreenShare, component)
     }
 
     @Test
@@ -983,7 +985,7 @@ class HCallScreenTest {
     fun selectedStreamIdSet_streamMenuIsDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -991,9 +993,9 @@ class HCallScreenTest {
         composeTestRule.setUpHCallScreen(selectedStreamId = "streamId")
 
         composeTestRule
-                .onNodeWithText("username", useUnmergedTree = true)
-                .assertIsDisplayed()
-                .performClick()
+            .onNodeWithText("username", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
 
         composeTestRule.onNodeWithTag(StreamMenuContentTestTag).assertIsDisplayed()
     }
@@ -1002,7 +1004,7 @@ class HCallScreenTest {
     fun selectedStreamIdNotSet_onSelectedStreamIdInvoked() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1025,7 +1027,7 @@ class HCallScreenTest {
     fun userClicksOnStreamMenuCancel_onStreamSelectedCallbackToNull() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1064,7 +1066,7 @@ class HCallScreenTest {
     fun selectedStreamIdSet_dragHandleIsNotDisplayed() {
         val streamItem = StreamItem.Stream(
             id = "streamId",
-            stream = StreamUi(id = "streamId", username = "username"),
+            stream = StreamUi(id = "streamId", userInfo = UserInfo("userId", "username", ImmutableUri())),
         )
         streamUiState.value = StreamUiState(
             streamItems = listOf(streamItem).toImmutableList()
@@ -1155,10 +1157,10 @@ class HCallScreenTest {
     fun userClicksMoreParticipantsStream_onModularComponentChangeToParticipants() {
         val streams = listOf(
             StreamItem.MoreStreams(
-                users = listOf(
-                    MoreStreamsUserPreview("1", "user1", null),
-                    MoreStreamsUserPreview("2", "user2", null),
-                )
+                userInfos = listOf(
+                    UserInfo("1", "user1", ImmutableUri()),
+                    UserInfo("2", "user2", ImmutableUri()),
+                ).toImmutableList()
             )
         )
         streamUiState.value = StreamUiState(streamItems = streams.toImmutableList())
