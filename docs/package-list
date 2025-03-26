@@ -57,7 +57,7 @@ com.kaleyra.video_sdk.call.fileshare.view
 com.kaleyra.video_sdk.call.kicked.model
 com.kaleyra.video_sdk.call.kicked.view
 com.kaleyra.video_sdk.call.kicked.viewmodel
-com.kaleyra.video_sdk.call.mapper
+com.kaleyra.video_sdk.call.pip.view
 com.kaleyra.video_sdk.call.pointer.model
 com.kaleyra.video_sdk.call.pointer.view
 com.kaleyra.video_sdk.call.screen.model
@@ -65,7 +65,6 @@ com.kaleyra.video_sdk.call.screenshare.model
 com.kaleyra.video_sdk.call.stream.layoutsystem.config
 com.kaleyra.video_sdk.call.stream.layoutsystem.model
 com.kaleyra.video_sdk.call.stream.model.core
-com.kaleyra.video_sdk.call.stream.view.core
 com.kaleyra.video_sdk.call.stream.view.items
 com.kaleyra.video_sdk.call.viewmodel
 com.kaleyra.video_sdk.call.virtualbackground.model
@@ -78,6 +77,7 @@ com.kaleyra.video_sdk.common.snackbar.model
 com.kaleyra.video_sdk.common.snackbar.view
 com.kaleyra.video_sdk.common.text
 com.kaleyra.video_sdk.common.uistate
+com.kaleyra.video_sdk.common.user
 com.kaleyra.video_sdk.common.userinput
 com.kaleyra.video_sdk.common.usermessages.model
 com.kaleyra.video_sdk.common.usermessages.provider
