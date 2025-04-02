@@ -129,9 +129,9 @@ object InputMapper {
             .map { inputs -> inputs.any { it is Input.Audio } }
             .distinctUntilChanged()
 
-    fun Call.toAudioInput(): Flow<Input.Audio?> =
+    fun Call.toAudioInput(): Flow<Input.Audio.My?> =
         this.inputs.availableInputs
-            .map { it.filterIsInstance<Input.Audio>().firstOrNull() }
+            .map { it.filterIsInstance<Input.Audio.My>().firstOrNull() }
 
     fun Call.toCameraVideoInput(): Flow<Input.Video.My?> =
         this.inputs.availableInputs
