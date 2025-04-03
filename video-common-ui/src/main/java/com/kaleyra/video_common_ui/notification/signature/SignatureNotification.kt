@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification.fileshare
+package com.kaleyra.video_common_ui.notification.signature
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -28,20 +28,20 @@ import androidx.core.app.NotificationCompat
 import com.kaleyra.video_common_ui.R
 
 /**
- * FileShareNotification
+ * SignatureNotification
  */
-internal class FileShareNotification {
+internal class SignatureNotification {
 
     /**
      * Builder
      *
      * @property context The context used to construct the notification
-     * @property channelId The notification channel id
-     * @property channelName The notification channel name showed to the users
+     * @property channelId notification channel id
+     * @property channelName The notification channel name
      * @property contentText The notification content text
      * @property contentTitle The notification title
      * @property contentIntent The pending intent to be executed when the user tap on the notification
-     * @property downloadIntent The pending intent to be executed when the user tap on the download button
+     * @property signIntent The pending intent to be executed when the user tap on the sign button
      * @property notificationPriority The priority associated with this notification
      * @constructor
      */
@@ -52,7 +52,7 @@ internal class FileShareNotification {
         private var contentText: String = "",
         private var contentTitle: String = "",
         private var contentIntent: PendingIntent? = null,
-        private var downloadIntent: PendingIntent? = null,
+        private var signIntent: PendingIntent? = null,
         private var notificationPriority: Int = NotificationCompat.PRIORITY_HIGH
     ) {
 
@@ -73,14 +73,6 @@ internal class FileShareNotification {
         fun contentTitle(text: String) = apply { this.contentTitle = text }
 
         /**
-         * Set notification priority
-         *
-         * @param priority Notification priority to be assigned to the builder
-         * @return Builder
-         */
-        fun setPriority(priority: Int) = apply { this.notificationPriority = priority }
-
-        /**
          * The pending intent to be executed when the user tap on the notification
          *
          * @param pendingIntent PendingIntent
@@ -88,14 +80,22 @@ internal class FileShareNotification {
          */
         fun contentIntent(pendingIntent: PendingIntent) = apply { this.contentIntent = pendingIntent }
 
+
         /**
-         * The pending intent to be executed when the user taps the download file button
+         * The pending intent to be executed when the user taps the sign button
          *
          * @param pendingIntent PendingIntent
          * @return Builder
          */
-        fun downloadIntent(pendingIntent: PendingIntent) = apply { this.downloadIntent = pendingIntent }
+        fun signIntent(pendingIntent: PendingIntent) = apply { this.signIntent = pendingIntent }
 
+        /**
+         * Set notification priority
+         *
+         * @param priority Notification priority to be assigned to the builder
+         * @return Builder
+         */
+        fun setPriority(priority: Int) = apply { this.notificationPriority = priority }
 
         /**
          * Build the chat notification
@@ -113,7 +113,7 @@ internal class FileShareNotification {
                     .setVibrate(arrayOf(0L).toLongArray())
                     .setWhen(System.currentTimeMillis())
                     .setGroupSummary(false)
-                    .setSmallIcon(R.drawable.ic_kaleyra_file_share)
+                    .setSmallIcon(R.drawable.ic_kaleyra_file)
                     .setPriority(notificationPriority)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
@@ -123,8 +123,8 @@ internal class FileShareNotification {
                     .setContentInfo("")
 
             contentIntent?.also { builder.setContentIntent(it) }
-            downloadIntent?.also {
-                val downloadAction = NotificationCompat.Action(0, context.getString(R.string.kaleyra_notification_download), it)
+            signIntent?.also {
+                val downloadAction = NotificationCompat.Action(0, context.getString(R.string.kaleyra_signature_notification_action_sign), it)
                 builder.addAction(downloadAction)
             }
 
@@ -145,7 +145,11 @@ internal class FileShareNotification {
             val notificationChannel = NotificationChannel(
                 channelId,
                 channelName,
-                if (isLowPriority) NotificationManager.IMPORTANCE_LOW else NotificationManager.IMPORTANCE_HIGH
+                if (isLowPriority
+                    || (SignDocumentsVisibilityObserver.isDisplayed.value
+                        || SignDocumentViewVisibilityObserver.isDisplayed.value))
+                    NotificationManager.IMPORTANCE_LOW
+                else NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 enableVibration(true)

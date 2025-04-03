@@ -157,18 +157,6 @@ internal object ConferenceUIExtensions {
         NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
     }
 
-    fun ConferenceUI.configureCallActivityShow(coroutineScope: CoroutineScope) {
-        call
-            .onEach { call ->
-                if (call.state.value is Call.State.Disconnected.Ended) return@onEach
-                when {
-                    call.isLink -> call.showOnAppResumed(coroutineScope)
-                    call.shouldShowAsActivity() -> call.show()
-                }
-            }
-            .launchIn(coroutineScope)
-    }
-
     fun ConferenceUI.bindCallButtons(coroutineScope: CoroutineScope) {
         call
             .onEach { ongoingCall ->

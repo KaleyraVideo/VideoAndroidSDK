@@ -73,6 +73,13 @@
     <string name="kaleyra_utterance_recording_started">Recording starting now</string>
     <string name="kaleyra_utterance_recording_stopped">Recording stopped</string>
 
+    <!-- SIGNATURE -->
+    <string name="kaleyra_signature_notification_channel_name" translatable="false">Signature</string>
+    <string name="kaleyra_signature_notification_action_sign">Sign</string>
+    <string name="kaleyra_signature_notification_user_sending_file">%1$s sent you a document to sign.</string>
+    <string name="kaleyra_signature_notification_sign_content_message">Do you want to sign it?</string>
+
+
     <!-- CHAT NOTIFICATIONS -->
 
     <plurals name="kaleyra_new_messages">

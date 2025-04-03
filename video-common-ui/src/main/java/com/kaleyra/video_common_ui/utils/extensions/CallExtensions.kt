@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -51,7 +52,7 @@ object CallExtensions {
         val me = participants.value.me ?: return false
         val videos = me.streams.value.map { it.video.value }
         val video = videos.firstOrNull { it is Input.Video.Camera.Internal }
-        return with (video?.enabled?.value) { this is Input.Enabled.Local || this is Input.Enabled.Both }
+        return with(video?.enabled?.value) { this is Input.Enabled.Local || this is Input.Enabled.Both }
     }
 
     internal fun Call.isMyInternalCameraUsingFrontLens(): Boolean {
@@ -82,7 +83,7 @@ object CallExtensions {
         val participants = participants.value.list
         val streams = participants.map { it.streams.value }.flatten()
         val videos = streams.map { it.video.value }
-        return videos.any { it != null && with (it.enabled.value) { this is Input.Enabled.Remote || this is Input.Enabled.Both } && it is Input.Video.Camera }
+        return videos.any { it != null && with(it.enabled.value) { this is Input.Enabled.Remote || this is Input.Enabled.Both } && it is Input.Video.Camera }
     }
 
     internal fun Call.getMyInternalCamera() = inputs.availableInputs.value.firstOrNull { it is Input.Video.Camera.Internal }
@@ -107,7 +108,7 @@ object CallExtensions {
             }
         }.stateIn(scope)
 
-    fun CallUI.Action.toCallUIButton(): CallUI.Button = when(this) {
+    fun CallUI.Action.toCallUIButton(): CallUI.Button = when (this) {
         CallUI.Action.Audio -> CallUI.Button.AudioOutput
         CallUI.Action.CameraEffects -> CallUI.Button.CameraEffects
         CallUI.Action.ChangeVolume -> CallUI.Button.Volume
@@ -119,6 +120,7 @@ object CallExtensions {
         CallUI.Action.ScreenShare.App -> CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly)
         CallUI.Action.ScreenShare,
         CallUI.Action.ScreenShare.UserChoice -> CallUI.Button.ScreenShare()
+
         CallUI.Action.ScreenShare.WholeDevice -> CallUI.Button.ScreenShare(CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen)
         CallUI.Action.ShowParticipants -> CallUI.Button.Participants
         CallUI.Action.SwitchCamera -> CallUI.Button.FlipCamera
@@ -143,12 +145,23 @@ object CallExtensions {
             }
             .launchIn(scope)
 
+        sharedFolder.signDocuments
+            .filter { it.isNotEmpty() }
+            .onEach {
+                buttonsProvider
+                    ?.invoke((
+                        type.value.toCallButtons(actions?.value)
+                            + CallUI.Button.Signature)
+                        .toMutableSet()
+                    )
+            }.launchIn(scope)
+
         toDownloadFiles(scope)
             .combine(state) { downloadFiles, callState -> downloadFiles to callState }
             .takeWhile { (_, callState) ->
                 callState !is Call.State.Disconnected.Ended
             }
-            .filterNot {(downloadFiles, callS_tate) -> downloadFiles.isEmpty() }
+            .filterNot {(downloadFiles, _) -> downloadFiles.isEmpty() }
             .onEach {
                 buttonsProvider
                     ?.invoke((
@@ -158,5 +171,13 @@ object CallExtensions {
                     )
             }
             .launchIn(scope)
+    }
+
+    fun CallUI.configureCallActivityShow(coroutineScope: CoroutineScope) {
+        if (state.value is Call.State.Disconnected.Ended) return
+        when {
+            isLink -> showOnAppResumed(coroutineScope)
+            shouldShowAsActivity() -> show()
+        }
     }
 }

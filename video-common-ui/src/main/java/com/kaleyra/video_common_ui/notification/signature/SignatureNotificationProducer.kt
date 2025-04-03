@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification.fileshare
+package com.kaleyra.video_common_ui.notification.signature
 
 import android.app.Notification
 import android.content.Context
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
@@ -36,39 +36,35 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
-internal class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) : NotificationProducer() {
+const val EXTRA_SIGN_ID = "com.kaleyra.video_common_ui.EXTRA_SIGN_ID"
 
-    companion object {
-        const val EXTRA_DOWNLOAD_ID = "com.kaleyra.video_common_ui.EXTRA_DOWNLOAD_ID"
-    }
+internal class SignatureNotificationProducer(private val coroutineScope: CoroutineScope) : NotificationProducer() {
 
     private var job: Job? = null
 
     override fun bind(call: CallUI) {
         super.bind(call)
-        var lastNotifiedDownload: SharedFile? = null
+        var lastNotifiedSignDocument: SignDocument? = null
         val me = call.participants.value.me
         val context = ContextRetainer.context
-        job = call.sharedFolder.files
+        job = call.sharedFolder.signDocuments
             .transform { files ->
-                val lastDownload = files.lastOrNull { file -> file.sender.userId != me?.userId } ?: return@transform
-                if (lastNotifiedDownload != lastDownload) emit(lastDownload)
-                lastNotifiedDownload = lastDownload
-            }
-            .onEach {
-                if (!FileShareVisibilityObserver.isDisplayed.value) {
+                val lastSignDocument = files.lastOrNull { file -> file.sender.userId != me?.userId } ?: return@transform
+                if (lastNotifiedSignDocument != lastSignDocument) emit(lastSignDocument)
+                lastNotifiedSignDocument = lastSignDocument
+            }.onEach {
+                if (!SignDocumentsVisibilityObserver.isDisplayed.value) {
                     val notificationPriority = (notificationPresentationHandler
-                            ?.notificationPresentationHandler
-                            ?.invoke(com.kaleyra.video_common_ui.notification.model.Notification.DownloadFile)
-                            ?: com.kaleyra.video_common_ui.notification.model.Notification.PresentationMode.HighPriority
+                        ?.notificationPresentationHandler
+                        ?.invoke(com.kaleyra.video_common_ui.notification.model.Notification.SignDocument)
+                        ?: com.kaleyra.video_common_ui.notification.model.Notification.PresentationMode.HighPriority
                         ).toNotificationCompatPriority()
                     if (notificationPriority == PRIORITY_HIDDEN) return@onEach
                     val notification = buildNotification(context, call, it, notificationPriority, call.activityClazz)
                     NotificationManager.notify(it.id.hashCode(), notification)
                 }
-            }
-            .onCompletion {
-                call.sharedFolder.files.value.forEach {
+            }.onCompletion {
+                call.sharedFolder.signDocuments.value.forEach {
                     NotificationManager.cancel(it.id.hashCode())
                 }
             }
@@ -80,14 +76,12 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
         job?.cancel()
     }
 
-    private suspend fun buildNotification(context: Context, call: Call, sharedFile: SharedFile, notificationPriority: Int, activityClazz: Class<*>): Notification {
+    private suspend fun buildNotification(context: Context, call: Call, signDocument: SignDocument, notificationPriority: Int, activityClazz: Class<*>): Notification {
         val participants = call.participants.first()
-        val participant = participants.others.firstOrNull { it.userId == sharedFile.sender.userId }
+        val participant = participants.others.firstOrNull { it.userId == signDocument.sender.userId }
         val participantsList = participant?.userId?.let { listOf(it) } ?: listOf()
         ContactDetailsManager.refreshContactDetails(*participantsList.toTypedArray())
         val username = participant?.combinedDisplayName?.first() ?: participant?.userId ?: ""
-        return NotificationManager.buildIncomingFileNotification(context, username, sharedFile.id, notificationPriority, activityClazz)
+        return NotificationManager.buildIncomingSignatureNotification(context, username, signDocument.id, notificationPriority, activityClazz)
     }
-
-
 }

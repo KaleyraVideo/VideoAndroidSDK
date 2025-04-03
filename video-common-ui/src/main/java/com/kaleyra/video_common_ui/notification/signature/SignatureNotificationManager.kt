@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification.fileshare
+package com.kaleyra.video_common_ui.notification.signature
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -22,64 +22,65 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.kaleyra.video_common_ui.R
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 
-object FileShareNotificationExtra {
+object SignatureNotificationExtra {
     const val NOTIFICATION_ACTION_EXTRA = "notificationAction"
 }
 
-internal interface FileShareNotificationManager {
+internal interface SignatureNotificationManager {
 
     companion object {
-        private const val DEFAULT_CHANNEL_ID = "com.kaleyra.video_common_ui.fileshare_notification_channel_default"
-        private const val DEFAULT_CHANNEL_ID_LOW_PRIORITY = "com.kaleyra.video_common_ui.fileshare_notification_channel_low_priority"
+        private const val DEFAULT_CHANNEL_ID = "com.kaleyra.video_common_ui.signature_notification_channel_default"
+        private const val DEFAULT_CHANNEL_ID_LOW_PRIORITY = "com.kaleyra.video_common_ui.signature_notification_channel_low_priority"
 
-        private const val CONTENT_REQUEST_CODE = 121
-        private const val DOWNLOAD_REQUEST_CODE = 232
+        private const val CONTENT_REQUEST_CODE = 122
+        private const val SIGN_REQUEST_CODE = 233
     }
 
-    fun buildIncomingFileNotification(
+    fun buildIncomingSignatureNotification(
         context: Context,
         username: String,
-        downloadId: String,
+        signId: String,
         notificationPriority: Int,
         activityClazz: Class<*>
     ): Notification {
         val resources = context.resources
-
         val isLowPriority = notificationPriority == NotificationCompat.PRIORITY_LOW
-        val channelName = resources.getString(R.string.kaleyra_notification_file_share_channel_name)
-        val builder = FileShareNotification
+        val channelName = resources.getString(R.string.kaleyra_signature_notification_action_sign)
+
+        val builder = SignatureNotification
             .Builder(
                 context = context,
-                channelId = if (isLowPriority) DEFAULT_CHANNEL_ID_LOW_PRIORITY else  DEFAULT_CHANNEL_ID,
+                channelId = if (isLowPriority) DEFAULT_CHANNEL_ID_LOW_PRIORITY else DEFAULT_CHANNEL_ID,
                 channelName = if (isLowPriority) "$channelName low priority" else channelName
             )
             .contentTitle(resources.getString(
-                    R.string.kaleyra_notification_user_sharing_file,
+                    R.string.kaleyra_signature_notification_user_sending_file,
                     username
                 ))
-            .contentText(resources.getString(R.string.kaleyra_notification_download_file))
+            .contentText(resources.getString(
+                R.string.kaleyra_signature_notification_sign_content_message
+            ))
             .setPriority(notificationPriority)
-            .contentIntent(downloadContentPendingIntent(context, activityClazz, downloadId))
-            .downloadIntent(downloadPendingIntent(context, activityClazz, downloadId))
+            .contentIntent(displaySignDocumentsPendingIntent(context, activityClazz, signId))
+            .signIntent(signDocumentPendingIntent(context, activityClazz, signId))
 
         return builder.build()
     }
 
-    private fun downloadContentPendingIntent(context: Context, activityClazz: Class<*>, downloadId: String) =
-        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE + downloadId.hashCode(), activityClazz, null)
+    private fun displaySignDocumentsPendingIntent(context: Context, activityClazz: Class<*>, signId: String) =
+        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE + signId.hashCode(), activityClazz, null)
 
-    private fun downloadPendingIntent(
+    private fun signDocumentPendingIntent(
         context: Context,
         activityClazz: Class<*>,
-        downloadId: String
+        signId: String
     ) = createCallActivityPendingIntent(
             context,
-            DOWNLOAD_REQUEST_CODE + downloadId.hashCode(),
+            SIGN_REQUEST_CODE + signId.hashCode(),
             activityClazz,
-            Intent().putExtra(EXTRA_DOWNLOAD_ID, downloadId)
+            Intent().putExtra(EXTRA_SIGN_ID, signId)
         )
 
     private fun <T> createCallActivityPendingIntent(
@@ -95,7 +96,7 @@ internal interface FileShareNotificationManager {
             this.action = Intent.ACTION_MAIN
             this.addCategory(Intent.CATEGORY_LAUNCHER)
             this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.putExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA, FileShareNotificationActionReceiver.ACTION_DOWNLOAD)
+            this.putExtra(SignatureNotificationExtra.NOTIFICATION_ACTION_EXTRA, SignatureNotificationActionReceiver.ACTION_SIGN)
             intentExtras?.let { this.putExtras(it) }
         }
         return PendingIntent.getActivity(

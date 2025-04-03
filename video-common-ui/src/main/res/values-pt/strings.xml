@@ -70,4 +70,10 @@
         <item quantity="one">%s nova mensagem</item>
         <item quantity="other">Novas mensagens: %s</item>
     </plurals>
+
+    <!-- SIGNATURE -->
+    <string name="kaleyra_signature_notification_action_sign">Assinatura</string>
+    <string name="kaleyra_signature_notification_user_sending_file">%1$s enviou-lhe um documento para assinar.</string>
+    <string name="kaleyra_signature_notification_sign_content_message">Quer assiná-lo?</string>
+
 </resources>

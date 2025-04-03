@@ -1,8 +1,11 @@
 package com.kaleyra.video_common_ui.callservice
 
+import android.app.Application
 import android.app.Notification
 import android.app.Service
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.StreamsAudioManager
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
@@ -12,7 +15,11 @@ import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationProducer
 import com.kaleyra.video_common_ui.utils.DeviceUtils
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -31,15 +38,24 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class CallForegroundServiceWorkerTest {
 
-    private val callMock = mockk<CallUI>(relaxed = true)
+    private val callMock = mockk<CallUI>(relaxed = true) {
+        every { participants } returns MutableStateFlow(mockk(relaxed = true))
+    }
 
     @Before
     fun setUp() {
+        mockkObject(ContextExtensions)
+        mockkObject(ContextRetainer)
+        every { ContextRetainer.context } returns mockk<Application>(relaxed = true) {
+            every { applicationContext } returns mockk(relaxed = true)
+            every { isSilent() } returns false
+        }
         mockkObject(ProximityService)
         mockkObject(DeviceUtils)
         mockkStatic("com.kaleyra.video_common_ui.KaleyraVideoKt")
         mockkConstructor(CallNotificationProducer::class)
         mockkConstructor(FileShareNotificationProducer::class)
+        mockkConstructor(SignatureNotificationProducer::class)
         mockkConstructor(ScreenShareOverlayProducer::class)
         mockkConstructor(CameraStreamManager::class)
         mockkConstructor(StreamsManager::class)
@@ -47,6 +63,7 @@ class CallForegroundServiceWorkerTest {
         mockkConstructor(StreamsAudioManager::class)
         every { anyConstructed<CallNotificationProducer>().bind(callMock, any()) } returns Unit
         every { anyConstructed<FileShareNotificationProducer>().bind(callMock) } returns Unit
+        every { anyConstructed<SignatureNotificationProducer>().bind(callMock) } returns Unit
         every { anyConstructed<ScreenShareOverlayProducer>().bind(callMock) } returns Unit
         every { anyConstructed<CameraStreamManager>().bind(callMock) } returns Unit
         every { anyConstructed<StreamsManager>().bind(callMock) } returns Unit
@@ -70,6 +87,10 @@ class CallForegroundServiceWorkerTest {
 
     @Test
     fun testBindOnSmartphone() = runTest {
+        every { callMock.sharedFolder } returns mockk {
+            every { files } returns MutableStateFlow(setOf())
+            every { signDocuments } returns MutableStateFlow(setOf())
+        }
         every { DeviceUtils.isSmartGlass } returns false
         val listener = object : CallNotificationProducer.Listener {
             override fun onNewNotification(call: Call, notification: Notification, id: Int) = Unit
@@ -141,6 +162,10 @@ class CallForegroundServiceWorkerTest {
 
     @Test
     fun serviceStoppedOnCallEnded() = runTest {
+        every { callMock.sharedFolder } returns mockk {
+            every { files } returns MutableStateFlow(setOf())
+            every { signDocuments } returns MutableStateFlow(setOf())
+        }
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
         val service = mockk<Service>(relaxed = true)
         val callForegroundServiceWorker = CallForegroundServiceWorker(mockk(relaxed = true), this, mockk(relaxed = true))

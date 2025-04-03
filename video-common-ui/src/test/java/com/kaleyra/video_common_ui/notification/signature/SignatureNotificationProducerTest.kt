@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification.fileshare
+package com.kaleyra.video_common_ui.notification.signature
 
 import android.app.Activity
-import android.app.Application
 import androidx.core.app.NotificationCompat
-import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
-import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.sharedfolder.SharedFolder
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.notification.NotificationPresentationHandler
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.notification.model.Notification
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.coEvery
@@ -53,12 +53,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class FileShareNotificationProducerTest {
+class SignatureNotificationProducerTest {
 
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
@@ -71,20 +70,18 @@ class FileShareNotificationProducerTest {
 
     private val participantsMock = mockk<CallParticipants>()
 
-    private val downloadFileMock = mockk<SharedFile>()
-
-    private val uploadFileMock = mockk<SharedFile>()
+    private val signDocumentMock = mockk<SignDocument>()
 
     private val sharedFolderMock = mockk<SharedFolder>()
 
     @Before
     fun setUp() {
         ContextRetainer().create(ApplicationProvider.getApplicationContext())
-        mockkObject(FileShareVisibilityObserver)
+        mockkObject(SignDocumentsVisibilityObserver)
         mockkObject(NotificationManager)
         mockkObject(ContactDetailsManager)
         with(NotificationManager) {
-            every { buildIncomingFileNotification(any(), any(), any(), 1, any()) } returns mockk(relaxed = true)
+            every { buildIncomingSignatureNotification(any(), any(), any(), 1, any()) } returns mockk(relaxed = true)
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
@@ -92,7 +89,7 @@ class FileShareNotificationProducerTest {
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)
             every { sharedFolder } returns sharedFolderMock
-            every { activityClazz } returns this@FileShareNotificationProducerTest::class.java
+            every { activityClazz } returns this@SignatureNotificationProducerTest::class.java
         }
         with(otherParticipantMock) {
             every { userId } returns "otherUserId"
@@ -106,16 +103,12 @@ class FileShareNotificationProducerTest {
             every { others } returns listOf(otherParticipantMock)
             every { me } returns meParticipantMock
         }
-        with(downloadFileMock) {
-            every { id } returns "downloadId"
+        with(signDocumentMock) {
+            every { id } returns "signId"
             every { sender.userId } returns "otherUserId"
         }
-        with(uploadFileMock) {
-            every { id } returns "uploadId"
-            every { sender.userId } returns "myUserId"
-        }
         with(sharedFolderMock) {
-            every { files } returns MutableStateFlow(setOf(downloadFileMock))
+            every { signDocuments } returns MutableStateFlow(setOf(signDocumentMock))
         }
     }
 
@@ -125,101 +118,89 @@ class FileShareNotificationProducerTest {
     }
 
     @Test
-    fun testHighPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        fileShareNotificationProducer.bind(callMock)
+    fun testNotifySignDocument() = runTest(UnconfinedTestDispatcher()) {
+        val signatureNotificationProducer = SignatureNotificationProducer(backgroundScope)
+        every { SignDocumentsVisibilityObserver.isDisplayed.value } returns false
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
-        verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+        verify(exactly = 1) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", 1, this@SignatureNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.notify("signId".hashCode(), any()) }
     }
 
     @Test
-    fun testNotificationPresentationHandlerLowPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+    fun testNotificationPresentationHandlerLowPriorityNotifySignFile() = runTest(UnconfinedTestDispatcher()) {
         val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
         every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
             Notification.PresentationMode.LowPriority
         }
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
-        every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        fileShareNotificationProducer.bind(callMock)
+        val signatureNotificationProducer = SignatureNotificationProducer(backgroundScope)
+        signatureNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { SignDocumentsVisibilityObserver.isDisplayed.value } returns false
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_LOW, this@FileShareNotificationProducerTest::class.java) }
-        verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+        verify(exactly = 1) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", NotificationCompat.PRIORITY_LOW, this@SignatureNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.notify("signId".hashCode(), any()) }
     }
 
     @Test
-    fun testNotificationPresentationHandlerHighPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+    fun testNotificationPresentationHandlerHighPriorityNotifySignFile() = runTest(UnconfinedTestDispatcher()) {
         val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
         every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
             Notification.PresentationMode.HighPriority
         }
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
-        every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        fileShareNotificationProducer.bind(callMock)
+        val signatureNotificationProducer = SignatureNotificationProducer(backgroundScope)
+        signatureNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { SignDocumentsVisibilityObserver.isDisplayed.value } returns false
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
-        verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+        verify(exactly = 1) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", NotificationCompat.PRIORITY_HIGH, this@SignatureNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.notify("signId".hashCode(), any()) }
     }
 
     @Test
-    fun testNotificationPresentationHandlerHiddenNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+    fun testNotificationPresentationHandlerHiddenNotifySignFile() = runTest(UnconfinedTestDispatcher()) {
         val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
         every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
             Notification.PresentationMode.Hidden
         }
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
-        every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        fileShareNotificationProducer.bind(callMock)
+        val signatureNotificationProducer = SignatureNotificationProducer(backgroundScope)
+        signatureNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { SignDocumentsVisibilityObserver.isDisplayed.value } returns false
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 0) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
-        verify(exactly = 0) { NotificationManager.notify("downloadId".hashCode(), any()) }
+        verify(exactly = 0) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", NotificationCompat.PRIORITY_HIGH, this@SignatureNotificationProducerTest::class.java) }
+        verify(exactly = 0) { NotificationManager.notify("signId".hashCode(), any()) }
     }
 
-    @Test
-    fun testNotificationNotShownIfFileShareIsVisible() = runTest(UnconfinedTestDispatcher()) {
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        every { FileShareVisibilityObserver.isDisplayed.value } returns true
-        fileShareNotificationProducer.bind(callMock)
-        advanceUntilIdle()
-        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), 1, any()) }
-        verify(exactly = 0) { NotificationManager.notify(any(), any()) }
-    }
 
     @Test
-    fun testUploadIsNotNotified() = runTest(UnconfinedTestDispatcher()) {
-        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
-        every { FileShareVisibilityObserver.isDisplayed.value } returns false
-        every { callMock.sharedFolder } returns mockk {
-            every { files } returns MutableStateFlow(setOf(uploadFileMock))
-        }
-        fileShareNotificationProducer.bind(callMock)
+    fun testNotificationNotShownIfSignDocumentsIsVisible() = runTest(UnconfinedTestDispatcher()) {
+        val signatureNotificationProducer = SignatureNotificationProducer(backgroundScope)
+        every { SignDocumentsVisibilityObserver.isDisplayed.value } returns true
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
-        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), 1, any()) }
+        verify(exactly = 0) { NotificationManager.buildIncomingSignatureNotification(any(), any(), any(), 1, any()) }
         verify(exactly = 0) { NotificationManager.notify(any(), any()) }
     }
 
     @Test
     fun testNotificationIsCancelledOnScopeCancel() = runTest {
-        val fileShareNotificationProducer = FileShareNotificationProducer(this)
-        fileShareNotificationProducer.bind(callMock)
+        val signatureNotificationProducer = SignatureNotificationProducer(this)
+        signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coroutineContext.cancelChildren()
         coroutineContext.job.children.first().join()
-        verify { NotificationManager.cancel("downloadId".hashCode()) }
+        verify { NotificationManager.cancel("signId".hashCode()) }
     }
 
     @Test
     fun testStop() = runTest {
-        val fileShareNotificationProducer = spyk(FileShareNotificationProducer(this))
-        fileShareNotificationProducer.bind(callMock)
-        fileShareNotificationProducer.stop()
+        val signatureNotificationProducer = spyk(SignatureNotificationProducer(this))
+        signatureNotificationProducer.bind(callMock)
+        signatureNotificationProducer.stop()
     }
 }

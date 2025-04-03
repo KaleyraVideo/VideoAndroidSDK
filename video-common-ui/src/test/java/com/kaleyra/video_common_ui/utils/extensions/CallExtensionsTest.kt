@@ -24,9 +24,11 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.utils.AppLifecycle
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.getMyInternalCamera
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsbInput
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsersWithCameraEnabled
@@ -44,17 +46,21 @@ import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.toDownloadFil
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDND
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_utils.MutableSharedStateFlow
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -463,5 +469,73 @@ class CallExtensionsTest {
         assertEquals(CallUI.Action.ToggleCamera.toCallUIButton(), CallUI.Button.Camera)
         assertEquals(CallUI.Action.ToggleFlashlight.toCallUIButton(), CallUI.Button.FlashLight)
         assertEquals(CallUI.Action.ToggleMicrophone.toCallUIButton(), CallUI.Button.Microphone)
+    }
+
+    @Test
+    fun bindCallButtonsWhiteboardButtonAdded() = runTest {
+        every { call.state } returns MutableStateFlow(Call.State.Connected)
+        every { call.type } returns MutableStateFlow(Call.Type.audioVideo())
+        every { call.actions } returns null
+        every { call.whiteboard } returns mockk {
+            every { events } returns MutableSharedStateFlow(Whiteboard.Event.Request.Show("adminUserId"))
+        }
+        every { call.sharedFolder } returns mockk {
+            every { signDocuments } returns MutableStateFlow(setOf())
+            every { files } returns MutableStateFlow(setOf())
+        }
+        var buttons = setOf<CallUI.Button>()
+        every { call.buttonsProvider } returns { receivedButtons ->
+            buttons = receivedButtons
+            receivedButtons
+        }
+
+        call.bindCallButtons(backgroundScope)
+        runCurrent()
+
+        Assert.assertTrue(buttons.contains(CallUI.Button.Whiteboard))
+    }
+
+    @Test
+    fun bindCallButtonsSignatureButtonAdded() = runTest {
+        every { call.state } returns MutableStateFlow(Call.State.Connected)
+        every { call.type } returns MutableStateFlow(Call.Type.audioVideo())
+        every { call.actions } returns null
+        every { call.whiteboard } returns mockk { every { events } returns MutableSharedFlow() }
+        every { call.sharedFolder } returns mockk {
+            every { signDocuments } returns MutableStateFlow(setOf(mockk()))
+            every { files } returns MutableStateFlow(setOf())
+        }
+        var buttons = setOf<CallUI.Button>()
+        every { call.buttonsProvider } returns { receivedButtons ->
+            buttons = receivedButtons
+            receivedButtons
+        }
+
+        call.bindCallButtons(backgroundScope)
+        runCurrent()
+
+        Assert.assertTrue(buttons.contains(CallUI.Button.Signature))
+    }
+
+    @Test
+    fun bindCallButtonsFileShareButtonAdded() = runTest {
+        every { call.state } returns MutableStateFlow(Call.State.Connected)
+        every { call.type } returns MutableStateFlow(Call.Type.audioVideo())
+        every { call.actions } returns null
+        every { call.whiteboard } returns mockk { every { events } returns MutableSharedFlow() }
+        every { call.sharedFolder } returns mockk {
+            every { signDocuments } returns MutableStateFlow(setOf())
+            every { files } returns MutableStateFlow(setOf(mockk(relaxed = true)))
+        }
+        var buttons = setOf<CallUI.Button>()
+        every { call.buttonsProvider } returns { receivedButtons ->
+            buttons = receivedButtons
+            receivedButtons
+        }
+
+        call.bindCallButtons(backgroundScope)
+        runCurrent()
+
+        Assert.assertTrue(buttons.contains(CallUI.Button.FileShare))
     }
 }

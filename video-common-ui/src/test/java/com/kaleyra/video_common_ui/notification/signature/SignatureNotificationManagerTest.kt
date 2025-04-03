@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_common_ui.notification.fileshare
+package com.kaleyra.video_common_ui.notification.signature
 
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.R
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotification
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationExtra
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import io.mockk.every
@@ -35,66 +38,66 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
 
 @RunWith(RobolectricTestRunner::class)
-class FileShareNotificationManagerTest {
+class SignatureNotificationManagerTest {
 
-    private val fileShareNotificationManager = object : FileShareNotificationManager {}
+    private val signatureNotificationManager = object : SignatureNotificationManager {}
 
     @Before
     fun setUp() {
-        mockkConstructor(FileShareNotification.Builder::class)
-        every { anyConstructed<FileShareNotification.Builder>().contentTitle(any()) } answers { self as FileShareNotification.Builder }
-        every { anyConstructed<FileShareNotification.Builder>().contentText(any()) } answers { self as FileShareNotification.Builder }
-        every { anyConstructed<FileShareNotification.Builder>().contentIntent(any()) } answers { self as FileShareNotification.Builder }
-        every { anyConstructed<FileShareNotification.Builder>().setPriority(any()) } answers { self as FileShareNotification.Builder }
-        every { anyConstructed<FileShareNotification.Builder>().downloadIntent(any()) } answers { self as FileShareNotification.Builder }
-        every { anyConstructed<FileShareNotification.Builder>().build() } returns mockk(relaxed = true)
+        mockkConstructor(SignatureNotification.Builder::class)
+        every { anyConstructed<SignatureNotification.Builder>().contentTitle(any()) } answers { self as SignatureNotification.Builder }
+        every { anyConstructed<SignatureNotification.Builder>().contentText(any()) } answers { self as SignatureNotification.Builder }
+        every { anyConstructed<SignatureNotification.Builder>().contentIntent(any()) } answers { self as SignatureNotification.Builder }
+        every { anyConstructed<SignatureNotification.Builder>().setPriority(any()) } answers { self as SignatureNotification.Builder }
+        every { anyConstructed<SignatureNotification.Builder>().signIntent(any()) } answers { self as SignatureNotification.Builder }
+        every { anyConstructed<SignatureNotification.Builder>().build() } returns mockk(relaxed = true)
     }
 
     @Test
     fun testBuildIncomingFileNotification() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        fileShareNotificationManager.buildIncomingFileNotification(
+        signatureNotificationManager.buildIncomingSignatureNotification(
             context = context,
             username = "username",
-            downloadId = "downloadId",
+            signId = "signId",
             notificationPriority = 1,
             activityClazz = this::class.java
         )
         verify(exactly = 1) {
-            anyConstructed<FileShareNotification.Builder>().contentTitle(
+            anyConstructed<SignatureNotification.Builder>().contentTitle(
                 context.getString(
-                    R.string.kaleyra_notification_user_sharing_file,
+                    R.string.kaleyra_signature_notification_user_sending_file,
                     "username"
                 )
             )
         }
         verify(exactly = 1) {
-            anyConstructed<FileShareNotification.Builder>().contentText(
-                context.getString(R.string.kaleyra_notification_download_file)
+            anyConstructed<SignatureNotification.Builder>().contentText(
+                context.getString(R.string.kaleyra_signature_notification_sign_content_message)
             )
         }
         verify(exactly = 1) {
-            anyConstructed<FileShareNotification.Builder>().setPriority(1)
+            anyConstructed<SignatureNotification.Builder>().setPriority(1)
         }
         verify(exactly = 1) {
-            anyConstructed<FileShareNotification.Builder>().contentIntent(withArg {
+            anyConstructed<SignatureNotification.Builder>().contentIntent(withArg {
                 val intent = Shadows.shadowOf(it).savedIntent
                 assertEquals(PendingIntentExtensions.updateFlags, Shadows.shadowOf(it).flags)
                 assertEquals(Intent.ACTION_MAIN, intent.action)
                 assert(intent.hasCategory(Intent.CATEGORY_LAUNCHER))
                 assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.flags)
-                assertEquals(FileShareNotificationActionReceiver.ACTION_DOWNLOAD, intent.getStringExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA))
+                assertEquals(SignatureNotificationActionReceiver.ACTION_SIGN, intent.getStringExtra(SignatureNotificationExtra.NOTIFICATION_ACTION_EXTRA))
             })
         }
         verify(exactly = 1) {
-            anyConstructed<FileShareNotification.Builder>().downloadIntent(withArg {
+            anyConstructed<SignatureNotification.Builder>().signIntent(withArg {
                 val intent = Shadows.shadowOf(it).savedIntent
                 assertEquals(PendingIntentExtensions.updateFlags, Shadows.shadowOf(it).flags)
                 assertEquals(Intent.ACTION_MAIN, intent.action)
                 assert(intent.hasCategory(Intent.CATEGORY_LAUNCHER))
                 assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.flags)
-                assertEquals(FileShareNotificationActionReceiver.ACTION_DOWNLOAD, intent.getStringExtra(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA))
-                assertEquals("downloadId", intent.getStringExtra(EXTRA_DOWNLOAD_ID))
+                assertEquals(SignatureNotificationActionReceiver.ACTION_SIGN, intent.getStringExtra(SignatureNotificationExtra.NOTIFICATION_ACTION_EXTRA))
+                assertEquals("signId", intent.getStringExtra(EXTRA_SIGN_ID))
             })
         }
     }
