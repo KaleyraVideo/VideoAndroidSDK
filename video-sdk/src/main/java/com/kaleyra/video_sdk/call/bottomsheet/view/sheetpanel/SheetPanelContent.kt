@@ -3,12 +3,9 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel
 
 import android.content.res.Configuration
-import android.widget.Space
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,9 +43,9 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
@@ -113,6 +110,7 @@ internal fun SheetPanelContent(
                     is AudioAction -> onModularComponentRequest(ModularComponent.Audio)
                     is ChatAction -> onModularComponentRequest(ModularComponent.Chat)
                     is FileShareAction -> onModularComponentRequest(ModularComponent.FileShare)
+                    is SignatureAction -> onModularComponentRequest(ModularComponent.SignDocuments)
                     is WhiteboardAction -> onModularComponentRequest(ModularComponent.Whiteboard)
                     is VirtualBackgroundAction -> onModularComponentRequest(ModularComponent.VirtualBackground)
                     is HangUpAction -> viewModel.hangUp()
@@ -182,7 +180,8 @@ internal fun SheetPanelContentPreview() {
                         AudioAction(),
                         ChatAction(notificationCount = 4),
                         FileShareAction(notificationCount = 2),
-                        WhiteboardAction(notificationCount = 3),
+                        SignatureAction(notificationCount = 3),
+                        WhiteboardAction(notificationCount = 4),
                         ScreenShareAction.WholeDevice(),
                         VirtualBackgroundAction(),
                         MicAction(),

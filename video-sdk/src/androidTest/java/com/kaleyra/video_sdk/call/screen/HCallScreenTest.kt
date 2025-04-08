@@ -35,6 +35,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
@@ -52,6 +53,7 @@ import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
@@ -461,6 +463,25 @@ class HCallScreenTest {
     }
 
     @Test
+    fun testSheetActionsOnSmallScreen_onModularComponentChangeToSignDocuments() {
+        var component: ModularComponent? = null
+        composeTestRule.setUpHCallScreen(
+            modularComponent = null,
+            onModularComponentChange = { component = it }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(SignatureAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(ModularComponent.SignDocuments, component)
+    }
+
+    @Test
     fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
         var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpHCallScreen(
@@ -471,6 +492,34 @@ class HCallScreenTest {
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(ModularComponent.FileShare, componentDisplayed)
+    }
+
+    @Test
+    fun testModalSheetSignDocuments_signDocumentsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpHCallScreen(
+            modularComponent = ModularComponent.SignDocuments,
+            onModularComponentDisplayed = { componentDisplayed = it }
+        )
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        assertEquals(ModularComponent.SignDocuments, componentDisplayed)
+    }
+
+    @Test
+    fun testModalSheetSignDocumentView_signDocumentViewComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpHCallScreen(
+            modularComponent = ModularComponent.SignDocumentView,
+            onModularComponentDisplayed = { componentDisplayed = it }
+        )
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        assertEquals(ModularComponent.SignDocumentView, componentDisplayed)
     }
 
     @Test
@@ -1426,6 +1475,7 @@ class HCallScreenTest {
                 onModularComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
+                isTesting = true
             )
         }
     }

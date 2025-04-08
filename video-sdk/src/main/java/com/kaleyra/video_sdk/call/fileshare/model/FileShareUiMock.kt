@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.fileshare.model
 
 import android.net.Uri
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 
 /**
@@ -45,4 +46,17 @@ val mockDownloadSharedFile = SharedFileUi(
     time = 3254234L,
     state = SharedFileUi.State.InProgress(progress = .4f),
     isMine = false
+)
+
+/**
+ * Mock Sign Document File
+ */
+val mockSignDocumentFile = SignDocumentUi(
+    id = "1",
+    name = "upload.txt",
+    uri = ImmutableUri(Uri.EMPTY),
+    sender = "Mario",
+    creationTime = 324234L,
+    signView = null,
+    signState = SignDocumentUi.SignStateUi.Signing
 )

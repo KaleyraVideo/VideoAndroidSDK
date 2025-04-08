@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,9 +20,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
-import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
-import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.sheetitemslayout.SheetItemsSpacing
@@ -75,16 +72,20 @@ internal fun VSheetContent(
         },
         onAnswerClick = viewModel::accept,
         onHangUpClick = viewModel::hangUp,
-        onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val micPermission = inputPermissions.micPermission ?: return@lambda
-            if (micPermission.status.isGranted) viewModel.toggleMic(activity)
-            else micPermission.launchPermissionRequest()
-        } },
-        onCameraToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
-            if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
-            else cameraPermission.launchPermissionRequest()
-        } } ,
+        onMicToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val micPermission = inputPermissions.micPermission ?: return@lambda
+                if (micPermission.status.isGranted) viewModel.toggleMic(activity)
+                else micPermission.launchPermissionRequest()
+            }
+        },
+        onCameraToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
+                if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
+                else cameraPermission.launchPermissionRequest()
+            }
+        },
         onScreenShareToggle = remember(viewModel) {
             {
                 if (!viewModel.tryStopScreenShare()) {
@@ -123,6 +124,10 @@ internal fun VSheetContent(
             viewModel.clearFileShareBadge()
         },
         onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onSignatureClick = {
+            onModularComponentRequest(ModularComponent.SignDocuments)
+            viewModel.clearSignatureBadge()
+        },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
         modifier = modifier
@@ -147,6 +152,7 @@ internal fun VSheetContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
+    onSignatureClick: () -> Unit,
     onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxVSheetItems,
@@ -164,6 +170,7 @@ internal fun VSheetContent(
                 )
                 Spacer(Modifier.height(SheetItemsSpacing))
             }
+
             showMoreAction -> {
                 MoreAction(
                     badgeCount = moreNotificationCount,
@@ -198,6 +205,7 @@ internal fun VSheetContent(
                             onChatClick = onChatClick,
                             onFileShareClick = onFileShareClick,
                             onWhiteboardClick = onWhiteboardClick,
+                            onSignatureClick = onSignatureClick,
                             onVirtualBackgroundToggle = onVirtualBackgroundToggle
                         )
                     }

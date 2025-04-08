@@ -25,6 +25,8 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
+import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
@@ -39,6 +41,7 @@ internal val SidePanelTag = "SidePanelTag"
 internal fun SidePanel(
     modularComponent: ModularComponent,
     onDismiss: () -> Unit,
+    onOtherModularComponentReuquested: (ModularComponent) -> Unit,
     onChatDeleted: () -> Unit,
     onChatCreationFailed: () -> Unit,
     onComponentDisplayed: (ModularComponent?) -> Unit,
@@ -67,6 +70,19 @@ internal fun SidePanel(
                 )
 
                 ModularComponent.Whiteboard -> WhiteboardComponent(
+                    onDismiss = onDismiss,
+                    isLargeScreen = true
+                )
+
+                ModularComponent.SignDocuments -> SignDocumentsComponent(
+                    onDismiss = { onDismiss() },
+                    onSignDocumentSelected = {
+                        onOtherModularComponentReuquested(ModularComponent.SignDocumentView)
+                    },
+                    isLargeScreen = true
+                )
+
+                ModularComponent.SignDocumentView -> SignDocumentViewComponent(
                     onDismiss = onDismiss,
                     isLargeScreen = true
                 )

@@ -123,7 +123,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -141,7 +142,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -159,7 +161,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -177,7 +180,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -195,7 +199,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -213,7 +218,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = {},
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
@@ -233,7 +239,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
@@ -259,7 +266,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
@@ -285,7 +293,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
@@ -309,7 +318,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { arePermissionAsked = it },
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
@@ -330,7 +340,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
@@ -356,7 +367,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
@@ -382,7 +394,8 @@ class CallScreenModalSheetTest {
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = {}
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
@@ -410,7 +423,8 @@ class CallScreenModalSheetTest {
                 modularComponent = ModularComponent.VirtualBackground,
                 sheetState = sheetState!!,
                 onRequestDismiss = { dismissed = true },
-                onUserMessageActionClick = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
                 onAskInputPermissions = {},
                 lifecycleOwner = lifecycleOwner
             )
@@ -436,7 +450,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = { clicked = true }
+                onUserMessageActionClick = { clicked = true },
+                onRequestOtherModularComponent = { }
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
@@ -459,7 +474,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = {},
-                onUserMessageActionClick = { clicked = true }
+                onUserMessageActionClick = { clicked = true },
+                onRequestOtherModularComponent = { }
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
@@ -482,7 +498,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 
@@ -498,7 +515,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 
@@ -514,7 +532,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 
@@ -530,7 +549,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 
@@ -546,7 +566,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 
@@ -562,7 +583,8 @@ class CallScreenModalSheetTest {
                 sheetState = rememberModalBottomSheetState(),
                 onRequestDismiss = { },
                 onAskInputPermissions = { },
-                onUserMessageActionClick = { }
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { }
             )
         }
 

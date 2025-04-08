@@ -103,16 +103,20 @@ internal fun HSheetDragContent(
         inputPermissions = inputPermissions,
         contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
-        onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val micPermission = inputPermissions.micPermission ?: return@lambda
-            if (micPermission.status.isGranted) viewModel.toggleMic(activity)
-            else micPermission.launchPermissionRequest()
-        } },
-        onCameraToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
-            if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
-            else cameraPermission.launchPermissionRequest()
-        } },
+        onMicToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val micPermission = inputPermissions.micPermission ?: return@lambda
+                if (micPermission.status.isGranted) viewModel.toggleMic(activity)
+                else micPermission.launchPermissionRequest()
+            }
+        },
+        onCameraToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
+                if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
+                else cameraPermission.launchPermissionRequest()
+            }
+        },
         onScreenShareToggle = remember(viewModel) {
             {
                 if (!viewModel.tryStopScreenShare()) {
@@ -156,6 +160,10 @@ internal fun HSheetDragContent(
             viewModel.clearFileShareBadge()
         },
         onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onSignatureClick = {
+            onModularComponentRequest(ModularComponent.SignDocuments)
+            viewModel.clearSignatureBadge()
+        },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) }
     )
 }
@@ -174,6 +182,7 @@ internal fun HSheetDragContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
+    onSignatureClick: () -> Unit,
     modifier: Modifier = Modifier,
     itemsPerRow: Int = MaxHSheetDragItems,
     labels: Boolean = true,
@@ -193,31 +202,32 @@ internal fun HSheetDragContent(
         contentPadding = contentPadding,
         modifier = modifier
     ) {
-       itemsIndexed(
-           key = { _, item -> item.id },
-           span = { index, _ ->
-               if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow - (chunkedActions.size % itemsPerRow - 1))
-               else GridItemSpan(1)
-           },
-           items = chunkedActions
-       ) { _, callAction, ->
-           CallSheetItem(
-               callAction = callAction,
-               modifier = Modifier.animateItemPlacement(),
-               label = labels,
-               extended = false,
-               inputPermissions = inputPermissions,
-               onHangUpClick = onHangUpClick,
-               onMicToggle = onMicToggle,
-               onCameraToggle = onCameraToggle,
-               onScreenShareToggle = onScreenShareToggle,
-               onFlipCameraClick = onFlipCameraClick,
-               onAudioClick = onAudioClick,
-               onChatClick = onChatClick,
-               onFileShareClick = onFileShareClick,
-               onWhiteboardClick = onWhiteboardClick,
-               onVirtualBackgroundToggle = onVirtualBackgroundToggle
-           )
-       }
+        itemsIndexed(
+            key = { _, item -> item.id },
+            span = { index, _ ->
+                if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow - (chunkedActions.size % itemsPerRow - 1))
+                else GridItemSpan(1)
+            },
+            items = chunkedActions
+        ) { _, callAction ->
+            CallSheetItem(
+                callAction = callAction,
+                modifier = Modifier.animateItemPlacement(),
+                label = labels,
+                extended = false,
+                inputPermissions = inputPermissions,
+                onHangUpClick = onHangUpClick,
+                onMicToggle = onMicToggle,
+                onCameraToggle = onCameraToggle,
+                onScreenShareToggle = onScreenShareToggle,
+                onFlipCameraClick = onFlipCameraClick,
+                onAudioClick = onAudioClick,
+                onChatClick = onChatClick,
+                onFileShareClick = onFileShareClick,
+                onWhiteboardClick = onWhiteboardClick,
+                onSignatureClick = onSignatureClick,
+                onVirtualBackgroundToggle = onVirtualBackgroundToggle
+            )
+        }
     }
 }

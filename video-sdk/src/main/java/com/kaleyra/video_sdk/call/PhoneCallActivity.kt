@@ -39,12 +39,17 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.NavBackComponent
 import com.kaleyra.video_common_ui.notification.CallNotificationActionReceiver
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra
 import com.kaleyra.video_common_ui.notification.CallNotificationExtra.IS_CALL_SERVICE_RUNNING_EXTRA
+import com.kaleyra.video_common_ui.notification.NotificationPresentationHandler
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.model.Notification
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationActionReceiver
 import com.kaleyra.video_common_ui.proximity.ProximityCallActivity
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.isPictureInPictureModeSupported
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
@@ -65,7 +70,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * @property disableProximity Boolean true to disable proximity listener to trigger camera and display on/off, false otherwise
  * @property isPipSupported Boolean true if picture-in-picture mode is supported, false otherwise
  */
-internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, ServiceConnection {
+internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, NotificationPresentationHandler, ServiceConnection {
 
     private companion object {
         var pictureInPictureAspectRatio: Rational = Rational(9, 16)
@@ -73,7 +78,12 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
         val isInPipMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
         val shouldShowFileShare: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+        val shouldShowSignDocuments: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+        val shouldShowSignDocumentView: MutableStateFlow<Boolean> = MutableStateFlow(false)
     }
+
 
     private var isActivityFinishing: Boolean = false
 
@@ -81,11 +91,20 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
 
     private var isFileShareDisplayed: Boolean = false
 
+    private var areSignDocumentDisplayed: Boolean = false
+
+    private var isSignDocumentViewDisplayed: Boolean = false
+
     private var isWhiteboardDisplayed: Boolean = false
 
     private var isUsbCameraConnecting: Boolean = false
 
     private var isAskingInputPermissions: Boolean = false
+
+    override var notificationPresentationHandler: (Notification) -> Notification.PresentationMode = {
+        if (isInPipMode.value) Notification.PresentationMode.HighPriority
+        else Notification.PresentationMode.LowPriority
+    }
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -105,6 +124,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("activity phone created")
         handleIntentAction(intent)
         if (isPipSupported) {
             updatePipParams()?.let { setPictureInPictureParams(it) }
@@ -118,10 +138,14 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
             CallScreen(
                 windowSizeClass = calculateWindowSizeClass(this),
                 shouldShowFileShareComponent = shouldShowFileShare.collectAsStateWithLifecycle().value,
+                shouldShowSignDocuments = shouldShowSignDocuments.collectAsStateWithLifecycle().value,
+                shouldShowSignDocumentView = shouldShowSignDocumentView.collectAsStateWithLifecycle().value,
                 isInPipMode = isInPipMode.collectAsStateWithLifecycle().value,
                 enterPip = ::enterPipModeIfSupported,
                 onFileShareVisibility = ::onFileShareVisibility,
                 onWhiteboardVisibility = { isWhiteboardDisplayed = it },
+                onSignDocumentsVisibility = ::onSignDocumentsVisibility,
+                onSignDocumentViewVisibility = ::onSignDocumentViewVisibility,
                 onPresentationMode = ::onPresentationMode,
                 onPipAspectRatio = ::onAspectRatio,
                 onUsbCameraConnected = ::onUsbConnecting,
@@ -150,6 +174,7 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
 
     override fun onResume() {
         super.onResume()
+        println("activity phone resumed")
         isInForeground = true
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
         isInPipMode.value = isInPictureInPictureMode
@@ -229,6 +254,17 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
                 true
             }
 
+            SignatureNotificationActionReceiver.ACTION_SIGN -> {
+                forwardIntentToReceiver(intent, SignatureNotificationActionReceiver::class.java)
+
+                val call = KaleyraVideo.conference.call.replayCache.firstOrNull()
+
+                val hasMoreSignDocuments = (call?.sharedFolder?.signDocuments?.value?.filter { it.signState.value is SignDocument.SignState.Pending }?.count() ?: 0) > 1
+                if (hasMoreSignDocuments) shouldShowSignDocuments.value = true
+                else shouldShowSignDocumentView.value = true
+                true
+            }
+
             else -> false
         }
     }
@@ -246,6 +282,16 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, Se
     private fun onFileShareVisibility(isFileShareVisible: Boolean) {
         isFileShareDisplayed = isFileShareVisible
         if (isFileShareVisible) shouldShowFileShare.value = false
+    }
+
+    private fun onSignDocumentsVisibility(areSignDocumentsVisible: Boolean) {
+        areSignDocumentDisplayed = areSignDocumentsVisible
+        if (areSignDocumentsVisible) shouldShowSignDocuments.value = false
+    }
+
+    private fun onSignDocumentViewVisibility(isSignDocumentViewVisible: Boolean) {
+        isSignDocumentViewDisplayed = isSignDocumentViewVisible
+        if (isSignDocumentViewVisible) shouldShowSignDocumentView.value = false
     }
 
     private fun onAspectRatio(aspectRatio: Rational) {

@@ -62,7 +62,12 @@ import java.lang.ref.WeakReference
 @OptIn(ExperimentalCoroutinesApi::class)
 class CallUserMessagesProviderTest {
 
-    private val callMock = mockk<CallUI>(relaxed = true)
+    private val callMock = mockk<CallUI>(relaxed = true) {
+        every { sharedFolder } returns mockk {
+            every { signDocuments } returns MutableStateFlow(setOf())
+            every { files } returns MutableStateFlow(setOf())
+        }
+    }
 
     @Before
     fun setUp() {

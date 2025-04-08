@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -53,6 +54,8 @@ import com.kaleyra.video_sdk.call.brandlogo.view.BrandLogoComponent
 import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.HCallScreenScaffold
+import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickBroadcastReceiver
+import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
@@ -60,11 +63,15 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.shouldDisplayBrandLogo
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
+import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.StreamItemSpacing
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 
@@ -88,6 +95,7 @@ internal fun HCallScreen(
     onAskInputPermissions: (Boolean) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
+    isTesting: Boolean = false,
 ) {
     var sheetDragActions: ImmutableList<CallActionUI> by remember { mutableStateOf(ImmutableList()) }
     val hasSheetDragContent by remember(selectedStreamId) { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
@@ -206,11 +214,34 @@ internal fun HCallScreen(
         val streamViewModel: StreamViewModel = viewModel(
             factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
         )
+
+        val signDocumentsViewModel: SignDocumentsViewModel = viewModel(
+            factory = SignDocumentsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+        )
+
+        val fileShareViewModel: FileShareViewModel = viewModel(
+            factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
+        )
+
         val onUserMessageActionClick = remember(streamViewModel) {
             { message: UserMessage ->
                 when (message) {
                     is PinScreenshareMessage -> {
                         streamViewModel.pinStream(message.streamId, prepend = true, force = true); Unit
+                    }
+
+                    is SignatureMessage.New -> {
+                        if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed  }.size == 1) {
+                            signDocumentsViewModel.signDocument(signDocumentsViewModel.uiState.value.signDocuments.value.first())
+                            onModalSheetComponentRequest(ModularComponent.SignDocumentView)
+                        } else {
+                            onModalSheetComponentRequest(ModularComponent.SignDocuments)
+                        }
+                    }
+
+                    is DownloadFileMessage.New -> {
+                        fileShareViewModel.download(message.downloadId)
+                        onModalSheetComponentRequest(ModularComponent.FileShare)
                     }
 
                     else -> Unit
@@ -273,9 +304,11 @@ internal fun HCallScreen(
                 modularComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
+                onRequestOtherModularComponent = { onModalSheetComponentRequest(it) },
                 onComponentDisplayed = onModularComponentDisplayed,
                 onAskInputPermissions = onAskInputPermissions,
-                onUserMessageActionClick = onUserMessageActionClick
+                onUserMessageActionClick = onUserMessageActionClick,
+                isTesting = isTesting
             )
         }
     }

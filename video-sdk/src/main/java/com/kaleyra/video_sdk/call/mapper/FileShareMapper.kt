@@ -72,6 +72,17 @@ internal object FileShareMapper {
         }
     }
 
+    fun Call.toMySignDocumentsCreationTimes(): Flow<List<Long>> {
+        return combine(
+            toMe(),
+            sharedFolder.signDocuments
+        ) { me, signDocuments ->
+            signDocuments
+                .filter { it.sender.userId != me.userId }
+                .map { it.creationTime }
+        }
+    }
+
     private fun SharedFileUi.isCancelledUpload(): Boolean =
         isMine && state == SharedFileUi.State.Cancelled
 

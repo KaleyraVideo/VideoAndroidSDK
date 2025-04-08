@@ -131,6 +131,10 @@ internal fun HSheetContent(
             viewModel.clearFileShareBadge()
         },
         onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onSignatureClick = {
+            onModularComponentRequest(ModularComponent.SignDocuments)
+            viewModel.clearSignatureBadge()
+        },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
         modifier = modifier
@@ -156,6 +160,7 @@ internal fun HSheetContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
+    onSignatureClick: () -> Unit,
     onMoreToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
@@ -209,6 +214,7 @@ internal fun HSheetContent(
                             onChatClick = onChatClick,
                             onFileShareClick = onFileShareClick,
                             onWhiteboardClick = onWhiteboardClick,
+                            onSignatureClick = onSignatureClick,
                             onVirtualBackgroundToggle = onVirtualBackgroundToggle
                         )
                     }

@@ -28,6 +28,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.view.CallActionBadgeCount
@@ -85,6 +86,7 @@ private fun painterFor(callAction: CallActionUI) =
             if (callAction.isToggled) painterResource(id = R.drawable.ic_kaleyra_camera_off)
             else painterResource(id = R.drawable.ic_kaleyra_camera_on)
 
+        is SignatureAction -> painterResource(id = R.drawable.ic_kaleyra_signature)
         is HangUpAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_hang_up)
         is CustomAction -> painterResource(id = callAction.icon)
         else -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_virtual_background)
@@ -114,6 +116,7 @@ private fun textFor(callAction: CallActionUI) =
             else stringResource(R.string.kaleyra_call_sheet_disable)
 
         is HangUpAction -> stringResource(id = R.string.kaleyra_call_sheet_hang_up_action)
+        is SignatureAction -> stringResource(id = R.string.kaleyra_signature_sign)
         is CustomAction -> callAction.buttonTexts.text ?: ""
         else -> ""
     }

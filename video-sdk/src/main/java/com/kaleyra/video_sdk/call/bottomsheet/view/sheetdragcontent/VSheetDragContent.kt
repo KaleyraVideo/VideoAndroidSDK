@@ -73,16 +73,20 @@ internal fun VSheetDragContent(
         inputPermissions = inputPermissions,
         contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
-        onMicToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val micPermission = inputPermissions.micPermission ?: return@lambda
-            if (micPermission.status.isGranted) viewModel.toggleMic(activity)
-            else micPermission.launchPermissionRequest()
-        } },
-        onCameraToggle = remember(viewModel, inputPermissions) { lambda@ {
-            val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
-            if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
-            else cameraPermission.launchPermissionRequest()
-        } },
+        onMicToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val micPermission = inputPermissions.micPermission ?: return@lambda
+                if (micPermission.status.isGranted) viewModel.toggleMic(activity)
+                else micPermission.launchPermissionRequest()
+            }
+        },
+        onCameraToggle = remember(viewModel, inputPermissions) {
+            lambda@{
+                val cameraPermission = inputPermissions.cameraPermission ?: return@lambda
+                if (uiState.isCameraUsageRestricted || cameraPermission.status.isGranted) viewModel.toggleCamera(activity)
+                else cameraPermission.launchPermissionRequest()
+            }
+        },
         onScreenShareToggle = remember(viewModel) {
             {
                 if (!viewModel.tryStopScreenShare()) {
@@ -121,6 +125,10 @@ internal fun VSheetDragContent(
             viewModel.clearFileShareBadge()
         },
         onWhiteboardClick = { onModularComponentRequest(ModularComponent.Whiteboard) },
+        onSignatureClick = {
+            onModularComponentRequest(ModularComponent.SignDocuments)
+            viewModel.clearSignatureBadge()
+        },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) }
     )
 }
@@ -139,6 +147,7 @@ internal fun VSheetDragContent(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
+    onSignatureClick: () -> Unit,
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
     inputPermissions: InputPermissions = InputPermissions(),
@@ -171,6 +180,7 @@ internal fun VSheetDragContent(
                 onChatClick = onChatClick,
                 onFileShareClick = onFileShareClick,
                 onWhiteboardClick = onWhiteboardClick,
+                onSignatureClick = onSignatureClick,
                 onVirtualBackgroundToggle = onVirtualBackgroundToggle
             )
         }

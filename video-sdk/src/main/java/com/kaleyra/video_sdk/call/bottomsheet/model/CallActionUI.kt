@@ -5,25 +5,27 @@ import androidx.compose.runtime.Stable
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import java.util.UUID
 
-private const val MIC_ACTION_ID = "mic_action_id"
+const val MIC_ACTION_ID = "mic_action_id"
 
-private const val CAMERA_ACTION_ID = "camera_action_id"
+const val CAMERA_ACTION_ID = "camera_action_id"
 
-private const val FLIP_CAMERA_ACTION_ID = "flip_camera_action_id"
+const val FLIP_CAMERA_ACTION_ID = "flip_camera_action_id"
 
-private const val CHAT_ACTION_ID = "chat_action_id"
+const val CHAT_ACTION_ID = "chat_action_id"
 
-private const val WHITEBOARD_ACTION_ID = "whiteboard_action_id"
+const val WHITEBOARD_ACTION_ID = "whiteboard_action_id"
 
-private const val AUDIO_ACTION_ID = "audio_action_id"
+const val SIGNATURE_ACTION_ID = "signature_action_id"
 
-private const val FILE_SHARE_ACTION_ID = "file_share_action_id"
+const val AUDIO_ACTION_ID = "audio_action_id"
 
-private const val SCREEN_SHARE_ACTION_ID = "screen_share_action_id"
+const val FILE_SHARE_ACTION_ID = "file_share_action_id"
 
-private const val VIRTUAL_BACKGROUND_ACTION_ID = "virtual_background_action_id"
+const val SCREEN_SHARE_ACTION_ID = "screen_share_action_id"
 
-private const val HANG_UP_ACTION_ID = "hang_up_action_id"
+const val VIRTUAL_BACKGROUND_ACTION_ID = "virtual_background_action_id"
+
+const val HANG_UP_ACTION_ID = "hang_up_action_id"
 
 @Stable
 internal interface CallActionUI {
@@ -114,6 +116,13 @@ internal data class FileShareAction(
 @Immutable
 internal data class WhiteboardAction(
     override val id: String = WHITEBOARD_ACTION_ID,
+    override val isEnabled: Boolean = true,
+    override val notificationCount: Int = 0
+) : NotifiableCallAction
+
+@Immutable
+internal data class SignatureAction(
+    override val id: String = SIGNATURE_ACTION_ID,
     override val isEnabled: Boolean = true,
     override val notificationCount: Int = 0
 ) : NotifiableCallAction
