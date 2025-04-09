@@ -489,7 +489,12 @@ internal fun shouldDisplayBrandLogo(callStateUi: CallStateUi, hasConnectedCallOn
 
 private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
     return modularComponent.let {
-        it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
+        it == ModularComponent.Chat
+            || it == ModularComponent.FileShare
+            || it == ModularComponent.Whiteboard
+            || it == ModularComponent.Participants
+            || it == ModularComponent.SignDocuments
+            || it == ModularComponent.SignDocumentView
     }
 }
 
