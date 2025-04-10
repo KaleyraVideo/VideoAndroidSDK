@@ -116,7 +116,7 @@ internal class FileShareNotification {
 
             contentIntent?.also { builder.setContentIntent(it) }
             downloadIntent?.also {
-                val downloadAction = NotificationCompat.Action(0, context.getString(R.string.kaleyra_notification_download), it)
+                val downloadAction = NotificationCompat.Action(0, context.getString(R.string.kaleyra_strings_action_download), it)
                 builder.addAction(downloadAction)
             }
 

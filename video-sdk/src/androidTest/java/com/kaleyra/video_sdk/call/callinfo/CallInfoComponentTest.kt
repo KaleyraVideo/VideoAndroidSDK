@@ -9,7 +9,6 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
@@ -46,7 +45,7 @@ class CallInfoComponentTest {
 
     @Test
     fun callUiStateConnecting_noDisplayNames_callDisplayStateTitleShown() {
-        val textRef = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val textRef = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = ImmutableList(),
@@ -60,7 +59,7 @@ class CallInfoComponentTest {
 
     @Test
     fun callUiStateConnecting_withDisplayNames_titleAndSubtitlesShown() {
-        val textRef = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val textRef = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = ImmutableList(listOf("user1")),
@@ -265,8 +264,8 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateDeclined_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_status_declined, callee.value.size)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_declines, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -283,8 +282,8 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateDeclined_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_status_declined, callee.value.size)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_declines, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -301,7 +300,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateLineBusy_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val textRef = TextRef.StringResource(R.string.kaleyra_call_status_ended_line_busy)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
@@ -319,7 +318,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateLineBusy_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val textRef = TextRef.StringResource(R.string.kaleyra_call_status_ended_line_busy)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
@@ -337,8 +336,8 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateNoAnswer_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_status_no_answer, callee.value.size)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_no_answer, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -355,8 +354,8 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateNoAnswer_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_status_no_answer, callee.value.size)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_no_answer, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -373,7 +372,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateLineAnsweredOnAnotherDevice_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val textRef = TextRef.StringResource(R.string.kaleyra_call_status_answered_on_other_device)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
@@ -391,7 +390,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateAnsweredOnAnotherDevice_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val textRef = TextRef.StringResource(R.string.kaleyra_call_status_answered_on_other_device)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
@@ -409,7 +408,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateError_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -426,7 +425,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateError_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -443,7 +442,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateErrorServer_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -460,7 +459,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateErrorServer_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -477,7 +476,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateErrorUnknown_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -494,7 +493,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateErrorUnknown_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         val callFailed = composeTestRule.activity.getString(R.string.kaleyra_call_failed)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -511,7 +510,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateEnded_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,
@@ -526,7 +525,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateEnded_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,
@@ -541,7 +540,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateHungUp_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,
@@ -556,7 +555,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateHungUp_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,
@@ -571,7 +570,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateKicked_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,
@@ -586,7 +585,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateKicked_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
+        val callEnded = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
             displayState = null,

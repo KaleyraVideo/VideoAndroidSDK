@@ -58,7 +58,7 @@ internal class CallRecordingTextToSpeechNotifier(
                 if (!shouldNotify || !voicePromptsEnabled) return@onEach
                 when (recording.type) {
                     Call.Recording.Type.Automatic -> {
-                        val text = context.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded)
+                        val text = context.getString(R.string.kaleyra_strings_description_call_recorded)
                         callTextToSpeech.speak(text)
                     }
                     else -> Unit

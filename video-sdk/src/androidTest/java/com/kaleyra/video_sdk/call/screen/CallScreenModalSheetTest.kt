@@ -160,7 +160,7 @@ class CallScreenModalSheetTest {
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(componentDisplayed, ModularComponent.FileShare)
     }
@@ -285,7 +285,7 @@ class CallScreenModalSheetTest {
                 onUserMessageActionClick = {}
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
@@ -459,7 +459,7 @@ class CallScreenModalSheetTest {
                 onUserMessageActionClick = { clicked = true }
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule

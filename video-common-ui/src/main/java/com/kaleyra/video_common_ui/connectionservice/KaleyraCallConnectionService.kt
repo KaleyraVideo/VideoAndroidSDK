@@ -155,7 +155,7 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
         coroutineScope.launch {
             val participants = call.participants.value
             val callee = if (participants.others.size > 1) {
-                resources.getString(R.string.kaleyra_notification_incoming_group_call)
+                resources.getString(R.string.kaleyra_strings_system_android_notification_title_call)
             } else {
                 val other = participants.others.firstOrNull()
                 other?.combinedDisplayName?.filterNotNull()?.firstOrNull() ?: other?.userId ?: ""

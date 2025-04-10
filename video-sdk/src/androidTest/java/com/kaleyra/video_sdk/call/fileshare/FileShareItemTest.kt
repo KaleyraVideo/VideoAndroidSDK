@@ -228,7 +228,7 @@ class FileShareItemTest {
     @Test
     fun download_downloadIconDisplayed() {
         sharedFile = mockDownloadSharedFile
-        val download = composeTestRule.activity.getString(R.string.kaleyra_fileshare_download)
+        val download = composeTestRule.activity.getString(R.string.kaleyra_strings_action_download)
         composeTestRule.onNodeWithContentDescription(download).assertIsDisplayed()
     }
 }

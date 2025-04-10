@@ -65,14 +65,14 @@ class SheetPanelItemTest {
     @Test
     fun chatAction_chatTextIsDisplayed() {
         callAction = ChatAction()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun fileShareAction_fileShareTextIsDisplayed() {
         callAction = FileShareAction()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -93,14 +93,14 @@ class SheetPanelItemTest {
     @Test
     fun screenShareAction_screenShareTextIsDisplayed() {
         callAction = ScreenShareAction.UserChoice()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun screenShareActionToggled_stopScreenShareTextIsDisplayed() {
         callAction = ScreenShareAction.UserChoice(isToggled = true)
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -135,7 +135,7 @@ class SheetPanelItemTest {
     @Test
     fun hangUpAction_endTextIsDisplayed() {
         callAction = HangUpAction()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

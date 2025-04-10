@@ -46,7 +46,7 @@ class CallSheetItemTest {
 
     @Test
     fun hangUpActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = HangUpAction(isEnabled = true),
@@ -70,7 +70,7 @@ class CallSheetItemTest {
 
     @Test
     fun hangUpActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = HangUpAction(isEnabled = false),
@@ -286,7 +286,7 @@ class CallSheetItemTest {
 
     @Test
     fun chatActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ChatAction(isEnabled = true),
@@ -310,7 +310,7 @@ class CallSheetItemTest {
 
     @Test
     fun chatActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ChatAction(isEnabled = false),
@@ -334,7 +334,7 @@ class CallSheetItemTest {
 
     @Test
     fun fileShareActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FileShareAction(isEnabled = true),
@@ -358,7 +358,7 @@ class CallSheetItemTest {
 
     @Test
     fun fileShareActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FileShareAction(isEnabled = false),
@@ -382,7 +382,7 @@ class CallSheetItemTest {
 
     @Test
     fun screenShareActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ScreenShareAction.UserChoice(isEnabled = true),
@@ -406,7 +406,7 @@ class CallSheetItemTest {
 
     @Test
     fun screenShareActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ScreenShareAction.UserChoice(isEnabled = false),
@@ -527,7 +527,7 @@ class CallSheetItemTest {
     @Test
     fun testOnHangUpActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = HangUpAction(),
@@ -657,7 +657,7 @@ class CallSheetItemTest {
     @Test
     fun testOnChatActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ChatAction(),
@@ -683,7 +683,7 @@ class CallSheetItemTest {
     @Test
     fun testOnFileShareActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FileShareAction(),
@@ -709,7 +709,7 @@ class CallSheetItemTest {
     @Test
     fun testOnScreenShareActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ScreenShareAction.UserChoice(),
@@ -786,7 +786,7 @@ class CallSheetItemTest {
 
     @Test
     fun hangUpActionNotExtended_actionHasDefaultWidth() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = HangUpAction(),
@@ -812,7 +812,7 @@ class CallSheetItemTest {
 
     @Test
     fun hangUpActionExtended_actionHasExtendedWidth() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = HangUpAction(),
@@ -930,7 +930,7 @@ class CallSheetItemTest {
 
     @Test
     fun chatActionLabelTrue_actionHasLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ChatAction(),
@@ -953,7 +953,7 @@ class CallSheetItemTest {
 
     @Test
     fun chatActionLabelFalse_actionHasNoLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ChatAction(),
@@ -976,7 +976,7 @@ class CallSheetItemTest {
 
     @Test
     fun fileShareActionLabelTrue_actionHasLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FileShareAction(),
@@ -999,7 +999,7 @@ class CallSheetItemTest {
 
     @Test
     fun fileShareActionLabelFalse_actionHasNoLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FileShareAction(),
@@ -1022,7 +1022,7 @@ class CallSheetItemTest {
 
     @Test
     fun screenShareActionLabelTrue_actionHasLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ScreenShareAction.UserChoice(),
@@ -1045,7 +1045,7 @@ class CallSheetItemTest {
 
     @Test
     fun screenShareActionLabelFalse_actionHasNoLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = ScreenShareAction.UserChoice(),

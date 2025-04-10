@@ -33,7 +33,6 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.tryToOpenFile
 import com.kaleyra.video_sdk.R
@@ -55,7 +54,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 class FileShareComponentTest {
 
@@ -117,7 +115,7 @@ class FileShareComponentTest {
 
     @Test
     fun fileShareTopAppBarShown() {
-        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
     }
 

@@ -50,14 +50,14 @@ class DayHeaderTest {
     @Test
     fun nowTime_todayIsDisplayed() {
         time.value = Instant.now().toEpochMilli()
-        val today = composeTestRule.activity.getString(R.string.kaleyra_today)
+        val today = composeTestRule.activity.getString(R.string.kaleyra_strings_info_today)
         composeTestRule.onNodeWithText(today).assertIsDisplayed()
     }
 
     @Test
     fun yesterdayTime_yesterdayIsDisplayed() {
         time.value = Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli()
-        val yesterday = composeTestRule.activity.getString(R.string.kaleyra_yesterday)
+        val yesterday = composeTestRule.activity.getString(R.string.kaleyra_strings_info_yesterday)
         composeTestRule.onNodeWithText(yesterday).assertIsDisplayed()
     }
 

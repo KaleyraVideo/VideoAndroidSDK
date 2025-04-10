@@ -61,12 +61,12 @@ object TimestampUtils {
             when {
                 zonedDateTime.isToday() -> time
                 zonedDateTime.isYesterday() -> {
-                    val yesterday = resources.getString(R.string.kaleyra_yesterday)
-                    resources.getString(R.string.kaleyra_day_time_pattern, yesterday, time)
+                    val yesterday = resources.getString(R.string.kaleyra_strings_info_yesterday)
+                    resources.getString(R.string.kaleyra_strings_info_day_time_pattern, yesterday, time)
                 }
                 else -> {
                     val day = zonedDateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                    resources.getString(R.string.kaleyra_day_time_pattern, day, time)
+                    resources.getString(R.string.kaleyra_strings_info_day_time_pattern, day, time)
                 }
             }
         } else DateTimeFormatter
@@ -89,8 +89,8 @@ object TimestampUtils {
             .atZone(ZoneId.systemDefault())
 
         return when {
-            zonedDateTime.isToday() -> context.resources.getString(R.string.kaleyra_today)
-            zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_yesterday)
+            zonedDateTime.isToday() -> context.resources.getString(R.string.kaleyra_strings_info_today)
+            zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_strings_info_yesterday)
             else -> DateTimeFormatter
                 .ofLocalizedDate(FormatStyle.LONG)
                 .withLocale(Locale.getDefault())

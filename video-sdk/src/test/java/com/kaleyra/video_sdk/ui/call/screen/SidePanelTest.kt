@@ -27,7 +27,6 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -106,7 +105,7 @@ class SidePanelTest {
     @Test
     fun fileShareComponent_fileShareComponentIsDisplayed() {
         component = ModularComponent.FileShare
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.FileShare)
     }

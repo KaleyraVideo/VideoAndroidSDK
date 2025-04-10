@@ -49,7 +49,7 @@ class ActiveScreenShareIndicatorTest {
 
     @Test
     fun testButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onNodeWithText(text)
             .assertHasClickAction()
@@ -58,7 +58,7 @@ class ActiveScreenShareIndicatorTest {
 
     @Test
     fun testButtonIsClicked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule.onNodeWithText(text).performClick()
         assertEquals(true, clicked)
     }
@@ -73,7 +73,7 @@ class ActiveScreenShareIndicatorTest {
     @Config(qualifiers = "w640dp-h360dp")
     @Test
     fun testButtonIsDisplayedInLandscape() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onNodeWithText(text)
             .assertHasClickAction()
@@ -83,7 +83,7 @@ class ActiveScreenShareIndicatorTest {
     @Config(qualifiers = "w640dp-h360dp")
     @Test
     fun testButtonIsClickedInLandscape() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule.onNodeWithText(text).performClick()
         assertEquals(true, clicked)
     }

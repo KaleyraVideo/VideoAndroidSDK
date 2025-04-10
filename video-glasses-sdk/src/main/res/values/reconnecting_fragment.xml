@@ -45,7 +45,7 @@
 
     <!-- SUBTITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_connecting</item>
+        <item name="android:text">@string/kaleyra_strings_info_status_connecting</item>
     </style>
 
     <!-- COUNTER -->

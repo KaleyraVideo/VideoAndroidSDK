@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="@string/kaleyra_glass_call_ended" />
+        tools:text="@string/kaleyra_strings_info_call_ended" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/kaleyra_subtitle"

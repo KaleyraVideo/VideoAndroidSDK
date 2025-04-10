@@ -80,7 +80,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
         val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
@@ -108,7 +108,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
         val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
@@ -132,7 +132,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
         val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
@@ -166,7 +166,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         val fileShareLeft = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().left
         val fileShareRight = composeTestRule.onNodeWithText(fileShareText).getBoundsInRoot().right
 
@@ -214,7 +214,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -336,7 +336,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -360,7 +360,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -425,7 +425,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -493,7 +493,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -516,7 +516,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -539,7 +539,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -566,7 +566,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -593,7 +593,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -621,7 +621,7 @@ class HSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -637,8 +637,8 @@ class HSheetDragContentTest {
         val width = CallActionDefaults.MinButtonSize * itemsPerRow + SheetItemsSpacing
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
-        val fileshare = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
-        val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val fileshare = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
+        val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             HSheetDragContent(
                 callActions = ImmutableList(
@@ -764,7 +764,7 @@ class HSheetDragContentTest {
     @Test
     fun testOnScreenShareClick() {
         var isClicked: Boolean? = null
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             HSheetDragContent(
                 callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
@@ -836,7 +836,7 @@ class HSheetDragContentTest {
     @Test
     fun testOnChatClick() {
         var isClicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             HSheetDragContent(
                 callActions = ImmutableList(listOf(ChatAction())),
@@ -860,7 +860,7 @@ class HSheetDragContentTest {
     @Test
     fun testOnFileShareClick() {
         var isClicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             HSheetDragContent(
                 callActions = ImmutableList(listOf(FileShareAction())),

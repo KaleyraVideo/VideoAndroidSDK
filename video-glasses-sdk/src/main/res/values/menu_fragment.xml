@@ -119,7 +119,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Chat" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_chat</item>
+        <item name="android:text">@string/kaleyra_strings_action_chat</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Custom" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">

@@ -27,7 +27,6 @@ import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -94,7 +93,7 @@ internal interface ChatNotificationManager {
             .Builder(
                 context,
                 DEFAULT_CHANNEL_ID,
-                context.resources.getString(R.string.kaleyra_notification_chat_channel_name)
+                context.resources.getString(R.string.kaleyra_strings_system_android_conversation_notification_channel)
             )
             .myUserId(myUserId)
             .myUsername(myUserName)

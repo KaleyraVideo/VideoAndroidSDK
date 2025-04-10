@@ -73,7 +73,7 @@ class CallNotificationManagerTest {
         }
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().contentText(
-                resources.getString(R.string.kaleyra_notification_tap_to_return_to_call)
+                resources.getString(R.string.kaleyra_strings_action_return_to_call)
             )
         }
         verify(exactly = 1) {
@@ -124,12 +124,12 @@ class CallNotificationManagerTest {
         buildIncomingCallNotification(isGroupCall = true)
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().user(
-                resources.getString(R.string.kaleyra_notification_incoming_group_call)
+                resources.getString(R.string.kaleyra_strings_system_android_notification_title_call)
             )
         }
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().contentText(
-                resources.getString(R.string.kaleyra_notification_tap_to_return_to_group_call)
+                resources.getString(R.string.kaleyra_strings_action_return_to_call)
             )
         }
     }
@@ -210,7 +210,7 @@ class CallNotificationManagerTest {
             anyConstructed<CallNotification.Builder>().user("username")
         }
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_tap_to_return_to_call))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_action_return_to_call))
         }
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().enableCallStyle(false)
@@ -224,10 +224,10 @@ class CallNotificationManagerTest {
         val resources = ApplicationProvider.getApplicationContext<Context>().resources
         buildOutgoingCallNotification(isGroupCall = true)
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_notification_outgoing_group_call))
+            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_strings_system_android_notification_title_call))
         }
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_tap_to_return_to_group_call))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_action_return_to_call))
         }
     }
 
@@ -278,7 +278,7 @@ class CallNotificationManagerTest {
             anyConstructed<CallNotification.Builder>().user("username")
         }
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_tap_to_return_to_call))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_action_return_to_call))
         }
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().enableCallStyle(false)
@@ -296,10 +296,10 @@ class CallNotificationManagerTest {
         val resources = ApplicationProvider.getApplicationContext<Context>().resources
         buildOngoingCallNotification(isGroupCall = true)
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_notification_ongoing_group_call))
+            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_strings_system_android_notification_title_call))
         }
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_tap_to_return_to_group_call))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_action_return_to_call))
         }
     }
 
@@ -308,7 +308,7 @@ class CallNotificationManagerTest {
         val resources = ApplicationProvider.getApplicationContext<Context>().resources
         buildOngoingCallNotification(isLink = true)
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_notification_ongoing_call))
+            anyConstructed<CallNotification.Builder>().user(resources.getString(R.string.kaleyra_strings_system_android_notification_title_call))
         }
     }
 
@@ -317,7 +317,7 @@ class CallNotificationManagerTest {
         val resources = ApplicationProvider.getApplicationContext<Context>().resources
         buildOngoingCallNotification(isCallRecorded = true)
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_call_recorded))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_info_call_recording_started))
         }
     }
 
@@ -326,7 +326,7 @@ class CallNotificationManagerTest {
         val resources = ApplicationProvider.getApplicationContext<Context>().resources
         buildOngoingCallNotification(isConnecting = true)
         verify(exactly = 1) {
-            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_notification_connecting_call))
+            anyConstructed<CallNotification.Builder>().contentText(resources.getString(R.string.kaleyra_strings_info_status_connecting))
         }
         verify(exactly = 1) {
             anyConstructed<CallNotification.Builder>().timer(false)

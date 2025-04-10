@@ -85,7 +85,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -150,7 +150,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -216,7 +216,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -239,7 +239,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -262,7 +262,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -286,7 +286,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -331,7 +331,7 @@ class SheetPanelContentTest {
                 onItemClick = { callAction = it }
             )
         }
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -344,7 +344,7 @@ class SheetPanelContentTest {
                 onItemClick = { callAction = it }
             )
         }
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -394,7 +394,7 @@ class SheetPanelContentTest {
                 onItemClick = { callAction = it }
             )
         }
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.onNodeWithText(text).performClick()
         Assert.assertEquals(action, callAction)
     }

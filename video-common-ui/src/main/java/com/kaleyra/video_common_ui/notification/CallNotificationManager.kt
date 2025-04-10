@@ -78,13 +78,13 @@ internal interface CallNotificationManager {
         if (isHighPriority && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             context.turnOnScreen()
 
-        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_incoming_group_call) else username
-        val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call)
+        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_strings_system_android_notification_title_call) else username
+        val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_strings_action_return_to_call else R.string.kaleyra_strings_action_return_to_call)
         val builder = CallNotification
             .Builder(
                 context = context,
                 channelId = if (isHighPriority) IMPORTANT_CHANNEL_ID else DEFAULT_CHANNEL_ID,
-                channelName = context.resources.getString(if (isHighPriority) R.string.kaleyra_notification_call_channel_high_priority_name else R.string.kaleyra_notification_call_channel_low_priority_name),
+                channelName = context.resources.getString(if (isHighPriority) R.string.kaleyra_strings_system_android_conference_high_priority_notification_channel else R.string.kaleyra_strings_system_android_conference_low_priority_notification_channel),
                 type = CallNotification.Type.INCOMING
             )
             .user(userText)
@@ -118,13 +118,13 @@ internal interface CallNotificationManager {
         enableCallStyle: Boolean,
     ): Notification {
         val context = ContextRetainer.context
-        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_notification_outgoing_group_call) else username
-        val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_notification_tap_to_return_to_group_call else R.string.kaleyra_notification_tap_to_return_to_call)
+        val userText = if (isGroupCall) context.resources.getString(R.string.kaleyra_strings_system_android_notification_title_call) else username
+        val tapToReturnText = context.getString(if (isGroupCall) R.string.kaleyra_strings_action_return_to_call else R.string.kaleyra_strings_action_return_to_call)
         val builder = CallNotification
             .Builder(
                 context = context,
                 channelId = DEFAULT_CHANNEL_ID,
-                channelName = context.resources.getString(R.string.kaleyra_notification_call_channel_low_priority_name),
+                channelName = context.resources.getString(R.string.kaleyra_strings_system_android_conference_low_priority_notification_channel),
                 type = CallNotification.Type.OUTGOING
             )
             .user(userText)
@@ -163,23 +163,23 @@ internal interface CallNotificationManager {
         val context = ContextRetainer.context
         val resources = context.resources
         val userText = when {
-            isGroupCall -> resources.getString(R.string.kaleyra_notification_ongoing_group_call)
-            isLink -> resources.getString(R.string.kaleyra_notification_ongoing_call)
+            isGroupCall -> resources.getString(R.string.kaleyra_strings_system_android_notification_title_call)
+            isLink -> resources.getString(R.string.kaleyra_strings_system_android_notification_title_call)
             else -> username
         }
         val contentText = resources.getString(
             when {
-                isConnecting -> R.string.kaleyra_notification_connecting_call
-                isCallRecorded -> R.string.kaleyra_notification_call_recorded
-                isGroupCall -> R.string.kaleyra_notification_tap_to_return_to_group_call
-                else -> R.string.kaleyra_notification_tap_to_return_to_call
+                isConnecting -> R.string.kaleyra_strings_info_status_connecting
+                isCallRecorded -> R.string.kaleyra_strings_info_call_recording_started
+                isGroupCall -> R.string.kaleyra_strings_action_return_to_call
+                else -> R.string.kaleyra_strings_action_return_to_call
             }
         )
         val builder = CallNotification
             .Builder(
                 context = context,
                 channelId = DEFAULT_CHANNEL_ID,
-                channelName = context.resources.getString(R.string.kaleyra_notification_call_channel_low_priority_name),
+                channelName = context.resources.getString(R.string.kaleyra_strings_system_android_conference_low_priority_notification_channel),
                 type = CallNotification.Type.ONGOING
             )
             .user(userText)

@@ -18,8 +18,8 @@ internal fun ScreenShareAction(
     enabled: Boolean = true,
     label: Boolean = false
 ) {
-    val labelText = stringResource(id = R.string.kaleyra_call_sheet_screen_share)
-    val buttonText = stringResource(id = if (!checked) R.string.kaleyra_call_sheet_screen_share else R.string.kaleyra_call_sheet_description_stop_screen_share)
+    val labelText = stringResource(id = R.string.kaleyra_strings_action_start_screen_share)
+    val buttonText = stringResource(id = if (!checked) R.string.kaleyra_strings_action_start_screen_share else R.string.kaleyra_strings_action_stop_screen_share)
     CallToggleAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_screen_share),

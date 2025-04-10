@@ -312,10 +312,10 @@ internal class GlassCallActivity :
                 .onEach { state ->
                     if (state is Call.State.Reconnecting) navController!!.navigate(R.id.reconnectingFragment)
                     if (state is Call.State.Disconnected.Ended) {
-                        val subtitle = if (state != Call.State.Disconnected.Ended) resources.getString(R.string.kaleyra_glass_call_ended) else null
+                        val subtitle = if (state != Call.State.Disconnected.Ended) resources.getString(R.string.kaleyra_strings_info_call_ended) else null
 
                         val title = when (state) {
-                            is Call.State.Disconnected.Ended.Declined                -> resources.getString(R.string.kaleyra_glass_call_declined)
+                            is Call.State.Disconnected.Ended.Declined                -> resources.getString(R.string.kaleyra_strings_info_call_declined)
                             is Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> resources.getString(R.string.kaleyra_glass_answered_on_another_device)
                             is Call.State.Disconnected.Ended.Kicked                  -> {
                                 val call = viewModel.call.replayCache.first()
@@ -329,10 +329,10 @@ internal class GlassCallActivity :
                                 )
                             }
                             is Call.State.Disconnected.Ended.LineBusy                -> resources.getString(R.string.kaleyra_glass_line_busy)
-                            is Call.State.Disconnected.Ended.HungUp                  -> resources.getString(R.string.kaleyra_glass_call_hung_up)
+                            is Call.State.Disconnected.Ended.HungUp                  -> resources.getString(R.string.kaleyra_strings_info_call_ended)
                             is Call.State.Disconnected.Ended.Error                   -> resources.getString(R.string.kaleyra_glass_call_error_occurred)
                             is Call.State.Disconnected.Ended.Timeout                 -> resources.getString(R.string.kaleyra_glass_call_timeout)
-                            else                                                     -> resources.getString(R.string.kaleyra_glass_call_ended)
+                            else                                                     -> resources.getString(R.string.kaleyra_strings_info_call_ended)
                         }
 
                         val navArgs = CallEndedFragmentArgs(title, subtitle).toBundle()

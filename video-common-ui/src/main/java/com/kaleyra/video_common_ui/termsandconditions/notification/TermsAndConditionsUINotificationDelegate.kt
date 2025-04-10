@@ -63,7 +63,7 @@ internal class TermsAndConditionsUINotificationDelegate(
         return TermsAndConditionsNotification.Builder(
             context = context,
             channelId = CHANNEL_ID,
-            channelName = context.resources.getString(R.string.kaleyra_notification_terms_and_conditions_channel_name),
+            channelName = context.resources.getString(R.string.kaleyra_strings_system_android_terms_and_conditions_notification_channel),
             notificationId = TERMS_AND_CONDITIONS_NOTIFICATION_ID
         )
             .title(notificationConfig.title)

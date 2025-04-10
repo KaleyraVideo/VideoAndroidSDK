@@ -16,11 +16,8 @@
 
 <resources>
     <string name="kaleyra_call_sheet_answer">Partecipa</string>
-    <string name="kaleyra_call_sheet_chat">Chat</string>
     <string name="kaleyra_call_sheet_whiteboard">Whiteboard</string>
     <string name="kaleyra_call_sheet_audio">Audio</string>
-    <string name="kaleyra_call_sheet_file_share">Condivisione file</string>
-    <string name="kaleyra_call_sheet_screen_share">Condivisione schermo</string>
     <string name="kaleyra_call_sheet_virtual_background">Virtual background</string>
     <string name="kaleyra_call_sheet_pin">Fissa</string>
     <string name="kaleyra_call_sheet_unpin">Rimuovi pin</string>
@@ -35,18 +32,16 @@
     <string name="kaleyra_call_sheet_off">Off</string>
     <string name="kaleyra_call_sheet_active">Attivo</string>
     <string name="kaleyra_call_sheet_disabled">Disattivato</string>
-    <string name="kaleyra_call_sheet_hang_up">Aggancia</string>
+    <string name="kaleyra_strings_action_call_end">Aggancia</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostra più azioni</string>
     <string name="kaleyra_call_sheet_description_enable_microphone">Abilita microfono</string>
     <string name="kaleyra_call_sheet_description_disable_microphone">Disabilita microfono</string>
     <string name="kaleyra_call_sheet_description_enable_camera">Abilita camera</string>
     <string name="kaleyra_call_sheet_description_disable_camera">Disabilita camera</string>
-    <string name="kaleyra_call_sheet_description_stop_screen_share">Ferma condivisione schermo</string>
 
     <string name="kaleyra_call_sheet_description_mic_warning">Avviso microfono</string>
     <string name="kaleyra_call_sheet_description_mic_error">"Errore del microfono "</string>
     <string name="kaleyra_stream_screenshare_message">Gli altri partecipanti stanno vedendo il tuo schermo</string>
-    <string name="kaleyra_stream_screenshare_action">Interrompi condivisione</string>
 
     <string name="kaleyra_stream_pin">Lo stream è fissato</string>
     <string name="kaleyra_stream_fullscreen">Lo stream è a schermo intero</string>
@@ -95,7 +90,7 @@
     <string name="kaleyra_call_action_audio_route_wired_headset">Cuffie con cavo</string>
     <string name="kaleyra_call_action_audio_route_loudspeaker">Speaker</string>
     <string name="kaleyra_call_action_audio_route_earpiece">Telefono</string>
-    <string name="kaleyra_call_action_audio_route_muted">Muto</string>
+    <string name="kaleyra_strings_action_audio_output_off">Audio disattivato</string>
     <string name="kaleyra_call_action_audio_route_bluetooth_connected">Connesso</string>
     <string name="kaleyra_call_action_audio_route_bluetooth_deactivating">Disattivazione &#8230;</string>
     <string name="kaleyra_call_action_audio_route_bluetooth_disconnected">Disconnesso</string>
@@ -108,7 +103,6 @@
     <string name="kaleyra_call_action_muted">Muto</string>
     <string name="kaleyra_call_action_mic_mute">Muta</string>
     <string name="kaleyra_call_action_switch_camera">Cambia</string>
-    <string name="kaleyra_call_action_file_share">Condividi file</string>
     <string name="kaleyra_call_action_chat">Chat</string>
     <string name="kaleyra_call_action_whiteboard">Lavagna</string>
     <string name="kaleyra_call_action_participants">Partecipanti</string>
@@ -160,26 +154,15 @@
     <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostra tasti</string>
     <string name="kaleyra_close">Chiudi</string>
-    <string name="kaleyra_call_status_connecting">Connessione in corso &#8230;</string>
     <string name="kaleyra_call_status_dialing">Chiamata in corso &#8230;</string>
     <plurals name="kaleyra_call_incoming_status_ringing">
         <item quantity="one">Ti sta chiamando &#8230;</item>
         <item quantity="other">Ti stanno chiamando &#8230;</item>
     </plurals>
     <string name="kaleyra_call_status_ringing">Sta squillando &#8230;</string>
-    <string name="kaleyra_call_status_ended">Chiamata terminata</string>
     <string name="kaleyra_call_status_user_disconnected">La connessione di rete è stata interrotta.</string>
     <string name="kaleyra_call_status_answered_on_other_device">Hai risposto su un altro dispositivo.</string>
-    <plurals name="kaleyra_call_status_declined">
-        <item quantity="one">Chiamata rifiutata.</item>
-        <item quantity="other">Tutti gli utenti hanno rifiutato la chiamata.</item>
-    </plurals>
-    <plurals name="kaleyra_call_status_no_answer">
-        <item quantity="one">L\'utente chiamato non ha risposto.</item>
-        <item quantity="other">Nessun utente ha risposto.</item>
-    </plurals>
     <string name="kaleyra_call_info_rec">Rec</string>
-    <string name="kaleyra_call_info_recording">Questa chiamata verrà registrata</string>
     <string name="kaleyra_call_info_ongoing_recording">Registrazione chiamata in corso</string>
     <string name="kaleyra_action_dismiss">Chiudi</string>
     <string name="kaleyra_action_cancel">Annulla</string>
@@ -257,7 +240,6 @@
     <string name="kaleyra_virtual_background_image">Immagine</string>
 
     <!-- FILE SHARE -->
-    <string name="kaleyra_fileshare">Condividi File</string>
     <string name="kaleyra_fileshare_add">Carica</string>
     <string name="kaleyra_fileshare_add_description">Carica nuovo file</string>
     <string name="kaleyra_fileshare_upload_error">Upload fallito - Riprova</string>
@@ -266,7 +248,6 @@
     <string name="kaleyra_fileshare_you">Tu</string>
     <string name="kaleyra_fileshare_progress">%1$d%%</string>
     <string name="kaleyra_fileshare_upload">Upload</string>
-    <string name="kaleyra_fileshare_download">Download</string>
     <string name="kaleyra_fileshare_miscellaneous">File generico</string>
     <string name="kaleyra_fileshare_media">File multimediale</string>
     <string name="kaleyra_fileshare_archive">File compresso</string>
@@ -310,7 +291,7 @@
     <string name="kaleyra_automatic_recording_disclaimer">Questa chiamata sarà registrata</string>
     <string name="kaleyra_manual_recording_disclaimer">Questa chiamata potrebbe essere registrata</string>
 
-    <string name="kaleyra_utterance_recording_call_will_be_recorded">Questa chiamata verrà registrata</string>
+    <string name="kaleyra_strings_description_call_recorded">Questa chiamata verrà registrata</string>
     <string name="kaleyra_utterance_recording_started">Registrazione avviata</string>
     <string name="kaleyra_utterance_recording_stopped">Registrazione interrotta</string>
     <string name="kaleyra_utterance_recording_failed">Registrazione fallita. Chiudi la chiamata e riprova</string>
@@ -332,8 +313,6 @@
     <!-- AUDIO FAILURE -->
     <string name="kaleyra_generic_audio_routing_error">Non è stato possibile effettuare il cambio di dispositivo di uscita audio.</string>
     <string name="kaleyra_already_in_system_call_audio_routing_error">Non è possibile cambiare il dispositivo di uscita audio mentre una chiamata di sistema è in corso.</string>
-
-    <string name="kaleyra_waiting_for_other_participants">In attesa di altri partecipanti…</string>
 
     <string name="kaleyra_show_participants_descr">Mostra partecipanti</string>
     <string name="kaleyra_call_status_ended_line_busy">Linea occupata</string>
@@ -357,6 +336,5 @@
     <string name="kaleyra_call_action_mic_unmute">Riattiva</string>
     <string name="kaleyra_call_sheet_enable">Abilita</string>
     <string name="kaleyra_call_sheet_disable">Disabilita</string>
-    <string name="kaleyra_call_sheet_hang_up_action">Termina</string>
 
 </resources>

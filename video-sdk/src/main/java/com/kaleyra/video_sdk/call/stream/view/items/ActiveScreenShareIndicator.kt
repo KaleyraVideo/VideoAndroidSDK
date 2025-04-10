@@ -84,7 +84,7 @@ private fun HScreenShareIndicator(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
+                text = stringResource(id = R.string.kaleyra_strings_action_stop_screen_share),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge
             )
@@ -119,7 +119,7 @@ private fun VScreenShareIndicator(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = stringResource(id = R.string.kaleyra_stream_screenshare_action),
+                text = stringResource(id = R.string.kaleyra_strings_action_stop_screen_share),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge
             )

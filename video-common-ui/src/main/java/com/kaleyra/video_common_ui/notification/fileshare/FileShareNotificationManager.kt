@@ -49,13 +49,13 @@ internal interface FileShareNotificationManager {
             .Builder(
                 context = context,
                 channelId = DEFAULT_CHANNEL_ID,
-                channelName = resources.getString(R.string.kaleyra_notification_file_share_channel_name)
+                channelName = resources.getString(R.string.kaleyra_strings_system_android_file_share_notification_channel)
             )
             .contentTitle(resources.getString(
-                    R.string.kaleyra_notification_user_sharing_file,
+                    R.string.kaleyra_string_info_user_file_uploaded,
                     username
                 ))
-            .contentText(resources.getString(R.string.kaleyra_notification_download_file))
+            .contentText(resources.getString(R.string.kaleyra_strings_info_download_file_title))
             .contentIntent(downloadContentPendingIntent(context, activityClazz, downloadId))
             .downloadIntent(downloadPendingIntent(context, activityClazz, downloadId))
 

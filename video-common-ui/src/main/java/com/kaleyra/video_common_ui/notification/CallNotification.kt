@@ -266,7 +266,7 @@ class CallNotification {
             screenShareIntent?.also {
                 screenShareAction = NotificationCompat.Action(
                     R.drawable.ic_kaleyra_screen_share,
-                    context.getString(R.string.kaleyra_notification_stop_screen_share),
+                    context.getString(R.string.kaleyra_strings_action_stop_screen_share),
                     it)
             }
 
@@ -274,14 +274,14 @@ class CallNotification {
             if (type == Type.INCOMING) {
                 answerAction = NotificationCompat.Action(
                     R.drawable.ic_kaleyra_answer,
-                    context.getString(R.string.kaleyra_notification_answer),
+                    context.getString(R.string.kaleyra_strings_action_answer),
                     answerIntent
                 )
             }
 
             val declineAction = NotificationCompat.Action(
                 R.drawable.ic_kaleyra_decline,
-                context.getString(if (type == Type.INCOMING) R.string.kaleyra_notification_decline else R.string.kaleyra_notification_hangup),
+                context.getString(if (type == Type.INCOMING) R.string.kaleyra_strings_action_decline else R.string.kaleyra_strings_action_call_end),
                 declineIntent)
 
             screenShareAction?.let { builder.addAction(it) }
@@ -346,12 +346,12 @@ class CallNotification {
                     Type.INCOMING -> {
                         val answerAction = Notification.Action.Builder(
                             Icon.createWithResource(context, R.drawable.ic_kaleyra_answer),
-                            context.getString(R.string.kaleyra_notification_answer),
+                            context.getString(R.string.kaleyra_strings_action_answer),
                             answerIntent
                         ).build()
                         val declineAction = Notification.Action.Builder(
                             Icon.createWithResource(context, R.drawable.ic_kaleyra_decline),
-                            context.getString(R.string.kaleyra_notification_decline),
+                            context.getString(R.string.kaleyra_strings_action_decline),
                             declineIntent
                         ).build()
                         builder.setActions(declineAction, answerAction)
@@ -359,7 +359,7 @@ class CallNotification {
                     else -> {
                         val declineAction = Notification.Action.Builder(
                             Icon.createWithResource(context, R.drawable.ic_kaleyra_decline),
-                            context.getString(R.string.kaleyra_notification_hangup),
+                            context.getString(R.string.kaleyra_strings_action_call_end),
                             declineIntent
                         ).build()
                         builder.setActions(declineAction)
@@ -373,7 +373,7 @@ class CallNotification {
             screenShareIntent?.also {
                 val screenShareAction = Notification.Action.Builder(
                     Icon.createWithResource(context, R.drawable.ic_kaleyra_screen_share),
-                    context.getString(R.string.kaleyra_notification_stop_screen_share),
+                    context.getString(R.string.kaleyra_strings_action_stop_screen_share),
                     it
                 ).build()
                 builder.addAction(screenShareAction)

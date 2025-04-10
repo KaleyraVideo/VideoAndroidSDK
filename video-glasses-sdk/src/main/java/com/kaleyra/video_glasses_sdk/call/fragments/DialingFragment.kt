@@ -46,7 +46,7 @@ internal class DialingFragment : PreCallFragment() {
     override fun setSubtitle(isGroupCall: Boolean, isLink: Boolean) {
         binding.kaleyraSubtitle.text = resources.getString(
             when {
-                isLink -> R.string.kaleyra_glass_connecting
+                isLink -> R.string.kaleyra_strings_info_status_connecting
                 isGroupCall -> R.string.kaleyra_glass_dialing_group
                 else -> R.string.kaleyra_glass_dialing
             }

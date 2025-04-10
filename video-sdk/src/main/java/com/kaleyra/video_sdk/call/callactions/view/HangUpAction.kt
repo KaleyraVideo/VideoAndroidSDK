@@ -31,13 +31,13 @@ internal fun HangUpAction(
             HangUpActionWidth
         ),
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_hang_up),
-        contentDescription = stringResource(id = R.string.kaleyra_call_sheet_hang_up),
+        contentDescription = stringResource(id = R.string.kaleyra_strings_action_call_end),
         buttonColor = KaleyraTheme.colors.negativeContainer,
         buttonContentColor = KaleyraTheme.colors.onNegativeContainer,
         disabledButtonColor = KaleyraTheme.colors.negativeContainer.copy(alpha = 0.38f),
         disabledButtonContentColor = KaleyraTheme.colors.onNegativeContainer.copy(alpha = 0.38f),
         enabled = enabled,
-        label = if (label) stringResource(R.string.kaleyra_call_sheet_hang_up_action) else null,
+        label = if (label) stringResource(R.string.kaleyra_strings_action_call_end) else null,
         onClick = onClick,
     )
 }

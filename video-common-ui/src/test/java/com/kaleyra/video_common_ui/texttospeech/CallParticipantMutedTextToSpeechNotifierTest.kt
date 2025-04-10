@@ -71,25 +71,25 @@ class CallParticipantMutedTextToSpeechNotifierTest {
     fun `test participant muted utterance`() = runTest {
         val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
         every { notifier.shouldNotify } returns true
-        every { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_description_admin_muted_you) } returns "text"
 
         notifier.start(backgroundScope)
 
         runCurrent()
-        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
+        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_strings_description_admin_muted_you) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
     }
 
     @Test
     fun `test participant muted utterance not reproduced with voice prompts disabled`() = runTest {
-        every { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_description_admin_muted_you) } returns "text"
         mockkObject(KaleyraVideo)
         every { KaleyraVideo.voicePrompts } returns VoicePrompts.Disabled
         val notifier = spyk(CallParticipantMutedTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
         notifier.start(backgroundScope)
 
         runCurrent()
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_description_admin_muted_you) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
     }
 

@@ -77,7 +77,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             actionList = listOf(HangUpAction()).toImmutableList()
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -197,7 +197,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             actionList = listOf(ChatAction()).toImmutableList()
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -215,7 +215,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         )
 
         val text =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -235,7 +235,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         )
 
         val buttonText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -289,7 +289,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             actionList = listOf(FileShareAction()).toImmutableList()
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -305,7 +305,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             onModularComponentDisplayed = { componentDisplayed = it }
         )
 
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
         assertEquals(ModularComponent.FileShare, componentDisplayed)
@@ -319,7 +319,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             onModularComponentDisplayed = { componentDisplayed = it }
         )
 
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
         assertEquals(ModularComponent.FileShare, componentDisplayed)
@@ -448,7 +448,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             actionList = (actions + HangUpAction()).toImmutableList()
         )
 
-        val hangUpText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val hangUpText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -594,7 +594,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             actionList = (actions + ChatAction()).toImmutableList()
         )
 
-        val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chatText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -616,7 +616,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         )
 
         val screenShareText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -640,7 +640,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         )
 
         val screenShareText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -687,7 +687,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         )
 
         val fileShareText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -989,7 +989,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
         streamUiState.value = StreamUiState(isScreenShareActive = true)
         composeTestRule.setUpVCallScreen()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1132,8 +1132,8 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
     fun testCallInfoComponentIsDisplayed() {
         composeTestRule.setUpVCallScreen()
 
-        val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        val title = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_strings_info_status_connecting)
         // check the content description because it's a TextView
         composeTestRule.onNodeWithText(title, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithText(subtitle, useUnmergedTree = true).assertIsDisplayed()
@@ -1184,7 +1184,7 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
 
         composeTestRule.setUpVCallScreen(modalSheetComponent = ModularComponent.FileShare)
 
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
 
         userMessageFlow.value = ImmutableList(listOf(PinScreenshareMessage("streamId", "username")))

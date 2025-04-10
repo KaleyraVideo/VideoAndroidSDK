@@ -18,7 +18,7 @@ internal fun ChatAction(
     label: Boolean = false,
     badgeCount: Int = 0
 ) {
-    val text = stringResource(id = R.string.kaleyra_call_sheet_chat)
+    val text = stringResource(id = R.string.kaleyra_strings_action_chat)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_chat),

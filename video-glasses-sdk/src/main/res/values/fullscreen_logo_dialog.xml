@@ -97,7 +97,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemFullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_hangup</item>
+        <item name="android:text">@string/kaleyra_strings_action_call_end</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.FullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
@@ -105,7 +105,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemFullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_accept</item>
+        <item name="android:text">@string/kaleyra_strings_action_answer</item>
     </style>
 
     <!-- VOICE COMMANDS -->
@@ -136,11 +136,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.FullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_hangup</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_call_end</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemFullScreenLogoDialog.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemFullScreenLogoDialog">
-        <item name="android:text">@string/kaleyra_glass_hangup</item>
+        <item name="android:text">@string/kaleyra_strings_action_call_end</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.FullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand">
@@ -150,10 +150,10 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.VoiceCommand.FullScreenLogoDialog" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.VoiceCommand">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_accept</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_answer</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemFullScreenLogoDialog.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemFullScreenLogoDialog">
-        <item name="android:text">@string/kaleyra_glass_accept</item>
+        <item name="android:text">@string/kaleyra_strings_action_answer</item>
     </style>
 </resources>

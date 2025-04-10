@@ -24,7 +24,7 @@ class FileShareActionTest {
 
     @Test
     fun testButtonTextIsNotDisplayedOnDefaultWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             FileShareAction(
                 onClick = {}
@@ -35,7 +35,7 @@ class FileShareActionTest {
 
     @Test
     fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             FileShareAction(
                 label = true,
@@ -47,7 +47,7 @@ class FileShareActionTest {
 
     @Test
     fun testButtonTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             FileShareAction(
                 modifier = Modifier.width(200.dp),
@@ -71,7 +71,7 @@ class FileShareActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         var clicked = false
         composeTestRule.setContent {
             FileShareAction(onClick = { clicked = true })
@@ -83,7 +83,7 @@ class FileShareActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             FileShareAction(
                 enabled = false,

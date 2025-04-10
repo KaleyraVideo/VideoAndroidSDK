@@ -24,7 +24,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
                 label = true,
@@ -37,7 +37,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testButtonTextIsNotDisplayedOnDefaultWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
                 onCheckedChange = {},
@@ -49,7 +49,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testScreenShareTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
                 modifier = Modifier.width(200.dp),
@@ -62,7 +62,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testStopScreenShareTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
                 modifier = Modifier.width(200.dp),
@@ -75,7 +75,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testOnCheckedChangeTrue() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         var checked = false
         composeTestRule.setContent {
             ScreenShareAction(
@@ -90,7 +90,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testOnCheckedChangeFalse() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         var checked = true
         composeTestRule.setContent {
             ScreenShareAction(
@@ -105,7 +105,7 @@ class ScreenShareActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule.setContent {
             ScreenShareAction(
                 enabled = false,

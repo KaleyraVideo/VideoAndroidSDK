@@ -192,7 +192,7 @@ private fun SharedFileInfoAndProgress(
                 painter = painterResource(
                     id = if (sharedFile.isMine) R.drawable.ic_kaleyra_upload else R.drawable.ic_kaleyra_download
                 ),
-                contentDescription = stringResource(id = if (sharedFile.isMine) R.string.kaleyra_fileshare_upload else R.string.kaleyra_fileshare_download),
+                contentDescription = stringResource(id = if (sharedFile.isMine) R.string.kaleyra_fileshare_upload else R.string.kaleyra_strings_action_download),
                 modifier = Modifier.size(12.dp)
             )
             Spacer(Modifier.width(8.dp))

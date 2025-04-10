@@ -41,7 +41,7 @@ internal fun FileShareAppBar(
 ) {
     ComponentAppBar(
         onBackPressed = onBackPressed,
-        title = stringResource(id = R.string.kaleyra_fileshare),
+        title = stringResource(id = R.string.kaleyra_strings_action_files),
         actions = { Spacer(Modifier.width(56.dp)) },
         scrollableState = lazyGridState,
         isLargeScreen = isLargeScreen,

@@ -440,7 +440,7 @@ class KaleyraCallConnectionServiceTest {
         val otherParticipantMock2 = mockk<CallParticipant>(relaxed = true)
         every { participantsMock.others } returns listOf(otherParticipantMock, otherParticipantMock2)
         service!!.onShowIncomingCallUi(connection)
-        val text = service!!.resources.getString(R.string.kaleyra_notification_incoming_group_call)
+        val text = service!!.resources.getString(R.string.kaleyra_strings_system_android_notification_title_call)
         verify(exactly = 1) {
             ContactsController.createOrUpdateConnectionServiceContact(service!!, connection.address, text)
         }

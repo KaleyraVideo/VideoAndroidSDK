@@ -106,7 +106,7 @@ internal abstract class VCallScreenBaseTest {
     val callInfoViewModel = mockk<CallInfoViewModel>(relaxed = true) {
         every { uiState } returns MutableStateFlow(
             CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(
-                R.string.kaleyra_call_status_connecting))
+                R.string.kaleyra_strings_info_status_connecting))
         )
     }
 

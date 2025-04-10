@@ -52,7 +52,7 @@ class PipScreenTest {
         }
         every { CallInfoViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<CallInfoViewModel>>(), any()) } returns mockk<CallInfoViewModel>(relaxed = true) {
-                every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting)))
+                every { uiState } returns MutableStateFlow(CallInfoUiState(callStateUi = CallStateUi.Disconnected.Ended, displayState = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)))
             }
         }
     }
@@ -72,8 +72,8 @@ class PipScreenTest {
     fun testCallInfoComponentIsDisplayed() {
         composeTestRule.setContent { PipScreen(onPipAspectRatio = {}) }
 
-        val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
-        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
+        val title = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_ended)
+        val subtitle = composeTestRule.activity.getString(R.string.kaleyra_strings_info_status_connecting)
         // check the content description because it's a TextView
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         composeTestRule.onNodeWithText(subtitle).assertIsDisplayed()

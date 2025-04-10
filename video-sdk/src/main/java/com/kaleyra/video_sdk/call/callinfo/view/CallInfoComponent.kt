@@ -115,7 +115,7 @@ fun CallInfoComponent(
         CallStateUi.Disconnected.Ended,
         CallStateUi.Disconnected.Ended.HungUp,
         is CallStateUi.Disconnected.Ended.Kicked -> {
-            displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_call_status_ended)
+            displayTitle = LocalContext.current.resources.getString(R.string.kaleyra_strings_info_call_ended)
             displaySubtitle = callDisplayState
         }
 
@@ -175,7 +175,7 @@ internal fun CallInfoConnectingWithDisplayNames() {
                 modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
-                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
+                    displayState = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting),
                     displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
                 )
             )
@@ -193,7 +193,7 @@ internal fun CallInfoConnectingWithNoDisplayNames() {
                 modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
-                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
+                    displayState = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting),
                     displayNames = ImmutableList()
                 )
             )
@@ -225,7 +225,7 @@ internal fun CallInfoPipMode() {
                 modifier = Modifier.background(color = Color.Blue),
                 callInfoUiState = CallInfoUiState(
                     callStateUi = CallStateUi.Connecting,
-                    displayState = TextRef.StringResource(R.string.kaleyra_call_status_connecting),
+                    displayState = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting),
                     displayNames = ImmutableList(listOf("Fede", "Kri", "Ste"))
                 ),
                 isPipMode = true

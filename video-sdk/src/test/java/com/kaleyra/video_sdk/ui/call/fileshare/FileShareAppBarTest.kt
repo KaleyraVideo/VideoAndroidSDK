@@ -72,7 +72,7 @@ class FileShareAppBarTest {
 
     @Test
     fun fileShareTextDisplayed() {
-        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
     }
 

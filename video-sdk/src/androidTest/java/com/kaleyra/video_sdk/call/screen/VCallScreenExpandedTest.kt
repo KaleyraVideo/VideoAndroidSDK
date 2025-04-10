@@ -1,16 +1,9 @@
 package com.kaleyra.video_sdk.call.screen
 
 import android.net.Uri
-import androidx.activity.ComponentActivity
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.test.assertAll
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.AndroidComposeTestRule
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAncestors
 import androidx.compose.ui.test.onChildAt
@@ -19,70 +12,33 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
-import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
-import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
 import com.kaleyra.video_sdk.call.brandlogo.model.Logo
-import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
-import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
-import com.kaleyra.video_sdk.call.callinfo.model.CallInfoUiState
-import com.kaleyra.video_sdk.call.callinfo.model.TextRef
-import com.kaleyra.video_sdk.call.callinfo.viewmodel.CallInfoViewModel
-import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
-import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
-import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
-import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
-import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.PanelTestTag
-import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreen
-import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
-import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
-import com.kaleyra.video_sdk.call.stream.model.StreamUiState
-import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
-import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
-import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
-import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
-import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
-import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
-import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkAll
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import kotlin.reflect.KClass
 
 // Test for the VCallScreen using a tablet (both in portrait and landscape)
 internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
@@ -229,7 +185,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
 
         composeTestRule.waitForIdle()
 
-        val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chatText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onAllNodesWithText(chatText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -255,7 +211,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
 
         composeTestRule.waitForIdle()
 
-        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_stop_screen_share)
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -284,7 +240,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
 
         composeTestRule.waitForIdle()
 
-        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val screenShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onAllNodesWithText(screenShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -314,7 +270,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         composeTestRule.waitForIdle()
 
         val fileShareText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onAllNodesWithText(fileShareText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -397,7 +353,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
             onSidePanelComponentRequest = { component = it }
         )
 
-        val chatText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chatText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -418,7 +374,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
             actionList = listOf(ChatAction()).toImmutableList()
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -439,7 +395,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
             actionList = listOf(FileShareAction()).toImmutableList()
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -481,7 +437,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         )
 
         val fileShareText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -538,7 +494,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
-        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val fileShareText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .onAncestors()[2]
@@ -578,7 +534,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         val moreText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
         composeTestRule.onNodeWithContentDescription(moreText, useUnmergedTree = true).performClick()
 
-        val audioText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val audioText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.onAllNodesWithText(audioText, useUnmergedTree = true)[0].performClick()
 
         composeTestRule.onNodeWithTag(PanelTestTag).assertDoesNotExist()

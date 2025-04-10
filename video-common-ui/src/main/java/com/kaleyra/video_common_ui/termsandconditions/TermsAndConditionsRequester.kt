@@ -59,8 +59,8 @@ internal class TermsAndConditionsRequester(
     ) {
         val context = ContextRetainer.context
         val notificationConfig = TermsAndConditionsUI.Config.Notification(
-            title = context.getString(R.string.kaleyra_user_data_consent_agreement_notification_title),
-            message = context.getString(R.string.kaleyra_user_data_consent_agreement_notification_message),
+            title = context.getString(R.string.kaleyra_strings_system_android_terms_and_conditions_notification_title),
+            message = context.getString(R.string.kaleyra_strings_system_android_terms_and_conditions_notification_body),
             dismissCallback = onDecline,
             enableFullscreen = DeviceUtils.isSmartGlass
         )

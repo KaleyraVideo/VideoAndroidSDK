@@ -31,7 +31,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
 
 @RunWith(RobolectricTestRunner::class)
@@ -61,14 +60,14 @@ class FileShareNotificationManagerTest {
         verify(exactly = 1) {
             anyConstructed<FileShareNotification.Builder>().contentTitle(
                 context.getString(
-                    R.string.kaleyra_notification_user_sharing_file,
+                    R.string.kaleyra_string_info_user_file_uploaded,
                     "username"
                 )
             )
         }
         verify(exactly = 1) {
             anyConstructed<FileShareNotification.Builder>().contentText(
-                context.getString(R.string.kaleyra_notification_download_file)
+                context.getString(R.string.kaleyra_strings_info_download_file_title)
             )
         }
         verify(exactly = 1) {

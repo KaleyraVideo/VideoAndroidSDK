@@ -40,7 +40,7 @@ class HangUpActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         var clicked = false
         composeTestRule.setContent {
             HangUpAction(onClick = { clicked = true })
@@ -52,7 +52,7 @@ class HangUpActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             HangUpAction(
                 enabled = false,

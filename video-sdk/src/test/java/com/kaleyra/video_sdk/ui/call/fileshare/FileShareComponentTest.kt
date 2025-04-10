@@ -33,8 +33,6 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import com.kaleyra.video_common_ui.requestConfiguration
-import com.kaleyra.video_common_ui.requestConnect
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.tryToOpenFile
 import com.kaleyra.video_sdk.R
@@ -47,13 +45,9 @@ import com.kaleyra.video_sdk.call.fileshare.model.mockUploadSharedFile
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareItemTag
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkConstructor
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -125,7 +119,7 @@ class FileShareComponentTest {
 
     @Test
     fun fileShareTopAppBarShown() {
-        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
     }
 

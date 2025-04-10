@@ -31,7 +31,6 @@ import androidx.core.app.RemoteInput
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.color.MaterialColors
-import com.kaleyra.video_common_ui.KaleyraVideo.conversation
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.utils.BitmapUtils.toBitmap
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.canUseFullScreenIntentCompat
@@ -265,7 +264,7 @@ internal class ChatNotification {
             markAsReadIntent?.also {
                 val markAsReadAction = NotificationCompat.Action(
                     R.drawable.ic_kaleyra_mark_as_read,
-                    context.getString(R.string.kaleyra_notification_chat_mark_as_read),
+                    context.getString(R.string.kaleyra_strings_action_mark_message_as_read),
                     it
                 )
                 builder.addAction(markAsReadAction)
@@ -284,7 +283,7 @@ internal class ChatNotification {
             context: Context,
             replyIntent: PendingIntent
         ): NotificationCompat.Action {
-            val replyLabel = context.resources.getString(R.string.kaleyra_notification_chat_reply)
+            val replyLabel = context.resources.getString(R.string.kaleyra_string_action_reply_message)
             val remoteInput = RemoteInput.Builder(EXTRA_REPLY)
                 .setLabel(replyLabel)
                 .build()

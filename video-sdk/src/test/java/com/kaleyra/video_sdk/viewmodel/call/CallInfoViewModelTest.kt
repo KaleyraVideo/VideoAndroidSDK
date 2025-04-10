@@ -108,7 +108,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiConnecting_stateUpdated() = runTest {
-        val expected = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val expected = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         every { callParticipants.others } returns listOf()
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connecting)
 
@@ -176,7 +176,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiReconnecting_stateUpdated() = runTest {
-        val expected = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val expected = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         every { callParticipants.others } returns listOf()
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Reconnecting)
 
@@ -202,7 +202,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiDeclined_oneParticipant_stateUpdated() = runTest {
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_status_declined, 1)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_declines, 1)
         every { callParticipants.others } returns listOf(mockk(relaxed = true))
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected.Ended.Declined)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(listOf("user1"))
@@ -217,7 +217,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateUiDeclined_moreParticipant_stateUpdated() = runTest {
         val callee = listOf("user1", "user2")
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_status_declined, callee.size)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_declines, callee.size)
         every { callParticipants.others } returns callee.map { mockk<CallParticipant>(relaxed = true) }
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected.Ended.Declined)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(callee)
@@ -244,7 +244,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiTimeout_oneParticipant_stateUpdated() = runTest {
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_status_no_answer, 1)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_no_answer, 1)
         every { callParticipants.others } returns listOf(mockk(relaxed = true))
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected.Ended.Timeout)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(listOf("user1"))
@@ -259,7 +259,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateUiTimeout_moreParticipant_stateUpdated() = runTest {
         val callee = listOf("user1", "user2")
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_status_no_answer, callee.size)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_call_no_answer, callee.size)
         every { callParticipants.others } returns callee.map { mockk<CallParticipant>(relaxed = true) }
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Disconnected.Ended.Timeout)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(callee)
@@ -273,7 +273,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiConnecting_toCallStateUi() {
-        val expected = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val expected = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         val displayState = CallStateUi.Connecting.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -310,7 +310,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateReconnecting_toCallStateUi() {
-        val expected = TextRef.StringResource(R.string.kaleyra_call_status_connecting)
+        val expected = TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
         val displayState = CallStateUi.Reconnecting.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -325,7 +325,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateEndedDeclinedOto_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant)
-        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_status_declined, quantity = call.participants.value.others.size)
+        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_call_declines, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Disconnected.Ended.Declined.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -333,7 +333,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateEndedDeclinedMtm_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant, otherParticipant)
-        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_status_declined, quantity =  call.participants.value.others.size)
+        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_call_declines, quantity =  call.participants.value.others.size)
         val displayState = CallStateUi.Disconnected.Ended.Declined.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -348,7 +348,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateEndedTimeoutOto_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant)
-        val expected =  TextRef.PluralResource(id = R.plurals.kaleyra_call_status_no_answer, quantity = call.participants.value.others.size)
+        val expected =  TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_call_no_answer, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Disconnected.Ended.Timeout.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -356,7 +356,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateEndedTimeoutMtm_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant, otherParticipant)
-        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_status_no_answer, quantity = call.participants.value.others.size)
+        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_call_no_answer, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Disconnected.Ended.Timeout.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }

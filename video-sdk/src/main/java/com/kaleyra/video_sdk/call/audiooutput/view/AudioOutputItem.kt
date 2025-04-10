@@ -29,11 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.BluetoothDeviceState
 import com.kaleyra.video_sdk.call.audiooutput.model.isConnectedOrPlaying
@@ -86,7 +84,7 @@ private fun titleFor(device: AudioDeviceUi): String =
         is AudioDeviceUi.LoudSpeaker -> stringResource(R.string.kaleyra_call_action_audio_route_loudspeaker)
         is AudioDeviceUi.EarPiece -> stringResource(R.string.kaleyra_call_action_audio_route_earpiece)
         is AudioDeviceUi.WiredHeadset -> stringResource(R.string.kaleyra_call_action_audio_route_wired_headset)
-        is AudioDeviceUi.Muted -> stringResource(R.string.kaleyra_call_action_audio_route_muted)
+        is AudioDeviceUi.Muted -> stringResource(R.string.kaleyra_strings_action_audio_output_off)
         is AudioDeviceUi.Bluetooth -> device.name ?: stringResource(R.string.kaleyra_call_action_audio_route_bluetooth)
     }
 

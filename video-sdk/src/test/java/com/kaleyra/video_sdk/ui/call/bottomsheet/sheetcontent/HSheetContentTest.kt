@@ -42,7 +42,6 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
-import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
@@ -135,7 +134,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -272,7 +271,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -299,7 +298,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -373,7 +372,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -449,7 +448,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -474,7 +473,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -499,7 +498,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -525,7 +524,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -551,7 +550,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -579,7 +578,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -825,7 +824,7 @@ class HSheetContentTest {
     @Test
     fun testOnHangUpActionClick() {
         var isHangUpClicked = false
-        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
@@ -915,7 +914,7 @@ class HSheetContentTest {
     @Test
     fun testOnScreenShareActionClick() {
         var isScreenShareClicked: Boolean? = null
-        val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_screen_share)
+        val screenShareDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_start_screen_share)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(ScreenShareAction.UserChoice())),
@@ -1005,7 +1004,7 @@ class HSheetContentTest {
     @Test
     fun testOnChatActionClick() {
         var isChatClicked = false
-        val chatDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chatDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(ChatAction())),
@@ -1035,7 +1034,7 @@ class HSheetContentTest {
     @Test
     fun testOnFileShareActionClick() {
         var isFileShareClicked = false
-        val fileShareDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_file_share)
+        val fileShareDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(FileShareAction())),
@@ -1384,7 +1383,7 @@ class HSheetContentTest {
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
-        val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         var itemsCount = -1
         val maxActions = 3
         composeTestRule.setContent {
@@ -1431,7 +1430,7 @@ class HSheetContentTest {
         val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
         val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
         val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
-        val chat = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         var itemsCount = -1
         val maxActions = 4
         composeTestRule.setContent {
@@ -1625,7 +1624,7 @@ class HSheetContentTest {
 
     @Test
     fun isLargeScreenFalse_hangUpActionWidthIsRegular() {
-        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),
@@ -1655,7 +1654,7 @@ class HSheetContentTest {
 
     @Test
     fun isLargeScreenTrue_hangUpActionWidthIsExtended() {
-        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_hang_up)
+        val hangUpDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_call_end)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(HangUpAction())),

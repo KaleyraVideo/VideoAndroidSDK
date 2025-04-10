@@ -9,7 +9,6 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.kaleyra.video_common_ui.CompanyUI
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.R
@@ -103,7 +102,7 @@ class SidePanelTest {
     @Test
     fun fileShareComponent_fileShareComponentIsDisplayed() {
         component = ModularComponent.FileShare
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_fileshare)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.FileShare)
     }

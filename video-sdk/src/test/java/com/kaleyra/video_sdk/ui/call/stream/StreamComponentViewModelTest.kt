@@ -50,7 +50,7 @@ class StreamComponentViewModelTest {
             )
         }
 
-        val text =  composeTestRule.activity.getString(R.string.kaleyra_stream_screenshare_action)
+        val text =  composeTestRule.activity.getString(R.string.kaleyra_strings_action_stop_screen_share)
         composeTestRule
             .onNodeWithText(text)
             .assertHasClickAction()

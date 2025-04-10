@@ -27,7 +27,7 @@ class ChatActionTest {
 
     @Test
     fun testButtonTextIsNotDisplayedOnDefaultWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             ChatAction(
                 onClick = {}
@@ -38,7 +38,7 @@ class ChatActionTest {
 
     @Test
     fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             ChatAction(
                 label = true,
@@ -50,7 +50,7 @@ class ChatActionTest {
 
     @Test
     fun testButtonTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             ChatAction(
                 modifier = Modifier.width(200.dp),
@@ -74,7 +74,7 @@ class ChatActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         var clicked = false
         composeTestRule.setContent {
             ChatAction(onClick = { clicked = true })
@@ -86,7 +86,7 @@ class ChatActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_chat)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             ChatAction(
                 enabled = false,

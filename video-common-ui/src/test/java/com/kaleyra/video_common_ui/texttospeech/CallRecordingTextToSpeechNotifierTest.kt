@@ -73,13 +73,13 @@ class CallRecordingTextToSpeechNotifierTest {
         val recordingMock = mockk<Call.Recording>(relaxed = true)
         every { recordingMock.type } returns Call.Recording.Type.Automatic
         every { callMock.recording } returns MutableStateFlow(recordingMock)
-        every { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) } returns "text"
         notifier.start(backgroundScope)
         advanceTimeBy(CallRecordingTextToSpeechNotifier.CALL_RECORDING_DEBOUNCE_MILLIS)
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
         advanceTimeBy(1)
-        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) }
+        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
     }
 
@@ -90,13 +90,13 @@ class CallRecordingTextToSpeechNotifierTest {
         val recordingMock = mockk<Call.Recording>(relaxed = true)
         every { recordingMock.type } returns Call.Recording.Type.Automatic
         every { callMock.recording } returns MutableStateFlow(recordingMock)
-        every { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) } returns "text"
         notifier.start(backgroundScope)
         advanceTimeBy(CallRecordingTextToSpeechNotifier.CALL_RECORDING_DEBOUNCE_MILLIS)
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
         advanceTimeBy(1)
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_utterance_recording_call_will_be_recorded) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_description_call_recorded) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
     }
 

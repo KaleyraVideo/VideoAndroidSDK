@@ -16,33 +16,28 @@
   -->
 
 <resources>
-    <string name="kaleyra_today">Oggi</string>
-    <string name="kaleyra_yesterday">Ieri</string>
-    <string name="kaleyra_notification_answer">Rispondi</string>
-    <string name="kaleyra_notification_decline">Rifiuta</string>
-    <string name="kaleyra_notification_hangup">Termina</string>
-    <string name="kaleyra_notification_download">Scarica</string>
-    <string name="kaleyra_notification_stop_screen_share">Ferma Condivisione</string>
-    <string name="kaleyra_notification_call_channel_high_priority_name">Chiamate Alta Priorità</string>
-    <string name="kaleyra_notification_call_channel_low_priority_name">Chiamate Bassa Priorità</string>
-    <string name="kaleyra_notification_terms_and_conditions_channel_name">Accordo Consenso Dati Utente</string>
-    <string name="kaleyra_notification_chat_channel_name">Chat</string>
-    <string name="kaleyra_notification_file_share_channel_name">Condivisione File</string>
-    <string name="kaleyra_notification_incoming_call">Chiamata in ingresso</string>
-    <string name="kaleyra_notification_incoming_group_call">Chiamata di gruppo in ingresso</string>
-    <string name="kaleyra_notification_outgoing_call">Chiamata in uscita</string>
-    <string name="kaleyra_notification_outgoing_group_call">Chiamata di gruppo in uscita</string>
-    <string name="kaleyra_notification_ongoing_call">Chiamata in corso</string>
-    <string name="kaleyra_notification_ongoing_group_call">Chiamata di gruppo in corso</string>
-    <string name="kaleyra_notification_connecting_call">Connessione in corso…</string>
-    <string name="kaleyra_notification_tap_to_return_to_call">Tocca per tornare alla chiamata</string>
-    <string name="kaleyra_notification_tap_to_return_to_group_call">Tocca per tornare alla chiamata di gruppo</string>
-    <string name="kaleyra_notification_call_recorded">Registrazione chiamata in corso</string>
-    <string name="kaleyra_notification_chat_reply">Rispondi</string>
-    <string name="kaleyra_notification_chat_mark_as_read">Segna come letto</string>
-    <string name="kaleyra_notification_user_sharing_file">%1$s vuole condividere un file con te.</string>
-    <string name="kaleyra_notification_download_file">Vuoi scaricare il file?</string>
-    <string name="kaleyra_call_waiting_for_other_participants">In attesa di altri partecipanti…</string>
+    <string name="kaleyra_strings_info_today">Oggi</string>
+    <string name="kaleyra_strings_info_yesterday">Ieri</string>
+    <string name="kaleyra_strings_action_answer">Rispondi</string>
+    <string name="kaleyra_strings_action_decline">Rifiuta</string>
+    <string name="kaleyra_strings_action_call_end">Termina</string>
+    <string name="kaleyra_strings_action_download">Scarica</string>
+    <string name="kaleyra_strings_action_stop_screen_share">Ferma Condivisione</string>
+    <string name="kaleyra_strings_system_android_conference_high_priority_notification_channel">Chiamate Alta Priorità</string>
+    <string name="kaleyra_strings_system_android_conference_low_priority_notification_channel">Chiamate Bassa Priorità</string>
+    <string name="kaleyra_strings_system_android_terms_and_conditions_notification_channel">Accordo Consenso Dati Utente</string>
+    <string name="kaleyra_strings_system_android_conversation_notification_channel">Conversazione</string>
+    <string name="kaleyra_strings_system_android_file_share_notification_channel">Condivisione File</string>
+    <string name="kaleyra_strings_action_files">File</string>
+    <string name="kaleyra_strings_system_android_notification_title_call">Chiamata</string>
+    <string name="kaleyra_strings_info_status_connecting">Connessione in corso…</string>
+    <string name="kaleyra_strings_action_return_to_call">Torna alla chiamata</string>
+    <string name="kaleyra_strings_info_call_recording_started">Registrazione chiamata in corso</string>
+    <string name="kaleyra_string_action_reply_message">Rispondi</string>
+    <string name="kaleyra_strings_action_mark_message_as_read">Segna come letto</string>
+    <string name="kaleyra_string_info_user_file_uploaded">%1$s ha caricato un file.</string>
+    <string name="kaleyra_strings_info_download_file_title">Vuoi scaricare il file?</string>
+    <string name="kaleyra_strings_info_call_waiting_for_other_participants">In attesa di altri partecipanti…</string>
 
     <!-- KICK PARTICIPANT -->
 
@@ -60,17 +55,17 @@
         <item quantity="other">L\'amministratore ha disabilitato il tuo microfono.\nTocca il bottone del microfono per riattivare.</item>
         <item quantity="many">L\'amministratore ha disabilitato il tuo microfono.\nTocca il bottone del microfono per riattivare.</item>
     </plurals>
-    <string name="kaleyra_call_participant_utterance_muted_by_admin">Microfono disabilitato</string>
+    <string name="kaleyra_strings_description_admin_muted_you">Microfono disabilitato</string>
 
 
     <!-- TERMS AND CONDITIONS -->
-    <string name="kaleyra_user_data_consent_agreement_notification_title">Termini e condizioni</string>
+    <string name="kaleyra_strings_system_android_terms_and_conditions_notification_title">Termini e condizioni</string>
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_message">Hai un nuovo messaggio</string>
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_call">Chiamata in entrata</string>
-    <string name="kaleyra_user_data_consent_agreement_notification_message">Accetta i termini e le condizioni per procedere</string>
+    <string name="kaleyra_strings_system_android_terms_and_conditions_notification_body">Accetta i termini e le condizioni per procedere</string>
 
     <!-- RECORDING UTTERANCE -->
-    <string name="kaleyra_utterance_recording_call_will_be_recorded">Questa chiamata verrà registrata</string>
+    <string name="kaleyra_strings_description_call_recorded">Questa chiamata verrà registrata</string>
     <string name="kaleyra_utterance_recording_failed">Registrazione fallita. Chiudi la chiamata e riprova</string>
     <string name="kaleyra_utterance_recording_started">Registrazione avviata</string>
     <string name="kaleyra_utterance_recording_stopped">Registrazione interrotta</string>
@@ -79,5 +74,9 @@
         <item quantity="one">%s nuovo messaggio</item>
         <item quantity="other">Nuovi messaggi: %s</item>
     </plurals>
+    <string name="kaleyra_strings_info_call_declined">La chiamata è stata rifiutata.</string>
+    <string name="kaleyra_strings_info_call_no_answer">Nessuna risposta.</string>
+    <string name="kaleyra_strings_info_call_ended">Chiamata terminata</string>
+    <string name="kaleyra_strings_action_start_screen_share">Schermo</string>
 
 </resources>

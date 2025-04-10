@@ -86,7 +86,7 @@ internal abstract class ConnectingFragment : BaseFragment() {
                 .takeWhile { it.count() < 2 }
                 .onCompletion {
                     binding.kaleyraSubtitle.text =
-                        resources.getString(R.string.kaleyra_glass_connecting)
+                        resources.getString(R.string.kaleyra_strings_info_status_connecting)
                 }.launchIn(this@repeatOnStarted)
 
             viewModel.participants

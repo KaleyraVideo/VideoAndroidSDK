@@ -111,7 +111,7 @@ object Iso8601 {
         return if (zonedDateTime.isLastWeek()) {
             when {
                 zonedDateTime.isToday() -> parseTime(timestamp)
-                zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_yesterday) + ", " + parseTime(timestamp)
+                zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_strings_info_yesterday) + ", " + parseTime(timestamp)
                 else -> zonedDateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } + ", " + parseTime(timestamp)
             }
         } else DateTimeFormatter
@@ -129,7 +129,7 @@ object Iso8601 {
         return if (calendar.isLastWeek()) {
             when {
                 calendar.isToday() -> parseTime(timestamp)
-                calendar.isYesterday() -> context.resources.getString(R.string.kaleyra_yesterday) + ", " + parseTime(timestamp)
+                calendar.isYesterday() -> context.resources.getString(R.string.kaleyra_strings_info_yesterday) + ", " + parseTime(timestamp)
                 else -> {
                     val formatter = SimpleDateFormat("EEEE", Locale.getDefault())
                     formatter.format(calendar.time).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } + ", " + parseTime(timestamp)
@@ -160,8 +160,8 @@ object Iso8601 {
             .atZone(ZoneId.systemDefault())
 
         return when {
-            zonedDateTime.isToday() -> context.resources.getString(R.string.kaleyra_today)
-            zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_yesterday)
+            zonedDateTime.isToday() -> context.resources.getString(R.string.kaleyra_strings_info_today)
+            zonedDateTime.isYesterday() -> context.resources.getString(R.string.kaleyra_strings_info_yesterday)
             else -> DateTimeFormatter
                 .ofLocalizedDate(FormatStyle.LONG)
                 .withLocale(Locale.getDefault())
@@ -176,8 +176,8 @@ object Iso8601 {
         calendar.timeZone = TimeZone.getDefault()
 
         return when {
-            calendar.isToday() -> context.resources.getString(R.string.kaleyra_today)
-            calendar.isYesterday() -> context.resources.getString(R.string.kaleyra_yesterday)
+            calendar.isToday() -> context.resources.getString(R.string.kaleyra_strings_info_today)
+            calendar.isYesterday() -> context.resources.getString(R.string.kaleyra_strings_info_yesterday)
             else ->  {
                 val df = DateFormat.getDateInstance(DateFormat.LONG)
                 df.timeZone = calendar.timeZone

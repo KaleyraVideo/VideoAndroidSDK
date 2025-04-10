@@ -36,7 +36,7 @@
 
     <!-- TITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog.CallEnded" parent="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_call_ended</item>
+        <item name="android:text">@string/kaleyra_strings_info_call_ended</item>
     </style>
 
     <!-- SUBTITLE -->

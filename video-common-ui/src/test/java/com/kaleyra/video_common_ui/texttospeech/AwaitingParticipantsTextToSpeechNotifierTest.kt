@@ -17,7 +17,6 @@
 package com.kaleyra.video_common_ui.texttospeech
 
 import android.content.Context
-import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.R
@@ -32,7 +31,6 @@ import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
@@ -68,29 +66,29 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
 
     @Test
     fun `test i am waiting others utterance`() = runTest {
-        every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) } returns "text"
 
         notifier.start(backgroundScope)
 
         advanceTimeBy(AwaitingParticipantsTextToSpeechNotifier.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
 
         advanceTimeBy(1)
-        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) }
+        verify(exactly = 1) { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) }
         verify(exactly = 1) { callTextToSpeechMock.speak("text") }
     }
 
     @Test
     fun `test i am waiting others utterance not played`() = runTest {
         every { callMock.amIWaitingOthers() } returns MutableStateFlow(false)
-        every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) } returns "text"
 
         notifier.start(backgroundScope)
 
         advanceTimeBy(AwaitingParticipantsTextToSpeechNotifier.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
         runCurrent()
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
     }
 
@@ -99,14 +97,14 @@ class AwaitingParticipantsTextToSpeechNotifierTest {
         mockkObject(KaleyraVideo)
         every { KaleyraVideo.voicePrompts } returns VoicePrompts.Disabled
         every { callMock.amIWaitingOthers() } returns MutableStateFlow(false)
-        every { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) } returns "text"
+        every { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) } returns "text"
 
         val notifier = spyk(AwaitingParticipantsTextToSpeechNotifier(callMock, proximitySensorMock, callTextToSpeechMock))
         notifier.start(backgroundScope)
 
         advanceTimeBy(AwaitingParticipantsTextToSpeechNotifier.AM_I_WAITING_FOR_OTHERS_DEBOUNCE_MILLIS)
         runCurrent()
-        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_call_waiting_for_other_participants) }
+        verify(exactly = 0) { contextMock.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants) }
         verify(exactly = 0) { callTextToSpeechMock.speak("text") }
     }
 

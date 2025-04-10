@@ -24,7 +24,6 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.toMuteEvents
 import com.kaleyra.video_utils.proximity_listener.ProximitySensor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -45,7 +44,7 @@ internal class CallParticipantMutedTextToSpeechNotifier(
             .toMuteEvents()
             .onEach {
                 if (!shouldNotify || !voicePromptsEnabled) return@onEach
-                val text = context.getString(R.string.kaleyra_call_participant_utterance_muted_by_admin)
+                val text = context.getString(R.string.kaleyra_strings_description_admin_muted_you)
                 callTextToSpeech.speak(text)
             }
             .onCompletion { callTextToSpeech.dispose(instantly = false) }

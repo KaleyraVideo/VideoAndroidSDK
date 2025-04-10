@@ -82,7 +82,7 @@ class AudioOutputOutputItemTest {
     @Test
     fun mutedDevice_mutedItemTextDisplayed() {
         audioDevice = AudioDeviceUi.Muted
-        val muted = composeTestRule.activity.getString(R.string.kaleyra_call_action_audio_route_muted)
+        val muted = composeTestRule.activity.getString(R.string.kaleyra_strings_action_audio_output_off)
         composeTestRule.onNodeWithText(muted).assertIsDisplayed()
     }
 

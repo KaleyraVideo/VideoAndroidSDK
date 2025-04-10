@@ -2,7 +2,6 @@ package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.kaleyra.video_common_ui.model.FloatingMessage
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -21,7 +20,7 @@ fun AutomaticRecordingSnackbarM3() {
 fun WaitingForOtherParticipantsSnackbarM3() {
     val resources = LocalContext.current.resources
     UserMessageInfoSnackbarM3(
-        message = resources.getString(R.string.kaleyra_call_waiting_for_other_participants)
+        message = resources.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants)
     )
 }
 

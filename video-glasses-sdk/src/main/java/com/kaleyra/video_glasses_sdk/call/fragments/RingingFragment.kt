@@ -53,7 +53,7 @@ internal class RingingFragment : PreCallFragment() {
             viewModel.callState
                 .takeWhile { it !is Call.State.Connecting }
                 .onCompletion {
-                    binding.kaleyraSubtitle.text = resources.getString(R.string.kaleyra_glass_connecting)
+                    binding.kaleyraSubtitle.text = resources.getString(R.string.kaleyra_strings_info_status_connecting)
                     binding.kaleyraBottomNavigation.visibility = View.INVISIBLE
                 }
                 .launchIn(this)
@@ -65,8 +65,8 @@ internal class RingingFragment : PreCallFragment() {
     override fun setSubtitle(isGroupCall: Boolean, isLink: Boolean) {
         binding.kaleyraSubtitle.text = resources.getString(
             when {
-                isLink -> R.string.kaleyra_glass_connecting
-                isGroupCall -> R.string.kaleyra_glass_ringing_group
+                isLink -> R.string.kaleyra_strings_info_status_connecting
+                isGroupCall -> R.string.kaleyra_strings_system_android_notification_title_call
                 else -> R.string.kaleyra_glass_ringing
             }
     ) }
