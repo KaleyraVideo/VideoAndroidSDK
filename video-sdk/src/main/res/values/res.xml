@@ -137,6 +137,7 @@
 
     <!-- SIGNATURE -->
     <item name="ic_kaleyra_signature" type="drawable">@drawable/kaleyra_f_signature</item>
+    <item name="ic_kaleyra_search" type="drawable">@drawable/kaleyra_f_search</item>
 
     <!-- SNAPSHOT -->
     <item name="ic_kaleyra_nav_close" type="drawable">@drawable/kaleyra_z_close</item>
@@ -150,6 +151,7 @@
     <item name="ic_kaleyra_snackbar_info" type="drawable">@drawable/kaleyra_z_alert</item>
 
     <!-- COMMON -->
+    <item name="ic_kaleyra_back" type="drawable">@drawable/kaleyra_z_chevron_left</item>
     <item name="ic_kaleyra_back_down" type="drawable">@drawable/kaleyra_z_chevron_down</item>
     <item name="ic_kaleyra_back_right" type="drawable">@drawable/kaleyra_f_chevron_right</item>
     <item name="ic_kaleyra_close_bold" type="drawable">@drawable/kaleyra_z_close_3</item>

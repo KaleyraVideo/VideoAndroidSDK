@@ -16,18 +16,14 @@
 
 package com.kaleyra.video_sdk.call.signature.view
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
-import com.kaleyra.video_sdk.call.fileshare.view.FileShareAppBar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
@@ -38,15 +34,18 @@ internal fun SignDocumentsAppBar(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     lazyGridState: LazyGridState,
-    isLargeScreen: Boolean = false
+    isLargeScreen: Boolean = false,
+    enableSearch: Boolean = true,
+    onSearch: (String) -> Unit
 ) {
     ComponentAppBar(
         onBackPressed = onBackPressed,
         title = stringResource(id = R.string.kaleyra_sign_documents),
-        actions = { Spacer(Modifier.width(56.dp)) },
         scrollableState = lazyGridState,
         isLargeScreen = isLargeScreen,
-        modifier = modifier
+        modifier = modifier,
+        enableSearch = enableSearch,
+        onSearch = onSearch
     )
 }
 
@@ -57,7 +56,8 @@ internal fun FileShareAppBarTest() {
     KaleyraTheme {
         SignDocumentsAppBar(
             onBackPressed = { },
-            lazyGridState = rememberLazyGridState()
+            lazyGridState = rememberLazyGridState(),
+            onSearch = {}
         )
     }
 }
@@ -70,7 +70,8 @@ internal fun FileShareAppBarLargeScreenTest() {
         SignDocumentsAppBar(
             onBackPressed = { },
             lazyGridState = rememberLazyGridState(),
-            isLargeScreen = true
+            isLargeScreen = true,
+            onSearch = {}
         )
     }
 }

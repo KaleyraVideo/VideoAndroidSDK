@@ -59,7 +59,6 @@ internal fun SignDocumentsContent(
     onItemClick: (SignDocumentUi) -> Unit,
     lazyGridState: LazyGridState
 ) {
-
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(minSize = 600.dp),

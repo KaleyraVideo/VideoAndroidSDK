@@ -26,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +42,7 @@ import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsContent
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsEmptyContent
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsAppBar
+import com.kaleyra.video_sdk.call.signature.view.SignDocumentsEmptySearchContent
 import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -47,6 +51,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlin.math.sign
 
 @Composable
 internal fun SignDocumentsComponent(
@@ -114,27 +119,43 @@ internal fun SignDocumentsComponent(
         onDispose(onBackPressed)
     }
 
+    var searchTerms by remember { mutableStateOf("") }
+
     Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
         Column(modifier) {
             SignDocumentsAppBar(
                 onBackPressed = onBackPressed,
                 isLargeScreen = isLargeScreen,
-                lazyGridState = lazyGridState
+                lazyGridState = lazyGridState,
+                enableSearch = true,
+                onSearch = { text ->
+                    searchTerms = text
+                }
             )
+
+            var filteredSignDocuments = uiState.signDocuments.value
+            if (searchTerms.isNotEmpty()) {
+                filteredSignDocuments = filteredSignDocuments.filter { it.name.contains(searchTerms, ignoreCase = true) || it.sender.contains(searchTerms, ignoreCase = true) }
+            }
 
             Box(
                 modifier = Modifier.weight(1f)
             ) {
                 when {
-                    uiState.signDocuments.isEmpty() -> {
+
+                    filteredSignDocuments.isEmpty() && searchTerms.isNotEmpty() -> {
+                        SignDocumentsEmptySearchContent()
+                    }
+
+                    filteredSignDocuments.isEmpty() -> {
                         SignDocumentsEmptyContent()
                     }
 
                     else -> {
                         SignDocumentsContent(
-                            items = uiState.signDocuments,
+                            items = ImmutableList(filteredSignDocuments),
                             onItemClick = onItemClick,
-                            lazyGridState = lazyGridState
+                            lazyGridState = lazyGridState,
                         )
                     }
                 }

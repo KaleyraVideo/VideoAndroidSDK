@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.fileshare.model.mockSignDocumentFile
 import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
@@ -138,5 +139,95 @@ class SignDocumentsComponentTest {
     fun largeScreen_userMessageComponentDoesNotExists() {
         largeScreen = true
         composeTestRule.onNodeWithText("User message").assertDoesNotExist()
+    }
+
+    @Test
+    fun oneSignDocument_filteredByName_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = mockSignDocumentFile.name.uppercase()
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_filteredBySender_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = mockSignDocumentFile.sender.uppercase()
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_filteredByNameInitialLetter_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = mockSignDocumentFile.name.first().uppercase()
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_filteredBySenderInitialLetter_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = mockSignDocumentFile.sender.first().uppercase()
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_noMatchFiltered_signDocumentFilteredOut() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "xxxxxxxxxxxxx"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsNotDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_signDocumentFilteredOut_closeClicked_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "xxxxxxxxxxxxx"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(close).performClick()
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun oneSignDocument_signDocumentFilteredOut_clearQueryClicked_signDocumentDisplayed() {
+        val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
+        val clearQuery = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_clear)
+        signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "xxxxxxxxxxxxx"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsNotDisplayed()
+        composeTestRule.onNodeWithContentDescription(clearQuery).performClick()
+        composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
     }
 }

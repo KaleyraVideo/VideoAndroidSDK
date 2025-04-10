@@ -88,7 +88,9 @@ internal fun SignDocumentViewComponent(
                         onDismiss()
                     },
                     isLargeScreen = isLargeScreen,
-                    lazyGridState = rememberLazyGridState()
+                    lazyGridState = rememberLazyGridState(),
+                    enableSearch = false,
+                    onSearch = {},
                 )
 
                 Box(

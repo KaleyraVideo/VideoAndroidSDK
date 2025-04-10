@@ -658,6 +658,7 @@ class HSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundToggle = { },
+                onSignatureClick = {},
                 modifier = Modifier.width(width)
             )
         }
@@ -699,7 +700,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         val rootBounds = composeTestRule.onRoot().getBoundsInRoot()
@@ -726,7 +728,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -750,7 +753,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -774,7 +778,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -798,7 +803,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -822,7 +828,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -846,7 +853,8 @@ class HSheetDragContentTest {
                 onChatClick = { isClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -870,7 +878,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { isClicked = true },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -894,7 +903,8 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { isClicked = true },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = {}
             )
         }
         composeTestRule.onNodeWithText(description).assertHasClickAction()
@@ -918,6 +928,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { isClicked = true }
             )
         }

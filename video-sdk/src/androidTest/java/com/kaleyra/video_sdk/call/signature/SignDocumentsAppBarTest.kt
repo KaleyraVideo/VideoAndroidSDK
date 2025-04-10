@@ -22,13 +22,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.appbar.view.SearchInputTag
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsAppBar
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,13 +47,17 @@ class SignDocumentsAppBarTest {
 
     private var isBackPressed = false
 
+    private var queryString = ""
+
     @Before
     fun setUp() {
         composeTestRule.setContent {
             SignDocumentsAppBar(
                 onBackPressed = { isBackPressed = true },
                 lazyGridState = rememberLazyGridState(),
-                isLargeScreen = isLargeScreen
+                isLargeScreen = isLargeScreen,
+                enableSearch = true,
+                onSearch = { queryString = it }
             )
         }
     }
@@ -57,6 +66,7 @@ class SignDocumentsAppBarTest {
     fun tearDown() {
         isLargeScreen = false
         isBackPressed = false
+        queryString = ""
     }
 
     @Test
@@ -68,9 +78,64 @@ class SignDocumentsAppBarTest {
     }
 
     @Test
-    fun fileShareTextDisplayed() {
-        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
-        composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
+    fun signTextDisplayed() {
+        val sign = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule.onNodeWithText(sign).assertIsDisplayed()
+    }
+
+    @Test
+    fun searchIconDisplayed() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).assertIsDisplayed()
+    }
+
+    @Test
+    fun searchIconClicked_searchBarDisplayed() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        composeTestRule.onNodeWithText(searchDescription).assertIsDisplayed()
+    }
+
+    @Test
+    fun searchBarDisplayed_textInputInserted_onSearchCalled() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "test"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        Assert.assertEquals(query, queryString)
+    }
+
+    @Test
+    fun textInputInserted_clearQueryClicked_queryTextCleared() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        val clearDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_clear)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "test"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onNodeWithContentDescription(clearDescription).performClick()
+        Assert.assertTrue(queryString.isEmpty())
+    }
+
+    @Test
+    fun textInputInserted_backPressed_queryTextCleared() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "test"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onNodeWithContentDescription(closeDescription).performClick()
+        Assert.assertTrue(queryString.isEmpty())
+    }
+
+    @Test
+    fun searchBarShown_backPressed_searchBarHidden() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+        val query = "test"
+        composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
+        composeTestRule.onNodeWithContentDescription(closeDescription).performClick()
+        composeTestRule.onNodeWithTag(SearchInputTag).assertIsNotDisplayed()
     }
 
     @Test

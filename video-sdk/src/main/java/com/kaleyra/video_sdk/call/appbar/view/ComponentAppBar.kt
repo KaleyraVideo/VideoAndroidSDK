@@ -19,72 +19,218 @@
 package com.kaleyra.video_sdk.call.appbar.view
 
 import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.material.textfield.TextInputLayout
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.topappbar.TopAppBar
+import com.kaleyra.video_sdk.theme.KaleyraTheme
+
+const val SearchInputTag = "SearchInputTag"
 
 @Composable
 internal fun ComponentAppBar(
     modifier: Modifier = Modifier,
     title: String,
     onBackPressed: () -> Unit,
-    actions: @Composable (RowScope.() -> Unit) = { Spacer(Modifier.width(56.dp)) },
+    enableSearch: Boolean = false,
+    actions: @Composable (RowScope.() -> Unit) = { if (!enableSearch) Spacer(Modifier.width(56.dp)) },
     scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.pinnedScrollBehavior(),
     scrollableState: ScrollableState? = null,
     isLargeScreen: Boolean = false,
+    onSearch: (String) -> Unit = {}
 ) {
+    var displaySearchBar by remember { mutableStateOf(false) }
+    var queryText by remember { mutableStateOf("") }
+
     TopAppBar(
         scrollBehavior = scrollBehavior,
         windowInsets = if (isLargeScreen) WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) else TopAppBarDefaults.windowInsets,
         navigationIcon = {
-            androidx.compose.material3.IconButton(
+            IconButton(
                 modifier = Modifier.padding(4.dp),
-                onClick = onBackPressed,
+                onClick = {
+                    if (displaySearchBar) {
+                        queryText = ""
+                        onSearch("")
+                        displaySearchBar = false
+                    } else onBackPressed()
+                },
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Icon(
-                    painter = if (isLargeScreen) painterResource(id = R.drawable.ic_kaleyra_back_right) else painterResource(id = R.drawable.ic_kaleyra_back_down),
-                    contentDescription = stringResource(id = R.string.kaleyra_close)
-                )
+                if (!displaySearchBar) {
+                    Icon(
+                        painter = if (isLargeScreen) painterResource(id = R.drawable.ic_kaleyra_back_right) else painterResource(id = R.drawable.ic_kaleyra_back_down),
+                        contentDescription = stringResource(id = R.string.kaleyra_close)
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_back),
+                        contentDescription = stringResource(id = R.string.kaleyra_close)
+                    )
+                }
+
             }
         },
         content = {
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (!displaySearchBar) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+
+                SearchInput(
+                    modifier = Modifier.padding(end = 24.dp),
+                    query = queryText,
+                    onQueryChange = {
+                        queryText = it
+                        onSearch(it)
+                    }
+                )
+            }
+
         },
-        actions = actions,
+        actions = {
+            if (!displaySearchBar) actions()
+            if (enableSearch && !displaySearchBar) {
+                IconButton(onClick = {
+                    displaySearchBar = true
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        contentDescription = stringResource(R.string.kaleyra_strings_action_search)
+                    )
+                }
+            }
+        },
         containerColor = if (scrollableState?.canScrollBackward == true) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = modifier
     )
+}
+
+@Composable
+fun SearchInput(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    hint: String = stringResource(R.string.kaleyra_strings_action_search),
+) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text(text = hint) },
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = hint
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.kaleyra_strings_action_clear)
+                    )
+                }
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
+        modifier = modifier.fillMaxWidth().testTag(SearchInputTag),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        )
+    )
+}
+
+@MultiConfigPreview
+@Composable
+fun SearchInputPreview() {
+    var searchQuery by remember { mutableStateOf("") }
+
+    Surface(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        SearchInput(
+            query = searchQuery,
+            onQueryChange = { searchQuery = it },
+        )
+    }
+}
+
+@MultiConfigPreview
+@Composable
+fun ComponentAppBarPreview() {
+    KaleyraTheme {
+        ComponentAppBar(
+            title = "testing",
+            onBackPressed = {},
+            enableSearch = true
+        )
+    }
 }

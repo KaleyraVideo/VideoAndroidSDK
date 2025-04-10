@@ -17,7 +17,6 @@
 
 package com.kaleyra.video_sdk.common.topappbar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
