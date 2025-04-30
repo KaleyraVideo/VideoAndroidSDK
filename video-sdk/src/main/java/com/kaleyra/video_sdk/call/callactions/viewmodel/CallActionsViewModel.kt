@@ -35,6 +35,7 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
+import com.kaleyra.video_common_ui.notification.signature.SignDocumentViewVisibilityObserver
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
@@ -59,6 +60,7 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocuments
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocumentsCreationTimes
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
@@ -67,8 +69,10 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
+import com.kaleyra.video_sdk.call.mapper.SignDocumentMapper.toSignDocumentUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
@@ -87,6 +91,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -277,21 +282,14 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .onEach { isUsageRestricted -> _uiState.update { it.copy(isCameraUsageRestricted = isUsageRestricted) } }
                 .launchIn(this)
 
-            combine(
-                uiState.map { it.actionList.value },
-                call.toMySignDocumentsCreationTimes(),
-                lastSignDocumentCreationTime,
-                SignDocumentsVisibilityObserver.isDisplayed
-            ) { _, creationTimes, lastSignDocumentCreationTime, signDocumentVisibility ->
-                if (signDocumentVisibility) {
-                    this@CallActionsViewModel.lastSignDocumentCreationTime.value = creationTimes.firstOrNull() ?: -1
-                    return@combine
-                }
-                val count = creationTimes.count { it > lastSignDocumentCreationTime }
-                updateAction<SignatureAction> { action ->
-                    action.copy(notificationCount = count)
-                }
-            }.launchIn(this)
+            call.toSignDocumentUi()
+                .onEach {
+                    val signBadgeCount = it.filter { it.signState != SignDocumentUi.SignStateUi.Completed }.count()
+                    uiState.first { it.actionList.value.any { it is SignatureAction } }
+                    updateAction<SignatureAction> { action ->
+                        action.copy(notificationCount = signBadgeCount)
+                    }
+                }.launchIn(viewModelScope)
 
             combine(
                 uiState.map { it.actionList.value },
