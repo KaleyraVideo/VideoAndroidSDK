@@ -214,13 +214,8 @@ private fun calculateSignDocumentLabelUiConfig(
             tint = MaterialTheme.colorScheme.error,
             iconPainter = painterResource(R.drawable.ic_kaleyra_call_sheet_error)
         )
-        SignDocumentUi.SignStateUi.Pending -> SignDocumentLabelUiConfig(
+        SignDocumentUi.SignStateUi.Signing, SignDocumentUi.SignStateUi.Pending -> SignDocumentLabelUiConfig(
             textResId = R.string.kaleyra_signature_state_pending,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            iconPainter = painterResource(R.drawable.ic_kaleyra_clock)
-        )
-        SignDocumentUi.SignStateUi.Signing -> SignDocumentLabelUiConfig(
-            textResId = R.string.kaleyra_signature_state_signing,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             iconPainter = painterResource(R.drawable.ic_kaleyra_clock)
         )
