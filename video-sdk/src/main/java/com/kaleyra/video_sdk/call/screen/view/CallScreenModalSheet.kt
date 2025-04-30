@@ -50,6 +50,8 @@ internal fun CallScreenModalSheet(
     var currentModularComponent by remember { mutableStateOf(modularComponent) }
     currentModularComponent = modularComponent
 
+    var displaySignDocumentsOnSignDocumentViewDismiss by remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
     val onDismiss: (ModularComponent) -> Unit = remember(sheetState) {
         { dismissingComponent ->
@@ -99,19 +101,29 @@ internal fun CallScreenModalSheet(
                         onDismiss(ModularComponent.SignDocuments)
                     },
                     onSignDocumentSelected = {
+                        displaySignDocumentsOnSignDocumentViewDismiss = true
                         onRequestOtherModularComponent(ModularComponent.SignDocumentView)
                     },
                     onUserMessageActionClick = onUserMessageActionClick,
                     isTesting = isTesting
                 )
 
-                ModularComponent.SignDocumentView -> SignDocumentViewComponent(
-                    onDismiss = {
-                        onRequestOtherModularComponent(ModularComponent.SignDocuments)
-                    },
-                    onUserMessageActionClick = onUserMessageActionClick,
-                    isTesting = isTesting
-                )
+                ModularComponent.SignDocumentView -> {
+                    SignDocumentViewComponent(
+                        onDispose = {
+                            onDismiss(ModularComponent.SignDocumentView)
+                        },
+                        onBackPressed = {
+                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
+                            else {
+                                displaySignDocumentsOnSignDocumentViewDismiss = false
+                                onDismiss(ModularComponent.SignDocumentView)
+                            }
+                        },
+                        onUserMessageActionClick = onUserMessageActionClick,
+                        isTesting = isTesting
+                    )
+                }
 
                 ModularComponent.VirtualBackground -> VirtualBackgroundComponent(
                     onDismiss = { onDismiss(ModularComponent.VirtualBackground) }

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentViewVisibilityObserver
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentView
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsAppBar
@@ -34,7 +35,8 @@ internal fun SignDocumentViewComponent(
     signDocumentsViewModel: SignDocumentsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = SignDocumentsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onDismiss: () -> Unit,
+    onDispose: () -> Unit,
+    onBackPressed: () -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit = { },
     isLargeScreen: Boolean = false,
     isTesting: Boolean = false
@@ -43,8 +45,10 @@ internal fun SignDocumentViewComponent(
     val signDocumentsUiState by signDocumentsViewModel.uiState.collectAsStateWithLifecycle()
 
     if (!isTesting) {
+        if (signDocumentsUiState.ongoingSignDocumentUi == null) return
         DisposableEffect(context) {
             context.sendBroadcast(Intent(context, SignDocumentViewVisibilityObserver::class.java).apply {
+                putExtra(SignDocumentViewVisibilityObserver.SIGN_DOCUMENT_ID_DISPLAYED, signDocumentsUiState.ongoingSignDocumentUi!!.id)
                 action = SignDocumentViewVisibilityObserver.ACTION_SIGN_VIEW_DISPLAYED
             })
             onDispose {
@@ -55,58 +59,51 @@ internal fun SignDocumentViewComponent(
         }
     }
 
-    var hasCompletedSign by remember { mutableStateOf(false) }
+    var isDisplayingSignView by remember { mutableStateOf(false) }
 
     val signingDocumentUi = signDocumentsUiState.ongoingSignDocumentUi
 
     when {
-        !hasCompletedSign && signingDocumentUi == null -> hasCompletedSign = false
-        !hasCompletedSign && signingDocumentUi != null -> hasCompletedSign = true
-        hasCompletedSign && signingDocumentUi == null -> {
-            hasCompletedSign = false
-            onDismiss()
+        !isDisplayingSignView && signingDocumentUi == null -> isDisplayingSignView = false
+        !isDisplayingSignView && signingDocumentUi != null -> isDisplayingSignView = true
+        isDisplayingSignView && signingDocumentUi == null -> {
+            isDisplayingSignView = false
+            onBackPressed()
         }
     }
 
-    if (signingDocumentUi != null || isTesting) {
+    DisposableEffect(Unit) {
+        onDispose(onDispose)
+    }
 
-        DisposableEffect(Unit) {
-            onDispose {
-                signingDocumentUi?.let { signDocumentsViewModel.cancelSign(signDocumentUi = it) }
-                onDismiss()
-            }
-        }
+    Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
+        Column(Modifier.fillMaxSize()) {
+            SignDocumentsAppBar(
+                onBackPressed = {
+                    signingDocumentUi?.let {
+                        signDocumentsViewModel.cancelSign(signDocumentUi = it)
+                    }
+                    onBackPressed()
+                },
+                isLargeScreen = isLargeScreen,
+                lazyGridState = rememberLazyGridState(),
+                enableSearch = false,
+                onSearch = {},
+            )
 
-
-        Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
-            Column(Modifier.fillMaxSize()) {
-                SignDocumentsAppBar(
-                    onBackPressed = {
-                        signingDocumentUi?.let {
-                            signDocumentsViewModel.cancelSign(signDocumentUi = it)
-                        }
-                        onDismiss()
-                    },
-                    isLargeScreen = isLargeScreen,
-                    lazyGridState = rememberLazyGridState(),
-                    enableSearch = false,
-                    onSearch = {},
+            Box(
+                modifier = Modifier.weight(1f)
+            ) {
+                if (signingDocumentUi?.signView != null && !isTesting) SignDocumentView(
+                    signView = signingDocumentUi.signView.value
                 )
 
-                Box(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    if (signingDocumentUi?.signView != null) SignDocumentView(
-                        signView = signingDocumentUi.signView.value
-                    )
-
-                    if (!isLargeScreen) {
-                        StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
-                    }
+                if (!isLargeScreen) {
+                    StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
                 }
-
-                NavigationBarsSpacer()
             }
+
+            NavigationBarsSpacer()
         }
     }
 }
@@ -116,7 +113,8 @@ internal fun SignDocumentViewComponent(
 internal fun SignDocumentViewComponentPreview() {
     KaleyraTheme {
         SignDocumentViewComponent(
-            onDismiss = {},
+            onDispose = {},
+            onBackPressed = {},
             onUserMessageActionClick = {},
             isLargeScreen = false,
             isTesting = true

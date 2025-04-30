@@ -37,6 +37,8 @@ class SignDocumentViewVisibilityObserver internal constructor(): BroadcastReceiv
          */
         const val ACTION_SIGN_VIEW_DISPLAYED = "com.kaleyra.video_common_ui.SIGN_VIEW_DISPLAYED"
 
+        const val SIGN_DOCUMENT_ID_DISPLAYED = "com.kaleyra.video_common_ui.SIGN_VIEW_DISPLAYED"
+
         /**
          * Sign Document View Not Displayed
          */
@@ -44,6 +46,9 @@ class SignDocumentViewVisibilityObserver internal constructor(): BroadcastReceiv
 
         private val _isDisplayed: MutableStateFlow<Boolean> = MutableStateFlow(false)
         val isDisplayed: StateFlow<Boolean> = _isDisplayed
+
+        private val _signDocumentIdDisplayed: MutableStateFlow<String?> = MutableStateFlow(null)
+        val signDocumentIdDisplayed: StateFlow<String?> = _signDocumentIdDisplayed
     }
 
     /**
@@ -51,8 +56,14 @@ class SignDocumentViewVisibilityObserver internal constructor(): BroadcastReceiv
      */
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            ACTION_SIGN_VIEW_DISPLAYED -> _isDisplayed.value = true
-            ACTION_SIGN_VIEW_NOT_DISPLAYED -> _isDisplayed.value = false
+            ACTION_SIGN_VIEW_DISPLAYED -> {
+                _isDisplayed.value = true
+                _signDocumentIdDisplayed.value = intent.getStringExtra(SIGN_DOCUMENT_ID_DISPLAYED)
+            }
+            ACTION_SIGN_VIEW_NOT_DISPLAYED -> {
+                _isDisplayed.value = false
+                _signDocumentIdDisplayed.value = null
+            }
             else -> Unit
         }
     }

@@ -83,7 +83,8 @@ internal fun SidePanel(
                 )
 
                 ModularComponent.SignDocumentView -> SignDocumentViewComponent(
-                    onDismiss = onDismiss,
+                    onBackPressed = onDismiss,
+                    onDispose = onDismiss,
                     isLargeScreen = true
                 )
 
