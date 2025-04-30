@@ -80,7 +80,7 @@ internal fun SignDocumentsContent(
             )
             if (index != 0) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .16f),
                     modifier = Modifier.testTag(SignDocumentsItemDividerTag)
                 )
             }
@@ -95,7 +95,7 @@ internal fun SignDocumentsContentPreview() {
     KaleyraTheme {
         Surface {
             SignDocumentsContent(
-                items = ImmutableList((0..200).map { mockSignDocumentFile.copy(id = UUID.randomUUID().toString()) }),
+                items = ImmutableList((0..5).map { mockSignDocumentFile.copy(id = UUID.randomUUID().toString()) }),
                 onItemClick = {},
                 lazyGridState = rememberLazyGridState()
             )
