@@ -130,6 +130,8 @@ object CallExtensions {
     }
 
     suspend internal fun CallUI.bindCallButtons(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+        val addedButtons: MutableList<CallUI.Button> = mutableListOf()
+
         whiteboard.events
             .combine(state) { whiteboardEvent, callState -> whiteboardEvent to callState }
             .takeWhile { (_, callState) ->
@@ -137,9 +139,10 @@ object CallExtensions {
             }
             .onEach { (whiteboardEvent, _) ->
                 if (whiteboardEvent is Whiteboard.Event.Request.Hide) return@onEach
+                if (CallUI.Button.Whiteboard !in addedButtons) addedButtons.add(CallUI.Button.Whiteboard)
                 buttonsProvider
                     ?.invoke((type.value.toCallButtons(actions?.value)
-                        + CallUI.Button.Whiteboard)
+                        + addedButtons)
                         .toMutableSet()
                     )
             }
@@ -148,10 +151,11 @@ object CallExtensions {
         sharedFolder.signDocuments
             .filter { it.isNotEmpty() }
             .onEach {
+                if (CallUI.Button.Signature !in addedButtons) addedButtons.add(CallUI.Button.Signature)
                 buttonsProvider
                     ?.invoke((
                         type.value.toCallButtons(actions?.value)
-                            + CallUI.Button.Signature)
+                            + addedButtons)
                         .toMutableSet()
                     )
             }.launchIn(scope)
@@ -163,10 +167,10 @@ object CallExtensions {
             }
             .filterNot {(downloadFiles, _) -> downloadFiles.isEmpty() }
             .onEach {
-                buttonsProvider
-                    ?.invoke((
+                if (CallUI.Button.FileShare !in addedButtons) addedButtons.add(CallUI.Button.FileShare)
+                buttonsProvider?.invoke((
                         type.value.toCallButtons(actions?.value)
-                            + CallUI.Button.FileShare)
+                            + addedButtons)
                         .toMutableSet()
                     )
             }

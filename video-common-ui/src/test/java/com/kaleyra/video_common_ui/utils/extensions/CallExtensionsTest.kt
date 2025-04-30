@@ -24,6 +24,7 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
@@ -62,6 +63,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -537,5 +539,42 @@ class CallExtensionsTest {
         runCurrent()
 
         Assert.assertTrue(buttons.contains(CallUI.Button.FileShare))
+    }
+
+    @Test
+    fun bindCallButtons_buttonsAreCachedKeepingOrdering() = runTest {
+        every { call.state } returns MutableStateFlow(Call.State.Connected)
+        every { call.type } returns MutableStateFlow(Call.Type.audioVideo())
+        every { call.actions } returns null
+        val mockkFile = mockk<SharedFile>(relaxed = true)
+        val mockkSignDocument = mockk<SignDocument>(relaxed = true)
+        val mockkWhiteboardEvent = Whiteboard.Event.Request.Show("adminUserId")
+        val whiteboardEventsFlow = MutableSharedStateFlow<Whiteboard.Event>(mockkWhiteboardEvent)
+        val signDocumentsFlow = MutableStateFlow<Set<SignDocument>>(setOf())
+        val filesFlow = MutableStateFlow<Set<SharedFile>>(setOf())
+        every { call.whiteboard } returns mockk {
+            every { events } returns whiteboardEventsFlow
+        }
+        every { call.sharedFolder } returns mockk {
+            every { signDocuments } returns signDocumentsFlow
+            every { files } returns filesFlow
+        }
+        var buttons = listOf<CallUI.Button>()
+        every { call.buttonsProvider } returns { receivedButtons ->
+            buttons = receivedButtons.toList()
+            receivedButtons
+        }
+
+        call.bindCallButtons(backgroundScope)
+        runCurrent()
+        filesFlow.value += setOf(mockkFile)
+        runCurrent()
+        signDocumentsFlow.value += setOf(mockkSignDocument)
+        runCurrent()
+
+        val filteredButtons = buttons.filter { it is CallUI.Button.Whiteboard || it is CallUI.Button.FileShare || it is CallUI.Button.Signature }
+        Assert.assertEquals(CallUI.Button.Whiteboard, filteredButtons.first())
+        Assert.assertEquals(CallUI.Button.FileShare, filteredButtons[1])
+        Assert.assertEquals(CallUI.Button.Signature, filteredButtons[2])
     }
 }
