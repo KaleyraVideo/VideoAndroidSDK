@@ -302,6 +302,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                     return@combine
                 }
                 val count = creationTimes.count { it > lastFileShareCreationTime }
+                uiState.first { it.actionList.value.any { it is FileShareAction } }
                 updateAction<FileShareAction> { action ->
                     action.copy(notificationCount = count)
                 }
@@ -312,7 +313,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 uiState.map { it.actionList.value },
                 call.whiteboard.notificationCount
             ) { _, notificationCount ->
-                updateAction<WhiteboardAction>() { action ->
+                uiState.first { it.actionList.value.any { it is WhiteboardAction } }
+                updateAction<WhiteboardAction> { action ->
                     action.copy(notificationCount = notificationCount)
                 }
             }.launchIn(this)
@@ -342,7 +344,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                                 uiState.map { it.actionList.value },
                                 it.unreadMessagesCount
                             ) { actionList, unreadMessagesCount ->
-                                updateAction<ChatAction>() { action ->
+                                uiState.first { it.actionList.value.any { it is ChatAction } }
+                                updateAction<ChatAction> { action ->
                                     action.copy(notificationCount = unreadMessagesCount)
                                 }
                             }.launchIn(this)
