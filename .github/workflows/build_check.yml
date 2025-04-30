@@ -37,12 +37,11 @@ jobs:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: gradle
+          java-version-file: .github/.java-version
+          distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: add python dependency
@@ -57,12 +56,11 @@ jobs:
     needs: [ determine-runner-integration, build_common ]
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: gradle
+          java-version-file: .github/.java-version
+          distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: add python dependency
@@ -77,12 +75,11 @@ jobs:
     needs: [ determine-runner-integration, build_common ]
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: gradle
+          java-version-file: .github/.java-version
+          distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: add python dependency
@@ -97,12 +94,11 @@ jobs:
     needs: [ determine-runner-integration, build_video_sdk, build_glasses_sdk ]
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: gradle
+          java-version-file: .github/.java-version
+          distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: add python dependency
