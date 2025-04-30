@@ -37,6 +37,7 @@ internal fun SignDocumentViewComponent(
     ),
     onDispose: () -> Unit,
     onBackPressed: () -> Unit,
+    onDocumentSigned: () -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit = { },
     isLargeScreen: Boolean = false,
     isTesting: Boolean = false
@@ -44,8 +45,7 @@ internal fun SignDocumentViewComponent(
     val context = LocalContext.current
     val signDocumentsUiState by signDocumentsViewModel.uiState.collectAsStateWithLifecycle()
 
-    if (!isTesting) {
-        if (signDocumentsUiState.ongoingSignDocumentUi == null) return
+    if (!isTesting && signDocumentsUiState.ongoingSignDocumentUi != null) {
         DisposableEffect(context) {
             context.sendBroadcast(Intent(context, SignDocumentViewVisibilityObserver::class.java).apply {
                 putExtra(SignDocumentViewVisibilityObserver.SIGN_DOCUMENT_ID_DISPLAYED, signDocumentsUiState.ongoingSignDocumentUi!!.id)
@@ -68,12 +68,8 @@ internal fun SignDocumentViewComponent(
         !isDisplayingSignView && signingDocumentUi != null -> isDisplayingSignView = true
         isDisplayingSignView && signingDocumentUi == null -> {
             isDisplayingSignView = false
-            onBackPressed()
+            onDocumentSigned()
         }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose(onDispose)
     }
 
     Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest) {
@@ -116,6 +112,7 @@ internal fun SignDocumentViewComponentPreview() {
             onDispose = {},
             onBackPressed = {},
             onUserMessageActionClick = {},
+            onDocumentSigned = {},
             isLargeScreen = false,
             isTesting = true
         )

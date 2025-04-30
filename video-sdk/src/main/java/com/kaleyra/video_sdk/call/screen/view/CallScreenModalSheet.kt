@@ -113,6 +113,11 @@ internal fun CallScreenModalSheet(
                         onDispose = {
                             onDismiss(ModularComponent.SignDocumentView)
                         },
+                        onDocumentSigned = {
+                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
+                            else onDismiss(ModularComponent.SignDocumentView)
+                            displaySignDocumentsOnSignDocumentViewDismiss = false
+                        },
                         onBackPressed = {
                             if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
                             else {

@@ -43,6 +43,7 @@ class SignDocumentViewComponentTest {
                 signDocumentsViewModel = signDocumentViewModel,
                 onDispose = {},
                 onBackPressed = { onDismissed = true },
+                onDocumentSigned = {},
                 onUserMessageActionClick = {},
                 isTesting = true
             )
@@ -70,6 +71,6 @@ class SignDocumentViewComponentTest {
     fun noSigningDocument_signCanceled() {
         uiState.value = SignDocumentUiState()
         composeTestRule.waitForIdle()
-        Assert.assertTrue(onDismissed)
+        composeTestRule.onNodeWithTag(SignViewTag).assertDoesNotExist()
     }
 }
