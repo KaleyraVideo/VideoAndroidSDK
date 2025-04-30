@@ -109,22 +109,19 @@ internal fun CallScreenModalSheet(
                 )
 
                 ModularComponent.SignDocumentView -> {
+                    val onSignDocumentClosed = remember(displaySignDocumentsOnSignDocumentViewDismiss) {
+                        {
+                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
+                            else onDismiss(ModularComponent.SignDocumentView)
+                            displaySignDocumentsOnSignDocumentViewDismiss = false
+                        }
+                    }
                     SignDocumentViewComponent(
                         onDispose = {
                             onDismiss(ModularComponent.SignDocumentView)
                         },
-                        onDocumentSigned = {
-                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
-                            else onDismiss(ModularComponent.SignDocumentView)
-                            displaySignDocumentsOnSignDocumentViewDismiss = false
-                        },
-                        onBackPressed = {
-                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
-                            else {
-                                displaySignDocumentsOnSignDocumentViewDismiss = false
-                                onDismiss(ModularComponent.SignDocumentView)
-                            }
-                        },
+                        onDocumentSigned = onSignDocumentClosed,
+                        onBackPressed = onSignDocumentClosed,
                         onUserMessageActionClick = onUserMessageActionClick,
                         isTesting = isTesting
                     )
