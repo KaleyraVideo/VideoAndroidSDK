@@ -18,12 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentViewVisibilityObserver
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
-import com.kaleyra.video_sdk.call.screen.model.ModularComponent
-import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentView
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsAppBar
 import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -35,7 +32,6 @@ internal fun SignDocumentViewComponent(
     signDocumentsViewModel: SignDocumentsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = SignDocumentsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
-    onDispose: () -> Unit,
     onBackPressed: () -> Unit,
     onDocumentSigned: () -> Unit,
     onUserMessageActionClick: (UserMessage) -> Unit = { },
@@ -109,7 +105,6 @@ internal fun SignDocumentViewComponent(
 internal fun SignDocumentViewComponentPreview() {
     KaleyraTheme {
         SignDocumentViewComponent(
-            onDispose = {},
             onBackPressed = {},
             onUserMessageActionClick = {},
             onDocumentSigned = {},

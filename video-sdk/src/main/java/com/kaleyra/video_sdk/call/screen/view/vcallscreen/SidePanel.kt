@@ -102,12 +102,7 @@ internal fun SidePanel(
                         }
                     }
                     SignDocumentViewComponent(
-                        onDispose = onSignDocumentClosed,
-                        onDocumentSigned = {
-                            if (displaySignDocumentsOnSignDocumentViewDismiss) onOtherModularComponentReuquested(ModularComponent.SignDocuments)
-                            else onDismiss()
-                            displaySignDocumentsOnSignDocumentViewDismiss = false
-                        },
+                        onDocumentSigned = onSignDocumentClosed,
                         onBackPressed = onSignDocumentClosed,
                         isLargeScreen = true
                     )

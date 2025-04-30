@@ -117,9 +117,6 @@ internal fun CallScreenModalSheet(
                         }
                     }
                     SignDocumentViewComponent(
-                        onDispose = {
-                            onDismiss(ModularComponent.SignDocumentView)
-                        },
                         onDocumentSigned = onSignDocumentClosed,
                         onBackPressed = onSignDocumentClosed,
                         onUserMessageActionClick = onUserMessageActionClick,
