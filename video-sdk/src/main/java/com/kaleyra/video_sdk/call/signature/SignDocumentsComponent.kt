@@ -51,7 +51,6 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-import kotlin.math.sign
 
 @Composable
 internal fun SignDocumentsComponent(
@@ -176,7 +175,7 @@ internal fun SignDocumentComponentPreview() {
     KaleyraTheme {
         SignDocumentComponentPreview(
             uiState = SignDocumentUiState(
-                signDocuments = ImmutableList(listOf(mockSignDocumentFile)),
+                signDocuments = ImmutableList(listOf(mockSignDocumentFile, mockSignDocumentFile.copy(id = "id2"), mockSignDocumentFile.copy(id = "id3"))),
             )
         )
     }
