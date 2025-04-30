@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.mapper
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_sdk.call.fileshare.model.SharedFileUi
@@ -80,6 +81,15 @@ internal object FileShareMapper {
             signDocuments
                 .filter { it.sender.userId != me.userId }
                 .map { it.creationTime }
+        }
+    }
+
+    fun Call.toMySignDocuments(): Flow<List<SignDocument>> {
+        return combine(
+            toMe(),
+            sharedFolder.signDocuments
+        ) { me, signDocuments ->
+            signDocuments.filter { it.sender.userId != me.userId }
         }
     }
 
