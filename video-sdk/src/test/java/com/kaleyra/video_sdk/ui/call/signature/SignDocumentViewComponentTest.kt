@@ -41,7 +41,8 @@ class SignDocumentViewComponentTest {
         composeTestRule.setContent {
             SignDocumentViewComponent(
                 signDocumentsViewModel = signDocumentViewModel,
-                onDismiss = { onDismissed = true },
+                onDispose = {},
+                onBackPressed = { onDismissed = true },
                 onUserMessageActionClick = {},
                 isTesting = true
             )

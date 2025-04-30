@@ -21,6 +21,7 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConversationUI
 import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.Mocks.conversationMock
 import com.kaleyra.video_sdk.termsandconditions.viewmodel.TermsAndConditionsViewModel
 import io.mockk.every
 import io.mockk.mockk
@@ -47,8 +48,6 @@ class TermsAndConditionsViewModelTest {
 
     private val conferenceMock = mockk<ConferenceUI>(relaxed = true)
 
-    private val conversationMock = mockk<ConversationUI>(relaxed = true)
-
     @After
     fun tearDown() {
         unmockkAll()
@@ -57,12 +56,10 @@ class TermsAndConditionsViewModelTest {
     @Test
     fun testTermsAndConditionsUiState_isConnectedUpdated() = runTest(UnconfinedTestDispatcher()) {
         every { conferenceMock.state } returns MutableStateFlow(State.Connecting)
-        every { conversationMock.state } returns MutableStateFlow(State.Connecting)
         val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
         val actual = viewModel.uiState.first()
         assertEquals(false, actual.isConnected)
         every { conferenceMock.state } returns MutableStateFlow(State.Connected)
-        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         advanceUntilIdle()
         val new = viewModel.uiState.first()
         assertEquals(true, new.isConnected)
@@ -71,7 +68,6 @@ class TermsAndConditionsViewModelTest {
     @Test
     fun testDecline() = runTest(UnconfinedTestDispatcher()) {
         every { conferenceMock.state } returns MutableStateFlow(State.Connected)
-        every { conversationMock.state } returns MutableStateFlow(State.Connected)
         val viewModel = TermsAndConditionsViewModel { Configuration.Success(conferenceMock, conversationMock, mockk(relaxed = true), MutableStateFlow(mockk())) }
         viewModel.decline()
         val actual = viewModel.uiState.first()

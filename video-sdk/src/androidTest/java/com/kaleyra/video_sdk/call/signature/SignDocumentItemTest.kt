@@ -68,16 +68,16 @@ class SignDocumentItemTest {
     }
 
     @Test
-    fun signStateSigning_signingMessageDisplayed() {
+    fun signStateSigning_pendingMessageDisplayed() {
         signDocument = mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Signing)
-        val signing = composeTestRule.activity.getString(R.string.kaleyra_signature_state_signing)
+        val signing = composeTestRule.activity.getString(R.string.kaleyra_signature_state_pending)
         composeTestRule.onNodeWithText(signing).assertIsDisplayed()
     }
 
     @Test
     fun signStateCompleted_completedMessageDisplayed() {
-        signDocument = mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Signing)
-        val completed = composeTestRule.activity.getString(R.string.kaleyra_signature_state_signing)
+        signDocument = mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Completed)
+        val completed = composeTestRule.activity.getString(R.string.kaleyra_signature_state_completed)
         composeTestRule.onNodeWithText(completed).assertIsDisplayed()
     }
 
