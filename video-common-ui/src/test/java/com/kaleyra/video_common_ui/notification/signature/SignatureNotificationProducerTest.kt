@@ -17,6 +17,7 @@
 package com.kaleyra.video_common_ui.notification.signature
 
 import android.app.Activity
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.CallParticipant
@@ -24,13 +25,10 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
-import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.notification.NotificationPresentationHandler
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.notification.model.Notification
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.coEvery
@@ -50,17 +48,15 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
 class SignatureNotificationProducerTest {
-
-    @get:Rule
-    var mainDispatcherRule = MainDispatcherRule()
 
     private val callMock = mockk<CallUI>()
 
@@ -124,7 +120,7 @@ class SignatureNotificationProducerTest {
         signatureNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", 1, this@SignatureNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.buildIncomingSignatureNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "signId", NotificationCompat.PRIORITY_HIGH, this@SignatureNotificationProducerTest::class.java) }
         verify(exactly = 1) { NotificationManager.notify("signId".hashCode(), any()) }
     }
 
