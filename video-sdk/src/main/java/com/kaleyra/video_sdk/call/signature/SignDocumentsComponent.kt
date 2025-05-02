@@ -136,6 +136,7 @@ internal fun SignDocumentsComponent(
             if (searchTerms.isNotEmpty()) {
                 filteredSignDocuments = filteredSignDocuments.filter { it.name.contains(searchTerms, ignoreCase = true) || it.sender.contains(searchTerms, ignoreCase = true) }
             }
+            filteredSignDocuments = filteredSignDocuments.sortedByDescending { it.creationTime }
 
             Box(
                 modifier = Modifier.weight(1f)
