@@ -57,15 +57,16 @@ class CallSheetItemTest {
                 callAction = HangUpAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -81,15 +82,16 @@ class CallSheetItemTest {
                 callAction = HangUpAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -105,15 +107,16 @@ class CallSheetItemTest {
                 callAction = MicAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -129,15 +132,16 @@ class CallSheetItemTest {
                 callAction = MicAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -153,15 +157,16 @@ class CallSheetItemTest {
                 callAction = CameraAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -177,15 +182,16 @@ class CallSheetItemTest {
                 callAction = CameraAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -201,15 +207,16 @@ class CallSheetItemTest {
                 callAction = FlipCameraAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -225,15 +232,16 @@ class CallSheetItemTest {
                 callAction = FlipCameraAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -249,15 +257,16 @@ class CallSheetItemTest {
                 callAction = AudioAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -273,15 +282,16 @@ class CallSheetItemTest {
                 callAction = AudioAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -297,15 +307,16 @@ class CallSheetItemTest {
                 callAction = ChatAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -321,15 +332,16 @@ class CallSheetItemTest {
                 callAction = ChatAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -345,15 +357,16 @@ class CallSheetItemTest {
                 callAction = FileShareAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -369,15 +382,16 @@ class CallSheetItemTest {
                 callAction = FileShareAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -393,15 +407,16 @@ class CallSheetItemTest {
                 callAction = ScreenShareAction.UserChoice(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -417,15 +432,16 @@ class CallSheetItemTest {
                 callAction = ScreenShareAction.UserChoice(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -441,15 +457,16 @@ class CallSheetItemTest {
                 callAction = WhiteboardAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -465,15 +482,16 @@ class CallSheetItemTest {
                 callAction = WhiteboardAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -489,15 +507,16 @@ class CallSheetItemTest {
                 callAction = VirtualBackgroundAction(isEnabled = true),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -513,15 +532,16 @@ class CallSheetItemTest {
                 callAction = VirtualBackgroundAction(isEnabled = false),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -541,12 +561,13 @@ class CallSheetItemTest {
                 onHangUpClick = { clicked = true },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -567,12 +588,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { clicked = it },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -593,12 +615,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { clicked = it },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -619,12 +642,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { clicked = true },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -645,12 +669,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { clicked = true },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -671,12 +696,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { clicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -697,12 +723,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { clicked = true },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -723,12 +750,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = { clicked = it  },
+                onScreenShareToggle = { clicked = it },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -755,7 +783,8 @@ class CallSheetItemTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { clicked = true },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSignatureClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -775,12 +804,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { clicked = true }
             )
         }
@@ -797,15 +827,16 @@ class CallSheetItemTest {
                 callAction = HangUpAction(),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -823,15 +854,16 @@ class CallSheetItemTest {
                 callAction = HangUpAction(),
                 label = false,
                 extended = true,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -852,12 +884,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -875,12 +908,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -898,12 +932,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -921,12 +956,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -944,12 +980,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -967,12 +1004,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -990,12 +1028,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1013,12 +1052,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1036,12 +1076,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1059,12 +1100,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1082,12 +1124,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1105,12 +1148,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1128,12 +1172,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1151,12 +1196,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1173,12 +1219,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1195,12 +1242,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1217,12 +1265,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1239,12 +1288,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1261,12 +1311,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1283,12 +1334,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1302,15 +1354,16 @@ class CallSheetItemTest {
                 callAction = MicAction(state = InputCallAction.State.Warning),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1336,15 +1389,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1369,15 +1423,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1402,15 +1457,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1437,15 +1493,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1471,15 +1528,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1504,15 +1562,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1530,15 +1589,16 @@ class CallSheetItemTest {
                 callAction = MicAction(state = InputCallAction.State.Error),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1556,15 +1616,16 @@ class CallSheetItemTest {
                 callAction = CameraAction(state = InputCallAction.State.Warning),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1582,15 +1643,16 @@ class CallSheetItemTest {
                 callAction = CameraAction(state = InputCallAction.State.Error),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1612,15 +1674,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1639,15 +1702,16 @@ class CallSheetItemTest {
                 ),
                 label = false,
                 extended = false,
-                onHangUpClick = {  },
+                onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1669,12 +1733,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1695,12 +1760,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1723,12 +1789,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1755,12 +1822,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1782,12 +1850,13 @@ class CallSheetItemTest {
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
-                onScreenShareToggle = {  },
+                onScreenShareToggle = { },
                 onFlipCameraClick = { },
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }

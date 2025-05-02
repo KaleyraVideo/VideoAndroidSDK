@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
@@ -69,6 +70,8 @@ import com.kaleyra.video_sdk.call.brandlogo.viewmodel.BrandLogoViewModel
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.callinfo.view.CallInfoComponent
 import com.kaleyra.video_sdk.call.callscreenscaffold.VCallScreenScaffold
+import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickBroadcastReceiver
+import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
 import com.kaleyra.video_sdk.call.screen.CompactScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.LargeScreenMaxActions
 import com.kaleyra.video_sdk.call.screen.callScreenScaffoldPaddingValues
@@ -76,17 +79,20 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
+import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
 import com.kaleyra.video_sdk.call.stream.StreamComponent
 import com.kaleyra.video_sdk.call.stream.StreamItemSpacing
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
-import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
@@ -123,6 +129,7 @@ internal fun VCallScreen(
     onChatDeleted: () -> Unit,
     onChatCreationFailed: () -> Unit,
     modifier: Modifier = Modifier,
+    isTesting: Boolean = false
 ) {
     val callActionsViewModel: CallActionsViewModel = viewModel(
         factory = CallActionsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
@@ -258,7 +265,7 @@ internal fun VCallScreen(
                             },
                             modifier = Modifier.padding(
                                 start = 14.dp,
-                                top = if (!hasSheetDragContent) 14.dp else 5.dp,
+                                top = if (!hasSheetDragContent) 14.dp else 6.5.dp,
                                 end = 14.dp,
                                 bottom = 14.dp
                             )
@@ -318,11 +325,34 @@ internal fun VCallScreen(
             val streamViewModel: StreamViewModel = viewModel(
                 factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
             )
+
+            val signDocumentsViewModel: SignDocumentsViewModel = viewModel(
+                factory = SignDocumentsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+            )
+
+            val fileShareViewModel: FileShareViewModel = viewModel(
+                factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
+            )
+
             val onUserMessageActionClick = remember(streamViewModel) {
                 { message: UserMessage ->
                     when (message) {
                         is PinScreenshareMessage -> {
                             streamViewModel.pinStream(message.streamId, prepend = true, force = true); Unit
+                        }
+
+                        is SignatureMessage.New -> {
+                            if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed  }.size == 1) {
+                                signDocumentsViewModel.signDocument(signDocumentsViewModel.uiState.value.signDocuments.value.first { it.id == message.signId })
+                                onSideBarSheetComponentRequest(ModularComponent.SignDocumentView)
+                            } else {
+                                onSideBarSheetComponentRequest(ModularComponent.SignDocuments)
+                            }
+                        }
+
+                        is DownloadFileMessage.New -> {
+                            fileShareViewModel.download(message.downloadId)
+                            onSideBarSheetComponentRequest(ModularComponent.FileShare)
                         }
 
                         else -> Unit
@@ -393,7 +423,10 @@ internal fun VCallScreen(
                                         .animateConstraints()
                                         .animatePlacement(this@LookaheadScope)
                                 )
-                                if (modalSheetComponent != ModularComponent.FileShare && modalSheetComponent != ModularComponent.Whiteboard) {
+                                if (modalSheetComponent != ModularComponent.FileShare
+                                    && modalSheetComponent != ModularComponent.Whiteboard
+                                    && modalSheetComponent != ModularComponent.SignDocuments
+                                    && modalSheetComponent != ModularComponent.SignDocumentView) {
                                     StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
                                 }
                             }
@@ -403,6 +436,7 @@ internal fun VCallScreen(
                             SidePanel(
                                 modularComponent = component,
                                 onDismiss = { onSidePanelComponentRequest(null) },
+                                onRequestOtherModularComponent = { onSidePanelComponentRequest(it) },
                                 onChatDeleted = {
                                     onSidePanelComponentRequest(null)
                                     onChatDeleted()
@@ -433,9 +467,11 @@ internal fun VCallScreen(
                 modularComponent = modalSheetComponent,
                 sheetState = modalSheetState,
                 onRequestDismiss = { onModalSheetComponentRequest(null) },
+                onRequestOtherModularComponent = { onModalSheetComponentRequest(it) },
                 onAskInputPermissions = onAskInputPermissions,
                 onUserMessageActionClick = onUserMessageActionClick,
                 onComponentDisplayed = onModularComponentDisplayed,
+                isTesting = isTesting
             )
         }
     }
@@ -453,7 +489,12 @@ internal fun shouldDisplayBrandLogo(callStateUi: CallStateUi, hasConnectedCallOn
 
 private fun isSidePanelSupported(modularComponent: ModularComponent?): Boolean {
     return modularComponent.let {
-        it == ModularComponent.Chat || it == ModularComponent.FileShare || it == ModularComponent.Whiteboard || it == ModularComponent.Participants
+        it == ModularComponent.Chat
+            || it == ModularComponent.FileShare
+            || it == ModularComponent.Whiteboard
+            || it == ModularComponent.Participants
+            || it == ModularComponent.SignDocuments
+            || it == ModularComponent.SignDocumentView
     }
 }
 

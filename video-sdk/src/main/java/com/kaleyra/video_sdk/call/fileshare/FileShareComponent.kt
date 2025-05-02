@@ -36,11 +36,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
@@ -61,6 +63,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import java.util.UUID
@@ -106,10 +109,12 @@ internal fun FileShareComponent(
         }
     }
 
+    val userMessagesViewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration))
+
     FileShareComponent(
         uiState = uiState,
         userMessageComponent = {
-            StackedUserMessageComponent(onActionClick = onUserMessageActionClick)
+            StackedUserMessageComponent(viewModel = userMessagesViewModel, onActionClick = onUserMessageActionClick)
         },
         showUnableToOpenFileSnackBar = showUnableToOpenFileSnackBar,
         showCancelledFileSnackBar = showCancelledFileSnackBar,
@@ -129,6 +134,10 @@ internal fun FileShareComponent(
         onBackPressed = onDismiss,
         isLargeScreen = isLargeScreen
     )
+
+    LaunchedEffect(Unit) {
+        userMessagesViewModel.dismissMessages()
+    }
 }
 
 @Composable

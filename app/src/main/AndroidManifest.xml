@@ -72,6 +72,10 @@
                     android:host="*.bandyer.com"
                     android:pathPattern="/..*/direct-rest-call-handler/..*"
                     android:scheme="https" />
+                <data
+                    android:host="*.bandyer.com"
+                    android:pathPattern="/..*/conference/..*"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 

@@ -45,12 +45,11 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           ref: ${{ inputs.tag }}
-      - name: set up JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: 'gradle'
+          java-version-file: .github/.java-version
+          distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Setup Python

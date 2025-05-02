@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.Participant
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.sharedfolder.SharedFile
@@ -37,6 +38,7 @@ import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel.Compani
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -48,6 +50,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -85,6 +88,7 @@ class FileShareViewModelTest {
 
     @Before
     fun setUp() {
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
         mockkObject(UriExtensions)
         mockkObject(ContactDetailsManager)
         every { any<Uri>().getFileSize() } returns 0

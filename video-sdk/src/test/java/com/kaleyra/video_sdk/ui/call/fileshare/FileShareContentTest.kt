@@ -99,8 +99,7 @@ class FileShareContentTest {
 
     @Test
     fun itemSuccessState_itemIsEnabled() {
-        items =
-            ImmutableList(listOf(mockDownloadSharedFile.copy(state = SharedFileUi.State.Success(uri = ImmutableUri(Uri.EMPTY)))))
+        items = ImmutableList(listOf(mockDownloadSharedFile.copy(state = SharedFileUi.State.Success(uri = ImmutableUri(Uri.EMPTY)))))
         composeTestRule.onNodeWithTag(FileShareItemTag).assertIsEnabled()
     }
 

@@ -487,6 +487,7 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onVirtualBackgroundToggle = { },
+                onSignatureClick = {},
                 modifier = Modifier.height(height)
             )
         }
@@ -521,6 +522,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -545,6 +547,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -569,6 +572,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -593,6 +597,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -617,6 +622,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -641,6 +647,7 @@ class VSheetDragContentTest {
                 onChatClick = { isClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -665,6 +672,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { isClicked = true },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -689,6 +697,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { isClicked = true },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -713,6 +722,7 @@ class VSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = {},
                 onVirtualBackgroundToggle = { isClicked = true }
             )
         }

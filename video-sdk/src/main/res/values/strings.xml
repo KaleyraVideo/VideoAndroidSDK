@@ -362,4 +362,18 @@
     <string name="kaleyra_user_message_pin">Pin</string>
     <string name="kaleyra_users_avatars_overflow" translatable="false">+%1$d</string>
 
+    <!-- SIGNATURE -->
+    <string name="kaleyra_sign_documents">Sign</string>
+    <string name="kaleyra_signature_state_pending">Pending</string>
+    <string name="kaleyra_signature_state_signing">Signing</string>
+    <string name="kaleyra_signature_state_completed">Completed</string>
+    <string name="kaleyra_signature_state_failed">Sign error</string>
+    <string name="kaleyra_signature_sign">Sign</string>
+    <string name="kaleyra_signature_no_documents_shared">No documents shared…</string>
+    <string name="kaleyra_signature_no_documents_shared_found_title">No documents…</string>
+    <string name="kaleyra_signature_no_documents_shared_found_subtitle">The search returned no results</string>
+    <string name="kaleyra_signature_new_practice_available">A new practice is available</string>
+    <string name="kaleyra_strings_action_search">Search…</string>
+    <string name="kaleyra_strings_action_clear">Clear</string>
+
 </resources>

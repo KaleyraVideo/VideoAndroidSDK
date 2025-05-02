@@ -64,4 +64,10 @@
         <item quantity="one">%s nuevo mensaje</item>
         <item quantity="other">Nuevos mensajes: %s</item>
     </plurals>
+
+    <!-- SIGNATURE -->
+    <string name="kaleyra_signature_notification_action_sign">Firma</string>
+    <string name="kaleyra_signature_notification_user_sending_file">%1$s te envió un documento para firmar.</string>
+    <string name="kaleyra_signature_notification_sign_content_message">¿Quieres firmarlo?</string>
+
 </resources>

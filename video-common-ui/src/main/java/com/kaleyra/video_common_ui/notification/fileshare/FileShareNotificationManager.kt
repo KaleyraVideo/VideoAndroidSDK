@@ -20,6 +20,7 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.NotificationCompat
 import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer.Companion.EXTRA_DOWNLOAD_ID
 import com.kaleyra.video_common_ui.utils.PendingIntentExtensions
@@ -32,6 +33,7 @@ internal interface FileShareNotificationManager {
 
     companion object {
         private const val DEFAULT_CHANNEL_ID = "com.kaleyra.video_common_ui.fileshare_notification_channel_default"
+        private const val DEFAULT_CHANNEL_ID_LOW_PRIORITY = "com.kaleyra.video_common_ui.fileshare_notification_channel_low_priority"
 
         private const val CONTENT_REQUEST_CODE = 121
         private const val DOWNLOAD_REQUEST_CODE = 232
@@ -41,21 +43,25 @@ internal interface FileShareNotificationManager {
         context: Context,
         username: String,
         downloadId: String,
+        notificationPriority: Int,
         activityClazz: Class<*>
     ): Notification {
         val resources = context.resources
 
+        val isLowPriority = notificationPriority == NotificationCompat.PRIORITY_LOW
+        val channelName = resources.getString(R.string.kaleyra_notification_file_share_channel_name)
         val builder = FileShareNotification
             .Builder(
                 context = context,
-                channelId = DEFAULT_CHANNEL_ID,
-                channelName = resources.getString(R.string.kaleyra_notification_file_share_channel_name)
+                channelId = if (isLowPriority) DEFAULT_CHANNEL_ID_LOW_PRIORITY else  DEFAULT_CHANNEL_ID,
+                channelName = if (isLowPriority) "$channelName low priority" else channelName
             )
             .contentTitle(resources.getString(
                     R.string.kaleyra_notification_user_sharing_file,
                     username
                 ))
             .contentText(resources.getString(R.string.kaleyra_notification_download_file))
+            .setPriority(notificationPriority)
             .contentIntent(downloadContentPendingIntent(context, activityClazz, downloadId))
             .downloadIntent(downloadPendingIntent(context, activityClazz, downloadId))
 
@@ -63,7 +69,7 @@ internal interface FileShareNotificationManager {
     }
 
     private fun downloadContentPendingIntent(context: Context, activityClazz: Class<*>, downloadId: String) =
-        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE + downloadId.hashCode(), activityClazz)
+        createCallActivityPendingIntent(context, CONTENT_REQUEST_CODE + downloadId.hashCode(), activityClazz, null)
 
     private fun downloadPendingIntent(
         context: Context,
@@ -80,7 +86,7 @@ internal interface FileShareNotificationManager {
         context: Context,
         requestCode: Int,
         activityClazz: Class<T>,
-        intentExtras: Intent? = null
+        intentExtras: Intent?
     ): PendingIntent {
         val applicationContext = context.applicationContext
         val intent = Intent(applicationContext, activityClazz).apply {

@@ -8,6 +8,8 @@ internal enum class ModularComponent {
     ScreenShare,
     FileShare,
     Whiteboard,
+    SignDocuments,
+    SignDocumentView,
     VirtualBackground,
     Participants,
     Chat

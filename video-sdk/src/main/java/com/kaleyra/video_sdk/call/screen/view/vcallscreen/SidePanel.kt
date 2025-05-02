@@ -13,10 +13,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
@@ -25,9 +33,12 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
+import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
+import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
+import kotlinx.coroutines.launch
 
 internal val SideBarBorderWidth = 1.dp
 internal val SidePanelPadding = 4.dp
@@ -39,11 +50,31 @@ internal val SidePanelTag = "SidePanelTag"
 internal fun SidePanel(
     modularComponent: ModularComponent,
     onDismiss: () -> Unit,
+    onRequestOtherModularComponent: (ModularComponent) -> Unit,
     onChatDeleted: () -> Unit,
     onChatCreationFailed: () -> Unit,
     onComponentDisplayed: (ModularComponent?) -> Unit,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     modifier: Modifier = Modifier
 ) {
+    var currentModularComponent by remember { mutableStateOf(modularComponent) }
+    currentModularComponent = modularComponent
+
+    var displaySignDocumentsOnSignDocumentViewDismiss by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
+    val onDismiss: (ModularComponent) -> Unit = remember(modularComponent) {
+        { dismissingComponent ->
+            if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                scope.launch {
+                    if (currentModularComponent == dismissingComponent) {
+                        onDismiss()
+                    }
+                }
+            }
+        }
+    }
+
     Box(
         modifier = modifier
             .padding(SidePanelPadding)
@@ -62,23 +93,49 @@ internal fun SidePanel(
             when (target) {
 
                 ModularComponent.FileShare -> FileShareComponent(
-                    onDismiss = onDismiss,
+                    onDismiss = { onDismiss(ModularComponent.FileShare) },
                     isLargeScreen = true
                 )
 
                 ModularComponent.Whiteboard -> WhiteboardComponent(
-                    onDismiss = onDismiss,
+                    onDismiss = { onDismiss(ModularComponent.Whiteboard) },
                     isLargeScreen = true
                 )
 
+                ModularComponent.SignDocuments -> SignDocumentsComponent(
+                    onDismiss = {
+                        if (!displaySignDocumentsOnSignDocumentViewDismiss) onDismiss(ModularComponent.SignDocuments)
+                    },
+                    onSignDocumentSelected = {
+                        displaySignDocumentsOnSignDocumentViewDismiss = true
+                        onRequestOtherModularComponent(ModularComponent.SignDocumentView)
+                    },
+                    isLargeScreen = true
+                )
+
+                ModularComponent.SignDocumentView -> {
+                    val onSignDocumentClosed = remember(displaySignDocumentsOnSignDocumentViewDismiss) {
+                        {
+                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
+                            else onDismiss(ModularComponent.SignDocumentView)
+                            displaySignDocumentsOnSignDocumentViewDismiss = false
+                        }
+                    }
+                    SignDocumentViewComponent(
+                        onDocumentSigned = onSignDocumentClosed,
+                        onBackPressed = onSignDocumentClosed,
+                        isLargeScreen = true
+                    )
+                }
+
                 ModularComponent.Participants -> ParticipantsComponent(
-                    onDismiss = onDismiss,
+                    onDismiss = { onDismiss(ModularComponent.Participants) },
                     isLargeScreen = true
                 )
 
                 ModularComponent.Chat -> ChatComponent(
-                    onBackPressed = onDismiss,
-                    onChatConfigurationFailure = onDismiss,
+                    onBackPressed = { onDismiss(ModularComponent.Chat) },
+                    onChatConfigurationFailure = { onDismiss(ModularComponent.Chat) },
                     onChatDeleted = onChatDeleted,
                     onChatCreationFailed = onChatCreationFailed,
                 )

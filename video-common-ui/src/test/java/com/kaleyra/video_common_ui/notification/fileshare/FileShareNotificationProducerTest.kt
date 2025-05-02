@@ -16,7 +16,11 @@
 
 package com.kaleyra.video_common_ui.notification.fileshare
 
-import android.content.Context
+import android.app.Activity
+import android.app.Application
+import androidx.core.app.NotificationCompat
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.sharedfolder.SharedFile
@@ -26,6 +30,8 @@ import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
+import com.kaleyra.video_common_ui.notification.NotificationPresentationHandler
+import com.kaleyra.video_common_ui.notification.model.Notification
 import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -56,8 +62,6 @@ class FileShareNotificationProducerTest {
     @get:Rule
     var mainDispatcherRule = MainDispatcherRule()
 
-    private val contextMock = mockk<Context>(relaxed = true)
-
     private val callMock = mockk<CallUI>()
 
     private val otherParticipantMock = mockk<CallParticipant>()
@@ -74,17 +78,16 @@ class FileShareNotificationProducerTest {
 
     @Before
     fun setUp() {
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
         mockkObject(FileShareVisibilityObserver)
         mockkObject(NotificationManager)
-        mockkObject(ContextRetainer)
         mockkObject(ContactDetailsManager)
         with(NotificationManager) {
-            every { buildIncomingFileNotification(any(), any(), any(), any()) } returns mockk(relaxed = true)
+            every { buildIncomingFileNotification(any(), any(), any(), 1, any()) } returns mockk(relaxed = true)
             every { cancel(any()) } returns mockk(relaxed = true)
             every { notify(any(), any()) } returns mockk(relaxed = true)
         }
         coEvery { ContactDetailsManager.refreshContactDetails(*anyVararg()) } returns Unit
-        every { ContextRetainer.context } returns contextMock
         with(callMock) {
             every { participants } returns MutableStateFlow(participantsMock)
             every { sharedFolder } returns sharedFolderMock
@@ -121,14 +124,62 @@ class FileShareNotificationProducerTest {
     }
 
     @Test
-    fun testNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+    fun testHighPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
         val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
         every { FileShareVisibilityObserver.isDisplayed.value } returns false
         fileShareNotificationProducer.bind(callMock)
         advanceUntilIdle()
         coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
-        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(contextMock, "otherUsername", "downloadId", this@FileShareNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
         verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+    }
+
+    @Test
+    fun testNotificationPresentationHandlerLowPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+        val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
+        every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
+            Notification.PresentationMode.LowPriority
+        }
+        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
+        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { FileShareVisibilityObserver.isDisplayed.value } returns false
+        fileShareNotificationProducer.bind(callMock)
+        advanceUntilIdle()
+        coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
+        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_LOW, this@FileShareNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+    }
+
+    @Test
+    fun testNotificationPresentationHandlerHighPriorityNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+        val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
+        every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
+            Notification.PresentationMode.HighPriority
+        }
+        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
+        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { FileShareVisibilityObserver.isDisplayed.value } returns false
+        fileShareNotificationProducer.bind(callMock)
+        advanceUntilIdle()
+        coVerify(exactly = 1) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
+        verify(exactly = 1) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
+        verify(exactly = 1) { NotificationManager.notify("downloadId".hashCode(), any()) }
+    }
+
+    @Test
+    fun testNotificationPresentationHandlerHiddenNotifyDownloadFile() = runTest(UnconfinedTestDispatcher()) {
+        val notificationPresentationHandler = spyk<Activity>(moreInterfaces = arrayOf(NotificationPresentationHandler::class))
+        every { (notificationPresentationHandler as NotificationPresentationHandler).notificationPresentationHandler } returns {
+            Notification.PresentationMode.Hidden
+        }
+        val fileShareNotificationProducer = FileShareNotificationProducer(backgroundScope)
+        fileShareNotificationProducer.onActivityCreated(notificationPresentationHandler, mockk())
+        every { FileShareVisibilityObserver.isDisplayed.value } returns false
+        fileShareNotificationProducer.bind(callMock)
+        advanceUntilIdle()
+        coVerify(exactly = 0) { ContactDetailsManager.refreshContactDetails(*listOf("otherUserId").toTypedArray()) }
+        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(ApplicationProvider.getApplicationContext(), "otherUsername", "downloadId", NotificationCompat.PRIORITY_HIGH, this@FileShareNotificationProducerTest::class.java) }
+        verify(exactly = 0) { NotificationManager.notify("downloadId".hashCode(), any()) }
     }
 
     @Test
@@ -137,7 +188,7 @@ class FileShareNotificationProducerTest {
         every { FileShareVisibilityObserver.isDisplayed.value } returns true
         fileShareNotificationProducer.bind(callMock)
         advanceUntilIdle()
-        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), any()) }
+        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), 1, any()) }
         verify(exactly = 0) { NotificationManager.notify(any(), any()) }
     }
 
@@ -150,7 +201,7 @@ class FileShareNotificationProducerTest {
         }
         fileShareNotificationProducer.bind(callMock)
         advanceUntilIdle()
-        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), any()) }
+        verify(exactly = 0) { NotificationManager.buildIncomingFileNotification(any(), any(), any(), 1, any()) }
         verify(exactly = 0) { NotificationManager.notify(any(), any()) }
     }
 

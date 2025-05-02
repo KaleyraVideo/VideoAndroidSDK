@@ -660,6 +660,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 modifier = Modifier.width(width)
             )
@@ -702,6 +703,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -729,6 +731,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -753,6 +756,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -777,6 +781,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -801,6 +806,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -825,6 +831,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -849,6 +856,7 @@ class HSheetDragContentTest {
                 onChatClick = { isClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -873,6 +881,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { isClicked = true },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -896,6 +905,7 @@ class HSheetDragContentTest {
                 onAudioClick = { },
                 onChatClick = { },
                 onFileShareClick = { },
+                onSignatureClick = { },
                 onWhiteboardClick = { isClicked = true },
                 onVirtualBackgroundToggle = { }
             )
@@ -921,6 +931,7 @@ class HSheetDragContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { isClicked = true }
             )
         }
