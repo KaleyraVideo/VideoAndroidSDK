@@ -90,6 +90,10 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token_for_hybrid_release.outputs.token }}
       - name: Trigger hybrid sdk release via script
         working-directory: scripts
         run: |
