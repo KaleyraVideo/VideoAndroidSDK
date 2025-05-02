@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Generate a token
         id: generate_token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
@@ -80,14 +80,21 @@ jobs:
     secrets: inherit
 
   update_hybrid_version:
+    runs-on: ubuntu-latest
     needs: update_sdk_version
     if: ${{ inputs.release_version == 'patch' || inputs.release_version == 'minor' }}
-    uses: KaleyraVideo/VideoHybridNativeBridge/.github/workflows/update_native_dep.yml@main
-    with: 
-      release_version: ${{ inputs.specific_release_version || needs.update_sdk_version.outputs.new_version }}
-      release_type: "patch"
-      platform: 'android'
-    secrets: inherit
+    steps:
+      - name: Generate a token for hybrid release
+        id: generate_token_for_hybrid_release
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Trigger hybrid sdk release via script
+        working-directory: scripts
+        run: |
+          chmod +x update_hybrid_sdk_version.sh
+          ./update_hybrid_sdk_version.sh "${{ steps.generate_token_for_hybrid_release.outputs.token }}" "${{ needs.update_sdk_version.outputs.new_version }}" "${{ inputs.release_version }}"
 
   release_notes:
     needs: [update_sdk_version, update_bom_version]
