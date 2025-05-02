@@ -89,7 +89,7 @@ class SidePanelTest {
                 onComponentDisplayed = { sideBarComponentDisplayed = it },
                 onChatDeleted = { isChatDeleted = true },
                 onChatCreationFailed = { isChatCreationFailed = true },
-                onOtherModularComponentReuquested = { }
+                onRequestOtherModularComponent = { }
             )
         }
     }

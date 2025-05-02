@@ -436,7 +436,7 @@ internal fun VCallScreen(
                             SidePanel(
                                 modularComponent = component,
                                 onDismiss = { onSidePanelComponentRequest(null) },
-                                onOtherModularComponentReuquested = { onSidePanelComponentRequest(it) },
+                                onRequestOtherModularComponent = { onSidePanelComponentRequest(it) },
                                 onChatDeleted = {
                                     onSidePanelComponentRequest(null)
                                     onChatDeleted()

@@ -98,7 +98,7 @@ internal fun CallScreenModalSheet(
 
                 ModularComponent.SignDocuments -> SignDocumentsComponent(
                     onDismiss = {
-                        onDismiss(ModularComponent.SignDocuments)
+                        if (!displaySignDocumentsOnSignDocumentViewDismiss) onDismiss(ModularComponent.SignDocuments)
                     },
                     onSignDocumentSelected = {
                         displaySignDocumentsOnSignDocumentViewDismiss = true
