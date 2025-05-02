@@ -17,8 +17,12 @@
 package com.kaleyra.video_sdk
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.sharedfolder.SharedFile
+import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.model.FloatingMessage
@@ -30,8 +34,10 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every
@@ -57,15 +63,21 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import java.lang.ref.WeakReference
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CallUserMessagesProviderTest {
 
+    private val signDocumentsFlow = MutableStateFlow<Set<SignDocument>>(setOf())
+    private val filesFlow = MutableStateFlow<Set<SharedFile>>(setOf())
+
     private val callMock = mockk<CallUI>(relaxed = true) {
+        every { participants } returns MutableStateFlow(mockk {
+            every { me } returns mockk(relaxed = true) { every { userId } returns "me"}
+            every { others } returns listOf(mockk(relaxed = true) { every { userId } returns "other" })
+        })
         every { sharedFolder } returns mockk {
-            every { signDocuments } returns MutableStateFlow(setOf())
-            every { files } returns MutableStateFlow(setOf())
+            every { signDocuments } returns signDocumentsFlow
+            every { files } returns filesFlow
         }
     }
 
@@ -334,5 +346,41 @@ class CallUserMessagesProviderTest {
 
         CallUserMessagesProvider.alertMessages.first { it.none { it is AlertMessage.CustomMessage } }
         assert(CallUserMessagesProvider.alertMessages.first().isEmpty())
+    }
+
+    @Test
+    fun testSignDocumentMessage() = runTest {
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        signDocumentsFlow.emit(
+            setOf(
+                mockk {
+                    every { id } returns "signId"
+                    every { creationTime } returns 123L
+                    every { sender } returns mockk { every { userId } returns "other" }
+                }
+            )
+        )
+        val actual = CallUserMessagesProvider.userMessage.first()
+        assert(actual is SignatureMessage)
+    }
+
+    @Test
+    fun testDownloadFileMessage() = runTest {
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        mockkObject(ContactDetailsManager)
+        filesFlow.emit(
+            setOf(
+                mockk {
+                    every { id } returns "signId"
+                    every { creationTime } returns 123L
+                    every { sender } returns mockk {
+                        every { combinedDisplayName } returns MutableStateFlow("displayName")
+                        every { userId } returns "other"
+                    }
+                }
+            )
+        )
+        val actual = CallUserMessagesProvider.userMessage.first()
+        assert(actual is DownloadFileMessage)
     }
 }

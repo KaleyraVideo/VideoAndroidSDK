@@ -149,16 +149,20 @@ object CallUserMessagesProvider {
     }
 
     private fun Channel<UserMessage>.sendSignDocumentsEvents(call: CallUI, scope: CoroutineScope) {
+        val sentSignDocumentsIds = mutableListOf<String>()
         call.sharedFolder.signDocuments.filter { it.isNotEmpty() }.onEach { files ->
-            val file = files.maxByOrNull { it.creationTime } ?: return@onEach
+            val file = files.filter { it.id !in sentSignDocumentsIds }.maxByOrNull { it.creationTime } ?: return@onEach
+            sentSignDocumentsIds += file.id
             send(SignatureMessage.New(file.id))
         }.launchIn(scope)
     }
 
     private fun Channel<UserMessage>.sendDownloadFilesEvents(call: CallUI, scope: CoroutineScope) {
+        val sentFilesIds = mutableListOf<String>()
         call.sharedFolder.files.filter { it.isNotEmpty() }.onEach { files ->
-            val file = files.maxByOrNull { it.creationTime } ?: return@onEach
+            val file = files.filter { it.id !in sentFilesIds && it.sender.userId != call.participants.value.me?.userId }.maxByOrNull { it.creationTime } ?: return@onEach
             val sender = file.sender.combinedDisplayName.first { file != null }
+            sentFilesIds += file.id
             send(DownloadFileMessage.New(file.id, sender!!))
         }.launchIn(scope)
     }
@@ -245,5 +249,4 @@ object CallUserMessagesProvider {
                 emit(newList)
             }.launchIn(scope)
     }
-
 }
