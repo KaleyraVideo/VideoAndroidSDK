@@ -161,7 +161,7 @@ object CallUserMessagesProvider {
         val sentFilesIds = mutableListOf<String>()
         call.sharedFolder.files.filter { it.isNotEmpty() }.onEach { files ->
             val file = files.filter { it.id !in sentFilesIds && it.sender.userId != call.participants.value.me?.userId }.maxByOrNull { it.creationTime } ?: return@onEach
-            val sender = file.sender.combinedDisplayName.first { file != null }
+            val sender = file.sender.combinedDisplayName.first { it != null }
             sentFilesIds += file.id
             send(DownloadFileMessage.New(file.id, sender!!))
         }.launchIn(scope)
