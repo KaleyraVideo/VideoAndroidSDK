@@ -252,7 +252,8 @@ internal abstract class VCallScreenBaseTest {
                 onAskInputPermissions = onAskInputPermissions,
                 onBackPressed = onBackPressed,
                 onChatDeleted = onChatDeleted,
-                onChatCreationFailed = onChatCreationFailed
+                onChatCreationFailed = onChatCreationFailed,
+                isTesting = true
             )
         }
     }

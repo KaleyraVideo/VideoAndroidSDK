@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import java.util.Objects
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Event representing the display mode set
@@ -232,6 +233,7 @@ class CallUI(
                     Chat,
                     Participants,
                     Whiteboard,
+                    Signature
                 )
             }
 
@@ -365,6 +367,11 @@ class CallUI(
          * Open whiteboard button
          */
         data object Whiteboard : Button()
+
+        /**
+         * Signature button
+         */
+        data object Signature : Button()
 
         /**
          * Custom Call Button
@@ -791,4 +798,3 @@ class CallUI(
         }
     }
 }
-

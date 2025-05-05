@@ -16,6 +16,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.view.AudioAction
@@ -26,6 +27,7 @@ import com.kaleyra.video_sdk.call.callactions.view.FlipCameraAction
 import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
 import com.kaleyra.video_sdk.call.callactions.view.MicAction
 import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
+import com.kaleyra.video_sdk.call.callactions.view.SignDocumentAction
 import com.kaleyra.video_sdk.call.callactions.view.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.callactions.view.WhiteboardAction
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
@@ -46,6 +48,7 @@ internal fun CallSheetItem(
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
+    onSignatureClick: () -> Unit,
     onVirtualBackgroundToggle: (Boolean) -> Unit,
     inputPermissions: InputPermissions = InputPermissions()
 ) {
@@ -139,6 +142,15 @@ internal fun CallSheetItem(
                 enabled = ca.isEnabled,
                 badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
                 onClick = onWhiteboardClick,
+                modifier = modifier
+            )
+        }
+        is SignatureAction -> {
+            SignDocumentAction(
+                label = label,
+                enabled = ca.isEnabled,
+                badgeCount = ca.notificationCount.takeIf { it != 0 } ?: 0,
+                onClick = onSignatureClick,
                 modifier = modifier
             )
         }

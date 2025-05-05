@@ -42,6 +42,7 @@ internal class FileShareNotification {
      * @property contentTitle The notification title
      * @property contentIntent The pending intent to be executed when the user tap on the notification
      * @property downloadIntent The pending intent to be executed when the user tap on the download button
+     * @property notificationPriority The priority associated with this notification
      * @constructor
      */
     data class Builder(
@@ -52,6 +53,7 @@ internal class FileShareNotification {
         private var contentTitle: String = "",
         private var contentIntent: PendingIntent? = null,
         private var downloadIntent: PendingIntent? = null,
+        private var notificationPriority: Int = NotificationCompat.PRIORITY_HIGH
     ) {
 
         /**
@@ -71,17 +73,23 @@ internal class FileShareNotification {
         fun contentTitle(text: String) = apply { this.contentTitle = text }
 
         /**
+         * Set notification priority
+         *
+         * @param priority Notification priority to be assigned to the builder
+         * @return Builder
+         */
+        fun setPriority(priority: Int) = apply { this.notificationPriority = priority }
+
+        /**
          * The pending intent to be executed when the user tap on the notification
          *
          * @param pendingIntent PendingIntent
          * @return Builder
          */
-        fun contentIntent(pendingIntent: PendingIntent) =
-            apply { this.contentIntent = pendingIntent }
-
+        fun contentIntent(pendingIntent: PendingIntent) = apply { this.contentIntent = pendingIntent }
 
         /**
-         * The pending intent to be executed when the user taps the answer button
+         * The pending intent to be executed when the user taps the download file button
          *
          * @param pendingIntent PendingIntent
          * @return Builder
@@ -96,7 +104,7 @@ internal class FileShareNotification {
          */
         fun build(): Notification {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                createNotificationChannel(context, channelId, channelName)
+                createNotificationChannel(context, channelId, channelName, notificationPriority)
 
             val builder =
                 NotificationCompat.Builder(context.applicationContext, channelId)
@@ -106,7 +114,7 @@ internal class FileShareNotification {
                     .setWhen(System.currentTimeMillis())
                     .setGroupSummary(false)
                     .setSmallIcon(R.drawable.ic_kaleyra_file_share)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setPriority(notificationPriority)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -127,14 +135,17 @@ internal class FileShareNotification {
         private fun createNotificationChannel(
             context: Context,
             channelId: String,
-            channelName: String
+            channelName: String,
+            notificationPriority: Int
         ) {
+            val isLowPriority = notificationPriority == NotificationCompat.PRIORITY_LOW
+
             val notificationManager =
                 context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
             val notificationChannel = NotificationChannel(
                 channelId,
                 channelName,
-                NotificationManager.IMPORTANCE_HIGH
+                if (isLowPriority) NotificationManager.IMPORTANCE_LOW else NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 enableVibration(true)

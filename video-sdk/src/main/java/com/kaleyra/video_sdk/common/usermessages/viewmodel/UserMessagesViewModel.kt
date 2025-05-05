@@ -66,6 +66,10 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
         stackedSnackbarHostMessagesHandler.removeUserMessage(userMessage)
     }
 
+    fun dismissMessages() {
+        stackedSnackbarHostMessagesHandler.removeUserMessages()
+    }
+
     override fun onCleared() {
         super.onCleared()
         CallUserMessagesProvider.dispose()

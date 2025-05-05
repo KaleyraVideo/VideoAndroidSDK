@@ -97,12 +97,16 @@ internal fun CallScreen(
     ),
     windowSizeClass: WindowSizeClass,
     shouldShowFileShareComponent: Boolean,
+    shouldShowSignDocuments: Boolean,
+    shouldShowSignDocumentView: Boolean,
     isInPipMode: Boolean,
     enterPip: () -> Unit,
     onPipAspectRatio: (Rational) -> Unit,
     onPresentationMode: (CallUI.PresentationMode) -> Unit,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onSignDocumentsVisibility: (Boolean) -> Unit,
+    onSignDocumentViewVisibility: (Boolean) -> Unit,
     onUsbCameraConnected: (Boolean) -> Unit,
     onActivityFinishing: () -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
@@ -240,10 +244,14 @@ internal fun CallScreen(
             isInPipMode = isInPipMode,
             callSheetState = callSheetState,
             shouldShowFileShareComponent = shouldShowFileShareComponent,
+            shouldShowSignDocumentsComponent = shouldShowSignDocuments,
+            shouldShowSignDocumentViewComponent = shouldShowSignDocumentView,
             whiteboardRequest = whiteboardRequest,
             inputPermissions = inputPermissions,
             onFileShareVisibility = onFileShareVisibility,
             onWhiteboardVisibility = onWhiteboardVisibility,
+            onSignDocumentsVisibility = onSignDocumentsVisibility,
+            onSignDocumentViewVisibility = onSignDocumentViewVisibility,
             onAskInputPermissions = onAskInputPermissions,
             onPipAspectRatio = onPipAspectRatio,
             onCallEndedBack = finishActivity,
@@ -261,10 +269,14 @@ internal fun CallScreen(
     uiState: MainUiState,
     callSheetState: CallSheetState,
     shouldShowFileShareComponent: Boolean,
+    shouldShowSignDocumentsComponent: Boolean,
+    shouldShowSignDocumentViewComponent: Boolean,
     whiteboardRequest: WhiteboardRequest?,
     inputPermissions: InputPermissions,
     onFileShareVisibility: (Boolean) -> Unit,
     onWhiteboardVisibility: (Boolean) -> Unit,
+    onSignDocumentsVisibility: (Boolean) -> Unit,
+    onSignDocumentViewVisibility: (Boolean) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     onPipAspectRatio: (Rational) -> Unit,
     onCallEndedBack: () -> Unit,
@@ -319,10 +331,36 @@ internal fun CallScreen(
         onWhiteboardVisibility
     )
 
+    SignatureVisibilityObserver(
+        modalSheetComponent = modalSheetComponent.value,
+        sidePanelComponent = sidePanelComponent.value,
+        onSignDocumentsVisibility
+    )
+
+    SignatureViewVisibilityObserver(
+        modalSheetComponent = modalSheetComponent.value,
+        sidePanelComponent = sidePanelComponent.value,
+        onSignDocumentViewVisibility
+    )
+
     if (shouldShowFileShareComponent) {
         LaunchedEffect(Unit) {
             if (!isLargeScreen) onModalSheetComponentRequest(ModularComponent.FileShare)
             else onSidePanelComponentRequest(ModularComponent.FileShare)
+        }
+    }
+
+    if (shouldShowSignDocumentsComponent) {
+        LaunchedEffect(Unit) {
+            if (!isLargeScreen) onModalSheetComponentRequest(ModularComponent.SignDocuments)
+            else onSidePanelComponentRequest(ModularComponent.SignDocuments)
+        }
+    }
+
+    if (shouldShowSignDocumentViewComponent) {
+        LaunchedEffect(Unit) {
+            if (!isLargeScreen) onModalSheetComponentRequest(ModularComponent.SignDocumentView)
+            else onSidePanelComponentRequest(ModularComponent.SignDocumentView)
         }
     }
 
@@ -443,6 +481,30 @@ internal fun WhiteboardVisibilityObserver(
     val isWhiteboardComponent = modalSheetComponent == ModularComponent.Whiteboard || sidePanelComponent == ModularComponent.Whiteboard
     LaunchedEffect(isWhiteboardComponent) {
         onWhiteboardVisibility(isWhiteboardComponent)
+    }
+}
+
+@Composable
+internal fun SignatureVisibilityObserver(
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
+    onSignatureVisibility: (Boolean) -> Unit,
+) {
+    val isSignDocumentsComponent = modalSheetComponent == ModularComponent.SignDocuments || sidePanelComponent == ModularComponent.SignDocuments
+    LaunchedEffect(isSignDocumentsComponent) {
+        onSignatureVisibility(isSignDocumentsComponent)
+    }
+}
+
+@Composable
+internal fun SignatureViewVisibilityObserver(
+    modalSheetComponent: ModularComponent?,
+    sidePanelComponent: ModularComponent?,
+    onSignatureViewVisibility: (Boolean) -> Unit,
+) {
+    val isSignDocumentViewComponent = modalSheetComponent == ModularComponent.SignDocumentView || sidePanelComponent == ModularComponent.SignDocumentView
+    LaunchedEffect(isSignDocumentViewComponent) {
+        onSignatureViewVisibility(isSignDocumentViewComponent)
     }
 }
 

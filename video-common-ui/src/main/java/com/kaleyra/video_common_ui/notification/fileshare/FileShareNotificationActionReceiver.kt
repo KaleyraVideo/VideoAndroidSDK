@@ -41,7 +41,7 @@ class FileShareNotificationActionReceiver internal constructor(val dispatcher: C
      */
     companion object {
         /**
-         * ActionHangUp
+         * Action Download
          */
         const val ACTION_DOWNLOAD = "com.kaleyra.video_common_ui.DOWNLOAD"
     }

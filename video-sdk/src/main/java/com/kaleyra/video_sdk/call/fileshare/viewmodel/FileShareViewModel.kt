@@ -17,20 +17,23 @@
 package com.kaleyra.video_sdk.call.fileshare.viewmodel
 
 import android.net.Uri
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.sharedfolder.SharedFolder
 import com.kaleyra.video_common_ui.utils.extensions.UriExtensions.getFileSize
-import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
-import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
 import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickProvider
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toSharedFilesUi
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import kotlinx.coroutines.flow.*
+import com.kaleyra.video_utils.ContextRetainer
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class FileShareViewModel(configure: suspend () -> Configuration, filePickProvider: FilePickProvider) : BaseViewModel<FileShareUiState>(configure) {
@@ -41,6 +44,8 @@ internal class FileShareViewModel(configure: suspend () -> Configuration, filePi
         get() = call.getValue()?.sharedFolder
 
     private var onFileSelected: (() -> Unit)? = null
+
+    private val notificationManager by lazy { NotificationManagerCompat.from(ContextRetainer.context) }
 
     init {
         filePickProvider.fileUri
@@ -77,6 +82,7 @@ internal class FileShareViewModel(configure: suspend () -> Configuration, filePi
 
     fun download(id: String) {
         sharedFolder?.download(id)
+        notificationManager.cancel(id.hashCode())
     }
 
     fun cancel(id: String) {

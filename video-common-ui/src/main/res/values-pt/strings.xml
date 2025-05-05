@@ -70,4 +70,8 @@
     <string name="kaleyra_strings_info_call_ended">Chamada encerrada</string>
     <string name="kaleyra_strings_action_start_screen_share">Tela</string>
 
+    <string name="kaleyra_signature_notification_action_sign">Assinatura</string>
+    <string name="kaleyra_signature_notification_user_sending_file">%1$s enviou-lhe um documento para assinar.</string>
+    <string name="kaleyra_signature_notification_sign_content_message">Quer assiná-lo?</string>
+
 </resources>

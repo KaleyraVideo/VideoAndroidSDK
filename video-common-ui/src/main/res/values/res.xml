@@ -25,4 +25,5 @@
     <item name="ic_kaleyra_avatar" type="drawable">@drawable/kaleyra_z_avatar</item>
     <item name="ic_kaleyra_mark_as_read" type="drawable">@drawable/kaleyra_icon_mark_as_read</item>
     <item name="ic_kaleyra_terms_and_conditions" type="drawable">@drawable/kaleyra_terms_and_conditions</item>
+    <item name="ic_kaleyra_file" type="drawable">@drawable/kaleyra_z_file</item>
 </resources>

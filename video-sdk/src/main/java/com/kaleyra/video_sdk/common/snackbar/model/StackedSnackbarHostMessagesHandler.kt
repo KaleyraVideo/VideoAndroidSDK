@@ -6,11 +6,14 @@ import androidx.compose.ui.platform.AccessibilityManager
 import com.kaleyra.video_sdk.common.uistate.UiState
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider.userMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -58,9 +61,12 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
     fun addUserMessage(userMessage: UserMessage, autoDismiss: Boolean = false) = scope.launch { internalAddUserMessage(userMessage, autoDismiss) }
 
     private fun internalAddUserMessage(userMessage: UserMessage, autoDismiss: Boolean = false) = scope.launch {
+        println("adding message $userMessage")
         with(_userMessages) {
             when (userMessage) {
                 is RecordingMessage -> this.removeIf { it is RecordingMessage }
+                is SignatureMessage.New -> this.removeIf { it is SignatureMessage.New }
+                is DownloadFileMessage.New -> this.removeIf { it is DownloadFileMessage.New }
                 is AudioConnectionFailureMessage -> this.removeIf { it is AudioConnectionFailureMessage }
                 is UsbCameraMessage -> this.removeIf { it is UsbCameraMessage }
                 is WhiteboardRequestMessage -> this.removeIf { it is WhiteboardRequestMessage }
@@ -88,6 +94,13 @@ class StackedSnackbarHostMessagesHandler(val accessibilityManager: Accessibility
     fun removeUserMessage(userMessage: UserMessage) = scope.launch {
         internalRemoveUserMessage(userMessage)
         updateUserMessages()
+    }
+
+    fun removeUserMessages() = scope.launch {
+        println("removing messages: ${userMessages.replayCache.firstOrNull()}")
+        userMessages.replayCache.firstOrNull()?.forEach { userMessage ->
+            removeUserMessage(userMessage)
+        }
     }
 
     private fun internalRemoveUserMessage(userMessage: UserMessage) {

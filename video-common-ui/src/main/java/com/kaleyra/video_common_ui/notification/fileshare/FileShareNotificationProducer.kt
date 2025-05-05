@@ -24,6 +24,9 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.notification.NotificationManager
+import com.kaleyra.video_common_ui.notification.NotificationProducer
+import com.kaleyra.video_common_ui.notification.model.PRIORITY_HIDDEN
+import com.kaleyra.video_common_ui.notification.model.toNotificationCompatPriority
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -33,7 +36,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
-internal class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) {
+internal class FileShareNotificationProducer(private val coroutineScope: CoroutineScope) : NotificationProducer() {
 
     companion object {
         const val EXTRA_DOWNLOAD_ID = "com.kaleyra.video_common_ui.EXTRA_DOWNLOAD_ID"
@@ -41,7 +44,8 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
 
     private var job: Job? = null
 
-    fun bind(call: CallUI) {
+    override fun bind(call: CallUI) {
+        super.bind(call)
         var lastNotifiedDownload: SharedFile? = null
         val me = call.participants.value.me
         val context = ContextRetainer.context
@@ -53,7 +57,13 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
             }
             .onEach {
                 if (!FileShareVisibilityObserver.isDisplayed.value) {
-                    val notification = buildNotification(context, call, it, call.activityClazz)
+                    val notificationPriority = (notificationPresentationHandler
+                            ?.notificationPresentationHandler
+                            ?.invoke(com.kaleyra.video_common_ui.notification.model.Notification.DownloadFile)
+                            ?: com.kaleyra.video_common_ui.notification.model.Notification.PresentationMode.HighPriority
+                        ).toNotificationCompatPriority()
+                    if (notificationPriority == PRIORITY_HIDDEN) return@onEach
+                    val notification = buildNotification(context, call, it, notificationPriority, call.activityClazz)
                     NotificationManager.notify(it.id.hashCode(), notification)
                 }
             }
@@ -65,16 +75,19 @@ internal class FileShareNotificationProducer(private val coroutineScope: Corouti
             .launchIn(coroutineScope)
     }
 
-    fun stop() {
+    override fun stop() {
+        super.stop()
         job?.cancel()
     }
 
-    private suspend fun buildNotification(context: Context, call: Call, sharedFile: SharedFile, activityClazz: Class<*>): Notification {
+    private suspend fun buildNotification(context: Context, call: Call, sharedFile: SharedFile, notificationPriority: Int, activityClazz: Class<*>): Notification {
         val participants = call.participants.first()
         val participant = participants.others.firstOrNull { it.userId == sharedFile.sender.userId }
         val participantsList = participant?.userId?.let { listOf(it) } ?: listOf()
         ContactDetailsManager.refreshContactDetails(*participantsList.toTypedArray())
         val username = participant?.combinedDisplayName?.first() ?: participant?.userId ?: ""
-        return NotificationManager.buildIncomingFileNotification(context, username, sharedFile.id, activityClazz)
+        return NotificationManager.buildIncomingFileNotification(context, username, sharedFile.id, notificationPriority, activityClazz)
     }
+
+
 }

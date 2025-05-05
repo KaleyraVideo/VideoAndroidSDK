@@ -289,4 +289,17 @@
     <string name="kaleyra_call_sheet_enable">Activar</string>
     <string name="kaleyra_call_sheet_disable">Desactivar</string>
 
+    <string name="kaleyra_sign_documents">Firma</string>
+    <string name="kaleyra_signature_state_pending">Pendiente</string>
+    <string name="kaleyra_signature_state_signing">Firmando</string>
+    <string name="kaleyra_signature_state_completed">Completado</string>
+    <string name="kaleyra_signature_state_failed">Error de firma</string>
+    <string name="kaleyra_signature_no_documents_shared">No hay documentos compartidos…</string>
+    <string name="kaleyra_signature_new_practice_available">Una nueva práctica está disponible</string>
+    <string name="kaleyra_signature_sign">Firma</string>
+    <string name="kaleyra_strings_action_search">Buscar…</string>
+    <string name="kaleyra_strings_action_clear">Borrar</string>
+    <string name="kaleyra_signature_no_documents_shared_found_title">Ningún documento…</string>
+    <string name="kaleyra_signature_no_documents_shared_found_subtitle">La búsqueda no devolvió resultados</string>
+
 </resources>

@@ -20,6 +20,7 @@ package com.kaleyra.video_sdk.common.usermessages.provider
 
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -30,7 +31,9 @@ import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingMessage
 import com.kaleyra.video_sdk.call.mapper.toCustomAlertMessage
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.CoroutineName
@@ -49,6 +52,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -95,6 +99,8 @@ object CallUserMessagesProvider {
         userMessageChannel.sendMutedEvents(call, scope)
         userMessageChannel.sendUsbCameraEvents(call, scope)
         userMessageChannel.sendFailedAudioOutputEvents(call, scope)
+        userMessageChannel.sendSignDocumentsEvents(call, scope)
+        userMessageChannel.sendDownloadFilesEvents(call, scope)
 
         _alertMessages.sendAutomaticRecordingAlertEvents(call, scope)
         _alertMessages.sendAmIAloneEvents(call, scope)
@@ -140,6 +146,25 @@ object CallUserMessagesProvider {
 
     private fun Channel<UserMessage>.sendFailedAudioOutputEvents(call: CallUI, scope: CoroutineScope) {
         call.toAudioConnectionFailureMessage().onEach { send(it) }.launchIn(scope)
+    }
+
+    private fun Channel<UserMessage>.sendSignDocumentsEvents(call: CallUI, scope: CoroutineScope) {
+        val sentSignDocumentsIds = mutableListOf<String>()
+        call.sharedFolder.signDocuments.filter { it.isNotEmpty() }.onEach { files ->
+            val file = files.filter { it.id !in sentSignDocumentsIds }.maxByOrNull { it.creationTime } ?: return@onEach
+            sentSignDocumentsIds += file.id
+            send(SignatureMessage.New(file.id))
+        }.launchIn(scope)
+    }
+
+    private fun Channel<UserMessage>.sendDownloadFilesEvents(call: CallUI, scope: CoroutineScope) {
+        val sentFilesIds = mutableListOf<String>()
+        call.sharedFolder.files.filter { it.isNotEmpty() }.onEach { files ->
+            val file = files.filter { it.id !in sentFilesIds && it.sender.userId != call.participants.value.me?.userId }.maxByOrNull { it.creationTime } ?: return@onEach
+            val sender = file.sender.combinedDisplayName.first { it != null }
+            sentFilesIds += file.id
+            send(DownloadFileMessage.New(file.id, sender!!))
+        }.launchIn(scope)
     }
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendAmIAloneEvents(call: CallUI, scope: CoroutineScope) {
@@ -224,5 +249,4 @@ object CallUserMessagesProvider {
                 emit(newList)
             }.launchIn(scope)
     }
-
 }

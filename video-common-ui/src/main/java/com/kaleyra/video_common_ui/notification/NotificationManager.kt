@@ -20,13 +20,14 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationManager
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationManager
 import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.MainScope
 
 /**
  * NotificationManager
  */
-internal object NotificationManager : CallNotificationManager, ChatNotificationManager, FileShareNotificationManager {
+internal object NotificationManager : CallNotificationManager, ChatNotificationManager, FileShareNotificationManager, SignatureNotificationManager {
 
     private val notificationManager by lazy { ContextRetainer.context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 

@@ -64,4 +64,9 @@
     <string name="kaleyra_strings_info_call_ended">Llamada finalizada</string>
     <string name="kaleyra_strings_action_start_screen_share">Pantalla</string>
 
+    <!-- SIGNATURE -->
+    <string name="kaleyra_signature_notification_action_sign">Firma</string>
+    <string name="kaleyra_signature_notification_user_sending_file">%1$s te envió un documento para firmar.</string>
+    <string name="kaleyra_signature_notification_sign_content_message">¿Quieres firmarlo?</string>
+
 </resources>

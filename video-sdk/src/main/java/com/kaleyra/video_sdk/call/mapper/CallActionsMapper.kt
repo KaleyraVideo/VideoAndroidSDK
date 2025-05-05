@@ -30,6 +30,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasAudio
@@ -66,6 +67,7 @@ internal object CallActionsMapper {
                     action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.RecordAppOnly -> ScreenShareAction.App()
                     action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.RecordEntireScreen -> ScreenShareAction.WholeDevice()
                     action is CallUI.Button.Whiteboard -> WhiteboardAction()
+                    action is CallUI.Button.Signature -> SignatureAction()
                     action is CallUI.Button.CameraEffects -> VirtualBackgroundAction(isEnabled = hasVirtualBackground && !isAudioOnly)
                     action is CallUI.Button.Custom -> action.toUI()
                     else -> null

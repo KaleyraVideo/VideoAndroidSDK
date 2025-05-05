@@ -44,6 +44,7 @@ class FileShareNotificationManagerTest {
         every { anyConstructed<FileShareNotification.Builder>().contentTitle(any()) } answers { self as FileShareNotification.Builder }
         every { anyConstructed<FileShareNotification.Builder>().contentText(any()) } answers { self as FileShareNotification.Builder }
         every { anyConstructed<FileShareNotification.Builder>().contentIntent(any()) } answers { self as FileShareNotification.Builder }
+        every { anyConstructed<FileShareNotification.Builder>().setPriority(any()) } answers { self as FileShareNotification.Builder }
         every { anyConstructed<FileShareNotification.Builder>().downloadIntent(any()) } answers { self as FileShareNotification.Builder }
         every { anyConstructed<FileShareNotification.Builder>().build() } returns mockk(relaxed = true)
     }
@@ -55,6 +56,7 @@ class FileShareNotificationManagerTest {
             context = context,
             username = "username",
             downloadId = "downloadId",
+            notificationPriority = 1,
             activityClazz = this::class.java
         )
         verify(exactly = 1) {
@@ -69,6 +71,9 @@ class FileShareNotificationManagerTest {
             anyConstructed<FileShareNotification.Builder>().contentText(
                 context.getString(R.string.kaleyra_strings_info_download_file_title)
             )
+        }
+        verify(exactly = 1) {
+            anyConstructed<FileShareNotification.Builder>().setPriority(1)
         }
         verify(exactly = 1) {
             anyConstructed<FileShareNotification.Builder>().contentIntent(withArg {

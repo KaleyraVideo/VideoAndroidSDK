@@ -105,3 +105,19 @@ internal fun FileShareContentPreview() {
         }
     }
 }
+
+@Preview(name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+internal fun FileShareNoItemsContentPreview() {
+    KaleyraTheme {
+        Surface {
+            FileShareContent(
+                items = ImmutableList(listOf()),
+                onItemClick = {},
+                onItemActionClick = {},
+                lazyGridState = rememberLazyGridState()
+            )
+        }
+    }
+}

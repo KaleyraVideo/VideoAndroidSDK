@@ -184,6 +184,7 @@ private fun SharedFileInfoAndProgress(
                 .size(LinearProgressIndicatorWidth, LinearProgressIndicatorHeight)
                 .clip(RoundedCornerShape(percent = 50))
                 .testTag(ProgressIndicatorTag),
+            drawStopIndicator = {},
             color = MaterialTheme.colorScheme.primary,
         )
 

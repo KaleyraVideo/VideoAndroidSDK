@@ -123,7 +123,6 @@
     <!-- FILE SHARE -->
     <item name="ic_kaleyra_folder" type="drawable">@drawable/kaleyra_z_folder</item>
     <item name="ic_kaleyra_zip" type="drawable">@drawable/kaleyra_z_zip</item>
-    <item name="ic_kaleyra_file" type="drawable">@drawable/kaleyra_z_file</item>
     <item name="ic_kaleyra_image" type="drawable">@drawable/kaleyra_z_gallery</item>
 
     <item name="ic_kaleyra_add" type="drawable">@drawable/kaleyra_z_plus</item>
@@ -133,7 +132,12 @@
     <item name="ic_kaleyra_upload" type="drawable">@drawable/kaleyra_z_arrow_up_3</item>
     <item name="ic_kaleyra_fileshare_cancel" type="drawable">@drawable/kaleyra_z_close_3</item>
     <item name="ic_kaleyra_download" type="drawable">@drawable/kaleyra_z_arrow_down_3</item>
+    <item name="ic_kaleyra_download_snackbar" type="drawable">@drawable/kaleyra_f_download</item>
     <item name="ic_kaleyra_save" type="drawable">@drawable/kaleyra_z_arrow_down_3</item>
+
+    <!-- SIGNATURE -->
+    <item name="ic_kaleyra_signature" type="drawable">@drawable/kaleyra_f_signature</item>
+    <item name="ic_kaleyra_search" type="drawable">@drawable/kaleyra_f_search</item>
 
     <!-- SNAPSHOT -->
     <item name="ic_kaleyra_nav_close" type="drawable">@drawable/kaleyra_z_close</item>
@@ -147,6 +151,7 @@
     <item name="ic_kaleyra_snackbar_info" type="drawable">@drawable/kaleyra_z_alert</item>
 
     <!-- COMMON -->
+    <item name="ic_kaleyra_back" type="drawable">@drawable/kaleyra_z_chevron_left</item>
     <item name="ic_kaleyra_back_down" type="drawable">@drawable/kaleyra_z_chevron_down</item>
     <item name="ic_kaleyra_back_right" type="drawable">@drawable/kaleyra_f_chevron_right</item>
     <item name="ic_kaleyra_close_bold" type="drawable">@drawable/kaleyra_z_close_3</item>
@@ -163,6 +168,9 @@
     <item name="ic_kaleyra_virtual_background_none" type="drawable">@drawable/kaleyra_z_square</item>
     <item name="ic_kaleyra_virtual_background_blur" type="drawable">@drawable/kaleyra_z_blurred_bg</item>
     <item name="ic_kaleyra_virtual_background_image" type="drawable">@drawable/kaleyra_z_virtual_bg</item>
+
+    <!-- SIGNATURE -->
+    <item name="ic_kaleyra_arrow_right" type="drawable">@drawable/kaleyra_f_arrow_right</item>
 
     <!-- STILL IN PNG, NOT USED -->
     <item name="ic_kaleyra_options" type="drawable">@drawable/kaleyra_options_icon</item>

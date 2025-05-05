@@ -23,7 +23,6 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.contactdetails.model.ContactDetails
 import com.kaleyra.video_common_ui.contactdetails.provider.CollaborationContactDetailsProvider
-import com.kaleyra.video_common_ui.utils.Repeat
 import com.kaleyra.video_common_ui.utils.RepeatRule
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -32,15 +31,9 @@ import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
@@ -50,9 +43,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class ContactDetailsManagerTest {
-
-    @get:Rule
-    val repeatRule = RepeatRule()
 
     @Before
     fun setUp() {

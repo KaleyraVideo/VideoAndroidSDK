@@ -35,24 +35,33 @@ import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
+import com.kaleyra.video_common_ui.notification.signature.SignDocumentViewVisibilityObserver
+import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.CHAT_ACTION_ID
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
 import com.kaleyra.video_sdk.call.bottomsheet.model.CameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ChatAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.FILE_SHARE_ACTION_ID
 import com.kaleyra.video_sdk.call.bottomsheet.model.FileShareAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SIGNATURE_ACTION_ID
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocuments
+import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocumentsCreationTimes
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasUsbCamera
@@ -60,8 +69,10 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyCameraEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isMyMicEnabled
 import com.kaleyra.video_sdk.call.mapper.InputMapper.isSharingScreen
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.isMeParticipantInitialized
+import com.kaleyra.video_sdk.call.mapper.SignDocumentMapper.toSignDocumentUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
@@ -69,6 +80,9 @@ import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -76,10 +90,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -87,6 +104,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
 
@@ -100,6 +119,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         get() = call.getValue()?.inputs?.availableInputs?.value
 
     private var lastFileShareCreationTime = MutableStateFlow(-1L)
+
+    private var lastSignDocumentCreationTime = MutableStateFlow(-1L)
 
     private val chat: MutableSharedFlow<Chat> = MutableSharedFlow(replay = 1)
 
@@ -177,7 +198,18 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                         )
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
-                        is FileShareAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
+                        is FileShareAction -> action.copy(
+                            isEnabled = isCallActive && !isCallEnded,
+                            notificationCount = (uiState.value.actionList.value.firstOrNull { it is NotifiableCallAction && it.id == FILE_SHARE_ACTION_ID } as? NotifiableCallAction)?.notificationCount
+                                ?: 0
+                        )
+
+                        is SignatureAction -> action.copy(
+                            isEnabled = isCallActive && !isCallEnded,
+                            notificationCount = (uiState.value.actionList.value.firstOrNull { it is NotifiableCallAction && it.id == SIGNATURE_ACTION_ID } as? NotifiableCallAction)?.notificationCount
+                                ?: 0
+                        )
+
                         is ScreenShareAction.UserChoice -> action.copy(
                             isToggled = isSharingScreen,
                             isEnabled = isCallActive && !isCallEnded
@@ -197,7 +229,12 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                         is WhiteboardAction -> action.copy(isEnabled = isCallActive && !isCallEnded)
                         is FlipCameraAction -> action.copy(isEnabled = !hasUsbCamera && isMyCameraEnabled && !isCallEnded)
                         is HangUpAction -> action.copy(isEnabled = !isCallEnded)
-                        is ChatAction -> action.copy(isEnabled = !isCallEnded)
+                        is ChatAction -> action.copy(
+                            isEnabled = !isCallEnded,
+                            notificationCount = (uiState.value.actionList.value.firstOrNull { it is NotifiableCallAction && it.id == CHAT_ACTION_ID } as? NotifiableCallAction)?.notificationCount
+                                ?: 0
+                        )
+
                         else -> action
                     }
                 }
@@ -206,13 +243,13 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
             uiState
                 .map { it.actionList.value }
-                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) }) { actionList, state ->
+                .combine(call.toAudioInput().flatMapLatest { it?.state ?: flowOf(null) }) { _, state ->
                     val inputState = when (state) {
                         is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
                         is Input.State.Closed.Error -> InputCallAction.State.Error
                         else -> InputCallAction.State.Ok
                     }
-                    updateAction<MicAction>(actionList) { action ->
+                    updateAction<MicAction> { action ->
                         action.copy(state = inputState)
                     }
                 }.launchIn(this)
@@ -221,13 +258,13 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 uiState.map { it.actionList.value },
                 call.toCameraVideoInput().flatMapLatest { it?.state ?: flowOf(null) },
                 hasCameraUsageRestrictionFlow
-            ) { actionList, state, cameraUsage ->
+            ) { _, state, cameraUsage ->
                 val inputState = when {
                     state is Input.State.Closed.AwaitingPermission -> InputCallAction.State.Warning
                     state is Input.State.Closed.Error || cameraUsage -> InputCallAction.State.Error
                     else -> InputCallAction.State.Ok
                 }
-                updateAction<CameraAction>(actionList) { action ->
+                updateAction<CameraAction> { action ->
                     action.copy(state = inputState)
                 }
             }.launchIn(this)
@@ -245,26 +282,39 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .onEach { isUsageRestricted -> _uiState.update { it.copy(isCameraUsageRestricted = isUsageRestricted) } }
                 .launchIn(this)
 
+            call.toSignDocumentUi()
+                .onEach {
+                    val signBadgeCount = it.filter { it.signState != SignDocumentUi.SignStateUi.Completed }.count()
+                    uiState.first { it.actionList.value.any { it is SignatureAction } }
+                    updateAction<SignatureAction> { action ->
+                        action.copy(notificationCount = signBadgeCount)
+                    }
+                }.launchIn(viewModelScope)
+
             combine(
                 uiState.map { it.actionList.value },
                 call.toOtherFilesCreationTimes(),
-                lastFileShareCreationTime
-            ) { actionList, creationTimes, lastFileShareCreationTime ->
-                if (FileShareVisibilityObserver.isDisplayed.value) {
+                lastFileShareCreationTime,
+                FileShareVisibilityObserver.isDisplayed
+            ) { _, creationTimes, lastFileShareCreationTime, fileShareVisibility ->
+                if (fileShareVisibility) {
                     this@CallActionsViewModel.lastFileShareCreationTime.value = creationTimes.lastOrNull() ?: -1
                     return@combine
                 }
                 val count = creationTimes.count { it > lastFileShareCreationTime }
-                updateAction<FileShareAction>(actionList) { action ->
+                uiState.first { it.actionList.value.any { it is FileShareAction } }
+                updateAction<FileShareAction> { action ->
                     action.copy(notificationCount = count)
                 }
             }.launchIn(this)
 
+
             combine(
                 uiState.map { it.actionList.value },
                 call.whiteboard.notificationCount
-            ) { actionList, notificationCount ->
-                updateAction<WhiteboardAction>(actionList) { action ->
+            ) { _, notificationCount ->
+                uiState.first { it.actionList.value.any { it is WhiteboardAction } }
+                updateAction<WhiteboardAction> { action ->
                     action.copy(notificationCount = notificationCount)
                 }
             }.launchIn(this)
@@ -284,10 +334,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 conversation.state.first { it is State.Connected }
                 var foundByServerId = false
                 val foundById = conversation.chats.getValue()?.any { getChatById(it) } ?: false
-                if (!foundById) {
-                    val chatFoundByServerId = conversation.find(chatId).await()
-                    foundByServerId = chatFoundByServerId.isSuccess
-                }
+                if (!foundById) foundByServerId = conversation.find(chatId).await().isSuccess
 
                 if (foundById || foundByServerId) {
                     conversation.chats.first {
@@ -297,7 +344,8 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                                 uiState.map { it.actionList.value },
                                 it.unreadMessagesCount
                             ) { actionList, unreadMessagesCount ->
-                                updateAction<ChatAction>(actionList) { action ->
+                                uiState.first { it.actionList.value.any { it is ChatAction } }
+                                updateAction<ChatAction> { action ->
                                     action.copy(notificationCount = unreadMessagesCount)
                                 }
                             }.launchIn(this)
@@ -425,14 +473,25 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
         }
     }
 
+    fun clearSignatureBadge() {
+        viewModelScope.launch {
+            val call = call.getValue()
+            val creationTimes = call?.toMySignDocumentsCreationTimes()?.first()
+            val maxCreationTime = creationTimes?.maxOrNull() ?: return@launch
+            lastSignDocumentCreationTime.value = maxCreationTime
+        }
+    }
+
     private inline fun <reified T> updateAction(
-        actionList: List<CallActionUI>,
         transform: (T) -> CallActionUI
     ) {
-        actionList.indexOfFirst { it::class == T::class }.takeIf { it != -1 }?.let { index ->
-            val action = transform((actionList[index] as T))
-            val updatedActionList = actionList.toMutableList().also { it[index] = action }
-            _uiState.update { it.copy(actionList = updatedActionList.toImmutableList()) }
+        _uiState.update { state ->
+            val actionList = state.actionList.value
+            val updatedActionList = actionList.indexOfFirst { it::class == T::class }.takeIf { it != -1 }?.let { index ->
+                val action = transform((actionList[index] as T))
+                actionList.toMutableList().also { it[index] = action }
+            } ?: return
+            state.copy(actionList = updatedActionList.toImmutableList())
         }
     }
 

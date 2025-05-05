@@ -337,7 +337,7 @@ class VSheetContentTest {
             .performClick()
 
         TestCase.assertEquals(ModularComponent.FileShare, component)
-        verify(exactly = 1) { callActionsViewModel.clearFileShareBadge()  }
+        verify(exactly = 1) { callActionsViewModel.clearFileShareBadge() }
     }
 
     @Test
@@ -564,6 +564,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -599,6 +600,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -634,6 +636,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -667,6 +670,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -701,6 +705,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -729,6 +734,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -756,6 +762,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -783,6 +790,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -812,6 +820,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -841,6 +850,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -870,6 +880,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -899,6 +910,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -928,6 +940,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -957,6 +970,7 @@ class VSheetContentTest {
                 onChatClick = { isChatClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -986,6 +1000,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { isFileShareClicked = true },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1016,6 +1031,7 @@ class VSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { isWhiteboardClicked = true },
                 onVirtualBackgroundToggle = { },
+                onSignatureClick = { },
                 onMoreToggle = { }
             )
         }
@@ -1044,6 +1060,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { isVirtualClicked = true },
                 onMoreToggle = { }
             )
@@ -1074,6 +1091,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1111,6 +1129,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { isMoreClicked = true }
             )
@@ -1149,6 +1168,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1182,6 +1202,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1219,6 +1240,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1256,6 +1278,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1294,6 +1317,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1335,6 +1359,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1381,6 +1406,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )
@@ -1415,7 +1441,7 @@ class VSheetContentTest {
                 showAnswerAction = true,
                 isMoreToggled = false,
                 onActionsPlaced = { itemsCount = it },
-                onAnswerClick = {  },
+                onAnswerClick = { },
                 onHangUpClick = { },
                 onMicToggle = { },
                 onCameraToggle = { },
@@ -1425,6 +1451,7 @@ class VSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { }
             )

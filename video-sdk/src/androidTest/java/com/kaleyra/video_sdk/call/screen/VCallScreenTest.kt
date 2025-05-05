@@ -22,6 +22,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.brandlogo.model.BrandLogoState
@@ -297,6 +298,25 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     }
 
     @Test
+    fun testSheetActionsOnSmallScreen_onModalSheetComponentChangeToSignDocuments() {
+        var component: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = null,
+            onModalSheetComponentRequest = { component = it }
+        )
+        callActionsUiState.value = CallActionsUiState(
+            actionList = listOf(SignatureAction()).toImmutableList()
+        )
+
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule
+            .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(ModularComponent.SignDocuments, component)
+    }
+
+    @Test
     fun testModalSheetFileShare_fileShareComponentIsDisplayed() {
         var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
@@ -311,6 +331,34 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
     }
 
     @Test
+    fun testModalSheetSignDocuments_signDocumentsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModularComponent.SignDocuments,
+            onModularComponentDisplayed = { componentDisplayed = it }
+        )
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        assertEquals(ModularComponent.SignDocuments, componentDisplayed)
+    }
+
+    @Test
+    fun testModalSheetSignDocumentView_signDocumentViewComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            modalSheetComponent = ModularComponent.SignDocumentView,
+            onModularComponentDisplayed = { componentDisplayed = it }
+        )
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_signature_sign)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
+        assertEquals(ModularComponent.SignDocumentView, componentDisplayed)
+    }
+
+    @Test
     fun testSidePanelFileShare_fileShareComponentIsDisplayed() {
         var componentDisplayed: ModularComponent? = null
         composeTestRule.setUpVCallScreen(
@@ -322,6 +370,20 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
         composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
         assertEquals(ModularComponent.FileShare, componentDisplayed)
+    }
+
+    @Test
+    fun testSidePanelSignDocuments_signDocumentsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setUpVCallScreen(
+            sidePanelComponent = ModularComponent.SignDocuments,
+            onModularComponentDisplayed = { componentDisplayed = it }
+        )
+
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_sign_documents)
+        composeTestRule.onNodeWithText(componentTitle, useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
+        assertEquals(ModularComponent.SignDocuments, componentDisplayed)
     }
 
     @Test
