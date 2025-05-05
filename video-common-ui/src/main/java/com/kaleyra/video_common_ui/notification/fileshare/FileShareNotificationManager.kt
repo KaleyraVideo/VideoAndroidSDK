@@ -49,7 +49,7 @@ internal interface FileShareNotificationManager {
         val resources = context.resources
 
         val isLowPriority = notificationPriority == NotificationCompat.PRIORITY_LOW
-        val channelName = resources.getString(R.string.kaleyra_notification_file_share_channel_name)
+        val channelName = resources.getString(R.string.kaleyra_strings_system_android_file_share_notification_channel)
         val builder = FileShareNotification
             .Builder(
                 context = context,
@@ -57,10 +57,10 @@ internal interface FileShareNotificationManager {
                 channelName = if (isLowPriority) "$channelName low priority" else channelName
             )
             .contentTitle(resources.getString(
-                    R.string.kaleyra_notification_user_sharing_file,
+                    R.string.kaleyra_string_info_user_file_uploaded,
                     username
                 ))
-            .contentText(resources.getString(R.string.kaleyra_notification_download_file))
+            .contentText(resources.getString(R.string.kaleyra_strings_info_download_file_title))
             .setPriority(notificationPriority)
             .contentIntent(downloadContentPendingIntent(context, activityClazz, downloadId))
             .downloadIntent(downloadPendingIntent(context, activityClazz, downloadId))
