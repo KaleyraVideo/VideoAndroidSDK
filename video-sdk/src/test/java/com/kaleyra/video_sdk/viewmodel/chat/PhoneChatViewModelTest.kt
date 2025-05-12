@@ -321,14 +321,6 @@ class PhoneChatViewModelTest {
     }
 
     @Test
-    fun testUserMessage() = runTest {
-        every { CallUserMessagesProvider.userMessage } returns flowOf(MutedMessage("admin"))
-        advanceUntilIdle()
-        val actual = viewModel.userMessage.first()
-        assert(actual is MutedMessage && actual.admin == "admin")
-    }
-
-    @Test
     fun testSendMessage() = runTest {
         advanceUntilIdle()
         val text = "text"

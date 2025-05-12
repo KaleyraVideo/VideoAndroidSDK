@@ -2,7 +2,6 @@ package com.kaleyra.video_sdk.call.appbar.view
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -205,7 +204,7 @@ private fun CallParticipantsButton(
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 painter = painterResource(id = R.drawable.ic_kaleyra_participants_new),
-                contentDescription = stringResource(id = R.string.kaleyra_show_participants_descr),
+                contentDescription = stringResource(id = R.string.kaleyra_strings_description_show_participants),
                 modifier = Modifier.size(16.dp)
             )
         }

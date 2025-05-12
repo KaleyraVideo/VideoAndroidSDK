@@ -48,7 +48,7 @@ class UserMessageSnackbarM3Test {
                 onDismissClick = { dismissClicked = true }
             )
         }
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(R.string.kaleyra_close)).performClick()
+        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)).performClick()
         Assert.assertEquals(true, dismissClicked)
     }
 

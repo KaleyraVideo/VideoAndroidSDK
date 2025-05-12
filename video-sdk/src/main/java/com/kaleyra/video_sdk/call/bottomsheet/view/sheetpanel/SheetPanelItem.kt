@@ -101,11 +101,11 @@ private fun textFor(callAction: CallActionUI) =
             )
         }
 
-        is FlipCameraAction -> stringResource(id = R.string.kaleyra_call_sheet_flip_camera)
+        is FlipCameraAction -> stringResource(id = R.string.kaleyra_strings_action_flip_camera)
         is AudioAction -> stringResource(id = R.string.kaleyra_call_sheet_audio)
         is ChatAction -> stringResource(id = R.string.kaleyra_strings_action_chat)
         is FileShareAction -> stringResource(id = R.string.kaleyra_strings_action_files)
-        is WhiteboardAction -> stringResource(id = R.string.kaleyra_call_sheet_whiteboard)
+        is WhiteboardAction -> stringResource(id = R.string.kaleyra_strings_action_board)
         is VirtualBackgroundAction -> stringResource(id = R.string.kaleyra_call_sheet_virtual_background)
         is MicAction ->
             if (callAction.isToggled) stringResource(R.string.kaleyra_call_action_mic_unmute)

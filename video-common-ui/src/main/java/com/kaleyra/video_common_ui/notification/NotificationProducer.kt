@@ -20,12 +20,9 @@ internal abstract class NotificationProducer : ActivityLifecycleCallbacks {
         notificationPresentationHandler = null
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        getNotificationPresentationHandler(activity)
-    }
-    override fun onActivityResumed(activity: Activity) {
-        getNotificationPresentationHandler(activity)
-    }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = getNotificationPresentationHandler(activity)
+
+    override fun onActivityResumed(activity: Activity) = getNotificationPresentationHandler(activity)
 
     override fun onActivityDestroyed(activity: Activity) {
         if (notificationPresentationHandler != null && activity != notificationPresentationHandler) return
@@ -33,10 +30,8 @@ internal abstract class NotificationProducer : ActivityLifecycleCallbacks {
     }
 
     private fun getNotificationPresentationHandler(activity: Activity) {
-        if (notificationPresentationHandler != null) return
-        if (activity is NotificationPresentationHandler) {
-            notificationPresentationHandler = activity
-        }
+        if (activity !is NotificationPresentationHandler) return
+        notificationPresentationHandler = activity
     }
 
     override fun onActivityStarted(activity: Activity) = Unit

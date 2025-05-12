@@ -55,7 +55,7 @@ class AudioOutputOutputFailureSnackbarM3Test {
     fun testGenericAudioFailureSnackbarDismissCLicked() {
         var onDismiss = false
         composeTestRule.setContent { AudioOutputGenericFailureSnackbarM3({ onDismiss = true }) }
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         composeTestRule.waitForIdle()
         Assert.assertEquals(true, onDismiss)
@@ -65,7 +65,7 @@ class AudioOutputOutputFailureSnackbarM3Test {
     fun tesInSystemCallAudioFailureSnackbarDismissClicked() {
         var onDismiss = false
         composeTestRule.setContent { AudioOutputInSystemCallFailureSnackbarM3({ onDismiss = true }) }
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         composeTestRule.waitForIdle()
         Assert.assertEquals(true, onDismiss)

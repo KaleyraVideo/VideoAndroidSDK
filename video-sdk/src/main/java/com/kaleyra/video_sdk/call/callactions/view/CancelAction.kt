@@ -17,7 +17,7 @@ internal fun CancelAction(
     enabled: Boolean = true,
     label: Boolean = false
 ) {
-    val text = stringResource(id = R.string.kaleyra_call_sheet_cancel)
+    val text = stringResource(id = R.string.kaleyra_strings_action_cancel)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_cancel),

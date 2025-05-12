@@ -203,7 +203,7 @@ internal class ChatFragment : BaseFragment(), TiltListener {
         with(binding.kaleyraTitle) {
             postDelayed({
                 if (!noMessages) return@postDelayed
-                text = resources.getString(R.string.kaleyra_glass_no_messages)
+                text = resources.getString(R.string.kaleyra_strings_info_empty_chat_title)
                 visibility = View.VISIBLE
             }, NO_MESSAGES_TIMEOUT)
         }
@@ -292,7 +292,7 @@ internal class ChatFragment : BaseFragment(), TiltListener {
 
     private fun updateCounter(count: Int) = with(binding.kaleyraCounter) {
         visibility = if (count > 0) {
-            text = resources.getString(R.string.kaleyra_glass_message_counter_pattern, count)
+            text = resources.getString(R.string.kaleyra_strings_info_new_messages_number_short, count)
             View.VISIBLE
         } else View.GONE
     }

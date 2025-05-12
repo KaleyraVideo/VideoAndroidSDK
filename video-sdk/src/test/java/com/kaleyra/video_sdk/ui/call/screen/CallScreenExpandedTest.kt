@@ -133,7 +133,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
         )
         composeTestRule.setUpCallScreen()
 
-        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -141,7 +141,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
             .assertIsDisplayed()
             .performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertDoesNotExist()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
@@ -154,13 +154,13 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
         )
         composeTestRule.setUpCallScreen()
 
-        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         val whiteboardButton = composeTestRule.onAllNodesWithContentDescription(whiteboardText, useUnmergedTree = true)[0]
         whiteboardButton.performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
 
@@ -173,7 +173,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
     fun userClicksParticipantsButton_participantsSidePanelIsDisplayed() {
         composeTestRule.setUpCallScreen()
 
-        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_strings_description_show_participants)
         composeTestRule
             .onNodeWithContentDescription(participantsText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -189,7 +189,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
     fun userClicksTwiceParticipantsButton_participantsSidePanelIsClosed() {
         composeTestRule.setUpCallScreen()
 
-        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_strings_description_show_participants)
         val participantsButton = composeTestRule.onNodeWithContentDescription(participantsText, useUnmergedTree = true)
         participantsButton.performClick()
 
@@ -267,7 +267,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
         }
         composeTestRule.setUpCallScreen(onWhiteboardVisibility = { isWhiteboardDisplayed = it })
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -284,7 +284,7 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
         val whiteboardRequest = mutableStateOf(WhiteboardRequest.Show("username"))
         composeTestRule.setUpCallScreen(whiteboardRequest = whiteboardRequest)
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
     }
@@ -297,13 +297,13 @@ internal class CallScreenExpandedTest: CallScreenBaseTest() {
         val whiteboardRequest = mutableStateOf<WhiteboardRequest?>(null)
         composeTestRule.setUpCallScreen(whiteboardRequest = whiteboardRequest)
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text, useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertIsDisplayed()
 

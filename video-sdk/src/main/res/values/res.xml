@@ -41,7 +41,8 @@
     <item name="ic_kaleyra_call_sheet_pin" type="drawable">@drawable/kaleyra_f_pin</item>
     <item name="ic_kaleyra_call_sheet_unpin" type="drawable">@drawable/kaleyra_f_unpin</item>
     <item name="ic_kaleyra_call_sheet_warning" type="drawable">@drawable/kaleyra_f_warning</item>
-    <item name="ic_kaleyra_call_sheet_error" type="drawable">@drawable/kaleyra_f_failure</item>
+    <item name="ic_kaleyra_call_sheet_error" type="drawable">@drawable/kaleyra_f_hardware_error</item>
+    <item name="ic_kaleyra_call_bold_close" type="drawable">@drawable/kaleyra_f_hardware_error</item>
 
     <!-- call app bar -->
     <item name="ic_kaleyra_arrow_back_new" type="drawable">@drawable/kaleyra_f_arrow_left</item>
@@ -69,7 +70,6 @@
     <item name="ic_kaleyra_participants_component_unpin" type="drawable">@drawable/kaleyra_f_unpin</item>
     <item name="ic_kaleyra_participants_component_auto_layout" type="drawable">@drawable/kaleyra_f_auto_layout</item>
     <item name="ic_kaleyra_participants_component_mosaic_layout" type="drawable">@drawable/kaleyra_f_mosaic_layout</item>
-    <item name="ic_kaleyra_participants_component_close" type="drawable">@drawable/kaleyra_f_close</item>
     <item name="ic_kaleyra_participants_component_kick" type="drawable">@drawable/kaleyra_f_kick</item>
 
     <!-- CHAT ACTION BAR -->
@@ -154,7 +154,7 @@
     <item name="ic_kaleyra_back" type="drawable">@drawable/kaleyra_z_chevron_left</item>
     <item name="ic_kaleyra_back_down" type="drawable">@drawable/kaleyra_z_chevron_down</item>
     <item name="ic_kaleyra_back_right" type="drawable">@drawable/kaleyra_f_chevron_right</item>
-    <item name="ic_kaleyra_close_bold" type="drawable">@drawable/kaleyra_z_close_3</item>
+    <item name="ic_kaleyra_hardware_error" type="drawable">@drawable/kaleyra_f_hardware_error</item>
 
     <!-- GLASS -->
     <item name="ic_kaleyra_glass_mic_off" type="drawable">@drawable/kaleyra_z_mic_off</item>

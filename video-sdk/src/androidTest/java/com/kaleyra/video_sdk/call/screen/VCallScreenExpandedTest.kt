@@ -127,7 +127,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
 
         composeTestRule.waitForIdle()
 
-        val flipText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule
             .onAllNodesWithText(flipText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -300,7 +300,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         composeTestRule.waitForIdle()
 
         val whiteboardText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onAllNodesWithText(whiteboardText, useUnmergedTree = true)[0]
             .assertIsDisplayed()
@@ -414,7 +414,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
             actionList = listOf(WhiteboardAction()).toImmutableList()
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -462,7 +462,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         )
 
         val whiteboardText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -514,7 +514,7 @@ internal class VCallScreenExpandedTest: VCallScreenBaseTest() {
         )
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_recording_started_message)
-        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .onAncestors()[2]

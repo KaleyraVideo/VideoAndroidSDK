@@ -83,7 +83,7 @@ class WhiteboardAppBarTest {
 
     @Test
     fun userClicksCollapse_backPressedInvoked() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)
@@ -99,14 +99,14 @@ class WhiteboardAppBarTest {
 
     @Test
     fun fileShareTextDisplayed() {
-        val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(whiteboard).assertIsDisplayed()
     }
 
     @Test
     fun userClickCloseOnLargeScreen_backPressedInvoked() {
         isLargeScreen = true
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)

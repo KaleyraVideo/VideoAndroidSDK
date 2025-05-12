@@ -106,6 +106,7 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
     private var binding: ActivityMainBinding? = null
     var searchView: SearchView? = null
     private val usersList: ArrayList<UserSelectionItem> = ArrayList()
+    private var recordingSnackbar: Snackbar? = null
 
     private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -182,18 +183,20 @@ class MainActivity : CollapsingToolbarActivity(), OnQueryTextListener, OnRefresh
             .flatMapLatest { it.state }
             .dropWhile { it is Recording.State.Stopped }
             .onEach {
-                Snackbar.make(window.decorView, it.toString(), Snackbar.LENGTH_SHORT).show()
+                recordingSnackbar = Snackbar.make(window.decorView, it.toString(), Snackbar.LENGTH_SHORT)
+                recordingSnackbar!!.show()
             }.launchIn(lifecycleScope)
     }
 
     override fun onPause() {
         super.onPause()
         hideKeyboard(true)
+        recordingSnackbar?.dismiss()
     }
 
     override fun onResume() {
         super.onResume()
-
+        recordingSnackbar?.dismiss()
         if (configuration!!.isMockConfiguration()) {
             ConfigurationActivity.Companion.showNew(this, configuration, true)
             return

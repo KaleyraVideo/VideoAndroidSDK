@@ -162,7 +162,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -190,7 +190,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -218,7 +218,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -246,7 +246,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -322,7 +322,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -398,7 +398,7 @@ class HSheetContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -862,7 +862,7 @@ class HSheetContentTest {
     @Test
     fun testOnMicActionClick() {
         var isMicClicked: Boolean? = null
-        val micDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val micDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(MicAction())),
@@ -893,7 +893,7 @@ class HSheetContentTest {
     @Test
     fun testOnCameraActionClick() {
         var isCameraClicked: Boolean? = null
-        val cameraDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val cameraDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(CameraAction())),
@@ -955,7 +955,7 @@ class HSheetContentTest {
     @Test
     fun testOnFlipCameraActionClick() {
         var isFlipCameraClicked = false
-        val flipDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
@@ -1079,7 +1079,7 @@ class HSheetContentTest {
     @Test
     fun testOnWhiteboardActionClick() {
         var isWhiteboardClicked = false
-        val whiteboardDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val whiteboardDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             HSheetContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),
@@ -1325,8 +1325,8 @@ class HSheetContentTest {
     @Test
     fun testSheetContentActionsPlacing() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             HSheetContent(
                 modifier = Modifier.width(200.dp),
@@ -1404,9 +1404,9 @@ class HSheetContentTest {
     @Test
     fun testMaxActionsLessThanActualActions() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
-        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         var itemsCount = -1
         val maxActions = 3
@@ -1452,9 +1452,9 @@ class HSheetContentTest {
     @Test
     fun testMaxActionsEqualToActualActions() {
         val moreDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
-        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         var itemsCount = -1
         val maxActions = 4
@@ -1500,9 +1500,9 @@ class HSheetContentTest {
     @Test
     fun answerActionIsDisplayed_answerActionMultiplierAppliedToMaxActions() {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
-        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         var itemsCount = -1
         val maxActions = 3
         composeTestRule.setContent {
@@ -1545,10 +1545,10 @@ class HSheetContentTest {
     @Test
     fun largeScreenTrueAndAnswerActionIsDisplayed_answerActionMultiplierAppliedToMaxActions() {
         val answerDescription = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_answer)
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
-        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
-        val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
+        val whiteboard = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         var itemsCount = -1
         val maxActions = 4
         composeTestRule.setContent {

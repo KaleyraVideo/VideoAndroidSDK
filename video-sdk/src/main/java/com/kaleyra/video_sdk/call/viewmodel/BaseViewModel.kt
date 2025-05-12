@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -50,9 +52,8 @@ abstract class BaseViewModel<UI_STATE: UiState>(configure: suspend () -> Configu
     abstract fun initialState(): UI_STATE
 
     init {
-        viewModelScope.launch {
-            val currentCall = conference.flatMapLatest { it.call }.first()
-            _call.emit(currentCall)
-        }
+        conference.flatMapLatest { it.call }.onEach {
+            _call.emit(it)
+        }.launchIn(viewModelScope)
     }
 }

@@ -20,7 +20,7 @@ class InputMessageHostTest {
 
     @Test
     fun testMicMessageEnabled() {
-        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_strings_action_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
         composeTestRule.setContent {
             InputMessageHost(inputMessage = MicMessage.Enabled)
@@ -37,7 +37,7 @@ class InputMessageHostTest {
 
     @Test
     fun testMicMessageDisabled() {
-        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_strings_action_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
         composeTestRule.setContent {
             InputMessageHost(inputMessage = MicMessage.Disabled)
@@ -54,7 +54,7 @@ class InputMessageHostTest {
 
     @Test
     fun testCameraMessageEnabled() {
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_action_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
         composeTestRule.setContent {
             InputMessageHost(inputMessage = CameraMessage.Enabled)
@@ -71,7 +71,7 @@ class InputMessageHostTest {
 
     @Test
     fun testCameraMessageDisabled() {
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_action_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
         composeTestRule.setContent {
             InputMessageHost(inputMessage = CameraMessage.Disabled)

@@ -87,13 +87,13 @@ class FeedbackFormTest {
 
     @Test
     fun cancelButtonIsDisplayed() {
-        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.onNodeWithText(cancel).assertIsDisplayed()
     }
 
     @Test
     fun userClicksCancel_onDismissInvoked() {
-        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.onNodeWithText(cancel).assertHasClickAction()
         composeTestRule.onNodeWithText(cancel).performClick()
         assertEquals(true, isDismissed)

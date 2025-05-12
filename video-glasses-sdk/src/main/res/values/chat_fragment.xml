@@ -48,7 +48,7 @@
     <style name="KaleyraCollaborationSuiteUI.TextView.Title.GlassChat" parent="KaleyraCollaborationSuiteUI.TextView.Title">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/kaleyra_dimen_text_40sp</item>
-        <item name="android:text">@string/kaleyra_glass_loading_messages</item>
+        <item name="android:text">@string/kaleyra_strings_info_loading</item>
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -75,11 +75,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_browse</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SwipeChat" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_browse</item>
+        <item name="android:text">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem">
@@ -89,11 +89,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_close</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChat" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_close</item>
+        <item name="android:text">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
@@ -144,11 +144,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_close</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChat.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChat">
-        <item name="android:text">@string/kaleyra_glass_close</item>
+        <item name="android:text">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.Chat" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand">

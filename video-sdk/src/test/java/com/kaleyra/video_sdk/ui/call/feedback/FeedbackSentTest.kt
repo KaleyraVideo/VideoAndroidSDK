@@ -66,13 +66,13 @@ class FeedbackSentTest {
 
     @Test
     fun closeButtonIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun userClicksClose_onDismissInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         val button = composeTestRule.onNodeWithText(text)
         button.assertHasClickAction()
         button.performClick()

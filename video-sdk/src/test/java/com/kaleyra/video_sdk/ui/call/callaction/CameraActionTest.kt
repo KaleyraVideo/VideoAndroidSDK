@@ -24,7 +24,7 @@ class CameraActionTest {
 
     @Test
     fun testOnCheckedChangeTrue() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         var checked = false
         composeTestRule.setContent {
             CameraAction(
@@ -39,7 +39,7 @@ class CameraActionTest {
 
     @Test
     fun testOnCheckedChangeFalse() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         var checked = true
         composeTestRule.setContent {
             CameraAction(
@@ -94,7 +94,11 @@ class CameraActionTest {
 
     @Test
     fun testErrorBadge() {
-        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_error)
+        val badgeDescr = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_camera))
+        }
         composeTestRule.setContent {
             CameraAction(
                 onCheckedChange = {},
@@ -107,7 +111,7 @@ class CameraActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             CameraAction(
                 enabled = false,

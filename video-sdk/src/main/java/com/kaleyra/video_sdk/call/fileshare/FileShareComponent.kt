@@ -43,11 +43,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kaleyra.video_common_ui.CollaborationViewModel
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.moveToFront
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.tryToOpenFile
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.PhoneCallActivity
 import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickActivity
 import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickBroadcastReceiver
 import com.kaleyra.video_sdk.call.fileshare.model.FileShareUiState
@@ -59,6 +61,8 @@ import com.kaleyra.video_sdk.call.fileshare.view.FileShareEmptyContent
 import com.kaleyra.video_sdk.call.fileshare.view.FileShareFab
 import com.kaleyra.video_sdk.call.fileshare.view.MaxFileSizeDialog
 import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.viewmodel.SharedViewModelStore
+import com.kaleyra.video_sdk.chat.PhoneChatActivity
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
@@ -66,6 +70,7 @@ import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponen
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
@@ -109,7 +114,12 @@ internal fun FileShareComponent(
         }
     }
 
-    val userMessagesViewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration))
+    val userMessagesViewModel: UserMessagesViewModel = SharedViewModelStore.getViewModel(
+        kClass = UserMessagesViewModel::class,
+        viewModelFactory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration),
+        boundActivities = arrayOf(LocalContext.current.findActivity()::class.java.name)
+    )
+//        viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration))
 
     FileShareComponent(
         uiState = uiState,

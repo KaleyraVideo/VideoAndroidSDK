@@ -69,9 +69,9 @@ internal class CallRecordingTextToSpeechNotifier(
             .onEach { recordingState ->
                 if (!shouldNotify || !voicePromptsEnabled) return@onEach
                 val text = when (recordingState) {
-                    is Call.Recording.State.Started -> context.getString(R.string.kaleyra_utterance_recording_started)
-                    is Call.Recording.State.Stopped.Error -> context.getString(R.string.kaleyra_utterance_recording_failed)
-                    is Call.Recording.State.Stopped -> context.getString(R.string.kaleyra_utterance_recording_stopped)
+                    is Call.Recording.State.Started -> context.getString(R.string.kaleyra_strings_info_recording_started)
+                    is Call.Recording.State.Stopped.Error -> context.getString(R.string.kaleyra_strings_info_recording_failed)
+                    is Call.Recording.State.Stopped -> context.getString(R.string.kaleyra_string_info_recording_stopped)
                 }
                 callTextToSpeech.speak(text)
             }

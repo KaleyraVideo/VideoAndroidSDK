@@ -52,20 +52,20 @@ class ParticipantsTopAppBarTest {
 
     @Test
     fun testParticipantCountIsDisplayed() {
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, participantsCount, participantsCount)
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participants_number, participantsCount, participantsCount)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun testCloseIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
 
     @Test
     fun testOnCloseClick() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(text).performClick()
         assertEquals(true, isCloseClicked)
     }
@@ -73,7 +73,7 @@ class ParticipantsTopAppBarTest {
     @Test
     fun userClickCloseOnLargeScreen_backPressedInvoked() {
         embeddedComponent = true
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assertEquals(true, isCloseClicked)

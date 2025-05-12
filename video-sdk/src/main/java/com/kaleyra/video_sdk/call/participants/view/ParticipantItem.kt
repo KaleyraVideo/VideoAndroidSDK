@@ -127,7 +127,7 @@ internal fun ParticipantItem(
                     when {
                         stream.video?.isScreenShare == true -> R.string.kaleyra_participants_component_screenshare
                         isAdminStream -> R.string.kaleyra_participants_component_admin
-                        else -> R.string.kaleyra_participants_component_participant
+                        else -> R.string.kaleyra_strings_info_participant
                     }
                 ),
                 maxLines = 1,
@@ -138,7 +138,7 @@ internal fun ParticipantItem(
 
         when {
             stream.audio == null -> Unit
-            amIAdmin || stream.isMine -> {
+            amIAdmin -> {
                 val interactionSource = remember { MutableInteractionSource() }
                 IconButton(
                     interactionSource = interactionSource,
@@ -154,6 +154,26 @@ internal fun ParticipantItem(
                         Icon(
                             disableMicPainterFor(stream.audio),
                             disableContentDescriptionFor(stream.audio, stream.userInfo?.username ?: "")
+                        )
+                    }
+                )
+            }
+            stream.isMine -> {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    enabled = stream.video == null || !stream.video.isScreenShare,
+                    onClick = {
+                        onDisableMicClick(
+                            stream.id,
+                            stream.audio.isEnabled
+                        )
+                    },
+                    content = {
+                        Icon(
+                            disableMicPainterFor(stream.audio),
+                            disableContentDescriptionForMyStream(stream.audio)
                         )
                     }
                 )

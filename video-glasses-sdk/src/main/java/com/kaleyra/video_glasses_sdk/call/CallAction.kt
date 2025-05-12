@@ -163,8 +163,8 @@ internal abstract class CallAction(
         R.layout.kaleyra_glass_menu_item_layout,
         R.attr.kaleyra_recyclerViewMicItemStyle
     ) {
-        override val defaultText = ctx.getString(R.string.kaleyra_glass_menu_microphone)
-        override val toggledText = ctx.getString(R.string.kaleyra_glass_menu_microphone_toggled)
+        override val defaultText = ctx.getString(R.string.kaleyra_strings_info_enable_microphone)
+        override val toggledText = ctx.getString(R.string.kaleyra_strings_info_disable_microphone)
     }
 
     /**
@@ -191,8 +191,8 @@ internal abstract class CallAction(
         R.layout.kaleyra_glass_menu_item_layout,
         R.attr.kaleyra_recyclerViewFlashLightItemStyle
     ) {
-        override val defaultText = ctx.getString(R.string.kaleyra_glass_menu_flashlight)
-        override val toggledText = ctx.getString(R.string.kaleyra_glass_menu_flashlight_toggled)
+        override val defaultText = ctx.getString(R.string.kaleyra_strings_info_disable_torch)
+        override val toggledText = ctx.getString(R.string.kaleyra_strings_info_enable_torch)
     }
 
     /**

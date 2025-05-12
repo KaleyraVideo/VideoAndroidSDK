@@ -17,7 +17,6 @@
 package com.kaleyra.video_sdk.ui.chat
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.kaleyra.video_sdk.R
@@ -74,7 +73,7 @@ class ConversationComponentTest {
     @Test
     fun emptyMessages_noMessagesDisplayed() {
         setContent(ConversationState(conversationItems = ImmutableList(emptyList())))
-        val noMessagesTitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_title)
+        val noMessagesTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_info_empty_chat_title)
         val noMessagesSubtitle = composeTestRule.activity.getString(R.string.kaleyra_chat_no_messages_subtitle)
         composeTestRule.onNodeWithText(noMessagesTitle).assertIsDisplayed()
         composeTestRule.onNodeWithText(noMessagesSubtitle).assertIsDisplayed()
@@ -83,7 +82,7 @@ class ConversationComponentTest {
     @Test
     fun messagesNotInitialized_loadingMessagingDisplayed() {
         setContent(ConversationState(conversationItems = null))
-        val channelLoading = composeTestRule.activity.getString(R.string.kaleyra_chat_channel_loading)
+        val channelLoading = composeTestRule.activity.getString(R.string.kaleyra_strings_info_loading)
         composeTestRule.onNodeWithText(channelLoading).assertIsDisplayed()
     }
 

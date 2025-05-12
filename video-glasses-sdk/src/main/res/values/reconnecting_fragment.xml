@@ -40,7 +40,7 @@
 
     <!-- TITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog.Reconnecting" parent="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_offline</item>
+        <item name="android:text">@string/kaleyra_strings_info_offline</item>
     </style>
 
     <!-- SUBTITLE -->

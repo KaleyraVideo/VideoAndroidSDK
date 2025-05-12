@@ -34,12 +34,12 @@
 
     <!-- TITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog.EndCall" parent="KaleyraCollaborationSuiteUI.TextView.Title.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_want_end_call</item>
+        <item name="android:text">@string/kaleyra_strings_info_ask_end_call_title</item>
     </style>
 
     <!-- SUBTITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.EndCall" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_confirm_end_call</item>
+        <item name="android:text">@string/kaleyra_strings_info_ask_end_call_body</item>
     </style>
 
     <!-- BOTTOM NAVIGATION BAR -->
@@ -53,7 +53,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemEndCall" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_cancel</item>
+        <item name="android:text">@string/kaleyra_strings_action_cancel</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.EndCall" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
@@ -66,7 +66,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemEndCall" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_confirm</item>
+        <item name="android:text">@string/kaleyra_strings_action_call_end</item>
     </style>
 
     <!-- VOICE COMMANDS -->
@@ -82,11 +82,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.EndCall" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_cancel</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_cancel</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemEndCall.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemEndCall">
-        <item name="android:text">@string/kaleyra_glass_cancel</item>
+        <item name="android:text">@string/kaleyra_strings_action_cancel</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.EndCall" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand">
@@ -97,10 +97,10 @@
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.VoiceCommand.EndCall" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.SecondItem.VoiceCommand">
         <item name="android:layout_marginStart">@dimen/kaleyra_dimen_space4</item>
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_confirm</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_call_end</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemEndCall.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemEndCall">
-        <item name="android:text">@string/kaleyra_glass_confirm</item>
+        <item name="android:text">@string/kaleyra_strings_action_call_end</item>
     </style>
 </resources>

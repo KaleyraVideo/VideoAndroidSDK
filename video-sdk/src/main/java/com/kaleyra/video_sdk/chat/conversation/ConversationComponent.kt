@@ -150,7 +150,7 @@ internal fun LoadingMessagesLabel(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.kaleyra_chat_channel_loading),
+            text = stringResource(id = R.string.kaleyra_strings_info_loading),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -164,7 +164,7 @@ internal fun NoMessagesLabel(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.kaleyra_chat_no_messages_title),
+            text = stringResource(id = R.string.kaleyra_strings_info_empty_chat_title),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
         )

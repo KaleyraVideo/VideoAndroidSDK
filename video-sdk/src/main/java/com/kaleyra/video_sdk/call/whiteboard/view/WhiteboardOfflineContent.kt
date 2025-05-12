@@ -20,8 +20,6 @@ import IconButton
 import android.content.res.Configuration
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,13 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
 
@@ -72,7 +68,7 @@ internal fun WhiteboardOfflineContent(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = stringResource(id = R.string.kaleyra_error_title),
+            text = stringResource(id = R.string.kaleyra_strings_info_generic_error),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface
         )

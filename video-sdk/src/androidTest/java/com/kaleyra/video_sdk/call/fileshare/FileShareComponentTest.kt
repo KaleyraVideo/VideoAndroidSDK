@@ -121,7 +121,7 @@ class FileShareComponentTest {
 
     @Test
     fun fileShareAppBarCloseButtonShown() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
     }
 
@@ -230,7 +230,7 @@ class FileShareComponentTest {
     fun userClicksPendingStateAction_onShareCancelInvoked() {
         val sharedFile = mockDownloadSharedFile.copy(id = "fileId", state = SharedFileUi.State.Pending)
         fileShareUiState = FileShareUiState(sharedFiles = ImmutableList(listOf(sharedFile)))
-        val cancel = composeTestRule.activity.getString(R.string.kaleyra_fileshare_cancel)
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.onNodeWithContentDescription(cancel).performClick()
         assertEquals("fileId", cancelId)
     }

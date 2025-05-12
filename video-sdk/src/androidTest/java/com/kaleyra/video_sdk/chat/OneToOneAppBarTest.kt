@@ -26,9 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.chat.appbar.*
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantDetails
 import com.kaleyra.video_sdk.chat.appbar.model.ChatParticipantState
@@ -40,14 +38,11 @@ import com.kaleyra.video_sdk.chat.appbar.view.SubtitleTag
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.topappbar.ActionsTag
 import com.kaleyra.video_sdk.findBackButton
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -132,7 +127,7 @@ class OneToOneAppBarTest {
     @Test
     fun connectionStateOffline_waitingForNetworkDisplayed() {
         connectionState = ConnectionState.Offline
-        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_chat_state_waiting_for_network)
+        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_strings_info_offline)
         getSubtitle().assertTextEquals(waitingForNetwork)
     }
 
@@ -151,14 +146,14 @@ class OneToOneAppBarTest {
             .withLocale(Locale.getDefault())
             .withZone(ZoneId.systemDefault())
             .format(Instant.ofEpochMilli(0))
-        val offline = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_last_login, timestamp)
+        val offline = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant_status_last_seen, timestamp)
         getSubtitle().assertTextEquals(offline)
     }
 
     @Test
     fun chatParticipantStateNeverOnline_recentlySeenDisplayed() {
         chatParticipantState.value = ChatParticipantState.Offline(null)
-        val offline = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_offline)
+        val offline = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant_status_offline)
         getSubtitle().assertTextEquals(offline)
     }
 

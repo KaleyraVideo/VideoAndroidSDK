@@ -106,13 +106,13 @@ class WhiteboardComponentTest {
 
     @Test
     fun whiteboardTopAppBarShown() {
-        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val fileShare = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(fileShare).assertIsDisplayed()
     }
 
     @Test
     fun whiteBoardAppBarCloseButtonShown() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
     }
 
@@ -130,7 +130,7 @@ class WhiteboardComponentTest {
 
     @Test
     fun offlineTrue_offlineUIDisplayed() {
-        val title = composeTestRule.activity.getString(R.string.kaleyra_error_title)
+        val title = composeTestRule.activity.getString(R.string.kaleyra_strings_info_generic_error)
         val subtitle = composeTestRule.activity.getString(R.string.kaleyra_error_subtitle)
         val reload = composeTestRule.activity.getString(R.string.kaleyra_error_button_reload)
         composeTestRule.onNodeWithText(title).assertDoesNotExist()
@@ -153,7 +153,7 @@ class WhiteboardComponentTest {
     @Test
     fun userClicksBack_onBackPressedInvoked() {
         uiState = WhiteboardUiState(isOffline = false)
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)

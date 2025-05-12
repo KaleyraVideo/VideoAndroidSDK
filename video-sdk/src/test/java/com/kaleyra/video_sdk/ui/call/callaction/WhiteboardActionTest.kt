@@ -27,7 +27,7 @@ class WhiteboardActionTest {
 
     @Test
     fun testButtonTextIsNotDisplayedOnDefaultWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             WhiteboardAction(
                 onClick = {}
@@ -38,7 +38,7 @@ class WhiteboardActionTest {
 
     @Test
     fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             WhiteboardAction(
                 label = true,
@@ -50,7 +50,7 @@ class WhiteboardActionTest {
 
     @Test
     fun testButtonTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             WhiteboardAction(
                 modifier = Modifier.width(200.dp),
@@ -74,7 +74,7 @@ class WhiteboardActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         var clicked = false
         composeTestRule.setContent {
             WhiteboardAction(onClick = { clicked = true })
@@ -86,7 +86,7 @@ class WhiteboardActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             WhiteboardAction(
                 enabled = false,

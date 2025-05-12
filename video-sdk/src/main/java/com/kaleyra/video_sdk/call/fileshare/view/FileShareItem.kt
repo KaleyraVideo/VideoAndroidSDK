@@ -246,7 +246,7 @@ private fun ActionButton(
                     is SharedFileUi.State.Available -> R.string.kaleyra_fileshare_download_descr
                     is SharedFileUi.State.Success -> R.string.kaleyra_fileshare_open_file
                     is SharedFileUi.State.Error -> R.string.kaleyra_fileshare_retry
-                    else -> R.string.kaleyra_fileshare_cancel
+                    else -> R.string.kaleyra_strings_action_cancel
                 }
             ),
             tint = when (sharedFileState) {

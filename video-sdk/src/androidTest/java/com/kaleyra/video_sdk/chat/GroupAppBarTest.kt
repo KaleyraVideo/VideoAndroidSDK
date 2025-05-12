@@ -26,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.*
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
@@ -43,13 +42,10 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
 import com.kaleyra.video_sdk.common.topappbar.ActionsTag
 import com.kaleyra.video_sdk.findBackButton
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.util.*
 
 class GroupAppBarTest {
@@ -119,7 +115,7 @@ class GroupAppBarTest {
     @Test
     fun chatStateNetworkOffline_waitingForNetworkDisplayed() {
         connectionState = ConnectionState.Offline
-        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_chat_state_waiting_for_network)
+        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_strings_info_offline)
         getSubtitle().assertTextEquals(waitingForNetwork)
     }
 

@@ -104,15 +104,6 @@ class CallUserMessagesProviderTest {
     }
 
     @Test
-    fun testDoubleStart() = runTest {
-        val scope = TestScope()
-        CallUserMessagesProvider.start(callMock, scope)
-        CallUserMessagesProvider.start(callMock, backgroundScope)
-        assertEquals(false, scope.isActive)
-        assertEquals(true, backgroundScope.isActive)
-    }
-
-    @Test
     fun testDispose() = runTest {
         CallUserMessagesProvider.start(callMock, backgroundScope)
         CallUserMessagesProvider.dispose()
@@ -246,6 +237,7 @@ class CallUserMessagesProviderTest {
 
     @Test
     fun testSendUserMessage() = runTest {
+        every { callMock.state } returns MutableStateFlow(Call.State.Connected)
         CallUserMessagesProvider.start(callMock, backgroundScope)
         CallUserMessagesProvider.sendUserMessage(CameraRestrictionMessage())
         val actual = CallUserMessagesProvider.userMessage.first()
@@ -272,6 +264,7 @@ class CallUserMessagesProviderTest {
     @Test
     fun testAmIAloneAlertMessage() = runTest {
         every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connected)
+        every { callMock.state } returns MutableStateFlow<Call.State>(Call.State.Connected)
         val doOtherHaveStreams = MutableStateFlow<Boolean>(false)
         every { callMock.doOthersHaveStreams() } returns doOtherHaveStreams
         CallUserMessagesProvider.start(callMock, backgroundScope)

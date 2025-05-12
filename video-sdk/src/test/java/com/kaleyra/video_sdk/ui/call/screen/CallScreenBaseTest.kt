@@ -7,6 +7,7 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
@@ -49,6 +50,7 @@ import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUiState
 import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -192,6 +194,7 @@ internal abstract class CallScreenBaseTest {
         every { KickedMessageViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<KickedMessageViewModel>>(), any()) } returns kickedMessageViewModel
         }
+        ContextRetainer().create(mockk(relaxed = true))
     }
 
     @After

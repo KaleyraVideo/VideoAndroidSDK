@@ -12,13 +12,12 @@ import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, configure: suspend () -> Configuration) : BaseViewModel<StackedSnackbarUiState>(configure) {
 
@@ -30,8 +29,10 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
     val userMessage: Flow<ImmutableList<UserMessage>> = userMessageChannel.receiveAsFlow().map { ImmutableList(it) }
 
     init {
-        viewModelScope.launch {
-            call.first()
+
+        println("INIT USER MESSAGES VIEW MODEL: $this")
+
+        call.onEach {
             with(CallUserMessagesProvider) {
 
                 start(call.getValue()!!)
@@ -40,26 +41,39 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
                     .onEach {
                         stackedSnackbarHostMessagesHandler.addUserMessage(it, true)
                     }
-                    .launchIn(this@launch)
+                    .launchIn(viewModelScope)
 
                 alertMessages
                     .onEach {
                         stackedSnackbarHostMessagesHandler.addAlertMessages(it)
                     }
-                    .launchIn(this@launch)
+                    .launchIn(viewModelScope)
             }
 
             with(stackedSnackbarHostMessagesHandler) {
                 userMessages
                     .onEach { newUserMessages ->
-                        userMessageChannel.send(newUserMessages)
-                    }.launchIn(this@launch)
+                        runCatching {
+                            userMessageChannel.send(newUserMessages)
+                        }.onFailure {
+                            println(it)
+                        }
+                    }.launchIn(viewModelScope)
                 alertMessages
                     .onEach { newAlertMessages ->
                         _uiState.update { it.copy(alertMessages = ImmutableList(newAlertMessages.toList())) }
-                    }.launchIn(this@launch)
+                    }.launchIn(viewModelScope)
             }
         }
+            .onCompletion {
+                println("completion of viewmodel scope job on $this@UserMessagesViewModels")
+            }
+            .launchIn(viewModelScope)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("user messages view model on cleared: $this")
     }
 
     fun dismiss(userMessage: UserMessage) {
@@ -70,17 +84,12 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
         stackedSnackbarHostMessagesHandler.removeUserMessages()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        CallUserMessagesProvider.dispose()
-    }
-
     companion object {
         fun provideFactory(accessibilityManager: AccessibilityManager?, configure: suspend () -> Configuration) =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return UserMessagesViewModel(accessibilityManager, configure) as T
+                    return  UserMessagesViewModel(accessibilityManager, configure) as T
                 }
             }
     }

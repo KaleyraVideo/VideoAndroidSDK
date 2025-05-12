@@ -111,7 +111,7 @@ class SidePanelTest {
     @Test
     fun whiteboardComponent_whiteboardComponentIsDisplayed() {
         component = ModularComponent.Whiteboard
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.Whiteboard)
     }

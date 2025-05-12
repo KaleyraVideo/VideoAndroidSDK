@@ -53,7 +53,7 @@
 
     <!-- TIMESTAMP -->
     <style name="KaleyraCollaborationSuiteUI.TextView.TimestampGlassChat.Notification" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.TimestampGlassChat">
-        <item name="android:text">@string/kaleyra_glass_now</item>
+        <item name="android:text">@string/kaleyra_strings_info_now</item>
     </style>
 
     <!-- BOTTOM NAVIGATION BAR -->
@@ -81,11 +81,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_hide_notification</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_dismiss</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemChatNotification" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_hide_notification</item>
+        <item name="android:text">@string/kaleyra_strings_action_dismiss</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.ChatNotification" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">

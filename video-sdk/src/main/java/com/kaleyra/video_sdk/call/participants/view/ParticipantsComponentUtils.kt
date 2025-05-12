@@ -25,11 +25,15 @@ internal fun disableMicPainterFor(streamAudio: AudioUi?): Painter =
 
 @Composable
 internal fun disableContentDescriptionFor(streamAudio: AudioUi?, username: String): String =
-    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_participants_component_disable_microphone_description else R.string.kaleyra_participants_component_enable_microphone_description, username)
+    stringResource(id = R.string.kaleyra_strings_info_disable_participant_microphone, username)
+
+@Composable
+internal fun disableContentDescriptionForMyStream(streamAudio: AudioUi?): String =
+    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_strings_info_disable_microphone else R.string.kaleyra_strings_info_enable_microphone)
 
 @Composable
 internal fun disableTextFor(streamAudio: AudioUi?, username: String): String =
-    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_participants_component_disable_microphone else R.string.kaleyra_participants_component_enable_microphone, username)
+    stringResource(id = if (streamAudio?.isEnabled == true) R.string.kaleyra_strings_info_disable_microphone else R.string.kaleyra_strings_info_enable_microphone, username)
 
 @Composable
 internal fun mutePainterFor(streamAudio: AudioUi?): Painter =

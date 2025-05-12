@@ -44,10 +44,6 @@ import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableMap
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableSet
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import com.kaleyra.video_sdk.common.viewmodel.UserMessageViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -107,7 +103,7 @@ private data class PhoneChatViewModelState(
     }
 }
 
-internal class PhoneChatViewModel(configure: suspend () -> Configuration) : ChatViewModel(configure), UserMessageViewModel {
+internal class PhoneChatViewModel(configure: suspend () -> Configuration) : ChatViewModel(configure) {
 
     private val firstUnreadMessageId = MutableStateFlow<String?>(null)
 
@@ -120,9 +116,6 @@ internal class PhoneChatViewModel(configure: suspend () -> Configuration) : Chat
     val theme: StateFlow<Theme> = company
         .flatMapLatest { it.combinedTheme }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Theme())
-
-    override val userMessage: Flow<UserMessage>
-        get() = CallUserMessagesProvider.userMessage
 
     init {
         viewModelScope.launch {

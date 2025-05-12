@@ -42,7 +42,7 @@
 
     <!-- SUBTITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Dialing" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_dialing</item>
+        <item name="android:text">@string/kaleyra_strings_info_status_connecting</item>
     </style>
 
     <!-- BOTTOM NAVIGATION -->

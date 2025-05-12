@@ -51,7 +51,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SwipeParticipants" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_browse</item>
+        <item name="android:text">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.Participants" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem">
@@ -59,7 +59,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemParticipants" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_back</item>
+        <item name="android:text">@string/kaleyra_strings_action_back</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.Participants" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
@@ -100,11 +100,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.Participants" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_back</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_back</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemParticipants.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemParticipants">
-        <item name="android:text">@string/kaleyra_glass_back</item>
+        <item name="android:text">@string/kaleyra_strings_action_back</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.Participants" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand">

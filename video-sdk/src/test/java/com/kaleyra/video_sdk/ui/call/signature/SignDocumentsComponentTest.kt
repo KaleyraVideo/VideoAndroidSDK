@@ -72,7 +72,7 @@ class SignDocumentsComponentTest {
 
     @Test
     fun signDocumentsAppBarCloseButtonShown() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
     }
 
@@ -124,7 +124,7 @@ class SignDocumentsComponentTest {
 
     @Test
     fun appBarCloseButtonClicked_onBackPressed() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertTrue(onBackPressed)
     }
@@ -204,7 +204,7 @@ class SignDocumentsComponentTest {
     @Test
     fun oneSignDocument_signDocumentFilteredOut_closeClicked_signDocumentDisplayed() {
         val pending = composeTestRule.activity.resources.getString(R.string.kaleyra_signature_state_pending)
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_close)
         signDocumentsUiState = SignDocumentUiState(signDocuments = ImmutableList(listOf(mockSignDocumentFile.copy(signState = SignDocumentUi.SignStateUi.Pending))))
         composeTestRule.onAllNodesWithContentDescription(pending).onFirst().assertIsDisplayed()
         val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)

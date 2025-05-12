@@ -18,7 +18,6 @@
 
     <!-- Etiquetas de rota de áudio -->
     <string name="kaleyra_call_sheet_description_mic_warning">Aviso do microfone</string>
-    <string name="kaleyra_call_sheet_description_mic_error">Erro do microfone</string>
     <string name="kaleyra_stream_screenshare_message">Os participantes da reunião estão a ver o seu ecrã</string>
     <string name="kaleyra_audio_route_title">Selecionar uma saída de áudio</string>
     <string name="kaleyra_call_action_audio_route_bluetooth">Bluetooth</string>
@@ -46,30 +45,20 @@
     <string name="kaleyra_call_action_participants">Participantes</string>
     <string name="kaleyra_call_action_audio_route">Saída de áudio</string>
     <string name="kaleyra_call_action_options">Opções</string>
-
     <string name="kaleyra_call_action_switch_camera_description">Trocar câmera</string>
-    <string name="kaleyra_call_action_enable_mic_description">Ativar microfone</string>
-    <string name="kaleyra_call_action_disable_mic_description">Silenciar microfone</string>
-    <string name="kaleyra_call_action_enable_camera_description">Ativar câmera</string>
-    <string name="kaleyra_call_action_disable_camera_description">Desativar câmera</string>
-
     <string name="kaleyra_call_action_more">Mais</string>
     <string name="kaleyra_call_drag_to_expand">Arraste para expandir</string>
     <string name="kaleyra_call_answer">Participar</string>
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Escreva aqui</string>
-    <string name="kaleyra_chat_channel_loading">Carregando &#8230;</string>
     <string name="kaleyra_chat_user_status_online">online</string>
     <string name="kaleyra_chat_participants_online">%1$s online</string>
     <plurals name="kaleyra_call_participants_typing">
         <item quantity="one">%1$s está digitando</item>
         <item quantity="other">%1$d estão digitando</item>
     </plurals>
-    <string name="kaleyra_chat_user_status_last_login">último acesso: %1$s</string>
-    <string name="kaleyra_chat_user_status_offline">visto recentemente</string>
     <string name="kaleyra_chat_user_status_typing">digitando</string>
-    <string name="kaleyra_chat_state_waiting_for_network">esperando pela rede &#8230;</string>
     <string name="kaleyra_chat_state_connecting">conectando &#8230;</string>
     <string name="kaleyra_chat_send">Enviar mensagem</string>
     <string name="kaleyra_chat_scroll_to_last_message">Rolar até a última mensagem</string>
@@ -77,7 +66,6 @@
     <string name="kaleyra_chat_msg_status_sent">Mensagem enviada</string>
     <string name="kaleyra_chat_msg_status_seen">Mensagem vista</string>
     <string name="kaleyra_chat_unread_messages">Mensagens não lidas</string>
-    <string name="kaleyra_chat_no_messages_title">Ainda sem mensagens</string>
     <string name="kaleyra_chat_group_title">Chat em grupo</string>
 
     <!-- Chamada -->
@@ -85,7 +73,6 @@
     <string name="kaleyra_chat_deleted">"A conversa foi excluída. "</string>
     <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botões</string>
-    <string name="kaleyra_close">Fechar</string>
     <string name="kaleyra_call_status_dialing">Chamando &#8230;</string>
     <plurals name="kaleyra_call_incoming_status_ringing">
         <item quantity="one">Está te chamando &#8230;</item>
@@ -93,12 +80,9 @@
     </plurals>
     <string name="kaleyra_call_status_ringing">Tocando &#8230;</string>
     <string name="kaleyra_call_status_user_disconnected">A conexão com a internet foi interrompida.</string>
-    <string name="kaleyra_call_status_answered_on_other_device">Você respondeu em outro dispositivo.</string>
 
     <string name="kaleyra_call_info_rec">Rec</string>
     <string name="kaleyra_call_info_ongoing_recording">Esta chamada está sendo gravada</string>
-    <string name="kaleyra_action_dismiss">Dispensar</string>
-    <string name="kaleyra_action_cancel">Cancelar</string>
     <string name="kaleyra_action_discard_changes">Descartar alterações</string>
     <string name="kaleyra_action_confirm">Confirmar</string>
     <string name="kaleyra_data_loss_confirm_message">Tem certeza?\nTodos os dados serão perdidos.</string>
@@ -108,7 +92,6 @@
     <string name="kaleyra_call_offline">Estás offline</string>
     <string name="kaleyra_current_user_busy">Você está atualmente em outra chamada</string>
     <string name="kaleyra_error_button_reload">Recarregar</string>
-    <string name="kaleyra_error_title">Ocorreu um erro</string>
     <string name="kaleyra_error_subtitle">Toque para recarregar</string>
 
     <string name="kaleyra_share_whiteboard">Compartilhar no quadro branco</string>
@@ -121,7 +104,6 @@
     <string name="kaleyra_ringing_answer">Atender</string>
     <string name="kaleyra_ringing_decline">Recusar</string>
 
-    <string name="kaleyra_back">Voltar</string>
     <string name="kaleyra_avatar">Avatar do usuário</string>
     <string name="kaleyra_company_logo">Logotipo da empresa</string>
 
@@ -130,7 +112,6 @@
 
     <!-- Quadro Branco -->
     <string name="kaleyra_collaborate_button">Colaborar</string>
-    <string name="kaleyra_whiteboard">Quadro branco</string>
 
     <string name="kaleyra_confirm_message">Sim</string>
     <string name="kaleyra_cancel_message">Não</string>
@@ -183,7 +164,6 @@
     <string name="kaleyra_fileshare_miscellaneous">Arquivo genérico</string>
     <string name="kaleyra_fileshare_media">Arquivo de mídia</string>
     <string name="kaleyra_fileshare_archive">Arquivar ficheiro</string>
-    <string name="kaleyra_fileshare_cancel">Cancelar</string>
     <string name="kaleyra_fileshare_download_descr">Iniciar download</string>
     <string name="kaleyra_fileshare_success">Ficheiro partilhado</string>
     <string name="kaleyra_fileshare_retry">Tentar novamente</string>
@@ -201,7 +181,6 @@
 
     <!-- FEEDBACK -->
     <string name="kaleyra_feedback_vote">Votar</string>
-    <string name="kaleyra_feedback_close">Fechar</string>
     <string name="kaleyra_feedback_evaluate_call">Por favor, avalie a qualidade da sua chamada</string>
     <string name="kaleyra_feedback_bad">Muito mau</string>
     <string name="kaleyra_feedback_poor">Mau</string>
@@ -214,19 +193,11 @@
     <string name="kaleyra_feedback_thank_you">Obrigado pelo seu feedback!</string>
 
     <!-- GRAVAÇÃO -->
-    <string name="kaleyra_recording_started">Gravação iniciada</string>
     <string name="kaleyra_recording_started_message">A gravação da chamada foi iniciada.</string>
     <string name="kaleyra_recording_stopped">Gravação interrompida</string>
     <string name="kaleyra_recording_stopped_message">A gravação da chamada foi interrompida.</string>
-    <string name="kaleyra_recording_failed">Erro na gravação</string>
-    <string name="kaleyra_recording_failed_message">Ocorreu um erro ao gravar a chamada. Por favor, desligue e tente novamente.</string>
     <string name="kaleyra_automatic_recording_disclaimer">A chamada será gravada</string>
     <string name="kaleyra_manual_recording_disclaimer">A chamada pode ser gravada</string>
-
-    <string name="kaleyra_strings_description_call_recorded">Esta chamada será gravada</string>
-    <string name="kaleyra_utterance_recording_started">A gravação está a começar agora</string>
-    <string name="kaleyra_utterance_recording_stopped">Gravação interrompida</string>
-    <string name="kaleyra_utterance_recording_failed">Falha na gravação. Desligue e tente novamente</string>
 
     <!-- BARRA DE TOPO DO APLICATIVO -->
     <string name="kaleyra_start_audio_call">Iniciar chamada de áudio</string>
@@ -246,9 +217,6 @@
     <string name="kaleyra_generic_audio_routing_error">Não foi possível alterar o dispositivo de saída de áudio.</string>
     <string name="kaleyra_already_in_system_call_audio_routing_error">Não é possível alterar o dispositivo de saída de áudio enquanto uma chamada do sistema já estiver em curso.</string>
 
-    <string name="kaleyra_show_participants_descr">Mostrar aos participantes</string>
-    <string name="kaleyra_call_status_ended_line_busy">Linha ocupada</string>
-
     <string name="kaleyra_whiteboard_show_request_by_admin_user_message">%1s solicitou a abertura do whiteboard</string>
     <string name="kaleyra_whiteboard_show_request_user_message">Você foi solicitado a abrir a whiteboard</string>
     <string name="kaleyra_whiteboard_hide_request_by_admin_user_message">%1s solicitou fechar a whiteboard</string>
@@ -257,28 +225,19 @@
     <!-- bottom sheet -->
 
     <string name="kaleyra_call_sheet_answer">Entrar</string>
-    <string name="kaleyra_call_sheet_whiteboard">Quadro branco</string>
     <string name="kaleyra_call_sheet_audio">Áudio</string>
     <string name="kaleyra_call_sheet_virtual_background">Plano de fundo virtual</string>
     <string name="kaleyra_call_sheet_pin">Fixar</string>
     <string name="kaleyra_call_sheet_unpin">Desafixar</string>
     <string name="kaleyra_call_sheet_fullscreen_on">Tela cheia</string>
     <string name="kaleyra_call_sheet_fullscreen_off">Sair</string>
-    <string name="kaleyra_call_sheet_flip_camera">Inverter</string>
     <string name="kaleyra_call_sheet_recording">Gravando</string>
-    <string name="kaleyra_call_sheet_cancel">Cancelar</string>
-    <string name="kaleyra_call_sheet_microphone">Microfone</string>
-    <string name="kaleyra_call_sheet_camera">Câmera</string>
     <string name="kaleyra_call_sheet_on">Ligado</string>
     <string name="kaleyra_call_sheet_off">Desligado</string>
     <string name="kaleyra_call_sheet_active">Ativo</string>
     <string name="kaleyra_call_sheet_disabled">Desativado</string>
     <string name="kaleyra_call_sheet_description_more_actions">Mostrar mais ações</string>
     <string name="kaleyra_call_sheet_description_hide_actions">Ocultar ações</string>
-    <string name="kaleyra_call_sheet_description_enable_microphone">Ativar microfone</string>
-    <string name="kaleyra_call_sheet_description_disable_microphone">Desativar microfone</string>
-    <string name="kaleyra_call_sheet_description_enable_camera">Ativar câmera</string>
-    <string name="kaleyra_call_sheet_description_disable_camera">Desativar câmera</string>
 
     <!-- streams -->
     <string name="kaleyra_stream_screenshare_received">%s está compartilhando sua tela</string>
@@ -288,7 +247,6 @@
     <string name="kaleyra_stream_muted_for_you">A transmissão está sem áudio para você</string>
     <string name="kaleyra_stream_you">Você</string>
     <string name="kaleyra_stream_other_participants">outros</string>
-    <string name="kaleyra_stream_show_participants">Mostrar participantes</string>
     <string name="kaleyra_stream_show_actions">Mostrar as ações da transmissão</string>
     <string name="kaleyra_stream_dimmed">Transmissão não selecionada</string>
 
@@ -297,7 +255,6 @@
     <string name="kaleyra_stream_audio_level">Nível de som</string>
     <string name="kaleyra_participants_component_change_layout">Mudar layout</string>
     <string name="kaleyra_participants_component_users_in_call">Usuários na chamada</string>
-    <string name="kaleyra_participants_component_users_invited">Convidados</string>
     <string name="kaleyra_participants_component_mosaic">Mosaico</string>
     <string name="kaleyra_participants_component_auto">Auto</string>
     <string name="kaleyra_participants_component_pin_stream">Fixar a live</string>
@@ -311,17 +268,8 @@
     <string name="kaleyra_participants_component_you">%s (Você)</string>
     <string name="kaleyra_participants_component_admin">Administrador</string>
     <string name="kaleyra_participants_component_screenshare">Compartilhamento de tela</string>
-    <string name="kaleyra_participants_component_participant">Participante</string>
     <string name="kaleyra_participants_component_remove_from_call">Remover da chamada</string>
-    <string name="kaleyra_participants_component_disable_microphone">Desativar o microfone</string>
-    <string name="kaleyra_participants_component_enable_microphone">Ativar o microfone</string>
-    <string name="kaleyra_participants_component_disable_microphone_description">Desativar o microfone de %s</string>
-    <string name="kaleyra_participants_component_enable_microphone_description">Ativar o microfone de %s</string>
     <string name="kaleyra_participants_component_show_more_actions">Mostrar mais ações</string>
-    <plurals name="kaleyra_participants_component_participants">
-        <item quantity="one">%d Participante</item>
-        <item quantity="other">%d Participantes</item>
-    </plurals>
     <string name="kaleyra_call_sheet_drag_description">Arrastar</string>
     <string name="kaleyra_input_text_default_error">Erro de entrada de texto</string>
     <string name="kaleyra_chat_no_messages_subtitle">Envie uma mensagem para iniciar a comunicação</string>
@@ -329,7 +277,6 @@
     <string name="kaleyra_chat_participants_is_online">está online</string>
     <string name="kaleyra_app_icon">Ícone do aplicativo</string>
     <string name="kaleyra_call_sheet_description_camera_warning">Aviso da câmera</string>
-    <string name="kaleyra_call_sheet_description_camera_error">Erro da câmera</string>
     <string name="kaleyra_fullscreen">Tela cheia</string>
 
     <string name="kaleyra_user_message_pin">Fixar</string>

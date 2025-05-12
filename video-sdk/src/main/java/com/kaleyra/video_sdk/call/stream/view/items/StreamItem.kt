@@ -230,7 +230,7 @@ private fun ZoomIcon(modifier: Modifier = Modifier, text: String) {
             .size(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        val zoomContentDescription = "${stringResource(R.string.kaleyra_call_sheet_zoom)} $text"
+        val zoomContentDescription = "${stringResource(R.string.kaleyra_strings_action_zoom)} $text"
         Text(
             modifier = Modifier
                 .semantics {

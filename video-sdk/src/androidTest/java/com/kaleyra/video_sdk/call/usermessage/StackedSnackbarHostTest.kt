@@ -77,7 +77,7 @@ class StackedSnackbarHostTest {
         advanceUntilIdle()
         composeTestRule.waitForIdle()
         val automaticRecording = composeTestRule.activity.getString(R.string.kaleyra_automatic_recording_disclaimer)
-        val waitingForOtherParticipants = composeTestRule.activity.getString(R.string.kaleyra_waiting_for_other_participants)
+        val waitingForOtherParticipants = composeTestRule.activity.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants)
         composeTestRule.onNodeWithText(automaticRecording).assertIsDisplayed()
         composeTestRule.onNodeWithText(waitingForOtherParticipants).assertIsDisplayed()
     }

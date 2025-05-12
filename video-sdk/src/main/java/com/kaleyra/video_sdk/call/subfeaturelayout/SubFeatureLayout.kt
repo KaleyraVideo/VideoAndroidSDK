@@ -28,14 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -63,7 +58,7 @@ internal fun SubFeatureLayout(
                 onClick = onCloseClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_kaleyra_close),
-                    contentDescription = stringResource(id = R.string.kaleyra_close))
+                    contentDescription = stringResource(id = R.string.kaleyra_strings_action_close))
             }
         }
         content()

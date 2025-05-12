@@ -105,7 +105,7 @@ class ScreenShareComponentTest {
     @Test
     fun userClicksClose_onCloseClickInvoked() {
         var isCloseClicked = false
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.setContent {
             ScreenShareComponent(
                 uiState = ScreenShareUiState(),

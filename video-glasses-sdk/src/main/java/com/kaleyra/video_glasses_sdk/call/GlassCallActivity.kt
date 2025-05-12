@@ -192,20 +192,71 @@ internal class GlassCallActivity :
                             val isCameraEnabled = viewModel.cameraEnabled.value
 
                             when {
-                                isMicBlocked && isCamBlocked -> resources.getString(R.string.kaleyra_glass_mic_and_cam_blocked)
-                                isMicBlocked                 -> resources.getString(R.string.kaleyra_glass_mic_blocked)
-                                isCamBlocked                 -> resources.getString(R.string.kaleyra_glass_cam_blocked)
-                                else                         -> null
+                                isMicBlocked && isCamBlocked -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_permission_error,
+                                            2,
+                                            getString(R.string.kaleyra_strings_action_microphone),
+                                            getString(R.string.kaleyra_strings_action_camera)
+                                        )
+                                    }
+                                }
+
+                                isMicBlocked -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_permission_error,
+                                            1,
+                                            getString(R.string.kaleyra_strings_action_microphone),
+                                        )
+                                    }
+                                }
+
+                                isCamBlocked -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_permission_error,
+                                            1,
+                                            getString(R.string.kaleyra_strings_action_camera),
+                                        )
+                                    }
+                                }
+
+                                else -> null
                             }?.also { binding.kaleyraToastContainer.show(BLOCKED_TOAST_ID, it) }
 
                             when {
-                                !isMicBlocked && !isMicEnabled && !isCamBlocked && !isCameraEnabled ->
-                                    resources.getString(R.string.kaleyra_glass_mic_and_cam_not_active)
-                                !isMicBlocked && !isMicEnabled                                      ->
-                                    resources.getString(R.string.kaleyra_glass_mic_not_active)
-                                !isCamBlocked && !isCameraEnabled                                   ->
-                                    resources.getString(R.string.kaleyra_glass_cam_not_active)
-                                else                                                                -> null
+                                !isMicBlocked && !isMicEnabled && !isCamBlocked && !isCameraEnabled -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_disabled,
+                                            2,
+                                            getString(R.string.kaleyra_strings_action_microphone),
+                                            getString(R.string.kaleyra_strings_action_camera)
+                                        )
+                                    }
+                                }
+                                !isMicBlocked && !isMicEnabled -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_disabled,
+                                            1,
+                                            getString(R.string.kaleyra_strings_action_microphone)
+                                        )
+                                    }
+                                }
+                                !isCamBlocked && !isCameraEnabled -> {
+                                    with(resources) {
+                                        getQuantityString(
+                                            R.plurals.kaleyra_strings_info_hardware_disabled,
+                                            1,
+                                            getString(R.string.kaleyra_strings_action_camera)
+                                        )
+                                    }
+                                }
+
+                                else -> null
                             }?.also { binding.kaleyraToastContainer.show(DISABLED_TOAST_ID, it) }
                         }
 
@@ -298,10 +349,10 @@ internal class GlassCallActivity :
                 .onEach {
                     binding.kaleyraStatusBar.setWiFiSignalState(
                         when {
-                            it.state == WiFiInfo.State.DISABLED                                     -> StatusBarView.WiFiSignalState.DISABLED
+                            it.state == WiFiInfo.State.DISABLED -> StatusBarView.WiFiSignalState.DISABLED
                             it.level == WiFiInfo.Level.NO_SIGNAL || it.level == WiFiInfo.Level.POOR -> StatusBarView.WiFiSignalState.LOW
-                            it.level == WiFiInfo.Level.FAIR || it.level == WiFiInfo.Level.GOOD      -> StatusBarView.WiFiSignalState.MODERATE
-                            else                                                                    -> StatusBarView.WiFiSignalState.FULL
+                            it.level == WiFiInfo.Level.FAIR || it.level == WiFiInfo.Level.GOOD -> StatusBarView.WiFiSignalState.MODERATE
+                            else -> StatusBarView.WiFiSignalState.FULL
                         }
                     )
                 }
@@ -315,9 +366,9 @@ internal class GlassCallActivity :
                         val subtitle = if (state != Call.State.Disconnected.Ended) resources.getString(R.string.kaleyra_strings_info_call_ended) else null
 
                         val title = when (state) {
-                            is Call.State.Disconnected.Ended.Declined                -> resources.getString(R.string.kaleyra_strings_info_call_declined)
-                            is Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> resources.getString(R.string.kaleyra_glass_answered_on_another_device)
-                            is Call.State.Disconnected.Ended.Kicked                  -> {
+                            is Call.State.Disconnected.Ended.Declined -> resources.getString(R.string.kaleyra_strings_info_call_declined)
+                            is Call.State.Disconnected.Ended.AnsweredOnAnotherDevice -> resources.getString(R.string.kaleyra_strings_info_user_answered_on_another_device)
+                            is Call.State.Disconnected.Ended.Kicked -> {
                                 val call = viewModel.call.replayCache.first()
                                 val participant = call.participants.value.list.find { it.userId == state.userId }
                                 val name = participant?.combinedDisplayName?.first() ?: ""
@@ -328,11 +379,12 @@ internal class GlassCallActivity :
                                     name
                                 )
                             }
-                            is Call.State.Disconnected.Ended.LineBusy                -> resources.getString(R.string.kaleyra_glass_line_busy)
-                            is Call.State.Disconnected.Ended.HungUp                  -> resources.getString(R.string.kaleyra_strings_info_call_ended)
-                            is Call.State.Disconnected.Ended.Error                   -> resources.getString(R.string.kaleyra_glass_call_error_occurred)
-                            is Call.State.Disconnected.Ended.Timeout                 -> resources.getString(R.string.kaleyra_glass_call_timeout)
-                            else                                                     -> resources.getString(R.string.kaleyra_strings_info_call_ended)
+
+                            is Call.State.Disconnected.Ended.LineBusy -> resources.getString(R.string.kaleyra_strings_info_call_line_busy)
+                            is Call.State.Disconnected.Ended.HungUp -> resources.getString(R.string.kaleyra_strings_info_call_ended)
+                            is Call.State.Disconnected.Ended.Error -> resources.getString(R.string.kaleyra_strings_info_generic_error)
+                            is Call.State.Disconnected.Ended.Timeout -> resources.getString(R.string.kaleyra_strings_info_call_no_answer)
+                            else -> resources.getString(R.string.kaleyra_strings_info_call_ended)
                         }
 
                         val navArgs = CallEndedFragmentArgs(title, subtitle).toBundle()
@@ -372,7 +424,7 @@ internal class GlassCallActivity :
                     with(binding.kaleyraToastContainer) {
                         if (it) show(
                             ALONE_TOAST_ID,
-                            resources.getString(R.string.kaleyra_glass_alone),
+                            resources.getString(R.string.kaleyra_strings_info_call_waiting_for_other_participants),
                             R.drawable.ic_kaleyra_glass_alert,
                             0L
                         )
@@ -413,7 +465,7 @@ internal class GlassCallActivity :
                 .onEach {
                     val minutes = (it!! / 60).toInt()
                     when {
-                        it == TIMER_BLINK_FOREVER_TH                            -> binding.kaleyraStatusBar.blinkTimer(-1)
+                        it == TIMER_BLINK_FOREVER_TH -> binding.kaleyraStatusBar.blinkTimer(-1)
                         it % 60 == 0L && ttlWarningThresholds.contains(minutes) -> {
                             val text = resources.getQuantityString(
                                 R.plurals.kaleyra_glass_ttl_expiration_pattern,
@@ -453,7 +505,7 @@ internal class GlassCallActivity :
                 .onEach {
                     binding.kaleyraStatusBar.setCenteredText(
                         resources.getQuantityString(
-                            R.plurals.kaleyra_glass_users_in_call_pattern,
+                            R.plurals.kaleyra_strings_info_participants_number,
                             it.count(),
                             it.count()
                         )
@@ -713,9 +765,9 @@ internal class GlassCallActivity :
         with(binding.kaleyraStatusBar) {
             setBackgroundColor(
                 when {
-                    destinationId == R.id.callParticipantsFragment       -> getResourceColor(R.color.kaleyra_glass_background_color)
+                    destinationId == R.id.callParticipantsFragment -> getResourceColor(R.color.kaleyra_glass_background_color)
                     fragmentsWithDimmedStatusBar.contains(destinationId) -> getResourceColor(R.color.kaleyra_glass_dimmed_background_color)
-                    else                                                 -> Color.TRANSPARENT
+                    else -> Color.TRANSPARENT
                 }
             )
             if (fragmentsWithParticipantsNumber.contains(destinationId)) showCenteredTitle()
@@ -733,13 +785,15 @@ internal class GlassCallActivity :
 
     override fun onTouch(event: com.kaleyra.video_glasses_sdk.TouchEvent): Boolean =
         when {
-            event.type == com.kaleyra.video_glasses_sdk.TouchEvent.Type.SWIPE_FORWARD && event.source == com.kaleyra.video_glasses_sdk.TouchEvent.Source.KEY  -> true.also {
+            event.type == com.kaleyra.video_glasses_sdk.TouchEvent.Type.SWIPE_FORWARD && event.source == com.kaleyra.video_glasses_sdk.TouchEvent.Source.KEY -> true.also {
                 binding.kaleyraStreams.horizontalSmoothScrollToNext(currentStreamItemIndex)
             }
+
             event.type == com.kaleyra.video_glasses_sdk.TouchEvent.Type.SWIPE_BACKWARD && event.source == com.kaleyra.video_glasses_sdk.TouchEvent.Source.KEY -> true.also {
                 binding.kaleyraStreams.horizontalSmoothScrollToPrevious(currentStreamItemIndex)
             }
-            else                                                                                  -> false
+
+            else -> false
         }
 
     private companion object {

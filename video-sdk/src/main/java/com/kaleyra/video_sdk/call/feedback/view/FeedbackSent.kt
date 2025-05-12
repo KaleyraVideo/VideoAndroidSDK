@@ -33,12 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -81,7 +77,7 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
                 .fillMaxWidth()
         ) {
             Text(
-                text = stringResource(id = R.string.kaleyra_feedback_close),
+                text = stringResource(id = R.string.kaleyra_strings_action_close),
                 style = MaterialTheme.typography.labelLarge
             )
         }

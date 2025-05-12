@@ -51,7 +51,7 @@ class SheetPanelItemTest {
     @Test
     fun flipCameraAction_flipCameraTextIsDisplayed() {
         callAction = FlipCameraAction()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -79,7 +79,7 @@ class SheetPanelItemTest {
     @Test
     fun whiteboardAction_whiteboardTextIsDisplayed() {
         callAction = WhiteboardAction()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

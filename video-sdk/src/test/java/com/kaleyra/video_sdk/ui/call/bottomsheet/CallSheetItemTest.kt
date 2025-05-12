@@ -99,7 +99,7 @@ class CallSheetItemTest {
 
     @Test
     fun micActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = MicAction(isEnabled = true),
@@ -124,7 +124,7 @@ class CallSheetItemTest {
 
     @Test
     fun micActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = MicAction(isEnabled = false),
@@ -149,7 +149,7 @@ class CallSheetItemTest {
 
     @Test
     fun cameraActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = CameraAction(isEnabled = true),
@@ -174,7 +174,7 @@ class CallSheetItemTest {
 
     @Test
     fun cameraActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = CameraAction(isEnabled = false),
@@ -199,7 +199,7 @@ class CallSheetItemTest {
 
     @Test
     fun flipCameraActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FlipCameraAction(isEnabled = true),
@@ -224,7 +224,7 @@ class CallSheetItemTest {
 
     @Test
     fun flipCameraActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FlipCameraAction(isEnabled = false),
@@ -449,7 +449,7 @@ class CallSheetItemTest {
 
     @Test
     fun whiteboardActionEnabled_actionIsEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = WhiteboardAction(isEnabled = true),
@@ -474,7 +474,7 @@ class CallSheetItemTest {
 
     @Test
     fun whiteboardActionDisabled_actionIsNotEnabled() {
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = WhiteboardAction(isEnabled = false),
@@ -577,7 +577,7 @@ class CallSheetItemTest {
     @Test
     fun testOnMicActionToggled() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = MicAction(),
@@ -604,7 +604,7 @@ class CallSheetItemTest {
     @Test
     fun testOnCameraActionToggled() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = CameraAction(),
@@ -631,7 +631,7 @@ class CallSheetItemTest {
     @Test
     fun testOnFlipCameraActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FlipCameraAction(),
@@ -766,7 +766,7 @@ class CallSheetItemTest {
     @Test
     fun testOnWhiteboardActionClick() {
         var clicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = WhiteboardAction(),
@@ -873,7 +873,7 @@ class CallSheetItemTest {
 
     @Test
     fun flipCameraActionLabelTrue_actionHasLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FlipCameraAction(),
@@ -897,7 +897,7 @@ class CallSheetItemTest {
 
     @Test
     fun flipCameraActionLabelFalse_actionHasNoLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = FlipCameraAction(),
@@ -1113,7 +1113,7 @@ class CallSheetItemTest {
 
     @Test
     fun whiteboardActionLabelTrue_actionHasLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = WhiteboardAction(),
@@ -1137,7 +1137,7 @@ class CallSheetItemTest {
 
     @Test
     fun whiteboardActionLabelFalse_actionHasNoLabel() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = WhiteboardAction(),
@@ -1365,7 +1365,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1400,7 +1400,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1434,7 +1434,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1468,8 +1468,12 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
-        val error = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_error)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
+        val error = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_microphone))
+        }
         composeTestRule.onNodeWithContentDescription(error).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsOn()
@@ -1504,7 +1508,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1539,7 +1543,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1573,8 +1577,12 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
-        val error = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_error)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val error = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_camera))
+        }
         composeTestRule.onNodeWithContentDescription(error).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsOn()
@@ -1600,8 +1608,12 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
-        val error = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_error)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
+        val error = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_microphone))
+        }
         composeTestRule.onNodeWithContentDescription(error).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsOn()
@@ -1627,7 +1639,7 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         val warning = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_warning)
         composeTestRule.onNodeWithContentDescription(warning).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
@@ -1654,8 +1666,12 @@ class CallSheetItemTest {
                 onVirtualBackgroundToggle = { }
             )
         }
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
-        val error = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_camera_error)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val error = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_camera))
+        }
         composeTestRule.onNodeWithContentDescription(error).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(description).assertIsOn()

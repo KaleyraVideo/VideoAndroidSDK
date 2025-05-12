@@ -33,7 +33,7 @@ internal fun MicMessage(
         inputPainter = if (enabled) {
             painterResource(R.drawable.ic_kaleyra_call_sheet_disable_microphone)
         } else painterResource(R.drawable.ic_kaleyra_call_sheet_enable_microphone),
-        inputText = stringResource(R.string.kaleyra_call_sheet_microphone),
+        inputText = stringResource(R.string.kaleyra_strings_action_microphone),
         stateText = if (enabled) stringResource(R.string.kaleyra_call_sheet_on) else stringResource(R.string.kaleyra_call_sheet_off)
     )
 }
@@ -48,7 +48,7 @@ internal fun CameraMessage(
         inputPainter = if (enabled) {
             painterResource(R.drawable.ic_kaleyra_call_sheet_disable_camera)
         } else painterResource(R.drawable.ic_kaleyra_call_sheet_enable_camera),
-        inputText = stringResource(R.string.kaleyra_call_sheet_camera),
+        inputText = stringResource(R.string.kaleyra_strings_action_camera),
         stateText = if (enabled) stringResource(R.string.kaleyra_call_sheet_on) else stringResource(R.string.kaleyra_call_sheet_off)
     )
 }
@@ -101,7 +101,7 @@ internal fun MicMessageText(
 ) {
     InputMessageText(
         modifier = modifier,
-        inputText = stringResource(id = R.string.kaleyra_call_sheet_microphone),
+        inputText = stringResource(id = R.string.kaleyra_strings_action_microphone),
         stateText = if (enabled) stringResource(id = R.string.kaleyra_call_sheet_on) else stringResource(id = R.string.kaleyra_call_sheet_off)
     )
 }
@@ -113,7 +113,7 @@ internal fun CameraMessageText(
 ) {
     InputMessageText(
         modifier = modifier,
-        inputText = stringResource(id = R.string.kaleyra_call_sheet_camera),
+        inputText = stringResource(id = R.string.kaleyra_strings_action_camera),
         stateText = if (enabled) stringResource(id = R.string.kaleyra_call_sheet_on) else stringResource(id = R.string.kaleyra_call_sheet_off)
     )
 }

@@ -55,7 +55,7 @@ class InputMessageHandleTest {
     @Test
     fun testInputMessageHandleOnMicInputMessage() {
         every { callActionsViewModel.userMessage } returns MutableStateFlow(MicMessage.Enabled)
-        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_strings_action_microphone)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
         composeTestRule.setContent {
             InputMessageHandle(callActionsViewModel)
@@ -73,7 +73,7 @@ class InputMessageHandleTest {
     @Test
     fun testInputMessageHandleOnCameraInputMessage() {
         every { callActionsViewModel.userMessage } returns MutableStateFlow(CameraMessage.Enabled)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_action_camera)
         val on = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_on)
         composeTestRule.setContent {
             InputMessageHandle(callActionsViewModel)
@@ -91,7 +91,7 @@ class InputMessageHandleTest {
     @Test
     fun testInputMessageHandleOffMicInputMessage() {
         every { callActionsViewModel.userMessage } returns MutableStateFlow(MicMessage.Disabled)
-        val microphone = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_microphone)
+        val microphone = composeTestRule.activity.getString(R.string.kaleyra_strings_action_microphone)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
         composeTestRule.setContent {
             InputMessageHandle(callActionsViewModel)
@@ -109,7 +109,7 @@ class InputMessageHandleTest {
     @Test
     fun testInputMessageHandleOffCameraInputMessage() {
         every { callActionsViewModel.userMessage } returns MutableStateFlow(CameraMessage.Disabled)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_action_camera)
         val off = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_off)
         composeTestRule.setContent {
             InputMessageHandle(callActionsViewModel)

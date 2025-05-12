@@ -8,6 +8,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.theme.Theme
@@ -55,6 +56,7 @@ import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -211,6 +213,7 @@ internal abstract class VCallScreenBaseTest {
         every { PhoneChatViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<PhoneChatViewModel>>(), any()) } returns phoneChatViewModel
         }
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
     }
 
     @After

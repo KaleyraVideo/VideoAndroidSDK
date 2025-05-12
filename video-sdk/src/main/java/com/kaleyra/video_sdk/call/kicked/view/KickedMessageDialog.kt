@@ -94,7 +94,7 @@ fun KickedMessageDialog(kickedUiState: KickedMessageUiState, onDismiss: () -> Un
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClickLabel = stringResource(id = R.string.kaleyra_action_dismiss),
+                        onClickLabel = stringResource(id = R.string.kaleyra_strings_action_dismiss),
                         role = Role.Button,
                         onClick = onDismiss
                     )

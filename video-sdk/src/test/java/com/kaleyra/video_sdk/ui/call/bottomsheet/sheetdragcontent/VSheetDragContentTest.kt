@@ -100,7 +100,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -124,7 +124,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -148,7 +148,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -172,7 +172,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -215,7 +215,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -279,7 +279,7 @@ class VSheetDragContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -465,9 +465,9 @@ class VSheetDragContentTest {
     fun testItemsPlacement() {
         val itemsPerColumn = 2
         val height = CallActionDefaults.MinButtonSize * itemsPerColumn + SheetItemsSpacing
-        val flip = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
-        val camera = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
-        val mic = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val flip = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
+        val camera = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
+        val mic = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         val chat = composeTestRule.activity.getString(R.string.kaleyra_strings_action_chat)
         composeTestRule.setContent {
             VSheetDragContent(
@@ -512,7 +512,7 @@ class VSheetDragContentTest {
     @Test
     fun testOnMicClick() {
         var isClicked: Boolean? = null
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.setContent {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(MicAction())),
@@ -537,7 +537,7 @@ class VSheetDragContentTest {
     @Test
     fun testOnCameraClick() {
         var isClicked: Boolean? = null
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule.setContent {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(CameraAction())),
@@ -587,7 +587,7 @@ class VSheetDragContentTest {
     @Test
     fun testOnFlipCameraClick() {
         var isClicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(FlipCameraAction())),
@@ -687,7 +687,7 @@ class VSheetDragContentTest {
     @Test
     fun testOnWhiteboardClick() {
         var isClicked = false
-        val description = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.setContent {
             VSheetDragContent(
                 callActions = ImmutableList(listOf(WhiteboardAction())),

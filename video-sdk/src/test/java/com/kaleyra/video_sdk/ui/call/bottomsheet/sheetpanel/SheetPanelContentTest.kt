@@ -109,7 +109,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -175,7 +175,7 @@ class SheetPanelContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithText(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -308,7 +308,7 @@ class SheetPanelContentTest {
                 onItemClick = { callAction = it }
             )
         }
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -360,7 +360,7 @@ class SheetPanelContentTest {
                 onItemClick = { callAction = it }
             )
         }
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

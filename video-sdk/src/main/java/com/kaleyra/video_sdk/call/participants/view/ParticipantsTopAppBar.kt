@@ -25,7 +25,7 @@ internal fun ParticipantsTopAppBar(
         modifier = modifier,
         onBackPressed = onBackPressed,
         isLargeScreen = isLargeScreen,
-        title = pluralStringResource(id = R.plurals.kaleyra_participants_component_participants, count = participantsCount, participantsCount),
+        title = pluralStringResource(id = R.plurals.kaleyra_strings_info_participants_number, count = participantsCount, participantsCount),
         scrollBehavior = scrollBehavior
     )
 }

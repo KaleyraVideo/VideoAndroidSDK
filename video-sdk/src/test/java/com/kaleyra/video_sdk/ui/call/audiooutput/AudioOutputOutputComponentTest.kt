@@ -73,7 +73,7 @@ class AudioOutputOutputComponentTest {
 
     @Test
     fun userClicksClose_onCloseClickInvoked() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isCloseClicked)
     }

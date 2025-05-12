@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.PhoneCallActivity
 import com.kaleyra.video_sdk.call.fileshare.model.mockSignDocumentFile
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
@@ -44,12 +45,15 @@ import com.kaleyra.video_sdk.call.signature.view.SignDocumentsEmptyContent
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsAppBar
 import com.kaleyra.video_sdk.call.signature.view.SignDocumentsEmptySearchContent
 import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
+import com.kaleyra.video_sdk.call.viewmodel.SharedViewModelStore
+import com.kaleyra.video_sdk.chat.PhoneChatActivity
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -80,7 +84,12 @@ internal fun SignDocumentsComponent(
         }
     }
 
-    val userMessagesViewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel. provideFactory(LocalAccessibilityManager. current, ::requestCollaborationViewModelConfiguration))
+    val userMessagesViewModel: UserMessagesViewModel = SharedViewModelStore.getViewModel(
+        kClass = UserMessagesViewModel::class,
+        viewModelFactory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration),
+        boundActivities = arrayOf(LocalContext.current.findActivity()::class.java.name)
+    )
+//    = viewModel(factory = UserMessagesViewModel. provideFactory(LocalAccessibilityManager. current, ::requestCollaborationViewModelConfiguration))
 
     SignDocumentsComponent(
         modifier = modifier,
@@ -193,7 +202,6 @@ internal fun SignDocumentEmptyComponentPreview() {
         )
     }
 }
-
 
 
 @Composable

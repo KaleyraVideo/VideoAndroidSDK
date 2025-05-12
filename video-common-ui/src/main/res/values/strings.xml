@@ -37,6 +37,56 @@
     <string name="kaleyra_string_info_user_file_uploaded">%1$s uploaded a file.</string>
     <string name="kaleyra_strings_info_download_file_title">Do you want to download the file?</string>
     <string name="kaleyra_strings_info_call_waiting_for_other_participants">Waiting for other participants…</string>
+    <string name="kaleyra_strings_info_user_answered_on_another_device">You have answered on another device.</string>
+    <string name="kaleyra_strings_action_back">Back</string>
+    <string name="kaleyra_strings_action_more">more</string>
+    <string name="kaleyra_strings_action_call">Call</string>
+    <string name="kaleyra_strings_info_generic_error">An error occurred</string>
+    <string name="kaleyra_strings_action_microphone">Microphone</string>
+    <string name="kaleyra_strings_action_camera">Camera</string>
+    <plurals name="kaleyra_strings_info_hardware_permission_error">
+        <item quantity="one">%1$s hardware permission error</item>
+        <item quantity="other">%1$s and %2$s hardware permission error</item>
+    </plurals>
+    <plurals name="kaleyra_strings_info_hardware_disabled">
+        <item quantity="one">%1$s is disabled</item>
+        <item quantity="other">%1$s and %2$s are disabled</item>
+    </plurals>
+    <string name="kaleyra_strings_action_cancel">Cancel</string>
+    <string name="kaleyra_strings_action_close">Close</string>
+    <string name="kaleyra_strings_info_ask_end_call_title">End call</string>
+    <string name="kaleyra_strings_info_ask_end_call_body">Are you sure you want to end the call?</string>
+    <string name="kaleyra_strings_action_increase">Increase</string>
+    <string name="kaleyra_strings_action_decrease">Decrease</string>
+    <string name="kaleyra_strings_action_zoom">Zoom</string>
+    <string name="kaleyra_strings_action_volume">Volume</string>
+    <string name="kaleyra_strings_action_dismiss">Dismiss</string>
+    <string name="kaleyra_strings_info_participant_invited">Invited</string>
+    <string name="kaleyra_strings_info_participant_status_offline">seen recently</string>
+    <string name="kaleyra_strings_info_participant_status_last_seen">last seen: %1$s</string>
+    <string name="kaleyra_strings_info_call_line_busy">Line busy</string>
+    <string name="kaleyra_strings_info_loading">Loading &#8230;</string>
+    <string name="kaleyra_strings_info_disable_microphone">Disable microphone</string>
+    <string name="kaleyra_strings_info_disable_participant_microphone">Disable %1$s\'s microphone</string>
+    <string name="kaleyra_strings_info_enable_microphone">Enable microphone</string>
+    <string name="kaleyra_strings_info_disable_camera">Disable camera</string>
+    <string name="kaleyra_strings_info_enable_camera">Enable camera</string>
+    <string name="kaleyra_strings_info_disable_torch">Disable torch</string>
+    <string name="kaleyra_strings_info_enable_torch">Enable torch</string>
+    <plurals name="kaleyra_strings_info_participants_number">
+        <item quantity="one">%d Participant</item>
+        <item quantity="other">%d Participants</item>
+    </plurals>
+    <string name="kaleyra_strings_description_show_participants">Show participants</string>
+    <string name="kaleyra_strings_info_participant">Participant</string>
+    <string name="kaleyra_strings_action_participants">Participants</string>
+    <string name="kaleyra_strings_action_flip_camera">Flip</string>
+    <string name="kaleyra_strings_action_board">Board</string>
+    <string name="kaleyra_strings_info_new_messages_number_short" translatable="false">+%1$d</string>
+    <string name="kaleyra_strings_info_new_messages_number">%1$d new messages</string>
+    <string name="kaleyra_strings_info_empty_chat_title">No message yet</string>
+    <string name="kaleyra_strings_info_now">Now</string>
+    <string name="kaleyra_strings_info_offline">waiting for network &#8230;</string>
 
     <!-- CALL PARTICIPANT REMOVED -->
 
@@ -64,9 +114,9 @@
     <!-- RECORDING UTTERANCE -->
 
     <string name="kaleyra_strings_description_call_recorded">This call will be recorded</string>
-    <string name="kaleyra_utterance_recording_failed">Recording failed. Hang up and retry</string>
-    <string name="kaleyra_utterance_recording_started">Recording starting now</string>
-    <string name="kaleyra_utterance_recording_stopped">Recording stopped</string>
+    <string name="kaleyra_strings_info_recording_failed">Recording failed. Hang up and retry</string>
+    <string name="kaleyra_strings_info_recording_started">Recording started</string>
+    <string name="kaleyra_string_info_recording_stopped">Recording stopped</string>
 
     <!-- SIGNATURE -->
     <string name="kaleyra_signature_notification_channel_name" translatable="false">Signature</string>

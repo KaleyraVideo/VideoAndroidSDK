@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_sdk.call.appbar.model.CallAppBarUiState
 import com.kaleyra.video_sdk.call.appbar.viewmodel.CallAppBarViewModel
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
@@ -42,6 +43,7 @@ import com.kaleyra.video_sdk.call.whiteboard.viewmodel.WhiteboardViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject

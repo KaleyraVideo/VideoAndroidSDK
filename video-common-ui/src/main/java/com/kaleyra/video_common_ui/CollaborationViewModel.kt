@@ -116,7 +116,7 @@ abstract class CollaborationViewModel(configure: suspend () -> Configuration) : 
  * Request a new Configuration via KaleyraVideoService implementation
  * @return CollaborationViewModel.Configuration returns the required configuration if the procedure succeed, a failure error otherwise.
  */
-suspend fun requestCollaborationViewModelConfiguration(): CollaborationViewModel.Configuration {
+fun requestCollaborationViewModelConfiguration(): CollaborationViewModel.Configuration {
     requestConfiguration()
     return if (KaleyraVideo.isConfigured) {
         CollaborationViewModel.Configuration.Success(

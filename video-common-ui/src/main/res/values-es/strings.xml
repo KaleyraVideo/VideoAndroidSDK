@@ -43,9 +43,9 @@
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_call">Llamada entrante</string>
     <string name="kaleyra_user_data_consent_agreement_notification_title_incoming_message">Tienes un nuevo mensaje</string>
     <string name="kaleyra_strings_description_call_recorded">Esta llamada será grabada</string>
-    <string name="kaleyra_utterance_recording_failed">Error al grabar. Cuelga y vuelve a intentarlo</string>
-    <string name="kaleyra_utterance_recording_started">Grabación iniciada ahora</string>
-    <string name="kaleyra_utterance_recording_stopped">Grabación detenida</string>
+    <string name="kaleyra_strings_info_recording_failed">Error al grabar. Cuelga y vuelve a intentarlo</string>
+    <string name="kaleyra_strings_info_recording_started">Grabación iniciada</string>
+    <string name="kaleyra_string_info_recording_stopped">Grabación detenida</string>
     <string name="kaleyra_strings_info_yesterday">ayer</string>
     <plurals name="kaleyra_call_participant_muted_by_admin">
         <item quantity="one">%s te ha silenciado.\nToque el botón del micrófono para activar el sonido.</item>
@@ -63,6 +63,56 @@
     <string name="kaleyra_strings_info_call_no_answer">Sin respuesta.</string>
     <string name="kaleyra_strings_info_call_ended">Llamada finalizada</string>
     <string name="kaleyra_strings_action_start_screen_share">Pantalla</string>
+    <string name="kaleyra_strings_info_user_answered_on_another_device">Has respondido en otro dispositivo.</string>
+    <string name="kaleyra_strings_action_back">Atrás</string>
+    <string name="kaleyra_strings_action_more">más</string>
+    <string name="kaleyra_strings_action_call">Llamar</string>
+    <string name="kaleyra_strings_info_generic_error">Se produjo un error</string>
+    <plurals name="kaleyra_strings_info_hardware_permission_error">
+        <item quantity="one">Error de permiso de hardware para %1$s</item>
+        <item quantity="other">Error de permiso de hardware para %1$s y %2$s</item>
+    </plurals>
+    <string name="kaleyra_strings_action_microphone">Micrófono</string>
+    <string name="kaleyra_strings_action_camera">Cámara</string>
+    <plurals name="kaleyra_strings_info_hardware_disabled">
+        <item quantity="one">%1$s está desactivado</item>
+        <item quantity="other">%1$s y %2$s están desactivados</item>
+    </plurals>
+    <string name="kaleyra_strings_action_cancel">Cancelar</string>
+    <string name="kaleyra_strings_action_close">Cerrar</string>
+    <string name="kaleyra_strings_info_ask_end_call_title">Finalizar llamada</string>
+    <string name="kaleyra_strings_info_ask_end_call_body">¿Está seguro de que desea finalizar la llamada?</string>
+    <string name="kaleyra_strings_action_increase">Aumentar</string>
+    <string name="kaleyra_strings_action_decrease">Disminuir</string>
+    <string name="kaleyra_strings_action_zoom">Zoom</string>
+    <string name="kaleyra_strings_action_volume">Volumen</string>
+    <string name="kaleyra_strings_action_dismiss">Descartar</string>
+    <string name="kaleyra_strings_info_participant_invited">Invitados</string>
+    <string name="kaleyra_strings_info_participant_status_offline">visto recientemente</string>
+    <string name="kaleyra_strings_info_participant_status_last_seen">última vez: %1$s</string>
+    <string name="kaleyra_strings_info_call_line_busy">Linea ocupada</string>
+    <string name="kaleyra_strings_info_loading">Cargando…</string>
+    <string name="kaleyra_strings_info_disable_microphone">Desactivar micrófono</string>
+    <string name="kaleyra_strings_info_disable_participant_microphone">Desactivar el micrófono de %1$s</string>
+    <string name="kaleyra_strings_info_enable_microphone">Activar micrófono</string>
+    <string name="kaleyra_strings_info_disable_camera">Desactivar cámara</string>
+    <string name="kaleyra_strings_info_enable_camera">Activar cámara</string>
+    <string name="kaleyra_strings_info_disable_torch">Desactivar linterna</string>
+    <string name="kaleyra_strings_info_enable_torch">Activar linterna</string>
+    <plurals name="kaleyra_strings_info_participants_number">
+        <item quantity="one">%d Participante</item>
+        <item quantity="other">%d Participantes</item>
+    </plurals>
+    <string name="kaleyra_strings_description_show_participants">Mostrar participantes</string>
+    <string name="kaleyra_strings_info_participant">Partícipe</string>
+    <string name="kaleyra_strings_action_participants">Participantes</string>
+    <string name="kaleyra_strings_action_flip_camera">Cambiar</string>
+    <string name="kaleyra_strings_action_board">Pizarra</string>
+    <string name="kaleyra_strings_info_new_messages_number">%1$d nuevos mensajes</string>
+    <string name="kaleyra_strings_info_empty_chat_title">Aún no hay mensajes</string>
+    <string name="kaleyra_strings_info_now">Ahora</string>
+    <string name="kaleyra_strings_info_offline">esperando red…</string>
+
 
     <!-- SIGNATURE -->
     <string name="kaleyra_signature_notification_action_sign">Firma</string>

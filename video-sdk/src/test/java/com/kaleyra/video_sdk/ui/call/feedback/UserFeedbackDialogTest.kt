@@ -21,7 +21,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -159,7 +158,7 @@ class UserFeedbackDialogTest {
                 onDismiss = { isDismissed = true }
             )
         }
-        val cancel = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        val cancel = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.onNodeWithText(cancel).performClick()
         TestCase.assertEquals(true, isDismissed)
     }

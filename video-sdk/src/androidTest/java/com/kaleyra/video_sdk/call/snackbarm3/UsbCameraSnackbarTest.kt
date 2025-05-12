@@ -70,7 +70,7 @@ class UsbCameraSnackbarM3Test {
     fun testUsbConnectedSnackbarDismissClicked() {
         var dismissClicked = false
         composeTestRule.setContent { UsbConnectedSnackbarM3("name", { dismissClicked = true }) }
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)
     }
@@ -79,7 +79,7 @@ class UsbCameraSnackbarM3Test {
     fun testUsbDisconnectedSnackbarDismissClicked() {
         var dismissClicked = false
         composeTestRule.setContent { UsbDisconnectedSnackbarM3({ dismissClicked = true }) }
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)
     }
@@ -88,7 +88,7 @@ class UsbCameraSnackbarM3Test {
     fun testUsbNotSupportedSnackbarDismissClicked() {
         var dismissClicked = false
         composeTestRule.setContent { UsbNotSupportedSnackbarM3({ dismissClicked = true }) }
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)
     }

@@ -18,7 +18,6 @@ package com.kaleyra.video_sdk.common.snackbar.view
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaleyra.video_sdk.R
@@ -52,7 +51,7 @@ fun RecordingErrorSnackbarM3(
 ) {
     val resources = LocalContext.current.resources
     UserMessageErrorSnackbarM3(
-        message = resources.getString(R.string.kaleyra_recording_failed_message),
+        message = resources.getString(R.string.kaleyra_strings_info_recording_failed),
         onDismissClick = onDismissClick
     )
 }

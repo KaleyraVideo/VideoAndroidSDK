@@ -29,6 +29,8 @@ import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import com.kaleyra.video_common_ui.ChatActivity
 import com.kaleyra.video_common_ui.NavBackComponent
+import com.kaleyra.video_common_ui.notification.NotificationPresentationHandler
+import com.kaleyra.video_common_ui.notification.model.Notification
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.goToPreviousOrMainActivity
 import com.kaleyra.video_sdk.R
@@ -37,13 +39,15 @@ import com.kaleyra.video_sdk.chat.screen.ChatScreen
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
 import com.kaleyra.video_utils.ContextRetainer
 
-internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
+internal class PhoneChatActivity : ChatActivity(), ServiceConnection, NotificationPresentationHandler {
 
     override val viewModel: PhoneChatViewModel by viewModels {
         PhoneChatViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     }
 
     private val isAndroid12 = Build.VERSION.SDK_INT == Build.VERSION_CODES.S || Build.VERSION.SDK_INT == Build.VERSION_CODES.S.inc()
+
+    override var notificationPresentationHandler: (Notification) -> Notification.PresentationMode = { Notification.PresentationMode.LowPriority }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +76,7 @@ internal class PhoneChatActivity : ChatActivity(), ServiceConnection {
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (isAndroid12) runCatching { unbindService(this) }

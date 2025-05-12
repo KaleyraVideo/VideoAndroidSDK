@@ -56,7 +56,7 @@ class WhiteboardOfflineContentTest {
 
     @Test
     fun offlineContentTextDisplayed() {
-        val title = composeTestRule.activity.getString(R.string.kaleyra_error_title)
+        val title = composeTestRule.activity.getString(R.string.kaleyra_strings_info_generic_error)
         val subtitle = composeTestRule.activity.getString(R.string.kaleyra_error_subtitle)
         val reload = composeTestRule.activity.getString(R.string.kaleyra_error_button_reload)
         composeTestRule.onNodeWithText(title).assertIsDisplayed()

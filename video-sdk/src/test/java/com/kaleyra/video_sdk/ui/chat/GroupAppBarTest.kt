@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -123,7 +122,7 @@ class GroupAppBarTest {
     @Test
     fun chatStateNetworkOffline_waitingForNetworkDisplayed() {
         connectionState = ConnectionState.Offline
-        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_chat_state_waiting_for_network)
+        val waitingForNetwork = composeTestRule.activity.getString(R.string.kaleyra_strings_info_offline)
         getSubtitle().assertTextEquals(waitingForNetwork)
     }
 

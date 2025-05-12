@@ -17,7 +17,7 @@ internal fun ZoomAction(
     enabled: Boolean = true,
     label: Boolean = true
 ) {
-    val text = stringResource(id = R.string.kaleyra_call_sheet_zoom)
+    val text = stringResource(id = R.string.kaleyra_strings_action_zoom)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_stream_zoom),

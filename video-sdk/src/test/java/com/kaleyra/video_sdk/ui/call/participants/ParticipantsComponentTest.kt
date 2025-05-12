@@ -123,13 +123,13 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantCountIsDisplayed() {
         participantsCount = 4
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_participants_component_participants, 4, 4)
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participants_number, 4, 4)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun testCloseIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(text).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
     }
@@ -193,14 +193,14 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantTextIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock))
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_participant)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun streamIsMineAndAudioIsDisabled_enableMicButtonIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -208,7 +208,7 @@ class ParticipantsComponentTest {
     @Test
     fun streamIsMineAndAudioIsEnabled_disableMicButtonIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -216,7 +216,7 @@ class ParticipantsComponentTest {
     @Test
     fun iAmAdminAndAudioIsDisabled_enableMicButtonIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -224,7 +224,7 @@ class ParticipantsComponentTest {
     @Test
     fun iAmAdminAndAudioIsEnabled_disableMicButtonIsDisplayed() {
         streams = ImmutableList(listOf(streamUiMock.copy(isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
         composeTestRule.onNodeWithContentDescription(description).assertIsDisplayed()
     }
@@ -390,7 +390,7 @@ class ParticipantsComponentTest {
 
     @Test
     fun testOnCloseClick() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(text).performClick()
         Assert.assertEquals(true, isCloseClicked)
     }
@@ -418,7 +418,7 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantItemOnDisableMicClick() {
         streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = true))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
         Assert.assertEquals(true, isStreamMicDisabled)
@@ -427,7 +427,7 @@ class ParticipantsComponentTest {
     @Test
     fun testParticipantItemOnEnableMicClick() {
         streams = ImmutableList(listOf(streamUiMock.copy(id = "customStreamId", isMine = true, audio = AudioUi(id = "id", isEnabled = false))))
-        val description = composeTestRule.activity.getString(R.string.kaleyra_participants_component_enable_microphone_description, streamUiMock.userInfo!!.username)
+        val description = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         composeTestRule.onNodeWithContentDescription(description).performClick()
         Assert.assertEquals("customStreamId", clickedStreamId)
         Assert.assertEquals(false, isStreamMicDisabled)
@@ -572,14 +572,14 @@ class ParticipantsComponentTest {
     @Test
     fun invitedParticipantsIsNotEmpty_invitedTitleIsDisplayed() {
         invited = ImmutableList(listOf("id1", "id2"))
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant_invited)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test
     fun invitedParticipantsIsEmpty_invitedTitleDoesNotExists() {
         invited = ImmutableList()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_users_invited)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant_invited)
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 

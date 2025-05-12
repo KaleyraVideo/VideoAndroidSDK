@@ -17,9 +17,6 @@
 package com.kaleyra.video_sdk.ui.call.screenshare
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -40,7 +37,6 @@ import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -113,7 +109,7 @@ class ScreenShareComponentTest {
     @Test
     fun userClicksClose_onCloseClickInvoked() {
         var isCloseClicked = false
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.setContent {
             ScreenShareComponent(
                 uiState = ScreenShareUiState(),

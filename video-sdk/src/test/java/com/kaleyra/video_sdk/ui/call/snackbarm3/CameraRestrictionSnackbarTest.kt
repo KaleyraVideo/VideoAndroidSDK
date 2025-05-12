@@ -47,7 +47,7 @@ class CameraRestrictionSnackbarM3Test {
     fun testCameraRestrictionSnackbarDismissClicked() {
         var dismissClicked = false
         composeTestRule.setContent { CameraRestrictionSnackbarM3({ dismissClicked = true }) }
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         Assert.assertEquals(true, dismissClicked)
     }

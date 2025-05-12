@@ -34,7 +34,7 @@ class PinScreenshareSnackbarTest {
     fun testPinScreenshareSnackbarDismissNotShown() {
         val userDisplayName = "userDisplayName"
         composeTestRule.setContent { PinScreenshareSnackbarM3(userDisplayName, {}) }
-        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.resources.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsNotDisplayed()
     }
 

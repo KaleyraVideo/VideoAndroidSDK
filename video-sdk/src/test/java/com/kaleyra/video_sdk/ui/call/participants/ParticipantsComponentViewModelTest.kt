@@ -117,7 +117,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo!!.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.toggleMic(any()) }

@@ -265,7 +265,7 @@ class HCallScreenTest {
         )
 
         val text =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -287,7 +287,7 @@ class HCallScreenTest {
         )
 
         val text =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -309,7 +309,7 @@ class HCallScreenTest {
         )
 
         val text =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -331,7 +331,7 @@ class HCallScreenTest {
         )
 
         val text =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -347,7 +347,7 @@ class HCallScreenTest {
             actionList = listOf(FlipCameraAction()).toImmutableList()
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -546,7 +546,7 @@ class HCallScreenTest {
             actionList = listOf(WhiteboardAction()).toImmutableList()
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -563,7 +563,7 @@ class HCallScreenTest {
             onModularComponentDisplayed = { componentDisplayed = it }
         )
 
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(ModularComponent.Whiteboard, componentDisplayed)
     }
@@ -640,7 +640,7 @@ class HCallScreenTest {
         )
 
         val micText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -666,7 +666,7 @@ class HCallScreenTest {
         )
 
         val micText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -692,7 +692,7 @@ class HCallScreenTest {
         )
 
         val cameraText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_camera)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -718,7 +718,7 @@ class HCallScreenTest {
         )
 
         val cameraText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_camera)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_camera)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -740,7 +740,7 @@ class HCallScreenTest {
             actionList = (actions + FlipCameraAction()).toImmutableList()
         )
 
-        val flipText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val flipText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -880,7 +880,7 @@ class HCallScreenTest {
         )
 
         val whiteboardText =
-            composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+            composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -923,7 +923,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -942,7 +942,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -961,7 +961,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -980,7 +980,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -999,7 +999,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1018,7 +1018,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule
             .onNodeWithContentDescription(closeText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1087,7 +1087,7 @@ class HCallScreenTest {
             onStreamSelected = { selectedStream = null }
         )
 
-        val cancelText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val cancelText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule
             .onNodeWithContentDescription(cancelText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1148,7 +1148,7 @@ class HCallScreenTest {
             onBackPressed = { clicked = true }
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_back)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_back)
         composeTestRule
             .onNodeWithContentDescription(text, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -1231,7 +1231,7 @@ class HCallScreenTest {
             onModularComponentChange = { component = it }
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_description_show_participants)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         assertEquals(ModularComponent.Participants, component)
@@ -1272,7 +1272,7 @@ class HCallScreenTest {
 
         composeTestRule.setUpHCallScreen(modularComponent = ModularComponent.Whiteboard)
 
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
 
         userMessageFlow.value = ImmutableList(listOf(PinScreenshareMessage("streamId", "username")))

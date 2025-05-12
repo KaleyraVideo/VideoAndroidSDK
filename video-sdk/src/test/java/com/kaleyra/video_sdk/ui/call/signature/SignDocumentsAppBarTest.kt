@@ -74,7 +74,7 @@ class SignDocumentsAppBarTest {
 
     @Test
     fun userClicksCollapse_backPressedInvoked() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)
@@ -122,7 +122,7 @@ class SignDocumentsAppBarTest {
     @Test
     fun textInputInserted_backPressed_queryTextCleared() {
         val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
-        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
         val query = "test"
         composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
@@ -133,7 +133,7 @@ class SignDocumentsAppBarTest {
     @Test
     fun searchBarShown_backPressed_searchBarHidden() {
         val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
-        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
         val query = "test"
         composeTestRule.onNodeWithText(searchDescription).performTextInput(query)
@@ -144,7 +144,7 @@ class SignDocumentsAppBarTest {
     @Test
     fun userClickCloseOnLargeScreen_backPressedInvoked() {
         isLargeScreen = true
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)

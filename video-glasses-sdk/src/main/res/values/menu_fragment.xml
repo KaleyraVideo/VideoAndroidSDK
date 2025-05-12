@@ -59,7 +59,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Microphone" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_microphone</item>
+        <item name="android:text">@string/kaleyra_strings_info_enable_microphone</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.Camera" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -67,7 +67,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Camera" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_camera</item>
+        <item name="android:text">@{@plurals/kaleyra_strings_info_enable_camera(1, count)}</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.SwitchCamera" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -75,7 +75,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.SwitchCamera" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_switch_camera</item>
+        <item name="android:text">@string/kaleyra_strings_action_flip_camera</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.Volume" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -83,7 +83,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Volume" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_volume</item>
+        <item name="android:text">@string/kaleyra_strings_action_volume</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.Zoom" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -91,7 +91,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Zoom" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_zoom</item>
+        <item name="android:text">@string/kaleyra_strings_action_zoom</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.FlashLight" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -99,7 +99,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.FlashLight" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_flashlight</item>
+        <item name="android:text">@string/kaleyra_strings_info_disable_torch</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.Participants" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -107,7 +107,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Participants" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_participants</item>
+        <item name="android:text">@string/kaleyra_strings_action_participants</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem.Chat" parent="KaleyraCollaborationSuiteUI.Glass.RecyclerViewItem">
@@ -131,7 +131,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem.Whiteboard" parent="KaleyraCollaborationSuiteUI.TextView.GlassRecyclerViewItem">
-        <item name="android:text">@string/kaleyra_glass_menu_whiteboard</item>
+        <item name="android:text">@string/kaleyra_strings_action_board</item>
     </style>
 
     <!-- BOTTOM NAVIGATION BAR -->
@@ -147,12 +147,12 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem">
-        <item name="android:contentDescription">@string/kaleyra_glass_browse</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_more</item>
         <item name="android:clickable">true</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SwipeMenu" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_browse</item>
+        <item name="android:text">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem">
@@ -161,12 +161,12 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem">
-        <item name="android:contentDescription">@string/kaleyra_glass_close</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_close</item>
         <item name="android:clickable">true</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemMenu" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_close</item>
+        <item name="android:text">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem">
@@ -216,12 +216,12 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.ThirdItem.VoiceCommand">
-        <item name="android:contentDescription">@string/kaleyra_glass_close</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_close</item>
         <item name="android:clickable">true</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemMenu.VoiceCommand" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel.ThirdItemMenu">
-        <item name="android:text">@string/kaleyra_glass_close</item>
+        <item name="android:text">@string/kaleyra_strings_action_close</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand.Menu" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.SecondItem.VoiceCommand">

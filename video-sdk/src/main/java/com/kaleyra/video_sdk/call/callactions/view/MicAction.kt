@@ -1,13 +1,19 @@
 package com.kaleyra.video_sdk.call.callactions.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -24,7 +30,11 @@ internal fun MicAction(
     CallToggleAction(
         modifier = modifier,
         icon = painterResource(id = if (checked) R.drawable.ic_kaleyra_call_sheet_enable_microphone else R.drawable.ic_kaleyra_call_sheet_disable_microphone),
-        contentDescription = stringResource(id = if (checked) R.string.kaleyra_call_sheet_description_enable_microphone else R.string.kaleyra_call_sheet_description_disable_microphone),
+        contentDescription = stringResource(
+            id =
+                if (checked) R.string.kaleyra_strings_info_enable_microphone
+                else R.string.kaleyra_strings_info_disable_microphone
+        ),
         checked = checked,
         onCheckedChange = onCheckedChange,
         label = if (label) {
@@ -34,12 +44,17 @@ internal fun MicAction(
         enabled = enabled,
         badgePainter = when {
             warning -> painterResource(R.drawable.ic_kaleyra_call_sheet_warning)
-            error -> painterResource(R.drawable.ic_kaleyra_call_sheet_error)
+            error -> painterResource(R.drawable.ic_kaleyra_hardware_error)
             else -> null
         },
-        badgeDescription =  when {
+        badgeDescription = when {
             warning -> stringResource(R.string.kaleyra_call_sheet_description_mic_warning)
-            error -> stringResource(R.string.kaleyra_call_sheet_description_mic_error)
+            error -> pluralStringResource(
+                id = R.plurals.kaleyra_strings_info_hardware_permission_error,
+                count = 1,
+                stringResource(R.string.kaleyra_strings_action_microphone)
+            )
+
             else -> null
         },
         badgeBackgroundColor = if (warning) KaleyraTheme.colors.warning else MaterialTheme.colorScheme.error,
@@ -74,7 +89,10 @@ internal fun MicActionWarningPreview() {
 @Composable
 internal fun MicActionErrorPreview() {
     KaleyraTheme {
-        Surface {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.size(70.dp)) {
             MicAction(false, {}, error = true)
         }
     }

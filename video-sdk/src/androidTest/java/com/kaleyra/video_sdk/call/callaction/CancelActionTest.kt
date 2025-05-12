@@ -21,7 +21,7 @@ class CancelActionTest {
 
     @Test
     fun labelFalse_labelDoesNotExists() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.setContent {
             CancelAction(
                 label = false,
@@ -33,7 +33,7 @@ class CancelActionTest {
 
     @Test
     fun labelTrue_labelDoesIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.setContent {
             CancelAction(
                 label = true,
@@ -45,7 +45,7 @@ class CancelActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         var clicked = false
         composeTestRule.setContent {
             CancelAction(onClick = { clicked = true })
@@ -57,7 +57,7 @@ class CancelActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.setContent {
             CancelAction(
                 enabled = false,

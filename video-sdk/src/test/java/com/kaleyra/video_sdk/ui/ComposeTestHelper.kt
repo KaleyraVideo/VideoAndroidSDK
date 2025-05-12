@@ -118,7 +118,7 @@ internal fun SemanticsNodeInteraction.assertBottomPositionInRootIsEqualTo(
 }
 
 internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.findBackButton(): SemanticsNodeInteraction {
-    val back = activity.getString(R.string.kaleyra_back)
+    val back = activity.getString(R.string.kaleyra_strings_action_back)
     return onNodeWithContentDescription(back)
 }
 internal fun <T: ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.findAvatar(): SemanticsNodeInteraction {

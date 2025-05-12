@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.callactions.view.CameraAction
 import com.kaleyra.video_sdk.call.callactions.view.MicAction
 import org.junit.Assert
 import org.junit.Rule
@@ -25,7 +24,7 @@ class MicActionTest {
 
     @Test
     fun testOnCheckedChangeTrue() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_disable_microphone)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_microphone)
         var checked = false
         composeTestRule.setContent {
             MicAction(
@@ -40,7 +39,7 @@ class MicActionTest {
 
     @Test
     fun testOnCheckedChangeFalse() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         var checked = true
         composeTestRule.setContent {
             MicAction(
@@ -94,7 +93,11 @@ class MicActionTest {
 
     @Test
     fun testErrorBadge() {
-        val badgeDescr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_mic_error)
+        val badgeDescr = with(composeTestRule.activity.resources) {
+            getQuantityString(R.plurals.kaleyra_strings_info_hardware_permission_error,
+                1,
+                getString(R.string.kaleyra_strings_action_microphone))
+        }
         composeTestRule.setContent {
             MicAction(
                 onCheckedChange = {},
@@ -107,7 +110,7 @@ class MicActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val descr = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_enable_microphone)
+        val descr = composeTestRule.activity.getString(R.string.kaleyra_strings_info_enable_microphone)
         composeTestRule.setContent {
             MicAction(
                 enabled = false,

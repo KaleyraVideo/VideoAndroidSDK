@@ -6,15 +6,26 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
+import com.kaleyra.video_sdk.call.PhoneCallActivity
+import com.kaleyra.video_sdk.call.viewmodel.SharedViewModelStore
+import com.kaleyra.video_sdk.chat.PhoneChatActivity
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.snackbar.view.StackedUserMessageComponent
@@ -26,6 +37,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -35,7 +47,11 @@ import kotlin.random.Random
 @Composable
 internal fun StackedUserMessageComponent(
     modifier: Modifier = Modifier,
-    viewModel: UserMessagesViewModel = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
+    viewModel: UserMessagesViewModel = SharedViewModelStore.getViewModel(
+        kClass = UserMessagesViewModel::class,
+        viewModelFactory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration),
+        boundActivities = arrayOf(LocalContext.current.findActivity()::class.java.name)
+    ),//= viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
     onActionClick: (UserMessage) -> Unit
 ) {
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(ImmutableList())
@@ -63,7 +79,7 @@ fun StackedUserMessageSnackbarHandlerPreview() = KaleyraTheme {
         CameraRestrictionMessage(),
         AudioConnectionFailureMessage.Generic,
         AudioConnectionFailureMessage.InSystemCall,
-        PinScreenshareMessage("id","User")
+        PinScreenshareMessage("id", "User")
     )
 
     val alerts = listOf(
@@ -91,7 +107,7 @@ fun StackedUserMessageSnackbarHandlerPreview() = KaleyraTheme {
         if (isPreview) return@LaunchedEffect
         timer(period = 2500) {
             scope.launch {
-                postAlerts.emit(alerts.subList(0, Random.nextInt(alerts.size+1)))
+                postAlerts.emit(alerts.subList(0, Random.nextInt(alerts.size + 1)))
             }
         }
     }

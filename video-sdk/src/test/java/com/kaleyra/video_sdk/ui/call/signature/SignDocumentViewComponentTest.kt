@@ -5,12 +5,14 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_sdk.call.fileshare.model.mockSignDocumentFile
 import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
 import com.kaleyra.video_sdk.call.signature.view.SignViewTag
 import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -37,6 +39,7 @@ class SignDocumentViewComponentTest {
 
     @Before
     fun setUp() {
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
         every { signDocumentViewModel.uiState } returns uiState
         composeTestRule.setContent {
             SignDocumentViewComponent(
@@ -61,7 +64,7 @@ class SignDocumentViewComponentTest {
 
     @Test
     fun backButtonClicked_signCanceled() {
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.resources.getString(com.kaleyra.video_sdk.R.string.kaleyra_close)).performClick()
+        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.resources.getString(com.kaleyra.video_sdk.R.string.kaleyra_strings_action_close)).performClick()
         verify { signDocumentViewModel.cancelSign(mockSignDocumentFile) }
         Assert.assertTrue(onDismissed)
     }

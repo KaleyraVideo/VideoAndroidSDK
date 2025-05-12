@@ -65,9 +65,9 @@ internal fun CallStateUi.toTextRef(call: CallUI?): TextRef? {
         CallStateUi.Ringing -> TextRef.PluralResource(R.plurals.kaleyra_call_incoming_status_ringing, call.participants.value.others.size)
         CallStateUi.RingingRemotely -> TextRef.StringResource(R.string.kaleyra_call_status_ringing)
         CallStateUi.Reconnecting -> TextRef.StringResource(R.string.kaleyra_strings_info_status_connecting)
-        CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice -> TextRef.StringResource(R.string.kaleyra_call_status_answered_on_other_device)
+        CallStateUi.Disconnected.Ended.AnsweredOnAnotherDevice -> TextRef.StringResource(R.string.kaleyra_strings_info_user_answered_on_another_device)
         CallStateUi.Disconnected.Ended.Declined -> TextRef.StringResource(R.string.kaleyra_strings_info_call_declined)
-        CallStateUi.Disconnected.Ended.LineBusy -> TextRef.StringResource(R.string.kaleyra_call_status_ended_line_busy)
+        CallStateUi.Disconnected.Ended.LineBusy -> TextRef.StringResource(R.string.kaleyra_strings_info_call_line_busy)
         CallStateUi.Disconnected.Ended.CurrentUserInAnotherCall -> TextRef.StringResource(R.string.kaleyra_current_user_busy)
         CallStateUi.Disconnected.Ended.Timeout -> TextRef.StringResource(R.string.kaleyra_strings_info_call_no_answer)
         CallStateUi.Disconnected.Ended.Error,

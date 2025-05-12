@@ -57,7 +57,7 @@ class SignDocumentViewComponentTest {
 
     @Test
     fun backButtonClicked_signCanceled() {
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.resources.getString(com.kaleyra.video_sdk.R.string.kaleyra_close)).performClick()
+        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.resources.getString(com.kaleyra.video_sdk.R.string.kaleyra_strings_action_close)).performClick()
         verify { signDocumentViewModel.cancelSign(mockSignDocumentFile) }
         Assert.assertTrue(onDismissed)
     }

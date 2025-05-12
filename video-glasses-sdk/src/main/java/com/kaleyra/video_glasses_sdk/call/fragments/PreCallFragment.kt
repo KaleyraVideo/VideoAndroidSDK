@@ -40,9 +40,11 @@ internal abstract class PreCallFragment : ConnectingFragment(),
 
             repeatOnStarted {
                 viewModel.participants.onEach { participants ->
-                    kaleyraCounter.text = resources.getString(
-                        R.string.kaleyra_glass_n_of_participants_pattern,
-                        participants.others.size + 1
+                    val participantsCount = participants.others.size + 1
+                    kaleyraCounter.text = resources.getQuantityString(
+                        R.plurals.kaleyra_strings_info_participants_number,
+                        participantsCount,
+                        participantsCount
                     )
 
                     val nParticipants = participants.others.count() + 1

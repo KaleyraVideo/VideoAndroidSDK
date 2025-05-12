@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_common_ui
 
+import android.os.Bundle
 import androidx.annotation.ColorInt
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallUIButtonsProvider
@@ -141,10 +142,10 @@ class CallUI(
     /**
      * Show the call ui
      */
-    fun show(): Boolean {
+    fun show(intentExtras: Bundle? = null): Boolean {
         val isInForeground = AppLifecycle.isInForeground.value
         if (isInForeground) {
-            KaleyraUIProvider.startCallActivity(activityClazz)
+            KaleyraUIProvider.startCallActivity(activityClazz, intentExtras)
         }
         return isInForeground
     }

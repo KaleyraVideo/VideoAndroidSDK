@@ -64,7 +64,7 @@ class FileShareAppBarTest {
 
     @Test
     fun userClicksCollapse_backPressedInvoked() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)
@@ -79,7 +79,7 @@ class FileShareAppBarTest {
     @Test
     fun userClickCloseOnLargeScreen_backPressedInvoked() {
         isLargeScreen = true
-        val close = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)

@@ -24,7 +24,7 @@ class FlipCameraActionTest {
 
     @Test
     fun testButtonTextIsNotDisplayedOnDefaultWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             FlipCameraAction(
                 onClick = {}
@@ -35,7 +35,7 @@ class FlipCameraActionTest {
 
     @Test
     fun testLabelIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             FlipCameraAction(
                 label = true,
@@ -47,7 +47,7 @@ class FlipCameraActionTest {
 
     @Test
     fun testButtonTextIsDisplayedOnWideWidth() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             FlipCameraAction(
                 modifier = Modifier.width(200.dp),
@@ -59,7 +59,7 @@ class FlipCameraActionTest {
 
     @Test
     fun testOnClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         var clicked = false
         composeTestRule.setContent {
             FlipCameraAction(onClick = { clicked = true })
@@ -71,7 +71,7 @@ class FlipCameraActionTest {
 
     @Test
     fun testClickOnButtonDisabled() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_flip_camera)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_flip_camera)
         composeTestRule.setContent {
             FlipCameraAction(
                 enabled = false,

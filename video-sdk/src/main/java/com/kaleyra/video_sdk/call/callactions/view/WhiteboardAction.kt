@@ -18,7 +18,7 @@ internal fun WhiteboardAction(
     label: Boolean = false,
     badgeCount: Int = 0
 ) {
-    val text = stringResource(id = R.string.kaleyra_call_sheet_whiteboard)
+    val text = stringResource(id = R.string.kaleyra_strings_action_board)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_whiteboard),

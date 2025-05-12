@@ -68,7 +68,7 @@ class CallAppBarComponentTest {
 
     @Test
     fun userClicksBack_onBackPressedInvoked() {
-        val close = composeTestRule.activity.getString(R.string.kaleyra_back)
+        val close = composeTestRule.activity.getString(R.string.kaleyra_strings_action_back)
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)
@@ -173,7 +173,7 @@ class CallAppBarComponentTest {
 
     @Test
     fun userClicksParticipantsButton_onParticipantClickInvoked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_description_show_participants)
         composeTestRule.onNodeWithContentDescription(text).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(text).performClick()
         assert(isParticipantButtonClicked)

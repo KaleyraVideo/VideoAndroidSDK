@@ -17,7 +17,7 @@ internal fun FlipCameraAction(
     enabled: Boolean = true,
     label: Boolean = false
 ) {
-    val text = stringResource(id = R.string.kaleyra_call_sheet_flip_camera)
+    val text = stringResource(id = R.string.kaleyra_strings_action_flip_camera)
     CallAction(
         modifier = modifier,
         icon = painterResource(id = R.drawable.ic_kaleyra_call_sheet_flip_camera),

@@ -119,7 +119,7 @@ internal class GlassChatNotificationActivity : AppCompatActivity(), com.kaleyra.
         kaleyraMessage.text = null
         kaleyraMessage.maxLines = 0
         kaleyraTime.visibility = View.GONE
-        kaleyraTitle.text = resources.getString(R.string.kaleyra_glass_new_messages_pattern, counter)
+        kaleyraTitle.text = resources.getString(R.string.kaleyra_strings_info_new_messages_number, counter)
         if (sendersId.contains(userId)) return@with
         sendersId.add(userId)
         kaleyraAvatars.addAvatar(userId, username, avatar)

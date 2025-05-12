@@ -92,7 +92,7 @@ object CallUserMessagesProvider {
      * @param scope CoroutineScope optional coroutine scope in which to execute the observing
      */
     fun start(call: CallUI, scope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()) + CoroutineName("CallUserMessagesProvider")) {
-        if (coroutineScope != null) dispose()
+        if (coroutineScope != null) return
         coroutineScope = scope
 
         userMessageChannel.sendRecordingEvents(call, scope)
@@ -106,6 +106,13 @@ object CallUserMessagesProvider {
         _alertMessages.sendAmIAloneEvents(call, scope)
         _alertMessages.sendWaitingForOtherParticipantsEvents(call, scope)
         _alertMessages.sendCustomMessages(call, scope)
+
+        call.state
+            .takeWhile { it !is Call.State.Disconnected.Ended }
+            .onCompletion {
+                dispose()
+            }
+            .launchIn(scope)
     }
 
     /**

@@ -3,10 +3,9 @@ package com.kaleyra.video_sdk.call.utils
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
-import android.os.IBinder
 
 /**
- * Fixes an issue in adroid 12 when a task cannot be resumed from an activity that has been reduced into pip and then resumed fullscreen:
+ * Fixes an issue in android 12 when a task cannot be resumed from an activity that has been reduced into pip and then resumed fullscreen:
  * https://issuetracker.google.com/issues/207397151#comment17
  */
 internal class Android12CallActivityTasksFixService : Service() {
@@ -19,7 +18,7 @@ internal class Android12CallActivityTasksFixService : Service() {
 }
 
 /**
- * Fixes an issue in adroid 12 when a task cannot be resumed from an activity that has been reduced into pip and then resumed fullscreen:
+ * Fixes an issue in android 12 when a task cannot be resumed from an activity that has been reduced into pip and then resumed fullscreen:
  * https://issuetracker.google.com/issues/207397151#comment17
  */
 internal class Android12ChatActivityTasksFixService : Service() {

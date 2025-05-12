@@ -435,7 +435,7 @@ internal fun CallActionBadgeIcon(
             contentDescription = contentDescription,
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(3.dp)
+                .padding(2.dp)
         )
     }
 }

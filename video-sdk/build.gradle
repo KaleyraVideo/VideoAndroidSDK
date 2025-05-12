@@ -84,6 +84,7 @@ dependencies {
     testImplementation "androidx.compose.ui:ui-test-junit4"
     testImplementation "androidx.compose.ui:ui-tooling"
     testImplementation "androidx.compose.ui:ui-test-manifest"
+    testApi project(":video-common-ui")
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore
@@ -93,14 +94,16 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4"
     androidTestImplementation "androidx.compose.ui:ui-tooling"
     androidTestImplementation "androidx.compose.ui:ui-test-manifest"
+    androidTestImplementation project(":video-common-ui")
 
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo
     implementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
-    def isPublishing = project.hasProperty("isPublishing")
-    if (isPublishing) api "com.kaleyra:video-common-ui:$moduleVersion"
-    else api project(':video-common-ui')
+//    def isPublishing = project.hasProperty("isPublishing")
+//    if (isPublishing) api "com.kaleyra:video-common-ui:$moduleVersion"
+//    else
+        api project(':video-common-ui')
 }
 
 licenseReport {

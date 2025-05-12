@@ -30,6 +30,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.mockActions
 import com.kaleyra.video_sdk.chat.conversation.model.ConversationState
@@ -42,7 +43,9 @@ import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider.userMessage
 import com.kaleyra.video_sdk.ui.performScrollUp
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import org.junit.After
@@ -67,8 +70,6 @@ class ChatScreenTest {
         )
     )
 
-    private var userMessage by mutableStateOf<UserMessage?>(null)
-
     private var embedded by mutableStateOf(false)
 
     private var onBackPressed = false
@@ -91,11 +92,11 @@ class ChatScreenTest {
 
     @Before
     fun setUp() {
+        ContextRetainer().create(composeTestRule.activity.applicationContext)
         uiState.update { it.copy(isDeleted = false) }
         composeTestRule.setContent {
             ChatScreen(
                 uiState = uiState.collectAsState().value,
-                userMessage = userMessage,
                 onBackPressed = { onBackPressed = true },
                 onChatDeleted = { onChatDeleted = true },
                 onChatCreationFailed = { onChatCreationFailed = true },
@@ -127,13 +128,12 @@ class ChatScreenTest {
         onShowCall = false
         onSendMessage = false
         onTyping = false
-        userMessage = null
         embedded = false
     }
 
     @Test
     fun userClicksBackButton_onBackPressedInvoked() {
-        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        val back = composeTestRule.activity.getString(R.string.kaleyra_strings_action_back)
         composeTestRule.onNodeWithContentDescription(back).performClick()
         assert(onBackPressed)
     }
@@ -190,32 +190,17 @@ class ChatScreenTest {
     }
 
     @Test
-    fun userMessage_userMessageSnackbarIsDisplayed() {
-        userMessage = RecordingMessage.Started
-        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
-    }
-
-    @Test
     fun chatEmbedded_topAppBarIsNotDisplayed() {
         embedded = true
-        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        val back = composeTestRule.activity.getString(R.string.kaleyra_strings_action_back)
         composeTestRule.onNodeWithContentDescription(back).assertDoesNotExist()
     }
 
     @Test
     fun chatNotEmbedded_topAppBarIsDisplayed() {
         embedded = false
-        val back = composeTestRule.activity.getString(R.string.kaleyra_back)
+        val back = composeTestRule.activity.getString(R.string.kaleyra_strings_action_back)
         composeTestRule.onNodeWithContentDescription(back).assertIsDisplayed()
-    }
-
-    @Test
-    fun chatEmbedded_userMessageSnackbarIsNotDisplayed() {
-        embedded = true
-        userMessage = RecordingMessage.Started
-        val title = composeTestRule.activity.getString(R.string.kaleyra_recording_started)
-        composeTestRule.onNodeWithText(title).assertDoesNotExist()
     }
 
     @Test

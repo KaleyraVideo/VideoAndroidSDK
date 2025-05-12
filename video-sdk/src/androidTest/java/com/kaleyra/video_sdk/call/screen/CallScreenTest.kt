@@ -234,7 +234,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
         )
         composeTestRule.setUpCallScreen()
 
-        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val whiteboardText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         // Check the button contained in the draggable part of the bottom sheet is displayed
         // The first of the list is the button contained in the fixed part of the bottom sheet, but not rendered by the internal adaptive layout.
         composeTestRule
@@ -242,7 +242,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
             .assertIsDisplayed()
             .performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SidePanelTag, useUnmergedTree = true).assertDoesNotExist()
@@ -271,7 +271,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
     fun userClicksParticipantsButtonOnSmallScreen_participantsModalSheetIsDisplayed() {
         composeTestRule.setUpCallScreen()
 
-        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_show_participants_descr)
+        val participantsText = composeTestRule.activity.getString(R.string.kaleyra_strings_description_show_participants)
         composeTestRule
             .onNodeWithContentDescription(participantsText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -414,7 +414,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
             onWhiteboardVisibility = { isWhiteboardDisplayed = it }
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
@@ -444,7 +444,7 @@ internal class CallScreenTest: CallScreenBaseTest() {
             whiteboardRequest = whiteboardRequest
         )
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
     }
@@ -474,13 +474,13 @@ internal class CallScreenTest: CallScreenBaseTest() {
             whiteboardRequest = whiteboardRequest
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
         composeTestRule.onNodeWithTag(CallScreenModalSheetTag).assertIsDisplayed()
 
@@ -502,13 +502,13 @@ internal class CallScreenTest: CallScreenBaseTest() {
             whiteboardRequest = whiteboardRequest
         )
 
-        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_whiteboard)
+        val buttonText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule
             .onNodeWithContentDescription(buttonText, useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
 
         whiteboardRequest.value = WhiteboardRequest.Hide("username")

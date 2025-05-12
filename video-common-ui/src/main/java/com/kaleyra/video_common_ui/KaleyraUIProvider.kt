@@ -18,6 +18,7 @@ package com.kaleyra.video_common_ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import com.kaleyra.video_common_ui.utils.DeviceUtils.isSmartGlass
 import com.kaleyra.video_utils.ContextRetainer
 
@@ -32,11 +33,12 @@ object KaleyraUIProvider {
      * Starts requested call activity
      * @param activityClazz Class<*> the requested call activity's Class
      */
-    fun startCallActivity(activityClazz: Class<*>) =
+    fun startCallActivity(activityClazz: Class<*>, intentExtras: Bundle? = null) =
         with(ContextRetainer.context) {
             val intent = Intent(this, activityClazz).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 putExtra(ENABLE_TILT_EXTRA, isSmartGlass)
+                intentExtras?.let { intentExtras -> putExtras(intentExtras) }
             }
             startActivity(intent)
         }

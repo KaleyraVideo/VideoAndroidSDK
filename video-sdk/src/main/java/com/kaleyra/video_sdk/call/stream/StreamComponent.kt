@@ -233,7 +233,7 @@ internal fun StreamComponent(
                                                 onClick = onClick,
                                                 label = if (streamItem is StreamItem.MoreStreams) stringResource(
                                                     id = R.string.kaleyra_stream_show_actions
-                                                ) else stringResource(id = R.string.kaleyra_stream_show_participants)
+                                                ) else stringResource(id = R.string.kaleyra_strings_description_show_participants)
                                             )
                                             .testTag(streamItem.id)
                                     ) {

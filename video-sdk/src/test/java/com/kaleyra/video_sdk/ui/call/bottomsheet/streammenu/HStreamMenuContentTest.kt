@@ -249,7 +249,7 @@ class HStreamMenuContentTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertIsDisplayed()
@@ -260,7 +260,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun testCancelActionIsDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.setContent {
             HStreamMenuContent(
                 isFullscreen = false,
@@ -335,7 +335,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun fullscreenTrue_cancelActionDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_action_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         composeTestRule.setContent {
             HStreamMenuContent(
                 isFullscreen = true,
@@ -389,7 +389,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun testOnCancelClick() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_cancel)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_cancel)
         var clicked = false
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -473,7 +473,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun testVideoPresent_zoomActionDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_zoom)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_zoom)
         composeTestRule.setContent {
             HStreamMenuContent(
                 isFullscreen = false,
@@ -494,7 +494,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun testVideoPresent_zoomActionPresent_zoomActionClicked() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_zoom)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_zoom)
         var zoomClicked = false
         composeTestRule.setContent {
             HStreamMenuContent(
@@ -518,7 +518,7 @@ class HStreamMenuContentTest {
 
     @Test
     fun testVideoNotPresent_zoomActionNotDisplayed() {
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_zoom)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_zoom)
         composeTestRule.setContent {
             HStreamMenuContent(
                 isFullscreen = false,
@@ -562,7 +562,7 @@ class HStreamMenuContentTest {
         }
 
         composeTestRule.waitForIdle()
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_zoom)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_zoom)
         composeTestRule
             .onNodeWithContentDescription(text)
             .assertIsDisplayed()

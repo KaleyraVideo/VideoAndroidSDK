@@ -71,11 +71,11 @@
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem.TermsAndConditions" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.RootLayout.FirstItem">
         <item name="android:clickable">true</item>
-        <item name="android:contentDescription">@string/kaleyra_glass_browse</item>
+        <item name="android:contentDescription">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SwipeTermsAndConditions" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">
-        <item name="android:text">@string/kaleyra_glass_browse</item>
+        <item name="android:text">@string/kaleyra_strings_action_more</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem.TermsAndConditions" parent="KaleyraCollaborationSuiteUI.Glass.BottomActionItem.ThirdItem">

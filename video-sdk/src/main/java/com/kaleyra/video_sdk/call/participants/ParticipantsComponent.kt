@@ -244,7 +244,7 @@ internal fun ParticipantsComponent(
 
                         item {
                             Text(
-                                text = stringResource(R.string.kaleyra_participants_component_users_invited),
+                                text = stringResource(R.string.kaleyra_strings_info_participant_invited),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier
                                     .fillMaxWidth()

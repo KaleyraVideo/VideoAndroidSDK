@@ -18,8 +18,9 @@
 
 package com.kaleyra.video_sdk.chat.screen
 
+import android.app.DownloadManager.EXTRA_DOWNLOAD_ID
 import android.content.res.Configuration
-import android.widget.Toast
+import android.os.Bundle
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -73,6 +74,9 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -80,9 +84,24 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationExtra
+import com.kaleyra.video_common_ui.notification.signature.EXTRA_SIGN_ID
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationActionReceiver
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationExtra
+import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.call.fileshare.filepick.FilePickBroadcastReceiver
+import com.kaleyra.video_sdk.call.fileshare.viewmodel.FileShareViewModel
+import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
+import com.kaleyra.video_sdk.call.signature.viewmodel.SignDocumentsViewModel
+import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
+import com.kaleyra.video_sdk.call.viewmodel.SharedViewModelStore
 import com.kaleyra.video_sdk.chat.appbar.view.GroupAppBar
 import com.kaleyra.video_sdk.chat.appbar.view.OneToOneAppBar
 import com.kaleyra.video_sdk.chat.conversation.ConversationComponent
@@ -93,13 +112,16 @@ import com.kaleyra.video_sdk.chat.input.ChatUserInput
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.model.mockChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
-import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
+import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
+import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
+import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
-import com.kaleyra.video_sdk.common.usermessages.view.UserMessageSnackbarHandler
+import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
+import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.CollaborationTheme
 import com.kaleyra.video_sdk.theme.KaleyraTheme
-import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.launch
 
 internal const val ConversationComponentTag = "ConversationComponentTag"
@@ -114,7 +136,6 @@ internal fun ChatScreen(
 ) {
     val theme by viewModel.theme.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(initialValue = null)
 
 //    if (!uiState.isUserConnected || uiState.connectionState is ConnectionState.Error) {
 //        LaunchedEffect(Unit) {
@@ -125,7 +146,6 @@ internal fun ChatScreen(
     CollaborationTheme(theme = theme) {
         ChatScreen(
             uiState = uiState,
-            userMessage = userMessage,
             onBackPressed = onBackPressed,
             onChatDeleted = onChatDeleted,
             onChatCreationFailed = onChatCreationFailed,
@@ -144,7 +164,6 @@ internal fun ChatScreen(
 @Composable
 internal fun ChatScreen(
     uiState: ChatUiState,
-    userMessage: UserMessage? = null,
     onBackPressed: () -> Unit,
     onMessageScrolled: (ConversationItem.Message) -> Unit,
     onResetMessagesScroll: () -> Unit,
@@ -183,11 +202,69 @@ internal fun ChatScreen(
 
     val chatUserInputContainerColor: Color by animateColorAsState(
         targetValue =
-        if (scrollState.canScrollBackward) MaterialTheme.colorScheme.outline.copy(.16f)
-        else MaterialTheme.colorScheme.surfaceContainerLowest,
+            if (scrollState.canScrollBackward) MaterialTheme.colorScheme.outline.copy(.16f)
+            else MaterialTheme.colorScheme.surfaceContainerLowest,
         label = "chatUserInputContainerColor",
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
     )
+
+    var isInCall by remember { mutableStateOf(uiState.isInCall) }
+    isInCall = uiState.isInCall
+    var snackBarHost: @Composable () -> Unit by remember(isInCall) { mutableStateOf({}) }
+
+    if (isInCall) {
+        val userMessagesViewModel: UserMessagesViewModel = SharedViewModelStore.getViewModel(
+            kClass = UserMessagesViewModel::class,
+            viewModelFactory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration),
+            boundActivities = arrayOf(LocalContext.current.findActivity()::class.java.name)
+        )
+//        = viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration))
+        val streamViewModel: StreamViewModel = viewModel(
+            factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+        )
+        val signDocumentsViewModel: SignDocumentsViewModel = viewModel(
+            factory = SignDocumentsViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
+        )
+        val fileShareViewModel: FileShareViewModel = viewModel(
+            factory = FileShareViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration, filePickProvider = FilePickBroadcastReceiver)
+        )
+        val onUserMessageActionClick: (UserMessage) -> Unit = remember(userMessagesViewModel) {
+            { message: UserMessage ->
+                var intentExtras: Bundle? = null
+                when (message) {
+                    is PinScreenshareMessage -> {
+                        streamViewModel.pinStream(message.streamId, prepend = true, force = true)
+                    }
+
+                    is SignatureMessage.New -> {
+                        if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed }.size == 1) {
+                            val signDocument = signDocumentsViewModel.uiState.value.signDocuments.value.first { it.id == message.signId }
+                            signDocumentsViewModel.signDocument(signDocument)
+                            intentExtras = Bundle().apply {
+                                putString(SignatureNotificationExtra.NOTIFICATION_ACTION_EXTRA, SignatureNotificationActionReceiver.ACTION_SIGN)
+                                putString(EXTRA_SIGN_ID, signDocument.id)
+                            }
+                        }
+                    }
+
+                    is DownloadFileMessage.New -> {
+                        fileShareViewModel.download(message.downloadId)
+                        intentExtras = Bundle().apply {
+                            putString(FileShareNotificationExtra.NOTIFICATION_ACTION_EXTRA, FileShareNotificationActionReceiver.ACTION_DOWNLOAD)
+                            putString(EXTRA_DOWNLOAD_ID, message.downloadId)
+                        }
+                    }
+
+                    else -> Unit
+                }
+                KaleyraVideo.conference.call.replayCache.firstOrNull()?.show(intentExtras)
+            }
+        }
+
+        snackBarHost = @Composable {
+            StackedUserMessageComponent(viewModel = userMessagesViewModel, onActionClick = onUserMessageActionClick)
+        }
+    }
 
     Box(
         modifier = Modifier.windowInsetsPadding(
@@ -263,16 +340,6 @@ internal fun ChatScreen(
                     }
                 }
             }).takeIf { !embedded } ?: {},
-            snackbarHost = (@Composable {
-                UserMessageSnackbarHandler(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            translationY = topAppBarPadding
-                        },
-                    userMessage = userMessage
-                )
-            }).takeIf { !embedded } ?: {},
             floatingActionButton = {
                 ResetScrollFab(
                     modifier = Modifier
@@ -287,40 +354,56 @@ internal fun ChatScreen(
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { paddingValues ->
-            Column(
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                ConversationComponent(
-                    conversationState = uiState.conversationState,
-                    participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
-                    onMessageScrolled = onMessageScrolled,
-                    onApproachingTop = onFetchMessages,
-                    scrollState = scrollState,
+            var stackedSnackBarTopPadding by remember { mutableStateOf(0.dp) }
+            val density = LocalDensity.current
+            Box {
+                Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .testTag(ConversationComponentTag)
-                )
-
-                HorizontalDivider(color = chatUserInputContainerColor)
-
-                if (uiState.hasFailedCreation) onChatCreationFailed()
-                else if (uiState.isDeleted) onChatDeleted()
-
-                val displayChatInput = !uiState.hasFailedCreation && !uiState.isDeleted
-
-                if (displayChatInput) {
-                    ChatUserInput(
+                        .padding(paddingValues)
+                        .onGloballyPositioned { coordinates ->
+                            stackedSnackBarTopPadding = with(density) { coordinates.boundsInRoot().top.toDp() }
+                            coordinates.boundsInRoot().top
+                        }
+                ) {
+                    ConversationComponent(
+                        conversationState = uiState.conversationState,
+                        participantsDetails = if (uiState is ChatUiState.Group) uiState.participantsDetails else null,
+                        onMessageScrolled = onMessageScrolled,
+                        onApproachingTop = onFetchMessages,
+                        scrollState = scrollState,
                         modifier = Modifier
-                            .onGloballyPositioned {
-                                fabPadding = it.boundsInRoot().height
-                            }
-                            .navigationBarsPadding()
-                            .let { if (!embedded) it.imePadding() else it },
-                        onTextChanged = onTyping,
-                        onMessageSent = onMessageSent,
-                        onDirectionLeft = topBarRef::requestFocus
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .testTag(ConversationComponentTag)
                     )
+
+                    HorizontalDivider(color = chatUserInputContainerColor)
+
+                    if (uiState.hasFailedCreation) onChatCreationFailed()
+                    else if (uiState.isDeleted) onChatDeleted()
+
+                    val displayChatInput = !uiState.hasFailedCreation && !uiState.isDeleted
+
+                    if (displayChatInput) {
+                        ChatUserInput(
+                            modifier = Modifier
+                                .onGloballyPositioned {
+                                    fabPadding = it.boundsInRoot().height
+                                }
+                                .navigationBarsPadding()
+                                .let { if (!embedded) it.imePadding() else it },
+                            onTextChanged = onTyping,
+                            onMessageSent = onMessageSent,
+                            onDirectionLeft = topBarRef::requestFocus
+                        )
+                    }
+                }
+
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = stackedSnackBarTopPadding)
+                ) {
+                    (snackBarHost.takeIf { !embedded } ?: {}).invoke()
                 }
             }
         }
@@ -384,7 +467,6 @@ internal fun ChatScreenPreview() = KaleyraTheme {
         onShowCall = { },
         onSendMessage = { },
         onTyping = { },
-        userMessage = RecordingMessage.Started,
         onChatCreationFailed = {},
         onChatDeleted = {},
     )

@@ -1,9 +1,6 @@
 package com.kaleyra.video_sdk.call.participants
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -12,12 +9,10 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.participants.model.ParticipantsUiState
 import com.kaleyra.video_sdk.call.participants.viewmodel.ParticipantsViewModel
-import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.AudioUi
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
-import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
@@ -118,7 +113,7 @@ class ParticipantsComponentViewModelTest {
             )
         }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_disable_microphone_description, stream.userInfo!!.username)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_disable_participant_microphone, stream.userInfo!!.username)
         composeTestRule.onNodeWithContentDescription(text).performClick()
 
         verify(exactly = 1) { viewModel.toggleMic(any()) }

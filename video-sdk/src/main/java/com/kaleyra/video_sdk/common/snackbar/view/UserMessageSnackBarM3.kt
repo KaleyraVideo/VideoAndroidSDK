@@ -2,16 +2,19 @@
 
 package com.kaleyra.video_sdk.common.snackbar.view
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.DayModePreview
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -72,11 +76,11 @@ internal fun UserMessageSnackbarM3(
             )
             .align(Alignment.Center)) {
             if (actionConfig == null && iconPainter != null) {
+                Spacer(Modifier.size(8.dp))
                 Icon(
                     modifier = Modifier
-                        .size(40.dp)
-                        .align(Alignment.CenterVertically)
-                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
+                        .size(24.dp)
+                        .align(Alignment.CenterVertically),
                     painter = iconPainter,
                     contentDescription = null,
                     tint = iconTint
@@ -95,16 +99,19 @@ internal fun UserMessageSnackbarM3(
                 onTextLayout = { textLayoutResult ->
                     isMultilineMessage = textLayoutResult.lineCount > 1
                 })
-            if (actionConfig == null && onDismissClick != null) IconButton(
-                modifier = Modifier
-                    .padding(end = 16.dp, start = 8.dp)
-                    .align(Alignment.CenterVertically)
-                    .size(24.dp),
-                onClick = onDismissClick) {
-                Icon(
-                    painter = painterResource(id = R.drawable.kaleyra_f_close),
-                    tint = contentColor,
-                    contentDescription = stringResource(id = R.string.kaleyra_close))
+            if (actionConfig == null && onDismissClick != null) {
+                IconButton(
+                    modifier = Modifier
+                        .padding(end = 8.dp, start = 0.dp)
+                        .align(Alignment.CenterVertically)
+                        .size(24.dp),
+                    onClick = onDismissClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_kaleyra_call_bold_close),
+                        tint = contentColor,
+                        contentDescription = stringResource(id = R.string.kaleyra_strings_action_close))
+                }
+
             }
             if (actionConfig !== null) FilledTonalButton(
                 modifier = Modifier
@@ -119,10 +126,11 @@ internal fun UserMessageSnackbarM3(
                     Icon(
                         tint = backgroundColor,
                         modifier = Modifier
-                            .size(18.dp)
-                            .padding(end = 8.dp),
+                            .width(18.dp)
+                            .height(18.dp),
                         painter = painterResource(id = actionConfig.iconResource),
                         contentDescription = actionDescription)
+                    Spacer(Modifier.size(8.dp))
                 }
                 Text(
                     maxLines = 1,
@@ -257,4 +265,10 @@ fun OnlyTextMessagePreview() = KaleyraTheme {
             message = "only text",
         )
     }
+}
+
+@Composable
+@MultiConfigPreview
+fun NewFileDownloadSnackbarPreview() = KaleyraTheme {
+    NewFileDownloadSnackbar("John Doe") { }
 }

@@ -182,7 +182,7 @@ class CallScreenModalSheetTest {
                 onComponentDisplayed = { componentDisplayed = it }
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(componentDisplayed, ModularComponent.Whiteboard)
     }
@@ -241,7 +241,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -268,7 +268,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_screenshare_picker_title)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -295,7 +295,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_files)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -341,8 +341,8 @@ class CallScreenModalSheetTest {
                 onRequestOtherModularComponent = {}
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -369,7 +369,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -396,7 +396,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_participants_component_change_layout)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -427,7 +427,7 @@ class CallScreenModalSheetTest {
             )
         }
         val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_virtual_background_picker_title)
-        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_strings_action_close)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule
             .onNodeWithContentDescription(closeText)
@@ -451,7 +451,7 @@ class CallScreenModalSheetTest {
                 onRequestOtherModularComponent = { }
             )
         }
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         val pinText = composeTestRule.activity.getString(R.string.kaleyra_user_message_pin)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         composeTestRule

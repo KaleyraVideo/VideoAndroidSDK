@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video_common_ui.theme.CompanyThemeManager
 import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_sdk.R
@@ -19,6 +20,7 @@ import com.kaleyra.video_sdk.call.screen.viewmodel.MainViewModel
 import com.kaleyra.video_sdk.chat.input.TextFieldTag
 import com.kaleyra.video_sdk.chat.screen.model.ChatUiState
 import com.kaleyra.video_sdk.chat.screen.viewmodel.PhoneChatViewModel
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -56,6 +58,7 @@ class SidePanelTest {
     private var isChatCreationFailed = false
 
     private val chatUiState = MutableStateFlow(ChatUiState.OneToOne())
+
     @Before
     fun setUp() {
         mockkObject(MainViewModel)
@@ -91,6 +94,7 @@ class SidePanelTest {
                 onRequestOtherModularComponent = { }
             )
         }
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
     }
 
     @After
@@ -114,7 +118,7 @@ class SidePanelTest {
     @Test
     fun whiteboardComponent_whiteboardComponentIsDisplayed() {
         component = ModularComponent.Whiteboard
-        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_whiteboard)
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_board)
         composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
         assertEquals(sideBarComponentDisplayed, ModularComponent.Whiteboard)
     }
