@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.telecom.TelecomManager
 import com.kaleyra.video.conference.Call
-import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
 import com.kaleyra.video_common_ui.callservice.KaleyraCallService
@@ -155,6 +154,18 @@ internal object ConferenceUIExtensions {
             else -> return
         }
         NotificationManager.notify(CallNotificationProducer.CALL_NOTIFICATION_ID, notification)
+    }
+
+    fun ConferenceUI.configureCallActivityShow(coroutineScope: CoroutineScope) {
+        call
+            .onEach { call ->
+                if (call.state.value is Call.State.Disconnected.Ended) return@onEach
+                when {
+                    call.isLink -> call.showOnAppResumed(coroutineScope)
+                    call.shouldShowAsActivity() -> call.show()
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     fun ConferenceUI.bindCallButtons(coroutineScope: CoroutineScope) {

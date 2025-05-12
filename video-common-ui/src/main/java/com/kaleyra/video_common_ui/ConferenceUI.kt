@@ -19,6 +19,7 @@ package com.kaleyra.video_common_ui
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
@@ -76,6 +77,7 @@ class ConferenceUI(
         configureCallServiceStart(callActivityClazz, logger, conferenceDispatcher)
         configureCallSounds(logger, conferenceDispatcher)
         configureScreenShareOverlayProducer(conferenceDispatcher)
+        configureCallActivityShow(conferenceDispatcher)
         bindCallButtons(conferenceDispatcher)
     }
 
