@@ -81,7 +81,7 @@ jobs:
 
   update_hybrid_version:
     runs-on: ubuntu-latest
-    needs: update_sdk_version
+    needs: [update_sdk_version, update_bom_version]
     if: ${{ inputs.release_version == 'patch' || inputs.release_version == 'minor' }}
     steps:
       - name: Generate a token for hybrid release
