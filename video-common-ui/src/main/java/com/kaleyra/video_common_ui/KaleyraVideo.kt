@@ -28,9 +28,7 @@ import com.kaleyra.video_common_ui.activityclazzprovider.GlassActivityClazzProvi
 import com.kaleyra.video_common_ui.activityclazzprovider.PhoneActivityClazzProvider
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.model.UserDetailsProvider
-import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.termsandconditions.TermsAndConditionsRequester
-import com.kaleyra.video_common_ui.theme.Theme
 import com.kaleyra.video_common_ui.utils.CORE_UI
 import com.kaleyra.video_common_ui.utils.extensions.CoroutineExtensions.launchBlocking
 import com.kaleyra.video_utils.ContextRetainer
