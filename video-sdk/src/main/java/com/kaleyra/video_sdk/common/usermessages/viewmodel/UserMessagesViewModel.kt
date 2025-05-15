@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -29,9 +28,6 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
     val userMessage: Flow<ImmutableList<UserMessage>> = userMessageChannel.receiveAsFlow().map { ImmutableList(it) }
 
     init {
-
-        println("INIT USER MESSAGES VIEW MODEL: $this")
-
         call.onEach {
             with(CallUserMessagesProvider) {
 
@@ -64,16 +60,7 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
                         _uiState.update { it.copy(alertMessages = ImmutableList(newAlertMessages.toList())) }
                     }.launchIn(viewModelScope)
             }
-        }
-            .onCompletion {
-                println("completion of viewmodel scope job on $this@UserMessagesViewModels")
-            }
-            .launchIn(viewModelScope)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        println("user messages view model on cleared: $this")
+        }.launchIn(viewModelScope)
     }
 
     fun dismiss(userMessage: UserMessage) {
@@ -89,7 +76,7 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return  UserMessagesViewModel(accessibilityManager, configure) as T
+                    return UserMessagesViewModel(accessibilityManager, configure) as T
                 }
             }
     }
