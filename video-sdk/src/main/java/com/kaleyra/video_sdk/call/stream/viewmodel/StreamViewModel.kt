@@ -129,7 +129,7 @@ internal class StreamViewModel(
                                 video = video,
                                 audio = audio,
                                 userInfos = otherUserInfo.toImmutableList(),
-                                isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
+                                isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled() && (video?.isEnabled ?: false)
                             )
                         )
                     }
