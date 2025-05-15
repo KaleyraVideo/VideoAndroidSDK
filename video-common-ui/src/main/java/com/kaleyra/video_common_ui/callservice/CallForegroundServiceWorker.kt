@@ -15,7 +15,6 @@ import com.kaleyra.video_common_ui.connectionservice.ProximityService
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
 import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationProducer
 import com.kaleyra.video_common_ui.utils.DeviceUtils
-import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.configureCallActivityShow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
@@ -75,8 +74,6 @@ internal class CallForegroundServiceWorker(
             fileShareNotificationProducer.bind(call!!)
             signatureNotificationProducer.bind(call!!)
         }
-
-        call!!.configureCallActivityShow(coroutineScope)
     }
 
     fun dispose() {
