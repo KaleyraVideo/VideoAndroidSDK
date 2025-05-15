@@ -26,6 +26,8 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combined
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.model.FloatingMessage
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
+import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper
@@ -39,6 +41,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
+import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -51,6 +54,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -350,6 +354,8 @@ class CallUserMessagesProviderTest {
 
     @Test
     fun testSignDocumentMessage() = runTest {
+        mockkObject(SignDocumentsVisibilityObserver.Companion)
+        every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         CallUserMessagesProvider.start(callMock, backgroundScope)
         signDocumentsFlow.emit(
             setOf(
@@ -365,9 +371,34 @@ class CallUserMessagesProviderTest {
     }
 
     @Test
+    fun testSignDocumentMessageNotShowingIfSignDocumentsIsVisible() = runTest {
+        mockkObject(SignDocumentsVisibilityObserver.Companion)
+        every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        signDocumentsFlow.emit(
+            setOf(
+                mockk {
+                    every { id } returns "signId"
+                    every { creationTime } returns 123L
+                    every { sender } returns mockk { every { userId } returns "other" }
+                }
+            )
+        )
+
+        var userMessage: UserMessage? = null
+        CallUserMessagesProvider.userMessage.onEach {
+            userMessage = it
+        }
+        advanceTimeBy(10000)
+        assertEquals(null, userMessage)
+    }
+
+    @Test
     fun testDownloadFileMessage() = runTest {
         CallUserMessagesProvider.start(callMock, backgroundScope)
         mockkObject(ContactDetailsManager)
+        mockkObject(FileShareVisibilityObserver.Companion)
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         filesFlow.emit(
             setOf(
                 mockk {
@@ -382,5 +413,32 @@ class CallUserMessagesProviderTest {
         )
         val actual = CallUserMessagesProvider.userMessage.first()
         assert(actual is DownloadFileMessage)
+    }
+
+    @Test
+    fun testDownloadFileMessageNotShowingIfFileShareIsVisible() = runTest {
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        mockkObject(ContactDetailsManager)
+        mockkObject(FileShareVisibilityObserver.Companion)
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        filesFlow.emit(
+            setOf(
+                mockk {
+                    every { id } returns "signId"
+                    every { creationTime } returns 123L
+                    every { sender } returns mockk {
+                        every { combinedDisplayName } returns MutableStateFlow("displayName")
+                        every { userId } returns "other"
+                    }
+                }
+            )
+        )
+
+        var userMessage: UserMessage? = null
+        CallUserMessagesProvider.userMessage.onEach {
+            userMessage = it
+        }
+        advanceTimeBy(10000)
+        assertEquals(null, userMessage)
     }
 }

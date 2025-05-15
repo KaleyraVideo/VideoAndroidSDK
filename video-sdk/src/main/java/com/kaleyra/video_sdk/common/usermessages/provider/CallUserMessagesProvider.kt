@@ -23,6 +23,8 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
+import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toAudioConnectionFailureMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
@@ -151,6 +153,7 @@ object CallUserMessagesProvider {
     private fun Channel<UserMessage>.sendSignDocumentsEvents(call: CallUI, scope: CoroutineScope) {
         val sentSignDocumentsIds = mutableListOf<String>()
         call.sharedFolder.signDocuments.filter { it.isNotEmpty() }.onEach { files ->
+            if (SignDocumentsVisibilityObserver.isDisplayed.value) return@onEach
             val file = files.filter { it.id !in sentSignDocumentsIds }.maxByOrNull { it.creationTime } ?: return@onEach
             sentSignDocumentsIds += file.id
             send(SignatureMessage.New(file.id))
@@ -160,6 +163,7 @@ object CallUserMessagesProvider {
     private fun Channel<UserMessage>.sendDownloadFilesEvents(call: CallUI, scope: CoroutineScope) {
         val sentFilesIds = mutableListOf<String>()
         call.sharedFolder.files.filter { it.isNotEmpty() }.onEach { files ->
+            if (FileShareVisibilityObserver.isDisplayed.value) return@onEach
             val file = files.filter { it.id !in sentFilesIds && it.sender.userId != call.participants.value.me?.userId }.maxByOrNull { it.creationTime } ?: return@onEach
             val sender = file.sender.combinedDisplayName.first { it != null }
             sentFilesIds += file.id
