@@ -101,6 +101,7 @@
     <item name="ic_kaleyra_participants" type="drawable">@drawable/kaleyra_f_multi_avatar</item>
     <item name="ic_kaleyra_full_star" type="drawable">@drawable/kaleyra_z_star_full</item>
     <item name="ic_kaleyra_more" type="drawable">@drawable/kaleyra_z_more</item>
+    <item name="ic_kaleyra_snackbar_close" type="drawable">@drawable/kaleyra_f_snackbar_close</item>
 
     <!-- WHITEBOARD -->
     <item name="ic_kaleyra_cancel" type="drawable">@drawable/kaleyra_z_arrow_left</item>
