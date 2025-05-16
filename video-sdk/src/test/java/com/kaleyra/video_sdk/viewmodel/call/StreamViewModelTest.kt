@@ -591,11 +591,11 @@ class StreamViewModelTest {
         }
 
     @Test
-    fun `stream preview is starting with video true if preferred type has video and is enabled`() =
-        runTest {
+    fun `stream preview is starting with video true if preferred type has video and is enabled`() = runTest {
+            val video = VideoUi(id = "videoId", isEnabled = true)
             with(callMock) {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
-                every { toMyCameraVideoUi() } returns flowOf(null)
+                every { toMyCameraVideoUi() } returns flowOf(video)
                 every { toMyCameraStreamAudioUi() } returns flowOf(null)
                 every { toOtherUserInfo() } returns flowOf(listOf())
                 every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
@@ -607,13 +607,12 @@ class StreamViewModelTest {
             )
             advanceUntilIdle()
 
-            val expected = StreamPreview(isStartingWithVideo = true)
+            val expected = StreamPreview(isStartingWithVideo = true, video = video)
             assertEquals(expected, viewModel.uiState.first().preview)
         }
 
     @Test
-    fun `stream preview is starting with video false if preferred type has video and is enabled is false`() =
-        runTest {
+    fun `stream preview is starting with video false if preferred type has video and is enabled is false`() = runTest {
             with(callMock) {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
                 every { toMyCameraVideoUi() } returns flowOf(null)
@@ -687,8 +686,7 @@ class StreamViewModelTest {
     }
 
     @Test
-    fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() =
-        runTest {
+    fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() = runTest {
             every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1))
             every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connected)
 
