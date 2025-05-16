@@ -12,8 +12,6 @@ import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
-import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
-import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationProducer
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -28,10 +26,6 @@ internal class CallForegroundServiceWorker(
 ) {
 
     private val callNotificationProducer by lazy { CallNotificationProducer(coroutineScope) }
-
-    private val fileShareNotificationProducer by lazy { FileShareNotificationProducer(coroutineScope) }
-
-    private val signatureNotificationProducer by lazy { SignatureNotificationProducer(coroutineScope) }
 
     private val cameraStreamManager by lazy { CameraStreamManager(coroutineScope) }
 
@@ -71,8 +65,6 @@ internal class CallForegroundServiceWorker(
 
         if (!DeviceUtils.isSmartGlass) {
             ProximityService.start(connection)
-            fileShareNotificationProducer.bind(call!!)
-            signatureNotificationProducer.bind(call!!)
         }
     }
 
@@ -87,7 +79,5 @@ internal class CallForegroundServiceWorker(
 
         if (DeviceUtils.isSmartGlass) return
         ProximityService.stop()
-        fileShareNotificationProducer.stop()
-        signatureNotificationProducer.stop()
     }
 }

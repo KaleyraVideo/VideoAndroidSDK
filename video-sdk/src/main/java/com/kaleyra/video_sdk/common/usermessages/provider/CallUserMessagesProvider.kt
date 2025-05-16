@@ -31,6 +31,7 @@ import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toUsbCameraMessage
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper.toRecordingMessage
 import com.kaleyra.video_sdk.call.mapper.toCustomAlertMessage
+import com.kaleyra.video_sdk.call.pip.CallUiPipVisibilityObserver
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
@@ -154,6 +155,7 @@ object CallUserMessagesProvider {
         val sentSignDocumentsIds = mutableListOf<String>()
         call.sharedFolder.signDocuments.filter { it.isNotEmpty() }.onEach { files ->
             if (SignDocumentsVisibilityObserver.isDisplayed.value) return@onEach
+            if (CallUiPipVisibilityObserver.isDisplayed.value) return@onEach
             val file = files.filter { it.id !in sentSignDocumentsIds }.maxByOrNull { it.creationTime } ?: return@onEach
             sentSignDocumentsIds += file.id
             send(SignatureMessage.New(file.id))
@@ -164,6 +166,7 @@ object CallUserMessagesProvider {
         val sentFilesIds = mutableListOf<String>()
         call.sharedFolder.files.filter { it.isNotEmpty() }.onEach { files ->
             if (FileShareVisibilityObserver.isDisplayed.value) return@onEach
+            if (CallUiPipVisibilityObserver.isDisplayed.value) return@onEach
             val file = files.filter { it.id !in sentFilesIds && it.sender.userId != call.participants.value.me?.userId }.maxByOrNull { it.creationTime } ?: return@onEach
             val sender = file.sender.combinedDisplayName.first { it != null }
             sentFilesIds += file.id

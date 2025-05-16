@@ -3,6 +3,7 @@ package com.kaleyra.video_common_ui
 import android.app.Application
 import android.content.Context
 import android.telecom.TelecomManager
+import com.kaleyra.video.State
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video_common_ui.call.CallNotificationProducer
 import com.kaleyra.video_common_ui.call.ScreenShareOverlayProducer
@@ -11,6 +12,8 @@ import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.TelecomManagerExtensions.addCall
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
+import com.kaleyra.video_common_ui.notification.fileshare.FileShareNotificationProducer
+import com.kaleyra.video_common_ui.notification.signature.SignatureNotificationProducer
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.bindCallButtons
@@ -176,4 +179,24 @@ internal object ConferenceUIExtensions {
             .launchIn(coroutineScope)
     }
 
+    fun ConferenceUI.bindNotificationProducers(coroutineScope: CoroutineScope) {
+        if (DeviceUtils.isSmartGlass) return
+        val fileShareNotificationProducer by lazy { FileShareNotificationProducer(coroutineScope) }
+        val signatureNotificationProducer by lazy { SignatureNotificationProducer(coroutineScope) }
+        val stopNotificationProducers = {
+            fileShareNotificationProducer.stop()
+            signatureNotificationProducer.stop()
+        }
+        state
+            .onEach { conferenceState ->
+                if (conferenceState is State.Disconnected) stopNotificationProducers()
+            }.launchIn(coroutineScope)
+        call.onEach { ongoingCall ->
+            stopNotificationProducers()
+            fileShareNotificationProducer.bind(ongoingCall)
+            signatureNotificationProducer.bind(ongoingCall)
+        }.onCompletion {
+            stopNotificationProducers()
+        }.launchIn(coroutineScope)
+    }
 }

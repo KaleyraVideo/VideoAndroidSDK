@@ -32,6 +32,7 @@ import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper
 import com.kaleyra.video_sdk.call.mapper.RecordingMapper
+import com.kaleyra.video_sdk.call.pip.CallUiPipVisibilityObserver
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.AudioConnectionFailureMessage
@@ -41,7 +42,6 @@ import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
-import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -54,7 +54,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -76,7 +75,7 @@ class CallUserMessagesProviderTest {
 
     private val callMock = mockk<CallUI>(relaxed = true) {
         every { participants } returns MutableStateFlow(mockk {
-            every { me } returns mockk(relaxed = true) { every { userId } returns "me"}
+            every { me } returns mockk(relaxed = true) { every { userId } returns "me" }
             every { others } returns listOf(mockk(relaxed = true) { every { userId } returns "other" })
         })
         every { sharedFolder } returns mockk {
@@ -87,12 +86,21 @@ class CallUserMessagesProviderTest {
 
     @Before
     fun setUp() {
+        mockkObject(ContactDetailsManager)
         mockkObject(InputMapper)
         mockkObject(RecordingMapper)
         mockkObject(KaleyraVideo)
         mockkObject(CallStateMapper)
         mockkObject(com.kaleyra.video_common_ui.mapper.StreamMapper)
         every { KaleyraVideo.conference } returns mockk(relaxed = true)
+        signDocumentsFlow.value = setOf()
+        filesFlow.value = setOf()
+        mockkObject(FileShareVisibilityObserver.Companion)
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(SignDocumentsVisibilityObserver.Companion)
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
     }
 
     @After
@@ -356,6 +364,8 @@ class CallUserMessagesProviderTest {
     fun testSignDocumentMessage() = runTest {
         mockkObject(SignDocumentsVisibilityObserver.Companion)
         every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         CallUserMessagesProvider.start(callMock, backgroundScope)
         signDocumentsFlow.emit(
             setOf(
@@ -373,9 +383,10 @@ class CallUserMessagesProviderTest {
     @Test
     fun testSignDocumentMessageNotShowingIfSignDocumentsIsVisible() = runTest {
         mockkObject(SignDocumentsVisibilityObserver.Companion)
-        every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
-        CallUserMessagesProvider.start(callMock, backgroundScope)
-        signDocumentsFlow.emit(
+        every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        signDocumentsFlow.value =
             setOf(
                 mockk {
                     every { id } returns "signId"
@@ -383,34 +394,53 @@ class CallUserMessagesProviderTest {
                     every { sender } returns mockk { every { userId } returns "other" }
                 }
             )
-        )
+        CallUserMessagesProvider.start(callMock, backgroundScope)
 
-        var userMessage: UserMessage? = null
-        CallUserMessagesProvider.userMessage.onEach {
-            userMessage = it
+        val result = withTimeoutOrNull(1000) {
+            CallUserMessagesProvider.userMessage.first()
         }
-        advanceTimeBy(10000)
-        assertEquals(null, userMessage)
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun testSignDocumentMessageNotShowingIfCallUIPipIsVisible() = runTest {
+        mockkObject(SignDocumentsVisibilityObserver.Companion)
+        every { SignDocumentsVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        signDocumentsFlow.value = setOf(
+            mockk {
+                every { id } returns "signId"
+                every { creationTime } returns 123L
+                every { sender } returns mockk { every { userId } returns "other" }
+            }
+        )
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+
+        val result = withTimeoutOrNull(1000) {
+            CallUserMessagesProvider.userMessage.first()
+        }
+        assertEquals(null, result)
     }
 
     @Test
     fun testDownloadFileMessage() = runTest {
         CallUserMessagesProvider.start(callMock, backgroundScope)
-        mockkObject(ContactDetailsManager)
         mockkObject(FileShareVisibilityObserver.Companion)
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
-        filesFlow.emit(
-            setOf(
-                mockk {
-                    every { id } returns "signId"
-                    every { creationTime } returns 123L
-                    every { sender } returns mockk {
-                        every { combinedDisplayName } returns MutableStateFlow("displayName")
-                        every { userId } returns "other"
-                    }
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        filesFlow.value = setOf(
+            mockk {
+                every { id } returns "signId"
+                every { creationTime } returns 123L
+                every { sender } returns mockk {
+                    every { combinedDisplayName } returns MutableStateFlow("displayName")
+                    every { userId } returns "other"
                 }
-            )
+            }
         )
+
         val actual = CallUserMessagesProvider.userMessage.first()
         assert(actual is DownloadFileMessage)
     }
@@ -418,9 +448,10 @@ class CallUserMessagesProviderTest {
     @Test
     fun testDownloadFileMessageNotShowingIfFileShareIsVisible() = runTest {
         CallUserMessagesProvider.start(callMock, backgroundScope)
-        mockkObject(ContactDetailsManager)
         mockkObject(FileShareVisibilityObserver.Companion)
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         filesFlow.emit(
             setOf(
                 mockk {
@@ -434,11 +465,33 @@ class CallUserMessagesProviderTest {
             )
         )
 
-        var userMessage: UserMessage? = null
-        CallUserMessagesProvider.userMessage.onEach {
-            userMessage = it
+        val result = withTimeoutOrNull(1000) {
+            CallUserMessagesProvider.userMessage.first()
         }
-        advanceTimeBy(10000)
-        assertEquals(null, userMessage)
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun testDownloadFileMessageNotShowingIfCallUIPipIsVisible() = runTest {
+        CallUserMessagesProvider.start(callMock, backgroundScope)
+        mockkObject(FileShareVisibilityObserver.Companion)
+        every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(CallUiPipVisibilityObserver.Companion)
+        every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(true)
+        filesFlow.value = setOf(
+            mockk {
+                every { id } returns "signId"
+                every { creationTime } returns 123L
+                every { sender } returns mockk {
+                    every { combinedDisplayName } returns MutableStateFlow("displayName")
+                    every { userId } returns "other"
+                }
+            }
+        )
+
+        val result = withTimeoutOrNull(1000) {
+            CallUserMessagesProvider.userMessage.first()
+        }
+        assertEquals(null, result)
     }
 }
