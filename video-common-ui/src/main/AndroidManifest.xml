@@ -155,8 +155,8 @@
             android:name=".notification.signature.SignDocumentViewVisibilityObserver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.kaleyra.video_common_ui.SIGN_VIEW_DISPLAYED" />
-                <action android:name="com.kaleyra.video_common_ui.SIGN_VIEW_NOT_DISPLAYED" />
+                <action android:name="com.kaleyra.video_sdk.ACTION_CALL_UI_PIP_DISPLAYED" />
+                <action android:name="com.kaleyra.video_sdk.ACTION_CALL_UI_PIP_DISPLAYED.ACTION_CALL_UI_PIP_NOT_DISPLAYED" />
             </intent-filter>
         </receiver>
 

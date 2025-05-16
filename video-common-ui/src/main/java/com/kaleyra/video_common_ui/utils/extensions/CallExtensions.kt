@@ -176,12 +176,4 @@ object CallExtensions {
             }
             .launchIn(scope)
     }
-
-    fun CallUI.configureCallActivityShow(coroutineScope: CoroutineScope) {
-        if (state.value is Call.State.Disconnected.Ended) return
-        when {
-            isLink -> showOnAppResumed(coroutineScope)
-            shouldShowAsActivity() -> show()
-        }
-    }
 }

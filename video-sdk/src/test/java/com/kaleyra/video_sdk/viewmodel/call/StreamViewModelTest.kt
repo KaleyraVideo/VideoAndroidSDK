@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
 import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
@@ -12,6 +13,8 @@ import com.kaleyra.video.conference.VideoStreamView
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCameraPermission
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.mapper.AudioMapper
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
@@ -42,6 +45,7 @@ import com.kaleyra.video_sdk.common.user.UserInfo
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.ui.mockkSuccessfulConfiguration
+import com.kaleyra.video_utils.ContextRetainer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -88,6 +92,7 @@ class StreamViewModelTest {
 
     @Before
     fun setUp() {
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
         mockkObject(com.kaleyra.video_common_ui.mapper.ParticipantMapper)
         mockkObject(com.kaleyra.video_sdk.call.mapper.ParticipantMapper)
         mockkObject(StreamMapper)
@@ -392,6 +397,163 @@ class StreamViewModelTest {
     }
 
     @Test
+    fun `stream preview is starting with video if call type is audio video and video is present and enabled`() = runTest {
+        val video = VideoUi(id = "videoId", isEnabled = true)
+        val audio = AudioUi(id = "audioId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
+            isStartingWithVideo = true
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+
+    @Test
+    fun `stream preview is starting with video if call type is audio video and video is null but camera permission is granted`() = runTest {
+        mockkObject(ContextExtensions)
+        every { ContextRetainer.context.hasCameraPermission() } returns true
+        val video = null
+        val audio = AudioUi(id = "audioId")
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(video)
+            every { toMyCameraStreamAudioUi() } returns flowOf(audio)
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            video = video,
+            audio = audio,
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
+            isStartingWithVideo = true
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview is not starting with video if call type is audio video and video is null`() = runTest {
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(null)
+            every { toMyCameraStreamAudioUi() } returns flowOf(null)
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            video = null,
+            audio = null,
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
+            isStartingWithVideo = false
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview is not starting with video if call type is audio only`() = runTest {
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(null)
+            every { toMyCameraStreamAudioUi() } returns flowOf(null)
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            video = null,
+            audio = null,
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
+            isStartingWithVideo = false
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
+    fun `stream preview is not starting with video if call type is audio upgradable`() = runTest {
+        val uriMock = mockk<Uri>(relaxed = true)
+        with(callMock) {
+            every { toCallStateUi() } returns MutableStateFlow(CallStateUi.Dialing)
+            every { toMyCameraVideoUi() } returns flowOf(null)
+            every { toMyCameraStreamAudioUi() } returns flowOf(null)
+            every { toOtherUserInfo() } returns flowOf(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            )
+            every { preferredType } returns MutableStateFlow(Call.PreferredType.audioUpgradable())
+        }
+
+        val viewModel = StreamViewModel(
+            configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
+            layoutController = StreamLayoutControllerMock()
+        )
+        advanceUntilIdle()
+
+        val expected = StreamPreview(
+            video = null,
+            audio = null,
+            userInfos = ImmutableList(
+                listOf(UserInfo("userId1", "displayName", ImmutableUri(uriMock)))
+            ),
+            isStartingWithVideo = false
+        )
+        assertEquals(expected, viewModel.uiState.first().preview)
+    }
+
+    @Test
     fun `handle empty list for other display names and images`() = runTest {
         val video = VideoUi(id = "videoId")
         val audio = AudioUi(id = "audioId")
@@ -469,11 +631,11 @@ class StreamViewModelTest {
         }
 
     @Test
-    fun `stream preview is starting with video true if preferred type has video and is enabled`() =
-        runTest {
+    fun `stream preview is starting with video true if preferred type has video and is enabled`() = runTest {
+            val video = VideoUi(id = "videoId", isEnabled = true)
             with(callMock) {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
-                every { toMyCameraVideoUi() } returns flowOf(null)
+                every { toMyCameraVideoUi() } returns flowOf(video)
                 every { toMyCameraStreamAudioUi() } returns flowOf(null)
                 every { toOtherUserInfo() } returns flowOf(listOf())
                 every { preferredType } returns MutableStateFlow(Call.PreferredType.audioVideo())
@@ -485,13 +647,12 @@ class StreamViewModelTest {
             )
             advanceUntilIdle()
 
-            val expected = StreamPreview(isStartingWithVideo = true)
+            val expected = StreamPreview(isStartingWithVideo = true, video = video)
             assertEquals(expected, viewModel.uiState.first().preview)
         }
 
     @Test
-    fun `stream preview is starting with video false if preferred type has video and is enabled is false`() =
-        runTest {
+    fun `stream preview is starting with video false if preferred type has video and is enabled is false`() = runTest {
             with(callMock) {
                 every { toCallStateUi() } returns MutableStateFlow(CallStateUi.RingingRemotely)
                 every { toMyCameraVideoUi() } returns flowOf(null)
@@ -565,8 +726,7 @@ class StreamViewModelTest {
     }
 
     @Test
-    fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() =
-        runTest {
+    fun `test streams updated after a debounce time if there is only one stream, there is still a participant in call and the call is connected`() = runTest {
             every { callMock.toInCallParticipants() } returns MutableStateFlow(listOf(participantMock1))
             every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Connected)
 

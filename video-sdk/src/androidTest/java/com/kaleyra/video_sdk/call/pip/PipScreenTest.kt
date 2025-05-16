@@ -64,13 +64,13 @@ class PipScreenTest {
 
     @Test
     fun testPipStreamComponentIsDisplayed() {
-        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}) }
+        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}, isTesting = true) }
         composeTestRule.onNodeWithTag(PipStreamComponentTag).assertIsDisplayed()
     }
 
     @Test
     fun testCallInfoComponentIsDisplayed() {
-        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}) }
+        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}, isTesting = true) }
 
         val title = composeTestRule.activity.getString(R.string.kaleyra_call_status_ended)
         val subtitle = composeTestRule.activity.getString(R.string.kaleyra_call_status_connecting)
@@ -81,7 +81,7 @@ class PipScreenTest {
 
     @Test
     fun testPipRecordingComponentIsDisplayed() {
-        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}) }
+        composeTestRule.setContent { PipScreen(onPipAspectRatio = {}, isTesting = true) }
 
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_info_rec)
         composeTestRule.onNodeWithText(text, ignoreCase = true).assertIsDisplayed()
@@ -90,7 +90,7 @@ class PipScreenTest {
     @Test
     fun testOnPipAspectRatioInvoked() {
         var aspectRatio: Rational? = null
-        composeTestRule.setContent { PipScreen(onPipAspectRatio = { aspectRatio = it }) }
+        composeTestRule.setContent { PipScreen(onPipAspectRatio = { aspectRatio = it }, isTesting = true) }
 
         assertEquals(Rational(DefaultPipSize.width, DefaultPipSize.height), aspectRatio)
     }

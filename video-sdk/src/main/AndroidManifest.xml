@@ -60,6 +60,16 @@
         <service android:name=".call.utils.Android12CallActivityTasksFixService" />
 
         <service android:name=".call.utils.Android12ChatActivityTasksFixService" />
+
+        <receiver
+            android:name=".call.pip.CallUiPipVisibilityObserver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.kaleyra.video_sdk.FILE_SHARE_DISPLAYED" />
+                <action android:name="com.kaleyra.video_common_ui.FILE_SHARE_NOT_DISPLAYED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

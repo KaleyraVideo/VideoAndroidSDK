@@ -124,7 +124,6 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, No
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("activity phone created")
         handleIntentAction(intent)
         if (isPipSupported) {
             updatePipParams()?.let { setPictureInPictureParams(it) }
@@ -174,7 +173,6 @@ internal class PhoneCallActivity : FragmentActivity(), ProximityCallActivity, No
 
     override fun onResume() {
         super.onResume()
-        println("activity phone resumed")
         isInForeground = true
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
         isInPipMode.value = isInPictureInPictureMode
