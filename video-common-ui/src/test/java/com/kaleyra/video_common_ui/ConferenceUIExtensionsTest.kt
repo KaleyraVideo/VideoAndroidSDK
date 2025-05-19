@@ -9,6 +9,7 @@ import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.bindCallButtons
+import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
@@ -22,7 +23,6 @@ import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.notification.NotificationManager
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
-import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.configureCallActivityShow
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.shouldShowAsActivity
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.showOnAppResumed
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions
@@ -326,7 +326,7 @@ class ConferenceUIExtensionsTest {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
         every { callMock.isLink } returns false
         every { callMock.shouldShowAsActivity() } returns true
-        callMock.configureCallActivityShow(backgroundScope)
+        conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 0) { callMock.show() }
     }
 
@@ -334,7 +334,7 @@ class ConferenceUIExtensionsTest {
     fun callStateDisconnectedEndedAndIsLink_configureCallActivityShow_showOnAppResumedNotInvoked() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow(Call.State.Disconnected.Ended)
         every { callMock.isLink } returns true
-        callMock.configureCallActivityShow(backgroundScope)
+        conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 0) { callMock.showOnAppResumed(any()) }
     }
 
@@ -343,7 +343,7 @@ class ConferenceUIExtensionsTest {
         every { callMock.state } returns MutableStateFlow(mockk())
         every { callMock.isLink } returns false
         every { callMock.shouldShowAsActivity() } returns true
-        callMock.configureCallActivityShow(backgroundScope)
+        conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 1) { callMock.show() }
     }
 
@@ -352,7 +352,7 @@ class ConferenceUIExtensionsTest {
         every { callMock.state } returns MutableStateFlow(mockk())
         every { callMock.isLink } returns false
         every { callMock.shouldShowAsActivity() } returns false
-        callMock.configureCallActivityShow(backgroundScope)
+        conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 0) { callMock.show() }
     }
 
@@ -360,7 +360,7 @@ class ConferenceUIExtensionsTest {
     fun callIsLink_configureCallActivityShow_showOnAppResumedInvoked() = runTest(UnconfinedTestDispatcher()) {
         every { callMock.state } returns MutableStateFlow(mockk())
         every { callMock.isLink } returns true
-        callMock.configureCallActivityShow(backgroundScope)
+        conferenceMock.configureCallActivityShow(backgroundScope)
         verify(exactly = 1) { callMock.showOnAppResumed(backgroundScope) }
     }
 

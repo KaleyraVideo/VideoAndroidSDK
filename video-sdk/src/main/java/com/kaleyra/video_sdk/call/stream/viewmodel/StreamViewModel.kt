@@ -7,6 +7,7 @@ import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.Conference
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.mapper.ParticipantMapper.toInCallParticipants
+import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.hasCameraPermission
 import com.kaleyra.video_sdk.call.mapper.AudioMapper.toMyCameraStreamAudioUi
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.ParticipantMapper.toOtherUserInfo
@@ -26,10 +27,12 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import com.kaleyra.video_utils.ContextRetainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -129,7 +132,13 @@ internal class StreamViewModel(
                                 video = video,
                                 audio = audio,
                                 userInfos = otherUserInfo.toImmutableList(),
-                                isStartingWithVideo = preferredType.hasVideo() && preferredType.isVideoEnabled()
+                                isStartingWithVideo =
+                                    preferredType.hasVideo()
+                                        && preferredType.isVideoEnabled()
+                                        && (
+                                        (video == null && ContextRetainer.context.hasCameraPermission()) ||
+                                            (video?.isEnabled ?: false)
+                                        )
                             )
                         )
                     }
@@ -142,7 +151,7 @@ internal class StreamViewModel(
 
             layoutController.isPinnedStreamLimitReached
                 .onEach { isPinnedStreamLimitReached ->
-                    _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = isPinnedStreamLimitReached)}
+                    _uiState.update { state -> state.copy(hasReachedMaxPinnedStreams = isPinnedStreamLimitReached) }
                 }
                 .launchIn(this)
         }

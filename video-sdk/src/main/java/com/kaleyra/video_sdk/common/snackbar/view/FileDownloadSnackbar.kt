@@ -25,9 +25,3 @@ fun NewFileDownloadSnackbar(
         )
     )
 }
-
-@Composable
-@MultiConfigPreview
-fun NewFileDownloadSnackbarPreview() = KaleyraTheme {
-    NewSignatureSnackbar {}
-}
