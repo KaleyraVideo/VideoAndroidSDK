@@ -132,7 +132,7 @@ internal fun CallScreen(
     )) { permissionsResult ->
         onAskInputPermissions(false)
         permissionsResult.forEach { (permission, isGranted) ->
-            when  {
+            when {
                 permission == RecordAudioPermission && isGranted -> viewModel.startMicrophone(activity)
                 permission == CameraPermission && isGranted -> viewModel.startCamera(activity)
             }
@@ -171,13 +171,19 @@ internal fun CallScreen(
 
     val shouldAskConnectionServicePermissions = viewModel.shouldAskConnectionServicePermissions && !activity.hasConnectionServicePermissions()
     var shouldAskInputPermissions by remember { mutableStateOf(!shouldAskConnectionServicePermissions) }
+    val onContactsPermissionsResult = remember(activity, viewModel) {
+        {
+            viewModel.startConnectionService(activity)
+            shouldAskInputPermissions = true
+        }
+    }
     val contactsPermissionsState = rememberMultiplePermissionsState(permissions = ContactsPermissions) { _ ->
-        viewModel.startConnectionService(activity)
-        shouldAskInputPermissions = true
+        onContactsPermissionsResult()
     }
     val connectionServicePermissionsState = rememberMultiplePermissionsState(permissions = if (ConnectionServiceUtils.isConnectionServiceSupported) ConnectionServicePermissions else listOf()) { permissionsResult ->
         if (permissionsResult.isNotEmpty() && permissionsResult.all { (_, isGranted) -> isGranted }) {
-            contactsPermissionsState.launchMultiplePermissionRequest()
+            if (contactsPermissionsState.shouldShowRationale) contactsPermissionsState.launchMultiplePermissionRequest()
+            else onContactsPermissionsResult()
         } else {
             viewModel.tryStartCallService()
             shouldAskInputPermissions = true
@@ -301,7 +307,7 @@ internal fun CallScreen(
 
     val modalSheetComponent: MutableState<ModularComponent?> = remember { mutableStateOf(null) }
     val onModalSheetComponentRequest = remember(modalSheetComponent) {
-        { component: ModularComponent? -> modalSheetComponent.value  = component }
+        { component: ModularComponent? -> modalSheetComponent.value = component }
     }
 
     val sidePanelComponent: MutableState<ModularComponent?> = remember(isLargeScreen) { mutableStateOf(null) }
@@ -368,7 +374,7 @@ internal fun CallScreen(
         when (whiteboardRequest) {
             is WhiteboardRequest.Show -> {
                 val targetComponent = if (isLargeScreen) sidePanelComponent else modalSheetComponent
-                if (targetComponent.value == ModularComponent.Whiteboard)  return@LaunchedEffect
+                if (targetComponent.value == ModularComponent.Whiteboard) return@LaunchedEffect
                 if (isLargeScreen) onSidePanelComponentRequest(ModularComponent.Whiteboard) else onModalSheetComponentRequest(ModularComponent.Whiteboard)
                 snapshotFlow { lastModularComponentDisplayed.value }.firstOrNull { it == ModularComponent.Whiteboard }
                 CallUserMessagesProvider.sendUserMessage(
@@ -447,7 +453,7 @@ internal fun CallScreen(
         val feedbackViewModel: FeedbackViewModel = viewModel(factory = FeedbackViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
         UserFeedbackDialog(viewModel = feedbackViewModel, onDismiss = onCallEndedBack)
 
-        val kickedMessageViewModel: KickedMessageViewModel  = viewModel(factory = KickedMessageViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+        val kickedMessageViewModel: KickedMessageViewModel = viewModel(factory = KickedMessageViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
         KickedMessageDialog(onDismiss = onCallEndedBack)
 
         val feedbackUiState = feedbackViewModel.uiState.collectAsStateWithLifecycle()
