@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>CallExtensions</title>
+    <title>onReceive</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-common-ui:dokkaHtmlPartial/release">androidJvm</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-sdk:dokkaHtmlPartial/release">androidJvm</button>
         </div>
     </div>
     <div class="navigation-controls">
@@ -58,36 +58,12 @@
                 <div class="sidebar--inner" id="sideMenu"></div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="video-common-ui::com.kaleyra.video_common_ui.utils.extensions/CallExtensions///PointingToDeclaration//-943617535">
-  <div class="breadcrumbs"><a href="../../index.html">video-common-ui</a><span class="delimiter">/</span><a href="../index.html">com.kaleyra.video_common_ui.utils.extensions</a><span class="delimiter">/</span><span class="current">CallExtensions</span></div>
+<div class="main-content" data-page-type="member" id="content" pageids="video-sdk::com.kaleyra.video_sdk.call.pip/CallUiPipVisibilityObserver/onReceive/#android.content.Context#android.content.Intent/PointingToDeclaration//2017425725">
+  <div class="breadcrumbs"><a href="../../index.html">video-sdk</a><span class="delimiter">/</span><a href="../index.html">com.kaleyra.video_sdk.call.pip</a><span class="delimiter">/</span><a href="index.html">CallUiPipVisibilityObserver</a><span class="delimiter">/</span><span class="current">onReceive</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Call</span><wbr><span><span>Extensions</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">CallExtensions</a></div></div></div>
+    <h1 class="cover"><span>on</span><wbr><span><span>Receive</span></span></h1>
   </div>
-  <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
-    <div class="tabs-section-body">
-      <div data-togglable="EXTENSION_FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-9150929%2FFunctions%2F-943617535" anchor-label="toCallUIButton" id="-9150929%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="to-call-u-i-button.html"><span>to</span><wbr><span>Call</span><wbr><span><span>UIButton</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-9150929%2FFunctions%2F-943617535"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="../../com.kaleyra.video_common_ui/-call-u-i/-action/index.html">CallUI.Action</a><span class="token punctuation">.</span><a href="to-call-u-i-button.html"><span class="token function">toCallUIButton</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.kaleyra.video_common_ui/-call-u-i/-button/index.html">CallUI.Button</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-receive.html"><span class="token function">onReceive</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">Called when a broadcast intent is received.</p><p class="paragraph">This method updates the <a href="../../../video-sdk/com.kaleyra.video_sdk.call.pip/-call-ui-pip-visibility-observer/-companion/_is-displayed.html">_isDisplayed</a> state flow based on the action of the received <a href="on-receive.html">intent</a>. It specifically looks for <a href="-companion/-a-c-t-i-o-n_-c-a-l-l_-u-i_-p-i-p_-d-i-s-p-l-a-y-e-d.html">ACTION_CALL_UI_PIP_DISPLAYED</a> and <a href="-companion/-a-c-t-i-o-n_-c-a-l-l_-u-i_-p-i-p_-n-o-t_-d-i-s-p-l-a-y-e-d.html">ACTION_CALL_UI_PIP_NOT_DISPLAYED</a>.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>context</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The Context in which the receiver is running.</p></div></div></div></div><div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>intent</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The Intent being received.</p></div></div></div></div></div></div></div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>

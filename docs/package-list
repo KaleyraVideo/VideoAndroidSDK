@@ -61,6 +61,7 @@ com.kaleyra.video_sdk.call.fileshare.view
 com.kaleyra.video_sdk.call.kicked.model
 com.kaleyra.video_sdk.call.kicked.view
 com.kaleyra.video_sdk.call.kicked.viewmodel
+com.kaleyra.video_sdk.call.pip
 com.kaleyra.video_sdk.call.pip.view
 com.kaleyra.video_sdk.call.pointer.model
 com.kaleyra.video_sdk.call.pointer.view
