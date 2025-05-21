@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +49,7 @@ internal fun VSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
+    areChildrenKeyboardFocusable: Boolean,
     onModularComponentRequest: (ModularComponent) -> Unit,
     inputPermissions: InputPermissions = InputPermissions(),
     onAskInputPermissions: (Boolean) -> Unit,
@@ -71,6 +77,7 @@ internal fun VSheetDragContent(
         callActions = callActions,
         itemsPerColumn = itemsPerColumn,
         inputPermissions = inputPermissions,
+        areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
         contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) {
@@ -148,6 +155,7 @@ internal fun VSheetDragContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onSignatureClick: () -> Unit,
+    areChildrenKeyboardFocusable: Boolean,
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
     inputPermissions: InputPermissions = InputPermissions(),
@@ -167,7 +175,9 @@ internal fun VSheetDragContent(
         items(key = { it.id }, items = chunkedActions) { callAction ->
             CallSheetItem(
                 callAction = callAction,
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier
+                    .animateItem()
+                    .focusProperties { canFocus = areChildrenKeyboardFocusable },
                 label = false,
                 extended = false,
                 inputPermissions = inputPermissions,

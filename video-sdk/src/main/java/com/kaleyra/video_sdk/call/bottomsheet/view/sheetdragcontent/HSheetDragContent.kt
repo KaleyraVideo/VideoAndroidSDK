@@ -1,6 +1,5 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,6 +51,7 @@ internal fun HSheetDragContent(
     screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
     isLargeScreen: Boolean,
+    areChildrenKeyboardFocusable: Boolean,
     inputPermissions: InputPermissions = InputPermissions(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onModularComponentRequest: (ModularComponent) -> Unit,
@@ -101,6 +102,7 @@ internal fun HSheetDragContent(
         callActions = callActions,
         itemsPerRow = itemsPerRow,
         inputPermissions = inputPermissions,
+        areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
         contentPadding = contentPadding,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) {
@@ -168,7 +170,7 @@ internal fun HSheetDragContent(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun HSheetDragContent(
     callActions: ImmutableList<CallActionUI>,
@@ -183,6 +185,7 @@ internal fun HSheetDragContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onSignatureClick: () -> Unit,
+    areChildrenKeyboardFocusable: Boolean,
     modifier: Modifier = Modifier,
     itemsPerRow: Int = MaxHSheetDragItems,
     labels: Boolean = true,
@@ -212,7 +215,9 @@ internal fun HSheetDragContent(
         ) { _, callAction ->
             CallSheetItem(
                 callAction = callAction,
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier
+                    .animateItem()
+                    .focusProperties { canFocus = areChildrenKeyboardFocusable },
                 label = labels,
                 extended = false,
                 inputPermissions = inputPermissions,

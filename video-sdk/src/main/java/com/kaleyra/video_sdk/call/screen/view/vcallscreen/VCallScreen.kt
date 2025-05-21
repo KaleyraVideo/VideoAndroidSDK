@@ -36,11 +36,15 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -97,6 +101,7 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
+import kotlinx.coroutines.launch
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -204,14 +209,31 @@ internal fun VCallScreen(
         } else null,
         sheetDragContent = {
             if (hasSheetDragContent) {
+                val areChildrenKeyboardFocusable by remember {
+                    // Even when the bottom sheet is collapsed, its children remain keyboard-focusable.
+                    // To prevent unintended interactions, disable their focus in this state
+                    derivedStateOf { sheetState.currentValue == CallSheetValue.Expanded }
+                }
+                val coroutineScope = rememberCoroutineScope()
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
+                    areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
                     inputPermissions = inputPermissions,
                     onModularComponentRequest = onSideBarSheetComponentRequest,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     onAskInputPermissions = onAskInputPermissions,
-                    modifier = Modifier.animateContentSize()
+                    modifier = Modifier
+                        .animateContentSize()
+                        .onFocusChanged {
+                            // Ensures the bottom sheet closes automatically when it loses focus,
+                            // improving accessibility for keyboard users.
+                            if (!it.hasFocus) {
+                                coroutineScope.launch {
+                                    sheetState.collapse()
+                                }
+                            }
+                        }
                 )
             }
         },
