@@ -137,7 +137,7 @@ class OneToOneAppBarTest {
     @Test
     fun chatParticipantStateOnline_onlineDisplayed() {
         chatParticipantState.value = ChatParticipantState.Online
-        val online = composeTestRule.activity.getString(R.string.kaleyra_chat_user_status_online)
+        val online = composeTestRule.activity.getString(R.string.kaleyra_strings_info_online)
         getSubtitle().assertTextEquals(online)
     }
 

@@ -56,7 +56,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip.FirstItem" parent="KaleyraCollaborationSuiteUI.TextView.GlassIconTip">
-        <item name="android:text">@string/kaleyra_glass_swipe</item>
+        <item name="android:text">@string/kaleyra_strings_action_swipe</item>
     </style>
 
     <!-- VOICE COMMANDS -->
@@ -92,7 +92,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip.SecondItem" parent="KaleyraCollaborationSuiteUI.TextView.GlassIconTip">
-        <item name="android:text">@string/kaleyra_glass_tap</item>
+        <item name="android:text">@string/kaleyra_string_action_tap</item>
     </style>
 
     <!-- VOICE COMMANDS -->
@@ -128,7 +128,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip.ThirdItem" parent="KaleyraCollaborationSuiteUI.TextView.GlassIconTip">
-        <item name="android:text">@string/kaleyra_glass_swipe</item>
+        <item name="android:text">@string/kaleyra_strings_action_swipe</item>
     </style>
 
     <!-- VOICE COMMANDS -->

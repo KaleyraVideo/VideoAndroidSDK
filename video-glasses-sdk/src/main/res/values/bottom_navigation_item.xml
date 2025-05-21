@@ -48,7 +48,7 @@
     <!-- ICON TIP TEXT -->
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip" parent="KaleyraCollaborationSuiteUI.TextView">
         <item name="android:maxLines">1</item>
-        <item name="android:text">@string/kaleyra_glass_tap</item>
+        <item name="android:text">@string/kaleyra_string_action_tap</item>
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
         <item name="android:layout_gravity">center</item>

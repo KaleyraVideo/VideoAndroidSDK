@@ -60,7 +60,6 @@
     <string name="kaleyra_participants_component_unmute_for_you">Unmute for you</string>
     <string name="kaleyra_participants_component_mute_for_you_description">Mute %s for you</string>
     <string name="kaleyra_participants_component_unmute_for_you_description">Unmute %s for you</string>
-    <string name="kaleyra_participants_component_you">%s (You)</string>
     <string name="kaleyra_participants_component_admin">Admin</string>
     <string name="kaleyra_participants_component_screenshare">Screen share</string>
     <string name="kaleyra_participants_component_remove_from_call">Remove from call</string>
@@ -105,9 +104,7 @@
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Type your message here</string>
-    <string name="kaleyra_chat_user_status_online">online</string>
     <string name="kaleyra_chat_participants_is_online">is online</string>
-    <string name="kaleyra_chat_participants_online">%1$s online</string>
     <plurals name="kaleyra_call_participants_typing">
         <item quantity="one">%1$s is typing</item>
         <item quantity="other">%1$d typing</item>
@@ -127,14 +124,10 @@
     <!-- Call -->
     <string name="kaleyra_call_show_buttons">Show buttons</string>
     <string name="kaleyra_call_status_dialing">Calling &#8230;</string>
-    <plurals name="kaleyra_call_incoming_status_ringing">
-        <item quantity="one">Is calling you &#8230;</item>
-        <item quantity="other">Are calling you &#8230;</item>
-    </plurals>
+
     <string name="kaleyra_call_status_ringing">Ringing &#8230;</string>
     <string name="kaleyra_call_status_user_disconnected">Internet connection has been interrupted.</string>
 
-    <string name="kaleyra_call_info_rec">Rec</string>
     <string name="kaleyra_call_info_ongoing_recording">This call is being recorded</string>
     <string name="kaleyra_action_discard_changes">Discard changes</string>
     <string name="kaleyra_action_confirm">Confirm</string>
@@ -254,17 +247,12 @@
     <string name="kaleyra_feedback_thank_you">Thank you for your feedback!</string>
 
     <!-- RECORDING -->
-    <string name="kaleyra_rec" translatable="false">REC</string>
+
     <string name="kaleyra_recording_started_message">The call recording has started.</string>
     <string name="kaleyra_recording_stopped">Recording stopped</string>
     <string name="kaleyra_recording_stopped_message">The call recording has been stopped.</string>
     <string name="kaleyra_automatic_recording_disclaimer">The call will be recorded</string>
     <string name="kaleyra_manual_recording_disclaimer">The call may be recorded</string>
-
-    <!-- TOP APP BAR -->
-    <string name="kaleyra_start_audio_call">Start audio call</string>
-    <string name="kaleyra_start_audio_upgradable_call">Start video call with video disabled</string>
-    <string name="kaleyra_start_video_call">Start video call</string>
 
     <!-- USB CAMERA -->
     <string name="kaleyra_generic_external_camera_connected">External USB camera connected</string>

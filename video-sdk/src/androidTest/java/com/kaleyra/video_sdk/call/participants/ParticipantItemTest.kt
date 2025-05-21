@@ -97,7 +97,7 @@ class ParticipantItemTest {
     @Test
     fun testYouIsDisplayed() {
         stream = streamUiMock.copy(isMine = true)
-        val text = composeTestRule.activity.getString(R.string.kaleyra_participants_component_you, stream.userInfo?.username ?: "")
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_your_participant, stream.userInfo?.username ?: "")
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 

@@ -52,8 +52,6 @@
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Escreva aqui</string>
-    <string name="kaleyra_chat_user_status_online">online</string>
-    <string name="kaleyra_chat_participants_online">%1$s online</string>
     <plurals name="kaleyra_call_participants_typing">
         <item quantity="one">%1$s está digitando</item>
         <item quantity="other">%1$d estão digitando</item>
@@ -74,14 +72,9 @@
     <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostrar botões</string>
     <string name="kaleyra_call_status_dialing">Chamando &#8230;</string>
-    <plurals name="kaleyra_call_incoming_status_ringing">
-        <item quantity="one">Está te chamando &#8230;</item>
-        <item quantity="other">Estão te chamando &#8230;</item>
-    </plurals>
     <string name="kaleyra_call_status_ringing">Tocando &#8230;</string>
     <string name="kaleyra_call_status_user_disconnected">A conexão com a internet foi interrompida.</string>
 
-    <string name="kaleyra_call_info_rec">Rec</string>
     <string name="kaleyra_call_info_ongoing_recording">Esta chamada está sendo gravada</string>
     <string name="kaleyra_action_discard_changes">Descartar alterações</string>
     <string name="kaleyra_action_confirm">Confirmar</string>
@@ -199,11 +192,6 @@
     <string name="kaleyra_automatic_recording_disclaimer">A chamada será gravada</string>
     <string name="kaleyra_manual_recording_disclaimer">A chamada pode ser gravada</string>
 
-    <!-- BARRA DE TOPO DO APLICATIVO -->
-    <string name="kaleyra_start_audio_call">Iniciar chamada de áudio</string>
-    <string name="kaleyra_start_audio_upgradable_call">Iniciar chamada de vídeo com vídeo desativado</string>
-    <string name="kaleyra_start_video_call">Iniciar chamada de vídeo</string>
-
     <!-- CÂMERA USB -->
     <string name="kaleyra_generic_external_camera_connected">Câmera USB externa conectada</string>
     <string name="kaleyra_external_camera_connected">Câmera USB externa %1$s conectada</string>
@@ -265,7 +253,6 @@
     <string name="kaleyra_participants_component_unmute_for_you">Desmutar</string>
     <string name="kaleyra_participants_component_mute_for_you_description">Silenciar %s</string>
     <string name="kaleyra_participants_component_unmute_for_you_description">Desmutar %s</string>
-    <string name="kaleyra_participants_component_you">%s (Você)</string>
     <string name="kaleyra_participants_component_admin">Administrador</string>
     <string name="kaleyra_participants_component_screenshare">Compartilhamento de tela</string>
     <string name="kaleyra_participants_component_remove_from_call">Remover da chamada</string>

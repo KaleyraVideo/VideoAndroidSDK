@@ -139,7 +139,7 @@ class GroupAppBarTest {
     fun participantsStateOnline_onlineIsDisplayed() {
         val users = listOf("mary", "john")
         participantsState = ChatParticipantsState(online = ImmutableList(users))
-        val typing = composeTestRule.activity.getString(R.string.kaleyra_chat_participants_online, users.size, users.size)
+        val typing = composeTestRule.activity.getString(R.string.kaleyra_strings_info_participant_online, users.size, users.size)
         getSubtitle().assertTextEquals(typing)
     }
 

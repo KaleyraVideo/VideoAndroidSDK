@@ -142,7 +142,7 @@ class CallAppBarComponentTest {
     fun automaticRecording_callConnecting_RECDisplayed() {
         recording = true
         callStateUi = CallStateUi.Connecting
-        val rec = composeTestRule.activity.getString(R.string.kaleyra_rec)
+        val rec = composeTestRule.activity.getString(R.string.kaleyra_strings_info_rec)
         composeTestRule.onNodeWithText(rec).assertIsDisplayed()
     }
 

@@ -55,7 +55,6 @@
     <string name="kaleyra_participants_component_unmute_for_you">Riattiva l\'audio</string>
     <string name="kaleyra_participants_component_mute_for_you_description">Silenzia %s</string>
     <string name="kaleyra_participants_component_unmute_for_you_description">Riattiva l\'audio di %s</string>
-    <string name="kaleyra_participants_component_you">%s (Tu)</string>
     <string name="kaleyra_participants_component_admin">Amministratore</string>
     <string name="kaleyra_participants_component_screenshare">Condivisione schermo</string>
     <string name="kaleyra_participants_component_remove_from_call">Rimuovi dalla chiamata</string>
@@ -98,8 +97,6 @@
 
     <!-- Chat -->
     <string name="kaleyra_edit_text_input_placeholder">Scrivi qui il tuo messaggio</string>
-    <string name="kaleyra_chat_user_status_online">in linea</string>
-    <string name="kaleyra_chat_participants_online">%1$s in linea</string>
     <plurals name="kaleyra_call_participants_typing">
         <item quantity="one">%1$s sta scrivendo</item>
         <item quantity="other">%1$d stanno scrivendo</item>
@@ -122,13 +119,9 @@
     <string name="kaleyra_chat">Chat</string>
     <string name="kaleyra_call_show_buttons">Mostra tasti</string>
     <string name="kaleyra_call_status_dialing">Chiamata in corso &#8230;</string>
-    <plurals name="kaleyra_call_incoming_status_ringing">
-        <item quantity="one">Ti sta chiamando &#8230;</item>
-        <item quantity="other">Ti stanno chiamando &#8230;</item>
-    </plurals>
+
     <string name="kaleyra_call_status_ringing">Sta squillando &#8230;</string>
     <string name="kaleyra_call_status_user_disconnected">La connessione di rete è stata interrotta.</string>
-    <string name="kaleyra_call_info_rec">Rec</string>
     <string name="kaleyra_call_info_ongoing_recording">Registrazione chiamata in corso</string>
     <string name="kaleyra_action_discard_changes">Annulla modifiche</string>
     <string name="kaleyra_action_confirm">Conferma</string>
@@ -246,11 +239,6 @@
     <string name="kaleyra_recording_stopped_message">La registrazione della chiamata è stata interrotta.</string>
     <string name="kaleyra_automatic_recording_disclaimer">Questa chiamata sarà registrata</string>
     <string name="kaleyra_manual_recording_disclaimer">Questa chiamata potrebbe essere registrata</string>
-
-    <!-- TOP APP BAR -->
-    <string name="kaleyra_start_audio_call">Avvia chiamata audio</string>
-    <string name="kaleyra_start_audio_upgradable_call">Avvia videochiamata con video disattivato</string>
-    <string name="kaleyra_start_video_call">Avvia videochiamata</string>
 
     <!-- USB CAMERA -->
     <string name="kaleyra_generic_external_camera_connected">Camera USB aggiuntiva connessa</string>

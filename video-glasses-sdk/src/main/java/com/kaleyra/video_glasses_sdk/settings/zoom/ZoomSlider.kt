@@ -33,7 +33,7 @@ internal class ZoomSlider @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : SettingSlider(context, attrs, defStyleAttr)  {
+) : SettingSlider(context, attrs, defStyleAttr) {
 
     override var binding: KaleyraGlassSliderLayoutBinding = KaleyraGlassSliderLayoutBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -43,6 +43,11 @@ internal class ZoomSlider @JvmOverloads constructor(
     }
 
     override fun setSliderText(progress: Int) {
-        binding.kaleyraPercentage.text = resources.getString(R.string.kaleyra_glass_slider_zoom_pattern, ((progress.toFloat() / maxProgress) * 100).roundToInt())
+        binding.kaleyraPercentage.text = with(resources) {
+            getString(R.string.kaleyra_strings_info_current_level_pattern,
+                getString(R.string.kaleyra_strings_action_zoom),
+                ((progress.toFloat() / maxProgress) * 100).roundToInt()
+            )
+        }
     }
 }

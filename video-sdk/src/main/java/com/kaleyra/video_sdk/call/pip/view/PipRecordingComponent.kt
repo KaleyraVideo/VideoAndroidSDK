@@ -38,10 +38,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.R
@@ -82,7 +80,7 @@ internal fun PipRecordingComponent(modifier: Modifier = Modifier) {
             RecordingDot()
             Spacer(Modifier.width(4.dp))
             Text(
-                text = stringResource(id = R.string.kaleyra_call_info_rec).uppercase(),
+                text = stringResource(id = R.string.kaleyra_strings_info_rec).uppercase(),
                 color = Color.White,
                 style = MaterialTheme.typography.labelSmall
             )

@@ -29,7 +29,7 @@ internal fun MutedSnackbarM3(
     val resources = LocalContext.current.resources
     UserMessageInfoSnackbarM3(
         message = resources.getQuantityString(
-            R.plurals.kaleyra_call_participant_muted_by_admin,
+            R.plurals.kaleyra_strings_info_participant_muted_by_admin,
             if (adminDisplayName.isNullOrBlank()) 0 else 1,
             adminDisplayName
         ),

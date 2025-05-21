@@ -68,7 +68,7 @@
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassIconTip.SecondItem.Volume" parent="KaleyraCollaborationSuiteUI.TextView.GlassIconTip.SecondItem">
-        <item name="android:text">@string/kaleyra_glass_swipe</item>
+        <item name="android:text">@string/kaleyra_strings_action_swipe</item>
     </style>
 
     <style name="KaleyraCollaborationSuiteUI.TextView.GlassLabel.SecondItemVolume" parent="KaleyraCollaborationSuiteUI.TextView.GlassLabel">

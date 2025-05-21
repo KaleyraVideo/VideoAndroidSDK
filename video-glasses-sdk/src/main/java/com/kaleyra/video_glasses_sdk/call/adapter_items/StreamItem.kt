@@ -288,7 +288,7 @@ internal class MyStreamItem(
             }.launchIn(item.scope)
 
             binding.kaleyraSubtitleLayout.kaleyraSubtitle.text = itemView.context.getString(
-                R.string.kaleyra_glass_you_pattern,
+                R.string.kaleyra_strings_info_your_participant,
                 item.streamParticipant.userDescription
             )
             binding.kaleyraCenteredSubtitle.text = item.streamParticipant.userDescription

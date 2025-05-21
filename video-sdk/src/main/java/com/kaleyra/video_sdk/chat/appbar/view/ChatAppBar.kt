@@ -27,13 +27,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.chat.appbar.model.ChatAction
 import com.kaleyra.video_sdk.common.button.BackIconButton
@@ -75,19 +73,10 @@ internal fun Actions(actions: ImmutableSet<ChatAction>) {
     Row(Modifier.testTag(ChatActionsTag)) {
         actions.value.forEach {
             when (it) {
-                is ChatAction.AudioCall -> {
+                is ChatAction.AudioUpgradableCall, is ChatAction.AudioCall -> {
                     IconButton(
                         icon = painterResource(R.drawable.ic_kaleyra_audio_call),
-                        iconDescription = stringResource(id = R.string.kaleyra_start_audio_call),
-                        enabledIconTint = MaterialTheme.colorScheme.onSurface,
-                        onClick = it.onClick
-                    )
-                }
-
-                is ChatAction.AudioUpgradableCall -> {
-                    IconButton(
-                        icon = painterResource(R.drawable.ic_kaleyra_audio_upgradable_call),
-                        iconDescription = stringResource(id = R.string.kaleyra_start_audio_upgradable_call),
+                        iconDescription = stringResource(id = R.string.kaleyra_strings_info_action_call),
                         enabledIconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = it.onClick
                     )
@@ -96,7 +85,7 @@ internal fun Actions(actions: ImmutableSet<ChatAction>) {
                 is ChatAction.VideoCall -> {
                     IconButton(
                         icon = painterResource(R.drawable.ic_kaleyra_video_call),
-                        iconDescription = stringResource(id = R.string.kaleyra_start_video_call),
+                        iconDescription = stringResource(id = R.string.kaleyra_strings_info_action_video_call),
                         enabledIconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = it.onClick
                     )

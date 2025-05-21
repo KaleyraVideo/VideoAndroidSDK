@@ -47,11 +47,11 @@
     <string name="kaleyra_strings_info_recording_started">Grabación iniciada</string>
     <string name="kaleyra_string_info_recording_stopped">Grabación detenida</string>
     <string name="kaleyra_strings_info_yesterday">ayer</string>
-    <plurals name="kaleyra_call_participant_muted_by_admin">
+    <plurals name="kaleyra_strings_info_participant_muted_by_admin">
         <item quantity="one">%s te ha silenciado.\nToque el botón del micrófono para activar el sonido.</item>
         <item quantity="other">El administrador te ha silenciado.\nToque el botón del micrófono para activar el sonido.</item>
     </plurals>
-    <plurals name="kaleyra_call_participant_removed">
+    <plurals name="kaleyra_strings_info_participant_removed_by_admin">
         <item quantity="one">%s te ha eliminado de la llamada</item>
         <item quantity="other">El administrador te ha eliminado de la llamada</item>
     </plurals>
@@ -65,7 +65,7 @@
     <string name="kaleyra_strings_action_start_screen_share">Pantalla</string>
     <string name="kaleyra_strings_info_user_answered_on_another_device">Has respondido en otro dispositivo.</string>
     <string name="kaleyra_strings_action_back">Atrás</string>
-    <string name="kaleyra_strings_action_more">más</string>
+    <string name="kaleyra_strings_action_more">Más</string>
     <string name="kaleyra_strings_action_call">Llamar</string>
     <string name="kaleyra_strings_info_generic_error">Se produjo un error</string>
     <plurals name="kaleyra_strings_info_hardware_permission_error">
@@ -88,8 +88,8 @@
     <string name="kaleyra_strings_action_volume">Volumen</string>
     <string name="kaleyra_strings_action_dismiss">Descartar</string>
     <string name="kaleyra_strings_info_participant_invited">Invitados</string>
-    <string name="kaleyra_strings_info_participant_status_offline">visto recientemente</string>
-    <string name="kaleyra_strings_info_participant_status_last_seen">última vez: %1$s</string>
+    <string name="kaleyra_strings_info_participant_status_offline">Visto recientemente</string>
+    <string name="kaleyra_strings_info_participant_status_last_seen">Última vez: %1$s</string>
     <string name="kaleyra_strings_info_call_line_busy">Linea ocupada</string>
     <string name="kaleyra_strings_info_loading">Cargando…</string>
     <string name="kaleyra_strings_info_disable_microphone">Desactivar micrófono</string>
@@ -111,7 +111,7 @@
     <string name="kaleyra_strings_info_new_messages_number">%1$d nuevos mensajes</string>
     <string name="kaleyra_strings_info_empty_chat_title">Aún no hay mensajes</string>
     <string name="kaleyra_strings_info_now">Ahora</string>
-    <string name="kaleyra_strings_info_offline">esperando red…</string>
+    <string name="kaleyra_strings_info_offline">Esperando red…</string>
 
 
     <!-- SIGNATURE -->
@@ -119,4 +119,27 @@
     <string name="kaleyra_signature_notification_user_sending_file">%1$s te envió un documento para firmar.</string>
     <string name="kaleyra_signature_notification_sign_content_message">¿Quieres firmarlo?</string>
 
+    <string name="kaleyra_strings_info_online">En línea</string>
+    <string name="kaleyra_strings_action_menu">Menú</string>
+    <string name="kaleyra_string_action_read">Leído</string>
+    <plurals name="kaleyra_strings_info_incoming_call">
+        <item quantity="one">Te está llamando &#8230;</item>
+        <item quantity="other">Te están llamando &#8230;</item>
+    </plurals>
+    <string name="kaleyra_strings_action_swipe_left">deslizar hacia la izquierda</string>
+    <string name="kaleyra_strings_action_swipe_right">deslizar hacia la derecha</string>
+    <string name="kaleyra_strings_action_either_way">deslizar hacia la derecha/izquierda</string>
+    <string name="kaleyra_strings_action_select">Seleccionar</string>
+    <string name="kaleyra_strings_action_swipe">Deslizar</string>
+    <string name="kaleyra_string_action_tap">Tocar</string>
+    <string name="kaleyra_strings_info_participant_joined">%1$s se unió</string>
+    <string name="kaleyra_strings_info_participant_online">%1$s en línea</string>
+    <string name="kaleyra_strings_info_participant_left">%1$s se fue</string>
+    <string name="kaleyra_strings_info_your_participant">%s (Tú)</string>
+    <plurals name="kaleyra_strings_info_call_max_duration_warn">
+        <item quantity="one">%d minuto restante para el final de la llamada</item>
+        <item quantity="other">%d minutos restantes para el final de la llamada</item>
+    </plurals>
+    <string name="kaleyra_strings_info_action_call">Iniciar llamada</string>
+    <string name="kaleyra_strings_info_action_video_call">Iniciar videollamada</string>
 </resources>

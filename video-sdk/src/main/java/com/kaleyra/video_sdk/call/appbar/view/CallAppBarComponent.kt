@@ -115,14 +115,14 @@ internal fun CallAppBarComponent(
                                 recording = automaticRecording ||
                                     recordingStateUi == RecordingStateUi.Started,
                                 pulseRecording = false,
-                                title = stringResource(id = R.string.kaleyra_rec)
+                                title = stringResource(id = R.string.kaleyra_strings_info_rec)
                             )
 
                     else -> Title(
                         recording = automaticRecording ||
                             recordingStateUi == RecordingStateUi.Started,
                         pulseRecording = recordingStateUi == RecordingStateUi.Started,
-                        title = title ?: automaticRecording.takeIf { it }?.let { stringResource(id = R.string.kaleyra_rec) } ?: "")
+                        title = title ?: automaticRecording.takeIf { it }?.let { stringResource(id = R.string.kaleyra_strings_info_rec) } ?: "")
                 }
             }
         )

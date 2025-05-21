@@ -194,7 +194,7 @@ internal abstract class CallScreenBaseTest {
         every { KickedMessageViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<KickedMessageViewModel>>(), any()) } returns kickedMessageViewModel
         }
-        ContextRetainer().create(mockk(relaxed = true))
+        ContextRetainer().create(ApplicationProvider.getApplicationContext())
     }
 
     @After

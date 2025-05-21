@@ -37,7 +37,7 @@ class MutedSnackbarM3Test {
     fun testMutedSnackbar() {
         val adminDisplayName = "adminUsername"
         composeTestRule.setContent { MutedSnackbarM3(adminDisplayName) }
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_muted_by_admin, 1, adminDisplayName)
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participant_muted_by_admin, 1, adminDisplayName)
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 }

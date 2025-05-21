@@ -60,22 +60,25 @@ internal class RingingFragment : PreCallFragment() {
         }
     }
 
-    override fun onConnected() { findNavController().safeNavigate(RingingFragmentDirections.actionRingingFragmentToEmptyFragment()) }
+    override fun onConnected() {
+        findNavController().safeNavigate(RingingFragmentDirections.actionRingingFragmentToEmptyFragment())
+    }
 
-    override fun setSubtitle(isGroupCall: Boolean, isLink: Boolean) {
-        binding.kaleyraSubtitle.text = resources.getString(
-            when {
-                isLink -> R.string.kaleyra_strings_info_status_connecting
-                isGroupCall -> R.string.kaleyra_strings_system_android_notification_title_call
-                else -> R.string.kaleyra_glass_ringing
-            }
-    ) }
+    override fun setSubtitle(isGroupCall: Boolean, isLink: Boolean) = with(resources) {
+        binding.kaleyraSubtitle.text = when {
+            isLink -> getString(R.string.kaleyra_strings_system_android_notification_title_call)
+            isGroupCall -> getQuantityString(R.plurals.kaleyra_strings_info_incoming_call, 2)
+            else -> getQuantityString(R.plurals.kaleyra_strings_info_incoming_call, 1)
+        }
+    }
 
     override fun onTap() = true.also { viewModel.onAnswer() }
 
     override fun onSwipeDown() = true.also { viewModel.onHangup() }
 
-    override fun onSwipeForward(isKeyEvent: Boolean) = isKeyEvent.also { if(it) binding.kaleyraParticipantsScrollView.smoothScrollByWithAutoScroll(resources.displayMetrics.densityDpi / 2, 0) }
+    override fun onSwipeForward(isKeyEvent: Boolean) =
+        isKeyEvent.also { if (it) binding.kaleyraParticipantsScrollView.smoothScrollByWithAutoScroll(resources.displayMetrics.densityDpi / 2, 0) }
 
-    override fun onSwipeBackward(isKeyEvent: Boolean) = isKeyEvent.also { if(it) binding.kaleyraParticipantsScrollView.smoothScrollByWithAutoScroll(-resources.displayMetrics.densityDpi / 2, 0) }
+    override fun onSwipeBackward(isKeyEvent: Boolean) =
+        isKeyEvent.also { if (it) binding.kaleyraParticipantsScrollView.smoothScrollByWithAutoScroll(-resources.displayMetrics.densityDpi / 2, 0) }
 }

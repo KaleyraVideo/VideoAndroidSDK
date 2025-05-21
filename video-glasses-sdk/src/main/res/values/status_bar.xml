@@ -112,7 +112,7 @@
         <item name="android:paddingEnd">@dimen/kaleyra_dimen_space24</item>
         <item name="android:textSize">@dimen/kaleyra_dimen_text_h1</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:text">@string/kaleyra_glass_rec</item>
+        <item name="android:text">@string/kaleyra_strings_info_rec</item>
         <item name="android:visibility">gone</item>
     </style>
 </resources>

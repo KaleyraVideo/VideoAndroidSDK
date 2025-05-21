@@ -83,7 +83,7 @@ class PipScreenTest {
     fun testPipRecordingComponentIsDisplayed() {
         composeTestRule.setContent { PipScreen(onPipAspectRatio = {}) }
 
-        val text = composeTestRule.activity.getString(R.string.kaleyra_call_info_rec)
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_info_rec)
         composeTestRule.onNodeWithText(text, ignoreCase = true).assertIsDisplayed()
     }
 

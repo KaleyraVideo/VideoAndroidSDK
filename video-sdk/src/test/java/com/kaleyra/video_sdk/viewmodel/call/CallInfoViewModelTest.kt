@@ -134,7 +134,7 @@ class CallInfoViewModelTest {
 
     @Test
     fun testCallStateUiRinging_oneParticipant_stateUpdated() = runTest {
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_incoming_status_ringing, 1)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_incoming_call, 1)
         every { callParticipants.others } returns listOf(mockk(relaxed = true))
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(listOf("user1"))
@@ -149,7 +149,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateUiRinging_moreParticipant_stateUpdated() = runTest {
         val callee = listOf("user1", "user2")
-        val expected = TextRef.PluralResource(R.plurals.kaleyra_call_incoming_status_ringing, callee.size)
+        val expected = TextRef.PluralResource(R.plurals.kaleyra_strings_info_incoming_call, callee.size)
         every { callParticipants.others } returns callee.map { mockk<CallParticipant>(relaxed = true) }
         every { call.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
         every { call.toOtherDisplayNames() } returns MutableStateFlow(callee)
@@ -288,7 +288,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateUiRingingOto_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant)
-        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_incoming_status_ringing, quantity = call.participants.value.others.size)
+        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_incoming_call, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Ringing.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }
@@ -296,7 +296,7 @@ class CallInfoViewModelTest {
     @Test
     fun testCallStateUiRingingMtm_toCallStateUi() {
         every { callParticipants.others } returns listOf(otherParticipant, otherParticipant)
-        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_call_incoming_status_ringing, quantity = call.participants.value.others.size)
+        val expected = TextRef.PluralResource(id = R.plurals.kaleyra_strings_info_incoming_call, quantity = call.participants.value.others.size)
         val displayState = CallStateUi.Ringing.toTextRef(call)
         Assert.assertEquals(expected, displayState)
     }

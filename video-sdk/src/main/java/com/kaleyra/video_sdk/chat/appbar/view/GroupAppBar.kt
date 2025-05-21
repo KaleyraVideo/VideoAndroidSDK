@@ -102,7 +102,7 @@ private fun textFor(
         )
 
         onlineCount > 0 -> stringResource(
-            R.string.kaleyra_chat_participants_online,
+            R.string.kaleyra_strings_info_participant_online,
             onlineCount
         )
 

@@ -101,7 +101,7 @@ fun KickedMessageDialog(kickedUiState: KickedMessageUiState, onDismiss: () -> Un
             ) {
                 Text(
                     text = pluralStringResource(
-                        id = R.plurals.kaleyra_call_participant_removed,
+                        id = R.plurals.kaleyra_strings_info_participant_removed_by_admin,
                         count = if (kickedUiState.adminName?.isNotBlank() == true) 1 else 0,
                         kickedUiState.adminName ?: ""),
                     modifier = Modifier.padding(16.dp),

@@ -51,7 +51,7 @@ internal fun StackedUserMessageComponent(
         kClass = UserMessagesViewModel::class,
         viewModelFactory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration),
         boundActivities = arrayOf(LocalContext.current.findActivity()::class.java.name)
-    ),//= viewModel(factory = UserMessagesViewModel.provideFactory(LocalAccessibilityManager.current, ::requestCollaborationViewModelConfiguration)),
+    ),
     onActionClick: (UserMessage) -> Unit
 ) {
     val userMessage by viewModel.userMessage.collectAsStateWithLifecycle(ImmutableList())

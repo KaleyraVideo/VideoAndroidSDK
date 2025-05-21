@@ -42,7 +42,7 @@
 
     <!-- SUBTITLE -->
     <style name="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog.Ringing" parent="KaleyraCollaborationSuiteUI.TextView.Subtitle.FullScreenDialog">
-        <item name="android:text">@string/kaleyra_glass_ringing</item>
+        <item name="android:text">@string/kaleyra_strings_system_android_notification_title_call</item>
     </style>
 
     <!-- BOTTOM NAVIGATION -->

@@ -363,7 +363,7 @@ internal class GlassCallActivity :
                 .onEach { state ->
                     if (state is Call.State.Reconnecting) navController!!.navigate(R.id.reconnectingFragment)
                     if (state is Call.State.Disconnected.Ended) {
-                        val subtitle = if (state != Call.State.Disconnected.Ended) resources.getString(R.string.kaleyra_strings_info_call_ended) else null
+                        val subtitle = if (state !is Call.State.Disconnected.Ended.HungUp) resources.getString(R.string.kaleyra_strings_info_call_ended) else null
 
                         val title = when (state) {
                             is Call.State.Disconnected.Ended.Declined -> resources.getString(R.string.kaleyra_strings_info_call_declined)
@@ -374,7 +374,7 @@ internal class GlassCallActivity :
                                 val name = participant?.combinedDisplayName?.first() ?: ""
                                 val hasDescription = name.isNotEmpty() && name != state.userId
                                 resources.getQuantityString(
-                                    R.plurals.kaleyra_glass_removed_from_call,
+                                    R.plurals.kaleyra_strings_info_participant_removed_by_admin,
                                     if (hasDescription) 1 else 0,
                                     name
                                 )
@@ -409,7 +409,7 @@ internal class GlassCallActivity :
                     show(
                         ADMIN_MUTED_TOAST_ID,
                         resources.getQuantityString(
-                            R.plurals.kaleyra_glass_muted_by_admin,
+                            R.plurals.kaleyra_strings_info_participant_muted_by_admin,
                             if (hasDescription) 1 else 0,
                             name
                         ),
@@ -468,7 +468,7 @@ internal class GlassCallActivity :
                         it == TIMER_BLINK_FOREVER_TH -> binding.kaleyraStatusBar.blinkTimer(-1)
                         it % 60 == 0L && ttlWarningThresholds.contains(minutes) -> {
                             val text = resources.getQuantityString(
-                                R.plurals.kaleyra_glass_ttl_expiration_pattern,
+                                R.plurals.kaleyra_strings_info_call_max_duration_warn,
                                 minutes,
                                 minutes
                             )
@@ -481,7 +481,7 @@ internal class GlassCallActivity :
             viewModel.onParticipantJoin
                 .onEach { part ->
                     val text = resources.getString(
-                        R.string.kaleyra_glass_user_joined_pattern,
+                        R.string.kaleyra_strings_info_participant_joined,
                         part.combinedDisplayName.first()
                     )
                     binding.kaleyraToastContainer.show(text = text)
@@ -490,7 +490,7 @@ internal class GlassCallActivity :
             viewModel.onParticipantLeave
                 .onEach { part ->
                     val text = resources.getString(
-                        R.string.kaleyra_glass_user_left_pattern,
+                        R.string.kaleyra_strings_info_participant_left,
                         part.combinedDisplayName.first()
                     )
                     binding.kaleyraToastContainer.show(text = text)

@@ -43,7 +43,7 @@ class PipRecordingComponentTest {
 
     @Test
     fun recTextIsDisplayed() {
-        val rec = composeTestRule.activity.getString(R.string.kaleyra_call_info_rec).uppercase()
+        val rec = composeTestRule.activity.getString(R.string.kaleyra_strings_info_rec).uppercase()
         composeTestRule.onNodeWithText(rec, ignoreCase = true).assertIsDisplayed()
     }
 }

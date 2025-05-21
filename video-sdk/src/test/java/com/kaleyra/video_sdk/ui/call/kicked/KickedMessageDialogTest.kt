@@ -17,9 +17,6 @@
 package com.kaleyra.video_sdk.ui.call.kicked
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -62,7 +59,7 @@ class KickedMessageDialogTest {
         composeTestRule.setContent {
             KickedMessageDialog(kickedUiState = KickedMessageUiState.Hidden, onDismiss = { isDismissed = true })
         }
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "")
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participant_removed_by_admin, 0, "")
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 
@@ -72,7 +69,7 @@ class KickedMessageDialogTest {
         composeTestRule.setContent {
             KickedMessageDialog(kickedUiState = KickedMessageUiState.Display("admin"), onDismiss = { isDismissed = true })
         }
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "admin")
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participant_removed_by_admin, 0, "admin")
         composeTestRule.onNodeWithText(text).assertDoesNotExist()
     }
 
@@ -81,7 +78,7 @@ class KickedMessageDialogTest {
         composeTestRule.setContent {
             KickedMessageDialog(kickedUiState = KickedMessageUiState.Display(), onDismiss = { isDismissed = true })
         }
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 0, "")
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participant_removed_by_admin, 0, "")
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
@@ -90,7 +87,7 @@ class KickedMessageDialogTest {
         composeTestRule.setContent {
             KickedMessageDialog(kickedUiState = KickedMessageUiState.Display(adminName = "CustomAdmin"), onDismiss = { isDismissed = true })
         }
-        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_call_participant_removed, 1, "CustomAdmin")
+        val text = composeTestRule.activity.resources.getQuantityString(R.plurals.kaleyra_strings_info_participant_removed_by_admin, 1, "CustomAdmin")
         composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 }

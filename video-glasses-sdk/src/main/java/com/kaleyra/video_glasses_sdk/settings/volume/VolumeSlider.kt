@@ -43,7 +43,9 @@ internal class VolumeSlider @JvmOverloads constructor(
         setSliderText(minProgress)
     }
 
-    override fun setSliderText(progress: Int) { binding.kaleyraPercentage.text = resources.getString(R.string.kaleyra_glass_slider_volume_pattern, progress) }
+    override fun setSliderText(progress: Int) { binding.kaleyraPercentage.text =  with(resources) {
+        getString(R.string.kaleyra_strings_info_current_level_pattern, getString(R.string.kaleyra_strings_action_volume), progress) }
+    }
 
     companion object {
         const val MIN_VALUE = 1

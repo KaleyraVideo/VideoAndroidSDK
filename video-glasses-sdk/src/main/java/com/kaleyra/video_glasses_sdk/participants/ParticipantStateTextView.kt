@@ -45,7 +45,7 @@ internal class ParticipantStateTextView @JvmOverloads constructor(
         this.state = state
         text = when (state) {
             is ChatParticipant.State.Invited   -> resources.getString(R.string.kaleyra_strings_info_participant_invited)
-            is ChatParticipant.State.Joined.Online    -> resources.getString(R.string.kaleyra_glass_online)
+            is ChatParticipant.State.Joined.Online    -> resources.getString(R.string.kaleyra_strings_info_online)
             is ChatParticipant.State.Joined.Offline -> {
                 val lastLogin = state.lastLogin
                 if (lastLogin is ChatParticipant.State.Joined.Offline.LastLogin.At) resources.getString(

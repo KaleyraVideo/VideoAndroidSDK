@@ -120,7 +120,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateRinging_withOneDisplayName_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1"))
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_incoming_status_ringing, callee.value.size)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_incoming_call, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,
@@ -137,7 +137,7 @@ class CallInfoComponentTest {
     @Test
     fun callUiStateRinging_withMoreDisplayNames_titleAndSubtitlesShown() {
         val callee = ImmutableList(listOf("user1", "user2"))
-        val textRef = TextRef.PluralResource(R.plurals.kaleyra_call_incoming_status_ringing, callee.value.size)
+        val textRef = TextRef.PluralResource(R.plurals.kaleyra_strings_info_incoming_call, callee.value.size)
         val displayState = textRef.resolve(composeTestRule.activity)
         callInfoUiState = CallInfoUiState(
             displayNames = callee,

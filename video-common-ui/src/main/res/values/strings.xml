@@ -39,7 +39,7 @@
     <string name="kaleyra_strings_info_call_waiting_for_other_participants">Waiting for other participants…</string>
     <string name="kaleyra_strings_info_user_answered_on_another_device">You have answered on another device.</string>
     <string name="kaleyra_strings_action_back">Back</string>
-    <string name="kaleyra_strings_action_more">more</string>
+    <string name="kaleyra_strings_action_more">More</string>
     <string name="kaleyra_strings_action_call">Call</string>
     <string name="kaleyra_strings_info_generic_error">An error occurred</string>
     <string name="kaleyra_strings_action_microphone">Microphone</string>
@@ -62,8 +62,8 @@
     <string name="kaleyra_strings_action_volume">Volume</string>
     <string name="kaleyra_strings_action_dismiss">Dismiss</string>
     <string name="kaleyra_strings_info_participant_invited">Invited</string>
-    <string name="kaleyra_strings_info_participant_status_offline">seen recently</string>
-    <string name="kaleyra_strings_info_participant_status_last_seen">last seen: %1$s</string>
+    <string name="kaleyra_strings_info_participant_status_offline">Seen recently</string>
+    <string name="kaleyra_strings_info_participant_status_last_seen">Last seen: %1$s</string>
     <string name="kaleyra_strings_info_call_line_busy">Line busy</string>
     <string name="kaleyra_strings_info_loading">Loading &#8230;</string>
     <string name="kaleyra_strings_info_disable_microphone">Disable microphone</string>
@@ -86,11 +86,11 @@
     <string name="kaleyra_strings_info_new_messages_number">%1$d new messages</string>
     <string name="kaleyra_strings_info_empty_chat_title">No message yet</string>
     <string name="kaleyra_strings_info_now">Now</string>
-    <string name="kaleyra_strings_info_offline">waiting for network &#8230;</string>
+    <string name="kaleyra_strings_info_offline">Waiting for network &#8230;</string>
 
     <!-- CALL PARTICIPANT REMOVED -->
 
-    <plurals name="kaleyra_call_participant_removed">
+    <plurals name="kaleyra_strings_info_participant_removed_by_admin">
         <item quantity="one">%s has removed you from the call</item>
         <item quantity="other">The admin has removed you from the call</item>
     </plurals>
@@ -98,10 +98,6 @@
 
     <!-- MUTE PARTICIPANT -->
 
-    <plurals name="kaleyra_call_participant_muted_by_admin">
-        <item quantity="one">%s has muted you.\nTo un-mute press the mic button.</item>
-        <item quantity="other">The admin has muted you.\nTo un-mute press the mic button</item>
-    </plurals>
     <string name="kaleyra_strings_description_admin_muted_you">Muted</string>
 
     <!-- TERMS AND CONDITIONS -->
@@ -138,5 +134,36 @@
     <string name="kaleyra_strings_info_call_no_answer">No answer.</string>
     <string name="kaleyra_strings_info_call_ended">Call ended</string>
     <string name="kaleyra_strings_action_start_screen_share">Screen</string>
+    <string name="kaleyra_strings_info_online">Online</string>
+    <string name="kaleyra_strings_action_menu">Menu</string>
+    <string name="kaleyra_string_action_read">Read</string>
+    <string name="kaleyra_strings_info_rec" translatable="false">Rec</string>
+    <plurals name="kaleyra_strings_info_incoming_call">
+        <item quantity="one">Is calling you &#8230;</item>
+        <item quantity="other">Are calling you &#8230;</item>
+    </plurals>
 
+    <string name="kaleyra_strings_action_either_way">swipe right/left</string>
+    <string name="kaleyra_strings_action_swipe_left">swipe left</string>
+    <string name="kaleyra_strings_action_swipe_right">swipes right</string>
+    <string name="kaleyra_strings_action_select">Select</string>
+    <string name="kaleyra_strings_info_current_level_pattern" translatable="false">%1$s: %2$d</string>
+    <string name="kaleyra_strings_action_swipe">Swipe</string>
+    <string name="kaleyra_string_action_tap">Tap</string>
+    <string name="kaleyra_strings_info_participant_joined">%1$s joined</string>
+    <string name="kaleyra_strings_info_participant_online">%1$s online</string>
+    <string name="kaleyra_strings_info_participant_left">%1$s left</string>
+    <string name="kaleyra_strings_info_your_participant">%s (You)</string>
+
+    <plurals name="kaleyra_strings_info_participant_muted_by_admin">
+        <item quantity="one">%s has muted you.\nTo un-mute press the mic button.</item>
+        <item quantity="other">The admin has muted you.\nTo un-mute press the mic button</item>
+    </plurals>
+    <plurals name="kaleyra_strings_info_call_max_duration_warn">
+        <item quantity="one">%d minute left to the end of the call</item>
+        <item quantity="other">%d minutes left to the end of the call</item>
+    </plurals>
+
+    <string name="kaleyra_strings_info_action_call">Start call</string>
+    <string name="kaleyra_strings_info_action_video_call">Start video call</string>
 </resources>

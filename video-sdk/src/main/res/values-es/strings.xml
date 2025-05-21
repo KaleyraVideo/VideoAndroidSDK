@@ -46,7 +46,6 @@
     <string name="kaleyra_participants_component_unmute_for_you">Desmutear</string>
     <string name="kaleyra_participants_component_mute_for_you_description">Mutear a %s</string>
     <string name="kaleyra_participants_component_unmute_for_you_description">Desmutear a %s</string>
-    <string name="kaleyra_participants_component_you">%s (Tú)</string>
     <string name="kaleyra_participants_component_admin">Administrador</string>
     <string name="kaleyra_participants_component_screenshare">Compartir pantalla</string>
     <string name="kaleyra_participants_component_remove_from_call">Eliminar de la llamada</string>
@@ -91,7 +90,6 @@
     <string name="kaleyra_call_action_whiteboard">Pizarra</string>
     <string name="kaleyra_call_hangup">Colgar</string>
     <string name="kaleyra_call_info_ongoing_recording">Esta llamada está siendo grabada</string>
-    <string name="kaleyra_call_info_rec">Grabación</string>
     <string name="kaleyra_call_left_alone">Quedaste solo/a</string>
     <string name="kaleyra_call_offline">Estás fuera de línea</string>
     <string name="kaleyra_chat_creation_failed">La creación de la conversación ha fallado.</string>
@@ -109,12 +107,10 @@
     <string name="kaleyra_chat_msg_status_pending">Mensaje pendiente</string>
     <string name="kaleyra_chat_msg_status_seen">Mensaje visto</string>
     <string name="kaleyra_chat_msg_status_sent">Mensaje enviado</string>
-    <string name="kaleyra_chat_participants_online">%1$s en línea</string>
     <string name="kaleyra_chat_scroll_to_last_message">Desplazarse hasta el último mensaje</string>
     <string name="kaleyra_chat_send">Enviar mensaje</string>
     <string name="kaleyra_chat_state_connecting">conectando…</string>
     <string name="kaleyra_chat_unread_messages">Mensajes no leídos</string>
-    <string name="kaleyra_chat_user_status_online">en línea</string>
     <string name="kaleyra_chat_user_status_typing">escribiendo</string>
     <string name="kaleyra_click_to_share_file">Haz clic en el botón &quot;+&quot; para empezar a compartir documentos e imágenes</string>
     <string name="kaleyra_collaborate_button">Collaborar</string>
@@ -182,9 +178,6 @@
     <string name="kaleyra_snapshot_close">Cerrar diálogo de instantánea</string>
     <string name="kaleyra_snapshot_save">Guardar instantánea de pantalla</string>
     <string name="kaleyra_snapshot_saved_in_gallery">Guardado en la galería</string>
-    <string name="kaleyra_start_audio_call">Iniciar llamada de audio</string>
-    <string name="kaleyra_start_audio_upgradable_call">Iniciar llamada de video con video desactivado</string>
-    <string name="kaleyra_start_video_call">Iniciar videollamada</string>
     <string name="kaleyra_tap_to_answer">tocar para responder</string>
     <string name="kaleyra_upload_file">Subir archivo</string>
     <string name="kaleyra_upload_file_error">Se produjo un error al subir la imagen del archivo</string>
@@ -199,10 +192,6 @@
     <string name="kaleyra_whiteboard_uploading_file">Subiendo archivo</string>
     <string name="kaleyra_write_permission_dialog_descr">Se necesita permiso de memoria para descargar archivos</string>
     <string name="kaleyra_write_permission_dialog_title">Permiso de memoria denegado</string>
-    <plurals name="kaleyra_call_incoming_status_ringing">
-        <item quantity="one">Te está llamando…</item>
-        <item quantity="other">Te están llamando…</item>
-    </plurals>
     <plurals name="kaleyra_call_participants_typing">
         <item quantity="one">%1$s está escribiendo</item>
         <item quantity="other">%1$d están escribiendo</item>

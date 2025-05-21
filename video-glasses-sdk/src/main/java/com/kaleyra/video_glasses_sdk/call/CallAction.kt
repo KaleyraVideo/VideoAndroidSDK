@@ -177,8 +177,8 @@ internal abstract class CallAction(
         R.layout.kaleyra_glass_menu_item_layout,
         R.attr.kaleyra_recyclerViewCameraItemStyle
     ) {
-        override val defaultText = ctx.getString(R.string.kaleyra_glass_menu_camera)
-        override val toggledText = ctx.getString(R.string.kaleyra_glass_menu_camera_toggled)
+        override val defaultText = ctx.getString(R.string.kaleyra_strings_info_enable_camera)
+        override val toggledText = ctx.getString(R.string.kaleyra_strings_info_disable_camera)
     }
 
     /**

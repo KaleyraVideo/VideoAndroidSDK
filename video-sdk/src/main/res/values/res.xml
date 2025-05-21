@@ -74,7 +74,6 @@
 
     <!-- CHAT ACTION BAR -->
     <item name="ic_kaleyra_audio_call" type="drawable">@drawable/ic_kaleyra_answer</item>
-    <item name="ic_kaleyra_audio_upgradable_call" type="drawable">@drawable/kaleyra_z_audio_upgradable</item>
     <item name="ic_kaleyra_video_call" type="drawable">@drawable/kaleyra_z_cam_22</item>
 
     <!-- CHAT -->

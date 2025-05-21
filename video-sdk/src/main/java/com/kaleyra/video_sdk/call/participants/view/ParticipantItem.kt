@@ -113,7 +113,7 @@ internal fun ParticipantItem(
             Text(
                 text = if (stream.isMine) {
                     stringResource(
-                        id = R.string.kaleyra_participants_component_you,
+                        id = R.string.kaleyra_strings_info_your_participant,
                         stream.userInfo?.username ?: ""
                     )
                 } else stream.userInfo?.username ?: "",
