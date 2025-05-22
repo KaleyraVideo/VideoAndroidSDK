@@ -49,7 +49,7 @@ internal fun VSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
-    areChildrenKeyboardFocusable: Boolean,
+    areChildrenKeyboardFocusable: Boolean = false,
     onModularComponentRequest: (ModularComponent) -> Unit,
     inputPermissions: InputPermissions = InputPermissions(),
     onAskInputPermissions: (Boolean) -> Unit,
@@ -140,7 +140,7 @@ internal fun VSheetDragContent(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun VSheetDragContent(
     callActions: ImmutableList<CallActionUI>,
@@ -155,7 +155,7 @@ internal fun VSheetDragContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onSignatureClick: () -> Unit,
-    areChildrenKeyboardFocusable: Boolean,
+    areChildrenKeyboardFocusable: Boolean = false,
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
     inputPermissions: InputPermissions = InputPermissions(),

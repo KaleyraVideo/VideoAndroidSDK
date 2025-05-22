@@ -51,7 +51,7 @@ internal fun HSheetDragContent(
     screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
     isLargeScreen: Boolean,
-    areChildrenKeyboardFocusable: Boolean,
+    areChildrenKeyboardFocusable: Boolean = false,
     inputPermissions: InputPermissions = InputPermissions(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onModularComponentRequest: (ModularComponent) -> Unit,
@@ -185,10 +185,10 @@ internal fun HSheetDragContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onSignatureClick: () -> Unit,
-    areChildrenKeyboardFocusable: Boolean,
     modifier: Modifier = Modifier,
     itemsPerRow: Int = MaxHSheetDragItems,
     labels: Boolean = true,
+    areChildrenKeyboardFocusable: Boolean = false,
     inputPermissions: InputPermissions = InputPermissions(),
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
