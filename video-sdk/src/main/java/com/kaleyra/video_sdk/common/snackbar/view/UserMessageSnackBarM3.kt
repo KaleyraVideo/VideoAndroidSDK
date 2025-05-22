@@ -3,6 +3,7 @@
 package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,6 +45,7 @@ import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Stable
@@ -99,12 +101,15 @@ internal fun UserMessageSnackbarM3(
                 onTextLayout = { textLayoutResult ->
                     isMultilineMessage = textLayoutResult.lineCount > 1
                 })
+            val iconButtonInteractionSource = remember { MutableInteractionSource() }
             if (actionConfig == null && onDismissClick != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(end = 8.dp, start = 0.dp)
                         .align(Alignment.CenterVertically)
+                        .highlightOnFocus(iconButtonInteractionSource)
                         .size(24.dp),
+                    interactionSource = iconButtonInteractionSource,
                     onClick = onDismissClick) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_snackbar_close),
@@ -112,12 +117,15 @@ internal fun UserMessageSnackbarM3(
                         contentDescription = stringResource(id = R.string.kaleyra_close))
                 }
             }
+            val filledButtonInteractionSource = remember { MutableInteractionSource() }
             if (actionConfig !== null) FilledTonalButton(
                 modifier = Modifier
                     .height(40.dp)
                     .padding(top = 4.dp, bottom = 4.dp, end = 8.dp)
+                    .highlightOnFocus(filledButtonInteractionSource)
                     .align(Alignment.CenterVertically),
                 contentPadding = PaddingValues(horizontal = 8.dp),
+                interactionSource = filledButtonInteractionSource,
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = contentColor),
                 onClick = actionConfig.onActionClick) {
                 val actionDescription = actionConfig.action.resolve(LocalContext.current)
