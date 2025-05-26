@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.appbar.view
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +47,7 @@ import com.kaleyra.video_sdk.call.appbar.model.recording.RecordingStateUi
 import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.common.button.BackIconButton
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.pulse
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
@@ -135,6 +137,7 @@ internal fun CallAppBarComponent(
                 BackIconButton(
                     modifier = Modifier.size(40.dp),
                     iconTint = LocalContentColor.current,
+                    highlightShape = RoundedCornerShape(50.dp, 0.dp, 0.dp, 50.dp),
                     onClick = onBackPressed
                 )
                 AsyncImage(
@@ -186,9 +189,16 @@ private fun CallParticipantsButton(
     participantCount: Int,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     androidx.compose.material3.IconButton(
         onClick = onClick,
-        modifier = Modifier.padding(end = 8.dp)
+        interactionSource = interactionSource,
+        modifier = Modifier
+            .highlightOnFocus(
+                interactionSource,
+                shape = RoundedCornerShape(0.dp, 50.dp, 50.dp, 0.dp)
+            )
+            .padding(end = 8.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

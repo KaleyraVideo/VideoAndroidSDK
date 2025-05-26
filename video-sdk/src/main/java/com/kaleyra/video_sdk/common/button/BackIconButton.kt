@@ -24,6 +24,8 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -36,6 +38,7 @@ import com.kaleyra.video_sdk.R
 internal fun BackIconButton(
     modifier: Modifier = Modifier,
     iconTint: Color = LocalContentColor.current,
+    highlightShape: Shape = RectangleShape,
     onClick: () -> Unit
 ) {
     IconButton(
@@ -43,6 +46,7 @@ internal fun BackIconButton(
         iconDescription = stringResource(id = R.string.kaleyra_back),
         enabledIconTint = iconTint,
         iconSize = 28.dp,
+        highlightShape = highlightShape,
         supportRtl = true,
         onClick = onClick,
         modifier = modifier
