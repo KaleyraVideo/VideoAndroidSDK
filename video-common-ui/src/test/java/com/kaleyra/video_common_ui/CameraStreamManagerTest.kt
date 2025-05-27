@@ -151,7 +151,7 @@ class CameraStreamManagerTest {
 
     @Test
     fun handleCameraStreamAudio_streamUpdatedOnAudioInput() = runTest(UnconfinedTestDispatcher()) {
-        val audio = mockk<Input.Audio>(relaxed = true)
+        val audio = mockk<Input.Audio.My>(relaxed = true)
         val audioFlow = MutableStateFlow(audio)
         every { callMock.toAudioInput() } returns audioFlow
         every { callMock.toMyCameraStream() } returns MutableStateFlow(myStream)
@@ -162,7 +162,7 @@ class CameraStreamManagerTest {
         val actual = myStream.audio.value
         assertEquals(audio, actual)
 
-        val newAudio = mockk<Input.Audio>(relaxed = true)
+        val newAudio = mockk<Input.Audio.My>(relaxed = true)
         audioFlow.value = newAudio
 
         val new = myStream.audio.value
@@ -171,7 +171,7 @@ class CameraStreamManagerTest {
 
     @Test
     fun handleCameraStreamAudio_streamUpdatedOnMyCameraStreamUpdated() = runTest(UnconfinedTestDispatcher()) {
-        val audio = mockk<Input.Audio>(relaxed = true)
+        val audio = mockk<Input.Audio.My>(relaxed = true)
         val streamFlow = MutableStateFlow(myStream)
         every { callMock.toAudioInput() } returns MutableStateFlow(audio)
         every { callMock.toMyCameraStream() } returns streamFlow

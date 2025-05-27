@@ -27,9 +27,9 @@ class StreamsAudioOutputManagerTest {
 
     private val callMock = mockk<Call>(relaxed = true)
 
-    private val audioMock1 = mockk<Input.Audio>(relaxed = true)
+    private val audioMock1 = mockk<Input.Audio.My>(relaxed = true)
 
-    private val audioMock2 = mockk<Input.Audio>(relaxed = true)
+    private val audioMock2 = mockk<Input.Audio.My>(relaxed = true)
 
     private val streamMock1 = mockk<Stream.Mutable>()
 
