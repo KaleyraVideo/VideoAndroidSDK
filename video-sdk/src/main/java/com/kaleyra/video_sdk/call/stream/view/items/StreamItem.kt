@@ -185,7 +185,7 @@ internal fun StreamStatusIcons(
 }
 
 @Composable
-private fun UserLabel(
+internal fun UserLabel(
     modifier: Modifier = Modifier,
     username: String,
     pin: Boolean

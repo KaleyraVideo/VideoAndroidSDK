@@ -33,22 +33,15 @@ class TextPointerTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private var textWidth = 0
-
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            TextPointer(username = "username", onTextWidth = { textWidth = it })
+            TextPointer(username = "username")
         }
     }
 
     @Test
     fun usernameIsDisplayed() {
         composeTestRule.onNodeWithText("username").assertIsDisplayed()
-    }
-
-    @Test
-    fun textWidthIsInvoked() {
-        assertNotEquals(0, textWidth)
     }
 }
