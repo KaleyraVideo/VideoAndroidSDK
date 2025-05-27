@@ -415,10 +415,10 @@ class CallActionsViewModelTest {
     @Test
     fun audioInputAwaitingPermission_callActionsUiState_micActionWarning() = runTest {
         val actions = MutableStateFlow(listOf(MicAction()))
-        val audioInput = mockk<Input.Audio> {
+        val audioInput = mockk<Input.Audio.My> {
             every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
         }
-        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        val audioFlow = MutableStateFlow<Input.Audio.My?>(null)
         every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 
@@ -442,10 +442,10 @@ class CallActionsViewModelTest {
     @Test
     fun audioInputError_callActionsUiState_micActionError() = runTest {
         val actions = MutableStateFlow(listOf(MicAction()))
-        val audioInput = mockk<Input.Audio> {
+        val audioInput = mockk<Input.Audio.My> {
             every { state } returns MutableStateFlow(Input.State.Closed.Error)
         }
-        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        val audioFlow = MutableStateFlow<Input.Audio.My?>(null)
         every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 

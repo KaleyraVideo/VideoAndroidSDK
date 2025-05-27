@@ -74,7 +74,7 @@ class InputMapperTest {
 
     private val usbMock = mockk<Input.Video.Camera.Usb>()
 
-    private val audioMock = mockk<Input.Audio>()
+    private val audioMock = mockk<Input.Audio.My>()
 
     private val streamMock = mockk<Stream.Mutable>()
 

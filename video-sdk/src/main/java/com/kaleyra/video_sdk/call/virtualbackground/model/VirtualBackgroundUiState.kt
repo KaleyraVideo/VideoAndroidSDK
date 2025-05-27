@@ -22,12 +22,14 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 /**
  * Virtual Background Ui State representation of the Virtual Background State on the Ui
+ * @property areVirtualBackgroundSupported Boolean whether the virtual background are supported for the current call
  * @property currentBackground VirtualBackgroundUi current virtual background ui
  * @property backgroundList ImmutableList<VirtualBackgroundUi> available virtual backgrounds
  * @constructor
  */
 @Immutable
 data class VirtualBackgroundUiState(
+    val areVirtualBackgroundSupported: Boolean = false,
     val currentBackground: VirtualBackgroundUi = VirtualBackgroundUi.None,
     val backgroundList: ImmutableList<VirtualBackgroundUi> = ImmutableList(emptyList())
 ) : UiState

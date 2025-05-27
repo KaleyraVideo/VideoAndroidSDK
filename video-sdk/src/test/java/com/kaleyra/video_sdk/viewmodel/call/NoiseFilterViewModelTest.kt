@@ -1,0 +1,111 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
+package com.kaleyra.video_sdk.viewmodel.call
+
+import com.kaleyra.video.conference.Input
+import com.kaleyra.video.noise_filter.DeepFilterNetLoader
+import com.kaleyra.video.noise_filter.DeepFilterNetModule
+import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
+import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_sdk.MainDispatcherRule
+import com.kaleyra.video_sdk.Mocks.callMock
+import com.kaleyra.video_sdk.Mocks.conferenceMock
+import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
+import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+
+@RunWith(RobolectricTestRunner::class)
+class NoiseFilterViewModelTest {
+
+    @get:Rule
+    var mainDispatcherRule = MainDispatcherRule()
+    private lateinit var viewModel: NoiseFilterViewModel
+    private val deepFilterNetLoadingState: MutableStateFlow<DeepFilterNetLoader.LoadingState> = MutableStateFlow(DeepFilterNetLoader.LoadingState.Unloaded)
+
+    @Before
+    fun setup() {
+        mockkObject(DeepFilterNetModule)
+        every { DeepFilterNetModule.isAvailable() } returns true
+        mockkObject(DeepFilterNetLoader)
+        every { DeepFilterNetLoader.loadingState } returns deepFilterNetLoadingState
+        every { conferenceMock.call } returns MutableStateFlow(callMock)
+        every { callMock.participants } returns MutableStateFlow(mockk {
+            every { me } returns mockk {
+                every { streams } returns MutableStateFlow(listOf(mockk {
+                    every { id } returns CAMERA_STREAM_ID
+                    val noiseFilterModeFlow = MutableStateFlow<Input.Audio.My.NoiseFilterMode>(Input.Audio.My.NoiseFilterMode.Standard)
+                    every { audio } returns MutableStateFlow<Input.Audio.My?>(mockk(relaxed = true) {
+                        every { noiseFilterMode } returns noiseFilterModeFlow
+                        every { setNoiseFilterMode(any<Input.Audio.My.NoiseFilterMode>()) } answers {
+                            noiseFilterModeFlow.value = firstArg()
+                        }
+                    })
+                }))
+            }
+        })
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
+    @Test
+    fun deepFilterNetLoaderLoadingStateUpdated_uiStateUpdated() = runTest {
+        viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        Assert.assertEquals(DeepFilterNetLoader.LoadingState.Unloaded, viewModel.uiState.first().deepFilerLoadingState)
+        deepFilterNetLoadingState.value = DeepFilterNetLoader.LoadingState.InProgress
+        advanceUntilIdle()
+        Assert.assertEquals(DeepFilterNetLoader.LoadingState.InProgress, viewModel.uiState.first().deepFilerLoadingState)
+        deepFilterNetLoadingState.value = DeepFilterNetLoader.LoadingState.Loaded
+        advanceUntilIdle()
+        Assert.assertEquals(DeepFilterNetLoader.LoadingState.Loaded, viewModel.uiState.first().deepFilerLoadingState)
+        deepFilterNetLoadingState.value = DeepFilterNetLoader.LoadingState.Unavailable
+        advanceUntilIdle()
+        Assert.assertEquals(DeepFilterNetLoader.LoadingState.Unavailable, viewModel.uiState.first().deepFilerLoadingState)
+    }
+
+    @Test
+    fun noiseSuppressionModeUpdated_uiStateUpdated() = runTest {
+        viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.None)
+        advanceUntilIdle()
+        Assert.assertEquals(NoiseFilterModeUi.None, viewModel.uiState.first().currentNoiseFilterModeUi)
+        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.Standard)
+        advanceUntilIdle()
+        Assert.assertEquals(NoiseFilterModeUi.Standard, viewModel.uiState.first().currentNoiseFilterModeUi)
+        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.DeepFilterAi)
+        advanceUntilIdle()
+        Assert.assertEquals(NoiseFilterModeUi.DeepFilterAi, viewModel.uiState.first().currentNoiseFilterModeUi)
+    }
+
+    @Test
+    fun deepFilterNetModuleNotAvailable_uiStateUpdated() = runTest {
+        every { DeepFilterNetModule.isAvailable() } returns false
+        viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        Assert.assertTrue(NoiseFilterModeUi.DeepFilterAi !in viewModel.uiState.first().supportedNoiseFilterModesUi.value)
+    }
+
+    @Test
+    fun deepFilterNetModuleAvailable_uiStateUpdated() = runTest {
+        viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        advanceUntilIdle()
+        Assert.assertTrue(NoiseFilterModeUi.DeepFilterAi in viewModel.uiState.first().supportedNoiseFilterModesUi.value)
+    }
+}

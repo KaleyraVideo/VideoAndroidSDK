@@ -129,7 +129,7 @@ private fun subtitleFor(device: AudioDeviceUi): String? =
     }
 
 @Composable
-private fun painterFor(device: AudioDeviceUi): Painter = painterResource(
+fun painterFor(device: AudioDeviceUi): Painter = painterResource(
     id = when (device) {
         is AudioDeviceUi.LoudSpeaker -> R.drawable.ic_kaleyra_loud_speaker
         is AudioDeviceUi.EarPiece -> R.drawable.ic_kaleyra_earpiece

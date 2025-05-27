@@ -99,7 +99,7 @@ class AudioMapperTest {
     fun cameraStreamAudioEnabled_toMyCameraAudioUi_cameraAudioUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
-        val audioMock = mockk<Input.Audio>(relaxed = true)
+        val audioMock = mockk<Input.Audio.My>(relaxed = true)
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
@@ -120,7 +120,7 @@ class AudioMapperTest {
     fun cameraStreamAudioDisabled_toMyCameraAudioUi_cameraAudioUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
-        val audioMock = mockk<Input.Audio>(relaxed = true)
+        val audioMock = mockk<Input.Audio.My>(relaxed = true)
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.None)
@@ -141,7 +141,7 @@ class AudioMapperTest {
     fun cameraStreamAudioEnabledLocally_toMyCameraAudioUi_cameraAudioUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
-        val audioMock = mockk<Input.Audio>(relaxed = true)
+        val audioMock = mockk<Input.Audio.My>(relaxed = true)
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Local)
@@ -162,7 +162,7 @@ class AudioMapperTest {
     fun cameraStreamAudioEnabledRemotely_toMyCameraAudioUi_cameraAudioUi() = runTest {
         mockkObject(InputMapper)
         val callMock = mockk<Call>(relaxed = true)
-        val audioMock = mockk<Input.Audio>(relaxed = true)
+        val audioMock = mockk<Input.Audio.My>(relaxed = true)
         with(audioMock) {
             every { id } returns "audioId"
             every { enabled } returns MutableStateFlow(Input.Enabled.Remote)

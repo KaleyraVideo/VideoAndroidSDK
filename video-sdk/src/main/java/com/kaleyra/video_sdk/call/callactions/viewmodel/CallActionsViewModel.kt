@@ -53,6 +53,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SIGNATURE_ACTION_ID
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -198,6 +199,9 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                         )
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
+
+                        is SettingsAction -> action.copy(isEnabled = !isCallEnded)
+
                         is FileShareAction -> action.copy(
                             isEnabled = isCallActive && !isCallEnded,
                             notificationCount = (uiState.value.actionList.value.firstOrNull { it is NotifiableCallAction && it.id == FILE_SHARE_ACTION_ID } as? NotifiableCallAction)?.notificationCount

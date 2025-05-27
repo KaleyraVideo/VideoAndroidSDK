@@ -28,6 +28,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -75,6 +76,7 @@ private fun painterFor(callAction: CallActionUI) =
         is ScreenShareAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_screen_share)
         is FlipCameraAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_flip_camera)
         is AudioAction -> audioPainterFor(callAction.audioDevice)
+        is SettingsAction -> painterResource(id = R.drawable.ic_kaleyra_settings)
         is ChatAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_chat)
         is FileShareAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_file_share)
         is WhiteboardAction -> painterResource(id = R.drawable.ic_kaleyra_call_sheet_whiteboard)
@@ -103,6 +105,7 @@ private fun textFor(callAction: CallActionUI) =
 
         is FlipCameraAction -> stringResource(id = R.string.kaleyra_call_sheet_flip_camera)
         is AudioAction -> stringResource(id = R.string.kaleyra_call_sheet_audio)
+        is SettingsAction -> stringResource(id = R.string.kaleyra_strings_action_settings)
         is ChatAction -> stringResource(id = R.string.kaleyra_call_sheet_chat)
         is FileShareAction -> stringResource(id = R.string.kaleyra_call_sheet_file_share)
         is WhiteboardAction -> stringResource(id = R.string.kaleyra_call_sheet_whiteboard)
@@ -282,6 +285,17 @@ internal fun SheetPanelCustomItemPreview() {
     KaleyraTheme {
         Surface {
             SheetPanelItem(callAction = CustomAction(icon = R.drawable.kaleyra_icon_reply, buttonTexts = CustomCallAction.ButtonTexts("Custom", "Custom")))
+        }
+    }
+}
+
+@DayModePreview
+@NightModePreview
+@Composable
+internal fun SheetPanelSettingsItemPreview() {
+    KaleyraTheme {
+        Surface {
+            SheetPanelItem(callAction = SettingsAction())
         }
     }
 }

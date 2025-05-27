@@ -26,6 +26,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
@@ -946,6 +947,54 @@ class CallSheetItemTest {
         composeTestRule.setContent {
             CallSheetItem(
                 callAction = AudioAction(),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onSignatureClick = {},
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun settingsActionLabelTrue_actionHasLabel() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = SettingsAction(),
+                label = true,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onSignatureClick = {},
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun settingsActionLabelFalse_actionHasNoLabel() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = SettingsAction(),
                 label = false,
                 extended = false,
                 onHangUpClick = { },

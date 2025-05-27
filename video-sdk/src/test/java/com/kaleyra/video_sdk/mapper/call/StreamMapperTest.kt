@@ -63,7 +63,7 @@ class StreamMapperTest {
 
     private val videoMock = mockk<Input.Video.Camera>(relaxed = true)
 
-    private val audioMock = mockk<Input.Audio>(relaxed = true)
+    private val audioMock = mockk<Input.Audio.My>(relaxed = true)
 
     private val myVideoMock = mockk<Input.Video.Camera.Internal>(relaxed = true)
 
@@ -588,7 +588,7 @@ class StreamMapperTest {
         Assert.assertEquals(expected, actual)
 
         // Update stream audio
-        val newStreamAudioMock = mockk<Input.Audio>(relaxed = true) {
+        val newStreamAudioMock = mockk<Input.Audio.My>(relaxed = true) {
             every { id } returns "audioId2"
             every { enabled } returns MutableStateFlow(Input.Enabled.Both)
             every { speaking } returns MutableStateFlow(false)

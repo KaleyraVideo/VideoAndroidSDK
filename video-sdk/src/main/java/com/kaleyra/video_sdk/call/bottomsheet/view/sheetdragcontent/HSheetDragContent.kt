@@ -149,6 +149,7 @@ internal fun HSheetDragContent(
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
+        onSettingsClick = { onModularComponentRequest(ModularComponent.Settings) },
         onChatClick = remember(viewModel, isLargeScreen) {
             {
                 if (isLargeScreen) onModularComponentRequest(ModularComponent.Chat)
@@ -179,6 +180,7 @@ internal fun HSheetDragContent(
     onVirtualBackgroundToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
@@ -222,6 +224,7 @@ internal fun HSheetDragContent(
                 onScreenShareToggle = onScreenShareToggle,
                 onFlipCameraClick = onFlipCameraClick,
                 onAudioClick = onAudioClick,
+                onSettingsClick = onSettingsClick,
                 onChatClick = onChatClick,
                 onFileShareClick = onFileShareClick,
                 onWhiteboardClick = onWhiteboardClick,

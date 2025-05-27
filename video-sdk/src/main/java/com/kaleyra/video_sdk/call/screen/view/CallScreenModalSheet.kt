@@ -24,6 +24,7 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
+import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
@@ -51,6 +52,7 @@ internal fun CallScreenModalSheet(
     currentModularComponent = modularComponent
 
     var displaySignDocumentsOnSignDocumentViewDismiss by remember { mutableStateOf(false) }
+    var displayAudioComponentOnSettingsDismiss by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val onDismiss: (ModularComponent) -> Unit = remember(sheetState) {
@@ -78,7 +80,26 @@ internal fun CallScreenModalSheet(
             modifier = modifier.testTag(CallScreenModalSheetTag)
         ) {
             when (modularComponent) {
-                ModularComponent.Audio -> AudioOutputComponent(onDismiss = { onDismiss(ModularComponent.Audio) })
+                ModularComponent.Settings -> SettingsComponent(
+                    onUserMessageActionClick = onUserMessageActionClick,
+                    isLargeScreen = false,
+                    onDismiss = {
+                        if (!displayAudioComponentOnSettingsDismiss) onDismiss(ModularComponent.Settings)
+                    },
+                    onChangeAudioOutputRequested = {
+                        displayAudioComponentOnSettingsDismiss = true
+                        onRequestOtherModularComponent(ModularComponent.Audio)
+                    }
+                )
+
+                ModularComponent.Audio -> {
+                    AudioOutputComponent(
+                        displayMutedAudioUi = !displayAudioComponentOnSettingsDismiss,
+                        onDismiss = {
+                        onDismiss(ModularComponent.Audio)
+                    })
+                    displayAudioComponentOnSettingsDismiss = false
+                }
 
                 ModularComponent.ScreenShare -> ScreenShareComponent(
                     onDismiss = { onDismiss(ModularComponent.ScreenShare) },
@@ -147,4 +168,5 @@ private fun isFullScreenComponent(component: ModularComponent): Boolean {
         || component == ModularComponent.Whiteboard
         || component == ModularComponent.SignDocuments
         || component == ModularComponent.SignDocumentView
+        || component == ModularComponent.Settings
 }

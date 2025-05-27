@@ -567,7 +567,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { },
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
@@ -603,7 +604,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
@@ -639,7 +641,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText("8").assertIsDisplayed()
@@ -673,7 +676,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -708,7 +712,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
@@ -737,7 +742,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertIsDisplayed()
@@ -765,7 +771,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertDoesNotExist()
@@ -793,7 +800,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(hangUpDescription).assertHasClickAction()
@@ -823,7 +831,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(micDescription).assertHasClickAction()
@@ -853,7 +862,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(cameraDescription).assertHasClickAction()
@@ -883,7 +893,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(screenShareDescription).assertHasClickAction()
@@ -913,7 +924,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(flipDescription).assertHasClickAction()
@@ -943,7 +955,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(audioDescription).assertHasClickAction()
@@ -973,7 +986,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(chatDescription).assertHasClickAction()
@@ -1003,7 +1017,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(fileShareDescription).assertHasClickAction()
@@ -1033,7 +1048,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { isWhiteboardClicked = true },
                 onVirtualBackgroundToggle = { },
                 onSignatureClick = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(whiteboardDescription).assertHasClickAction()
@@ -1063,7 +1079,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { isVirtualClicked = true },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(virtualDescription).assertHasClickAction()
@@ -1094,7 +1111,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertHasClickAction()
@@ -1132,7 +1150,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { isMoreClicked = true }
+                onMoreToggle = { isMoreClicked = true },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1171,7 +1190,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
@@ -1205,7 +1225,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
@@ -1243,7 +1264,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(answerDescription).assertIsDisplayed()
@@ -1281,7 +1303,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         val childBounds1 = composeTestRule.onNodeWithContentDescription(flip).getBoundsInRoot()
@@ -1320,7 +1343,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1362,7 +1386,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1409,7 +1434,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1454,7 +1480,8 @@ class VSheetContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
-                onMoreToggle = { }
+                onMoreToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
