@@ -57,7 +57,8 @@ internal fun VSheetContent(
     maxActions: Int = MaxVSheetItems,
     inputPermissions: InputPermissions = InputPermissions(),
     onAskInputPermissions: (Boolean) -> Unit,
-    onNextFocusRequest: () -> FocusRequester? = { null }
+    onEnterFocusRequester: (FocusRequester?) -> Unit = { },
+    onExitFocusRequest: () -> FocusRequester? = { null }
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -136,7 +137,8 @@ internal fun VSheetContent(
         },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
-        onNextFocusRequest = onNextFocusRequest,
+        onEnterFocusRequester = onEnterFocusRequester,
+        onExitFocusRequest = onExitFocusRequest,
         modifier = modifier
     )
 }
@@ -166,7 +168,8 @@ internal fun VSheetContent(
     modifier: Modifier = Modifier,
     maxActions: Int = MaxVSheetItems,
     inputPermissions: InputPermissions = InputPermissions(),
-    onNextFocusRequest: () -> FocusRequester? = { null }
+    onEnterFocusRequester: (FocusRequester?) -> Unit = { },
+    onExitFocusRequest: () -> FocusRequester? = { null }
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
     var moreNotificationCount by remember { mutableIntStateOf(0) }
@@ -182,14 +185,16 @@ internal fun VSheetContent(
                 .indexOfLast { it.isEnabled } // Find the last one that's interactable
         }
     }
+    // Focus Requester for the first call action
+    val firstActionFocusRequester = remember { FocusRequester() }
 
-    Column(modifier.focusGroup()) {
+    Column(modifier) {
         Column(
             modifier = Modifier
                 .focusRequester(answerOrMoreButtonRequester)
                 .focusProperties {
                     // When the "Answer" or "More" button is focused and Tab is pressed, focus will exit this component.
-                    next = onNextFocusRequest() ?: next
+                    next = onExitFocusRequest() ?: next
                 }
         ) {
             when {
@@ -225,25 +230,34 @@ internal fun VSheetContent(
                 callActions.value.fastForEachIndexed { index, callAction ->
                     key(callAction.id) {
                         CallSheetItem(
-                            modifier = Modifier.let {
+                            modifier = Modifier.let { modifier ->
                                 // Keyboard Accessibility Logic:
                                 // This block defines the focus traversal behavior when navigating with the keyboard (e.g., pressing Tab).
                                 // It ensures that focus moves predictably through the call action buttons and then to specific
                                 // "Answer" or "More" buttons if they are present, or exits the component otherwise.
-                                if (index == lastFocusableActionIndex) {
-                                    // When on the last focusable call action button:
-                                    it.focusProperties {
-                                        next = if (showMoreAction || showAnswerAction) {
-                                            // If either "Answer" or "More" buttons are visible, move focus to them.
-                                            answerOrMoreButtonRequester
-                                        } else {
-                                            // Otherwise, trigger the external 'onNextFocusRequest' to exit focus from this component.
-                                            onNextFocusRequest() ?: next
+                                when (index) {
+                                    0 -> {
+                                        // Add this focus requester as entry point for the focus
+                                        modifier
+                                            .focusRequester(firstActionFocusRequester)
+                                            .also { onEnterFocusRequester(firstActionFocusRequester) }
+                                    }
+                                    lastFocusableActionIndex -> {
+                                        // When on the last focusable call action button:
+                                        modifier.focusProperties {
+                                            next = if (showMoreAction || showAnswerAction) {
+                                                // If either "Answer" or "More" buttons are visible, move focus to them.
+                                                answerOrMoreButtonRequester
+                                            } else {
+                                                // Otherwise, trigger the external 'onNextFocusRequest' to exit focus from this component.
+                                                onExitFocusRequest() ?: next
+                                            }
                                         }
                                     }
-                                } else {
-                                    // For all other intermediate call action buttons, focus moves to the next logical item by default.
-                                    it // No specific focus properties needed, default traversal applies.
+                                    else -> {
+                                        // For all other intermediate call action buttons, focus moves to the next logical item by default.
+                                        modifier // No specific focus properties needed, default traversal applies.
+                                    }
                                 }
                             },
                             callAction = callAction,
