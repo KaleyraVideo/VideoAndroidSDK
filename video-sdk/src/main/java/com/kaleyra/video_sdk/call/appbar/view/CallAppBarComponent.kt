@@ -144,7 +144,7 @@ internal fun CallAppBarComponent(
                     model = appIcon,
                     contentDescription = stringResource(id = R.string.kaleyra_app_icon),
                     contentScale = ContentScale.Fit,
-                    modifier = modifier
+                    modifier = Modifier
                         .clip(CircleShape)
                         .size(22.dp)
                 )
