@@ -17,10 +17,12 @@
 package com.kaleyra.video_sdk
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.sharedfolder.SignDocument
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
@@ -75,7 +77,17 @@ class CallUserMessagesProviderTest {
 
     private val callMock = mockk<CallUI>(relaxed = true) {
         every { participants } returns MutableStateFlow(mockk {
-            every { me } returns mockk(relaxed = true) { every { userId } returns "me" }
+            every { me } returns mockk(relaxed = true) {
+                every { streams } returns MutableStateFlow(listOf(
+                    mockk {
+                        every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
+                        every { state } returns MutableStateFlow(Stream.State.Live)
+                        every { audio } returns mockk(relaxed = true)
+                        every { video } returns mockk(relaxed = true)
+                    }
+                ))
+                every { userId } returns "me"
+            }
             every { others } returns listOf(mockk(relaxed = true) { every { userId } returns "other" })
         })
         every { sharedFolder } returns mockk {

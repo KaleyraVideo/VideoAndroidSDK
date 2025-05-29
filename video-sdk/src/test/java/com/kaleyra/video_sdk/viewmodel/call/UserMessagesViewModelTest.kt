@@ -1,9 +1,12 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
+import androidx.compose.runtime.MutableState
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
@@ -49,6 +52,22 @@ class UserMessagesViewModelTest {
     @Before
     fun setUp() {
         mockkObject(KaleyraVideo)
+        with (callMock) {
+            every { participants } returns MutableStateFlow(mockk {
+                every { me } returns mockk(relaxed = true) {
+                    every { streams } returns MutableStateFlow(listOf(
+                        mockk {
+                            every { id } returns com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+                            every { audio } returns mockk(relaxed = true)
+                            every { video } returns mockk(relaxed = true)
+                            every { state } returns MutableStateFlow(Stream.State.Live)
+                        }
+                    ))
+                    every { userId } returns "me"
+                }
+                every { others } returns listOf(mockk(relaxed = true) { every { userId } returns "other" })
+            })
+        }
         every { KaleyraVideo.conference } returns mockk(relaxed = true)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.kaleyra.video_sdk.call.virtualbackground.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -23,11 +25,14 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Effect
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
+import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toCurrentVirtualBackgroundUi
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgroundsUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -57,6 +62,19 @@ internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration
                     val background = uiState.value.currentBackground
                     video.tryApplyEffect(getEffect(call, background))
                 }.launchIn(viewModelScope)
+
+            call.toCurrentVirtualBackgroundUi()
+                .onEach { currentVirtualBackgroundUi ->
+                    _uiState.update { it.copy(currentBackground = currentVirtualBackgroundUi) }
+                }
+                .launchIn(viewModelScope)
+
+            call
+                .isCpuThrottling(viewModelScope)
+                .onEach { isDeviceOverHeating ->
+                    _uiState.update { it.copy(isDeviceOverHeating = isDeviceOverHeating) }
+                }
+                .launchIn(viewModelScope)
         }
     }
 

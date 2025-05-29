@@ -99,4 +99,5 @@
     <string name="kaleyra_strings_info_camera_settings">Camera Effects</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Model loading in progress…</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Model not available</string>
+    <string name="kaleyra_strings_info_call_thermal_warning_message">Some features have been deactivated due to device overheating.</string>
 </resources>

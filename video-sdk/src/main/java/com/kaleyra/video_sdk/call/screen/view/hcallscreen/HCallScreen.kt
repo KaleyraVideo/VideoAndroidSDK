@@ -72,6 +72,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 
@@ -242,6 +243,10 @@ internal fun HCallScreen(
                     is DownloadFileMessage.New -> {
                         fileShareViewModel.download(message.downloadId)
                         onModalSheetComponentRequest(ModularComponent.FileShare)
+                    }
+
+                    is ThermalWarningMessage -> {
+                        onModalSheetComponentRequest(ModularComponent.Settings)
                     }
 
                     else -> Unit

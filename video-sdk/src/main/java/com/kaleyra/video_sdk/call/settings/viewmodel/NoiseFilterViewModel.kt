@@ -4,16 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kaleyra.video.noise_filter.DeepFilterNetLoader
-import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
+import com.kaleyra.video_sdk.call.mapper.NoiseFilterMapper.getSupportedNoiseFilterModes
 import com.kaleyra.video_sdk.call.mapper.NoiseFilterMapper.toNoiseFilerMode
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class NoiseFilterViewModel(configure: suspend () -> Configuration) : BaseViewModel<NoiseFilterUiState>(configure) {
 
@@ -24,13 +27,17 @@ internal class NoiseFilterViewModel(configure: suspend () -> Configuration) : Ba
             _uiState.update { it.copy(deepFilerLoadingState = loadingState) }
         }.launchIn(viewModelScope)
 
-        _uiState.update {
-            it.copy(supportedNoiseFilterModesUi = ImmutableList(
-                listOfNotNull(
-                    NoiseFilterModeUi.DeepFilterAi.takeIf { DeepFilterNetModule.isAvailable() },
-                    NoiseFilterModeUi.Standard,
-                    NoiseFilterModeUi.None
-                )))
+        _uiState.update { it.copy(supportedNoiseFilterModesUi = ImmutableList(getSupportedNoiseFilterModes())) }
+
+        viewModelScope.launch {
+            call.first()
+
+            call.getValue()!!
+                .isCpuThrottling(this)
+                .onEach { isDeviceOverHeating ->
+                    _uiState.update { it.copy(isDeviceOverHeating = isDeviceOverHeating) }
+                }
+                .launchIn(this)
         }
     }
 

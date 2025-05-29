@@ -19,7 +19,6 @@ package com.kaleyra.video_common_ui.utils.extensions
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Input
-import com.kaleyra.video.conversation.internal.chat_client.api.channels.channel.participants.participant.internal.ChatChannelParticipant
 import com.kaleyra.video.sharedfolder.SharedFile
 import com.kaleyra.video.whiteboard.Whiteboard
 import com.kaleyra.video_common_ui.CallUI
@@ -32,12 +31,14 @@ import com.kaleyra.video_utils.FieldProperty
 import com.kaleyra.video_utils.thermal.DeviceThermalManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -106,7 +107,7 @@ object CallExtensions {
             .launchIn(coroutineScope)
     }
 
-    suspend internal fun CallUI.toDownloadFiles(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): StateFlow<List<SharedFile>> =
+    internal suspend fun CallUI.toDownloadFiles(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): StateFlow<List<SharedFile>> =
         sharedFolder.files.map { files ->
             files.filterNot {
                 it.sender.userId == participants.value.me?.userId
@@ -170,33 +171,34 @@ object CallExtensions {
             .takeWhile { (_, callState) ->
                 callState !is Call.State.Disconnected.Ended
             }
-            .filterNot {(downloadFiles, _) -> downloadFiles.isEmpty() }
+            .filterNot { (downloadFiles, _) -> downloadFiles.isEmpty() }
             .onEach {
                 if (CallUI.Button.FileShare !in addedButtons) addedButtons.add(CallUI.Button.FileShare)
                 buttonsProvider?.invoke((
-                        type.value.toCallButtons(actions?.value)
-                            + addedButtons)
-                        .toMutableSet()
-                    )
+                    type.value.toCallButtons(actions?.value)
+                        + addedButtons)
+                    .toMutableSet()
+                )
             }
             .launchIn(scope)
     }
 
-    internal var CallUI.deviceThermalManager: DeviceThermalManager? by FieldProperty { null }
+    internal var Call.deviceThermalManager: DeviceThermalManager? by FieldProperty { null }
 
-    suspend fun CallUI.isThrottlingCpu(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): StateFlow<Boolean> {
+    suspend fun Call.isCpuThrottling(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): StateFlow<Boolean> {
         deviceThermalManager = deviceThermalManager ?: DeviceThermalManager(ContextRetainer.context).apply {
             startThermalMonitoring()
             state
                 .takeWhile { it !is Call.State.Disconnected.Ended }
                 .onCompletion {
                     deviceThermalManager?.stopThermalMonitoring()
-                    deviceThermalManager = null }
+                    deviceThermalManager = null
+                }
                 .launchIn(scope)
         }
 
         return deviceThermalManager!!.throttlingStatus.map { throttlingStatus ->
-            throttlingStatus.ordinal >= DeviceThermalManager.ThrottlingStatus.SEVERE.ordinal
+            throttlingStatus.value >= DeviceThermalManager.ThrottlingStatus.SEVERE.value
         }.stateIn(scope)
     }
 }

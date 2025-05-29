@@ -82,4 +82,5 @@
     <string name="kaleyra_strings_info_camera_settings">Efectos de cámara</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Cargando modelo…</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Modelo no disponible</string>
+    <string name="kaleyra_strings_info_call_thermal_warning_message">Alguns recursos foram desativados devido ao superaquecimento do dispositivo.</string>
 </resources>

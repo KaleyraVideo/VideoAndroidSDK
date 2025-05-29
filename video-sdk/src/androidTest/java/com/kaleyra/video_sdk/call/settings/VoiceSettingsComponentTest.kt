@@ -2,18 +2,13 @@ package com.kaleyra.video_sdk.call.settings
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi.Muted
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.settings.view.AudioDeviceMutedOptionsTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsComponent
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
-import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert
@@ -94,21 +89,5 @@ class VoiceSettingsComponentTest {
             )).performClick()
 
         Assert.assertTrue(hasRequestedAudioOutputChange)
-    }
-
-    @Test
-    fun testAllSoundsMutedOptionSelected() {
-        composeTestRule.setContent {
-            VoiceSettingsComponent(
-                AudioOutputUiState(
-                    audioDeviceList = ImmutableList(listOf(AudioDeviceUi.Muted, AudioDeviceUi.LoudSpeaker, AudioDeviceUi.EarPiece)),
-                    playingDeviceId = Muted::class.java.name
-                ),
-                { },
-                { }
-            )
-        }
-
-        composeTestRule.onNodeWithTag(AudioDeviceMutedOptionsTag).assertIsSelected()
     }
 }

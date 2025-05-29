@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -29,11 +28,14 @@ import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
+import com.kaleyra.video_sdk.call.mapper.NoiseFilterMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgroundsUi
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
+import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionDeepFilterOptionTag
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
+import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundImageOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
@@ -72,6 +74,8 @@ class SettingsComponentTest {
     @Before
     fun setUp() {
         ContextRetainer().create(composeTestRule.activity.applicationContext)
+        mockkObject(NoiseFilterMapper)
+        every { NoiseFilterMapper.getSupportedNoiseFilterModes() } returns listOf(NoiseFilterModeUi.None, NoiseFilterModeUi.Standard, NoiseFilterModeUi.DeepFilterAi)
         mockkObject(AudioOutputMapper)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.LoudSpeaker)
         every { callMock.toAvailableAudioDevicesUi() } returns MutableStateFlow(listOf(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.EarPiece))
@@ -160,7 +164,7 @@ class SettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_deepfilter_ai)).performClick()
+        composeTestRule.onNodeWithTag(NoiseSuppressionDeepFilterOptionTag).performClick()
 
         verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.DeepFilterAi) }
     }
@@ -274,7 +278,7 @@ class SettingsComponentTest {
         }
 
         scrollState.scrollTo(400)
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_image)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).performClick()
 
         verify { virtualBackgroundViewModel.setEffect(VirtualBackgroundUi.Image("image")) }
 }

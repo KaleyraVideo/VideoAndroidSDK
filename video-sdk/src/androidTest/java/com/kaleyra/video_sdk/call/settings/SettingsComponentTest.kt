@@ -5,6 +5,7 @@ package com.kaleyra.video_sdk.call.settings
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -19,6 +20,7 @@ import com.kaleyra.video.conference.Effect
 import com.kaleyra.video.conference.Effects
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
+import com.kaleyra.video_common_ui.R
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_sdk.Mocks.callMock
 import com.kaleyra.video_sdk.Mocks.conferenceMock
@@ -27,11 +29,14 @@ import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toAvailableAudioDevicesUi
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
+import com.kaleyra.video_sdk.call.mapper.NoiseFilterMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgroundsUi
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
+import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionDeepFilterOptionTag
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
+import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundImageOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
@@ -67,6 +72,8 @@ class SettingsComponentTest {
     @Before
     fun setUp() {
         ContextRetainer().create(composeTestRule.activity.applicationContext)
+        mockkObject(NoiseFilterMapper)
+        every { NoiseFilterMapper.getSupportedNoiseFilterModes() } returns listOf(NoiseFilterModeUi.None, NoiseFilterModeUi.Standard, NoiseFilterModeUi.DeepFilterAi)
         mockkObject(AudioOutputMapper)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.LoudSpeaker)
         every { callMock.toAvailableAudioDevicesUi() } returns MutableStateFlow(listOf(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.EarPiece))
@@ -120,8 +127,13 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-                scrollState
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = scrollState,
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
         advanceUntilIdle()
@@ -141,10 +153,16 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = rememberScrollState(),
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
-        composeTestRule.onNodeWithText(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_deepfilter_ai)).performClick()
+        composeTestRule.onNodeWithTag(NoiseSuppressionDeepFilterOptionTag).performClick()
 
         verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.DeepFilterAi) }
     }
@@ -156,10 +174,16 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = rememberScrollState(),
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
-        composeTestRule.onNodeWithText(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_standard)).performClick()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_standard)).performClick()
 
         verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.Standard) }
     }
@@ -171,10 +195,16 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = rememberScrollState(),
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
-        composeTestRule.onAllNodesWithText(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_none)).onFirst().performClick()
+        composeTestRule.onAllNodesWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_none)).onFirst().performClick()
 
         verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.None) }
     }
@@ -188,8 +218,13 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-                scrollState
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = scrollState,
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
         scrollState.scrollTo(400)
@@ -207,8 +242,13 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-                scrollState
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = scrollState,
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
         scrollState.scrollTo(400)
@@ -226,13 +266,18 @@ class SettingsComponentTest {
                 audioOutputViewModel,
                 noiseFilterViewModel,
                 virtualBackgroundViewModel,
-                scrollState
-            ) { }
+                onDismiss = {},
+                onUserMessageActionClick = { },
+                onChangeAudioOutputRequested = { },
+                scrollState = scrollState,
+                modifier = Modifier,
+                isLargeScreen = false
+            )
         }
 
         scrollState.scrollTo(400)
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_image)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).performClick()
 
         verify { virtualBackgroundViewModel.setEffect(VirtualBackgroundUi.Image("image")) }
-}
+    }
 }

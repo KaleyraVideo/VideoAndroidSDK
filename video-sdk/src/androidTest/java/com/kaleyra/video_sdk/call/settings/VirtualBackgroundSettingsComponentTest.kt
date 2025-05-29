@@ -67,7 +67,7 @@ class VirtualBackgroundSettingsComponentTest {
     }
 
     @Test
-    fun testVirtualBackgroundsPresent_cameraSettingsNotDisplayed() = runTest {
+    fun testVirtualBackgroundsPresent_cameraSettingsDisplayed() = runTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
@@ -122,7 +122,7 @@ class VirtualBackgroundSettingsComponentTest {
             }
         }
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_image)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).performClick()
         Assert.assertEquals(VirtualBackgroundUi.Image("image"), requestedVirtualBackgroundUi)
     }
 

@@ -272,7 +272,7 @@
     <string name="kaleyra_virtual_background_picker_title">Select virtual background</string>
     <string name="kaleyra_virtual_background_none">None</string>
     <string name="kaleyra_virtual_background_blur">Blur</string>
-    <string name="kaleyra_virtual_background_image">Image</string>
+    <string name="kaleyra_virtual_background_image">Virtual background</string>
 
     <!-- FILE SHARE -->
     <string name="kaleyra_fileshare">File Share</string>

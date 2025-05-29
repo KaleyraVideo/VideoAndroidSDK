@@ -19,12 +19,17 @@
 package com.kaleyra.video_sdk.common.usermessages.provider
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Effect
+import com.kaleyra.video.conference.Input
 import com.kaleyra.video_common_ui.CallUI
+import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
 import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
+import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toAudioConnectionFailureMessage
 import com.kaleyra.video_sdk.call.mapper.InputMapper.toMutedMessage
@@ -37,6 +42,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.CoroutineName
@@ -56,6 +62,7 @@ import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -104,6 +111,7 @@ object CallUserMessagesProvider {
         userMessageChannel.sendFailedAudioOutputEvents(call, scope)
         userMessageChannel.sendSignDocumentsEvents(call, scope)
         userMessageChannel.sendDownloadFilesEvents(call, scope)
+        userMessageChannel.sendThermalWarningEvents(call, scope)
 
         _alertMessages.sendAutomaticRecordingAlertEvents(call, scope)
         _alertMessages.sendAmIAloneEvents(call, scope)
@@ -230,6 +238,47 @@ object CallUserMessagesProvider {
             val newList = if (callStateUi is CallStateUi.Connecting) mutableList.plus(AlertMessage.AutomaticRecordingMessage) else mutableList.minus(AlertMessage.AutomaticRecordingMessage)
             value = newList
         }.launchIn(scope)
+    }
+
+    private fun Channel<UserMessage>.sendThermalWarningEvents(call: CallUI, scope: CoroutineScope) {
+        scope.launch {
+
+            var currentNoiseFilterMode: Input.Audio.My.NoiseFilterMode? = null
+            var currentCameraEffect: Effect.Video? = null
+
+            call.participants.first { it.me != null }
+                .me!!.streams.first { it.any { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+                .first { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
+                .audio.flatMapLatestNotNull { it?.noiseFilterMode }
+                .onEach { noiseFilterMode ->
+                    currentNoiseFilterMode = noiseFilterMode
+                }
+                .launchIn(scope)
+
+
+            call.participants.first { it.me != null }
+                .me!!.streams.first { it.any { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+                .first { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
+                .video.flatMapLatestNotNull { it?.currentEffect }
+                .onEach { currentEffect ->
+                    currentCameraEffect = currentEffect
+                }
+                .launchIn(scope)
+
+
+            call.isCpuThrottling()
+                .filter { it }
+                .onEach {
+                    val hasAiNoiseFilterActive = currentNoiseFilterMode is Input.Audio.My.NoiseFilterMode.DeepFilterAi
+                    val hasBlurOrImageBackgroundActive = currentCameraEffect is Effect.Video.Background.Blur || currentCameraEffect is Effect.Video.Background.Image
+                    if (!hasAiNoiseFilterActive && !hasBlurOrImageBackgroundActive) return@onEach
+                    send(ThermalWarningMessage(
+                        hasDisabledNoiseFilter = hasAiNoiseFilterActive,
+                        hasDisabledVirtualBackground = hasBlurOrImageBackgroundActive
+                    ))
+
+                }.launchIn(scope)
+        }
     }
 
     private fun MutableStateFlow<Set<AlertMessage>>.sendCustomMessages(call: CallUI, scope: CoroutineScope) {
