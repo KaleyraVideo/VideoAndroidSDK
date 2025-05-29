@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.screen.view.hcallscreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -82,6 +85,9 @@ private val CallSheetEstimatedWidth = 76.dp
 private val CallSheetEstimatedWidthWithHandle = 87.dp
 private val StreamMenuEstimatedWidth = CallSheetEstimatedWidth
 
+internal val HCallScreenAppBarTag = "HCallScreenAppBarTag"
+internal val HCallScreenContentTag = "HCallScreenContentTag"
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun HCallScreen(
@@ -104,16 +110,40 @@ internal fun HCallScreen(
     val hasSheetDragContent by remember(selectedStreamId) { derivedStateOf { selectedStreamId == null && sheetDragActions.value.isNotEmpty() } }
     var isInFullscreenMode by remember { mutableStateOf(false) }
 
+    val (appBarRequester, contentRequester, sheetDragContentRequester) = remember { FocusRequester.createRefs() }
+    var sheetContentRequester by remember { mutableStateOf<FocusRequester?>(null) }
+
     val contentSpacing = 8.dp
     HCallScreenScaffold(
         modifier = modifier,
         sheetState = sheetState,
         paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, left = contentSpacing, right = contentSpacing),
         topAppBar = {
+            val coroutineScope = rememberCoroutineScope()
             CallAppBarComponent(
                 onParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(end = contentSpacing)
+                modifier = Modifier
+                    .padding(horizontal = contentSpacing)
+                    .focusRequester(appBarRequester)
+                    .onFocusChanged {
+                        // Ensures the bottom sheet closes automatically when the app
+                        // bar gains focus, improving accessibility for keyboard users.
+                        if (!it.isFocused) return@onFocusChanged
+                        coroutineScope.launch {
+                            sheetState.collapse()
+                        }
+                    }
+                    .testTag(HCallScreenAppBarTag)
+            )
+            Box(
+                modifier = Modifier
+                    .height(0.dp)
+                    .onFocusChanged {
+                        if (!it.hasFocus) return@onFocusChanged
+                        contentRequester.requestFocus()
+                    }
+                    .focusable()
             )
         },
         sheetDragContent = {
@@ -123,7 +153,6 @@ internal fun HCallScreen(
                     // To prevent unintended interactions, disable their focus in this state
                     derivedStateOf { sheetState.currentValue == CallSheetValue.Expanded }
                 }
-                val coroutineScope = rememberCoroutineScope()
                 VSheetDragContent(
                     callActions = sheetDragActions,
                     inputPermissions = inputPermissions,
@@ -131,17 +160,10 @@ internal fun HCallScreen(
                     onAskInputPermissions = onAskInputPermissions,
                     onModularComponentRequest = onModalSheetComponentRequest,
                     contentPadding = PaddingValues(top = 14.dp, end = 14.dp, bottom = 14.dp, start = 8.dp),
+                    onExitFocusRequest = { sheetContentRequester },
                     modifier = Modifier
                         .animateContentSize()
-                        .onFocusChanged {
-                            // Ensures the bottom sheet closes automatically when it loses focus,
-                            // improving accessibility for keyboard users.
-                            if (!it.hasFocus) {
-                                coroutineScope.launch {
-                                    sheetState.collapse()
-                                }
-                            }
-                        }
+                        .focusRequester(sheetDragContentRequester)
                 )
             }
         },
@@ -165,6 +187,16 @@ internal fun HCallScreen(
                             onActionsOverflow = { sheetDragActions = it },
                             onModularComponentRequest = onModalSheetComponentRequest,
                             onMoreToggle = onChangeSheetState,
+                            onEnterFocusRequester = { focusRequester: FocusRequester? ->
+                                sheetContentRequester = focusRequester
+                            },
+                            onExitFocusRequest = {
+                                if (sheetState.currentValue == CallSheetValue.Collapsed) {
+                                    appBarRequester
+                                } else {
+                                    sheetDragContentRequester
+                                }
+                            },
                             modifier = Modifier
                                 .padding(
                                     start = 5.dp,
@@ -188,6 +220,15 @@ internal fun HCallScreen(
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
+                Box(
+                    modifier = Modifier
+                        .height(0.dp)
+                        .onFocusChanged {
+                            if (!it.hasFocus) return@onFocusChanged
+                            appBarRequester.requestFocus()
+                        }
+                        .focusable()
+                )
             }
         },
         brandLogo = brandLogo@{
@@ -268,9 +309,18 @@ internal fun HCallScreen(
                 }
             }
         }
+        val coroutineScope = rememberCoroutineScope()
 
         Box(
             modifier = Modifier
+                .onFocusChanged {
+                    if (!it.isFocused) return@onFocusChanged
+                    // Ensures the bottom sheet closes automatically when the content
+                    // gains focus, improving accessibility for keyboard users.
+                    coroutineScope.launch {
+                        sheetState.collapse()
+                    }
+                }
                 .pointerInteropFilter {
                     // TODO test this
                     if (selectedStreamId != null && !isInFullscreenMode) {
@@ -278,23 +328,36 @@ internal fun HCallScreen(
                         true
                     } else false
                 }
+                .testTag(HCallScreenContentTag)
                 .clearAndSetSemantics {},
         ) {
-            StreamComponent(
-                viewModel = streamViewModel,
-                windowSizeClass = windowSizeClass,
-                selectedStreamId = selectedStreamId,
-                onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
-                onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = leftPadding,
-                        top = topPadding,
-                        end = rightPadding,
-                        bottom = bottomPadding,
-                    )
-            )
+            Box(Modifier.focusRequester(contentRequester)) {
+                StreamComponent(
+                    viewModel = streamViewModel,
+                    windowSizeClass = windowSizeClass,
+                    selectedStreamId = selectedStreamId,
+                    onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
+                    onMoreParticipantClick = { onModalSheetComponentRequest(ModularComponent.Participants) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = leftPadding,
+                            top = topPadding,
+                            end = rightPadding,
+                            bottom = bottomPadding,
+                        )
+                )
+
+                Box(
+                    modifier = Modifier
+                        .height(0.dp)
+                        .onFocusChanged {
+                            if (!it.hasFocus) return@onFocusChanged
+                            sheetContentRequester?.requestFocus()
+                        }
+                        .focusable()
+                )
+            }
 
             Column(
                 modifier = Modifier.padding(
