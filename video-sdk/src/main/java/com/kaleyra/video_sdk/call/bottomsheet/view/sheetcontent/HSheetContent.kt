@@ -207,16 +207,16 @@ internal fun HSheetContent(
         )  {
             when {
                 showAnswerAction -> {
-                    AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
                     Spacer(Modifier.width(SheetItemsSpacing))
+                    AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
                 }
                 showMoreAction -> {
+                    Spacer(Modifier.width(SheetItemsSpacing))
                     MoreAction(
                         badgeCount = moreNotificationCount,
                         checked = isMoreToggled,
                         onCheckedChange = onMoreToggle,
                     )
-                    Spacer(Modifier.width(SheetItemsSpacing))
                 }
             }
         }
