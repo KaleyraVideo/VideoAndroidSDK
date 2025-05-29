@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -56,7 +57,8 @@ internal fun HSheetDragContent(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onModularComponentRequest: (ModularComponent) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onExitFocusRequest: () -> FocusRequester? = { null },
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,6 +106,7 @@ internal fun HSheetDragContent(
         inputPermissions = inputPermissions,
         areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
         contentPadding = contentPadding,
+        onExitFocusRequest = onExitFocusRequest,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) {
             lambda@{
@@ -170,6 +173,8 @@ internal fun HSheetDragContent(
     )
 }
 
+// N.B. Keyboard navigation tests are currently excluded due to past difficulties with
+// programmatic focus management in UI tests. Exercise caution when modifying this code.
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun HSheetDragContent(
@@ -190,7 +195,8 @@ internal fun HSheetDragContent(
     labels: Boolean = true,
     areChildrenKeyboardFocusable: Boolean = false,
     inputPermissions: InputPermissions = InputPermissions(),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    onExitFocusRequest: () -> FocusRequester? = { null },
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val shouldExtendLastButton = callActions.count() / itemsPerRow < 1
 
@@ -208,16 +214,31 @@ internal fun HSheetDragContent(
         itemsIndexed(
             key = { _, item -> item.id },
             span = { index, _ ->
+                // Span logic for the last item if it needs to extend
                 if (shouldExtendLastButton && index == chunkedActions.size - 1) GridItemSpan(itemsPerRow - (chunkedActions.size % itemsPerRow - 1))
                 else GridItemSpan(1)
             },
             items = chunkedActions
-        ) { _, callAction ->
+        ) { index, callAction ->
             CallSheetItem(
                 callAction = callAction,
                 modifier = Modifier
                     .animateItem()
-                    .focusProperties { canFocus = areChildrenKeyboardFocusable },
+                    .focusProperties {
+                        // Controls whether this item can receive keyboard focus.
+                        // If 'false', it will be skipped during tab navigation.
+                        canFocus = areChildrenKeyboardFocusable
+
+                        // This focus property logic only applies to the last item in the grid.
+                        // For other items, the default LazyVerticalGrid traversal order (left-to-right, then top-to-bottom) will apply.
+                        if (index != callActions.count() - 1) return@focusProperties
+
+                        // When the last item in the grid is focused and 'Tab' is pressed,
+                        // it will attempt to move focus to the FocusRequester provided by 'onNextFocusRequester()'.
+                        // If 'onNextFocusRequester()' returns null, it falls back to the default 'next' behavior
+                        // of the LazyVerticalGrid, which typically involves looping within the grid or exiting.
+                        next = onExitFocusRequest() ?: next
+                    },
                 label = labels,
                 extended = false,
                 inputPermissions = inputPermissions,
