@@ -51,7 +51,7 @@ internal fun VSheetDragContent(
     onAskInputPermissions: (Boolean) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier,
-    onNextFocusRequester: () -> FocusRequester? = { null },
+    onExitFocusRequest: () -> FocusRequester? = { null },
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -76,7 +76,7 @@ internal fun VSheetDragContent(
         inputPermissions = inputPermissions,
         areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
         contentPadding = contentPadding,
-        onNextFocusRequester = onNextFocusRequester,
+        onExitFocusRequest = onExitFocusRequest,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) {
             lambda@{
@@ -159,7 +159,7 @@ internal fun VSheetDragContent(
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
     inputPermissions: InputPermissions = InputPermissions(),
-    onNextFocusRequester: () -> FocusRequester? = { null },
+    onExitFocusRequest: () -> FocusRequester? = { null },
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val chunkedActions = remember(callActions, itemsPerColumn) {
@@ -191,7 +191,7 @@ internal fun VSheetDragContent(
                         // it will attempt to move focus to the FocusRequester provided by 'onNextFocusRequester()'.
                         // If 'onNextFocusRequester()' returns null, it falls back to the default 'next' behavior
                         // of the LazyHorizontalGrid, which typically involves looping within the grid or exiting.
-                        next = onNextFocusRequester() ?: next
+                        next = onExitFocusRequest() ?: next
                     },
                 label = false,
                 extended = false,
