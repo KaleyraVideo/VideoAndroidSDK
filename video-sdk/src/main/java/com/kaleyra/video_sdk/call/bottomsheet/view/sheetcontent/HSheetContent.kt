@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent
 
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -196,7 +197,7 @@ internal fun HSheetContent(
         modifier = modifier.focusGroup(), // Ensures the parent acquires focus and automatically shifts it to the first child element for keyboard navigation.
         reverseLayout = true
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .focusRequester(answerOrMoreButtonRequester)
                 .focusProperties {
@@ -205,17 +206,20 @@ internal fun HSheetContent(
                 }
         )  {
             when {
-                showAnswerAction -> AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
+                showAnswerAction -> {
+                    AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
+                    Spacer(Modifier.width(SheetItemsSpacing))
+                }
                 showMoreAction -> {
                     MoreAction(
                         badgeCount = moreNotificationCount,
                         checked = isMoreToggled,
                         onCheckedChange = onMoreToggle,
                     )
+                    Spacer(Modifier.width(SheetItemsSpacing))
                 }
             }
         }
-        Spacer(Modifier.width(SheetItemsSpacing))
 
         HSheetItemsLayout(
             onItemsPlaced = { itemsPlaced ->
