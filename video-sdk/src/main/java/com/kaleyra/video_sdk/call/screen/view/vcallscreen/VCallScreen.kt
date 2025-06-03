@@ -379,7 +379,6 @@ internal fun VCallScreen(
                         else -> false
                     }
                 }
-                .clearAndSetSemantics {}
         ) {
             val streamViewModel: StreamViewModel = viewModel(
                 factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)

@@ -328,8 +328,7 @@ internal fun HCallScreen(
                         true
                     } else false
                 }
-                .testTag(HCallScreenContentTag)
-                .clearAndSetSemantics {},
+                .testTag(HCallScreenContentTag),
         ) {
             Box(Modifier.focusRequester(contentRequester)) {
                 StreamComponent(
