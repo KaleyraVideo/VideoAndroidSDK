@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -311,7 +312,8 @@ private fun CallActionLayout(
                             layout(constraints.minWidth, placeable.height) {
                                 placeable.placeRelative(-placeable.width / 2, 0)
                             }
-                        },
+                        }
+                        .clearAndSetSemantics { },
                     text = label,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -392,7 +394,7 @@ private fun ButtonLayout(
                         }
                     },
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
