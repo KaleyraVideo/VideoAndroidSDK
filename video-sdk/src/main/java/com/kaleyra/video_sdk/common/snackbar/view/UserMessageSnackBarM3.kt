@@ -41,6 +41,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
@@ -101,7 +104,10 @@ internal fun UserMessageSnackbarM3(
                     .heightIn(min = 32.dp)
                     .padding(top = 4.dp, bottom = 4.dp, start = if (actionConfig != null || iconPainter == null) 16.dp else 8.dp, end = if (onDismissClick == null && actionConfig == null) 16.dp else 8.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    .semantics {
+                        liveRegion = LiveRegionMode.Assertive
+                    },
                 text = message,
                 style = MaterialTheme.typography.bodySmall,
                 onTextLayout = { textLayoutResult ->
