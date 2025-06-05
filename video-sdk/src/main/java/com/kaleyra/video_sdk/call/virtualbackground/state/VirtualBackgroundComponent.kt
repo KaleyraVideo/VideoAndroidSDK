@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.call.virtualbackground
+package com.kaleyra.video_sdk.call.virtualbackground.state
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
