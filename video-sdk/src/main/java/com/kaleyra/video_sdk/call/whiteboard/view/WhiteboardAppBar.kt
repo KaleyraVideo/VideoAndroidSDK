@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.whiteboard.view
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -25,6 +26,7 @@ import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.appbar.view.ComponentAppBar
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,9 +54,13 @@ internal fun WhiteboardAppBar(
         title = stringResource(id = R.string.kaleyra_whiteboard),
         actions = {
             if (isFileSharingSupported) {
+                val interactionSource = remember { MutableInteractionSource() }
                 androidx.compose.material3.IconButton(
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .highlightOnFocus(interactionSource),
                     onClick = onUploadClick,
+                    interactionSource = interactionSource,
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                         contentColor = MaterialTheme.colorScheme.onSurface

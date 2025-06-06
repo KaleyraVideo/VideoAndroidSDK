@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
@@ -27,6 +29,7 @@ private val IconSize = 24.dp
 internal fun IconButton(
     icon: Painter,
     iconDescription: String?,
+    modifier: Modifier = Modifier,
     enabledIconTint: Color = LocalContentColor.current,
     disabledIconTint: Color = LocalContentColor.current,
     iconSize: Dp = IconSize,
@@ -34,12 +37,12 @@ internal fun IconButton(
     supportRtl: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     indication: Indication? = ripple(bounded = false, radius = iconSize),
+    highlightShape: Shape = RectangleShape,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .highlightOnFocus(interactionSource)
+            .highlightOnFocus(interactionSource, highlightShape)
             .defaultMinSize(minWidth = MinSize, minHeight = MinSize)
             .clickable(
                 onClick = onClick,

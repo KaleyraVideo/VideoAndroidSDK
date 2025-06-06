@@ -16,18 +16,21 @@
 
 package com.kaleyra.video_sdk.call.whiteboard.view
 
-import IconButton
 import android.content.res.Configuration
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 
 @Composable
 internal fun WhiteboardOfflineContent(
@@ -58,18 +62,27 @@ internal fun WhiteboardOfflineContent(
                 animation = tween(500, easing = LinearEasing)
             )
         )
+        val interactionSource = remember { MutableInteractionSource() }
+
         IconButton(
-            icon = painterResource(id = R.drawable.ic_kaleyra_reload),
-            iconDescription = stringResource(id = R.string.kaleyra_error_button_reload),
-            enabledIconTint = MaterialTheme.colorScheme.onSurface,
-            iconSize = 96.dp,
             onClick = onReloadClick,
-            indication = ripple(bounded = false, radius = 48.dp),
-            modifier = Modifier
-                .graphicsLayer {
-                    rotationZ = if (loading) rotation else 0f
-                }
-        )
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            interactionSource = interactionSource,
+            modifier = Modifier.highlightOnFocus(interactionSource)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_kaleyra_reload),
+                contentDescription = stringResource(id = R.string.kaleyra_error_button_reload),
+                modifier = Modifier
+                    .size(96.dp)
+                    .graphicsLayer {
+                        rotationZ = if (loading) rotation else 0f
+                    }
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = stringResource(id = R.string.kaleyra_error_title),

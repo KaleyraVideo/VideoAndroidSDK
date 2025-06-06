@@ -22,6 +22,7 @@ import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +68,7 @@ import com.kaleyra.video_sdk.common.text.Ellipsize
 import com.kaleyra.video_sdk.common.text.EllipsizeText
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isArchiveMimeType
 import com.kaleyra.video_sdk.extensions.MimeTypeExtensions.isImageMimeType
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlin.math.roundToInt
 
@@ -225,12 +228,14 @@ private fun SharedFileInfoAndProgress(
 private fun ActionButton(
     sharedFileState: SharedFileUi.State,
     onActionClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val onSurfaceAlpha50 = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
     IconButton(
         onClick = onActionClick,
-        modifier = modifier
+        interactionSource = interactionSource,
+        modifier = modifier.highlightOnFocus(interactionSource)
     ) {
         Icon(
             painter = painterResource(

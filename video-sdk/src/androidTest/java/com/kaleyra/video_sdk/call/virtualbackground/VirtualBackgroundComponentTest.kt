@@ -29,6 +29,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import org.junit.After
 import org.junit.Assert

@@ -16,7 +16,14 @@
 
 package com.kaleyra.video_sdk.ui.call.feedback
 
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.NativeKeyEvent
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
@@ -29,13 +36,16 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.requestFocus
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
+import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
 import com.kaleyra.video_sdk.call.feedback.view.FeedbackForm
 import com.kaleyra.video_sdk.call.feedback.view.StarSliderTag
 import junit.framework.TestCase.assertEquals
@@ -54,6 +64,8 @@ class FeedbackFormTest {
 
     private var isDismissed = false
 
+    private var feedbackUiState by mutableStateOf(FeedbackUiState.Display())
+
     private var rating: FeedbackUiRating = FeedbackUiRating.Awful
 
     private var comment = ""
@@ -62,6 +74,7 @@ class FeedbackFormTest {
     fun setUp() {
         composeTestRule.setContent {
             FeedbackForm(
+                feedbackUiState = feedbackUiState,
                 onUserFeedback = { rating, comment ->
                     this@FeedbackFormTest.comment = comment
                     this@FeedbackFormTest.rating = rating
@@ -101,6 +114,58 @@ class FeedbackFormTest {
     @Test
     fun testSliderDefaultSettings() {
         composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo(5f, 1f.rangeTo(5f), 3))).assertIsDisplayed()
+    }
+
+    @Test
+    fun rightArrowDown_sliderValueIsIncreased() {
+        feedbackUiState = FeedbackUiState.Display(rating = FeedbackUiRating.Awful)
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(1f, 1f.rangeTo(5f), 3))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_poor)
+        val keyEvent = androidx.compose.ui.input.key.KeyEvent(NativeKeyEvent(0,0, NativeKeyEvent.ACTION_DOWN, NativeKeyEvent.KEYCODE_DPAD_RIGHT, 0))
+        composeTestRule.onNodeWithTag(StarSliderTag).requestFocus()
+        composeTestRule.onNodeWithTag(StarSliderTag).performKeyPress(keyEvent)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(2f, 1f.rangeTo(5f), 3))
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun leftArrowDown_sliderValueIsDecreased() {
+        feedbackUiState = FeedbackUiState.Display(rating = FeedbackUiRating.Excellent)
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(5f, 1f.rangeTo(5f), 3))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_good)
+        val keyEvent = androidx.compose.ui.input.key.KeyEvent(NativeKeyEvent(0,0, NativeKeyEvent.ACTION_DOWN, NativeKeyEvent.KEYCODE_DPAD_LEFT, 0))
+        composeTestRule.onNodeWithTag(StarSliderTag).requestFocus()
+        composeTestRule.onNodeWithTag(StarSliderTag).performKeyPress(keyEvent)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(4f, 1f.rangeTo(5f), 3))
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun leftArrowDown_atMinValue_doesNotChangeSliderPosition() {
+        feedbackUiState = FeedbackUiState.Display(rating = FeedbackUiRating.Awful)
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(1f, 1f.rangeTo(5f), 3))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_bad)
+        val keyEvent = androidx.compose.ui.input.key.KeyEvent(NativeKeyEvent(0,0, NativeKeyEvent.ACTION_DOWN, NativeKeyEvent.KEYCODE_DPAD_LEFT, 0))
+        composeTestRule.onNodeWithTag(StarSliderTag).requestFocus()
+        composeTestRule.onNodeWithTag(StarSliderTag).performKeyPress(keyEvent)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(1f, 1f.rangeTo(5f), 3))
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun rightArrowDown_atMinValue_doesNotChangeSliderPosition() {
+        feedbackUiState = FeedbackUiState.Display(rating = FeedbackUiRating.Excellent)
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(5f, 1f.rangeTo(5f), 3))
+        val text = composeTestRule.activity.getString(R.string.kaleyra_feedback_excellent)
+        val keyEvent = androidx.compose.ui.input.key.KeyEvent(NativeKeyEvent(0,0, NativeKeyEvent.ACTION_DOWN, NativeKeyEvent.KEYCODE_DPAD_RIGHT, 0))
+        composeTestRule.onNodeWithTag(StarSliderTag).requestFocus()
+        composeTestRule.onNodeWithTag(StarSliderTag).performKeyPress(keyEvent)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(StarSliderTag).assertRangeInfoEquals(ProgressBarRangeInfo(5f, 1f.rangeTo(5f), 3))
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
     }
 
     @Test

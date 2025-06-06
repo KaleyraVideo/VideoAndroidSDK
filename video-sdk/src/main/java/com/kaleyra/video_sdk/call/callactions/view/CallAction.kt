@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.callactions.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -54,6 +56,7 @@ import com.kaleyra.video_sdk.call.utils.TextStyleExtensions.clearFontPadding
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawRoundedCornerBorder
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlin.math.roundToInt
 
@@ -172,6 +175,7 @@ internal fun CallToggleAction(
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
@@ -192,9 +196,11 @@ internal fun CallToggleAction(
                         minWidth = CallActionDefaults.MinButtonSize,
                         minHeight = CallActionDefaults.MinButtonSize
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .highlightOnFocus(interactionSource),
                 shape = CallActionDefaults.ButtonShape,
-                colors = CallActionDefaults.iconToggleButtonColors()
+                colors = CallActionDefaults.iconToggleButtonColors(),
+                interactionSource = interactionSource,
             ) {
                 ButtonLayout(
                     icon = icon,
@@ -227,6 +233,7 @@ internal fun CallAction(
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
     label: String? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     var isButtonTextDisplayed by remember { mutableStateOf(false) }
     CallActionLayout(
@@ -244,7 +251,8 @@ internal fun CallAction(
                         minWidth = CallActionDefaults.MinButtonSize,
                         minHeight = CallActionDefaults.MinButtonSize
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .highlightOnFocus(interactionSource),
                 enabled = enabled,
                 shape = CallActionDefaults.ButtonShape,
                 colors = CallActionDefaults.iconButtonColors(
@@ -253,6 +261,7 @@ internal fun CallAction(
                     disabledContainerColor = disabledButtonColor,
                     disabledContentColor = disabledButtonContentColor
                 ),
+                interactionSource = interactionSource,
                 onClick = onClick
             ) {
                 ButtonLayout(
@@ -276,7 +285,7 @@ private fun CallActionLayout(
     badgeCount: Int = 0,
     badgeDescription: String? = null,
     badgeBackgroundColor: Color = MaterialTheme.colorScheme.primary,
-    badgeContentColor: Color = contentColorFor(badgeBackgroundColor),
+    badgeContentColor: Color = contentColorFor(badgeBackgroundColor)
 ) {
     Box(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -384,7 +393,7 @@ private fun ButtonLayout(
                         }
                     },
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

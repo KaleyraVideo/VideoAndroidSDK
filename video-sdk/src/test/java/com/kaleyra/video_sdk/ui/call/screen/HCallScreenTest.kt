@@ -55,6 +55,8 @@ import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreen
+import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreenAppBarTag
+import com.kaleyra.video_sdk.call.screen.view.hcallscreen.HCallScreenContentTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
@@ -1449,6 +1451,28 @@ class HCallScreenTest {
 
         val companyLogo = composeTestRule.activity.getString(R.string.kaleyra_company_logo)
         composeTestRule.onNodeWithContentDescription(companyLogo).assertDoesNotExist()
+    }
+
+    @Test
+    fun sheetExpanded_appBarFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpHCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(HCallScreenAppBarTag).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+    @Test
+    fun sheetExpanded_screenContentFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpHCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(HCallScreenContentTag).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)

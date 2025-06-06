@@ -26,7 +26,7 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
-import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import kotlinx.coroutines.launch

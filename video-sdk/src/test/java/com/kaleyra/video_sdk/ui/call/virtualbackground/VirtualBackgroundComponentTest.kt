@@ -26,7 +26,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList

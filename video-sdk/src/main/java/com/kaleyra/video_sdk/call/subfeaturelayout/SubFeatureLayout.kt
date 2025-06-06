@@ -17,26 +17,28 @@
 package com.kaleyra.video_sdk.call.subfeaturelayout
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
-import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
-import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
-import com.kaleyra.video_sdk.call.audiooutput.model.mockAudioDevices
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -59,8 +61,12 @@ internal fun SubFeatureLayout(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )
+            val buttonInteractionSource = remember { MutableInteractionSource() }
             IconButton(
-                onClick = onCloseClick) {
+                onClick = onCloseClick,
+                interactionSource = buttonInteractionSource,
+                modifier = Modifier.highlightOnFocus(buttonInteractionSource)
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_kaleyra_close),
                     contentDescription = stringResource(id = R.string.kaleyra_close))

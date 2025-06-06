@@ -17,7 +17,9 @@
 package com.kaleyra.video_sdk.call.signature.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -28,6 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -38,6 +41,7 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.fileshare.model.mockSignDocumentFile
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import java.util.UUID
 
@@ -66,6 +70,7 @@ internal fun SignDocumentsContent(
         state = lazyGridState
     ) {
         itemsIndexed(items = items.value, key = { _, item -> item.id }) { index, item ->
+            val interactionSource = remember { MutableInteractionSource() }
             SignDocumentItem(
                 signDocumentUi = item,
                 modifier = Modifier
@@ -73,8 +78,11 @@ internal fun SignDocumentsContent(
                         enabled = true,
                         onClickLabel = stringResource(R.string.kaleyra_signature_sign),
                         role = Role.Button,
-                        onClick = { onItemClick(item) }
+                        onClick = { onItemClick(item) },
+                        interactionSource = interactionSource,
+                        indication = LocalIndication.current
                     )
+                    .highlightOnFocus(interactionSource)
                     .testTag(SignDocumentsItemTag),
                 onActionClick = { onItemClick(item) }
             )

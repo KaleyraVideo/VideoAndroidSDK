@@ -34,6 +34,8 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreenAppBarTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreenContentTag
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -1353,5 +1355,28 @@ internal abstract class VCallScreenTest: VCallScreenBaseTest() {
             }
         )
         assert(onChatCreationFailed)
+    }
+
+
+    @Test
+    fun sheetExpanded_appBarFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpVCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(VCallScreenAppBarTag).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+    @Test
+    fun sheetExpanded_screenContentFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpVCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(VCallScreenContentTag, useUnmergedTree = true).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 }

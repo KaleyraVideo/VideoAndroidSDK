@@ -19,59 +19,49 @@
 package com.kaleyra.video_sdk.call.appbar.view
 
 import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.material.textfield.TextInputLayout
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.topappbar.TopAppBar
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 const val SearchInputTag = "SearchInputTag"
@@ -90,13 +80,17 @@ internal fun ComponentAppBar(
 ) {
     var displaySearchBar by remember { mutableStateOf(false) }
     var queryText by remember { mutableStateOf("") }
+    val searchFocusRequester = remember { FocusRequester() }
 
     TopAppBar(
         scrollBehavior = scrollBehavior,
         windowInsets = if (isLargeScreen) WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) else TopAppBarDefaults.windowInsets,
         navigationIcon = {
+            val interactionSource = remember { MutableInteractionSource() }
             IconButton(
-                modifier = Modifier.padding(4.dp),
+                modifier = Modifier
+                    .padding(4.dp)
+                    .highlightOnFocus(interactionSource),
                 onClick = {
                     if (displaySearchBar) {
                         queryText = ""
@@ -104,6 +98,7 @@ internal fun ComponentAppBar(
                         displaySearchBar = false
                     } else onBackPressed()
                 },
+                interactionSource = interactionSource,
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -124,35 +119,43 @@ internal fun ComponentAppBar(
             }
         },
         content = {
-            if (!displaySearchBar) {
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
+                if (!displaySearchBar) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
 
-                SearchInput(
-                    modifier = Modifier.padding(end = 24.dp),
-                    query = queryText,
-                    onQueryChange = {
-                        queryText = it
-                        onSearch(it)
+                    SearchInput(
+                        modifier = Modifier
+                            .padding(end = 24.dp)
+                            .focusRequester(searchFocusRequester),
+                        query = queryText,
+                        onQueryChange = {
+                            queryText = it
+                            onSearch(it)
+                        }
+                    )
+
+                    LaunchedEffect(Unit) {
+                        searchFocusRequester.requestFocus()
                     }
-                )
-            }
-
+                }
         },
         actions = {
             if (!displaySearchBar) actions()
             if (enableSearch && !displaySearchBar) {
-                IconButton(onClick = {
-                    displaySearchBar = true
-                }) {
+                val interactionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    modifier = Modifier.highlightOnFocus(interactionSource),
+                    interactionSource = interactionSource,
+                    onClick = { displaySearchBar = true }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         tint = MaterialTheme.colorScheme.onSurface,
@@ -172,12 +175,14 @@ fun SearchInput(
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     hint: String = stringResource(R.string.kaleyra_strings_action_search),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     TextField(
         value = query,
         onValueChange = onQueryChange,
         placeholder = { Text(text = hint) },
         singleLine = true,
+        interactionSource = interactionSource,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -186,7 +191,12 @@ fun SearchInput(
         },
         trailingIcon = {
             if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
+                val trailingButtonInteractionSource = remember { MutableInteractionSource() }
+                IconButton(
+                    onClick = { onQueryChange("") },
+                    interactionSource = trailingButtonInteractionSource,
+                    modifier = Modifier.highlightOnFocus(trailingButtonInteractionSource)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = stringResource(R.string.kaleyra_strings_action_clear)
@@ -198,7 +208,10 @@ fun SearchInput(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
         ),
-        modifier = modifier.fillMaxWidth().testTag(SearchInputTag),
+        modifier = modifier
+            .fillMaxWidth()
+            .highlightOnFocus(interactionSource)
+            .testTag(SearchInputTag),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,

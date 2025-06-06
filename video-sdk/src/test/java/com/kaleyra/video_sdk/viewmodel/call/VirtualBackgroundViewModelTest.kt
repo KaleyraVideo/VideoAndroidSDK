@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.viewmodel.call
 
+import android.net.Uri
 import com.kaleyra.video.conference.CallParticipant
 import com.kaleyra.video.conference.CallParticipants
 import com.kaleyra.video.conference.Effect
@@ -29,17 +30,21 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.mapper.InputMapper
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
 import com.kaleyra.video_sdk.MainDispatcherRule
-import com.kaleyra.video_sdk.call.stream.model.core.streamUiMock
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManagerImpl
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
+import com.kaleyra.video_utils.dispatcher.DispatcherProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -73,10 +78,26 @@ class VirtualBackgroundViewModelTest {
 
     private val effectsMock = mockk<Effects>(relaxed = true)
 
+    private val uri = mockk<Uri>(relaxed = true)
+
+    private val testDispatcher = StandardTestDispatcher()
+
+    private val dispatcherProvider = object : DispatcherProvider {
+        override val default: CoroutineDispatcher = testDispatcher
+        override val io: CoroutineDispatcher = testDispatcher
+        override val main: CoroutineDispatcher = testDispatcher
+        override val mainImmediate: CoroutineDispatcher = testDispatcher
+    }
+
+    private val virtualBackgroundManager = VirtualBackgroundStateManagerImpl.createForTesting(dispatcherProvider)
+
     @Before
     fun setUp() {
         mockkObject(InputMapper)
-        viewModel = VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
+        viewModel = VirtualBackgroundViewModel(
+            configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) },
+            virtualBackgroundStateManager = virtualBackgroundManager
+        )
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { callMock.participants } returns MutableStateFlow(participantsMock)
         every { participantsMock.me } returns meMock
@@ -85,10 +106,11 @@ class VirtualBackgroundViewModelTest {
             every { id } returns CameraStreamConstants.CAMERA_STREAM_ID
             every { video } returns MutableStateFlow(myVideoMock)
         }
+        every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.None)
         every { callMock.effects } returns effectsMock
         every { callMock.toMyCameraStream() } returns MutableStateFlow(myStreamMock)
         with(effectsMock) {
-            every { preselected } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = mockk()))
+            every { preselected } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = uri))
             every { available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(id = "blurId", factor = 1f)))
         }
     }
@@ -102,7 +124,7 @@ class VirtualBackgroundViewModelTest {
     fun testVirtualBackgroundUiState_backgroundsUpdated() = runTest {
         advanceUntilIdle()
         val actual = viewModel.uiState.first().backgroundList.value
-        assertEquals(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Blur("blurId"), VirtualBackgroundUi.Image("imageId")), actual)
+        assertEquals(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Blur("blurId"), VirtualBackgroundUi.Image("imageId", ImmutableUri(uri))), actual)
     }
 
     @Test
@@ -111,7 +133,9 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.None)
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = virtualBackgroundManager.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.None, uiStateBackground)
+        assertEquals(false, isVirtualBackgroundEnabled)
         verify { myVideoMock.tryApplyEffect(Effect.Video.None) }
     }
 
@@ -121,7 +145,9 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = virtualBackgroundManager.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.Blur("blurId"), uiStateBackground)
+        assertEquals(true, isVirtualBackgroundEnabled)
         verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Blur)
@@ -135,7 +161,9 @@ class VirtualBackgroundViewModelTest {
         viewModel.setEffect(VirtualBackgroundUi.Image("imageId"))
 
         val uiStateBackground = viewModel.uiState.first().currentBackground
+        val isVirtualBackgroundEnabled = virtualBackgroundManager.isVirtualBackgroundEnabled.value
         assertEquals(VirtualBackgroundUi.Image("imageId"), uiStateBackground)
+        assertEquals(true, isVirtualBackgroundEnabled)
         verify {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Image)
@@ -148,9 +176,13 @@ class VirtualBackgroundViewModelTest {
         val videoFlow = MutableStateFlow<Input.Video.My?>(null)
         every { myStreamMock.video } returns videoFlow
 
-        val viewModel = VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
-        viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
+        val viewModel = VirtualBackgroundViewModel(
+            configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) },
+            virtualBackgroundStateManager = virtualBackgroundManager
+        )
+        advanceUntilIdle()
 
+        viewModel.setEffect(VirtualBackgroundUi.Blur("blurId"))
         verify(exactly = 0) {
             myVideoMock.tryApplyEffect(withArg {
                 assert(it is Effect.Video.Background.Blur)
@@ -165,5 +197,45 @@ class VirtualBackgroundViewModelTest {
                 assert(it is Effect.Video.Background.Blur)
             })
         }
+    }
+
+    @Test
+    fun testInitialVirtualBackgroundLoading() = runTest {
+        every { myVideoMock.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blurId", .4f))
+
+        val viewModel = VirtualBackgroundViewModel(
+            configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) },
+            virtualBackgroundStateManager = virtualBackgroundManager
+        )
+        advanceUntilIdle()
+
+        assertEquals(
+            VirtualBackgroundUi.Blur("blurId", .4f),
+            viewModel.uiState.value.currentBackground
+        )
+        assertEquals(
+            true,
+            virtualBackgroundManager.isVirtualBackgroundEnabled.value
+        )
+    }
+
+    @Test
+    fun testInitialVirtualBackgroundLoadingWithVideoNull() = runTest {
+        every { myStreamMock.video } returns MutableStateFlow(null)
+
+        val viewModel = VirtualBackgroundViewModel(
+            configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) },
+            virtualBackgroundStateManager = virtualBackgroundManager
+        )
+        advanceUntilIdle()
+
+        assertEquals(
+            VirtualBackgroundUi.None,
+            viewModel.uiState.value.currentBackground
+        )
+        assertEquals(
+            false,
+            virtualBackgroundManager.isVirtualBackgroundEnabled.value
+        )
     }
 }

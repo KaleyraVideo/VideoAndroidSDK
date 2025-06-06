@@ -28,7 +28,7 @@ sealed class FeedbackUiState: UiState {
      * @constructor
      */
     @Immutable
-    data class Display(val rating: FeedbackUiRating? = FeedbackUiRating.Excellent, val comment: String? = null): FeedbackUiState()
+    data class Display(val rating: FeedbackUiRating = FeedbackUiRating.Excellent, val comment: String? = null): FeedbackUiState()
 
     /**
      * Feedback ui state hidden, not ready to be displayed yet

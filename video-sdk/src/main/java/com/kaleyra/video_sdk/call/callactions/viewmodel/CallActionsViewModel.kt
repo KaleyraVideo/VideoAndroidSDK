@@ -31,12 +31,9 @@ import com.kaleyra.video_common_ui.ChatUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
-import com.kaleyra.video_common_ui.mapper.InputMapper.hasActiveVirtualBackground
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
-import com.kaleyra.video_common_ui.notification.signature.SignDocumentViewVisibilityObserver
-import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
 import com.kaleyra.video_common_ui.utils.FlowUtils
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.bottomsheet.model.AudioAction
@@ -60,7 +57,6 @@ import com.kaleyra.video_sdk.call.callactions.model.CallActionsUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.toCurrentAudioDeviceUi
 import com.kaleyra.video_sdk.call.mapper.CallActionsMapper.toCallActions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
-import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocuments
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toMySignDocumentsCreationTimes
 import com.kaleyra.video_sdk.call.mapper.FileShareMapper.toOtherFilesCreationTimes
 import com.kaleyra.video_sdk.call.mapper.InputMapper.hasCameraUsageRestriction
@@ -74,15 +70,14 @@ import com.kaleyra.video_sdk.call.screen.model.CallStateUi
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel.Companion.SCREEN_SHARE_STREAM_ID
 import com.kaleyra.video_sdk.call.signature.model.SignDocumentUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManager
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManagerImpl
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.CameraRestrictionMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -90,13 +85,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -104,10 +96,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
-internal class CallActionsViewModel(configure: suspend () -> Configuration) : BaseViewModel<CallActionsUiState>(configure) {
+internal class CallActionsViewModel(
+    configure: suspend () -> Configuration,
+    private val virtualBackgroundStateManager: VirtualBackgroundStateManager
+) : BaseViewModel<CallActionsUiState>(configure) {
 
     override fun initialState() = CallActionsUiState()
 
@@ -156,9 +149,7 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
                 .isSharingScreen()
                 .stateIn(this, SharingStarted.Eagerly, false)
 
-            val isVirtualBackgroundEnabledFlow = call
-                .hasActiveVirtualBackground()
-                .stateIn(this, SharingStarted.Eagerly, false)
+            val isVirtualBackgroundEnabledFlow = virtualBackgroundStateManager.isVirtualBackgroundEnabled
 
             val isLocalParticipantInitializedFlow = call
                 .isMeParticipantInitialized()
@@ -501,11 +492,13 @@ internal class CallActionsViewModel(configure: suspend () -> Configuration) : Ba
 
         private const val RESTRICTED_VIDEO_COOLDOWN_MESSAGE_TIME = 1500L
 
-        fun provideFactory(configure: suspend () -> Configuration) =
-            object : ViewModelProvider.Factory {
+        fun provideFactory(
+            configure: suspend () -> Configuration,
+            virtualBackgroundStateManager: VirtualBackgroundStateManager = VirtualBackgroundStateManagerImpl.getInstance()
+        ) = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return CallActionsViewModel(configure) as T
+                    return CallActionsViewModel(configure, virtualBackgroundStateManager) as T
                 }
             }
     }

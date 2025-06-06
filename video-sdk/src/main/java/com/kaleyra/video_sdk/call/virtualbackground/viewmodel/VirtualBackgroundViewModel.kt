@@ -23,8 +23,11 @@ import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Effect
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
+import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.mapToVirtualBackgroundUi
 import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgroundsUi
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManager
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManagerImpl
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
@@ -36,13 +39,18 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration) : BaseViewModel<VirtualBackgroundUiState>(configure) {
+internal class VirtualBackgroundViewModel(
+    configure: suspend () -> Configuration,
+    private val virtualBackgroundStateManager: VirtualBackgroundStateManager
+) : BaseViewModel<VirtualBackgroundUiState>(configure) {
 
     override fun initialState() = VirtualBackgroundUiState()
 
     init {
         viewModelScope.launch {
             val call = call.first()
+            updateVirtualBackground(getCurrentVirtualBackground(call))
+            virtualBackgroundStateManager.updateActiveCall(call)
 
             call
                 .toVirtualBackgroundsUi()
@@ -61,7 +69,7 @@ internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration
     }
 
     fun setEffect(background: VirtualBackgroundUi) {
-        _uiState.update { it.copy(currentBackground = background) }
+        updateVirtualBackground(background)
 
         val call = call.getValue()
         val me = call?.participants?.value?.me
@@ -80,13 +88,26 @@ internal class VirtualBackgroundViewModel(configure: suspend () -> Configuration
         }
     }
 
-    companion object {
+    private fun getCurrentVirtualBackground(call: Call): VirtualBackgroundUi {
+        val me = call.participants.value.me
+        val cameraStream = me?.streams?.value?.find { it.id == CAMERA_STREAM_ID }
+        val video = cameraStream?.video?.value
+        return video?.currentEffect?.value?.mapToVirtualBackgroundUi() ?: VirtualBackgroundUi.None
+    }
 
-        fun provideFactory(configure: suspend () -> Configuration) =
-            object : ViewModelProvider.Factory {
+    private fun updateVirtualBackground(background: VirtualBackgroundUi) {
+        _uiState.update { it.copy(currentBackground = background) }
+        virtualBackgroundStateManager.setVirtualBackgroundEnabled(background != VirtualBackgroundUi.None)
+    }
+
+    companion object {
+        fun provideFactory(
+            configure: suspend () -> Configuration,
+            virtualBackgroundStateManager: VirtualBackgroundStateManager = VirtualBackgroundStateManagerImpl.getInstance()
+        ) = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return VirtualBackgroundViewModel(configure) as T
+                    return VirtualBackgroundViewModel(configure, virtualBackgroundStateManager) as T
                 }
             }
     }

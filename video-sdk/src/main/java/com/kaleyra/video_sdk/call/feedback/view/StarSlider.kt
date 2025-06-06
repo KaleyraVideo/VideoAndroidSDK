@@ -16,6 +16,7 @@
 
 package com.kaleyra.video_sdk.call.feedback.view
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 // Default slider thumb radius in the material library
@@ -57,13 +59,17 @@ internal fun StarSlider(
     val density = LocalDensity.current
     val thumbSize = remember { with(density) { ThumbRadius.toPx().toInt() } }
     Layout(
+        modifier = modifier,
         content = {
+            val sliderInteractionSource = remember { MutableInteractionSource() }
             Slider(
                 onValueChange = onValueChange,
                 value = value,
                 steps = levels - 2,
                 valueRange = 1f.rangeTo(levels.toFloat()),
+                interactionSource = sliderInteractionSource,
                 modifier = Modifier
+                    .highlightOnFocus(sliderInteractionSource)
                     .alpha(0f)
                     .width(SliderWidth)
                     .testTag(StarSliderTag)
