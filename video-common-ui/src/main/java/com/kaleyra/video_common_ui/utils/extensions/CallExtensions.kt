@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.runBlocking
 
 object CallExtensions {
 
@@ -135,7 +136,7 @@ object CallExtensions {
         CallUI.Action.ToggleMicrophone -> CallUI.Button.Microphone
     }
 
-    suspend internal fun CallUI.bindCallButtons(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
+    internal suspend fun CallUI.bindCallButtons(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)) {
         val addedButtons: MutableList<CallUI.Button> = mutableListOf()
 
         whiteboard.events

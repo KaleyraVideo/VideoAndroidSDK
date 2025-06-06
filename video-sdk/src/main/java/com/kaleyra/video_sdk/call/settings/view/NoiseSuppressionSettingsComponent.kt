@@ -20,10 +20,15 @@ import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterUiState
 
 @Composable
-internal fun NoiseSuppressionSettingsComponent(noiseFilterUiState: NoiseFilterUiState, onNoiseSuppressionModeRequested: (NoiseFilterModeUi) -> Unit) {
+internal fun NoiseSuppressionSettingsComponent(
+    noiseFilterUiState: NoiseFilterUiState,
+    onNoiseSuppressionModeRequested: (NoiseFilterModeUi) -> Unit,
+    modifier: Modifier = Modifier) {
     if (noiseFilterUiState.supportedNoiseFilterModesUi.value.isEmpty()) return
 
-    Column(modifier = Modifier.testTag(NoiseSuppressionSettingsTag)) {
+    Column(modifier = Modifier
+        .testTag(NoiseSuppressionSettingsTag)
+        .then(modifier!!)) {
         Text(
             modifier = Modifier.padding(bottom = 16.dp),
             text = stringResource(R.string.kaleyra_strings_info_noise_suppression),
@@ -36,7 +41,7 @@ internal fun NoiseSuppressionSettingsComponent(noiseFilterUiState: NoiseFilterUi
             )
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = SettingsGroupHorizontalPadding, vertical = SettingsGroupVerticalPadding)
+                modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding)
             ) {
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.DeepFilterAi)) {
                     SettingsItemComponent(
@@ -46,34 +51,38 @@ internal fun NoiseSuppressionSettingsComponent(noiseFilterUiState: NoiseFilterUi
                         subtitle = subtitleFor(noiseFilterUiState.deepFilerLoadingState),
                         isToggleable = false,
                         isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.DeepFilterAi,
-                        isEnabled = !noiseFilterUiState.isDeviceOverHeating && noiseFilterUiState.deepFilerLoadingState !is DeepFilterNetLoader.LoadingState.Unavailable,
+                        isEnabled = !noiseFilterUiState.isDeviceOverHeating,
                         onCheckedChange = {
                             onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.DeepFilterAi)
                         }
                     )
                 }
-                SettingsItemComponent(
-                    iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_standard),
-                    text = stringResource(R.string.kaleyra_strings_action_noise_suppression_standard),
-                    testTag = NoiseSuppressionStandardOptionTag,
-                    isToggleable = false,
-                    isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.Standard,
-                    isEnabled = true,
-                    onCheckedChange = {
-                        onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.Standard)
-                    }
-                )
-                SettingsItemComponent(
-                    iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_none),
-                    text = stringResource(R.string.kaleyra_strings_action_noise_suppression_none),
-                    testTag = NoiseSuppressionNoneOptionTag,
-                    isToggleable = false,
-                    isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.None,
-                    isEnabled = true,
-                    onCheckedChange = {
-                        onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.None)
-                    }
-                )
+                if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.Standard)) {
+                    SettingsItemComponent(
+                        iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_standard),
+                        text = stringResource(R.string.kaleyra_strings_action_noise_suppression_standard),
+                        testTag = NoiseSuppressionStandardOptionTag,
+                        isToggleable = false,
+                        isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.Standard,
+                        isEnabled = true,
+                        onCheckedChange = {
+                            onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.Standard)
+                        }
+                    )
+                }
+                if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.None)) {
+                    SettingsItemComponent(
+                        iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_none),
+                        text = stringResource(R.string.kaleyra_strings_action_noise_suppression_none),
+                        testTag = NoiseSuppressionNoneOptionTag,
+                        isToggleable = false,
+                        isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.None,
+                        isEnabled = true,
+                        onCheckedChange = {
+                            onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.None)
+                        }
+                    )
+                }
             }
         }
     }

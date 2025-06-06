@@ -145,8 +145,10 @@ internal fun UserMessageSnackbarM3(
 @Composable
 internal fun UserMessageInfoSnackbarM3(
     message: String, onDismissClick: (() -> Unit)? = null,
+    iconTint: Color =  MaterialTheme.colorScheme.surface,
     actionConfig: UserMessageSnackbarActionConfig? = null) {
     UserMessageSnackbarM3(
+        iconTint = iconTint,
         iconPainter = painterResource(id = R.drawable.ic_kaleyra_snackbar_info),
         message = message,
         onDismissClick = onDismissClick,

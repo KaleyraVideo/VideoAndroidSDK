@@ -48,7 +48,7 @@ internal fun AudioOutputItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

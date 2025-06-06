@@ -33,14 +33,14 @@ data class NoiseFilterUiState(
      * Defaults to an empty immutable list, indicating no specific modes are listed initially
      * (consider using `persistentListOf()` for cleaner empty list creation).
      */
-    val supportedNoiseFilterModesUi: ImmutableList<NoiseFilterModeUi> = ImmutableList(listOf()),
+    val supportedNoiseFilterModesUi: ImmutableList<NoiseFilterModeUi> = ImmutableList(listOf(NoiseFilterModeUi.None)),
 
     /**
      * The currently selected or active noise filter mode.
      * Represented by an instance of [NoiseFilterModeUi].
      * Defaults to [NoiseFilterModeUi.Standard].
      */
-    val currentNoiseFilterModeUi: NoiseFilterModeUi = NoiseFilterModeUi.Standard,
+    val currentNoiseFilterModeUi: NoiseFilterModeUi = NoiseFilterModeUi.None,
 
     /**
      * Flag indicating whether the device is currently experiencing overheating.

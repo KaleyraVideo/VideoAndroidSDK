@@ -63,10 +63,7 @@ internal fun StackedSnackbar(
                     dismiss()
                     onActionClick(userMessage)
                 }
-                is ThermalWarningMessage -> ThermalWarningSnackbar(onDismissClick = dismiss, onSettingsClicked = {
-                    dismiss()
-                    onActionClick(userMessage)
-                })
+                is ThermalWarningMessage -> ThermalWarningSnackbar(onDismissClick = dismiss)
                 AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                 AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                 AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()

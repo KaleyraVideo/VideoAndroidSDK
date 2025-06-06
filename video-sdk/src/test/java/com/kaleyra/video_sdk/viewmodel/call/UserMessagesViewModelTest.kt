@@ -7,14 +7,20 @@ import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_utils.thermal.DeviceThermalManager
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
@@ -73,6 +79,10 @@ class UserMessagesViewModelTest {
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { CallUserMessagesProvider.userMessage } returns userMessages
         every { CallUserMessagesProvider.alertMessages } returns alertMessages
+        mockkObject(CallExtensions)
+        with(CallExtensions) {
+            coEvery { callMock.isCpuThrottling(any()) } returns MutableStateFlow(false)
+        }
         viewModel = spyk(UserMessagesViewModel(
             accessibilityManager = null,
             configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }

@@ -189,8 +189,10 @@ class SettingsComponentTest {
     }
 
     @Test
-    fun testDisableNoiseFilterOptionTextCLicked_disableNoiseFilterModeSetOnViewModel() {
+    fun testDisableNoiseFilterOptionTextCLicked_disableNoiseFilterModeSetOnViewModel() = runTest {
+        lateinit var scrollState: ScrollState
         composeTestRule.setContent {
+            scrollState = rememberScrollState()
             SettingsComponent(
                 audioOutputViewModel,
                 noiseFilterViewModel,
@@ -198,11 +200,12 @@ class SettingsComponentTest {
                 onDismiss = {},
                 onUserMessageActionClick = { },
                 onChangeAudioOutputRequested = { },
-                scrollState = rememberScrollState(),
+                scrollState = scrollState,
                 modifier = Modifier,
-                isLargeScreen = false
+                isLargeScreen = false,
             )
         }
+        scrollState.scrollTo(400)
 
         composeTestRule.onAllNodesWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_none)).onFirst().performClick()
 

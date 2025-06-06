@@ -356,9 +356,6 @@ internal fun VCallScreen(
                             onSideBarSheetComponentRequest(ModularComponent.FileShare)
                         }
 
-                        is ThermalWarningMessage -> {
-                            onSideBarSheetComponentRequest(ModularComponent.Settings)
-                        }
                         else -> Unit
                     }
                 }

@@ -40,7 +40,7 @@ internal fun VirtualBackgroundContent(
     onItemClick: (VirtualBackgroundUi) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp)
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(items = items.value.distinctBy { it.id }, key = { it.id }) {
             VirtualBackgroundItem(

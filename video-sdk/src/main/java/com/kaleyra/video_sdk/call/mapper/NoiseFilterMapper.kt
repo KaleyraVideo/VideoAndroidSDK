@@ -17,4 +17,10 @@ object NoiseFilterMapper {
         NoiseFilterModeUi.Standard -> Input.Audio.My.NoiseFilterMode.Standard
         NoiseFilterModeUi.None -> Input.Audio.My.NoiseFilterMode.Disabled
     }
+
+    internal fun Input.Audio.My.NoiseFilterMode.toNoiseFilerUiMode(): NoiseFilterModeUi = when (this) {
+        Input.Audio.My.NoiseFilterMode.DeepFilterAi -> NoiseFilterModeUi.DeepFilterAi
+        Input.Audio.My.NoiseFilterMode.Standard -> NoiseFilterModeUi.Standard
+        Input.Audio.My.NoiseFilterMode.Disabled -> NoiseFilterModeUi.None
+    }
 }

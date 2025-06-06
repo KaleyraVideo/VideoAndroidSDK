@@ -20,12 +20,13 @@ import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiSta
 @Composable
 internal fun VirtualBackgroundSettingsComponent(
     virtualBackgroundUiState: VirtualBackgroundUiState,
-    onVirtualBackgroundRequested: (VirtualBackgroundUi) -> Unit
+    onVirtualBackgroundRequested: (VirtualBackgroundUi) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (virtualBackgroundUiState.backgroundList.value.isEmpty()) return
     if (virtualBackgroundUiState.backgroundList.value.size == 1 && virtualBackgroundUiState.backgroundList.value.first() is VirtualBackgroundUi.None) return
 
-    Column(modifier = Modifier.testTag(VirtualBackgroundSettingsTag)) {
+    Column(modifier = Modifier.testTag(VirtualBackgroundSettingsTag).then(modifier)) {
         Text(
             modifier = Modifier.padding(bottom = 16.dp),
             text = stringResource(R.string.kaleyra_strings_info_camera_settings),
@@ -38,7 +39,7 @@ internal fun VirtualBackgroundSettingsComponent(
             )
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = SettingsGroupHorizontalPadding, vertical = SettingsGroupVerticalPadding)
+                modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding , top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding)
             ) {
                 SettingsItemComponent(
                     iconPainter = painterResource(R.drawable.ic_kaleyra_virtual_background_blur),

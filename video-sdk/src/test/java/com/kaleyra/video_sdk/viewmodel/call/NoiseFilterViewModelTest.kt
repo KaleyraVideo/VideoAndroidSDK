@@ -7,13 +7,19 @@ import com.kaleyra.video.noise_filter.DeepFilterNetLoader
 import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.Mocks.callMock
 import com.kaleyra.video_sdk.Mocks.conferenceMock
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
+import com.kaleyra.video_utils.ContextRetainer
+import com.kaleyra.video_utils.thermal.DeviceThermalManager
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,6 +64,10 @@ class NoiseFilterViewModelTest {
                 }))
             }
         })
+        mockkObject(CallExtensions)
+        with(CallExtensions) {
+            coEvery { callMock.isCpuThrottling(any()) } returns MutableStateFlow(false)
+        }
     }
 
     @After

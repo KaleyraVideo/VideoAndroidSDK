@@ -39,7 +39,7 @@ internal fun ScreenShareContent(
     onItemClick: (ScreenShareTargetUi) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp)
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(items = items.value, key = { it.name }) {
             ScreenShareItem(

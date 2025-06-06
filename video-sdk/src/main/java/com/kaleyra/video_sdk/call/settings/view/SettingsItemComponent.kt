@@ -17,6 +17,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -40,18 +44,19 @@ fun SettingsItemComponent(
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(40.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(48.dp)) {
         Box(modifier = Modifier.clearAndSetSemantics {}) {
             Icon(
                 painter = iconPainter,
                 modifier = Modifier.size(24.dp),
                 contentDescription = text,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha)
             )
         }
         Spacer(Modifier.size(8.dp))
         val displayRadioButton = isToggleable == false
         val displaySwitch = isToggleable == true
+        var isChecked by remember { mutableStateOf(isSelected) }
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -68,14 +73,14 @@ fun SettingsItemComponent(
                         else -> Role.Button
                     },
                     onClick = {
-                        if (isEnabled) onCheckedChange(true)
+                        if (isEnabled) onCheckedChange(!isChecked)
                     }
                 )
                 .optionalTestTag(testTag),
             verticalArrangement = Arrangement.Center) {
             Text(
                 text = text,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
                 style = if (isSelected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge)
             if (subtitle != null) {
                 Text(
@@ -91,7 +96,10 @@ fun SettingsItemComponent(
                     modifier = Modifier
                         .clearAndSetSemantics {},
                     checked = isSelected,
-                    onCheckedChange = { if (isEnabled) onCheckedChange(it) },
+                    onCheckedChange = {
+                        isChecked = it
+                        if (isEnabled) onCheckedChange(it)
+                    },
                     enabled = isEnabled,
                 )
             }
@@ -106,17 +114,19 @@ fun SettingsItemComponent(
             }
 
             else -> {
-                IconButton(modifier = Modifier
-                    .size(24.dp)
-                    .clearAndSetSemantics {},
-                    enabled = isEnabled,
-                    onClick = { if (isEnabled) onCheckedChange(true) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.kaleyra_f_chevron_right),
-                        contentDescription = text,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else 0.4f),
-                    )
+                Box(modifier = Modifier.padding(end = 12.dp)) {
+                    IconButton(modifier = Modifier
+                        .size(24.dp)
+                        .clearAndSetSemantics {},
+                        enabled = isEnabled,
+                        onClick = { if (isEnabled) onCheckedChange(true) }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.kaleyra_f_chevron_right),
+                            contentDescription = text,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else 0.4f),
+                        )
+                    }
                 }
             }
         }

@@ -22,10 +22,11 @@ internal fun VoiceSettingsComponent(
     audioOutputUiState: AudioOutputUiState,
     onDisableAllSoundsRequested: (disabled: Boolean) -> Unit,
     onChangeAudioOutputRequested: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val currentAudioDeviceUi = audioOutputUiState.audioDeviceList.value.firstOrNull { it.id == audioOutputUiState.playingDeviceId }
 
-    Column(modifier = Modifier.testTag(VoiceSettingsTag)) {
+    Column(modifier = Modifier.testTag(VoiceSettingsTag).then(modifier)) {
         Text(
             modifier = Modifier.padding(bottom = 16.dp),
             text = stringResource(R.string.kaleyra_strings_info_voice_settings),
@@ -38,7 +39,7 @@ internal fun VoiceSettingsComponent(
             )
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = SettingsGroupHorizontalPadding, vertical = SettingsGroupVerticalPadding)
+                modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding , top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding)
             ) {
                 SettingsItemComponent(
                     iconPainter = painterResource(R.drawable.ic_kaleyra_muted),

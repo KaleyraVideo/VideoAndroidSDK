@@ -17,16 +17,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
+import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.common.snackbar.view.ThermalWarningSnackbar
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.theme.KaleyraTheme
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 val SettingsGroupBorderWidth = 1.dp
 val SettingsGroupRoundCorner = 11.dp
-val SettingsGroupHorizontalPadding = 16.dp
+val SettingsGroupHorizontalStartPadding = 24.dp
+val SettingsGroupHorizontalEndPadding = 16.dp
 val SettingsGroupVerticalPadding = 8.dp
 const val DisabledOptionAlpha = 0.4f
 
@@ -45,6 +50,7 @@ internal const val VirtualBackgroundNoneOptionTag = "VirtualBackgroundNoneOption
 internal const val AudioDeviceMutedOptionsTag = "AudioDeviceMutedOptionsTag"
 
 
+@ExperimentalCoroutinesApi
 @Composable
 internal fun SettingsComponent(
     audioOutputViewModel: AudioOutputViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AudioOutputViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
@@ -73,24 +79,43 @@ internal fun SettingsComponent(
             isLargeScreen = isLargeScreen
         )
 
+        val horizontalPaddingModifier = Modifier.padding(horizontal = 16.dp)
+
         Column(modifier = Modifier
             .fillMaxHeight()
-            .padding(horizontal = 16.dp)
             .verticalScroll(scrollState)
         ) {
+            if (noiseFilterUiState.value.isDeviceOverHeating) {
+                Spacer(modifier = Modifier.size(24.dp))
+                ThermalWarningSnackbar()
+            }
+            Spacer(modifier = Modifier.size(24.dp))
             VoiceSettingsComponent(
                 audioOutputUiState.value, { disableAllSounds ->
                     if (disableAllSounds) audioOutputViewModel.disableCallSounds()
                     else audioOutputViewModel.enableCallSounds()
-                }, onChangeAudioOutputRequested)
-            Spacer(modifier = Modifier.size(32.dp))
-            NoiseSuppressionSettingsComponent(noiseFilterUiState.value) { requestedNoiseSuppressionMode ->
-                noiseFilterViewModel.setNoiseSuppressionMode(requestedNoiseSuppressionMode)
+                },
+                onChangeAudioOutputRequested,
+                horizontalPaddingModifier
+            )
+            if (noiseFilterUiState.value.supportedNoiseFilterModesUi.value.any { it !is NoiseFilterModeUi.None }) {
+                Spacer(modifier = Modifier.size(24.dp))
+                NoiseSuppressionSettingsComponent(
+                    noiseFilterUiState.value,
+                    { requestedNoiseSuppressionMode ->
+                        noiseFilterViewModel.setNoiseSuppressionMode(requestedNoiseSuppressionMode)
+                    },
+                    horizontalPaddingModifier
+                )
             }
-            Spacer(modifier = Modifier.size(32.dp))
-            VirtualBackgroundSettingsComponent(virtualBackgroundUiState.value) { requestedVirtualBackground ->
-                virtualBackgroundViewModel.setEffect(requestedVirtualBackground)
-            }
+            Spacer(modifier = Modifier.size(24.dp))
+            VirtualBackgroundSettingsComponent(
+                virtualBackgroundUiState.value,
+                { requestedVirtualBackground ->
+                    virtualBackgroundViewModel.setEffect(requestedVirtualBackground)
+                },
+                horizontalPaddingModifier
+            )
         }
     }
 

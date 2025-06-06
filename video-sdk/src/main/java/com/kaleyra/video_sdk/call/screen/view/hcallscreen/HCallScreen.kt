@@ -245,10 +245,6 @@ internal fun HCallScreen(
                         onModalSheetComponentRequest(ModularComponent.FileShare)
                     }
 
-                    is ThermalWarningMessage -> {
-                        onModalSheetComponentRequest(ModularComponent.Settings)
-                    }
-
                     else -> Unit
                 }
             }

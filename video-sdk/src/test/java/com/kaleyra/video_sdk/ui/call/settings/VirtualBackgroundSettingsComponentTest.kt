@@ -50,9 +50,9 @@ class VirtualBackgroundSettingsComponentTest {
     @Test
     fun testNoVirtualBackground_cameraSettingsNotDisplayed() = runTest {
         composeTestRule.setContent {
-            VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(areVirtualBackgroundSupported = false)) {
-                requestedVirtualBackgroundUi = it
-            }
+            VirtualBackgroundSettingsComponent(
+                VirtualBackgroundUiState(areVirtualBackgroundSupported = false),
+                { requestedVirtualBackgroundUi = it })
         }
 
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_info_camera_settings)).assertDoesNotExist()
@@ -61,9 +61,10 @@ class VirtualBackgroundSettingsComponentTest {
     @Test
     fun testOnlyNoneVirtualBackground_cameraSettingsNotDisplayed() = runTest {
         composeTestRule.setContent {
-            VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(areVirtualBackgroundSupported = true, backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None)))) {
-                requestedVirtualBackgroundUi = it
-            }
+            VirtualBackgroundSettingsComponent(
+                VirtualBackgroundUiState(areVirtualBackgroundSupported = true, backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None))),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_info_camera_settings)).assertDoesNotExist()
@@ -72,11 +73,12 @@ class VirtualBackgroundSettingsComponentTest {
     @Test
     fun testVirtualBackgroundsPresent_cameraSettingsDisplayed() = runTest {
         composeTestRule.setContent {
-            VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
-                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("blur"), VirtualBackgroundUi.Blur("blur"))))) {
-                requestedVirtualBackgroundUi = it
-            }
+            VirtualBackgroundSettingsComponent(
+                VirtualBackgroundUiState(
+                    areVirtualBackgroundSupported = true,
+                    backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("blur"), VirtualBackgroundUi.Blur("blur")))),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithTag(VirtualBackgroundSettingsTag).assertIsDisplayed()
@@ -91,9 +93,9 @@ class VirtualBackgroundSettingsComponentTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
-                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))))) {
-                requestedVirtualBackgroundUi = it
-            }
+                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_none)).performClick()
@@ -106,9 +108,9 @@ class VirtualBackgroundSettingsComponentTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
-                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))))) {
-                requestedVirtualBackgroundUi = it
-            }
+                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_blur)).performClick()
@@ -120,9 +122,9 @@ class VirtualBackgroundSettingsComponentTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
-                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))))) {
-                requestedVirtualBackgroundUi = it
-            }
+                backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).performClick()
@@ -135,9 +137,9 @@ class VirtualBackgroundSettingsComponentTest {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
-                currentBackground = VirtualBackgroundUi.Blur("blur"))) {
-                requestedVirtualBackgroundUi = it
-            }
+                currentBackground = VirtualBackgroundUi.Blur("blur")),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithTag(VirtualBackgroundBlurOptionTag).assertIsSelected()
@@ -149,9 +151,9 @@ class VirtualBackgroundSettingsComponentTest {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
-                currentBackground = VirtualBackgroundUi.Image("image"))) {
-                requestedVirtualBackgroundUi = it
-            }
+                currentBackground = VirtualBackgroundUi.Image("image")),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).assertIsSelected()
@@ -163,9 +165,9 @@ class VirtualBackgroundSettingsComponentTest {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
                 areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
-                currentBackground = VirtualBackgroundUi.None)) {
-                requestedVirtualBackgroundUi = it
-            }
+                currentBackground = VirtualBackgroundUi.None),
+                { requestedVirtualBackgroundUi = it }
+            )
         }
 
         composeTestRule.onNodeWithTag(VirtualBackgroundNoneOptionTag).assertIsSelected()

@@ -30,6 +30,7 @@ import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.model.FloatingMessage
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
 import com.kaleyra.video_sdk.call.mapper.InputMapper
@@ -45,6 +46,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -113,6 +115,10 @@ class CallUserMessagesProviderTest {
         every { FileShareVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
         mockkObject(CallUiPipVisibilityObserver.Companion)
         every { CallUiPipVisibilityObserver.isDisplayed } returns MutableStateFlow(false)
+        mockkObject(CallExtensions)
+        with(CallExtensions) {
+            coEvery { callMock.isCpuThrottling(any()) } returns MutableStateFlow(false)
+        }
     }
 
     @After
