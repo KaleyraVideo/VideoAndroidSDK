@@ -17,6 +17,7 @@
 package com.kaleyra.video_sdk.call.feedback.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -40,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 /**
@@ -73,12 +76,15 @@ internal fun FeedbackSent(onDismiss: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val buttonInteractionSource = remember { MutableInteractionSource() }
         Button(
             onClick = onDismiss,
             shape = RoundedCornerShape(4.dp),
+            interactionSource = buttonInteractionSource,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier
                 .fillMaxWidth()
+                .highlightOnFocus(buttonInteractionSource)
         ) {
             Text(
                 text = stringResource(id = R.string.kaleyra_feedback_close),

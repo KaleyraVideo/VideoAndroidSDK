@@ -21,6 +21,7 @@ package com.kaleyra.video_sdk.call.feedback.view
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,31 +29,35 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,6 +69,7 @@ import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toRatingStrin
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiMapping.toSliderValue
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiRating
 import com.kaleyra.video_sdk.call.feedback.model.FeedbackUiState
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 
@@ -81,9 +87,15 @@ internal fun FeedbackForm(
     feedbackUiState as FeedbackUiState.Display
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text = feedbackUiState.comment ?: "")) }
     var isEditTextFocused by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(feedbackUiState.rating) }
+    var sliderValue by remember(feedbackUiState) { mutableFloatStateOf(feedbackUiState.rating.toSliderValue()) }
+    val sliderTextStringRes by remember(feedbackUiState) {
+        derivedStateOf {
+            feedbackUiValueFor(sliderValue).toRatingStringRes()
+        }
+    }
     val orientation = LocalConfiguration.current.orientation
     val windowSizeClass = currentWindowAdaptiveInfo(LocalConfiguration.current)
+    val sliderLevels = remember { FeedbackUiRating.entries.count() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -106,17 +118,34 @@ internal fun FeedbackForm(
         }
         if (!isEditTextFocused) Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = composableRatingTextFor(feedbackUiRating = sliderValue!!),
+            text = stringResource(sliderTextStringRes),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(10.dp))
         StarSlider(
-            value = composableSliderValueFor(sliderValue!!),
-            onValueChange = { sliderValue = feedbackUiValueFor(it) },
-            levels = FeedbackUiRating.entries.count(),
+            value = sliderValue,
+            onValueChange = { sliderValue = it },
+            levels = sliderLevels,
+            modifier = Modifier
+                .onKeyEvent { keyEvent ->
+                    // Implement keyboard accessibility for slider value adjustments
+                    if (keyEvent.type != KeyEventType.KeyDown) return@onKeyEvent false
+                    when (keyEvent.key) {
+                        Key.DirectionRight -> {
+                            sliderValue = (sliderValue + 1).coerceIn(1f, sliderLevels.toFloat())
+                            true
+                        }
+                        Key.DirectionLeft -> {
+                            sliderValue = (sliderValue - 1).coerceIn(1f, sliderLevels.toFloat())
+                            true
+                        }
+                        else -> false
+                    }
+                }
         )
 
+        val textFieldInteractionSource = remember { MutableInteractionSource() }
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = { textFieldValue = it },
@@ -128,12 +157,14 @@ internal fun FeedbackForm(
                     )
                 }
             },
+            interactionSource = textFieldInteractionSource,
             modifier = Modifier
                 .padding(top = 24.dp, bottom = 8.dp)
                 .fillMaxWidth()
                 .onFocusChanged {
                     isEditTextFocused = it.hasFocus
                 }
+                .highlightOnFocus(textFieldInteractionSource)
                 .animateContentSize(),
             maxLines = when {
                 orientation == Configuration.ORIENTATION_LANDSCAPE && windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact -> 1
@@ -151,12 +182,15 @@ internal fun FeedbackForm(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End) {
+            horizontalArrangement = Arrangement.End
+        ) {
+            val negativeButtonInteractionSource = remember { MutableInteractionSource() }
             TextButton(
                 onClick = { onDismiss() },
+                interactionSource = negativeButtonInteractionSource,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(end = 12.dp),
+                    .highlightOnFocus(negativeButtonInteractionSource),
                 content = {
                     Text(
                         text = stringResource(id = R.string.kaleyra_action_cancel),
@@ -165,10 +199,14 @@ internal fun FeedbackForm(
                     )
                 },
             )
+            Spacer(Modifier.width(12.dp))
+            val positiveButtonInteractionSource = remember { MutableInteractionSource() }
             Button(
-                onClick = { onUserFeedback(sliderValue!!, textFieldValue.text) },
+                onClick = { onUserFeedback(feedbackUiValueFor(sliderValue), textFieldValue.text) },
                 shape = RoundedCornerShape(4.dp),
+                interactionSource = positiveButtonInteractionSource,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                modifier = Modifier.highlightOnFocus(positiveButtonInteractionSource)
             ) {
                 Text(
                     text = stringResource(id = R.string.kaleyra_feedback_vote),
@@ -177,22 +215,6 @@ internal fun FeedbackForm(
             }
         }
     }
-}
-
-@Composable
-internal fun composableRatingTextFor(feedbackUiRating: FeedbackUiRating): String {
-    val stringId = remember(feedbackUiRating) {
-        feedbackUiRating.toRatingStringRes()
-    }
-    return stringResource(id = stringId)
-}
-
-@Composable
-internal fun composableSliderValueFor(feedbackUiRating: FeedbackUiRating): Float {
-    val sliderValueFloat = remember(feedbackUiRating) {
-        feedbackUiRating.toSliderValue()
-    }
-    return sliderValueFloat
 }
 
 @Preview(name = "Light Mode")
