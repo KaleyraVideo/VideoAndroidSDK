@@ -312,8 +312,7 @@ private fun CallActionLayout(
                             layout(constraints.minWidth, placeable.height) {
                                 placeable.placeRelative(-placeable.width / 2, 0)
                             }
-                        }
-                        .clearAndSetSemantics { },
+                        },
                     text = label,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
