@@ -20,11 +20,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -37,20 +35,15 @@ const val MovablePointerTag = "MovablePointerTag"
 
 @Composable
 internal fun MovablePointer(pointer: PointerUi, parentSize: IntSize, scale: FloatArray) {
-    val density = LocalDensity.current
-
-    val pointerSize = remember { with(density) { PointerSize.toPx() } }
-    val centerOffsetY = remember { pointerSize / 2 }
-
     val offsetX by animateFloatAsState(targetValue = (pointer.x / 100) * parentSize.width)
-    val offsetY by animateFloatAsState(targetValue = (pointer.y / 100) * parentSize.height - centerOffsetY)
+    val offsetY by animateFloatAsState(targetValue = (pointer.y / 100) * parentSize.height)
 
     TextPointer(
         username = pointer.username,
         modifier = Modifier
             .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
             .graphicsLayer {
-                transformOrigin = TransformOrigin(.5f, .2f)
+                transformOrigin = TransformOrigin(0f, 0f)
                 scaleX /= scale[0]
                 scaleY /= scale[1]
             }
