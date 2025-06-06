@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.call.stream.view.items.UserLabel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
@@ -50,12 +51,19 @@ internal fun TextPointer(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        Pointer()
-        UserLabel(
-            modifier = Modifier.offset(PointerSize / 1f, PointerSize / 1.2f),
-            username = username,
-            pin = false,
-        )
+        Box(
+            modifier = Modifier.graphicsLayer {
+                translationX = -4.dp.toPx()
+                translationY = -6.dp.toPx()
+            }
+        ) {
+            Pointer()
+            UserLabel(
+                modifier = Modifier.offset(PointerSize / 1f, PointerSize / 1.2f),
+                username = username,
+                pin = false,
+            )
+        }
     }
 }
 
