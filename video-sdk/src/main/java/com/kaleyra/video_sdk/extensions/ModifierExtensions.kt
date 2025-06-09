@@ -57,6 +57,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -94,7 +96,10 @@ internal object ModifierExtensions {
         }
 
     @Stable
-    internal fun Modifier.highlightOnFocus(interactionSource: MutableInteractionSource): Modifier =
+    internal fun Modifier.highlightOnFocus(
+        interactionSource: MutableInteractionSource,
+        shape: Shape = RectangleShape
+    ): Modifier =
         this.composed {
             val inputModeManager = LocalInputModeManager.current
             val isFocused = interactionSource.collectIsFocusedAsState().value
@@ -104,7 +109,8 @@ internal object ModifierExtensions {
             ) { derivedStateOf { inputModeManager.inputMode != InputMode.Touch && isFocused }.value }
             border(
                 width = if (enableHighlight) FocusHighlightStroke else 0.dp,
-                color = if (enableHighlight) FocusHighlightColor else Color.Transparent
+                color = if (enableHighlight) FocusHighlightColor else Color.Transparent,
+                shape = shape
             )
         }
 

@@ -3,12 +3,12 @@
 package com.kaleyra.video_sdk.common.snackbar.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,17 +34,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.callinfo.model.TextRef
 import com.kaleyra.video_sdk.common.preview.DayModePreview
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Stable
@@ -65,9 +72,13 @@ internal fun UserMessageSnackbarM3(
     contentColor: Color = MaterialTheme.colorScheme.surface
 ) {
     var isMultilineMessage by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
 
     Box(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .focusRequester(focusRequester)
     ) {
         Row(modifier = modifier
             .background(
@@ -93,18 +104,24 @@ internal fun UserMessageSnackbarM3(
                     .heightIn(min = 32.dp)
                     .padding(top = 4.dp, bottom = 4.dp, start = if (actionConfig != null || iconPainter == null) 16.dp else 8.dp, end = if (onDismissClick == null && actionConfig == null) 16.dp else 8.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    .semantics {
+                        liveRegion = LiveRegionMode.Assertive
+                    },
                 text = message,
                 style = MaterialTheme.typography.bodySmall,
                 onTextLayout = { textLayoutResult ->
                     isMultilineMessage = textLayoutResult.lineCount > 1
                 })
+            val iconButtonInteractionSource = remember { MutableInteractionSource() }
             if (actionConfig == null && onDismissClick != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(end = 8.dp, start = 0.dp)
                         .align(Alignment.CenterVertically)
+                        .highlightOnFocus(iconButtonInteractionSource)
                         .size(24.dp),
+                    interactionSource = iconButtonInteractionSource,
                     onClick = onDismissClick) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_kaleyra_snackbar_close),
@@ -112,12 +129,15 @@ internal fun UserMessageSnackbarM3(
                         contentDescription = stringResource(id = R.string.kaleyra_close))
                 }
             }
+            val filledButtonInteractionSource = remember { MutableInteractionSource() }
             if (actionConfig !== null) FilledTonalButton(
                 modifier = Modifier
                     .height(40.dp)
                     .padding(top = 4.dp, bottom = 4.dp, end = 8.dp)
+                    .highlightOnFocus(filledButtonInteractionSource)
                     .align(Alignment.CenterVertically),
                 contentPadding = PaddingValues(horizontal = 8.dp),
+                interactionSource = filledButtonInteractionSource,
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = contentColor),
                 onClick = actionConfig.onActionClick) {
                 val actionDescription = actionConfig.action.resolve(LocalContext.current)
@@ -139,6 +159,10 @@ internal fun UserMessageSnackbarM3(
                 )
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 

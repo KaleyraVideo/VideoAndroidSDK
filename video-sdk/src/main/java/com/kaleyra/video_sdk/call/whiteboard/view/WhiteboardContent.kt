@@ -19,6 +19,10 @@ package com.kaleyra.video_sdk.call.whiteboard.view
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,11 +30,13 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaleyra.video_sdk.call.whiteboard.model.WhiteboardUploadUi
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 
 internal const val LinearProgressIndicatorTag = "LinearProgressIndicatorTag"
 internal const val WhiteboardViewTag = "WhiteboardViewTag"
@@ -46,8 +52,12 @@ internal fun WhiteboardContent(
     Box(modifier = modifier.fillMaxWidth()) {
         val runningInPreview = LocalInspectionMode.current
         if (!runningInPreview) {
+            val webViewInteractionSource = remember { MutableInteractionSource() }
+            val focusInteraction = remember { FocusInteraction.Focus() }
             AndroidView(
-                modifier = Modifier.testTag(WhiteboardViewTag),
+                modifier = Modifier
+                    .testTag(WhiteboardViewTag)
+                    .highlightOnFocus(webViewInteractionSource),
                 factory = {
                     val parentView = whiteboardView.parent as? ViewGroup
                     parentView?.removeView(whiteboardView)
@@ -59,6 +69,10 @@ internal fun WhiteboardContent(
                         )
                         isFocusable = true
                         isFocusableInTouchMode = true
+                        setOnFocusChangeListener { _, hasFocus ->
+                            val interaction = if (hasFocus) focusInteraction else FocusInteraction.Unfocus(focusInteraction)
+                            webViewInteractionSource.tryEmit(interaction)
+                        }
                     }
                 },
                 update = { whiteboardView ->

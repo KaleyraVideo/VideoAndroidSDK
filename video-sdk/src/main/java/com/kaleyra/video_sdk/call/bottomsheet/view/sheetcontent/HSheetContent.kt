@@ -1,8 +1,12 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent
 
+import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -10,8 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -52,7 +59,8 @@ internal fun HSheetContent(
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
     inputPermissions: InputPermissions = InputPermissions(),
-    onAskInputPermissions: (Boolean) -> Unit
+    onAskInputPermissions: (Boolean) -> Unit,
+    onNextFocusRequest: () -> FocusRequester? = { null }
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -137,10 +145,13 @@ internal fun HSheetContent(
         },
         onVirtualBackgroundToggle = { onModularComponentRequest(ModularComponent.VirtualBackground) },
         onMoreToggle = onMoreToggle,
+        onNextFocusRequest = onNextFocusRequest,
         modifier = modifier
     )
 }
 
+// N.B. Keyboard navigation tests are currently excluded due to past difficulties with
+// programmatic focus management in UI tests. Exercise caution when modifying this code.
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun HSheetContent(
@@ -165,24 +176,48 @@ internal fun HSheetContent(
     modifier: Modifier = Modifier,
     maxActions: Int = MaxHSheetItems,
     inputPermissions: InputPermissions = InputPermissions(),
+    onNextFocusRequest: () -> FocusRequester? = { null }
 ) {
     var showMoreAction by remember { mutableStateOf(false) }
     var moreNotificationCount by remember { mutableIntStateOf(0) }
 
-    ReversibleRow(modifier, reverseLayout = true) {
-        when {
-            showAnswerAction -> {
-                AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
-                Spacer(Modifier.width(SheetItemsSpacing))
-            }
+    // Focus Requester for the fixed Answer/More button
+    val answerOrMoreButtonRequester = remember { FocusRequester() }
+    var actualVisibleActionCount by remember { mutableIntStateOf(0) }
+    // Derived state for the index of the last focusable dynamic action
+    val lastFocusableActionIndex by remember(callActions) {
+        derivedStateOf {
+            callActions.value
+                .take(actualVisibleActionCount) // Only consider currently visible items
+                .indexOfLast { it.isEnabled } // Find the last one that's interactable
+        }
+    }
 
-            showMoreAction -> {
-                MoreAction(
-                    badgeCount = moreNotificationCount,
-                    checked = isMoreToggled,
-                    onCheckedChange = onMoreToggle,
-                )
-                Spacer(Modifier.width(SheetItemsSpacing))
+    ReversibleRow(
+        modifier = modifier.focusGroup(), // Ensures the parent acquires focus and automatically shifts it to the first child element for keyboard navigation.
+        reverseLayout = true
+    ) {
+        Row(
+            modifier = Modifier
+                .focusRequester(answerOrMoreButtonRequester)
+                .focusProperties {
+                    // When the "Answer" or "More" button is focused and Tab is pressed, focus will exit this component.
+                    next = onNextFocusRequest() ?: next
+                }
+        )  {
+            when {
+                showAnswerAction -> {
+                    Spacer(Modifier.width(SheetItemsSpacing))
+                    AnswerAction(extended = isLargeScreen, onClick = onAnswerClick)
+                }
+                showMoreAction -> {
+                    Spacer(Modifier.width(SheetItemsSpacing))
+                    MoreAction(
+                        badgeCount = moreNotificationCount,
+                        checked = isMoreToggled,
+                        onCheckedChange = onMoreToggle,
+                    )
+                }
             }
         }
 
@@ -190,6 +225,7 @@ internal fun HSheetContent(
             onItemsPlaced = { itemsPlaced ->
                 showMoreAction = callActions.count() > itemsPlaced
                 moreNotificationCount = computeMoreActionNotificationCount(callActions, itemsPlaced)
+                actualVisibleActionCount = itemsPlaced
                 onActionsPlaced(itemsPlaced)
             },
             maxItems = maxActions - when {
@@ -198,9 +234,30 @@ internal fun HSheetContent(
                 else -> 0
             },
             content = {
-                callActions.value.fastForEach { callAction ->
+                callActions.value.fastForEachIndexed { index, callAction ->
                     key(callAction.id) {
                         CallSheetItem(
+                            modifier = Modifier.let {
+                                // Keyboard Accessibility Logic:
+                                // This block defines the focus traversal behavior when navigating with the keyboard (e.g., pressing Tab).
+                                // It ensures that focus moves predictably through the call action buttons and then to specific
+                                // "Answer" or "More" buttons if they are present, or exits the component otherwise.
+                                if (index == lastFocusableActionIndex) {
+                                    // When on the last focusable call action button:
+                                    it.focusProperties {
+                                        next = if (showMoreAction || showAnswerAction) {
+                                            // If either "Answer" or "More" buttons are visible, move focus to them.
+                                            answerOrMoreButtonRequester
+                                        } else {
+                                            // Otherwise, trigger the external 'onNextFocusRequest' to exit focus from this component.
+                                            onNextFocusRequest() ?: next
+                                        }
+                                    }
+                                } else {
+                                    // For all other intermediate call action buttons, focus moves to the next logical item by default.
+                                    it // No specific focus properties needed, default traversal applies.
+                                }
+                            },
                             callAction = callAction,
                             label = false,
                             extended = isLargeScreen,

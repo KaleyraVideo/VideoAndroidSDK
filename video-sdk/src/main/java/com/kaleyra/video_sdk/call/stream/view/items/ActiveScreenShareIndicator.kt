@@ -1,5 +1,6 @@
 package com.kaleyra.video_sdk.call.stream.view.items
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.utils.ConfigurationExtensions.isAtLeastMediumSizeWidth
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -61,6 +64,7 @@ private fun HScreenShareIndicator(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -76,6 +80,7 @@ private fun HScreenShareIndicator(
         Button(
             shape = RoundedCornerShape(4.dp),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.highlightOnFocus(interactionSource),
             onClick = onStopClick
         ) {
             Icon(
@@ -97,6 +102,7 @@ private fun VScreenShareIndicator(
     onStopClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,6 +117,8 @@ private fun VScreenShareIndicator(
         Button(
             shape = RoundedCornerShape(4.dp),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            interactionSource = interactionSource,
+            modifier = Modifier.highlightOnFocus(interactionSource),
             onClick = onStopClick
         ) {
             Icon(

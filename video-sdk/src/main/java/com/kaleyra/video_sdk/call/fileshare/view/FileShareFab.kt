@@ -18,12 +18,15 @@ package com.kaleyra.video_sdk.call.fileshare.view
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 
 private val FabSize = 56.dp
 private val FabIconPadding = 16.dp
@@ -43,10 +47,14 @@ internal fun FileShareFab(
     collapsed: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     FloatingActionButton(
-        modifier = modifier.sizeIn(minWidth = FabSize, minHeight = FabSize),
+        modifier = modifier
+            .sizeIn(minWidth = FabSize, minHeight = FabSize)
+            .highlightOnFocus(interactionSource),
         containerColor = MaterialTheme.colorScheme.primary,
+        interactionSource = interactionSource,
         onClick = onClick
     ) {
         val padding = if (collapsed) 0.dp else FabPadding

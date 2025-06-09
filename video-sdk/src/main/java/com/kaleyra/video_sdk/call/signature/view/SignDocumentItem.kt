@@ -20,6 +20,7 @@ import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +53,7 @@ import com.kaleyra.video_sdk.call.signature.model.SignDocumentUiState
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.drawCircleBorder
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.theme.KaleyraTheme.colors
 
@@ -162,13 +165,17 @@ private fun calculateSignDocumentActionUiConfig(
 @Composable
 fun SignDocumentItemAction(
     signDocumentUiState: SignDocumentUi.SignStateUi,
-    onActionClick: () -> Unit
+    onActionClick: () -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val uiConfig = calculateSignDocumentActionUiConfig(signDocumentUiState)
 
     IconButton(
-        modifier = Modifier.size(26.dp),
+        modifier = Modifier
+            .size(26.dp)
+            .highlightOnFocus(interactionSource),
         colors = uiConfig.buttonColors,
+        interactionSource = interactionSource,
         onClick = onActionClick
     ) {
         Icon(

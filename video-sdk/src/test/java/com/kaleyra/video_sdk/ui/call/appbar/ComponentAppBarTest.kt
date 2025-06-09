@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -133,5 +134,13 @@ class ComponentAppBarTest {
         composeTestRule.onNodeWithContentDescription(close).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isBackPressed)
+    }
+
+    @Test
+    fun searchIconClicked_searchBarHasFocused() {
+        val searchDescription = composeTestRule.activity.getString(R.string.kaleyra_strings_action_search)
+        composeTestRule.onNodeWithContentDescription(searchDescription).performClick()
+
+        composeTestRule.onNodeWithTag(SearchInputTag).assertIsFocused()
     }
 }
