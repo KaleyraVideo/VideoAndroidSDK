@@ -75,6 +75,7 @@ com.kaleyra.video_sdk.call.stream.model.core
 com.kaleyra.video_sdk.call.stream.view.items
 com.kaleyra.video_sdk.call.viewmodel
 com.kaleyra.video_sdk.call.virtualbackground.model
+com.kaleyra.video_sdk.call.virtualbackground.state
 com.kaleyra.video_sdk.call.whiteboard.model
 com.kaleyra.video_sdk.chat.appbar.model
 com.kaleyra.video_sdk.chat.conversation.model
