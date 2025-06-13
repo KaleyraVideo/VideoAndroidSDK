@@ -78,6 +78,7 @@ class CallUserMessagesProviderTest {
     private val filesFlow = MutableStateFlow<Set<SharedFile>>(setOf())
 
     private val callMock = mockk<CallUI>(relaxed = true) {
+        every { type } returns MutableStateFlow(Call.Type.audioVideo())
         every { participants } returns MutableStateFlow(mockk {
             every { me } returns mockk(relaxed = true) {
                 every { streams } returns MutableStateFlow(listOf(

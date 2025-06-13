@@ -22,33 +22,16 @@ import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.snackbar.view.ThermalWarningSnackbar
+import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
 import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-val SettingsGroupBorderWidth = 1.dp
-val SettingsGroupRoundCorner = 11.dp
-val SettingsGroupHorizontalStartPadding = 24.dp
-val SettingsGroupHorizontalEndPadding = 16.dp
-val SettingsGroupVerticalPadding = 8.dp
-const val DisabledOptionAlpha = 0.4f
-
-internal const val VoiceSettingsTag = "VoiceSettingsTag"
-internal const val VirtualBackgroundSettingsTag = "VirtualBackgroundSettingsTag"
-internal const val NoiseSuppressionSettingsTag = "NoiseSuppressionSettingsTag"
-
-internal const val NoiseSuppressionDeepFilterOptionTag = "NoiseSuppressionDeepFilterOptionTag"
-internal const val NoiseSuppressionStandardOptionTag = "NoiseSuppressionStandardOptionTag"
-internal const val NoiseSuppressionNoneOptionTag = "NoiseSuppressionNoneOptionTag"
-
-internal const val VirtualBackgroundBlurOptionTag = "VirtualBackgroundBlurOptionTag"
-internal const val VirtualBackgroundImageOptionTag = "VirtualBackgroundImageOptionTag"
-internal const val VirtualBackgroundNoneOptionTag = "VirtualBackgroundNoneOptionTag"
-
-internal const val AudioDeviceMutedOptionsTag = "AudioDeviceMutedOptionsTag"
-
+private val SettingsComponentHorizontalPadding = 16.dp
+private val SettingsComponentVerticalSpacer = 24.dp
+private val SettingsComponentTopPadding = 56.dp
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -79,17 +62,17 @@ internal fun SettingsComponent(
             isLargeScreen = isLargeScreen
         )
 
-        val horizontalPaddingModifier = Modifier.padding(horizontal = 16.dp)
+        val horizontalPaddingModifier = Modifier.padding(horizontal = SettingsComponentHorizontalPadding)
 
         Column(modifier = Modifier
             .fillMaxHeight()
             .verticalScroll(scrollState)
         ) {
             if (noiseFilterUiState.value.isDeviceOverHeating) {
-                Spacer(modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.size(SettingsComponentVerticalSpacer))
                 ThermalWarningSnackbar()
             }
-            Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(SettingsComponentVerticalSpacer))
             VoiceSettingsComponent(
                 audioOutputUiState.value, { disableAllSounds ->
                     if (disableAllSounds) audioOutputViewModel.disableCallSounds()
@@ -99,7 +82,7 @@ internal fun SettingsComponent(
                 horizontalPaddingModifier
             )
             if (noiseFilterUiState.value.supportedNoiseFilterModesUi.value.any { it !is NoiseFilterModeUi.None }) {
-                Spacer(modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.size(SettingsComponentVerticalSpacer))
                 NoiseSuppressionSettingsComponent(
                     noiseFilterUiState.value,
                     { requestedNoiseSuppressionMode ->
@@ -108,7 +91,7 @@ internal fun SettingsComponent(
                     horizontalPaddingModifier
                 )
             }
-            Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(SettingsComponentVerticalSpacer))
             VirtualBackgroundSettingsComponent(
                 virtualBackgroundUiState.value,
                 { requestedVirtualBackground ->
@@ -116,10 +99,11 @@ internal fun SettingsComponent(
                 },
                 horizontalPaddingModifier
             )
+            NavigationBarsSpacer()
         }
     }
 
-    if (!isTesting) StackedUserMessageComponent(modifier = Modifier.padding(top = 56.dp), onActionClick = onUserMessageActionClick)
+    if (!isTesting) StackedUserMessageComponent(modifier = Modifier.padding(top = SettingsComponentTopPadding), onActionClick = onUserMessageActionClick)
 }
 
 @MultiConfigPreview

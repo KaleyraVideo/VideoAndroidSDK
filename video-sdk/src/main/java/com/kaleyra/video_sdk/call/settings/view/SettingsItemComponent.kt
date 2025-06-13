@@ -33,6 +33,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
 
+private const val DisabledOptionAlpha = 0.4f
+private val SettingsItemComponentIconSize = 24.dp
+private val SettingsItemComponentChevronEndPadding = 12.dp
+private val SettingsItemComponentHeight = 48.dp
+private val SettingsItemComponentIconSpacer = 8.dp
+
+
 @Composable
 fun SettingsItemComponent(
     iconPainter: Painter,
@@ -44,44 +51,54 @@ fun SettingsItemComponent(
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(48.dp)) {
+    val displayRadioButton = isToggleable == false
+    val displaySwitch = isToggleable == true
+    var isChecked by remember { mutableStateOf(isSelected) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(SettingsItemComponentHeight)
+            .optionalTestTag(testTag)
+            .selectable(
+                selected = isSelected,
+                enabled = true,
+                role = when {
+                    displaySwitch -> Role.Switch
+                    displayRadioButton -> Role.RadioButton
+                    else -> Role.Button
+                },
+                onClick = {
+                    if (!isEnabled) return@selectable
+                    if (displaySwitch) {
+                        isChecked = !isChecked
+                        onCheckedChange(isChecked)
+                    } else {
+                        isChecked = true
+                        onCheckedChange(true)
+                    }
+                }
+            )) {
         Box(modifier = Modifier.clearAndSetSemantics {}) {
             Icon(
                 painter = iconPainter,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(SettingsItemComponentIconSize),
                 contentDescription = text,
                 tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha)
             )
         }
-        Spacer(Modifier.size(8.dp))
-        val displayRadioButton = isToggleable == false
-        val displaySwitch = isToggleable == true
-        var isChecked by remember { mutableStateOf(isSelected) }
+        Spacer(Modifier.size(SettingsItemComponentIconSpacer))
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(1f)
-                .semantics(mergeDescendants = true) {
-                    contentDescription = text
-                }
-                .selectable(
-                    selected = isSelected,
-                    enabled = true,
-                    role = when {
-                        displaySwitch -> Role.Switch
-                        displayRadioButton -> Role.RadioButton
-                        else -> Role.Button
-                    },
-                    onClick = {
-                        if (isEnabled) onCheckedChange(!isChecked)
-                    }
-                )
-                .optionalTestTag(testTag),
+                .weight(1f),
             verticalArrangement = Arrangement.Center) {
+            val bodyLargeStyle = MaterialTheme.typography.bodyLarge
             Text(
                 text = text,
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
-                style = if (isSelected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge)
+                style = if (isSelected) MaterialTheme.typography.titleMedium.copy(letterSpacing = bodyLargeStyle.letterSpacing) else bodyLargeStyle
+            )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
@@ -105,26 +122,33 @@ fun SettingsItemComponent(
             }
 
             displayRadioButton -> {
-                RadioButton(modifier = Modifier
-                    .padding(end = 0.dp)
-                    .clearAndSetSemantics {},
+                RadioButton(
+                    modifier = Modifier
+                        .clearAndSetSemantics {},
                     selected = isSelected,
-                    onClick = { if (isEnabled) onCheckedChange(true) },
+                    onClick = {
+                        isChecked = true
+                        if (isEnabled) onCheckedChange(true)
+                    },
                     enabled = isEnabled)
             }
 
             else -> {
-                Box(modifier = Modifier.padding(end = 12.dp)) {
-                    IconButton(modifier = Modifier
-                        .size(24.dp)
-                        .clearAndSetSemantics {},
+                Box(modifier = Modifier.padding(end = SettingsItemComponentChevronEndPadding)) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(SettingsItemComponentIconSize)
+                            .clearAndSetSemantics {},
                         enabled = isEnabled,
-                        onClick = { if (isEnabled) onCheckedChange(true) }
+                        onClick = {
+                            isChecked = true
+                            if (isEnabled) onCheckedChange(true)
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.kaleyra_f_chevron_right),
                             contentDescription = text,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else 0.4f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
                         )
                     }
                 }

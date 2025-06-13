@@ -7,6 +7,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
+import com.kaleyra.video_sdk.call.settings.view.ChangeAudioOutputTestTag
+import com.kaleyra.video_sdk.call.settings.view.MuteAllSoundsSwitchTestTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsComponent
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
 import io.mockk.unmockkAll
@@ -45,14 +47,8 @@ class VoiceSettingsComponentTest {
         }
 
         composeTestRule.onNodeWithTag(VoiceSettingsTag).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(
-                com.kaleyra.video_sdk.R.string.kaleyra_strings_action_disable_all_sounds
-            )).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(
-                com.kaleyra.video_sdk.R.string.kaleyra_strings_action_voice_change_audio_output
-            )).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(MuteAllSoundsSwitchTestTag).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(ChangeAudioOutputTestTag).assertIsDisplayed()
     }
 
     @Test
@@ -65,12 +61,32 @@ class VoiceSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(
-                com.kaleyra.video_sdk.R.string.kaleyra_strings_action_disable_all_sounds
-            )).performClick()
+        composeTestRule.onNodeWithTag(MuteAllSoundsSwitchTestTag).performClick()
 
         Assert.assertTrue(hasRequestedMuteAllSounds)
+    }
+
+    @Test
+    fun testDisableAndEnableAllSoundClicked_mutedAndEnabledAudioDeviceUiSetOnViewModel() {
+        composeTestRule.setContent {
+            VoiceSettingsComponent(
+                AudioOutputUiState(),
+                {
+                    hasRequestedMuteAllSounds = it
+                },
+                {
+                    hasRequestedAudioOutputChange = true
+                }
+            )
+        }
+
+        val switch = composeTestRule.onNodeWithTag(MuteAllSoundsSwitchTestTag)
+
+        switch.performClick()
+        Assert.assertTrue(hasRequestedMuteAllSounds)
+
+        switch.performClick()
+        Assert.assertFalse(hasRequestedMuteAllSounds)
     }
 
     @Test
@@ -83,10 +99,7 @@ class VoiceSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(
-                com.kaleyra.video_sdk.R.string.kaleyra_strings_action_voice_change_audio_output
-            )).performClick()
+        composeTestRule.onNodeWithTag(ChangeAudioOutputTestTag).performClick()
 
         Assert.assertTrue(hasRequestedAudioOutputChange)
     }

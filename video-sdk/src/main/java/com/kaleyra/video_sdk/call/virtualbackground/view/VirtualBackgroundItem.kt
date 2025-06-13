@@ -60,11 +60,12 @@ internal fun VirtualBackgroundItem(
             tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
+        val bodyLargeStyle = MaterialTheme.typography.bodyLarge
         Text(
             text = textFor(background),
             maxLines = 1,
             color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-            style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
+            style = if (selected) MaterialTheme.typography.titleMedium.copy(letterSpacing = bodyLargeStyle.letterSpacing) else bodyLargeStyle,
         )
     }
 }

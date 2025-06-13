@@ -199,7 +199,7 @@ object CallExtensions {
         }
 
         return deviceThermalManager!!.throttlingStatus.map { throttlingStatus ->
-            throttlingStatus.value >= DeviceThermalManager.ThrottlingStatus.SEVERE.value
+            throttlingStatus.value >= DeviceThermalManager.ThrottlingStatus.CRITICAL.value
         }.stateIn(scope)
     }
 }

@@ -14,10 +14,24 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kaleyra.video.noise_filter.DeepFilterNetLoader
+import com.kaleyra.video.noise_filter.DeepFilterNetModuleLoader
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterUiState
+
+private val NoiseSuppressionSettingsGroupBorderWidth = 1.dp
+private val NoiseSuppressionSettingsGroupRoundCorner = 11.dp
+private val NoiseSuppressionSettingsGroupHorizontalStartPadding = 24.dp
+private val NoiseSuppressionSettingsGroupHorizontalEndPadding = 16.dp
+private val NoiseSuppressionSettingsGroupTitleBottomPadding = 16.dp
+private val NoiseSuppressionSettingsGroupVerticalPadding = 8.dp
+
+internal const val NoiseSuppressionDeepFilterOptionTag = "NoiseSuppressionDeepFilterOptionTag"
+internal const val NoiseSuppressionStandardOptionTag = "NoiseSuppressionStandardOptionTag"
+internal const val NoiseSuppressionNoneOptionTag = "NoiseSuppressionNoneOptionTag"
+internal const val VoiceSettingsTag = "VoiceSettingsTag"
+internal const val NoiseSuppressionSettingsTag = "NoiseSuppressionSettingsTag"
+
 
 @Composable
 internal fun NoiseSuppressionSettingsComponent(
@@ -30,18 +44,18 @@ internal fun NoiseSuppressionSettingsComponent(
         .testTag(NoiseSuppressionSettingsTag)
         .then(modifier!!)) {
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = NoiseSuppressionSettingsGroupTitleBottomPadding),
             text = stringResource(R.string.kaleyra_strings_info_noise_suppression),
             style = MaterialTheme.typography.bodyLarge)
         Box(modifier = Modifier
             .border(
-                width = SettingsGroupBorderWidth,
+                width = NoiseSuppressionSettingsGroupBorderWidth,
                 color = MaterialTheme.colorScheme.outlineVariant,
-                shape = RoundedCornerShape(SettingsGroupRoundCorner)
+                shape = RoundedCornerShape(NoiseSuppressionSettingsGroupRoundCorner)
             )
         ) {
             Column(
-                modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding)
+                modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding, bottom = NoiseSuppressionSettingsGroupVerticalPadding)
             ) {
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.DeepFilterAi)) {
                     SettingsItemComponent(
@@ -89,8 +103,8 @@ internal fun NoiseSuppressionSettingsComponent(
 }
 
 @Composable
-private fun subtitleFor(loadingState: DeepFilterNetLoader.LoadingState): String? = when (loadingState) {
-    DeepFilterNetLoader.LoadingState.InProgress -> stringResource(R.string.kaleyra_strings_info_deep_filter_net_model_loading_in_progress)
-    DeepFilterNetLoader.LoadingState.Unavailable -> stringResource(R.string.kaleyra_strings_info_deep_filter_net_model_unavailable)
+private fun subtitleFor(loadingState: DeepFilterNetModuleLoader.LoadingState): String? = when (loadingState) {
+    DeepFilterNetModuleLoader.LoadingState.InProgress -> stringResource(R.string.kaleyra_strings_info_deep_filter_net_model_loading_in_progress)
+    DeepFilterNetModuleLoader.LoadingState.Unavailable -> stringResource(R.string.kaleyra_strings_info_deep_filter_net_model_unavailable)
     else -> null
 }

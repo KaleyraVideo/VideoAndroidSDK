@@ -86,7 +86,7 @@ class NoiseSuppressionComponentTest {
             supportedNoiseFilterModesUi = ImmutableList(listOf(NoiseFilterModeUi.DeepFilterAi, NoiseFilterModeUi.Standard, NoiseFilterModeUi.None))
         ), { requestedNoiseFilterMode = it })}
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_deepfilter_ai)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(NoiseSuppressionDeepFilterOptionTag).assertIsDisplayed()
     }
 
     @Test
@@ -104,7 +104,7 @@ class NoiseSuppressionComponentTest {
             supportedNoiseFilterModesUi = ImmutableList(listOf(NoiseFilterModeUi.DeepFilterAi, NoiseFilterModeUi.Standard, NoiseFilterModeUi.None))
         ), { requestedNoiseFilterMode = it })}
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_standard)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(NoiseSuppressionStandardOptionTag).assertIsDisplayed()
     }
 
     @Test
@@ -113,7 +113,7 @@ class NoiseSuppressionComponentTest {
             supportedNoiseFilterModesUi = ImmutableList(listOf(NoiseFilterModeUi.DeepFilterAi, NoiseFilterModeUi.Standard, NoiseFilterModeUi.None))
         ), { requestedNoiseFilterMode = it })}
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_common_ui.R.string.kaleyra_strings_action_noise_suppression_none)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(NoiseSuppressionNoneOptionTag).assertIsDisplayed()
     }
 
     @Test

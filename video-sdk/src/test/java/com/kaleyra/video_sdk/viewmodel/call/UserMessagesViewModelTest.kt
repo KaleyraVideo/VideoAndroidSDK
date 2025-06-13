@@ -1,26 +1,21 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
-import androidx.compose.runtime.MutableState
+import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
-import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
-import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
-import com.kaleyra.video_utils.ContextRetainer
-import com.kaleyra.video_utils.thermal.DeviceThermalManager
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.unmockkAll
@@ -59,6 +54,7 @@ class UserMessagesViewModelTest {
     fun setUp() {
         mockkObject(KaleyraVideo)
         with (callMock) {
+            every { type } returns MutableStateFlow(Call.Type.audioVideo())
             every { participants } returns MutableStateFlow(mockk {
                 every { me } returns mockk(relaxed = true) {
                     every { streams } returns MutableStateFlow(listOf(

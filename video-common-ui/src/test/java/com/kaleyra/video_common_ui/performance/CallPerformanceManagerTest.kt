@@ -43,6 +43,7 @@ class CallPerformanceManagerTest {
     }
 
     private val callMock: Call = mockk<Call> {
+        every { type } returns MutableStateFlow(Call.Type.audioVideo())
         every { state } returns MutableStateFlow(Call.State.Connected)
         every { participants } returns MutableStateFlow(participantsMock)
     }
@@ -109,7 +110,7 @@ class CallPerformanceManagerTest {
     }
 
     @Test
-    fun throttlingStatusSevere_disabledBlurVirtualBackground() = runTest {
+    fun throttlingStatusSevere_notDisabledBlurVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
         }
@@ -119,7 +120,7 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 1) { myVideo.tryApplyEffect(Effect.Video.None) }
+        verify(exactly = 0) { myVideo.tryApplyEffect(Effect.Video.None) }
     }
 
     @Test
@@ -223,7 +224,7 @@ class CallPerformanceManagerTest {
     }
 
     @Test
-    fun throttlingStatusSevere_disabledImageVirtualBackground() = runTest {
+    fun throttlingStatusSevere_notDisabledImageVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
         }
@@ -233,7 +234,7 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 1) { myVideo.tryApplyEffect(Effect.Video.None) }
+        verify(exactly = 0) { myVideo.tryApplyEffect(Effect.Video.None) }
     }
 
     @Test
@@ -451,7 +452,7 @@ class CallPerformanceManagerTest {
     }
 
     @Test
-    fun throttlingStatusSevere_aiNoiseFilterDisabled() = runTest {
+    fun throttlingStatusSevere_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
         }
@@ -461,7 +462,7 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 1) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test

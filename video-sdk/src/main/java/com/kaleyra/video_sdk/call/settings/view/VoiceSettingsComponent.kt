@@ -17,6 +17,17 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.view.painterFor
 
+private val SettingsGroupBorderWidth = 1.dp
+private val SettingsGroupRoundCorner = 11.dp
+private val SettingsGroupTitleBottomPadding = 16.dp
+private val SettingsGroupHorizontalStartPadding = 24.dp
+private val SettingsGroupHorizontalEndPadding = 16.dp
+private val SettingsGroupVerticalPadding = 8.dp
+
+internal const val MuteAllSoundsSwitchTestTag = "AudioDeviceMutedOptionsTag"
+internal const val ChangeAudioOutputTestTag = "ChangeAudioOutputTestTag"
+
+
 @Composable
 internal fun VoiceSettingsComponent(
     audioOutputUiState: AudioOutputUiState,
@@ -28,7 +39,7 @@ internal fun VoiceSettingsComponent(
 
     Column(modifier = Modifier.testTag(VoiceSettingsTag).then(modifier)) {
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = SettingsGroupTitleBottomPadding),
             text = stringResource(R.string.kaleyra_strings_info_voice_settings),
             style = MaterialTheme.typography.bodyLarge)
         Box(modifier = Modifier
@@ -44,7 +55,7 @@ internal fun VoiceSettingsComponent(
                 SettingsItemComponent(
                     iconPainter = painterResource(R.drawable.ic_kaleyra_muted),
                     text = stringResource(R.string.kaleyra_strings_action_disable_all_sounds),
-                    testTag = AudioDeviceMutedOptionsTag,
+                    testTag = MuteAllSoundsSwitchTestTag,
                     isToggleable = true,
                     isSelected = !audioOutputUiState.areCallSoundsEnabled,
                     isEnabled = true,
@@ -53,6 +64,7 @@ internal fun VoiceSettingsComponent(
                 SettingsItemComponent(
                     iconPainter = currentAudioDeviceUi?.let { painterFor(it) } ?: painterResource(R.drawable.ic_kaleyra_loud_speaker),
                     text = stringResource(R.string.kaleyra_strings_action_voice_change_audio_output),
+                    testTag = ChangeAudioOutputTestTag,
                     isSelected = false,
                     isEnabled = true,
                     onCheckedChange = { onChangeAudioOutputRequested.invoke() }

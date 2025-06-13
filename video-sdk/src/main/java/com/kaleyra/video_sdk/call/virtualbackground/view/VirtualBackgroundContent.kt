@@ -53,7 +53,7 @@ internal fun VirtualBackgroundContent(
                         onClick = { onItemClick(it) }
                     )
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp,  vertical = 12.dp)
+                    .padding(horizontal = 24.dp,  vertical = 8.dp)
             )
         }
     }

@@ -3,8 +3,7 @@ package com.kaleyra.video_sdk.call.settings.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kaleyra.video.noise_filter.DeepFilterNetLoader
+import com.kaleyra.video.noise_filter.DeepFilterNetModuleLoader
 import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.call.mapper.NoiseFilterMapper.getSupportedNoiseFilterModes
@@ -15,7 +14,6 @@ import com.kaleyra.video_sdk.call.settings.model.NoiseFilterUiState
 import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -32,7 +30,7 @@ internal class NoiseFilterViewModel(configure: suspend () -> Configuration) : Ba
     override fun initialState() = NoiseFilterUiState()
 
     init {
-        DeepFilterNetLoader.loadingState.onEach { loadingState ->
+        DeepFilterNetModuleLoader.loadingState.onEach { loadingState ->
             _uiState.update { it.copy(deepFilerLoadingState = loadingState) }
         }.launchIn(viewModelScope)
 

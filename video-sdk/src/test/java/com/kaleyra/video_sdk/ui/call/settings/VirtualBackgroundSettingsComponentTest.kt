@@ -98,7 +98,7 @@ class VirtualBackgroundSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_none)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundNoneOptionTag).performClick()
 
         Assert.assertEquals(VirtualBackgroundUi.None, requestedVirtualBackgroundUi)
     }
@@ -113,7 +113,7 @@ class VirtualBackgroundSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_blur)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundBlurOptionTag).performClick()
         Assert.assertEquals(VirtualBackgroundUi.Blur("blur"), requestedVirtualBackgroundUi)
     }
 

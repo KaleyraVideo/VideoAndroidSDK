@@ -6,7 +6,7 @@ import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import org.junit.Assert
 import org.junit.Test
 
-class DeepFilterNetLoaderMapperTest {
+class DeepFilterNetModuleLoaderMapperTest {
 
     @Test
     fun testNoiseFilterModeUiToNoiseFilterMode() {

@@ -83,8 +83,13 @@ dependencies {
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
     testImplementation catalog.javaAssist
-    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
-    testImplementation kaleyraCatalog.kaleyraVideo
+    testImplementation kaleyraCatalog.kaleyraVideoCoreAv
+//    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
+//    testImplementation kaleyraCatalog.kaleyraVideo
+    testImplementation project(":video")
+    testImplementation project(":video-extension-audio")
+//    testImplementation "com.kaleyra:video:1.5.0"
+//    testImplementation "com.kaleyra:video-extension-audio:1.5.0"
 
     testImplementation platform(catalog.androidxComposeBom)
     testImplementation 'androidx.compose.material3:material3'
@@ -92,15 +97,21 @@ dependencies {
     androidTestImplementation catalog.mockkAndroid
     androidTestImplementation catalog.androidxTestEspressoIntents
     androidTestImplementation catalog.junitTestExt
+    androidTestImplementation "com.kaleyra:video:1.5.0"
+    androidTestImplementation "com.kaleyra:video-extension-audio:1.5.0"
 
     implementation sampleAppCatalog.androidxWorkRuntime
     implementation sampleAppCatalog.androidxWorkRuntimeKtx
 
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
+    compileOnly kaleyraCatalog.kaleyraVideoCoreAv
 
-    compileOnly kaleyraCatalog.kaleyraVideo
-    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
+//    compileOnly kaleyraCatalog.kaleyraVideo
+//    compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
+
+    compileOnly project(":video")
+    compileOnly project(":video-extension-audio")
 }
 
 licenseReport {

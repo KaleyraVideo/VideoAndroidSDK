@@ -58,11 +58,12 @@ internal fun AudioOutputItem(
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.Center) {
+            val bodyLargeStyle = MaterialTheme.typography.bodyLarge
             Text(
                 text = titleFor(audioDevice),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
+                style = if (selected) MaterialTheme.typography.titleMedium.copy(letterSpacing = bodyLargeStyle.letterSpacing) else bodyLargeStyle,
                 color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
             )
             val subtitle = subtitleFor(audioDevice)

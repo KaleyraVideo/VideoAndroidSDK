@@ -1,7 +1,7 @@
 package com.kaleyra.video_sdk.call.settings.model
 
 import androidx.compose.runtime.Immutable
-import com.kaleyra.video.noise_filter.DeepFilterNetLoader
+import com.kaleyra.video.noise_filter.DeepFilterNetModuleLoader
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.uistate.UiState
 
@@ -19,11 +19,11 @@ import com.kaleyra.video_sdk.common.uistate.UiState
 data class NoiseFilterUiState(
     /**
      * The current loading state of the deep filter's neural network model or resources.
-     * Represented by [DeepFilterNetLoader.LoadingState], which could include states
+     * Represented by [DeepFilterNetModuleLoader.LoadingState], which could include states
      * like Unloaded, Loading, Loaded, or Error.
-     * Defaults to [DeepFilterNetLoader.LoadingState.Unloaded].
+     * Defaults to [DeepFilterNetModuleLoader.LoadingState.Unloaded].
      */
-    val deepFilerLoadingState: DeepFilterNetLoader.LoadingState = DeepFilterNetLoader.LoadingState.Unloaded,
+    val deepFilerLoadingState: DeepFilterNetModuleLoader.LoadingState = DeepFilterNetModuleLoader.LoadingState.Unloaded,
 
     /**
      * An immutable list of noise filter modes that are supported by the current

@@ -35,7 +35,9 @@ import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionDeepFilterOptionTag
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
+import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundBlurOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundImageOptionTag
+import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundNoneOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
@@ -233,7 +235,7 @@ class SettingsComponentTest {
         }
 
         scrollState.scrollTo(400)
-        composeTestRule.onAllNodesWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_none)).onLast().performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundNoneOptionTag).performClick()
 
         verify { virtualBackgroundViewModel.setEffect(VirtualBackgroundUi.None) }
     }
@@ -257,7 +259,7 @@ class SettingsComponentTest {
         }
 
         scrollState.scrollTo(400)
-        composeTestRule.onAllNodesWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_blur)).onFirst().performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundBlurOptionTag).performClick()
 
         verify { virtualBackgroundViewModel.setEffect(VirtualBackgroundUi.Blur("blur")) }
     }
@@ -284,5 +286,5 @@ class SettingsComponentTest {
         composeTestRule.onNodeWithTag(VirtualBackgroundImageOptionTag).performClick()
 
         verify { virtualBackgroundViewModel.setEffect(VirtualBackgroundUi.Image("image")) }
-}
+    }
 }

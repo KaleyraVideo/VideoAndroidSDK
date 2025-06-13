@@ -17,6 +17,18 @@ import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
 
+private val SettingsGroupBorderWidth = 1.dp
+private val SettingsGroupRoundCorner = 11.dp
+private val SettingsGroupTitleBottomPadding = 16.dp
+private val SettingsGroupHorizontalStartPadding = 24.dp
+private val SettingsGroupHorizontalEndPadding = 16.dp
+private val SettingsGroupVerticalPadding = 8.dp
+
+internal const val VirtualBackgroundSettingsTag = "VirtualBackgroundSettingsTag"
+internal const val VirtualBackgroundBlurOptionTag = "VirtualBackgroundBlurOptionTag"
+internal const val VirtualBackgroundImageOptionTag = "VirtualBackgroundImageOptionTag"
+internal const val VirtualBackgroundNoneOptionTag = "VirtualBackgroundNoneOptionTag"
+
 @Composable
 internal fun VirtualBackgroundSettingsComponent(
     virtualBackgroundUiState: VirtualBackgroundUiState,
@@ -28,7 +40,7 @@ internal fun VirtualBackgroundSettingsComponent(
 
     Column(modifier = Modifier.testTag(VirtualBackgroundSettingsTag).then(modifier)) {
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = SettingsGroupTitleBottomPadding),
             text = stringResource(R.string.kaleyra_strings_info_camera_settings),
             style = MaterialTheme.typography.bodyLarge)
         Box(modifier = Modifier
