@@ -12,6 +12,7 @@ import com.kaleyra.video_common_ui.call.ParticipantManager
 import com.kaleyra.video_common_ui.call.StreamsManager
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnection
 import com.kaleyra.video_common_ui.connectionservice.ProximityService
+import com.kaleyra.video_common_ui.noise_filter.DeepFilterNetThresholdController
 import com.kaleyra.video_common_ui.performance.CallPerformanceManager
 import com.kaleyra.video_common_ui.utils.DeviceUtils
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,8 @@ internal class CallForegroundServiceWorker(
 
     private val callPerformanceManager by lazy { CallPerformanceManager(coroutineScope) }
 
+    private val deepFilterNetThresholdController by lazy { DeepFilterNetThresholdController(coroutineScope) }
+
     private var call: CallUI? = null
     private var connection: KaleyraCallConnection? = null
 
@@ -60,6 +63,7 @@ internal class CallForegroundServiceWorker(
         streamsAudioManager.bind(call!!)
         callPerformanceManager.bind(call!!)
         callNotificationProducer.bind(call!!, service)
+        deepFilterNetThresholdController.bind()
         callNotificationProducer.listener = callNotificationListener
 
         call!!.state
@@ -81,6 +85,7 @@ internal class CallForegroundServiceWorker(
         streamsAudioManager.stop()
         callNotificationProducer.stop()
         callPerformanceManager.stop()
+        deepFilterNetThresholdController.stop()
 
         if (DeviceUtils.isSmartGlass) return
         ProximityService.stop()
