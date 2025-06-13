@@ -21,6 +21,7 @@ package com.kaleyra.video_sdk.common.usermessages.provider
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Effect
 import com.kaleyra.video.conference.Input
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.contactdetails.ContactDetailsManager.combinedDisplayName
@@ -28,6 +29,7 @@ import com.kaleyra.video_common_ui.mapper.StreamMapper.amIWaitingOthers
 import com.kaleyra.video_common_ui.mapper.StreamMapper.doOthersHaveStreams
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
 import com.kaleyra.video_common_ui.notification.signature.SignDocumentsVisibilityObserver
+import com.kaleyra.video_common_ui.utils.FlowUtils.combine
 import com.kaleyra.video_common_ui.utils.FlowUtils.flatMapLatestNotNull
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_sdk.call.mapper.CallStateMapper.toCallStateUi
@@ -242,32 +244,40 @@ object CallUserMessagesProvider {
     private fun Channel<UserMessage>.sendThermalWarningEvents(call: CallUI, scope: CoroutineScope) {
         scope.launch {
 
-            var currentNoiseFilterMode: Input.Audio.My.NoiseFilterMode? = null
-            var currentCameraEffect: Effect.Video? = null
+            val currentNoiseFilterMode: MutableStateFlow<Input.Audio.My.NoiseFilterMode?> = MutableStateFlow(null)
+            val currentCameraEffect: MutableStateFlow<Effect.Video?> = MutableStateFlow(null)
 
             call.participants.first { it.me != null }
                 .me!!.streams.first { it.any { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
                 .first { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
                 .audio.flatMapLatestNotNull { it?.noiseFilterMode }
                 .onEach { noiseFilterMode ->
-                    currentNoiseFilterMode = noiseFilterMode
+                    currentNoiseFilterMode.value = noiseFilterMode
                 }
                 .launchIn(scope)
 
 
-            call.participants.first { it.me != null }
-                .me!!.streams.first { it.any { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
-                .first { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
-                .video.flatMapLatestNotNull { it?.currentEffect }
-                .onEach { currentEffect ->
-                    currentCameraEffect = currentEffect
+            if (call.type.value.hasVideo()) {
+                call.participants.first { it.me != null }
+                    .me!!.streams.first { it.any { stream -> stream.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+                    .first { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
+                    .video.flatMapLatestNotNull { it?.currentEffect }
+                    .onEach { currentEffect ->
+                        currentCameraEffect.value = currentEffect
+                    }
+                    .launchIn(scope)
+            }
+
+            currentNoiseFilterMode.first { it != null }
+            if (call.type.value.hasVideo()) {
+                currentCameraEffect.first { it != null }
+            }
+
+            call.isCpuThrottling().combine(currentNoiseFilterMode, currentCameraEffect) { a,b, c -> Triple(a, b, c) }
+                .filter { (isThrottling, currentNoiseFilterMode, currentCameraEffect) ->
+                    isThrottling
                 }
-                .launchIn(scope)
-
-
-            call.isCpuThrottling()
-                .filter { it }
-                .onEach {
+                .onEach { (_, currentNoiseFilterMode, currentCameraEffect) ->
                     val hasAiNoiseFilterActive = currentNoiseFilterMode is Input.Audio.My.NoiseFilterMode.DeepFilterAi
                     val hasBlurOrImageBackgroundActive = currentCameraEffect is Effect.Video.Background.Blur || currentCameraEffect is Effect.Video.Background.Image
                     if (!hasAiNoiseFilterActive && !hasBlurOrImageBackgroundActive) return@onEach
