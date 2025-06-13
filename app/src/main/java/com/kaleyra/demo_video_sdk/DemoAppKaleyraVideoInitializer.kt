@@ -27,6 +27,7 @@ import com.kaleyra.demo_video_sdk.ui.custom_views.CallConfiguration
 import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIButtons
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -73,7 +74,6 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 )
             }
 
-
             if (getCallConfiguration().options.backCameraAsDefault)
                 KaleyraVideo.conference.settings.camera = Conference.Settings.Camera.Back
 
@@ -81,7 +81,18 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val callConfiguration = getCallConfiguration()
 
                 ongoingCall.buttonsProvider = { callButtons ->
-                    callButtons + getCallConfiguration().actions.mapToCallUIButtons()
+                    lateinit var providedButtons: Set<CallUI.Button>
+                    val otherCallUIButtons = getCallConfiguration().actions.mapToCallUIButtons().filter { it !in callButtons }
+                    callButtons.indexOf(CallUI.Button.Settings).takeIf { it != -1 }?.let { callUISettingsIndex ->
+                        providedButtons = addSetAtIndex<CallUI.Button>(
+                            callButtons,
+                            otherCallUIButtons,
+                            callUISettingsIndex
+                        )
+                    } ?: run {
+                        providedButtons = callButtons + otherCallUIButtons
+                    }
+                    providedButtons
                 }
 
                 ongoingCall.state
@@ -113,6 +124,22 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     )
                 })
             }
+        }
+
+        private fun <T> addSetAtIndex(
+            mainSet: MutableSet<T>,
+            setToInsert: Collection<T>,
+            index: Int
+        ): MutableSet<T> {
+            val mainList = mainSet.toMutableList()
+            if (index < 0 || index > mainList.size) {
+                throw IndexOutOfBoundsException("Index $index is out of bounds for list of size ${mainList.size}")
+            }
+            val itemsToActuallyInsertInOrder = setToInsert.toList()
+            if (itemsToActuallyInsertInOrder.isNotEmpty()) {
+                mainList.addAll(index, itemsToActuallyInsertInOrder)
+            }
+            return LinkedHashSet(mainList)
         }
     }
 
