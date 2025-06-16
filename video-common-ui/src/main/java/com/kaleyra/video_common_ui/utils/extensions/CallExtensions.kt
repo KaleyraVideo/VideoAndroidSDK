@@ -188,7 +188,6 @@ object CallExtensions {
 
     suspend fun Call.isCpuThrottling(scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): StateFlow<Boolean> {
         deviceThermalManager = deviceThermalManager ?: DeviceThermalManager(ContextRetainer.context).apply {
-            startThermalMonitoring()
             state
                 .takeWhile { it !is Call.State.Disconnected.Ended }
                 .onCompletion {
@@ -197,6 +196,7 @@ object CallExtensions {
                 }
                 .launchIn(scope)
         }
+        deviceThermalManager!!.startThermalMonitoring()
 
         return deviceThermalManager!!.throttlingStatus.map { throttlingStatus ->
             throttlingStatus.value >= DeviceThermalManager.ThrottlingStatus.CRITICAL.value
