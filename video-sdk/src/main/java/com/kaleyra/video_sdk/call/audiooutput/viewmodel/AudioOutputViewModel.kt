@@ -19,12 +19,14 @@ package com.kaleyra.video_sdk.call.audiooutput.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
 import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.setAudioOutputDevice
 import com.kaleyra.video_extension_audio.extensions.disableCallSounds
+import com.kaleyra.video_extension_audio.extensions.muteCallSoundsWhenMuted
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.mapper.AudioOutputMapper.mapToAudioOutputDevice
@@ -78,6 +80,13 @@ internal class AudioOutputViewModel(configure: suspend () -> Configuration) : Ba
     fun disableCallSounds() {
         KaleyraVideo.conference.disableCallSounds()
         _uiState.update { it.copy(areCallSoundsEnabled = false) }
+    }
+
+    fun muteCallSoundsWhenMuted() {
+        viewModelScope.launch {
+            val ongoingCall = call.first()
+            ongoingCall.muteCallSoundsWhenMuted()
+        }
     }
 
     fun setDevice(device: AudioDeviceUi) {

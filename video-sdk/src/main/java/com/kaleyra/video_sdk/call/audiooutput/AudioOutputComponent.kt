@@ -73,6 +73,10 @@ internal fun AudioOutputComponent(
         }
     }
 
+    LaunchedEffect(Unit) {
+        if (displayMutedAudioUi) viewModel.muteCallSoundsWhenMuted()
+    }
+
     AudioOutputComponent(
         uiState = uiState,
         displayMutedAudioUi = displayMutedAudioUi,
