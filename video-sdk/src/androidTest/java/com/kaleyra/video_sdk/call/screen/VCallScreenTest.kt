@@ -8,10 +8,10 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.requestFocus
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
-import com.kaleyra.video.User
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetState
 import com.kaleyra.video_sdk.call.bottomsheet.CallSheetValue
@@ -34,6 +34,8 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheetTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.StreamMenuContentTestTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreenAppBarTag
+import com.kaleyra.video_sdk.call.screen.view.vcallscreen.VCallScreenContentTag
 import com.kaleyra.video_sdk.call.stream.layoutsystem.model.StreamItem
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.model.core.StreamUi
@@ -1353,5 +1355,27 @@ internal class VCallScreenTest: VCallScreenBaseTest() {
             }
         )
         assert(onChatCreationFailed)
+    }
+
+    @Test
+    fun sheetExpanded_appBarFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpVCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(VCallScreenAppBarTag).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
+    }
+
+    @Test
+    fun sheetExpanded_screenContentFocused_sheetCollapsed() = runTest {
+        val sheetState = CallSheetState(CallSheetValue.Expanded)
+        composeTestRule.setUpVCallScreen(sheetState = sheetState)
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Expanded, sheetState.currentValue)
+        composeTestRule.onNodeWithTag(VCallScreenContentTag, useUnmergedTree = true).performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(CallSheetValue.Collapsed, sheetState.currentValue)
     }
 }

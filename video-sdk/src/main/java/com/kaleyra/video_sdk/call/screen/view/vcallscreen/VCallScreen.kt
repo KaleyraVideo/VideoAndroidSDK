@@ -7,6 +7,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,11 +37,15 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -98,6 +103,7 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
+import kotlinx.coroutines.launch
 
 internal val PanelTestTag = "PanelTestTag"
 
@@ -109,6 +115,9 @@ private val StreamMenuEstimatedHeight = 100.dp
 
 private val ContentSpacing = 8.dp
 private val ContentExpandedSpacing = 12.dp
+
+internal val VCallScreenAppBarTag = "VCallScreenAppBarTag"
+internal val VCallScreenContentTag = "VCallScreenContentTag"
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -169,6 +178,8 @@ internal fun VCallScreen(
 
     val hasLogo = brandLogoUiState.hasLogo(isDarkTheme)
 
+    val (appBarRequester, contentRequester, sheetDragContentRequester, sheetContentRequester) = remember { FocusRequester.createRefs() }
+
     VCallScreenScaffold(
         modifier = modifier,
         windowSizeClass = windowSizeClass,
@@ -176,10 +187,31 @@ internal fun VCallScreen(
         // Avoid applying horizontal padding here to prevent it from affecting the bottom sheet.
         paddingValues = callScreenScaffoldPaddingValues(top = contentSpacing, bottom = contentSpacing),
         topAppBar = {
+            val coroutineScope = rememberCoroutineScope()
             CallAppBarComponent(
                 onParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(horizontal = contentSpacing)
+                modifier = Modifier
+                    .padding(horizontal = contentSpacing)
+                    .focusRequester(appBarRequester)
+                    .onFocusChanged {
+                        // Ensures the bottom sheet closes automatically when the app
+                        // bar gains focus, improving accessibility for keyboard users.
+                        if (!it.isFocused) return@onFocusChanged
+                        coroutineScope.launch {
+                            sheetState.collapse()
+                        }
+                    }
+                    .testTag(VCallScreenAppBarTag)
+            )
+            Box(
+                modifier = Modifier
+                    .height(0.dp)
+                    .onFocusChanged {
+                        if (!it.hasFocus) return@onFocusChanged
+                        contentRequester.requestFocus()
+                    }
+                    .focusable()
             )
         },
         sheetPanelContent = if (!isRinging && isLargeScreen) {
@@ -205,14 +237,23 @@ internal fun VCallScreen(
         } else null,
         sheetDragContent = {
             if (hasSheetDragContent) {
+                val areChildrenKeyboardFocusable by remember {
+                    // Even when the bottom sheet is collapsed, its children remain keyboard-focusable.
+                    // To prevent unintended interactions, disable their focus in this state
+                    derivedStateOf { sheetState.currentValue == CallSheetValue.Expanded }
+                }
                 HSheetDragContent(
                     callActions = sheetDragActions,
                     isLargeScreen = isLargeScreen,
+                    areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
                     inputPermissions = inputPermissions,
                     onModularComponentRequest = onSideBarSheetComponentRequest,
                     contentPadding = PaddingValues(top = 8.dp, end = 14.dp, bottom = 14.dp, start = 14.dp),
                     onAskInputPermissions = onAskInputPermissions,
-                    modifier = Modifier.animateContentSize()
+                    onExitFocusRequest = { sheetContentRequester },
+                    modifier = Modifier
+                        .animateContentSize()
+                        .focusRequester(sheetDragContentRequester)
                 )
             }
         },
@@ -244,7 +285,8 @@ internal fun VCallScreen(
             AnimatedContent(
                 targetState = selectedStreamId,
                 contentAlignment = Alignment.Center,
-                label = "sheet content"
+                label = "sheet content",
+                modifier = Modifier.focusRequester(sheetContentRequester)
             ) { currentlySelectedStreamId ->
                 if (currentlySelectedStreamId == null) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -263,6 +305,13 @@ internal fun VCallScreen(
                             onMoreToggle = { isSheetCollapsed ->
                                 if (hasSheetDragContent) onChangeSheetState(isSheetCollapsed)
                                 else showSheetPanelContent = !showSheetPanelContent
+                            },
+                            onNextFocusRequest = {
+                                if (sheetState.currentValue == CallSheetValue.Collapsed) {
+                                    appBarRequester
+                                } else {
+                                    sheetDragContentRequester
+                                }
                             },
                             modifier = Modifier.padding(
                                 start = 14.dp,
@@ -286,6 +335,16 @@ internal fun VCallScreen(
                         modifier = Modifier.testTag(StreamMenuContentTestTag)
                     )
                 }
+
+                Box(
+                    modifier = Modifier
+                        .height(0.dp)
+                        .onFocusChanged {
+                            if (!it.hasFocus) return@onFocusChanged
+                            appBarRequester.requestFocus()
+                        }
+                        .focusable()
+                )
             }
         },
         sheetDragHandle = (@Composable { InputMessageHandle() }).takeIf { hasSheetDragContent }
@@ -321,7 +380,6 @@ internal fun VCallScreen(
                         else -> false
                     }
                 }
-                .clearAndSetSemantics {}
         ) {
             val streamViewModel: StreamViewModel = viewModel(
                 factory = StreamViewModel.provideFactory(configure = ::requestCollaborationViewModelConfiguration)
@@ -364,8 +422,20 @@ internal fun VCallScreen(
             LookaheadScope {
                 BoxWithConstraints {
                     val constraints = constraints
+                    val coroutineScope = rememberCoroutineScope()
 
-                    Row {
+                    Row(
+                        modifier = Modifier
+                            .onFocusChanged {
+                                if (!it.isFocused) return@onFocusChanged
+                                // Ensures the bottom sheet closes automatically when the content
+                                // gains focus, improving accessibility for keyboard users.
+                                coroutineScope.launch {
+                                    sheetState.collapse()
+                                }
+                            }
+                            .testTag(VCallScreenContentTag)
+                    ) {
                         val sidePanelWeight = remember(sidePanelComponent, isAtLeastExpandedWidth) {
                             when {
                                 sidePanelComponent == ModularComponent.Whiteboard -> 4f
@@ -379,23 +449,35 @@ internal fun VCallScreen(
                                 .weight(2f)
                                 .clipToBounds()
                         ) {
-                            StreamComponent(
-                                viewModel = streamViewModel,
-                                windowSizeClass = windowSizeClass,
-                                selectedStreamId = selectedStreamId,
-                                onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
-                                onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .navigationBarsPadding()
-                                    .padding(cutoutPaddingValues)
-                                    .padding(
-                                        start = leftPadding,
-                                        top = topPadding,
-                                        end = if (sidePanelComponent != null) 0.dp else rightPadding,
-                                        bottom = bottomPadding
-                                    )
-                            )
+                            Box(Modifier.focusRequester(contentRequester)) {
+                                StreamComponent(
+                                    viewModel = streamViewModel,
+                                    windowSizeClass = windowSizeClass,
+                                    selectedStreamId = selectedStreamId,
+                                    onStreamItemClick = { streamItem -> onStreamSelected(streamItem.id) },
+                                    onMoreParticipantClick = { onSideBarSheetComponentRequest(ModularComponent.Participants) },
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .navigationBarsPadding()
+                                        .padding(cutoutPaddingValues)
+                                        .padding(
+                                            start = leftPadding,
+                                            top = topPadding,
+                                            end = if (sidePanelComponent != null) 0.dp else rightPadding,
+                                            bottom = bottomPadding
+                                        )
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .height(0.dp)
+                                        .onFocusChanged {
+                                            if (!it.hasFocus) return@onFocusChanged
+                                            sheetContentRequester.requestFocus()
+                                        }
+                                        .focusable()
+                                )
+                            }
 
                             Column(Modifier.padding(top = topPadding)) {
                                 val displayBrandLogo = !windowSizeClass.isAtLeastExpandedWidth() && shouldDisplayBrandLogo(brandLogoUiState.callStateUi, hasConnectedCallOnce)

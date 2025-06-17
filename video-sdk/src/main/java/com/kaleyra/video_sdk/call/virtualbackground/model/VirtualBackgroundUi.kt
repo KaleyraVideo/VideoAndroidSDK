@@ -16,7 +16,8 @@
 
 package com.kaleyra.video_sdk.call.virtualbackground.model
 
-import com.kaleyra.video.conference.Effect
+import androidx.annotation.FloatRange
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 
 /**
  * Virtual Background Ui representation of the Virtual Background on the Ui
@@ -28,19 +29,21 @@ sealed class VirtualBackgroundUi(open val id: String) {
     /**
      * Blue Virtual Background
      * @property id String blur virtual background identifier
+     * @property factor Float representation of blur amount
      * @constructor
      */
-    data class Blur(override val id: String) : VirtualBackgroundUi(id)
+    data class Blur(override val id: String, @FloatRange(0.0, 1.0)  val factor: Float = 1f): VirtualBackgroundUi(id)
 
     /**
      * Image Virtual Background
      * @property id String image virtual background identifier
+     * @property uri Uri image virtual background uri resource
      * @constructor
      */
-    data class Image(override val id: String) : VirtualBackgroundUi(id)
+    data class Image(override val id: String, val uri: ImmutableUri = ImmutableUri()): VirtualBackgroundUi(id)
 
     /**
      * None Virtual Background
      */
-    data object None : VirtualBackgroundUi("None")
+    data object None: VirtualBackgroundUi("None")
 }

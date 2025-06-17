@@ -55,6 +55,7 @@ import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.preview.NightModePreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animateConstraints
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.animatePlacement
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.currentWindowAdaptiveInfo
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.hasCompactHeight
@@ -223,6 +224,7 @@ internal fun StreamComponent(
                                         cast?.state is StreamItemState.Featured
                                     }
 
+                                    val interactionSource = remember { MutableInteractionSource() }
                                     Surface(
                                         shape = RoundedCornerShape(StreamComponentDefaults.CornerRadius),
                                         color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -233,8 +235,10 @@ internal fun StreamComponent(
                                                 onClick = onClick,
                                                 label = if (streamItem is StreamItem.MoreStreams) stringResource(
                                                     id = R.string.kaleyra_stream_show_actions
-                                                ) else stringResource(id = R.string.kaleyra_stream_show_participants)
+                                                ) else stringResource(id = R.string.kaleyra_stream_show_participants),
+                                                interactionSource = interactionSource
                                             )
+                                            .highlightOnFocus(interactionSource)
                                             .testTag(streamItem.id)
                                     ) {
                                         Box {
@@ -280,19 +284,19 @@ private fun calculateThumbnailsSize(
     else min(maxAvailableSize / maxThumbnailsStreams, maxThumbnailSize)
 }
 
+
 private fun Modifier.streamClickable(
     onClick: () -> Unit,
     label: String,
-): Modifier = composed {
-    this.clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null,
-        onClickLabel = label,
-        role = Role.Button,
-        enabled = true,
-        onClick = onClick
-    )
-}
+    interactionSource: MutableInteractionSource
+): Modifier = clickable(
+    interactionSource = interactionSource,
+    indication = null,
+    onClickLabel = label,
+    role = Role.Button,
+    enabled = true,
+    onClick = onClick
+)
 
 private fun Modifier.streamDim(enabled: Boolean): Modifier = composed {
     if (enabled) {

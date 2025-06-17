@@ -4,6 +4,7 @@ package com.kaleyra.video_sdk.call.bottomsheet.view.sheetpanel
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -52,6 +53,7 @@ import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @Composable
@@ -62,11 +64,12 @@ internal fun SheetPanelContent(
     onModularComponentRequest: (ModularComponent) -> Unit,
     onAskInputPermissions: (Boolean) -> Unit,
     inputPermissions: InputPermissions = InputPermissions(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val activity = LocalContext.current.findActivity()
     var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
-    screenShareMode = callActions.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
+    screenShareMode =
+        callActions.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -139,7 +142,7 @@ internal fun SheetPanelContent(
 internal fun SheetPanelContent(
     callActions: ImmutableList<CallActionUI>,
     onItemClick: (CallActionUI) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = Modifier.width(320.dp),
@@ -152,16 +155,20 @@ internal fun SheetPanelContent(
             modifier = modifier
         ) {
             items(items = callActions.value, key = { it.id }) {
-                    SheetPanelItem(
-                        callAction = it,
-                        modifier = Modifier.height(36.dp)
-                            .clickable(
-                                role = Role.Button,
-                                onClick = { onItemClick(it) }
-                            )
-                            .padding(start = 0.dp, end = 9.dp, top = 0.dp, bottom = 0.dp)
-                    )
-                    Spacer(Modifier.size(16.dp))
+                val interactionSource = remember { MutableInteractionSource() }
+                SheetPanelItem(
+                    callAction = it,
+                    modifier = Modifier
+                        .highlightOnFocus(interactionSource)
+                        .height(36.dp)
+                        .clickable(
+                            onClick = { onItemClick(it) },
+                            indication = null,
+                            interactionSource = interactionSource
+                        )
+                        .padding(start = 0.dp, end = 9.dp, top = 0.dp, bottom = 0.dp)
+                )
+                Spacer(Modifier.size(16.dp))
             }
         }
     }

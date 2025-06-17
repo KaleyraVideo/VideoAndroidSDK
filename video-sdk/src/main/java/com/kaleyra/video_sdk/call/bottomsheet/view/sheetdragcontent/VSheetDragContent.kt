@@ -1,11 +1,10 @@
 package com.kaleyra.video_sdk.call.bottomsheet.view.sheetdragcontent
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -13,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,11 +45,13 @@ internal fun VSheetDragContent(
     viewModel: CallActionsViewModel = viewModel<CallActionsViewModel>(factory = CallActionsViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     screenShareViewModel: ScreenShareViewModel = viewModel<ScreenShareViewModel>(factory = ScreenShareViewModel.provideFactory(::requestCollaborationViewModelConfiguration)),
     callActions: ImmutableList<CallActionUI>,
+    areChildrenKeyboardFocusable: Boolean = false,
     onModularComponentRequest: (ModularComponent) -> Unit,
     inputPermissions: InputPermissions = InputPermissions(),
     onAskInputPermissions: (Boolean) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onExitFocusRequest: () -> FocusRequester? = { null },
 ) {
     val activity = LocalContext.current.findActivity()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -71,7 +74,9 @@ internal fun VSheetDragContent(
         callActions = callActions,
         itemsPerColumn = itemsPerColumn,
         inputPermissions = inputPermissions,
+        areChildrenKeyboardFocusable = areChildrenKeyboardFocusable,
         contentPadding = contentPadding,
+        onExitFocusRequest = onExitFocusRequest,
         onHangUpClick = viewModel::hangUp,
         onMicToggle = remember(viewModel, inputPermissions) {
             lambda@{
@@ -134,7 +139,9 @@ internal fun VSheetDragContent(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
+// N.B. Keyboard navigation tests are currently excluded due to past difficulties with
+// programmatic focus management in UI tests. Exercise caution when modifying this code.
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun VSheetDragContent(
     callActions: ImmutableList<CallActionUI>,
@@ -150,9 +157,11 @@ internal fun VSheetDragContent(
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
     onSignatureClick: () -> Unit,
+    areChildrenKeyboardFocusable: Boolean = false,
     modifier: Modifier = Modifier,
     itemsPerColumn: Int = MaxVSheetDragItems,
     inputPermissions: InputPermissions = InputPermissions(),
+    onExitFocusRequest: () -> FocusRequester? = { null },
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val chunkedActions = remember(callActions, itemsPerColumn) {
@@ -166,10 +175,26 @@ internal fun VSheetDragContent(
         contentPadding = contentPadding,
         modifier = modifier
     ) {
-        items(key = { it.id }, items = chunkedActions) { callAction ->
+        itemsIndexed(key = { _, item -> item.id }, items = chunkedActions) { index, callAction ->
             CallSheetItem(
                 callAction = callAction,
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier
+                    .animateItem()
+                    .focusProperties {
+                        // Controls whether this item can receive keyboard focus.
+                        // If 'false', it will be skipped during tab navigation.
+                        canFocus = areChildrenKeyboardFocusable
+
+                        // This focus property logic only applies to the last item in the grid.
+                        // For other items, the default LazyHorizontalGrid traversal order (top-to-bottom, then left-to-right) will apply.
+                        if (index != callActions.count() - 1) return@focusProperties
+
+                        // When the last item in the grid is focused and 'Tab' is pressed,
+                        // it will attempt to move focus to the FocusRequester provided by 'onNextFocusRequester()'.
+                        // If 'onNextFocusRequester()' returns null, it falls back to the default 'next' behavior
+                        // of the LazyHorizontalGrid, which typically involves looping within the grid or exiting.
+                        next = onExitFocusRequest() ?: next
+                    },
                 label = false,
                 extended = false,
                 inputPermissions = inputPermissions,

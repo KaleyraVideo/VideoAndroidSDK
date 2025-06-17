@@ -50,9 +50,7 @@ internal fun SheetPanelItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier
-                .size(24.dp)
-                .then(modifier),
+            modifier = Modifier.size(24.dp),
             painter = painterFor(callAction),
             contentDescription = null,
             tint = if (callAction.isEnabled) contentColor else disabledContentColor

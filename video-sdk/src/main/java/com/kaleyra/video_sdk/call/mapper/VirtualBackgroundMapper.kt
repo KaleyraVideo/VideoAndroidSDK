@@ -20,6 +20,7 @@ import com.kaleyra.video.conference.Effect
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
+import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -49,6 +50,15 @@ internal object VirtualBackgroundMapper {
             buttons.value.contains(CallUI.Button.CameraEffects) || buttons.value.contains(CallUI.Button.Settings) && it.isNotEmpty()
         }.distinctUntilChanged()
 
+    fun Effect.mapToVirtualBackgroundUi(): VirtualBackgroundUi? {
+        return when (this) {
+            is Effect.Video.Background.Blur -> VirtualBackgroundUi.Blur(id = id, factor = factor)
+            is Effect.Video.Background.Image -> VirtualBackgroundUi.Image(id = id, uri = ImmutableUri(image))
+            is Effect.Video.None -> VirtualBackgroundUi.None
+            else -> null
+        }
+    }
+
     private fun CallUI.toCurrentCameraVideoEffect(): Flow<Effect> =
         this.participants
             .mapNotNull { it.me }
@@ -61,13 +71,4 @@ internal object VirtualBackgroundMapper {
             .filterNotNull()
             .flatMapLatest { it.currentEffect }
             .distinctUntilChanged()
-
-    private fun Effect.mapToVirtualBackgroundUi(): VirtualBackgroundUi? {
-        return when (this) {
-            is Effect.Video.Background.Blur -> VirtualBackgroundUi.Blur(id = id)
-            is Effect.Video.Background.Image -> VirtualBackgroundUi.Image(id = id)
-            is Effect.Video.None -> VirtualBackgroundUi.None
-            else -> null
-        }
-    }
 }

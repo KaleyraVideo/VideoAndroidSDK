@@ -142,8 +142,7 @@ object InputMapper {
         this.participants
             .flatMapLatestNotNull { it.me?.streams }
             .mapNotNull { streams ->
-                streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID }
-            }
+                streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
 
     fun Call.hasActiveVirtualBackground() =
         this.toMyCameraStream()
