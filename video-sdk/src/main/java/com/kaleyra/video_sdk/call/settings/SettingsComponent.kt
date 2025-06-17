@@ -1,4 +1,4 @@
-package com.kaleyra.video_sdk.call.settings.view
+package com.kaleyra.video_sdk.call.settings
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
@@ -18,12 +18,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
+import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionSettingsComponent
+import com.kaleyra.video_sdk.call.settings.view.SettingsAppBar
+import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundSettingsComponent
+import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsComponent
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.common.snackbar.view.ThermalWarningSnackbar
 import com.kaleyra.video_sdk.common.spacer.NavigationBarsSpacer
-import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.theme.KaleyraTheme

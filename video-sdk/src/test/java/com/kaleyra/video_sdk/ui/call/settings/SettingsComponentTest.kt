@@ -8,10 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,7 +32,7 @@ import com.kaleyra.video_sdk.call.mapper.VirtualBackgroundMapper.toVirtualBackgr
 import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionDeepFilterOptionTag
 import com.kaleyra.video_sdk.call.settings.view.NoiseSuppressionSettingsTag
-import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
+import com.kaleyra.video_sdk.call.settings.SettingsComponent
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundBlurOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundImageOptionTag
 import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundNoneOptionTag

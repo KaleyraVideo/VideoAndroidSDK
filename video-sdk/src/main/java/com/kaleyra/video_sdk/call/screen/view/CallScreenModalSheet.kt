@@ -24,7 +24,7 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
-import com.kaleyra.video_sdk.call.settings.view.SettingsComponent
+import com.kaleyra.video_sdk.call.settings.SettingsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.virtualbackground.VirtualBackgroundComponent
