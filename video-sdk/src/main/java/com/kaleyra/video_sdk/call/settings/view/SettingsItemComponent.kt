@@ -1,5 +1,12 @@
 package com.kaleyra.video_sdk.call.settings.view
 
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.IndicationNodeFactory
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -32,6 +43,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kaleyra.video_sdk.R
+import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
 
 private const val DisabledOptionAlpha = 0.4f
 private val SettingsItemComponentIconSize = 24.dp
@@ -50,6 +62,7 @@ fun SettingsItemComponent(
     isSelected: Boolean,
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val displayRadioButton = isToggleable == false
     val displaySwitch = isToggleable == true
@@ -77,9 +90,14 @@ fun SettingsItemComponent(
                         isChecked = true
                         onCheckedChange(true)
                     }
-                }
-            )) {
-        Box(modifier = Modifier.clearAndSetSemantics {}) {
+                },
+                interactionSource = interactionSource,
+                indication = LocalIndication.current
+            )
+            .highlightOnFocus(interactionSource)
+    ) {
+        Box(modifier = Modifier.clearAndSetSemantics {}
+        ) {
             Icon(
                 painter = iconPainter,
                 modifier = Modifier.size(SettingsItemComponentIconSize),
@@ -110,8 +128,7 @@ fun SettingsItemComponent(
         when {
             displaySwitch -> {
                 Switch(
-                    modifier = Modifier
-                        .clearAndSetSemantics {},
+                    modifier = Modifier.clearAndSetSemantics {},
                     checked = isSelected,
                     onCheckedChange = {
                         isChecked = it
@@ -131,27 +148,6 @@ fun SettingsItemComponent(
                         if (isEnabled) onCheckedChange(true)
                     },
                     enabled = isEnabled)
-            }
-
-            else -> {
-                Box(modifier = Modifier.padding(end = SettingsItemComponentChevronEndPadding)) {
-                    IconButton(
-                        modifier = Modifier
-                            .size(SettingsItemComponentIconSize)
-                            .clearAndSetSemantics {},
-                        enabled = isEnabled,
-                        onClick = {
-                            isChecked = true
-                            if (isEnabled) onCheckedChange(true)
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.kaleyra_f_chevron_right),
-                            contentDescription = text,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1f else DisabledOptionAlpha),
-                        )
-                    }
-                }
             }
         }
     }
