@@ -218,7 +218,7 @@ class CallUI(
              * A set of all Call Buttons
              */
             val all: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
                     Camera,
@@ -240,7 +240,7 @@ class CallUI(
              * Default set of Call Buttons for audio calls
              */
             val audioCall: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
                     Volume,
@@ -253,7 +253,7 @@ class CallUI(
              * Default set of Call Buttons for video calls
              */
             val videoCall: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
                     Camera,
