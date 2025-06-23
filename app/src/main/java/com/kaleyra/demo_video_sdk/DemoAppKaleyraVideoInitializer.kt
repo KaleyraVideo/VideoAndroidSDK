@@ -81,18 +81,11 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val callConfiguration = getCallConfiguration()
 
                 ongoingCall.buttonsProvider = { callButtons ->
-                    lateinit var providedButtons: Set<CallUI.Button>
-                    val otherCallUIButtons = getCallConfiguration().actions.mapToCallUIButtons().filter { it !in callButtons }
-                    callButtons.indexOf(CallUI.Button.Settings).takeIf { it != -1 }?.let { callUISettingsIndex ->
-                        providedButtons = addSetAtIndex<CallUI.Button>(
-                            callButtons,
-                            otherCallUIButtons,
-                            callUISettingsIndex
+
+                    (callButtons + getCallConfiguration().actions.mapToCallUIButtons())
+                        .toSortedSet(
+                            CallUI.Button.Collections.PredefinedOrderButtonComparator
                         )
-                    } ?: run {
-                        providedButtons = callButtons + otherCallUIButtons
-                    }
-                    providedButtons
                 }
 
                 ongoingCall.state
@@ -124,22 +117,6 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                     )
                 })
             }
-        }
-
-        private fun <T> addSetAtIndex(
-            mainSet: MutableSet<T>,
-            setToInsert: Collection<T>,
-            index: Int
-        ): MutableSet<T> {
-            val mainList = mainSet.toMutableList()
-            if (index < 0 || index > mainList.size) {
-                throw IndexOutOfBoundsException("Index $index is out of bounds for list of size ${mainList.size}")
-            }
-            val itemsToActuallyInsertInOrder = setToInsert.toList()
-            if (itemsToActuallyInsertInOrder.isNotEmpty()) {
-                mainList.addAll(index, itemsToActuallyInsertInOrder)
-            }
-            return LinkedHashSet(mainList)
         }
     }
 

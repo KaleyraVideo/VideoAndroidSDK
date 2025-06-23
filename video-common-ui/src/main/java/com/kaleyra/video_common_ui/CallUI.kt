@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import java.util.Comparator
 import java.util.Objects
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Event representing the display mode set
@@ -213,6 +213,10 @@ class CallUI(
          * Collections of Call Buttons
          */
         companion object Collections {
+
+            data object PredefinedOrderButtonComparator: Comparator<CallUI.Button> {
+                override fun compare(button1: Button?, button2: Button?) = all.indexOf(button1) - all.indexOf(button2)
+            }
 
             /**
              * A set of all Call Buttons
